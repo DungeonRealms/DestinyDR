@@ -2,6 +2,7 @@ package net.dungeonrealms;
 
 import net.dungeonrealms.listeners.MainListener;
 import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -31,6 +32,9 @@ public class DungeonRealms extends JavaPlugin {
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
         pm.registerEvents(new MainListener(), this);
         Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
+
+        WebAPI.fetchPrerequisites();
+
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "s/");
 
     }
