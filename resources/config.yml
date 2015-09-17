@@ -1,0 +1,5 @@
+mongo.host:
+mongo.username:
+mongo.password:
+mongo.port:
+mongo.database:

@@ -8,7 +8,6 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class DungeonRealms extends JavaPlugin {
 
-
     public void onLoad() {
         Utils.log.info("DungeonRealms onLoad() ... STARTING UP");
     }
