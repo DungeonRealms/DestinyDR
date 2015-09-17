@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="plugin dependencies">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/worldguard-6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/BountifulAPI.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

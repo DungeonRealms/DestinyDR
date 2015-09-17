@@ -27,7 +27,6 @@ public class DungeonRealms extends JavaPlugin {
         long START_TIME = System.currentTimeMillis() / 1000L;
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
         DatabaseAPI.getInstance().startInitialization();
-
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
         pm.registerEvents(new MainListener(), this);
