@@ -1,0 +1,4 @@
+Manifest-Version: 1.0
+Class-Path: lib/bson-3.0.2.jar lib/mongodb-driver-core-3.0.2.jar lib/m
+ ongodb-driver-async-3.0.2.jar
+

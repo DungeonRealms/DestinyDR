@@ -1,6 +1,10 @@
 package net.dungeonrealms;
 
+import net.dungeonrealms.listeners.MainListener;
 import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 /**
@@ -8,12 +12,26 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class DungeonRealms extends JavaPlugin {
 
+    static DungeonRealms instance = null;
+
+    public static DungeonRealms getInstance() {
+        return instance;
+    }
+
     public void onLoad() {
         Utils.log.info("DungeonRealms onLoad() ... STARTING UP");
+        instance = this;
     }
 
     public void onEnable() {
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
+        DatabaseAPI.getInstance().startInitialization();
+
+        PluginManager pm = Bukkit.getPluginManager();
+        Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
+        pm.registerEvents(new MainListener(), this);
+        Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
+
     }
 
     public void onDisable() {
