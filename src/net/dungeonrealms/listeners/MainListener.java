@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -42,11 +43,10 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-
-        if(WebAPI.ANNOUNCEMENTS != null && WebAPI.ANNOUNCEMENTS.size() > 0) {
+        if (WebAPI.ANNOUNCEMENTS != null && WebAPI.ANNOUNCEMENTS.size() > 0) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 for (Map.Entry<String, Integer> e : WebAPI.ANNOUNCEMENTS.entrySet()) {
-                    BountifulAPI.sendTitle(player, 1, e.getValue(), 1, e.getKey());
+                    BountifulAPI.sendTitle(player, 1, e.getValue(), 1, e.getKey().replace(":", ""), e.getKey().split(":")[0]);
                     try {
                         Thread.sleep(e.getValue());
                     } catch (InterruptedException e1) {
@@ -54,6 +54,15 @@ public class MainListener implements Listener {
                     }
                 }
             }, 0l);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void onSpawn(CreatureSpawnEvent event) {
+        if (event.isCancelled()) return;
+
+        if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM) {
+            event.setCancelled(true);
         }
     }
 

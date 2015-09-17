@@ -1,5 +1,6 @@
 package net.dungeonrealms.mechanics;
 
+import net.dungeonrealms.mastery.AsyncUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.md_5.bungee.api.ChatColor;
 
@@ -22,23 +23,22 @@ public class WebAPI {
         if (ANNOUNCEMENTS.size() > 0) {
             ANNOUNCEMENTS.clear();
         }
-        new Thread(() -> {
+        AsyncUtils.pool.submit(() -> {
             try {
                 URL url = new URL("http://dungeonrealms.com/api/announcements.txt");
                 BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
                 String line;
                 while ((line = in.readLine()) != null) {
                     if (line.startsWith(">")) {
-                        ANNOUNCEMENTS.put(ChatColor.translateAlternateColorCodes('&', line), Integer.valueOf(line.split(":")[1]));
+                        ANNOUNCEMENTS.put(ChatColor.translateAlternateColorCodes('&', line), Integer.valueOf(line.split(",")[1]));
                     }
                 }
             } catch (MalformedURLException e) {
                 Utils.log.warning("MalformedURL WebAPI(WebAPI.class)");
             } catch (IOException e) {
                 Utils.log.warning("IO Exception");
-            } finally {
             }
-        }, "WebAPI(Prerequisites)-Thread").start();
+        });
     }
 
 }
