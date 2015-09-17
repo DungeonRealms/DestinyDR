@@ -25,9 +25,8 @@ public class DatabaseAPI {
         return instance;
     }
 
-    public static HashMap<UUID, Document> PLAYERS = new HashMap<>();
-
-    public static ArrayList<UUID> REQUEST_NEW_DATA = new ArrayList<>();
+    public static volatile HashMap<UUID, Document> PLAYERS = new HashMap<>();
+    public static volatile ArrayList<UUID> REQUEST_NEW_DATA = new ArrayList<>();
 
     public void update(UUID uuid, EnumOperators EO, String variable, Object object) {
         Database.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable, object)),
