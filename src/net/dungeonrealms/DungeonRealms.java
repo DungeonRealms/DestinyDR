@@ -24,6 +24,7 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     public void onEnable() {
+        long START_TIME = System.currentTimeMillis() / 1000L;
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
         DatabaseAPI.getInstance().startInitialization();
 
@@ -31,6 +32,7 @@ public class DungeonRealms extends JavaPlugin {
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
         pm.registerEvents(new MainListener(), this);
         Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
+        Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "s/");
 
     }
 
