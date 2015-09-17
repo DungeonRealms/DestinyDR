@@ -57,7 +57,15 @@ public class MainListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    /**
+     * Cancel spawning unless it's CUSTOM.
+     * So we don't have RANDOM SHEEP. We have..
+     * CUSTOM SHEEP. RAWR SHEEP EAT ME>.. AH RUN!
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void onSpawn(CreatureSpawnEvent event) {
         if (event.isCancelled()) return;
 
