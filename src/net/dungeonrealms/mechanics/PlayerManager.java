@@ -12,6 +12,9 @@ public class PlayerManager {
         player.getInventory().setItem(7, ItemManager.getHearthStone("HearthStone", new String[]{
                 ChatColor.GRAY + "(Right-Click) teleport back to your wayshrine!"
         }));
+        player.getInventory().setItem(8, ItemManager.getPlayerProfile(player, "Player Profile", new String[]{
+                ChatColor.GRAY + "(Right-Click) to open your profile!"
+        }));
     }
 
 }

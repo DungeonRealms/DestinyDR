@@ -5,23 +5,23 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
 
 /**
  * Created by Nick on 9/18/2015.
  */
-public class InventoryListener implements Listener {
+public class BlockListener implements Listener {
 
     /**
-     * Disables the clicking of items that contain
-     * NBTTag `important` in `type`.
+     * Disables the placement of core items that have
+     * NBTData of `important` in `type` field.
      * @param event
      * @since 1.0
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getCurrentItem() == null) return;
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getCurrentItem());
+    public void onBlockPlace(BlockPlaceEvent event) {
+        if (event.getItemInHand() == null) return;
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemInHand());
         if (nmsItem == null) return;
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null || !tag.getString("type").equalsIgnoreCase("important")) return;
