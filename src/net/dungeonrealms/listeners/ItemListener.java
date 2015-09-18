@@ -4,6 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.teleportation.Teleportation;
 import org.bukkit.Material;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -24,18 +25,17 @@ public class ItemListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerUseTeleportItem(PlayerInteractEvent event) {
-        if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
-            return;
-        }
-        if (event.getPlayer().getItemInHand().getType() == Material.QUARTZ) {
-            if (event.getPlayer().hasMetadata("Hearthstone") && !(CombatLog.isInCombat(event.getPlayer().getUniqueId()))) {
-                Teleportation.teleportPlayer(event.getPlayer().getUniqueId());
-            } else {
-                if (event.getPlayer().hasMetadata("Hearthstone")) {
-                    event.getPlayer().removeMetadata("Hearthstone", DungeonRealms.getInstance());
-                }
-                event.getPlayer().sendMessage("Your Hearthstone is not ready yet, or you are currently in combat! (" + Teleportation.PLAYER_TELEPORTS.get(event.getPlayer().getUniqueId()) + ")");
+        Player player = event.getPlayer();
+        if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
+        if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.QUARTZ) return;
+
+        if (player.hasMetadata("Hearthstone") && !(CombatLog.isInCombat(event.getPlayer().getUniqueId()))) {
+            Teleportation.teleportPlayer(event.getPlayer().getUniqueId());
+        } else {
+            if (event.getPlayer().hasMetadata("Hearthstone")) {
+                event.getPlayer().removeMetadata("Hearthstone", DungeonRealms.getInstance());
             }
+            event.getPlayer().sendMessage("Your Hearthstone is not ready yet, or you are currently in combat! (" + Teleportation.PLAYER_TELEPORTS.get(event.getPlayer().getUniqueId()) + ")");
         }
     }
 }

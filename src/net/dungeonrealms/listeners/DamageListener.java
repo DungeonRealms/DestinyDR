@@ -3,7 +3,6 @@ package net.dungeonrealms.listeners;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.mastery.NMSUtils;
-import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -45,12 +44,7 @@ public class DamageListener implements Listener {
         event.setCancelled(true);
         net.minecraft.server.v1_8_R3.Entity nmsEntity = ((CraftEntity) event.getEntity()).getHandle();
         NBTTagCompound tag = nmsEntity.getNBTTag();
-        if (tag == null) {
-            Utils.log.warning("EnderCrystal blew up and isn't a Buff?!? " + event.getEntity().getLocation());
-            return;
-        }
-        //for some reason it's NOT passing through here..
-        System.out.println("6");
+        if (!tag.getString("type").equalsIgnoreCase("buff")) return;
         int radius = tag.getInt("radius");
         int duration = tag.getInt("duration");
         PotionEffectType effectType = PotionEffectType.getByName(tag.getString("effectType"));
