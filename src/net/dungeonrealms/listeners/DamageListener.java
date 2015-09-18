@@ -86,7 +86,6 @@ public class DamageListener implements Listener {
         }
 
     }
-
     /**
      * Listen for the players weapon.
      *

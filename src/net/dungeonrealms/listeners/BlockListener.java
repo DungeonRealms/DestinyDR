@@ -27,5 +27,4 @@ public class BlockListener implements Listener {
         if (tag == null || !tag.getString("type").equalsIgnoreCase("important")) return;
         event.setCancelled(true);
     }
-
 }

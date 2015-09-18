@@ -18,7 +18,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
  * Created by Kieran on 9/18/2015.
  */
 public class ItemListener implements Listener {
-
     /**
      * Used to stop player from dropping items that are
      * valuable e.g. hearthstone or profile head.

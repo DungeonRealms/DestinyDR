@@ -76,7 +76,6 @@ public class MainListener implements Listener {
         PlayerManager.checkInventory(player);
 
     }
-
     /**
      * Cancel spawning unless it's CUSTOM. So we don't have RANDOM SHEEP. We
      * have.. CUSTOM SHEEP. RAWR SHEEP EAT ME>.. AH RUN!
