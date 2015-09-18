@@ -38,7 +38,7 @@ public class API {
      * @since 1.0
      */
     public static boolean isPlayerInRegion(UUID uuid, String region) {
-        return API.getWorldGuard().getRegionManager(Bukkit.getPlayer(uuid).getWorld()).getApplicableRegions(Bukkit.getPlayer(uuid).getLocation()).getRegions().contains(region);
+        return getWorldGuard().getRegionManager(Bukkit.getPlayer(uuid).getWorld()).getApplicableRegions(Bukkit.getPlayer(uuid).getLocation()).getRegions().contains(region);
     }
 
 }
