@@ -30,6 +30,7 @@ public class Entities {
         NMSUtils nmsUtils = new NMSUtils();
 
         nmsUtils.registerEntity("Pirate", 54, EntityZombie.class, EntityPirate.class);
+
         nmsUtils.registerEntity("PetCaveSpider", 59, EntityCaveSpider.class, CaveSpider.class);
         nmsUtils.registerEntity("PetBabyZombie", 54, EntityZombie.class, BabyZombie.class);
         nmsUtils.registerEntity("PetBabyZombiePig", 57, EntityPigZombie.class, BabyZombiePig.class);
