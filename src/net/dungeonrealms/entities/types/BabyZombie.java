@@ -1,7 +1,7 @@
 package net.dungeonrealms.entities.types;
 
-import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.EntityZombie;
 import net.minecraft.server.v1_8_R3.World;
 
@@ -27,7 +27,10 @@ public class BabyZombie extends EntityZombie {
         this.setBaby(true);
         this.persistent = true;
 
-        Entities.getInstance().registerEntityMetadata(this, this.entityType, 0, 0);
+        MetadataUtils.registerEntityMetadata(this, this.entityType, 0, 0);
     }
 
+    public BabyZombie(World world) {
+        super(world);
+    }
 }

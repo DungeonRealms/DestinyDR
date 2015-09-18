@@ -1,7 +1,7 @@
 package net.dungeonrealms.entities.types;
 
-import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.EntityRabbit;
 import net.minecraft.server.v1_8_R3.World;
 
@@ -26,6 +26,10 @@ public class Rabbit extends EntityRabbit {
         this.canPickUpLoot = false;
         this.persistent = true;
 
-        Entities.getInstance().registerEntityMetadata(this, this.entityType, 0, 0);
+        MetadataUtils.registerEntityMetadata(this, this.entityType, 0, 0);
+    }
+
+    public Rabbit(World world) {
+        super(world);
     }
 }

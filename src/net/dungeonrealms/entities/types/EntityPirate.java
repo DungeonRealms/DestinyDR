@@ -1,8 +1,8 @@
 package net.dungeonrealms.entities.types;
 
-import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.World;
@@ -21,11 +21,15 @@ public class EntityPirate extends MeleeEntityZombie {
 		this.entityType = entityType;
 		//This shouldn't be hardcoded to 1 but it's just for testing.
 		int level = Utils.getRandomFromTier(tier);
-		Entities.getInstance().registerEntityMetadata(this, this.entityType, tier, level);
+		MetadataUtils.registerEntityMetadata(this, this.entityType, tier, level);
 		EntityStats.setMonsterStats(this, level);
 		this.setCustomName(ChatColor.GOLD + "Pirate");
 		this.setCustomNameVisible(true);
 		setArmor(1);
+	}
+
+	public EntityPirate(World world) {
+		super(world);
 	}
 
 	@Override

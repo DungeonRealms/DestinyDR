@@ -1,7 +1,7 @@
 package net.dungeonrealms.entities.types;
 
-import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.EntityHorse;
 import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.World;
@@ -31,6 +31,10 @@ public class Horse extends EntityHorse {
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(horseSpeed);
         this.setOwnerUUID(ownerUUID.toString());
 
-        Entities.getInstance().registerEntityMetadata(this, this.entityType, 0, 0);
+        MetadataUtils.registerEntityMetadata(this, this.entityType, 0, 0);
+    }
+
+    public Horse(World world) {
+        super(world);
     }
 }

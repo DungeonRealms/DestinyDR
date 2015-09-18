@@ -57,8 +57,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("rank", String.class);
             case GEMS:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("gems", Integer.class);
-            case WAYSHRINE:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("wayshrine", Location.class);
+            case HEARTHSTONE:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("hearthstone", Location.class);
             /*
             Player Attribute Variables
              */
@@ -94,7 +94,7 @@ public class DatabaseAPI {
                                 .append("lastLogin", 0l)
                                 .append("netLevel", 0)
                                 .append("rank", "DEFAULT")
-                                .append("wayshrine", "starter")
+                                .append("hearthstone", "starter")
                                 .append("isPlaying", true)
 
                 );

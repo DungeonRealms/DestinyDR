@@ -2,6 +2,7 @@ package net.dungeonrealms.commands;
 
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.types.EntityPirate;
+import net.dungeonrealms.entities.utils.BuffUtils;
 import net.dungeonrealms.entities.utils.MountUtils;
 import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.enums.EnumEntityType;
@@ -41,9 +42,11 @@ public class CommandSpawn implements CommandExecutor {
                     zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
                     world.addEntity(zombie, SpawnReason.CUSTOM);
                     zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
-                	Utils.log.info("Spawned");
+                    Utils.log.info("Spawned");
                     break;
                 case "buff":
+                    BuffUtils.spawnBuff(player.getUniqueId());
+                    Utils.log.info("Spawned Buff");
                     break;
                 case "pet": {
                     if (!Entities.PLAYER_PETS.containsKey(player.getUniqueId())) {

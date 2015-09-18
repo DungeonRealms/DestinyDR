@@ -3,14 +3,11 @@ package net.dungeonrealms.listeners;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.mastery.NMSUtils;
-import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -41,27 +38,21 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBuffExplode(EntityExplodeEvent event) {
-        if (!(event.getEntity() instanceof EnderCrystal)) return;
         event.setCancelled(true);
-        net.minecraft.server.v1_8_R3.Entity nmsEntity = ((CraftEntity) event.getEntity()).getHandle();
-        NBTTagCompound tag = nmsEntity.getNBTTag();
-        if (tag == null) {
-            Utils.log.warning("EnderCrystal blew up and isn't a Buff?!? " + event.getEntity().getLocation());
-            return;
-        }
-        //for some reason it's NOT passing through here..
-        System.out.println("6");
-        int radius = tag.getInt("radius");
-        int duration = tag.getInt("duration");
-        PotionEffectType effectType = PotionEffectType.getByName(tag.getString("effectType"));
-        for (Entity e : event.getEntity().getNearbyEntities(radius, radius, radius)) {
-            if (!(e instanceof Player)) continue;
-            ((Player) e).addPotionEffect(new PotionEffect(effectType, duration, 2));
-            e.sendMessage(new String[]{
-                    "",
-                    ChatColor.BLUE + "[BUFF] " + ChatColor.YELLOW + "You have received the " + ChatColor.UNDERLINE + effectType.getName() + ChatColor.YELLOW + " buff!",
-                    ""
-            });
+        if (!(event.getEntity().hasMetadata("type"))) return;
+        if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("buff")) {
+            int radius = event.getEntity().getMetadata("radius").get(0).asInt();
+            int duration = event.getEntity().getMetadata("duration").get(0).asInt();
+            PotionEffectType effectType = PotionEffectType.getByName(event.getEntity().getMetadata("effectType").get(0).asString());
+            for (Entity e : event.getEntity().getNearbyEntities(radius, radius, radius)) {
+                if (!(e instanceof Player)) continue;
+                ((Player) e).addPotionEffect(new PotionEffect(effectType, duration, 2));
+                e.sendMessage(new String[]{
+                        "",
+                        ChatColor.BLUE + "[BUFF] " + ChatColor.YELLOW + "You have received the " + ChatColor.UNDERLINE + effectType.getName() + ChatColor.YELLOW + " buff!",
+                        ""
+                });
+            }
         }
     }
 
@@ -76,12 +67,8 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onMobDeath(EntityDeathEvent event) {
-        if (event.getEntity() instanceof Player) {
-            return;
-        }
-        if (!(event.getEntity().hasMetadata("type"))) {
-            return;
-        }
+        if (event.getEntity() instanceof Player) return;
+        if (!(event.getEntity().hasMetadata("type"))) return;
         String metaValue = event.getEntity().getMetadata("type").get(0).asString();
         if (metaValue.equalsIgnoreCase("hostile")) {
             int tier = event.getEntity().getMetadata("tier").get(0).asInt();
@@ -99,7 +86,6 @@ public class DamageListener implements Listener {
         }
 
     }
-
     /**
      * Listen for the players weapon.
      *
@@ -108,20 +94,18 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerStrikeWithWeapon(EntityDamageByEntityEvent event) {
-        if (event.getDamager() instanceof Player) {
-            //Make sure the player is HOLDING something!
-            if (((Player) event.getDamager()).getItemInHand() == null) return;
-            //Check if the item has NBT, all our custom weapons will have NBT.
-            net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) event.getDamager()).getItemInHand()));
-            if (nmsItem != null && nmsItem.getTag() != null) {
-                //Get the NBT of the item the player is holding.
-                NBTTagCompound tag = nmsItem.getTag();
-                //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
-                if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
-                double damage = tag.getDouble("damage");
-                event.setDamage(damage);
-            }
-        }
+        if (!(event.getDamager() instanceof Player)) return;
+        //Make sure the player is HOLDING something!
+        if (((Player) event.getDamager()).getItemInHand() == null) return;
+        //Check if the item has NBT, all our custom weapons will have NBT.
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) event.getDamager()).getItemInHand()));
+        if (nmsItem == null || nmsItem.getTag() == null) return;
+        //Get the NBT of the item the player is holding.
+        NBTTagCompound tag = nmsItem.getTag();
+        //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
+        if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
+        double damage = tag.getDouble("damage");
+        event.setDamage(damage);
     }
 
     /**
@@ -134,19 +118,19 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onEntityDamagedByEntity(EntityDamageByEntityEvent event) {
-        if (event.getEntity() instanceof Player) {
-            return;
-        }
-        if (!(event.getEntity().hasMetadata("type"))) {
-            return;
-        }
-        String metaValue = event.getEntity().getMetadata("type").get(0).asString();
-        if (metaValue.equalsIgnoreCase("pet")) {
-            event.setCancelled(true);
-            event.getDamager().sendMessage("You cannot damage players pets!");
-        } else if (metaValue.equalsIgnoreCase("mount")) {
-            event.setCancelled(true);
-            event.getDamager().sendMessage("You cannot damage players mounts!");
+        if (event.getEntity() instanceof Player) return;
+        if (!(event.getEntity().hasMetadata("type"))) return;
+        String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
+        switch (metaValue) {
+            case "pet":
+                event.setCancelled(true);
+                event.getDamager().sendMessage("You cannot damage players pets!");
+                break;
+            case "mount":
+                event.setCancelled(true);
+                event.getDamager().sendMessage("You cannot damage players mounts!");
+                break;
+            default:
         }
     }
 
@@ -161,9 +145,7 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onEntityDamaged(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player) {
-            return;
-        }
+        if (event.getEntity() instanceof Player) return;
         if (event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.DROWNING || event.getCause() == DamageCause.FALL
                 || event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.FIRE) {
             event.setCancelled(true);
@@ -180,10 +162,7 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerDeath(EntityDeathEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
-            return;
-        }
-
+        if (!(event.getEntity() instanceof Player)) return;
         if (Entities.PLAYER_PETS.containsKey(event.getEntity().getUniqueId())) {
             net.minecraft.server.v1_8_R3.Entity pet = Entities.PLAYER_PETS.get(event.getEntity().getUniqueId());
             if (!pet.getBukkitEntity().isDead()) { //Safety check
@@ -212,21 +191,19 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onMonsterDamagePlayer(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player)) return;
         int finalDamage = 0;
-        if (event.getEntity() instanceof Player) {
-            Player p = (Player) event.getEntity();
-            net.minecraft.server.v1_8_R3.Entity nmsMonster = NMSUtils.getNMSEntity(event.getDamager());
-            if (event.getDamager().hasMetadata("type") && event.getDamager().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-                EntityStats.Stats stats = EntityStats.getMonsterStats(nmsMonster);
-                Random random = new Random();
-                if (random.nextBoolean()) {
-                    finalDamage = stats.atk + random.nextInt(10);
-                }
-                else {
-                    finalDamage = stats.atk - random.nextInt(10);
-                }
-                p.sendMessage(finalDamage + "dealt to you");
+        Player p = (Player) event.getEntity();
+        net.minecraft.server.v1_8_R3.Entity nmsMonster = NMSUtils.getNMSEntity(event.getDamager());
+        if (event.getDamager().hasMetadata("type") && event.getDamager().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+            EntityStats.Stats stats = EntityStats.getMonsterStats(nmsMonster);
+            Random random = new Random();
+            if (random.nextBoolean()) {
+                finalDamage = stats.atk + random.nextInt(10);
+            } else {
+                finalDamage = stats.atk - random.nextInt(10);
             }
+            p.sendMessage(finalDamage + "dealt to you");
         }
     }
 }
