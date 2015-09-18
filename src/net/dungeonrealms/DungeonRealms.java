@@ -8,6 +8,7 @@ import net.dungeonrealms.commands.CommandSpawn;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.listeners.DamageListener;
+import net.dungeonrealms.listeners.InventoryListener;
 import net.dungeonrealms.listeners.ItemListener;
 import net.dungeonrealms.listeners.MainListener;
 import net.dungeonrealms.mastery.Utils;
@@ -45,6 +46,7 @@ public class DungeonRealms extends JavaPlugin {
         pm.registerEvents(new MainListener(), this);
         pm.registerEvents(new DamageListener(), this);
         pm.registerEvents(new ItemListener(), this);
+        pm.registerEvents(new InventoryListener(), this);
         Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
 
         WebAPI.fetchPrerequisites();
