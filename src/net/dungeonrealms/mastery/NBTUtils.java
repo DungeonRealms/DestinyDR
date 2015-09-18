@@ -12,7 +12,6 @@ import org.bukkit.potion.PotionEffectType;
  * Created by Nick on 9/17/2015.
  */
 public class NBTUtils {
-
     /**
      * This method is used to create buffs.
      *
