@@ -1,14 +1,14 @@
 package net.dungeonrealms.commands;
 
-import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.types.EntityPirate;
 import net.dungeonrealms.entities.utils.BuffUtils;
+import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.entities.utils.MountUtils;
 import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.mastery.NBTUtils;
 import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.EntityLiving;
+import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -49,7 +49,7 @@ public class CommandSpawn implements CommandExecutor {
                     Utils.log.info("Spawned Buff");
                     break;
                 case "pet": {
-                    if (!Entities.PLAYER_PETS.containsKey(player.getUniqueId())) {
+                    if (!EntityAPI.hasPetOut(player.getUniqueId())) {
                         PetUtils.spawnPet(player.getUniqueId(), 3);
                         Utils.log.info("Spawned Pet");
                     } else {
@@ -58,13 +58,13 @@ public class CommandSpawn implements CommandExecutor {
                     break;
                 }
                 case "mount": {
-                    if (!Entities.PLAYER_MOUNTS.containsKey(player.getUniqueId())) {
-                        if (Entities.PLAYER_PETS.containsKey(player.getUniqueId())) {
-                            EntityLiving entityLiving = (EntityLiving) Entities.PLAYER_PETS.get(player.getUniqueId());
-                            if (entityLiving.isAlive()) {
-                                entityLiving.getBukkitEntity().remove();
+                    if (!EntityAPI.hasMountOut(player.getUniqueId())) {
+                        if (EntityAPI.hasPetOut(player.getUniqueId())) {
+                            Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
+                            if (entity.isAlive()) {
+                                entity.getBukkitEntity().remove();
                             }
-                            Entities.PLAYER_PETS.remove(player.getUniqueId());
+                            EntityAPI.removePlayerPetList(player.getUniqueId());
                             player.sendMessage("Your pet has returned home as you have summoned your mount");
                         }
                         MountUtils.spawnMount(player.getUniqueId(), 5);

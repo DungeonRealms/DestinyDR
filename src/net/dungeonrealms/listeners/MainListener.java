@@ -2,7 +2,7 @@ package net.dungeonrealms.listeners;
 
 import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.entities.Entities;
+import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -101,14 +101,14 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onMountDismount(VehicleExitEvent event) {
         if (!(event.getExited() instanceof Player)) return;
-        if (Entities.PLAYER_MOUNTS.containsKey(event.getExited().getUniqueId())) {
+        if (EntityAPI.hasMountOut(event.getExited().getUniqueId())) {
             //net.minecraft.server.v1_8_R3.Entity playerPet = Entities.PLAYER_MOUNTS.get(event.getExited().getUniqueId());
             //NBTTagCompound tag = playerPet.getNBTTag();
             if (event.getVehicle().hasMetadata("type")) {
                 String metaValue = event.getVehicle().getMetadata("type").get(0).asString();
                 if (metaValue.equalsIgnoreCase("mount")) {
                     event.getVehicle().remove();
-                    Entities.PLAYER_MOUNTS.remove(event.getExited().getUniqueId());
+                    EntityAPI.removePlayerMountList(event.getExited().getUniqueId());
                     event.getExited().sendMessage("For it's own safety, your mount has returned to the stable.");
                 }
             }
@@ -123,23 +123,23 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (Entities.PLAYER_PETS.containsKey(event.getPlayer().getUniqueId())) {
-            net.minecraft.server.v1_8_R3.Entity playerPet = Entities.PLAYER_PETS.get(event.getPlayer().getUniqueId());
+        if (EntityAPI.hasPetOut(event.getPlayer().getUniqueId())) {
+            net.minecraft.server.v1_8_R3.Entity playerPet = EntityAPI.getPlayerPet(event.getPlayer().getUniqueId());
             if (playerPet.isAlive()) { //Safety check
                 playerPet.dead = true;
             }
-            Entities.PLAYER_PETS.remove(event.getPlayer().getUniqueId());
+            EntityAPI.removePlayerPetList(event.getPlayer().getUniqueId());
         }
 
-        if (Entities.PLAYER_MOUNTS.containsKey(event.getPlayer().getUniqueId())) {
-            net.minecraft.server.v1_8_R3.Entity playerMount = Entities.PLAYER_MOUNTS.get(event.getPlayer().getUniqueId());
+        if (EntityAPI.hasMountOut(event.getPlayer().getUniqueId())) {
+            net.minecraft.server.v1_8_R3.Entity playerMount = EntityAPI.getPlayerMount(event.getPlayer().getUniqueId());
             if (playerMount.isAlive()) { //Safety check
                 if (playerMount.passenger != null) {
                     playerMount.passenger = null;
                 }
                 playerMount.dead = true;
             }
-            Entities.PLAYER_MOUNTS.remove(event.getPlayer().getUniqueId());
+            EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
         }
     }
 }

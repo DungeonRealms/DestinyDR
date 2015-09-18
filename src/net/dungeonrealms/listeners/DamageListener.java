@@ -1,6 +1,6 @@
 package net.dungeonrealms.listeners;
 
-import net.dungeonrealms.entities.Entities;
+import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.mastery.NMSUtils;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -163,21 +163,21 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerDeath(EntityDeathEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
-        if (Entities.PLAYER_PETS.containsKey(event.getEntity().getUniqueId())) {
-            net.minecraft.server.v1_8_R3.Entity pet = Entities.PLAYER_PETS.get(event.getEntity().getUniqueId());
+        if (EntityAPI.hasPetOut(event.getEntity().getUniqueId())) {
+            net.minecraft.server.v1_8_R3.Entity pet = EntityAPI.getPlayerPet(event.getEntity().getUniqueId());
             if (!pet.getBukkitEntity().isDead()) { //Safety check
                 pet.getBukkitEntity().remove();
             }
-            Entities.PLAYER_PETS.remove(event.getEntity().getUniqueId());
+            EntityAPI.removePlayerPetList(event.getEntity().getUniqueId());
             event.getEntity().sendMessage("For it's own safety, your pet has returned to its home.");
         }
 
-        if (Entities.PLAYER_MOUNTS.containsKey(event.getEntity().getUniqueId())) {
-            net.minecraft.server.v1_8_R3.Entity mount = Entities.PLAYER_MOUNTS.get(event.getEntity().getUniqueId());
+        if (EntityAPI.hasMountOut(event.getEntity().getUniqueId())) {
+            net.minecraft.server.v1_8_R3.Entity mount = EntityAPI.getPlayerMount(event.getEntity().getUniqueId());
             if (mount.isAlive()) {
                 mount.getBukkitEntity().remove();
             }
-            Entities.PLAYER_MOUNTS.remove(event.getEntity().getUniqueId());
+            EntityAPI.getPlayerMount(event.getEntity().getUniqueId());
             event.getEntity().sendMessage("For it's own safety, your mount has returned to the stable.");
         }
     }
