@@ -1,6 +1,5 @@
 package net.dungeonrealms.listeners;
 
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.teleportation.Teleportation;
 import org.bukkit.Material;
@@ -29,12 +28,9 @@ public class ItemListener implements Listener {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.QUARTZ) return;
 
-        if (player.hasMetadata("Hearthstone") && !(CombatLog.isInCombat(event.getPlayer().getUniqueId()))) {
+        if (Teleportation.canUseHearthstone(player.getUniqueId()) && !(CombatLog.isInCombat(event.getPlayer().getUniqueId()))) {
             Teleportation.teleportPlayer(event.getPlayer().getUniqueId());
         } else {
-            if (event.getPlayer().hasMetadata("Hearthstone")) {
-                event.getPlayer().removeMetadata("Hearthstone", DungeonRealms.getInstance());
-            }
             event.getPlayer().sendMessage("Your Hearthstone is not ready yet, or you are currently in combat! (" + Teleportation.PLAYER_TELEPORTS.get(event.getPlayer().getUniqueId()) + ")");
         }
     }

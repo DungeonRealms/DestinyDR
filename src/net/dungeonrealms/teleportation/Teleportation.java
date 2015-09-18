@@ -8,7 +8,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -54,14 +53,18 @@ public class Teleportation {
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for (Map.Entry<UUID, Integer> e : PLAYER_TELEPORTS.entrySet()) {
-                Player player = Bukkit.getPlayer(e.getKey());
-                if (e.getValue() <= 0 && !(player.hasMetadata("Hearthstone"))) {
-                    player.setMetadata("Hearthstone", new FixedMetadataValue(DungeonRealms.getInstance(), player.getUniqueId()));
-                    player.sendMessage("Your Hearthstone is ready to be used!");
-                }
                 PLAYER_TELEPORTS.put(e.getKey(), (e.getValue() - 1));
             }
         }, 0, 20L);
+    }
+
+    public static boolean canUseHearthstone(UUID uuid) {
+        if (PLAYER_TELEPORTS.containsKey(uuid)) {
+            if (PLAYER_TELEPORTS.get(uuid) <= 0) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public static void teleportPlayer(UUID uuid) {
@@ -89,8 +92,8 @@ public class Teleportation {
             player.sendMessage("Using your Hearthstone to return to the Tutorial Island");
         }
 
-        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 2));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 140, 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 200, 2));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 1));
         player.playSound(player.getLocation(), Sound.AMBIENCE_CAVE, 1F, 1F);
 
         final int[] taskTimer = {5};
@@ -99,10 +102,8 @@ public class Teleportation {
             if (taskTimer[0] <= 0) {
                 if (CombatLog.isInCombat(uuid)) {
                     player.sendMessage("Your teleport has been interrupted by combat!");
-                    player.removeMetadata("Hearthstone", DungeonRealms.getInstance());
                 } else {
                     player.teleport(location);
-                    player.removeMetadata("Hearthstone", DungeonRealms.getInstance());
                 }
             }
             taskTimer[0]--;
