@@ -28,4 +28,8 @@ public class Rabbit extends EntityRabbit {
 
         Entities.getInstance().registerEntityMetadata(this, this.entityType, 0, 0);
     }
+
+    public Rabbit(World world) {
+        super(world);
+    }
 }

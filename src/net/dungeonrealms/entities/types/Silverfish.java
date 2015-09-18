@@ -28,4 +28,8 @@ public class Silverfish extends EntitySilverfish {
 
         Entities.getInstance().registerEntityMetadata(this, this.entityType, 0, 0);
     }
+
+    public Silverfish(World world) {
+        super(world);
+    }
 }

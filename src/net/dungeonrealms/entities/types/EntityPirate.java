@@ -28,6 +28,10 @@ public class EntityPirate extends MeleeEntityZombie {
 		setArmor(1);
 	}
 
+	public EntityPirate(World world) {
+		super(world);
+	}
+
 	@Override
 	public ItemStack[] getTierArmor(int tier) {
 		if (tier == 1) {

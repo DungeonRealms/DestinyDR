@@ -28,4 +28,8 @@ public class CaveSpider extends EntityCaveSpider {
 
         Entities.getInstance().registerEntityMetadata(this, this.entityType, 0, 0);
     }
+
+    public CaveSpider(World world) {
+        super(world);
+    }
 }

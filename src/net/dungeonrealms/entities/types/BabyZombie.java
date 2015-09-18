@@ -30,4 +30,7 @@ public class BabyZombie extends EntityZombie {
         Entities.getInstance().registerEntityMetadata(this, this.entityType, 0, 0);
     }
 
+    public BabyZombie(World world) {
+        super(world);
+    }
 }

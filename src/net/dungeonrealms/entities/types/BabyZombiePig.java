@@ -29,4 +29,8 @@ public class BabyZombiePig extends EntityPigZombie {
 
         Entities.getInstance().registerEntityMetadata(this, this.entityType, 0, 0);
     }
+
+    public BabyZombiePig(World world) {
+        super(world);
+    }
 }

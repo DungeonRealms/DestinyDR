@@ -28,4 +28,8 @@ public class Chicken extends EntityChicken {
 
         Entities.getInstance().registerEntityMetadata(this, this.entityType, 0, 0);
     }
+
+    public Chicken(World world) {
+        super(world);
+    }
 }

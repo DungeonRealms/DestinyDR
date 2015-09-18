@@ -33,4 +33,8 @@ public class Horse extends EntityHorse {
 
         Entities.getInstance().registerEntityMetadata(this, this.entityType, 0, 0);
     }
+
+    public Horse(World world) {
+        super(world);
+    }
 }

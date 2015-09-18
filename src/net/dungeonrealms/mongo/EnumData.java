@@ -12,6 +12,6 @@ public enum EnumData {
     RANK,
     IS_PLAYING,
     GEMS,
-    WAYSHRINE,
+    HEARTHSTONE,
 
 }

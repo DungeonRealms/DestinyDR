@@ -28,4 +28,8 @@ public class Wolf extends EntityWolf {
 
         Entities.getInstance().registerEntityMetadata(this, this.entityType, 0, 0);
     }
+
+    public Wolf(World world) {
+        super(world);
+    }
 }

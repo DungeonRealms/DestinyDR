@@ -5,6 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.teleportation.Teleportation;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -68,6 +69,7 @@ public class MainListener implements Listener {
 				}
 			} , 5l);
 		}
+		Teleportation.PLAYER_TELEPORTS.put(event.getPlayer().getUniqueId(), 120);
 	}
 
 	/**
@@ -138,12 +140,4 @@ public class MainListener implements Listener {
 			Entities.PLAYER_MOUNTS.remove(event.getPlayer().getUniqueId());
 		}
 	}
-
-	/**
-	 * Handles player moving the server
-	 *
-	 * @param event
-	 * @since 1.0
-	 */
-
 }

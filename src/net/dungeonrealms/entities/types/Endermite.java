@@ -28,4 +28,8 @@ public class Endermite extends EntityEndermite {
 
         Entities.getInstance().registerEntityMetadata(this, this.entityType, 0, 0);
     }
+
+    public Endermite(World world) {
+        super(world);
+    }
 }

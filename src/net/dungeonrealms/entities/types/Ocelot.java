@@ -28,4 +28,8 @@ public class Ocelot extends EntityOcelot {
 
         Entities.getInstance().registerEntityMetadata(this, this.entityType, 0, 0);
     }
+
+    public Ocelot(World world) {
+        super(world);
+    }
 }
