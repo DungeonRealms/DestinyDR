@@ -1,7 +1,17 @@
 name: DungeonRealms-Optimized
 main: net.dungeonrealms.DungeonRealms
-verson: 1.0
+version: 1.0
 authors: [xFinityPro, Proxying, Xwaffle]
 website: http://www.dungeonrealms.net
 depend: [BountifulAPI, WorldGuard]
 description: The new dungeonrealms!
+commands:
+    spawn:
+        usage: /<command>
+        description: Handles manual spawning.
+    add:
+        usage: /<command>
+        description: Handles manual spawning items.
+    analyze:
+        usage: /<command>
+        description: Handles analyzing items/mobs.

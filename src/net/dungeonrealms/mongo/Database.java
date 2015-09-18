@@ -26,18 +26,12 @@ public class Database {
     public static MongoCollection<Document> collection = null;
 
     public void initConnection() {
-
-        Utils.log.info("Starting Mongo Connection...");
-
-        /*
-        Dont worry if it doesn't exist. it will create
-        automatically.
-         */
-        mongoClient = MongoClients.create("mongodb://localhost");
+        Utils.log.info("DungeonRealms Starting [MONGODB] Connection...");
+        //mongoClient = MongoClients.create("mongodb://admin:admin123@ds051970.mongolab.com:51970/dungeonrealms");
+        mongoClient = MongoClients.create("mongodb://druser:drpass@ds051970.mongolab.com:51970/dungeonrealms");
         database = mongoClient.getDatabase("dungeonrealms");
         collection = database.getCollection("player_data");
-
-        Utils.log.info("Mongo has connected successfully!");
+        Utils.log.info("DungeonRealms [MONGODB] has connected successfully!");
     }
 
 }

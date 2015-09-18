@@ -3,6 +3,7 @@
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/lib/worldguard-6.1.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/BountifulAPI.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/worldedit-bukkit-6.1.jar!/" />
     </CLASSES>
     <JAVADOC />
     <SOURCES />

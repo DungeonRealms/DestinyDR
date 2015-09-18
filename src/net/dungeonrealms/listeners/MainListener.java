@@ -63,15 +63,16 @@ public class MainListener implements Listener {
      * CUSTOM SHEEP. RAWR SHEEP EAT ME>.. AH RUN!
      *
      * @param event
-     * @since 1.0
-     *
      * @WARNING: THIS EVENT IS VERY INTENSIVE!
+     * @since 1.0
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onSpawn(CreatureSpawnEvent event) {
+        /*
         if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM) {
             event.setCancelled(true);
         }
+         */
     }
 
 

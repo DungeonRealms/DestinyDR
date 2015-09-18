@@ -75,12 +75,11 @@ public class DatabaseAPI {
         Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first((document, throwable) -> {
             if (document == null) {
                 addNewPlayer(uuid);
-                REQUEST_NEW_DATA.add(uuid);
             } else if (document != null) {
                 if (REQUEST_NEW_DATA.contains(uuid)) {
-                    PLAYERS.put(uuid, document);
                     REQUEST_NEW_DATA.remove(uuid);
                 }
+                PLAYERS.put(uuid, document);
             }
         });
     }
@@ -95,11 +94,14 @@ public class DatabaseAPI {
                                 .append("lastLogin", 0l)
                                 .append("netLevel", 0)
                                 .append("rank", "DEFAULT")
-                                .append("wayshrine", new Location(Bukkit.getWorlds().get(0), -367, 83, 390))
+                                .append("wayshrine", "starter")
                                 .append("isPlaying", true)
 
                 );
-        Database.collection.insertOne(newPlayerDocument, (aVoid, throwable) -> Utils.log.info("Injected new player!"));
+        Database.collection.insertOne(newPlayerDocument, (aVoid, throwable) -> {
+            REQUEST_NEW_DATA.add(uuid);
+            Utils.log.info("Requesting new data for : " + uuid);
+        });
     }
 
 }
