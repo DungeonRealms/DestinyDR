@@ -53,7 +53,7 @@ public class MainListener implements Listener {
                         e1.printStackTrace();
                     }
                 }
-            }, 0l);
+            }, 5l);
         }
     }
 
@@ -64,6 +64,8 @@ public class MainListener implements Listener {
      *
      * @param event
      * @since 1.0
+     *
+     * @WARNING: THIS EVENT IS VERY INTENSIVE!
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onSpawn(CreatureSpawnEvent event) {

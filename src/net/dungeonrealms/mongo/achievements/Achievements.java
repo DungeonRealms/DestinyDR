@@ -1,6 +1,7 @@
 package net.dungeonrealms.mongo.achievements;
 
 import com.mongodb.client.model.Filters;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import org.bson.Document;
@@ -25,12 +26,10 @@ public class Achievements {
     }
 
     public boolean hasAchievement(UUID uuid, EnumAchievements achievement) {
-
         Object info = DatabaseAPI.PLAYERS.get(uuid).get("collectibles");
         ArrayList<String> TEMP_LIST = (ArrayList<String>) ((Document) info).get("achievements");
-
         if (TEMP_LIST == null) {
-            Bukkit.broadcastMessage("ITS NULL");
+            Utils.log.warning("Unable to process hasAchievemnt() method for " + uuid + " the list is NULL!?");
         }
         return TEMP_LIST.contains(achievement.getMongoName());
     }
@@ -45,7 +44,9 @@ public class Achievements {
     public enum EnumAchievements {
 
         FIRST_LOGIN(0, "First Login", new String[]{
-                "Achievement Get! :Login for the first time!"
+                "",
+                "Congratulations You've logged in!",
+                "",
         }, 100, "achievement.first_login");
 
         private int id;

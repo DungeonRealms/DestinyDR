@@ -13,7 +13,6 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
  */
 public class DamageListener implements Listener {
 
-
     /**
      * Listen for the players weapon.
      * @param event

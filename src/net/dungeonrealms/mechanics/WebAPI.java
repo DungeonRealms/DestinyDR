@@ -19,7 +19,7 @@ public class WebAPI {
     public static volatile HashMap<String, Integer> ANNOUNCEMENTS = new HashMap<>();
 
     public static void fetchPrerequisites() {
-        Utils.log.info("Web Loading.. Prerequisites...");
+        Utils.log.info("DungeonRealms [WEB-API] Loading... Prerequisites...");
         if (ANNOUNCEMENTS.size() > 0) {
             ANNOUNCEMENTS.clear();
         }
