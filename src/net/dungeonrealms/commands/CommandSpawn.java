@@ -1,8 +1,13 @@
 package net.dungeonrealms.commands;
 
+import net.dungeonrealms.entities.Entities;
+import net.dungeonrealms.entities.types.EntityPirate;
+import net.dungeonrealms.entities.utils.MountUtils;
+import net.dungeonrealms.entities.utils.PetUtils;
+import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.mastery.NBTUtils;
 import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.monsters.entities.EntityPirate;
+import net.minecraft.server.v1_8_R3.EntityLiving;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -32,7 +37,7 @@ public class CommandSpawn implements CommandExecutor {
                     break;
                 case "pirate":
                     World world = ((CraftWorld) player.getWorld()).getHandle();
-                    EntityPirate zombie = new EntityPirate(world);
+                    EntityPirate zombie = new EntityPirate(world, EnumEntityType.HOSTILE_MOB, 1);
                     zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
                     world.addEntity(zombie, SpawnReason.CUSTOM);
                     zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
@@ -40,6 +45,32 @@ public class CommandSpawn implements CommandExecutor {
                     break;
                 case "buff":
                     break;
+                case "pet": {
+                    if (!Entities.PLAYER_PETS.containsKey(player.getUniqueId())) {
+                        PetUtils.spawnPet(player.getUniqueId(), 3);
+                        Utils.log.info("Spawned Pet");
+                    } else {
+                        player.sendMessage("You already have a pet summoned");
+                    }
+                    break;
+                }
+                case "mount": {
+                    if (!Entities.PLAYER_MOUNTS.containsKey(player.getUniqueId())) {
+                        if (Entities.PLAYER_PETS.containsKey(player.getUniqueId())) {
+                            EntityLiving entityLiving = (EntityLiving) Entities.PLAYER_PETS.get(player.getUniqueId());
+                            if (entityLiving.isAlive()) {
+                                entityLiving.getBukkitEntity().remove();
+                            }
+                            Entities.PLAYER_PETS.remove(player.getUniqueId());
+                            player.sendMessage("Your pet has returned home as you have summoned your mount");
+                        }
+                        MountUtils.spawnMount(player.getUniqueId(), 5);
+                        Utils.log.info("Spawned Mount");
+                    } else {
+                        player.sendMessage("You already have a mount summoned");
+                    }
+                    break;
+                }
                 default:
             }
         }

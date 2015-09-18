@@ -15,3 +15,6 @@ commands:
     analyze:
         usage: /<command>
         description: Handles analyzing items/mobs.
+    lag:
+        usage: /<command>
+        description: Shows server information.

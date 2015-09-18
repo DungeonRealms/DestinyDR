@@ -1,7 +1,10 @@
 package net.dungeonrealms.listeners;
 
-import java.util.Map;
-
+import com.connorlinfoot.bountifulapi.BountifulAPI;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.Entities;
+import net.dungeonrealms.mechanics.WebAPI;
+import net.dungeonrealms.mongo.DatabaseAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -12,12 +15,10 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
 
-import com.connorlinfoot.bountifulapi.BountifulAPI;
-
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mechanics.WebAPI;
-import net.dungeonrealms.mongo.DatabaseAPI;
+import java.util.Map;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -84,5 +85,65 @@ public class MainListener implements Listener {
 		 * { event.setCancelled(true); }
 		 */
 	}
+
+	/**
+	 * Makes sure to despawn mounts on dismount and remove from hashmap
+	 *
+	 * @param event
+	 * @since 1.0
+	 */
+	@EventHandler (priority = EventPriority.MONITOR)
+	public void onMountDismount(VehicleExitEvent event) {
+		if (!(event.getExited() instanceof Player)) {
+			return;
+		}
+		if (Entities.PLAYER_MOUNTS.containsKey(event.getExited().getUniqueId())) {
+			//net.minecraft.server.v1_8_R3.Entity playerPet = Entities.PLAYER_MOUNTS.get(event.getExited().getUniqueId());
+			//NBTTagCompound tag = playerPet.getNBTTag();
+			if (event.getVehicle().hasMetadata("type")) {
+				String metaValue = event.getVehicle().getMetadata("type").get(0).asString();
+				if (metaValue.equalsIgnoreCase("mount")) {
+					event.getVehicle().remove();
+					Entities.PLAYER_MOUNTS.remove(event.getExited().getUniqueId());
+					event.getExited().sendMessage("For it's own safety, your mount has returned to the stable.");
+				}
+			}
+		}
+	}
+
+	/**
+	 * Handles player leaving the server
+	 *
+	 * @param event
+	 * @since 1.0
+	 */
+	@EventHandler (priority = EventPriority.MONITOR)
+	public void onPlayerQuit(PlayerQuitEvent event) {
+		if (Entities.PLAYER_PETS.containsKey(event.getPlayer().getUniqueId())) {
+			net.minecraft.server.v1_8_R3.Entity playerPet = Entities.PLAYER_PETS.get(event.getPlayer().getUniqueId());
+			if (playerPet.isAlive()) { //Safety check
+				playerPet.dead = true;
+			}
+			Entities.PLAYER_PETS.remove(event.getPlayer().getUniqueId());
+		}
+
+		if (Entities.PLAYER_MOUNTS.containsKey(event.getPlayer().getUniqueId())) {
+			net.minecraft.server.v1_8_R3.Entity playerMount = Entities.PLAYER_MOUNTS.get(event.getPlayer().getUniqueId());
+			if (playerMount.isAlive()) { //Safety check
+				if (playerMount.passenger != null) {
+					playerMount.passenger = null;
+				}
+				playerMount.dead = true;
+			}
+			Entities.PLAYER_MOUNTS.remove(event.getPlayer().getUniqueId());
+		}
+	}
+
+	/**
+	 * Handles player moving the server
+	 *
+	 * @param event
+	 * @since 1.0
+	 */
 
 }

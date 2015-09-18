@@ -3,6 +3,7 @@ package net.dungeonrealms.mastery;
 import net.minecraft.server.v1_8_R3.BiomeBase;
 import net.minecraft.server.v1_8_R3.EntityInsentient;
 import net.minecraft.server.v1_8_R3.EntityTypes;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -60,5 +61,9 @@ public class NMSUtils {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+	}
+
+	public static net.minecraft.server.v1_8_R3.Entity getNMSEntity(org.bukkit.entity.Entity ent) {
+		return (((CraftEntity) ent).getHandle());
 	}
 }
