@@ -1,6 +1,7 @@
 package net.dungeonrealms.commands;
 
 import net.dungeonrealms.mastery.NBTUtils;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.monsters.entities.EntityPirate;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
@@ -12,6 +13,7 @@ import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -31,8 +33,10 @@ public class CommandSpawn implements CommandExecutor {
                 case "pirate":
                     World world = ((CraftWorld) player.getWorld()).getHandle();
                     EntityPirate zombie = new EntityPirate(world);
-                    world.addEntity(zombie);
                     zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
+                    world.addEntity(zombie, SpawnReason.CUSTOM);
+                    zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
+                	Utils.log.info("Spawned");
                     break;
                 default:
             }
