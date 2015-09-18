@@ -13,5 +13,4 @@ public class PlayerManager {
                 ChatColor.GRAY + "(Right-Click) teleport back to your wayshrine!"
         }));
     }
-
 }
