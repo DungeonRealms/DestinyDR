@@ -32,7 +32,7 @@ public class CommandSpawn implements CommandExecutor {
                     break;
                 case "pirate":
                     World world = ((CraftWorld) player.getWorld()).getHandle();
-                    EntityPirate zombie = new EntityPirate(world);
+                    EntityPirate zombie = new EntityPirate(world, 1);
                     zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
                     world.addEntity(zombie, SpawnReason.CUSTOM);
                     zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
