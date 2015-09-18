@@ -8,13 +8,11 @@ import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.teleportation.Teleportation;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityCombustEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
@@ -36,14 +34,6 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onAsyncJoin(AsyncPlayerPreLoginEvent event) {
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void onCombust(EntityCombustEvent event) {
-        if (event.getEntityType().equals(EntityType.ZOMBIE)) {
-            event.setCancelled(true);
-            return;
-        }
     }
 
     /**
