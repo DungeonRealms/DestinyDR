@@ -29,7 +29,7 @@ public class DamageListener implements Listener {
                 //Get the NBT of the item the player is holding.
                 NBTTagCompound tag = CraftItemStack.asNMSCopy(((Player) event.getDamager()).getItemInHand()).getTag();
                 //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
-                if (!tag.getString("type").split(":")[0].equalsIgnoreCase("weapon")) return;
+                if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
                 double damage = tag.getDouble("damage");
                 event.setDamage(damage);
             }
