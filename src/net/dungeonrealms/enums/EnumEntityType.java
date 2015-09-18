@@ -8,7 +8,8 @@ public enum  EnumEntityType {
     PET(0, "PET"),
     MOUNT(1, "MOUNT"),
     FRIENDLY_MOB(2, "FRIENDLY_MOB"),
-    HOSTILE_MOB(3, "HOSTILE_MOB");
+    HOSTILE_MOB(3, "HOSTILE_MOB"),
+    BUFF(4, "BUFF");
 
     private int id;
     private String rawName;

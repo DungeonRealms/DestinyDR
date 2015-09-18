@@ -2,6 +2,7 @@ package net.dungeonrealms.commands;
 
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.types.EntityPirate;
+import net.dungeonrealms.entities.utils.BuffUtils;
 import net.dungeonrealms.entities.utils.MountUtils;
 import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.enums.EnumEntityType;
@@ -15,12 +16,10 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.potion.PotionEffectType;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -46,8 +45,8 @@ public class CommandSpawn implements CommandExecutor {
                     Utils.log.info("Spawned");
                     break;
                 case "buff":
-                    EnderCrystal enderCrystal = (EnderCrystal) player.getWorld().spawnEntity(player.getLocation(), EntityType.ENDER_CRYSTAL);
-                    NBTUtils.buffEntity(enderCrystal, PotionEffectType.REGENERATION, 10, 20 * 6);
+                    BuffUtils.spawnBuff(player.getUniqueId());
+                    Utils.log.info("Spawned Buff");
                     break;
                 case "pet": {
                     if (!Entities.PLAYER_PETS.containsKey(player.getUniqueId())) {

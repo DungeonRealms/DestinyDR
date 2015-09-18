@@ -7,9 +7,7 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -40,22 +38,21 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBuffExplode(EntityExplodeEvent event) {
-        if (!(event.getEntity() instanceof EnderCrystal)) return;
         event.setCancelled(true);
-        net.minecraft.server.v1_8_R3.Entity nmsEntity = ((CraftEntity) event.getEntity()).getHandle();
-        NBTTagCompound tag = nmsEntity.getNBTTag();
-        if (!tag.getString("type").equalsIgnoreCase("buff")) return;
-        int radius = tag.getInt("radius");
-        int duration = tag.getInt("duration");
-        PotionEffectType effectType = PotionEffectType.getByName(tag.getString("effectType"));
-        for (Entity e : event.getEntity().getNearbyEntities(radius, radius, radius)) {
-            if (!(e instanceof Player)) continue;
-            ((Player) e).addPotionEffect(new PotionEffect(effectType, duration, 2));
-            e.sendMessage(new String[]{
-                    "",
-                    ChatColor.BLUE + "[BUFF] " + ChatColor.YELLOW + "You have received the " + ChatColor.UNDERLINE + effectType.getName() + ChatColor.YELLOW + " buff!",
-                    ""
-            });
+        if (!(event.getEntity().hasMetadata("type"))) return;
+        if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("buff")) {
+            int radius = event.getEntity().getMetadata("radius").get(0).asInt();
+            int duration = event.getEntity().getMetadata("duration").get(0).asInt();
+            PotionEffectType effectType = PotionEffectType.getByName(event.getEntity().getMetadata("effectType").get(0).asString());
+            for (Entity e : event.getEntity().getNearbyEntities(radius, radius, radius)) {
+                if (!(e instanceof Player)) continue;
+                ((Player) e).addPotionEffect(new PotionEffect(effectType, duration, 2));
+                e.sendMessage(new String[]{
+                        "",
+                        ChatColor.BLUE + "[BUFF] " + ChatColor.YELLOW + "You have received the " + ChatColor.UNDERLINE + effectType.getName() + ChatColor.YELLOW + " buff!",
+                        ""
+                });
+            }
         }
     }
 

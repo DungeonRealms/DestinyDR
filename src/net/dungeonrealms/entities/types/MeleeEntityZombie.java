@@ -1,8 +1,8 @@
 package net.dungeonrealms.entities.types;
 
-import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.ChatColor;
@@ -33,7 +33,7 @@ public abstract class MeleeEntityZombie extends EntityZombie {
         this.getBukkitEntity().setCustomName(ChatColor.GOLD.toString() + ChatColor.UNDERLINE.toString() + mobName);
         // setGoals();
         int level = Utils.getRandomFromTier(tier);
-        Entities.getInstance().registerEntityMetadata(this, this.entityType, tier, level);
+        MetadataUtils.registerEntityMetadata(this, this.entityType, tier, level);
         EntityStats.setMonsterStats(this, level);
         setStats();
     }
