@@ -1,20 +1,22 @@
 package net.dungeonrealms;
 
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import net.dungeonrealms.commands.CommandAdd;
 import net.dungeonrealms.commands.CommandAnalyze;
 import net.dungeonrealms.commands.CommandLag;
 import net.dungeonrealms.commands.CommandSpawn;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.PetUtils;
+import net.dungeonrealms.listeners.BankListener;
 import net.dungeonrealms.listeners.DamageListener;
 import net.dungeonrealms.listeners.MainListener;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -31,7 +33,6 @@ public class DungeonRealms extends JavaPlugin {
         Utils.log.info("DungeonRealms onLoad() ... STARTING UP");
         instance = this;
     }
-
     public void onEnable() {
         long START_TIME = System.currentTimeMillis() / 1000L;
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
@@ -41,6 +42,7 @@ public class DungeonRealms extends JavaPlugin {
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
         pm.registerEvents(new MainListener(), this);
         pm.registerEvents(new DamageListener(), this);
+        pm.registerEvents(new  BankListener(), this);
         Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
 
         WebAPI.fetchPrerequisites();
