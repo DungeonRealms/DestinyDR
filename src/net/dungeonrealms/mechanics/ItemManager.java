@@ -32,7 +32,7 @@ public class ItemManager {
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
-        tag.set("usage", new NBTTagString("wayshrine"));
+        tag.set("usage", new NBTTagString("hearthstone"));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }

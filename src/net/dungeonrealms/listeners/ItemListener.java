@@ -49,7 +49,7 @@ public class ItemListener implements Listener {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(player.getItemInHand());
         NBTTagCompound tag = nmsItem.getTag();
         if (nmsItem == null || tag == null) return;
-        if (!(tag.getString("type").equalsIgnoreCase("important") && tag.getString("usage").equalsIgnoreCase("wayshrine"))) return;
+        if (!(tag.getString("type").equalsIgnoreCase("important") && tag.getString("usage").equalsIgnoreCase("hearthstone"))) return;
         if (Teleportation.canUseHearthstone(player.getUniqueId())) {
             if (!(CombatLog.isInCombat(event.getPlayer().getUniqueId()))) {
                 Teleportation.teleportPlayer(event.getPlayer().getUniqueId());

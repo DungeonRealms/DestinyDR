@@ -16,5 +16,4 @@ public class PlayerManager {
                 ChatColor.GRAY + "(Right-Click) to open your profile!"
         }));
     }
-
 }
