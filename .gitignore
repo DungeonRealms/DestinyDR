@@ -1,0 +1,6 @@
+*.class
+*.idea
+*.project
+*.classpath
+*.settings
+/bin
