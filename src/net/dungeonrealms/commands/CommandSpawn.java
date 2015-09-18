@@ -38,6 +38,8 @@ public class CommandSpawn implements CommandExecutor {
                     zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
                 	Utils.log.info("Spawned");
                     break;
+                case "buff":
+                    break;
                 default:
             }
         }
