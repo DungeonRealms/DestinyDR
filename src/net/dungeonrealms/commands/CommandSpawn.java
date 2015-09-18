@@ -15,10 +15,12 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.entity.EnderCrystal;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.potion.PotionEffectType;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -41,9 +43,11 @@ public class CommandSpawn implements CommandExecutor {
                     zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
                     world.addEntity(zombie, SpawnReason.CUSTOM);
                     zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
-                	Utils.log.info("Spawned");
+                    Utils.log.info("Spawned");
                     break;
                 case "buff":
+                    EnderCrystal enderCrystal = (EnderCrystal) player.getWorld().spawnEntity(player.getLocation(), EntityType.ENDER_CRYSTAL);
+                    NBTUtils.buffEntity(enderCrystal, PotionEffectType.REGENERATION, 10, 20 * 6);
                     break;
                 case "pet": {
                     if (!Entities.PLAYER_PETS.containsKey(player.getUniqueId())) {
