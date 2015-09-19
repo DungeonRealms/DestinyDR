@@ -66,6 +66,7 @@ public class MainListener implements Listener {
         PlayerManager.checkInventory(player);
 
     }
+
     /**
      * Cancel spawning unless it's CUSTOM. So we don't have RANDOM SHEEP. We
      * have.. CUSTOM SHEEP. RAWR SHEEP EAT ME>.. AH RUN!
@@ -77,7 +78,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onSpawn(CreatureSpawnEvent event) {
         /*
-		 * if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM)
+         * if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM)
 		 * { event.setCancelled(true); }
 		 */
     }
