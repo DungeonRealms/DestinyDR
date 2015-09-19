@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 public class PlayerManager {
     public static void checkInventory(Player player) {
         player.getInventory().setItem(7, ItemManager.getHearthStone("HearthStone", new String[]{
-                ChatColor.GRAY + "(Right-Click) teleport back to your wayshrine!"
+                ChatColor.GRAY + "(Right-Click) teleport back to your hearthstone location!"
         }));
         player.getInventory().setItem(8, ItemManager.getPlayerProfile(player, "Player Profile", new String[]{
                 ChatColor.GRAY + "(Right-Click) to open your profile!"

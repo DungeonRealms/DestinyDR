@@ -39,7 +39,7 @@ public class ItemManager {
 
 	/**
 	 * 
-	 * @param material
+	 * @param m
 	 * @param name
 	 * @param lore
 	 * @return

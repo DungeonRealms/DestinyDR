@@ -2,8 +2,7 @@ package net.dungeonrealms.teleportation;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
@@ -41,6 +40,21 @@ public class Teleportation {
     public static Location Cyrennica;
     public static Location Tutorial;
 
+    public enum EnumTeleportType {
+        HEARTHSTONE(0, "Hearthstone"),
+        TELEPORT_BOOK(1, "Teleport Book");
+
+        private int id;
+        private String name;
+
+        EnumTeleportType(int id, String name) {
+            this.id = id;
+            this.name = name;
+        }
+    }
+
+
+
     public void startInitialization() {
         Cyrennica = new Location(Bukkit.getWorlds().get(0), -367, 83, 390);
         Harrison_Field = new Location(Bukkit.getWorlds().get(0), -594, 58, 687, 92.0F, 1F);
@@ -59,11 +73,16 @@ public class Teleportation {
         }, 0, 20L);
     }
 
-    public static void teleportPlayer(UUID uuid) {
+    public static void teleportPlayer(UUID uuid, EnumTeleportType teleportType, NBTTagCompound nbt) {
         Player player = Bukkit.getPlayer(uuid);
         TeleportAPI.addPlayerCurrentlyTeleporting(uuid, player.getLocation());
-        String locationName = getLocationFromDatabase(uuid);
-        Location location = getLocationFromString(locationName);
+        String locationName;
+        if (teleportType == EnumTeleportType.HEARTHSTONE) {
+            locationName = TeleportAPI.getLocationFromDatabase(uuid);
+        } else {
+            locationName = nbt.getString("usage").toLowerCase();
+        }
+        Location location = TeleportAPI.getLocationFromString(locationName);
 
         if (location.equals(Cyrennica)) {
             player.sendMessage("Using your Hearthstone to return to Cyrennica.");
@@ -97,63 +116,29 @@ public class Teleportation {
                     if (taskTimer[0] <= 0) {
                         if (CombatLog.isInCombat(uuid)) {
                             player.sendMessage("Your teleport has been interrupted by combat!");
-                            TeleportAPI.addPlayerHearthstoneCD(uuid, 300);
+                            if (teleportType == EnumTeleportType.HEARTHSTONE) {
+                                TeleportAPI.addPlayerHearthstoneCD(uuid, 300);
+                            }
                         } else {
                             player.teleport(location);
-                            TeleportAPI.addPlayerHearthstoneCD(uuid, 300);
+                            if (teleportType == EnumTeleportType.HEARTHSTONE) {
+                                TeleportAPI.addPlayerHearthstoneCD(uuid, 300);
+                            }
                         }
                         TeleportAPI.removePlayerCurrentlyTeleporting(uuid);
                     }
                     taskTimer[0]--;
+                } else {
+                    TeleportAPI.removePlayerCurrentlyTeleporting(uuid);
+                    player.removePotionEffect(PotionEffectType.BLINDNESS);
+                    player.removePotionEffect(PotionEffectType.CONFUSION);
+                    player.sendMessage("Your teleport was canceled due to moving!");
+                    if (teleportType == EnumTeleportType.HEARTHSTONE) {
+                        TeleportAPI.addPlayerHearthstoneCD(uuid, 500);
+                    }
                 }
-            } else {
-                TeleportAPI.removePlayerCurrentlyTeleporting(uuid);
-                player.removePotionEffect(PotionEffectType.BLINDNESS);
-                player.removePotionEffect(PotionEffectType.CONFUSION);
-                player.sendMessage("Your teleport was canceled due to moving!");
-                TeleportAPI.addPlayerHearthstoneCD(uuid, 500);
             }
         },0 ,20L);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 160L);
-    }
-
-    public static String getLocationFromDatabase(UUID uuid) {
-        if (DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid) != null) {
-            return DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid).toString();
-        } else {
-            return "cyrennica";
-        }
-    }
-
-    public static Location getLocationFromString(String location) {
-        switch (location) {
-            case "starter": {
-                return Tutorial;
-            }
-            case "cyrennica": {
-                return Cyrennica;
-            }
-            case "harrison": {
-                return Harrison_Field;
-            }
-            case "dark_oak": {
-                return Dark_Oak_Tavern;
-            }
-            case "trollsbane": {
-                return Trollsbane_tavern;
-            }
-            case "tripoli": {
-                return Tripoli;
-            }
-            case "gloomy_hollows": {
-                return Gloomy_Hollows;
-            }
-            case "crestguard": {
-                return Crestguard_Keep;
-            }
-            default: {
-                return Cyrennica;
-            }
-        }
     }
 }

@@ -14,6 +14,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by Kieran on 9/18/2015.
@@ -44,22 +45,26 @@ public class ItemListener implements Listener {
     public void onPlayerUseTeleportItem(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
-        if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.QUARTZ) return;
-
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(player.getItemInHand());
-        NBTTagCompound tag = nmsItem.getTag();
-        if (nmsItem == null || tag == null) return;
-        if (!(tag.getString("type").equalsIgnoreCase("important") && tag.getString("usage").equalsIgnoreCase("hearthstone"))) return;
-        if (TeleportAPI.canUseHearthstone(player.getUniqueId())) {
-            if (!(CombatLog.isInCombat(event.getPlayer().getUniqueId()))) {
-                Teleportation.teleportPlayer(event.getPlayer().getUniqueId());
+        if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.QUARTZ && player.getItemInHand().getType() != Material.BOOK) return;
+        ItemStack itemStack = player.getItemInHand();
+        if (!(CombatLog.isInCombat(event.getPlayer().getUniqueId()))) {
+            if (TeleportAPI.isHearthstone(itemStack)) {
+                if (TeleportAPI.canUseHearthstone(player.getUniqueId())) {
+                    net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+                    Teleportation.teleportPlayer(event.getPlayer().getUniqueId(), Teleportation.EnumTeleportType.HEARTHSTONE, nmsItem.getTag());
+                } else {
+                    player.sendMessage(
+                            ChatColor.GREEN.toString() + ChatColor.BOLD + "HEARTHSTONE " + ChatColor.RED + "[Usage Exhausted] " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s" + ChatColor.RED + ")");
+                }
+            } else if (TeleportAPI.isTeleportBook(itemStack)) {
+                net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+                Teleportation.teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, nmsItem.getTag());
             } else {
-                player.sendMessage(
-                        ChatColor.GREEN.toString() + ChatColor.BOLD + "HEARTHSTONE " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s" + ChatColor.RED + ")");
+                player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "This item cannot be used to Teleport!");
             }
         } else {
             player.sendMessage(
-                    ChatColor.GREEN.toString() + ChatColor.BOLD + "HEARTHSTONE " + ChatColor.RED + "[Usage Exhausted] " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s" + ChatColor.RED + ")");
+                    ChatColor.GREEN.toString() + ChatColor.BOLD + "TELEPORT " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player.getUniqueId()) + "s" + ChatColor.RED + ")");
         }
     }
 }
