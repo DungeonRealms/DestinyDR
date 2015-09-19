@@ -148,7 +148,7 @@ public class MainListener implements Listener {
         if (Teleportation.PLAYERS_TELEPORTING.containsKey(event.getPlayer().getUniqueId())) {
             Teleportation.PLAYERS_TELEPORTING.remove(event.getPlayer().getUniqueId());
             Teleportation.PLAYER_TELEPORT_COOLDOWNS.put(event.getPlayer().getUniqueId(), 500);
-            event.getPlayer().sendMessage("YOU MOVED FAGGOT DON'T MOVE OR ILL BEAT YOU UP WAFFLE");
+            event.getPlayer().sendMessage("Your teleport was canceled due to moving!");
         }
     }
 }

@@ -54,11 +54,11 @@ public class ItemListener implements Listener {
                 Teleportation.teleportPlayer(event.getPlayer().getUniqueId());
             } else {
                 player.sendMessage(
-                        ChatColor.GREEN.toString() + ChatColor.BOLD + "HEARTHSTONE " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(event.getPlayer().getUniqueId()) + "s/" + ChatColor.RED + ")");
+                        ChatColor.GREEN.toString() + ChatColor.BOLD + "HEARTHSTONE " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(event.getPlayer().getUniqueId()) + "s" + ChatColor.RED + ")");
             }
         } else {
             player.sendMessage(
-                    ChatColor.GREEN.toString() + ChatColor.BOLD + "HEARTHSTONE " + ChatColor.RED + "[Usage Exhausted] " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(event.getPlayer().getUniqueId()) + "s/" + ChatColor.RED + ")");
+                    ChatColor.GREEN.toString() + ChatColor.BOLD + "HEARTHSTONE " + ChatColor.RED + "[Usage Exhausted] " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(event.getPlayer().getUniqueId()) + "s" + ChatColor.RED + ")");
         }
     }
 }
