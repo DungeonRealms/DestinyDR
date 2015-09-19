@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.commands.CommandAdd;
 import net.dungeonrealms.commands.CommandAnalyze;
@@ -45,6 +46,7 @@ public class DungeonRealms extends JavaPlugin {
         Database.getInstance().initConnection();
         DatabaseAPI.getInstance().startInitialization();
         PluginManager pm = Bukkit.getPluginManager();
+        BankMechanics.init();
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
         pm.registerEvents(new MainListener(), this);
         pm.registerEvents(new DamageListener(), this);

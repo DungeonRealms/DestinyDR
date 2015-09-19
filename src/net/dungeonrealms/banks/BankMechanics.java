@@ -25,22 +25,22 @@ public class BankMechanics {
 
 	public static ItemStack gem;
 
-	public void init() {
+	public static void init() {
 		gem = loadCurrency();
 	}
 
 	/**
 	 * @return
 	 */
-	private ItemStack loadCurrency() {
+	private static ItemStack loadCurrency() {
 		ItemStack item = new ItemStack(Material.EMERALD, 1);
-		ItemMeta meta = gem.getItemMeta();
+		ItemMeta meta = item.getItemMeta();
 		List<String> lore = new ArrayList<String>();
 		lore.add("The currency of Andalucia");
 		meta.setLore(lore);
 		meta.setDisplayName("Gem");
-		gem.setItemMeta(meta);
-		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(gem);
+		item.setItemMeta(meta);
+		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
 		NBTTagCompound tag = nms.getTag() == null ? new NBTTagCompound() : nms.getTag();
 		tag.setBoolean("money", true);
 		nms.setTag(tag);
@@ -51,7 +51,7 @@ public class BankMechanics {
 	 * @param player
 	 */
 	public static void addGemsToPlayer(Player player, int num) {
-		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, "gems", num);
+		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, "info.gems", num);
 	}
 
 }
