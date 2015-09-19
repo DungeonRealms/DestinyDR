@@ -123,7 +123,7 @@ public class PetUtils {
                 player.playSound(player.getLocation(), Sound.SPIDER_IDLE, 1F, 1F);
                 player.sendMessage("Cave Spider Pet Spawned!");
                 makePet(petCaveSpider, player.getUniqueId());
-                Entities.PLAYER_PETS.put(player.getUniqueId(), petCaveSpider);
+                EntityAPI.addPlayerPetList(player.getUniqueId(), petCaveSpider);
                 player.closeInventory();
                 break;
             }
@@ -135,7 +135,7 @@ public class PetUtils {
                 player.playSound(player.getLocation(), Sound.ZOMBIE_IDLE, 1F, 1F);
                 player.sendMessage("Zombie pet Spawned!");
                 makePet(petBabyZombie, player.getUniqueId());
-                Entities.PLAYER_PETS.put(player.getUniqueId(), petBabyZombie);
+                EntityAPI.addPlayerPetList(player.getUniqueId(), petBabyZombie);
                 player.closeInventory();
                 break;
             }
@@ -149,7 +149,7 @@ public class PetUtils {
                 player.playSound(player.getLocation(), Sound.ZOMBIE_PIG_IDLE, 1F, 1F);
                 player.sendMessage("Zombie Pigman pet Spawned!");
                 makePet(petBabyZombiePig, player.getUniqueId());
-                Entities.PLAYER_PETS.put(player.getUniqueId(), petBabyZombiePig);
+                EntityAPI.addPlayerPetList(player.getUniqueId(), petBabyZombiePig);
                 player.closeInventory();
                 break;
             }
@@ -165,7 +165,7 @@ public class PetUtils {
                 player.playSound(player.getLocation(), Sound.WOLF_BARK, 1F, 1F);
                 player.sendMessage("Wolf pet Spawned!");
                 makePet(petWolf, player.getUniqueId());
-                Entities.PLAYER_PETS.put(player.getUniqueId(), petWolf);
+                EntityAPI.addPlayerPetList(player.getUniqueId(), petWolf);
                 player.closeInventory();
                 break;
             }
@@ -179,7 +179,7 @@ public class PetUtils {
                 player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1F, 1F);
                 player.sendMessage("Chicken pet Spawned!");
                 makePet(petChicken, player.getUniqueId());
-                Entities.PLAYER_PETS.put(player.getUniqueId(), petChicken);
+                EntityAPI.addPlayerPetList(player.getUniqueId(), petChicken);
                 player.closeInventory();
                 break;
             }
@@ -194,7 +194,7 @@ public class PetUtils {
                 player.playSound(player.getLocation(), Sound.CAT_MEOW, 1F, 1F);
                 player.sendMessage("Ocelot pet Spawned!");
                 makePet(petOcelot, player.getUniqueId());
-                Entities.PLAYER_PETS.put(player.getUniqueId(), petOcelot);
+                EntityAPI.addPlayerPetList(player.getUniqueId(), petOcelot);
                 player.closeInventory();
                 break;
             }
@@ -208,7 +208,7 @@ public class PetUtils {
                 player.playSound(player.getLocation(), Sound.DIG_GRASS, 1F, 1F);
                 player.sendMessage("Rabbit pet Spawned!");
                 makePet(petRabbit, player.getUniqueId());
-                Entities.PLAYER_PETS.put(player.getUniqueId(), petRabbit);
+                EntityAPI.addPlayerPetList(player.getUniqueId(), petRabbit);
                 player.closeInventory();
                 break;
             }
@@ -220,7 +220,7 @@ public class PetUtils {
                 player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 1F, 1F);
                 player.sendMessage("Silverfish pet Spawned!");
                 makePet(petSilverfish, player.getUniqueId());
-                Entities.PLAYER_PETS.put(player.getUniqueId(), petSilverfish);
+                EntityAPI.addPlayerPetList(player.getUniqueId(), petSilverfish);
                 player.closeInventory();
                 break;
             }
@@ -232,7 +232,7 @@ public class PetUtils {
                 player.playSound(player.getLocation(), Sound.ENDERMAN_IDLE, 1F, 1F);
                 player.sendMessage("Endermite pet Spawned!");
                 makePet(petEndermite, player.getUniqueId());
-                Entities.PLAYER_PETS.put(player.getUniqueId(), petEndermite);
+                EntityAPI.addPlayerPetList(player.getUniqueId(), petEndermite);
                 player.closeInventory();
                 break;
             }

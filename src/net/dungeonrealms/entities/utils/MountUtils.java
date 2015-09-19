@@ -1,6 +1,5 @@
 package net.dungeonrealms.entities.utils;
 
-import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.types.Horse;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.minecraft.server.v1_8_R3.World;
@@ -37,7 +36,7 @@ public class MountUtils {
                 horseInventory.setArmor(new ItemStack(Material.IRON_BARDING));
                 player.playSound(player.getLocation(), Sound.HORSE_IDLE, 1F, 1F);
                 player.sendMessage("Mount Spawned!");
-                Entities.PLAYER_MOUNTS.put(player.getUniqueId(), mountHorse);
+                EntityAPI.addPlayerMountList(player.getUniqueId(), mountHorse);
                 player.closeInventory();
                 break;
             }
@@ -53,7 +52,7 @@ public class MountUtils {
                 horseInventory.setArmor(new ItemStack(Material.GOLD_BARDING));
                 player.playSound(player.getLocation(), Sound.HORSE_IDLE, 1F, 1F);
                 player.sendMessage("Mount Spawned!");
-                Entities.PLAYER_MOUNTS.put(player.getUniqueId(), mountHorse);
+                EntityAPI.addPlayerMountList(player.getUniqueId(), mountHorse);
                 player.closeInventory();
                 break;
             }
@@ -69,7 +68,7 @@ public class MountUtils {
                 horseInventory.setArmor(new ItemStack(Material.DIAMOND_BARDING));
                 player.playSound(player.getLocation(), Sound.HORSE_IDLE, 1F, 1F);
                 player.sendMessage("Mount Spawned!");
-                Entities.PLAYER_MOUNTS.put(player.getUniqueId(), mountHorse);
+                EntityAPI.addPlayerMountList(player.getUniqueId(), mountHorse);
                 player.closeInventory();
                 break;
             }
@@ -84,7 +83,7 @@ public class MountUtils {
                 horseInventory.setSaddle(new ItemStack(Material.SADDLE));
                 player.playSound(player.getLocation(), Sound.HORSE_SKELETON_IDLE, 1F, 1F);
                 player.sendMessage("Mount Spawned!");
-                Entities.PLAYER_MOUNTS.put(player.getUniqueId(), mountHorse);
+                EntityAPI.addPlayerMountList(player.getUniqueId(), mountHorse);
                 player.closeInventory();
                 break;
             }
@@ -99,7 +98,7 @@ public class MountUtils {
                 horseInventory.setSaddle(new ItemStack(Material.SADDLE));
                 player.playSound(player.getLocation(), Sound.HORSE_ZOMBIE_IDLE, 1F, 1F);
                 player.sendMessage("Mount Spawned!");
-                Entities.PLAYER_MOUNTS.put(player.getUniqueId(), mountHorse);
+                EntityAPI.addPlayerMountList(player.getUniqueId(), mountHorse);
                 player.closeInventory();
                 break;
             }

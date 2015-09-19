@@ -28,7 +28,8 @@ public class Teleportation {
         return instance;
     }
 
-    public static HashMap<UUID, Integer> PLAYER_TELEPORTS = new HashMap<>();
+    public static HashMap<UUID, Integer> PLAYER_TELEPORT_COOLDOWNS = new HashMap<>();
+    public static HashMap<UUID, Location> PLAYERS_TELEPORTING = new HashMap<>();
 
     public static Location Harrison_Field;
     public static Location Dark_Oak_Tavern;
@@ -52,15 +53,15 @@ public class Teleportation {
         Tutorial = new Location(Bukkit.getWorlds().get(0), 824, 48, -103, 124F, 1F);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            for (Map.Entry<UUID, Integer> e : PLAYER_TELEPORTS.entrySet()) {
-                PLAYER_TELEPORTS.put(e.getKey(), (e.getValue() - 1));
+            for (Map.Entry<UUID, Integer> e : PLAYER_TELEPORT_COOLDOWNS.entrySet()) {
+                PLAYER_TELEPORT_COOLDOWNS.put(e.getKey(), (e.getValue() - 1));
             }
         }, 0, 20L);
     }
 
     public static boolean canUseHearthstone(UUID uuid) {
-        if (PLAYER_TELEPORTS.containsKey(uuid)) {
-            if (PLAYER_TELEPORTS.get(uuid) <= 0) {
+        if (PLAYER_TELEPORT_COOLDOWNS.containsKey(uuid)) {
+            if (PLAYER_TELEPORT_COOLDOWNS.get(uuid) <= 0) {
                 return true;
             }
         }
@@ -69,6 +70,7 @@ public class Teleportation {
 
     public static void teleportPlayer(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
+        PLAYERS_TELEPORTING.put(uuid, player.getLocation());
         String locationName = getLocationFromDatabase(uuid);
         Location location = getLocationFromString(locationName);
 
@@ -92,24 +94,30 @@ public class Teleportation {
             player.sendMessage("Using your Hearthstone to return to the Tutorial Island");
         }
 
-        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 200, 2));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 200, 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 220, 2));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 220, 1));
         player.playSound(player.getLocation(), Sound.AMBIENCE_CAVE, 1F, 1F);
 
-        final int[] taskTimer = {5};
+        final int[] taskTimer = {6};
         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
 
-            if (taskTimer[0] <= 0) {
-                if (CombatLog.isInCombat(uuid)) {
-                    player.sendMessage("Your teleport has been interrupted by combat!");
-                } else {
-                    player.teleport(location);
+            if (PLAYERS_TELEPORTING.containsKey(player.getUniqueId())) {
+                if (taskTimer[0] <= 0) {
+                    if (CombatLog.isInCombat(uuid)) {
+                        player.sendMessage("Your teleport has been interrupted by combat!");
+                    } else {
+                        player.teleport(location);
+                    }
+                    PLAYERS_TELEPORTING.remove(uuid);
                 }
+                taskTimer[0]--;
+            } else {
+                player.removePotionEffect(PotionEffectType.BLINDNESS);
+                player.removePotionEffect(PotionEffectType.CONFUSION);
             }
-            taskTimer[0]--;
         },0 ,20L);
-        Teleportation.PLAYER_TELEPORTS.put(uuid, 300);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 140L);
+        PLAYER_TELEPORT_COOLDOWNS.put(uuid, 300);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 160L);
     }
 
     public static String getLocationFromDatabase(UUID uuid) {
