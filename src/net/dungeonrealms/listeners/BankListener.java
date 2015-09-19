@@ -40,6 +40,7 @@ public class BankListener implements Listener {
 			if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
 				e.setCancelled(true);
 				e.getPlayer().openInventory(getBank(e.getPlayer()));
+				e.getPlayer().playSound(e.getPlayer().getLocation(), "random.chestopen", 1, 1);
 			}
 		}
 	}
@@ -62,7 +63,7 @@ public class BankListener implements Listener {
 
 						}
 					} else if (e.getCurrentItem().getItemMeta().getDisplayName().equalsIgnoreCase("gem")) {
-						if (nms.hasTag() && nms.getTag().hasKey("money")) {
+						if (nms.hasTag() && nms.getTag().hasKey("type")) {
 							ItemStack stack = e.getInventory().getItem(e.getRawSlot());
 							e.getInventory().remove(stack);
 							Player player = (Player) e.getWhoClicked();
@@ -77,7 +78,6 @@ public class BankListener implements Listener {
 			}
 		} else if (e.getInventory().getTitle().equalsIgnoreCase("How Many?")) {
 			e.setCancelled(true);
-			Utils.log.info(e.getRawSlot() + " slot");
 			if (e.getRawSlot() < 27) {
 				ItemStack current = e.getCurrentItem();
 				if (current != null) {
@@ -186,7 +186,7 @@ public class BankListener implements Listener {
 		ItemStack item8 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "1000", null,
 				DyeColor.LIME.getWoolData());
 		ItemStack confimItem = ItemManager.createItemWithData(Material.INK_SACK, "Confirm", null,
-				DyeColor.LIME.getWoolData());
+				(short) 10);
 		inv.setItem(0, item0);
 		inv.setItem(1, item1);
 		inv.setItem(2, item2);
@@ -212,8 +212,6 @@ public class BankListener implements Listener {
 		ArrayList<String> lore = new ArrayList<String>();
 		lore.add(ChatColor.GREEN.toString() + "Left Click " + " to withdraw Raw Gems.");
 		lore.add(ChatColor.GREEN.toString() + "Right Click " + " to create a Bank Note.");
-		// lore.add(ChatColor.GREEN.toString() + "Middle Click " + " to upgrade
-		// your bank.");
 		meta.setLore(lore);
 		bankItem.setItemMeta(meta);
 		inv.setItem(8, bankItem);

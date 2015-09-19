@@ -42,7 +42,7 @@ public class BankMechanics {
 		item.setItemMeta(meta);
 		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
 		NBTTagCompound tag = nms.getTag() == null ? new NBTTagCompound() : nms.getTag();
-		tag.setBoolean("money", true);
+		tag.setString("type", "gem");
 		nms.setTag(tag);
 		return CraftItemStack.asBukkitCopy(nms);
 	}

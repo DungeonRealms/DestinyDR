@@ -53,8 +53,8 @@ public class ItemManager {
 		is.setItemMeta(meta);
 		return is;
 	}
-	public static ItemStack createItemWithData(Material m, String name, String[] lore, byte b) {
-		ItemStack is = new ItemStack(m, 1, b);
+	public static ItemStack createItemWithData(Material m, String name, String[] lore, short i) {
+		ItemStack is = new ItemStack(m, 1, i);
 		ItemMeta meta = is.getItemMeta();
 		meta.setDisplayName(name);
 		if (lore != null)
