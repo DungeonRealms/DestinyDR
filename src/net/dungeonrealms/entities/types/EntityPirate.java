@@ -1,14 +1,20 @@
 package net.dungeonrealms.entities.types;
 
+import java.util.Random;
+
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
+
+import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.md_5.bungee.api.ChatColor;
+import net.minecraft.server.v1_8_R3.Item;
+import net.minecraft.server.v1_8_R3.Items;
 import net.minecraft.server.v1_8_R3.World;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -19,7 +25,7 @@ public class EntityPirate extends MeleeEntityZombie {
 	public EntityPirate(World world, EnumEntityType entityType, int tier) {
 		super(world);
 		this.entityType = entityType;
-		//This shouldn't be hardcoded to 1 but it's just for testing.
+		// This shouldn't be hardcoded to 1 but it's just for testing.
 		int level = Utils.getRandomFromTier(tier);
 		MetadataUtils.registerEntityMetadata(this, this.entityType, tier, level);
 		EntityStats.setMonsterStats(this, level);
@@ -36,8 +42,8 @@ public class EntityPirate extends MeleeEntityZombie {
 	public ItemStack[] getTierArmor(int tier) {
 		if (tier == 1) {
 			return new ItemStack[] { new ItemStack(Material.LEATHER_BOOTS, 1),
-					new ItemStack(Material.LEATHER_LEGGINGS, 1), new ItemStack(Material.LEATHER_CHESTPLATE, 1),
-					new ItemStack(Material.LEATHER_HELMET, 1) };
+				new ItemStack(Material.LEATHER_LEGGINGS, 1), new ItemStack(Material.LEATHER_CHESTPLATE, 1),
+				new ItemStack(Material.LEATHER_HELMET, 1) };
 		}
 		return null;
 	}
@@ -45,6 +51,27 @@ public class EntityPirate extends MeleeEntityZombie {
 	@Override
 	public void setStats() {
 
+	}
+
+	@Override
+	protected Item getLoot() {
+		ItemStack item = BankMechanics.gem.clone();
+		item.setAmount(this.random.nextInt(5));
+		return CraftItemStack.asNMSCopy(item).getItem();
+	}
+
+	@Override
+	protected void getRareDrop() {
+		switch (this.random.nextInt(3)) {
+		case 0:
+			this.a(Items.GOLD_NUGGET, 1);
+			break;
+		case 1:
+			this.a(Items.WOODEN_SWORD, 1);
+			break;
+		case 2:
+			this.a(Items.BOAT, 1);
+		}
 	}
 
 	@Override
