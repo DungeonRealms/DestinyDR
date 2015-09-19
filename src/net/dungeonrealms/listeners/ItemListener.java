@@ -59,6 +59,7 @@ public class ItemListener implements Listener {
             } else if (TeleportAPI.isTeleportBook(itemStack)) {
                 net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
                 Teleportation.teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, nmsItem.getTag());
+                player.setItemInHand(new ItemStack(Material.AIR));
             } else {
                 player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "This item cannot be used to Teleport!");
             }
