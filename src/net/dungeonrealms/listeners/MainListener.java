@@ -6,7 +6,7 @@ import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.teleportation.Teleportation;
+import net.dungeonrealms.teleportation.TeleportAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,7 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 
@@ -61,12 +60,13 @@ public class MainListener implements Listener {
                 }
             }, 5l);
         }
-        Teleportation.PLAYER_TELEPORT_COOLDOWNS.put(event.getPlayer().getUniqueId(), 120);
+        TeleportAPI.addPlayerHearthstoneCD(event.getPlayer().getUniqueId(), 120);
 
         //Makes sure the player has hearthstone.
         PlayerManager.checkInventory(player);
 
     }
+
     /**
      * Cancel spawning unless it's CUSTOM. So we don't have RANDOM SHEEP. We
      * have.. CUSTOM SHEEP. RAWR SHEEP EAT ME>.. AH RUN!
@@ -78,7 +78,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onSpawn(CreatureSpawnEvent event) {
         /*
-		 * if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM)
+         * if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM)
 		 * { event.setCancelled(true); }
 		 */
     }
@@ -93,8 +93,6 @@ public class MainListener implements Listener {
     public void onMountDismount(VehicleExitEvent event) {
         if (!(event.getExited() instanceof Player)) return;
         if (EntityAPI.hasMountOut(event.getExited().getUniqueId())) {
-            //net.minecraft.server.v1_8_R3.Entity playerPet = Entities.PLAYER_MOUNTS.get(event.getExited().getUniqueId());
-            //NBTTagCompound tag = playerPet.getNBTTag();
             if (event.getVehicle().hasMetadata("type")) {
                 String metaValue = event.getVehicle().getMetadata("type").get(0).asString();
                 if (metaValue.equalsIgnoreCase("mount")) {
@@ -131,24 +129,6 @@ public class MainListener implements Listener {
                 playerMount.dead = true;
             }
             EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
-        }
-    }
-
-    /**
-     * Handles players moving
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerMove(PlayerMoveEvent event) {
-        if (!(Teleportation.PLAYERS_TELEPORTING.containsKey(event.getPlayer().getUniqueId()))) {
-            return;
-        }
-        if (Teleportation.PLAYERS_TELEPORTING.containsKey(event.getPlayer().getUniqueId())) {
-            Teleportation.PLAYERS_TELEPORTING.remove(event.getPlayer().getUniqueId());
-            Teleportation.PLAYER_TELEPORT_COOLDOWNS.put(event.getPlayer().getUniqueId(), 500);
-            event.getPlayer().sendMessage("Your teleport was canceled due to moving!");
         }
     }
 }

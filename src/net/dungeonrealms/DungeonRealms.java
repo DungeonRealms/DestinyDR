@@ -53,7 +53,7 @@ public class DungeonRealms extends JavaPlugin {
         pm.registerEvents(new ItemListener(), this);
         pm.registerEvents(new InventoryListener(), this);
         pm.registerEvents(new BlockListener(), this);
-        pm.registerEvents(new  BankListener(), this);
+        pm.registerEvents(new BankListener(), this);
         Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
 
         WebAPI.fetchPrerequisites();

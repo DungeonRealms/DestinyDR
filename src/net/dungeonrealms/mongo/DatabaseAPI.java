@@ -93,11 +93,13 @@ public class DatabaseAPI {
                                 .append("firstLogin", System.currentTimeMillis() / 1000L)
                                 .append("lastLogin", 0l)
                                 .append("netLevel", 0)
+                                .append("experience", 0f)
                                 .append("rank", "DEFAULT")
                                 .append("hearthstone", "starter")
                                 .append("isPlaying", true)
-
-                );
+                                .append("attributes", new Document("strength", 1).append("dexterity", 1).append("intellect", 1).append("vitality", 1))
+                                .append("collectibles", new Document("achievements", new ArrayList<String>())
+                                ));
         Database.collection.insertOne(newPlayerDocument, (aVoid, throwable) -> {
             REQUEST_NEW_DATA.add(uuid);
             Utils.log.info("Requesting new data for : " + uuid);

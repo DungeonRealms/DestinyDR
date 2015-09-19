@@ -54,23 +54,14 @@ public class Teleportation {
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for (Map.Entry<UUID, Integer> e : PLAYER_TELEPORT_COOLDOWNS.entrySet()) {
-                PLAYER_TELEPORT_COOLDOWNS.put(e.getKey(), (e.getValue() - 1));
+                TeleportAPI.addPlayerHearthstoneCD(e.getKey(), (e.getValue() - 1));
             }
         }, 0, 20L);
     }
 
-    public static boolean canUseHearthstone(UUID uuid) {
-        if (PLAYER_TELEPORT_COOLDOWNS.containsKey(uuid)) {
-            if (PLAYER_TELEPORT_COOLDOWNS.get(uuid) <= 0) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     public static void teleportPlayer(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
-        PLAYERS_TELEPORTING.put(uuid, player.getLocation());
+        TeleportAPI.addPlayerCurrentlyTeleporting(uuid, player.getLocation());
         String locationName = getLocationFromDatabase(uuid);
         Location location = getLocationFromString(locationName);
 
@@ -101,22 +92,28 @@ public class Teleportation {
         final int[] taskTimer = {6};
         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
 
-            if (PLAYERS_TELEPORTING.containsKey(player.getUniqueId())) {
-                if (taskTimer[0] <= 0) {
-                    if (CombatLog.isInCombat(uuid)) {
-                        player.sendMessage("Your teleport has been interrupted by combat!");
-                    } else {
-                        player.teleport(location);
+            if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
+                if (player.getLocation().getX() == PLAYERS_TELEPORTING.get(player.getUniqueId()).getX() && player.getLocation().getZ() == PLAYERS_TELEPORTING.get(player.getUniqueId()).getZ()) {
+                    if (taskTimer[0] <= 0) {
+                        if (CombatLog.isInCombat(uuid)) {
+                            player.sendMessage("Your teleport has been interrupted by combat!");
+                            TeleportAPI.addPlayerHearthstoneCD(uuid, 300);
+                        } else {
+                            player.teleport(location);
+                            TeleportAPI.addPlayerHearthstoneCD(uuid, 300);
+                        }
+                        TeleportAPI.removePlayerCurrentlyTeleporting(uuid);
                     }
-                    PLAYERS_TELEPORTING.remove(uuid);
+                    taskTimer[0]--;
                 }
-                taskTimer[0]--;
             } else {
+                TeleportAPI.removePlayerCurrentlyTeleporting(uuid);
                 player.removePotionEffect(PotionEffectType.BLINDNESS);
                 player.removePotionEffect(PotionEffectType.CONFUSION);
+                player.sendMessage("Your teleport was canceled due to moving!");
+                TeleportAPI.addPlayerHearthstoneCD(uuid, 500);
             }
         },0 ,20L);
-        PLAYER_TELEPORT_COOLDOWNS.put(uuid, 300);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 160L);
     }
 
