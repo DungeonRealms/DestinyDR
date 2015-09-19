@@ -67,6 +67,7 @@ public class MainListener implements Listener {
         PlayerManager.checkInventory(player);
 
     }
+
     /**
      * Cancel spawning unless it's CUSTOM. So we don't have RANDOM SHEEP. We
      * have.. CUSTOM SHEEP. RAWR SHEEP EAT ME>.. AH RUN!
@@ -78,7 +79,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onSpawn(CreatureSpawnEvent event) {
         /*
-		 * if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM)
+         * if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM)
 		 * { event.setCancelled(true); }
 		 */
     }
@@ -135,16 +136,13 @@ public class MainListener implements Listener {
     }
 
     /**
-     * Handles players moving
-     *
+     * Handles players moving for hearthstone?
      * @param event
      * @since 1.0
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerMove(PlayerMoveEvent event) {
-        if (!(Teleportation.PLAYERS_TELEPORTING.containsKey(event.getPlayer().getUniqueId()))) {
-            return;
-        }
+        if (!(Teleportation.PLAYERS_TELEPORTING.containsKey(event.getPlayer().getUniqueId()))) return;
         if (Teleportation.PLAYERS_TELEPORTING.containsKey(event.getPlayer().getUniqueId())) {
             Teleportation.PLAYERS_TELEPORTING.remove(event.getPlayer().getUniqueId());
             Teleportation.PLAYER_TELEPORT_COOLDOWNS.put(event.getPlayer().getUniqueId(), 500);
