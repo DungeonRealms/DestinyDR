@@ -48,6 +48,10 @@ public class ItemListener implements Listener {
         if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.QUARTZ && player.getItemInHand().getType() != Material.BOOK) return;
         ItemStack itemStack = player.getItemInHand();
         if (!(CombatLog.isInCombat(event.getPlayer().getUniqueId()))) {
+            if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
+                player.sendMessage("You cannot restart a teleport during a cast!");
+                return;
+            }
             if (TeleportAPI.isHearthstone(itemStack)) {
                 if (TeleportAPI.canUseHearthstone(player.getUniqueId())) {
                     net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
@@ -59,9 +63,13 @@ public class ItemListener implements Listener {
             } else if (TeleportAPI.isTeleportBook(itemStack)) {
                 net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
                 Teleportation.teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, nmsItem.getTag());
-                player.setItemInHand(new ItemStack(Material.AIR));
+                if (player.getItemInHand().getAmount() == 1) {
+                    player.setItemInHand(new ItemStack(Material.AIR));
+                } else {
+                    player.getItemInHand().setAmount((player.getItemInHand().getAmount() - 1));
+                }
             } else {
-                player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "This item cannot be used to Teleport!");
+                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "This item cannot be used to Teleport!");
             }
         } else {
             player.sendMessage(

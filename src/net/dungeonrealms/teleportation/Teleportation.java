@@ -80,7 +80,11 @@ public class Teleportation {
         if (teleportType == EnumTeleportType.HEARTHSTONE) {
             locationName = TeleportAPI.getLocationFromDatabase(uuid);
         } else {
-            locationName = nbt.getString("usage").toLowerCase();
+            if (nbt != null) {
+                locationName = nbt.getString("usage").toLowerCase();
+            } else {
+                locationName = "cyrennica";
+            }
         }
         Location location = TeleportAPI.getLocationFromString(locationName);
 
