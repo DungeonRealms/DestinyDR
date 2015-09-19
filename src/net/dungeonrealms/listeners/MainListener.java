@@ -15,6 +15,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 
@@ -60,7 +61,7 @@ public class MainListener implements Listener {
                 }
             }, 5l);
         }
-        Teleportation.PLAYER_TELEPORTS.put(event.getPlayer().getUniqueId(), 120);
+        Teleportation.PLAYER_TELEPORT_COOLDOWNS.put(event.getPlayer().getUniqueId(), 120);
 
         //Makes sure the player has hearthstone.
         PlayerManager.checkInventory(player);
@@ -130,6 +131,24 @@ public class MainListener implements Listener {
                 playerMount.dead = true;
             }
             EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
+        }
+    }
+
+    /**
+     * Handles players moving
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerMove(PlayerMoveEvent event) {
+        if (!(Teleportation.PLAYERS_TELEPORTING.containsKey(event.getPlayer().getUniqueId()))) {
+            return;
+        }
+        if (Teleportation.PLAYERS_TELEPORTING.containsKey(event.getPlayer().getUniqueId())) {
+            Teleportation.PLAYERS_TELEPORTING.remove(event.getPlayer().getUniqueId());
+            Teleportation.PLAYER_TELEPORT_COOLDOWNS.put(event.getPlayer().getUniqueId(), 500);
+            event.getPlayer().sendMessage("YOU MOVED FAGGOT DON'T MOVE OR ILL BEAT YOU UP WAFFLE");
         }
     }
 }
