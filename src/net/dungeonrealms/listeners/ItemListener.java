@@ -1,6 +1,7 @@
 package net.dungeonrealms.listeners;
 
 import net.dungeonrealms.combat.CombatLog;
+import net.dungeonrealms.teleportation.TeleportAPI;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.ChatColor;
@@ -49,16 +50,16 @@ public class ItemListener implements Listener {
         NBTTagCompound tag = nmsItem.getTag();
         if (nmsItem == null || tag == null) return;
         if (!(tag.getString("type").equalsIgnoreCase("important") && tag.getString("usage").equalsIgnoreCase("hearthstone"))) return;
-        if (Teleportation.canUseHearthstone(player.getUniqueId())) {
+        if (TeleportAPI.canUseHearthstone(player.getUniqueId())) {
             if (!(CombatLog.isInCombat(event.getPlayer().getUniqueId()))) {
                 Teleportation.teleportPlayer(event.getPlayer().getUniqueId());
             } else {
                 player.sendMessage(
-                        ChatColor.GREEN.toString() + ChatColor.BOLD + "HEARTHSTONE " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(event.getPlayer().getUniqueId()) + "s" + ChatColor.RED + ")");
+                        ChatColor.GREEN.toString() + ChatColor.BOLD + "HEARTHSTONE " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s" + ChatColor.RED + ")");
             }
         } else {
             player.sendMessage(
-                    ChatColor.GREEN.toString() + ChatColor.BOLD + "HEARTHSTONE " + ChatColor.RED + "[Usage Exhausted] " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(event.getPlayer().getUniqueId()) + "s" + ChatColor.RED + ")");
+                    ChatColor.GREEN.toString() + ChatColor.BOLD + "HEARTHSTONE " + ChatColor.RED + "[Usage Exhausted] " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s" + ChatColor.RED + ")");
         }
     }
 }
