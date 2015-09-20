@@ -1,5 +1,6 @@
 package net.dungeonrealms.commands;
 
+import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagDouble;
@@ -21,15 +22,23 @@ public class CommandAdd implements CommandExecutor {
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
         if (s instanceof ConsoleCommandSender) return false;
         Player player = (Player) s;
-
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(new ItemStack(Material.STICK));
-        NBTTagCompound tag = nms.getTag() == null ? new NBTTagCompound() : nms.getTag();
-        tag.set("type", new NBTTagString("weapon"));
-        tag.set("damage", new NBTTagDouble(123));
-        nms.setTag(tag);
-        player.getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
-        //RANDOM TP BOOK
-        player.getInventory().addItem(ItemManager.createRandomTeleportBook("Teleport Book"));
+        if (args.length > 0) {
+            switch (args[0]) {
+                case "nbt":
+                    net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(new ItemStack(Material.STICK));
+                    NBTTagCompound tag = nms.getTag() == null ? new NBTTagCompound() : nms.getTag();
+                    tag.set("type", new NBTTagString("weapon"));
+                    tag.set("damage", new NBTTagDouble(123));
+                    nms.setTag(tag);
+                    player.getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
+                    //RANDOM TP BOOK
+                    player.getInventory().addItem(ItemManager.createRandomTeleportBook("Teleport Book"));
+                    break;
+                case "weapon":
+                    player.getInventory().addItem(new ItemGenerator().next());
+                    break;
+            }
+        }
 
         return true;
     }
