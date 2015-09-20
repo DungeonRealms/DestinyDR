@@ -56,7 +56,10 @@ public class EntityPirate extends MeleeEntityZombie {
 	protected Item getLoot() {
 		ItemStack item = BankMechanics.gem.clone();
 		item.setAmount(this.random.nextInt(5));
-		return CraftItemStack.asNMSCopy(item).getItem();
+		org.bukkit.World bukkitWorld = (org.bukkit.World) this.getWorld();
+		bukkitWorld.dropItemNaturally(this.getBukkitEntity().getLocation(), item);
+
+		return null;
 	}
 
 	@Override

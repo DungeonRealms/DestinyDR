@@ -4,11 +4,12 @@
 package net.dungeonrealms.entities.types.monsters;
 
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.banks.BankMechanics;
-import net.dungeonrealms.entities.types.RangedEntityZombie;
+import net.dungeonrealms.entities.types.RangedEntitySkeleton;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.mastery.MetadataUtils;
@@ -23,7 +24,7 @@ import net.minecraft.server.v1_8_R3.World;
 /**
  * Created by Chase on Sep 19, 2015
  */
-public class EntityRangedPirate extends RangedEntityZombie {
+public class EntityRangedPirate extends RangedEntitySkeleton {
 
 	public EntityRangedPirate(World world, EnumEntityType entityType, int tier) {
 		super(world);
@@ -42,7 +43,9 @@ public class EntityRangedPirate extends RangedEntityZombie {
 	}
 
 	@Override
-	public void a(EntityLiving entityliving, float f) {															//14 - world.difficulty.a() * 4
+	public void a(EntityLiving entityliving, float f) { // 14 -
+														// world.difficulty.a()
+														// * 4
 		EntityArrow entityarrow = new EntityArrow(this.world, this, entityliving, 1.6F, (float) (14 - 2 * 4));
 		entityarrow.b((double) (f * 2.0F) + this.random.nextGaussian() * 0.25D + (double) ((float) 2 * 0.11F));
 		this.makeSound("random.bow", 1.0F, 1.0F / (0.8F));
@@ -68,7 +71,9 @@ public class EntityRangedPirate extends RangedEntityZombie {
 	protected Item getLoot() {
 		ItemStack item = BankMechanics.gem.clone();
 		item.setAmount(this.random.nextInt(5));
-		return CraftItemStack.asNMSCopy(item).getItem();
+		org.bukkit.World bukkitWorld = (org.bukkit.World) this.getWorld();
+		bukkitWorld.dropItemNaturally(this.getBukkitEntity().getLocation(), item);
+		return null;
 	}
 
 	@Override

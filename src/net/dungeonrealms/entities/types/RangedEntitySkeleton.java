@@ -17,8 +17,7 @@ import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.EntityHuman;
-import net.minecraft.server.v1_8_R3.EntityZombie;
-import net.minecraft.server.v1_8_R3.IRangedEntity;
+import net.minecraft.server.v1_8_R3.EntitySkeleton;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.PathfinderGoalArrowAttack;
 import net.minecraft.server.v1_8_R3.PathfinderGoalFloat;
@@ -33,7 +32,7 @@ import net.minecraft.server.v1_8_R3.World;
 /**
  * Created by Chase on Sep 19, 2015
  */
-public abstract class RangedEntityZombie extends EntityZombie implements IRangedEntity {
+public abstract class RangedEntitySkeleton extends EntitySkeleton {
 	public String name;
 	public String mobHead;
 	public EnumEntityType entityType;
@@ -41,7 +40,7 @@ public abstract class RangedEntityZombie extends EntityZombie implements IRanged
 	/**
 	 * @param world
 	 */
-	public RangedEntityZombie(World world, String mobName, String mobHead, int tier, EnumEntityType entityType) {
+	public RangedEntitySkeleton(World world, String mobName, String mobHead, int tier, EnumEntityType entityType) {
 		super(world);
 		try {
 			Field bField = PathfinderGoalSelector.class.getDeclaredField("b");
@@ -55,7 +54,7 @@ public abstract class RangedEntityZombie extends EntityZombie implements IRanged
 		} catch (Exception exc) {
 			exc.printStackTrace();
 		}
-		
+
 		this.goalSelector.a(1, new PathfinderGoalFloat(this));
 		this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
 		this.goalSelector.a(5, new PathfinderGoalRandomStroll(this, 1.0D));
@@ -64,7 +63,6 @@ public abstract class RangedEntityZombie extends EntityZombie implements IRanged
 		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
 		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
 
-		
 		this.name = mobName;
 		this.mobHead = mobHead;
 		this.entityType = entityType;
@@ -84,7 +82,7 @@ public abstract class RangedEntityZombie extends EntityZombie implements IRanged
 	@Override
 	protected abstract void getRareDrop();
 
-	public RangedEntityZombie(World world) {
+	public RangedEntitySkeleton(World world) {
 		super(world);
 	}
 
