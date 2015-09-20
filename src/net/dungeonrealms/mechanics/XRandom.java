@@ -15,7 +15,7 @@ public class XRandom {
     }
 
     public XRandom(long seed) {
-        last = seed;
+        this.last = seed;
     }
 
     public int nextInt(int max) {
