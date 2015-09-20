@@ -3,11 +3,6 @@
  */
 package net.dungeonrealms.entities.types.monsters;
 
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.inventory.ItemStack;
-
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.types.RangedEntitySkeleton;
 import net.dungeonrealms.entities.utils.EntityStats;
@@ -15,11 +10,10 @@ import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_8_R3.EntityArrow;
-import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.Item;
-import net.minecraft.server.v1_8_R3.Items;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_8_R3.*;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by Chase on Sep 19, 2015
@@ -70,8 +64,7 @@ public class EntityRangedPirate extends RangedEntitySkeleton {
 	protected Item getLoot() {
 		ItemStack item = BankMechanics.gem.clone();
 		item.setAmount(this.random.nextInt(5));
-		org.bukkit.World bukkitWorld = (org.bukkit.World) this.getWorld();
-		bukkitWorld.dropItemNaturally(this.getBukkitEntity().getLocation(), item);
+		this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation(), item);
 		return null;
 	}
 
