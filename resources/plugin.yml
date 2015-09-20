@@ -18,3 +18,5 @@ commands:
     lag:
         usage: /<command>
         description: Shows server information.
+    party:
+        description: The main party command.
