@@ -42,6 +42,15 @@ public class ParticleAPI {
             this.particle = particle;
         }
 
+        public static ParticleEffect getById(int id) {
+            for (ParticleEffect particleEffect : values()) {
+                if (particleEffect.id == id) {
+                    return particleEffect;
+                }
+            }
+            return null;
+        }
+
         public EnumParticle getParticle() {
             return particle;
         }
