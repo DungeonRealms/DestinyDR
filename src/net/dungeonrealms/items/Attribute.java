@@ -10,7 +10,7 @@ import org.bukkit.inventory.ItemStack;
 public class Attribute {
 
     private ItemStack item;
-    net.minecraft.server.v1_8_R3.ItemStack nmsStack;
+    private net.minecraft.server.v1_8_R3.ItemStack nmsStack;
 
     public Attribute(ItemStack item) {
         this.item = item;
@@ -30,6 +30,10 @@ public class Attribute {
     public Item.ItemModifier getItemModifier() {
         NBTTagCompound tag = nmsStack.getTag();
         return Item.ItemModifier.getById(tag.getInt("itemTier"));
+    }
+
+    public void addAttribute(Item.AttributeType type) {
+
     }
 
 }

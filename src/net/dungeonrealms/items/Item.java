@@ -9,16 +9,26 @@ import org.bukkit.ChatColor;
 public class Item {
 
     public enum ItemType {
-        NULL(-1),
-        SWORD(0),
-        POLEARM(1),
-        AXE(2),
-        PICKAXE(3);
+        SWORD(0, "Sword"),
+        POLE_ARM(1, "Pole Arm"),
+        AXE(2, "Axe"),
+        STAFF(3, "Staff"),
+        BOW(4, "Bow");
 
         private int id;
+        private String name;
 
-        ItemType(int id) {
+        ItemType(int id, String name) {
             this.id = id;
+            this.name = name;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getName() {
+            return name;
         }
 
         public static ItemType getById(int id) {
@@ -27,7 +37,7 @@ public class Item {
                     return it;
                 }
             }
-            return getById(-1);
+            return getById(0);
         }
     }
 
@@ -105,8 +115,7 @@ public class Item {
     }
 
     public enum AttributeType {
-        NULL(-1, "NULL"),
-        DAMAGdE(0, "Damage"),
+        DAMAGE(0, "Damage"),
         PURE_DAMAGE(1, "Pure Damage"),
         CRITICAL_HIT(2, "Critical Hit"),
         ARMOR_PENETRATION(3, "ArmorPenetration"),
@@ -143,7 +152,7 @@ public class Item {
                     return at;
                 }
             }
-            return getById(-1);
+            return null;
         }
     }
 
@@ -178,6 +187,5 @@ public class Item {
             }
             return getById(0);
         }
-
     }
 }
