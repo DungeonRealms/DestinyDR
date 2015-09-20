@@ -2,6 +2,7 @@ package net.dungeonrealms.commands;
 
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.mechanics.ItemManager;
+import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagDouble;
 import net.minecraft.server.v1_8_R3.NBTTagString;
@@ -13,6 +14,8 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -33,6 +36,8 @@ public class CommandAdd implements CommandExecutor {
                     player.getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
                     //RANDOM TP BOOK
                     player.getInventory().addItem(ItemManager.createRandomTeleportBook("Teleport Book"));
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.WITCH_MAGIC, player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.PORTAL, player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 4F, 400);
                     break;
                 case "weapon":
                     player.getInventory().addItem(new ItemGenerator().next());

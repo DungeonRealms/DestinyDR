@@ -2,6 +2,8 @@ package net.dungeonrealms.teleportation;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -12,6 +14,7 @@ import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -115,6 +118,12 @@ public class Teleportation {
 
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
                 if (player.getLocation().getX() == PLAYERS_TELEPORTING.get(player.getUniqueId()).getX() && player.getLocation().getZ() == PLAYERS_TELEPORTING.get(player.getUniqueId()).getZ()) {
+                    try {
+                        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.WITCH_MAGIC, player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
+                        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.PORTAL, player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 4F, 400);
+                    } catch (Exception e) {
+                        Utils.log.info("Teleportation tried to send particle to player and failed. Continuing.s");
+                    }
                     if (taskTimer[0] <= 0) {
                         if (CombatLog.isInCombat(uuid)) {
                             player.sendMessage("Your teleport has been interrupted by combat!");
