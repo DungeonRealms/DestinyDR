@@ -8,6 +8,7 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -57,7 +58,7 @@ public class TeleportAPI {
         if (tag == null || nmsItem == null) {
             return false;
         }
-        if (!(tag.getString("type").equalsIgnoreCase("teleport") && tag.getString("usage") == null)) {
+        if (!(tag.getString("type").equalsIgnoreCase("teleport"))) {
             return false;
         }
         return true;
@@ -94,7 +95,7 @@ public class TeleportAPI {
             case "cyrennica": {
                 return Teleportation.Cyrennica;
             }
-            case "harrison": {
+            case "harrison_field": {
                 return Teleportation.Harrison_Field;
             }
             case "dark_oak": {
@@ -114,6 +115,35 @@ public class TeleportAPI {
             }
             default: {
                 return Teleportation.Cyrennica;
+            }
+        }
+    }
+
+    public static String getRandomTeleportString() {
+        switch (new Random().nextInt(6)) {
+            case 0: {
+                return "Cyrennica";
+            }
+            case 1: {
+                return "Harrison_Field";
+            }
+            case 2: {
+                return "Dark_Oak";
+            }
+            case 3: {
+                return "Trollsbane";
+            }
+            case 4: {
+                return "Tripoli";
+            }
+            case 5: {
+                return "Gloomy_Hollows";
+            }
+            case 6: {
+                return "Crestguard";
+            }
+            default: {
+                return "Cyrennica";
             }
         }
     }

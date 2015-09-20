@@ -13,6 +13,7 @@ public enum EnumData {
     IS_PLAYING,
     GEMS,
     HEARTHSTONE,
+    ECASH,
 
     /*
     Player Attributes

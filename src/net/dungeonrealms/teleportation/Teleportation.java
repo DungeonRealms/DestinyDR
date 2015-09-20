@@ -53,8 +53,6 @@ public class Teleportation {
         }
     }
 
-
-
     public void startInitialization() {
         Cyrennica = new Location(Bukkit.getWorlds().get(0), -367, 83, 390);
         Harrison_Field = new Location(Bukkit.getWorlds().get(0), -594, 58, 687, 92.0F, 1F);
@@ -89,23 +87,23 @@ public class Teleportation {
         Location location = TeleportAPI.getLocationFromString(locationName);
 
         if (location.equals(Cyrennica)) {
-            player.sendMessage("Using your Hearthstone to return to Cyrennica.");
+            player.sendMessage("Teleporting to Cyrennica.");
         } else if (location.equals(Harrison_Field)) {
-            player.sendMessage("Using your Hearthstone to return to Harrison Field.");
+            player.sendMessage("Teleporting to Harrison Field.");
         } else if (location.equals(Dark_Oak_Tavern)) {
-            player.sendMessage("Using your Hearthstone to return to Dark Oak Tavern.");
+            player.sendMessage("Teleporting to Dark Oak Tavern.");
         } else if (location.equals(Deadpeaks_Mountain_Camp)) {
-            player.sendMessage("Using your Hearthstone to return to DeadPeaks Camp.");
+            player.sendMessage("Teleporting to return to DeadPeaks Camp.");
         } else if (location.equals(Trollsbane_tavern)) {
-            player.sendMessage("Using your Hearthstone to return to Trollsbane Tavern.");
+            player.sendMessage("Teleporting to Trollsbane Tavern.");
         } else if (location.equals(Tripoli)) {
-            player.sendMessage("Using your Hearthstone to return to Tripoli.");
+            player.sendMessage("Teleporting to return to Tripoli.");
         } else if (location.equals(Gloomy_Hollows)) {
-            player.sendMessage("Using your Hearthstone to return to Gloomy Hollows.");
+            player.sendMessage("Teleporting to Gloomy Hollows.");
         } else if (location.equals(Crestguard_Keep)) {
-            player.sendMessage("Using your Hearthstone to return to Crestgaurd Keep.");
+            player.sendMessage("Teleporting to Crestgaurd Keep.");
         } else if (location.equals(Tutorial)) {
-            player.sendMessage("Using your Hearthstone to return to the Tutorial Island");
+            player.sendMessage("Teleporting to the Tutorial Island");
         }
 
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 220, 2));

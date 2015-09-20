@@ -1,5 +1,6 @@
 package net.dungeonrealms.commands;
 
+import net.dungeonrealms.mechanics.ItemManager;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagDouble;
 import net.minecraft.server.v1_8_R3.NBTTagString;
@@ -26,8 +27,9 @@ public class CommandAdd implements CommandExecutor {
         tag.set("type", new NBTTagString("weapon"));
         tag.set("damage", new NBTTagDouble(123));
         nms.setTag(tag);
-
         player.getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
+        //RANDOM TP BOOK
+        player.getInventory().addItem(ItemManager.createRandomTeleportBook("Teleport Book"));
 
         return true;
     }
