@@ -123,11 +123,7 @@ public class TeleportAPI {
     }
 
     public static String getRandomTeleportString() {
-        //int a = new XRandom(1).nextInt(6);
-        Random rand = new Random();
-        int a = rand.nextInt(6);
-        Bukkit.broadcastMessage(String.valueOf(a));
-        switch (a) {
+        switch (new Random().nextInt(6)) {
             case 0: {
                 return "Cyrennica";
             }
