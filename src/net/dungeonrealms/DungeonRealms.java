@@ -1,9 +1,5 @@
 package net.dungeonrealms;
 
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.commands.CommandAdd;
@@ -12,17 +8,15 @@ import net.dungeonrealms.commands.CommandLag;
 import net.dungeonrealms.commands.CommandSpawn;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.PetUtils;
-import net.dungeonrealms.listeners.BankListener;
-import net.dungeonrealms.listeners.BlockListener;
-import net.dungeonrealms.listeners.DamageListener;
-import net.dungeonrealms.listeners.InventoryListener;
-import net.dungeonrealms.listeners.ItemListener;
-import net.dungeonrealms.listeners.MainListener;
+import net.dungeonrealms.listeners.*;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.teleportation.Teleportation;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -61,6 +55,8 @@ public class DungeonRealms extends JavaPlugin {
         PetUtils.getInstance().startInitialization();
         Teleportation.getInstance().startInitialization();
         CombatLog.getInstance().startInitialization();
+        //TODO: CURRENTLY NO SCOREBOARD IMPLEMENTEED SO NO POINT UPDATING IT.
+        //PartyMechanics.getInstance().startInitialization();
 
         Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
         Entities.getInstance().startInitialization();

@@ -1,16 +1,11 @@
 package net.dungeonrealms.party;
 
+import net.dungeonrealms.DungeonRealms;
+import org.bukkit.Bukkit;
+import org.bukkit.scoreboard.*;
+
 import java.util.ArrayList;
 import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.scoreboard.DisplaySlot;
-import org.bukkit.scoreboard.Objective;
-import org.bukkit.scoreboard.Score;
-import org.bukkit.scoreboard.Scoreboard;
-import org.bukkit.scoreboard.ScoreboardManager;
-
-import net.dungeonrealms.DungeonRealms;
 
 /**
  * Created by Nick on 8/30/2015.
@@ -102,7 +97,7 @@ public class PartyMechanics {
         }
     }
 
-    public void Initialize() {
+    public void startInitialization() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for (Party p : PARTIES) {
                 setScoreboard(p);
