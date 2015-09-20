@@ -1,11 +1,32 @@
 package net.dungeonrealms.entities;
 
-import net.dungeonrealms.entities.types.*;
-import net.dungeonrealms.mastery.NMSUtils;
-import net.minecraft.server.v1_8_R3.*;
-
 import java.util.HashMap;
 import java.util.UUID;
+
+import net.dungeonrealms.entities.types.monsters.EntityPirate;
+import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
+import net.dungeonrealms.entities.types.mounts.Horse;
+import net.dungeonrealms.entities.types.pets.BabyZombie;
+import net.dungeonrealms.entities.types.pets.BabyZombiePig;
+import net.dungeonrealms.entities.types.pets.CaveSpider;
+import net.dungeonrealms.entities.types.pets.Chicken;
+import net.dungeonrealms.entities.types.pets.Endermite;
+import net.dungeonrealms.entities.types.pets.Ocelot;
+import net.dungeonrealms.entities.types.pets.Rabbit;
+import net.dungeonrealms.entities.types.pets.Silverfish;
+import net.dungeonrealms.entities.types.pets.Wolf;
+import net.dungeonrealms.mastery.NMSUtils;
+import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.EntityCaveSpider;
+import net.minecraft.server.v1_8_R3.EntityChicken;
+import net.minecraft.server.v1_8_R3.EntityEndermite;
+import net.minecraft.server.v1_8_R3.EntityHorse;
+import net.minecraft.server.v1_8_R3.EntityOcelot;
+import net.minecraft.server.v1_8_R3.EntityPigZombie;
+import net.minecraft.server.v1_8_R3.EntityRabbit;
+import net.minecraft.server.v1_8_R3.EntitySilverfish;
+import net.minecraft.server.v1_8_R3.EntityWolf;
+import net.minecraft.server.v1_8_R3.EntityZombie;
 
 /**
  * Created by Kieran on 9/18/2015.
@@ -27,6 +48,7 @@ public class Entities {
         NMSUtils nmsUtils = new NMSUtils();
 
         nmsUtils.registerEntity("Pirate", 54, EntityZombie.class, EntityPirate.class);
+        nmsUtils.registerEntity("RangedPirate", 54, EntityZombie.class, EntityRangedPirate.class);
 
         nmsUtils.registerEntity("PetCaveSpider", 59, EntityCaveSpider.class, CaveSpider.class);
         nmsUtils.registerEntity("PetBabyZombie", 54, EntityZombie.class, BabyZombie.class);

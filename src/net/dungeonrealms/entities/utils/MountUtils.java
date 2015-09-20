@@ -1,7 +1,7 @@
 package net.dungeonrealms.entities.utils;
 
-import net.dungeonrealms.entities.types.EnderDragon;
-import net.dungeonrealms.entities.types.Horse;
+import net.dungeonrealms.entities.types.mounts.EnderDragon;
+import net.dungeonrealms.entities.types.mounts.Horse;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;

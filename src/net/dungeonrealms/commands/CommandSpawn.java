@@ -1,6 +1,7 @@
 package net.dungeonrealms.commands;
 
-import net.dungeonrealms.entities.types.EntityPirate;
+import net.dungeonrealms.entities.types.monsters.EntityPirate;
+import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
 import net.dungeonrealms.entities.utils.BuffUtils;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.entities.utils.MountUtils;
@@ -36,14 +37,6 @@ public class CommandSpawn implements CommandExecutor {
                     Wolf w = (Wolf) Bukkit.getWorld(player.getWorld().getName()).spawnEntity(player.getLocation(), EntityType.WOLF);
                     NBTUtils.nullifyAI(w);
                     break;
-                case "pirate":
-                    World world = ((CraftWorld) player.getWorld()).getHandle();
-                    EntityPirate zombie = new EntityPirate(world, EnumEntityType.HOSTILE_MOB, 1);
-                    zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
-                    world.addEntity(zombie, SpawnReason.CUSTOM);
-                    zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
-                    Utils.log.info("Spawned");
-                    break;
                 case "buff":
                     BuffUtils.spawnBuff(player.getUniqueId());
                     Utils.log.info("Spawned Buff");
@@ -73,6 +66,23 @@ public class CommandSpawn implements CommandExecutor {
                         player.sendMessage("You already have a mount summoned");
                     }
                     break;
+                }
+                case "monster":{
+               	 if(args.length >= 2){
+               		 if(args[1].equalsIgnoreCase("pirate")){
+                         World world = ((CraftWorld) player.getWorld()).getHandle();
+                         EntityPirate zombie = new EntityPirate(world, EnumEntityType.HOSTILE_MOB, 1);
+                         zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
+                         world.addEntity(zombie, SpawnReason.CUSTOM);
+                         zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
+               		 }else if(args[1].equalsIgnoreCase("rangedpirate")){
+                         World world = ((CraftWorld) player.getWorld()).getHandle();
+                         EntityRangedPirate zombie = new EntityRangedPirate(world, EnumEntityType.HOSTILE_MOB, 1);
+                         zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
+                         world.addEntity(zombie, SpawnReason.CUSTOM);
+                         zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
+               		 }
+               	 }
                 }
                 default:
             }

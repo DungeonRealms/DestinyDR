@@ -1,4 +1,4 @@
-package net.dungeonrealms.entities.types;
+package net.dungeonrealms.entities.types.pets;
 
 import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.mastery.MetadataUtils;

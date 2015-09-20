@@ -1,8 +1,8 @@
-package net.dungeonrealms.entities.types;
+package net.dungeonrealms.entities.types.pets;
 
 import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.mastery.MetadataUtils;
-import net.minecraft.server.v1_8_R3.EntitySilverfish;
+import net.minecraft.server.v1_8_R3.EntityEndermite;
 import net.minecraft.server.v1_8_R3.World;
 
 import java.util.UUID;
@@ -10,13 +10,13 @@ import java.util.UUID;
 /**
  * Created by Kieran on 9/5/2015.
  */
-public class Silverfish extends EntitySilverfish {
+public class Endermite extends EntityEndermite {
 
     public String mobName;
     public UUID ownerUUID;
     public EnumEntityType entityType;
 
-    public Silverfish(World world, String mobName, UUID ownerUUID, EnumEntityType entityType) {
+    public Endermite(World world, String mobName, UUID ownerUUID, EnumEntityType entityType) {
         super(world);
         this.mobName = mobName;
         this.ownerUUID = ownerUUID;
@@ -29,7 +29,7 @@ public class Silverfish extends EntitySilverfish {
         MetadataUtils.registerEntityMetadata(this, this.entityType, 0, 0);
     }
 
-    public Silverfish(World world) {
+    public Endermite(World world) {
         super(world);
     }
 }
