@@ -34,7 +34,7 @@ public class EnchantmentAPI {
 
     public static boolean isItemWeapon(ItemStack itemStack) {
         Item.ItemType itemType = new Attribute(itemStack).getItemType();
-        return itemType == Item.ItemType.AXE || itemType == Item.ItemType.POLEARM || itemType == Item.ItemType.SWORD;
+        return itemType == Item.ItemType.AXE || itemType == Item.ItemType.POLE_ARM || itemType == Item.ItemType.SWORD;
     }
 
     public static boolean isItemArmor(ItemStack itemStack) {

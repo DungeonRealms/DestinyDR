@@ -32,7 +32,7 @@ public class EntityRangedPirate extends RangedEntitySkeleton {
 		int level = Utils.getRandomFromTier(tier);
 		MetadataUtils.registerEntityMetadata(this, this.entityType, tier, level);
 		EntityStats.setMonsterStats(this, level);
-		this.setCustomName(ChatColor.GOLD + "Ranged SPirate");
+		this.setCustomName(ChatColor.GOLD + "Ranged Pirate");
 		this.setCustomNameVisible(true);
 		setArmor(1);
 	}
