@@ -3,15 +3,14 @@
  */
 package net.dungeonrealms.duel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
-
+import net.dungeonrealms.DungeonRealms;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import net.dungeonrealms.DungeonRealms;
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Created by Chase on Sep 20, 2015
@@ -31,9 +30,7 @@ public class DuelMechanics {
 		PENDING_DUELS.put(p2.getUniqueId(), p1.getUniqueId());
 		cooldown.add(p1.getUniqueId());
 		// REMOVE PLAYER FROM COOLDOWN AFTER 10 SECONDS
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-			cooldown.remove(p1.getUniqueId());
-		} , 10L * 20L);
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> cooldown.remove(p1.getUniqueId()), 10L * 20L);
 
 		p1.sendMessage(ChatColor.YELLOW.toString() + "Duel Request has been sent to " + p2.getDisplayName()
 			+ " they have 10 seconds to respond to your duel request!");
