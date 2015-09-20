@@ -4,9 +4,7 @@ import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.mastery.NMSUtils;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -18,7 +16,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -57,36 +54,6 @@ public class DamageListener implements Listener {
     }
 
     /**
-     * This event is to handle mobs, not PLAYERS!
-     * <p>
-     * THIS METHOD IS FOR TESTING, NOT SURE IF EXTENDING
-     * THE ENTITY YOU CAN PUT ITS DROPS INSIDE. XWAFFLE. ;-)
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void onMobDeath(EntityDeathEvent event) {
-        if (event.getEntity() instanceof Player) return;
-        if (!(event.getEntity().hasMetadata("type"))) return;
-        String metaValue = event.getEntity().getMetadata("type").get(0).asString();
-        if (metaValue.equalsIgnoreCase("hostile")) {
-            int tier = event.getEntity().getMetadata("tier").get(0).asInt();
-            switch (tier) {
-                case 1:
-                    event.getDrops().clear();
-                    event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), new ItemStack(Material.BEDROCK, 2));
-                    break;
-                case 2:
-                    event.getDrops().clear();
-                    event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), new ItemStack(Material.INK_SACK, 2));
-                default:
-                    Bukkit.broadcastMessage("THIS MOB HAS NO TIER CODED NUBS");
-            }
-        }
-
-    }
-    /**
      * Listen for the players weapon.
      *
      * @param event
@@ -109,26 +76,24 @@ public class DamageListener implements Listener {
     }
 
     /**
-     * Listen for Entities being damaged by another Entity.
-     * NOT TO BE USED FOR PLAYERS
-     * Mainly used for friendly mobs and damage cancelling
+     * Listen for Pets Damage.
+     * <p>
+     * E.g. I can't attack Xwaffle's Wolf it's a pet!
      *
      * @param event
      * @since 1.0
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
-    public void onEntityDamagedByEntity(EntityDamageByEntityEvent event) {
-        if (event.getEntity() instanceof Player) return;
+    public void petDamageListener(EntityDamageByEntityEvent event) {
         if (!(event.getEntity().hasMetadata("type"))) return;
+        if (event.getEntity() instanceof Player) return;
         String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
         switch (metaValue) {
             case "pet":
                 event.setCancelled(true);
-                event.getDamager().sendMessage("You cannot damage players pets!");
                 break;
             case "mount":
                 event.setCancelled(true);
-                event.getDamager().sendMessage("You cannot damage players mounts!");
                 break;
             default:
         }

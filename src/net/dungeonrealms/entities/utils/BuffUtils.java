@@ -18,13 +18,19 @@ import java.util.UUID;
  */
 public class BuffUtils {
 
+    /**
+     * Adds the buff to a Endercrystal entity, takes a player UUID.
+     *
+     * @param uuid
+     * @since 1.0
+     */
     public static void spawnBuff(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         World world = ((CraftWorld) player.getWorld()).getHandle();
         EnderCrystal enderCrystal = new EnderCrystal(world, EnumEntityType.BUFF);
-        enderCrystal.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0 , 0);
+        enderCrystal.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
         world.addEntity(enderCrystal, CreatureSpawnEvent.SpawnReason.CUSTOM);
-        enderCrystal.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0 , 0);
+        enderCrystal.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
         player.playSound(player.getLocation(), Sound.ENDERDRAGON_DEATH, 1F, 1F);
         MetadataUtils.registerBuffMetadata(enderCrystal, PotionEffectType.BLINDNESS, 10, 20 * 6);
     }
