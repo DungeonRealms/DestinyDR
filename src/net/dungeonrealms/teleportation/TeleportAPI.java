@@ -3,7 +3,6 @@ package net.dungeonrealms.teleportation;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -56,8 +55,6 @@ public class TeleportAPI {
         }
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
-        Bukkit.broadcastMessage(tag.getString("type"));
-        Bukkit.broadcastMessage(tag.getString("usage"));
         if (tag == null || nmsItem == null) {
             return false;
         }
