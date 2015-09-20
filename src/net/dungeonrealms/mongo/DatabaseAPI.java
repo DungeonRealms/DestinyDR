@@ -59,6 +59,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("gems", Integer.class);
             case HEARTHSTONE:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("hearthstone", Location.class);
+            case ECASH:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("ecash", Integer.class);
             /*
             Player Attribute Variables
              */
@@ -90,6 +92,7 @@ public class DatabaseAPI {
                         new Document("uuid", uuid.toString())
                                 .append("health", 50)
                                 .append("gems", 100)
+                                .append("ecash", 0)
                                 .append("firstLogin", System.currentTimeMillis() / 1000L)
                                 .append("lastLogin", 0l)
                                 .append("netLevel", 0)

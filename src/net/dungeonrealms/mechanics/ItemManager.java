@@ -1,7 +1,9 @@
 package net.dungeonrealms.mechanics;
 
+import net.dungeonrealms.teleportation.TeleportAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -10,6 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -33,6 +36,28 @@ public class ItemManager {
 		NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
 		tag.set("type", new NBTTagString("important"));
 		tag.set("usage", new NBTTagString("hearthstone"));
+		nmsStack.setTag(tag);
+		return CraftItemStack.asBukkitCopy(nmsStack);
+	}
+
+	/**
+	 * creates a random Teleport book
+	 *
+	 * @param name
+	 * @return
+	 * @since 1.0
+	 */
+	public static ItemStack createRandomTeleportBook(String name) {
+		ItemStack rawStack = new ItemStack(Material.BOOK);
+		ItemMeta meta = rawStack.getItemMeta();
+		meta.setDisplayName(name);
+		String teleportLocation = TeleportAPI.getRandomTeleportString();
+		meta.setLore(Collections.singletonList(ChatColor.GRAY + "(Right-Click) Teleport to " + teleportLocation));
+		rawStack.setItemMeta(meta);
+		net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+		NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+		tag.set("type", new NBTTagString("teleport"));
+		tag.set("usage", new NBTTagString(teleportLocation));
 		nmsStack.setTag(tag);
 		return CraftItemStack.asBukkitCopy(nmsStack);
 	}

@@ -53,8 +53,6 @@ public class Teleportation {
         }
     }
 
-
-
     public void startInitialization() {
         Cyrennica = new Location(Bukkit.getWorlds().get(0), -367, 83, 390);
         Harrison_Field = new Location(Bukkit.getWorlds().get(0), -594, 58, 687, 92.0F, 1F);

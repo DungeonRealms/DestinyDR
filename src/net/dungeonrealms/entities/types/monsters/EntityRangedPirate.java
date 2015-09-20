@@ -28,7 +28,6 @@ public class EntityRangedPirate extends RangedEntityZombie {
 	public EntityRangedPirate(World world, EnumEntityType entityType, int tier) {
 		super(world);
 		this.entityType = entityType;
-		// This shouldn't be hardcoded to 1 but it's just for testing.
 		int level = Utils.getRandomFromTier(tier);
 		MetadataUtils.registerEntityMetadata(this, this.entityType, tier, level);
 		EntityStats.setMonsterStats(this, level);

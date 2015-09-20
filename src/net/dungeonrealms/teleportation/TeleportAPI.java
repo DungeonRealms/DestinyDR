@@ -3,11 +3,13 @@ package net.dungeonrealms.teleportation;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -54,10 +56,12 @@ public class TeleportAPI {
         }
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
+        Bukkit.broadcastMessage(tag.getString("type"));
+        Bukkit.broadcastMessage(tag.getString("usage"));
         if (tag == null || nmsItem == null) {
             return false;
         }
-        if (!(tag.getString("type").equalsIgnoreCase("teleport") && tag.getString("usage") == null)) {
+        if (!(tag.getString("type").equalsIgnoreCase("teleport"))) {
             return false;
         }
         return true;
@@ -94,7 +98,7 @@ public class TeleportAPI {
             case "cyrennica": {
                 return Teleportation.Cyrennica;
             }
-            case "harrison": {
+            case "harrison_field": {
                 return Teleportation.Harrison_Field;
             }
             case "dark_oak": {
@@ -114,6 +118,39 @@ public class TeleportAPI {
             }
             default: {
                 return Teleportation.Cyrennica;
+            }
+        }
+    }
+
+    public static String getRandomTeleportString() {
+        //int a = new XRandom(1).nextInt(6);
+        Random rand = new Random();
+        int a = rand.nextInt(6);
+        Bukkit.broadcastMessage(String.valueOf(a));
+        switch (a) {
+            case 0: {
+                return "Cyrennica";
+            }
+            case 1: {
+                return "Harrison_Field";
+            }
+            case 2: {
+                return "Dark_Oak";
+            }
+            case 3: {
+                return "Trollsbane";
+            }
+            case 4: {
+                return "Tripoli";
+            }
+            case 5: {
+                return "Gloomy_Hollows";
+            }
+            case 6: {
+                return "Crestguard";
+            }
+            default: {
+                return "Cyrennica";
             }
         }
     }

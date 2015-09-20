@@ -15,7 +15,7 @@ public class XRandom {
     }
 
     public XRandom(long seed) {
-        this.last = seed;
+        last = seed;
     }
 
     public int nextInt(int max) {
@@ -25,5 +25,4 @@ public class XRandom {
         int out = (int) last % max;
         return (out < 0) ? -out : out;
     }
-
 }
