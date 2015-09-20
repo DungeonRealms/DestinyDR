@@ -86,7 +86,7 @@ public class DuelMechanics {
 	 * @return
 	 */
 	public static boolean isDuelPartner(Player p1, Player p2) {
-		return PENDING_DUELS.get(p1.getUniqueId()) == p2.getUniqueId();
+		return DUELS.get(p1.getUniqueId()) == p2.getUniqueId();
 	}
 
 	/**
