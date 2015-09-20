@@ -13,7 +13,6 @@ import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.TileEntity;
 import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
@@ -252,23 +251,15 @@ public class BankListener implements Listener {
      */
     public void openHowManyGems(Player player) {
         Inventory inv = Bukkit.createInventory(null, 27, "How Many?");
-        ItemStack item0 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "-1000", null,
-                DyeColor.RED.getWoolData());
-        ItemStack item1 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "-100", null,
-                DyeColor.RED.getWoolData());
-        ItemStack item2 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "-10", null,
-                DyeColor.RED.getWoolData());
-        ItemStack item3 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "-1", null,
-                DyeColor.RED.getWoolData());
+        ItemStack item0 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "-1000", null, (short) 10);
+        ItemStack item1 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "-100", null, (short) 10);
+        ItemStack item2 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "-10", null, (short) 10);
+        ItemStack item3 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "-1", null, (short) 10);
         ItemStack item4 = ItemManager.createItem(Material.EMERALD, "Withdraw 0 Gems", null);
-        ItemStack item5 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "1", null,
-                DyeColor.LIME.getWoolData());
-        ItemStack item6 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "10", null,
-                DyeColor.LIME.getWoolData());
-        ItemStack item7 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "100", null,
-                DyeColor.LIME.getWoolData());
-        ItemStack item8 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "1000", null,
-                DyeColor.LIME.getWoolData());
+        ItemStack item5 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "1", null, (short) 10);
+        ItemStack item6 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "10", null, (short) 10);
+        ItemStack item7 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "100", null, (short) 10);
+        ItemStack item8 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "1000", null, (short) 10);
         ItemStack confimItem = ItemManager.createItemWithData(Material.INK_SACK, "Confirm", null, (short) 10);
 
         inv.setItem(0, item0);
