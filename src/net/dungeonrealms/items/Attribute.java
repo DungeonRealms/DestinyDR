@@ -32,8 +32,7 @@ public class Attribute {
         return Item.ItemModifier.getById(tag.getInt("itemTier"));
     }
 
-    public void addAttribute(Item.AttributeType type) {
-
+    public ItemStack getItem() {
+        return item;
     }
-
 }
