@@ -3,22 +3,25 @@
  */
 package net.dungeonrealms.duel;
 
-import net.dungeonrealms.DungeonRealms;
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
+import net.dungeonrealms.DungeonRealms;
+import net.md_5.bungee.api.ChatColor;
 
 /**
  * Created by Chase on Sep 20, 2015
  */
 public class DuelMechanics {
-	public static HashMap<UUID, UUID> PENDING_DUELS = new HashMap<UUID, UUID>();
-	public static HashMap<UUID, UUID> DUELS = new HashMap<UUID, UUID>();
-	public static ArrayList<UUID> cooldown = new ArrayList<UUID>();
+	public static HashMap<UUID, UUID> PENDING_DUELS = new HashMap<>();
+	public static HashMap<UUID, UUID> DUELS = new HashMap<>();
+	public static ArrayList<UUID> cooldown = new ArrayList<>();
 
 	// ALL PLAYERS IN A DUEL
 	/**
@@ -30,7 +33,9 @@ public class DuelMechanics {
 		PENDING_DUELS.put(p2.getUniqueId(), p1.getUniqueId());
 		cooldown.add(p1.getUniqueId());
 		// REMOVE PLAYER FROM COOLDOWN AFTER 10 SECONDS
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> cooldown.remove(p1.getUniqueId()), 10L * 20L);
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+			cooldown.remove(p1.getUniqueId());
+		} , 10L * 20L);
 
 		p1.sendMessage(ChatColor.YELLOW.toString() + "Duel Request has been sent to " + p2.getDisplayName()
 			+ " they have 10 seconds to respond to your duel request!");
@@ -59,10 +64,26 @@ public class DuelMechanics {
 	 */
 	public static void setupDuel(Player p1, Player p2) {
 		cancelRequestedDuel(p1);
-		DUELS.put(p1.getUniqueId(), p2.getUniqueId());
-		DUELS.put(p2.getUniqueId(), p1.getUniqueId());
-		p1.sendMessage(ChatColor.GREEN  + "Duel started with " + p2.getDisplayName());
-		p2.sendMessage(ChatColor.GREEN  + "Duel started with " + p1.getDisplayName());
+		Timer timer = new Timer();
+		timer.scheduleAtFixedRate(new TimerTask() {
+			int time = 10;
+
+			@Override
+			public void run() {
+			time--;
+			p1.sendMessage(ChatColor.GREEN.toString() + time + ChatColor.YELLOW.toString()
+					+ " seconds until the battle begins!");
+			if (time == 0) {
+				p1.sendMessage(ChatColor.GREEN + "Duel started with " + p2.getDisplayName());
+				p2.sendMessage(ChatColor.GREEN + "Duel started with " + p1.getDisplayName());
+				DUELS.put(p1.getUniqueId(), p2.getUniqueId());
+				DUELS.put(p2.getUniqueId(), p1.getUniqueId());
+				this.cancel();
+			}
+			}
+
+		}, 0, 20l);
+
 	}
 
 	/**
