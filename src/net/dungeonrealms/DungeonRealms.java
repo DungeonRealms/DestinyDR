@@ -2,10 +2,7 @@ package net.dungeonrealms;
 
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.commands.CommandAdd;
-import net.dungeonrealms.commands.CommandAnalyze;
-import net.dungeonrealms.commands.CommandLag;
-import net.dungeonrealms.commands.CommandSpawn;
+import net.dungeonrealms.commands.*;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.listeners.*;
@@ -13,6 +10,7 @@ import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.party.PartyMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -55,8 +53,7 @@ public class DungeonRealms extends JavaPlugin {
         PetUtils.getInstance().startInitialization();
         Teleportation.getInstance().startInitialization();
         CombatLog.getInstance().startInitialization();
-        //TODO: CURRENTLY NO SCOREBOARD IMPLEMENTEED SO NO POINT UPDATING IT.
-        //PartyMechanics.getInstance().startInitialization();
+        PartyMechanics.getInstance().startInitialization();
 
         Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
         Entities.getInstance().startInitialization();
@@ -68,6 +65,7 @@ public class DungeonRealms extends JavaPlugin {
         getCommand("add").setExecutor(new CommandAdd());
         getCommand("analyze").setExecutor(new CommandAnalyze());
         getCommand("lag").setExecutor(new CommandLag());
+        getCommand("party").setExecutor(new CommandParty());
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
 
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "s/");

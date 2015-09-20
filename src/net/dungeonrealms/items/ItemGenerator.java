@@ -1,34 +1,56 @@
 package net.dungeonrealms.items;
 
 import net.dungeonrealms.mastery.Utils;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.NBTTagInt;
+import net.minecraft.server.v1_8_R3.NBTTagList;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by Nick on 9/19/2015.
  */
 public class ItemGenerator {
 
+    /**
+     * allows, new ItemGenerator().next() -> ItemStack.
+     *
+     * @return
+     * @since 1.0
+     */
     public ItemStack next() {
         return getWeapon(getRandomItemType(), getRandomItemTier(), getRandomItemModifier());
     }
 
+    /**
+     * Used for the next() method above.
+     *
+     * @param type
+     * @param tier
+     * @param modifier
+     * @return
+     * @since 1.0
+     */
     ItemStack getWeapon(Item.ItemType type, Item.ItemTier tier, Item.ItemModifier modifier) {
         ItemStack item = getBaseItem(type, tier);
-        ArrayList<Item.AttributeType> attributeTypes = getRandomAttributes(tier, new Random().nextInt(6));
+        ArrayList<Item.AttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(tier.getAttributeRange()));
         ItemMeta meta = item.getItemMeta();
         List<String> list = new NameGenerator().next();
-        meta.setDisplayName(list.get(0) + " " + list.get(1) + " " + list.get(2));
+        meta.setDisplayName(ChatColor.GRAY + "[" + ChatColor.WHITE + "T" + tier.getId() + ChatColor.GRAY + "]" + " " + list.get(0) + " " + list.get(1) + " " + list.get(2));
         List<String> itemLore = new ArrayList<>();
         itemLore.add(ChatColor.WHITE + "Held in Main Hand");
-        for (Item.AttributeType aTypes : attributeTypes) {
-            itemLore.add(ChatColor.GREEN + "+" + ChatColor.WHITE + new DamageMeta().next(tier, modifier, aTypes) + " " + aTypes.getName());
+
+        HashMap<Item.AttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
+
+        for (Item.AttributeType aType : attributeTypes) {
+            int i = new DamageMeta().next(tier, modifier, aType);
+            attributeTypeIntegerHashMap.put(aType, i);
+            itemLore.add(ChatColor.GREEN + "+" + ChatColor.WHITE + i + " " + aType.getName());
         }
         itemLore.add(ChatColor.WHITE + "Requires Level " + String.valueOf(tier.getRangeValues()[0]));
         itemLore.add(ChatColor.WHITE + "Item level NILL");
@@ -36,32 +58,83 @@ public class ItemGenerator {
         itemLore.add("");
         meta.setLore(itemLore);
         item.setItemMeta(meta);
-        return item;
+
+        //Time for some NMS on the item, (Backend attributes for reading).
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+
+        /*
+        The line below removes the weapons attributes.
+        E.g. Diamond Sword says, "+7 Attack Damage"
+         */
+        tag.set("AttributeModifiers", new NBTTagList());
+
+        for (Map.Entry<Item.AttributeType, Integer> entry : attributeTypeIntegerHashMap.entrySet()) {
+            tag.set(entry.getKey().getNBTName(), new NBTTagInt(entry.getValue()));
+        }
+
+        nmsStack.setTag(tag);
+
+        return CraftItemStack.asBukkitCopy(nmsStack);
     }
 
+    /**
+     * Gets a random ItemType
+     *
+     * @return
+     * @since 1.0
+     */
     public Item.ItemType getRandomItemType() {
-        return Item.ItemType.getById(new Random().nextInt(Item.ItemType.values().length));
+        return Item.ItemType.getById(new Random().nextInt(Item.ItemType.values().length - 0) + 0);
     }
 
+    /**
+     * Gets a radnom ItemTier
+     *
+     * @return
+     * @since 1.0
+     */
     public Item.ItemTier getRandomItemTier() {
-        return Item.ItemTier.getById(new Random().nextInt(Item.ItemTier.values().length));
+        return Item.ItemTier.getById(new Random().nextInt(Item.ItemTier.values().length - 0) + 0);
     }
 
+    /**
+     * Gets a random ItemModifier
+     *
+     * @return
+     * @since 1.0
+     */
     public Item.ItemModifier getRandomItemModifier() {
-        return Item.ItemModifier.getById(new Random().nextInt(Item.ItemModifier.values().length));
+        return Item.ItemModifier.getById(new Random().nextInt(Item.ItemModifier.values().length - 0) + 0);
     }
 
-    ArrayList<Item.AttributeType> getRandomAttributes(Item.ItemTier tier, int amountOfAttributes) {
+    /**
+     * Returns a list of itemAttributes based on the param.
+     *
+     * @param amountOfAttributes
+     * @return
+     * @since 1.0
+     */
+    ArrayList<Item.AttributeType> getRandomAttributes(int amountOfAttributes) {
         ArrayList<Item.AttributeType> attributeList = new ArrayList<>();
         attributeList.add(Item.AttributeType.DAMAGE);
         for (int i = 0; i < amountOfAttributes; i++) {
-            if (!attributeList.contains(Item.AttributeType.getById(amountOfAttributes))) {
-                attributeList.add(Item.AttributeType.getById(new Random().nextInt(Item.AttributeType.values().length)));
+            int random = new Random().nextInt(Item.AttributeType.values().length);
+            if (!attributeList.contains(Item.AttributeType.getById(random))) {
+                attributeList.add(Item.AttributeType.getById(random));
             }
         }
         return attributeList;
     }
 
+    /**
+     * Returns ItemStack Material based on item type and tier.
+     *
+     * @param type
+     * @param tier
+     * @return
+     * @since 1.0
+     */
     ItemStack getBaseItem(Item.ItemType type, Item.ItemTier tier) {
         switch (type) {
             case SWORD:

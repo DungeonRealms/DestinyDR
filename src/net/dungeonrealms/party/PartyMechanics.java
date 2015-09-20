@@ -2,6 +2,7 @@ package net.dungeonrealms.party;
 
 import net.dungeonrealms.DungeonRealms;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.scoreboard.*;
 
 import java.util.ArrayList;
@@ -110,16 +111,13 @@ public class PartyMechanics {
         Scoreboard board = manager.getNewScoreboard();
         Objective objective = board.registerNewObjective("test", "dummy");
         objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-        objective.setDisplayName("Party");
-
-        int i = 0;
+        objective.setDisplayName(ChatColor.RED.toString() + ChatColor.BOLD.toString() + Bukkit.getPlayer(party.getOwner()).getDisplayName() + "'s Party");
         for (UUID uuid : party.getMembers()) {
-            Score score = objective.getScore(Bukkit.getPlayer(uuid).getName() + " - " + Bukkit.getPlayer(uuid).getHealth());
-            score.setScore(i);
-            i++;
+            Score score = objective.getScore(ChatColor.BOLD.toString() + Bukkit.getPlayer(uuid).getName());
+            score.setScore((int) Bukkit.getPlayer(uuid).getHealth());
         }
-        Score score = objective.getScore(Bukkit.getPlayer(party.getOwner()).getName() + " - " + Bukkit.getPlayer(party.getOwner()).getHealth());
-        score.setScore(i);
+        Score score = objective.getScore(ChatColor.BOLD.toString() + Bukkit.getPlayer(party.getOwner()).getName());
+        score.setScore((int) Bukkit.getPlayer(party.getOwner()).getHealth());
         Bukkit.getPlayer(party.getOwner()).setScoreboard(board);
 
         for (UUID uuid : party.getMembers()) {

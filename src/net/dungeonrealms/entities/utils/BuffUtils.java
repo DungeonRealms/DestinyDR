@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -32,6 +33,6 @@ public class BuffUtils {
         world.addEntity(enderCrystal, CreatureSpawnEvent.SpawnReason.CUSTOM);
         enderCrystal.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
         player.playSound(player.getLocation(), Sound.ENDERDRAGON_DEATH, 1F, 1F);
-        MetadataUtils.registerBuffMetadata(enderCrystal, PotionEffectType.BLINDNESS, 10, 20 * 6);
+        MetadataUtils.registerBuffMetadata(enderCrystal, PotionEffectType.getById(new Random().nextInt(PotionEffectType.values().length)), 10, 600);
     }
 }

@@ -42,20 +42,22 @@ public class Item {
     }
 
     public enum ItemTier {
-        TIER_1(1, new Integer[]{1, 10}, ItemMaterial.WOOD),
-        TIER_2(2, new Integer[]{10, 20}, ItemMaterial.STONE),
-        TIER_3(3, new Integer[]{20, 30}, ItemMaterial.IRON),
-        TIER_4(4, new Integer[]{30, 40}, ItemMaterial.DIAMOND),
-        TIER_5(5, new Integer[]{40, 50}, ItemMaterial.GOLD),;
+        TIER_1(0, new Integer[]{1, 10}, ItemMaterial.WOOD, 3),
+        TIER_2(1, new Integer[]{10, 20}, ItemMaterial.STONE,4),
+        TIER_3(2, new Integer[]{20, 30}, ItemMaterial.IRON,6),
+        TIER_4(3, new Integer[]{30, 40}, ItemMaterial.DIAMOND,8),
+        TIER_5(4, new Integer[]{40, 50}, ItemMaterial.GOLD,13),;
 
         private int id;
         private Integer[] rangeValues;
         private ItemMaterial material;
+        private int attributeRange;
 
-        ItemTier(int id, Integer[] rangeValues, ItemMaterial material) {
+        ItemTier(int id, Integer[] rangeValues, ItemMaterial material, int attributeRange) {
             this.id = id;
             this.rangeValues = rangeValues;
             this.material = material;
+            this.attributeRange = attributeRange;
         }
 
         public int getId() {
@@ -68,6 +70,10 @@ public class Item {
 
         public ItemMaterial getMaterial() {
             return material;
+        }
+
+        public int getAttributeRange() {
+            return attributeRange;
         }
 
         public static ItemTier getById(int id) {
@@ -115,27 +121,29 @@ public class Item {
     }
 
     public enum AttributeType {
-        DAMAGE(0, "Damage"),
-        PURE_DAMAGE(1, "Pure Damage"),
-        CRITICAL_HIT(2, "Critical Hit"),
-        ARMOR_PENETRATION(3, "ArmorPenetration"),
-        VS_MONSTERS(4, "VS Monsters"),
-        VS_PLAYER(5, "VS Players"),
-        BLIND(6, "Blind"),
-        KNOCK_BACK(7, "KnockBack"),
-        LIFE_STEAL(8, "LifeSteal"),
-        VITALITY(9, "Vitality"),
-        DEXTERITY(10, "Dexterity"),
-        ICE_DAMAGE(11, "IceDamage"),
-        FIRE_DAMAGE(12, "FireDamage"),
-        ACCURACY(13, "Accuracy"),;
+        DAMAGE(0, "Damage", "damage"),
+        PURE_DAMAGE(1, "Pure Damage", "pureDamage"),
+        CRITICAL_HIT(2, "Critical Hit", "criticalHit"),
+        ARMOR_PENETRATION(3, "ArmorPenetration", "armorPenetration"),
+        VS_MONSTERS(4, "VS Monsters", "vsMonsters"),
+        VS_PLAYER(5, "VS Players", "vsPlayers"),
+        BLIND(6, "Blind", "blind"),
+        KNOCK_BACK(7, "KnockBack", "knockback"),
+        LIFE_STEAL(8, "LifeSteal", "lifesteal"),
+        VITALITY(9, "Vitality", "vitality"),
+        DEXTERITY(10, "Dexterity", "deterity"),
+        ICE_DAMAGE(11, "IceDamage", "iceDamage"),
+        FIRE_DAMAGE(12, "FireDamage", "fireDamage"),
+        ACCURACY(13, "Accuracy", "accuracy"),;
 
         private int id;
         private String name;
+        private String NBTName;
 
-        AttributeType(int id, String name) {
+        AttributeType(int id, String name, String NBTName) {
             this.id = id;
             this.name = name;
+            this.NBTName = NBTName;
         }
 
         public int getId() {
@@ -144,6 +152,10 @@ public class Item {
 
         public String getName() {
             return name;
+        }
+
+        public String getNBTName() {
+            return NBTName;
         }
 
         public static AttributeType getById(int id) {
