@@ -2,6 +2,7 @@ package net.dungeonrealms.listeners;
 
 import java.util.Arrays;
 
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -54,12 +55,14 @@ public class InventoryListener implements Listener {
 			e.setCancelled(true);
 			return;
 			} else if (slot == 30) {
+			e.setCancelled(true);
 			wager.cycleArmor();
 			} else if (slot == 32) {
+			e.setCancelled(true);
 			wager.cycleWeapon();
 			} else if (slot == 0) {
 			if (wager.isLeft(p)) {
-				//Left clicked
+				// Left clicked
 				e.setCancelled(true);
 				if (CraftItemStack.asNMSCopy(stack).getTag().getString("state").equalsIgnoreCase("notready")) {
 					ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
@@ -69,8 +72,10 @@ public class InventoryListener implements Listener {
 					nbt.setString("state", "ready");
 					nms.setTag(nbt);
 					wager.setItemSlot(0, CraftItemStack.asBukkitCopy(nms));
-					if(CraftItemStack.asNMSCopy(e.getInventory().getItem(8)).getTag().getString("state").equalsIgnoreCase("ready"))
+					if (CraftItemStack.asNMSCopy(e.getInventory().getItem(8)).getTag().getString("state")
+						.equalsIgnoreCase("ready")) {
 						wager.startDuel();
+					}
 				} else {
 					ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
 						ChatColor.YELLOW.toString() + "Not Ready", null, DyeColor.GRAY.getDyeData());
@@ -86,7 +91,7 @@ public class InventoryListener implements Listener {
 			}
 			} else if (slot == 8) {
 			if (!wager.isLeft(p)) {
-				//Right Clicked
+				// Right Clicked
 				e.setCancelled(true);
 				if (CraftItemStack.asNMSCopy(stack).getTag().getString("state").equalsIgnoreCase("notready")) {
 					ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
@@ -96,8 +101,10 @@ public class InventoryListener implements Listener {
 					nbt.setString("state", "ready");
 					nms.setTag(nbt);
 					wager.setItemSlot(8, CraftItemStack.asBukkitCopy(nms));
-					if(CraftItemStack.asNMSCopy(e.getInventory().getItem(0)).getTag().getString("state").equalsIgnoreCase("ready"))
+					if (CraftItemStack.asNMSCopy(e.getInventory().getItem(0)).getTag().getString("state")
+						.equalsIgnoreCase("ready")) {
 						wager.startDuel();
+					}
 				} else {
 					ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
 						ChatColor.YELLOW.toString() + "Not Ready", null, DyeColor.GRAY.getDyeData());
@@ -133,10 +140,17 @@ public class InventoryListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onDuelWagerClosed(InventoryCloseEvent event) {
 		if (event.getInventory().getTitle().contains("vs.")) {
+
 			DuelWager wager = DuelMechanics.getWager((Player) event.getPlayer());
-			wager.p1.closeInventory();
-			wager.p2.closeInventory();
-			DuelMechanics.removeWager(wager);
+			if (wager != null) {
+			if (!wager.completed) {
+				if (wager.p1.getOpenInventory() != null && Bukkit.getPlayer(wager.p1.getUniqueId()) != null)
+					wager.p1.closeInventory();
+				if (wager.p2.getOpenInventory() != null && Bukkit.getPlayer(wager.p2.getUniqueId()) != null)
+					wager.p2.closeInventory();
+				DuelMechanics.removeWager(wager);
+			}
+			}
 		}
 	}
 }

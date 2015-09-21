@@ -24,7 +24,8 @@ public class DuelWager {
 	public ItemTier armorTier;
 	public ItemTier weaponTier;
 	public ArrayList<ItemStack> winningItems = new ArrayList<>();
-
+	public boolean completed = false;
+	
 	public DuelWager(Player p1, Player p2) {
 		this.p1 = p1;
 		this.p2 = p2;
@@ -50,7 +51,7 @@ public class DuelWager {
 		for (int i = 0; i < list.length; i++) {
 			if (list[i] == weaponTier) {
 			j = i + 1;
-			if (j > list.length) {
+			if (j >= list.length) {
 				j = 0;
 				break;
 			}
@@ -88,7 +89,7 @@ public class DuelWager {
 		for (int i = 0; i < list.length; i++) {
 			if (list[i] == armorTier) {
 			j = i + 1;
-			if (j > list.length) {
+			if (j >= list.length) {
 				j = 0;
 				break;
 			}
@@ -121,7 +122,9 @@ public class DuelWager {
 	 * 
 	 */
 	public void startDuel() {
-		DuelMechanics.cancelRequestedDuel(p1);
+		completed = true;
+		p1.closeInventory();
+		p2.closeInventory();
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(new TimerTask() {
 			int time = 10;
@@ -140,7 +143,7 @@ public class DuelWager {
 			}
 			}
 
-		}, 0, 20l);
+		}, 0, 10 * 1000l);
 
 	}
 

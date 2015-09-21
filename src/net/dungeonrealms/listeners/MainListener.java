@@ -161,7 +161,7 @@ public class MainListener implements Listener {
 				return;
 			}
 			if (DuelMechanics.isPendingDuel(p1)) {
-				if (DuelMechanics.isDuelPartner(p1, p2)) {
+				if (DuelMechanics.isPendingDuelPartner(p1, p2)) {
 					DuelMechanics.launchWager(p1,p2);
 //					DuelMechanics.setupDuel(p1, p2);
 				} else {
