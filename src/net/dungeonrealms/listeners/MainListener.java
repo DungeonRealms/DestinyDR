@@ -144,12 +144,12 @@ public class MainListener implements Listener {
 		if (e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
 			Player p1 = (Player) e.getDamager();
 			Player p2 = (Player) e.getEntity();
-			if (DuelMechanics.isDueling(p2)) {
+			if (DuelMechanics.isDueling(p2.getUniqueId())) {
 			// If player they're punching is their duel partner
-			if (DuelMechanics.isDuelPartner(p1, p2)) {
+			if (DuelMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
 				if (p2.getHealth() - e.getDamage() <= 0) {
 					// if they're gonna die this hit end duel
-					DuelWager wager = DuelMechanics.getWager(p1);
+					DuelWager wager = DuelMechanics.getWager(p1.getUniqueId());
 					if (wager != null) {
 						e.setCancelled(true);
 						p2.setHealth(0.5);
@@ -160,19 +160,19 @@ public class MainListener implements Listener {
 				p1.sendMessage("That's not you're dueling partner!");
 			} else {
 			e.setCancelled(true);
-			if (DuelMechanics.isOnCooldown(p1)) {
+			if (DuelMechanics.isOnCooldown(p1.getUniqueId())) {
 				p1.sendMessage(ChatColor.RED + "You must wait to send another Duel Request");
 				return;
 			}
-			if (DuelMechanics.isPendingDuel(p1)) {
-				if (DuelMechanics.isPendingDuelPartner(p1, p2)) {
+			if (DuelMechanics.isPendingDuel(p1.getUniqueId())) {
+				if (DuelMechanics.isPendingDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
 					DuelMechanics.launchWager(p1, p2);
 					// Remove from pending
-					DuelMechanics.cancelRequestedDuel(p1);
+					DuelMechanics.cancelRequestedDuel(p1.getUniqueId());
 				} else {
-					if (!DuelMechanics.isOnCooldown(p1)) {
-						DuelMechanics.cancelRequestedDuel(p1);
-						DuelMechanics.sendDuelRequest(p1, p2);
+					if (!DuelMechanics.isOnCooldown(p1.getUniqueId())) {
+						DuelMechanics.cancelRequestedDuel(p1.getUniqueId());
+						DuelMechanics.sendDuelRequest(p1.getUniqueId(), p2.getUniqueId());
 					} else {
 						p1.sendMessage(ChatColor.RED + "You must wait to send another Duel Request");
 						return;
@@ -180,9 +180,9 @@ public class MainListener implements Listener {
 
 				}
 			} else {
-				if (DuelMechanics.isPendingDuel(p2))
-					DuelMechanics.cancelRequestedDuel(p2);
-				DuelMechanics.sendDuelRequest(p1, p2);
+				if (DuelMechanics.isPendingDuel(p2.getUniqueId()))
+					DuelMechanics.cancelRequestedDuel(p2.getUniqueId());
+				DuelMechanics.sendDuelRequest(p1.getUniqueId(), p2.getUniqueId());
 			}
 			}
 		}

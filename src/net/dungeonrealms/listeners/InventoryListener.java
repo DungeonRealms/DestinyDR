@@ -49,7 +49,7 @@ public class InventoryListener implements Listener {
 	public void onDuelWagerClick(InventoryClickEvent e) {
 		if (e.getInventory().getTitle().contains("vs.")) {
 			Player p = (Player) e.getWhoClicked();
-			DuelWager wager = DuelMechanics.getWager(p);
+			DuelWager wager = DuelMechanics.getWager(p.getUniqueId());
 			int slot = e.getRawSlot();
 			ItemStack stack = e.getCurrentItem();
 			if (stack == null)
@@ -157,8 +157,8 @@ public class InventoryListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onDuelWagerClosed(InventoryCloseEvent event) {
 		if (event.getInventory().getTitle().contains("vs.")) {
-
-			DuelWager wager = DuelMechanics.getWager((Player) event.getPlayer());
+			Player p = (Player) event.getPlayer();
+			DuelWager wager = DuelMechanics.getWager(p.getUniqueId());
 			if (wager != null) {
 			if (!wager.completed) {
 				DuelMechanics.removeWager(wager);

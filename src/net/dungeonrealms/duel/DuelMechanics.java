@@ -36,31 +36,32 @@ public class DuelMechanics {
 	 * @param p1
 	 * @param p2
 	 */
-	public static void sendDuelRequest(Player p1, Player p2) {
-		PENDING_DUELS.put(p1.getUniqueId(), p2.getUniqueId());
-		PENDING_DUELS.put(p2.getUniqueId(), p1.getUniqueId());
-		cooldown.add(p1.getUniqueId());
+	public static void sendDuelRequest(UUID p1, UUID p2) {
+		PENDING_DUELS.put(p1, p2);
+		PENDING_DUELS.put(p2, p1);
+		cooldown.add(p1);
 		// REMOVE PLAYER FROM COOLDOWN AFTER 10 SECONDS
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-			cooldown.remove(p1.getUniqueId());
+			cooldown.remove(p1);
 		} , 5 * 20L);
-
-		p1.sendMessage(ChatColor.YELLOW.toString() + "Duel Request has been sent to " + p2.getDisplayName()
+		Player player1 = Bukkit.getPlayer(p1);
+		Player player2 = Bukkit.getPlayer(p2);
+		player1.sendMessage(ChatColor.YELLOW.toString() + "Duel Request has been sent to " + player2.getDisplayName()
 			+ " they have 10 seconds to respond to your duel request!");
-		p2.sendMessage(ChatColor.YELLOW.toString() + "Duel request received from " + p1.getDisplayName()
+		player2.sendMessage(ChatColor.YELLOW.toString() + "Duel request received from " + player1.getDisplayName()
 			+ " hit them back to accept");
 	}
 
-	public static boolean isPendingDuel(Player p) {
-		return PENDING_DUELS.containsKey(p.getUniqueId());
+	public static boolean isPendingDuel(UUID p) {
+		return PENDING_DUELS.containsKey(p);
 	}
 
-	public static boolean isDueling(Player p) {
-		return DUELS.containsKey(p.getUniqueId());
+	public static boolean isDueling(UUID p) {
+		return DUELS.containsKey(p);
 	}
 
-	public static void cancelRequestedDuel(Player p) {
-		UUID uuid1 = PENDING_DUELS.get(p.getUniqueId());
+	public static void cancelRequestedDuel(UUID p) {
+		UUID uuid1 = PENDING_DUELS.get(p);
 		UUID uuid2 = PENDING_DUELS.get(uuid1);
 		PENDING_DUELS.remove(uuid1);
 		PENDING_DUELS.remove(uuid2);
@@ -73,19 +74,19 @@ public class DuelMechanics {
 	 * @param p2
 	 * @return
 	 */
-	public static boolean isDuelPartner(Player p1, Player p2) {
-		return DUELS.get(p1.getUniqueId()) == p2.getUniqueId();
+	public static boolean isDuelPartner(UUID p1, UUID p2) {
+		return DUELS.get(p1) == p2;
 	}
 
-	public static boolean isPendingDuelPartner(Player p1, Player p2) {
-		return PENDING_DUELS.get(p1.getUniqueId()) == p2.getUniqueId();
+	public static boolean isPendingDuelPartner(UUID p1, UUID p2) {
+		return PENDING_DUELS.get(p1) == p2;
 	}
 
 	/**
 	 * @return
 	 */
-	public static boolean isOnCooldown(Player p1) {
-		return cooldown.contains(p1.getUniqueId());
+	public static boolean isOnCooldown(UUID p1) {
+		return cooldown.contains(p1);
 	}
 
 	/**
@@ -137,10 +138,10 @@ public class DuelMechanics {
 	 * @param player
 	 * @return
 	 */
-	public static DuelWager getWager(Player player) {
+	public static DuelWager getWager(UUID uuid) {
 		for (int i = 0; i < WAGERS.size(); i++) {
 			DuelWager current = WAGERS.get(i);
-			if (current.p1.getUniqueId() == player.getUniqueId() || current.p2.getUniqueId() == player.getUniqueId())
+			if (current.p1.getUniqueId() ==uuid || current.p2.getUniqueId() == uuid)
 			return current;
 		}
 		return null;

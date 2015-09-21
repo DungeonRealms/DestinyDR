@@ -82,7 +82,7 @@ public class BankListener implements Listener {
                         if (e.getCursor().getType() == Material.EMERALD) {
                             if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                                 Utils.log.info("Added Gem");
-                                BankMechanics.addGemsToPlayer(player, e.getCursor().getAmount());
+                                BankMechanics.addGemsToPlayer(player.getUniqueId(), e.getCursor().getAmount());
                                 e.setCursor(null);
                                 ItemStack bankItem = new ItemStack(Material.EMERALD);
                                 ItemMeta meta = bankItem.getItemMeta();
@@ -181,7 +181,7 @@ public class BankListener implements Listener {
                         inventory.remove(stack);
                         inventory.getItem(8).getItemMeta()
                                 .setDisplayName("Withdraw " + getPlayerGems(uuid) + stack.getAmount() + " Gem(s)");
-                        BankMechanics.addGemsToPlayer(Bukkit.getPlayer(uuid), stack.getAmount());
+                        BankMechanics.addGemsToPlayer(uuid, stack.getAmount());
                     }
                 }
             }
