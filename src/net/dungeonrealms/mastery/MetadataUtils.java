@@ -3,6 +3,8 @@ package net.dungeonrealms.mastery;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.entity.Projectile;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffectType;
 
@@ -59,5 +61,30 @@ public class MetadataUtils {
         entity.getBukkitEntity().setMetadata("effectType", new FixedMetadataValue(DungeonRealms.getInstance(), potionEffectType.getName()));
         entity.getBukkitEntity().setMetadata("radius", new FixedMetadataValue(DungeonRealms.getInstance(), radius));
         entity.getBukkitEntity().setMetadata("duration", new FixedMetadataValue(DungeonRealms.getInstance(), duration));
+    }
+
+    /**
+     * This method is used add metadata to projectiles based on their firing weapons nbt data.
+     *
+     * @param tag
+     * @param projectile
+     * @since 1.0
+     */
+    public static void registerProjectileMetadata(NBTTagCompound tag, Projectile projectile) {
+        projectile.setMetadata("damage", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getDouble("damage")));
+        projectile.setMetadata("vsPlayers", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("vsPlayers")));
+        projectile.setMetadata("vsMonsters", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("vsMonsters")));
+        projectile.setMetadata("fireDamage", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("fireDamage")));
+        projectile.setMetadata("iceDamage", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("iceDamage")));
+        projectile.setMetadata("poisonDamage", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("poisonDamage")));
+        projectile.setMetadata("criticalHit", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("criticalHit")));
+        projectile.setMetadata("lifesteal", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("lifesteal")));
+        projectile.setMetadata("blind", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("blind")));
+        projectile.setMetadata("pureDamage", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("pureDamage")));
+        projectile.setMetadata("armorPenetration", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("armorPenetration")));
+        projectile.setMetadata("vitality", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("vitality")));
+        projectile.setMetadata("accuracy", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("accuracy")));
+        projectile.setMetadata("deterity", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("deterity")));
+        projectile.setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("tier")));
     }
 }

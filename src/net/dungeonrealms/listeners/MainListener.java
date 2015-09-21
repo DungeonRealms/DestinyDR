@@ -1,7 +1,15 @@
 package net.dungeonrealms.listeners;
 
-import java.util.Map;
-
+import com.connorlinfoot.bountifulapi.BountifulAPI;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.duel.DuelMechanics;
+import net.dungeonrealms.duel.DuelWager;
+import net.dungeonrealms.entities.utils.EntityAPI;
+import net.dungeonrealms.mechanics.PlayerManager;
+import net.dungeonrealms.mechanics.WebAPI;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.teleportation.TeleportAPI;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,17 +22,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 
-import com.connorlinfoot.bountifulapi.BountifulAPI;
-
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.duel.DuelMechanics;
-import net.dungeonrealms.duel.DuelWager;
-import net.dungeonrealms.entities.utils.EntityAPI;
-import net.dungeonrealms.mechanics.PlayerManager;
-import net.dungeonrealms.mechanics.WebAPI;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.teleportation.TeleportAPI;
-import net.md_5.bungee.api.ChatColor;
+import java.util.Map;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -139,7 +137,7 @@ public class MainListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void playerPunchPlayer(EntityDamageByEntityEvent e) {
 		if (e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
 			Player p1 = (Player) e.getDamager();

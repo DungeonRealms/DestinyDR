@@ -3,8 +3,10 @@ package net.dungeonrealms.listeners;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.items.DamageAPI;
+import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.NMSUtils;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Arrow;
@@ -14,11 +16,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -61,7 +60,7 @@ public class DamageListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onPlayerMeleeHitEntity(EntityDamageByEntityEvent event) {
         if ((!(event.getDamager() instanceof Player)) && (event.getDamager().getType() != EntityType.ARROW)) return;
         //Make sure the player is HOLDING something!
@@ -80,10 +79,43 @@ public class DamageListener implements Listener {
         } else {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (attackingArrow.getShooter() != null && attackingArrow.getShooter() instanceof Player) {
-                //TODO: GET DATA FROM ARROW OBJECT AFTER WE APPLY IT IN PROJECTILE FIRE EVENT
+                finalDamage = DamageAPI.calculateProjectileDamage((Player)attackingArrow.getShooter(), event.getEntity(), attackingArrow);
             }
         }
         event.setDamage(finalDamage);
+    }
+
+    /**
+     * Listen for the players weapon hitting an entity
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
+    public void onPlayerMeleeHitEntityREDUCETEST(EntityDamageByEntityEvent event) {
+        if ((!(event.getDamager() instanceof Player)) && (event.getDamager().getType() != EntityType.ARROW)) return;
+        Bukkit.broadcastMessage("Previous Damage " + String.valueOf(event.getDamage()));
+
+        event.setDamage(event.getDamage() / 2);
+        Bukkit.broadcastMessage("Armor Reduced Damage " + String.valueOf(event.getDamage()));
+    }
+
+    /**
+     * Listen for the players weapon hitting an entity
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
+    public void onPlayerFireProjectile(ProjectileLaunchEvent event) {
+        if (!(event.getEntity().getShooter() instanceof Player) &&(event.getEntityType() != EntityType.ARROW)) return;
+        Player shooter = (Player) event.getEntity().getShooter();
+        if (shooter.getItemInHand() == null) return;
+        //Check if the item has NBT, all our custom weapons will have NBT.
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(shooter.getItemInHand()));
+        if (nmsItem == null || nmsItem.getTag() == null) return;
+        //Get the NBT of the item the player is holding.
+        NBTTagCompound tag = nmsItem.getTag();
+        MetadataUtils.registerProjectileMetadata(tag, event.getEntity());
+        Bukkit.broadcastMessage("Projectile Meta Registered");
     }
 
     /**
