@@ -1,7 +1,14 @@
 package net.dungeonrealms.listeners;
 
-import java.util.Map;
-
+import com.connorlinfoot.bountifulapi.BountifulAPI;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.duel.DuelMechanics;
+import net.dungeonrealms.entities.utils.EntityAPI;
+import net.dungeonrealms.mechanics.PlayerManager;
+import net.dungeonrealms.mechanics.WebAPI;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.teleportation.TeleportAPI;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,16 +21,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 
-import com.connorlinfoot.bountifulapi.BountifulAPI;
-
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.duel.DuelMechanics;
-import net.dungeonrealms.entities.utils.EntityAPI;
-import net.dungeonrealms.mechanics.PlayerManager;
-import net.dungeonrealms.mechanics.WebAPI;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.teleportation.TeleportAPI;
-import net.md_5.bungee.api.ChatColor;
+import java.util.Map;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -143,31 +141,31 @@ public class MainListener implements Listener {
 		if (e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
 			Player p1 = (Player) e.getDamager();
 			Player p2 = (Player) e.getEntity();
-			if (DuelMechanics.isDueling(p2)) {
+			if (DuelMechanics.isDueling(p2.getUniqueId())) {
 			// If player they're punching is their duel partner
-			if (DuelMechanics.isDuelPartner(p1, p2)) {
+			if (DuelMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
 				if (p2.getHealth() - e.getDamage() <= 0) {
 					// if they're gonna die this hit end duel
 					e.setCancelled(true);
 					p2.setHealth(0.5);
-					DuelMechanics.endDuel(p1, p2);
+					DuelMechanics.endDuel(p1.getUniqueId(), p2.getUniqueId());
 				}
 			} else
 				p1.sendMessage("That's not you're dueling partner!");
 			} else {
 			e.setCancelled(true);
-			if (DuelMechanics.isOnCooldown(p1)) {
+			if (DuelMechanics.isOnCooldown(p1.getUniqueId())) {
 				p1.sendMessage(ChatColor.RED + "You must wait to send another Duel Request");
 				return;
 			}
-			if (DuelMechanics.isPendingDuel(p1)) {
-				if (DuelMechanics.isPendingDuelPartner(p1, p2)) {
-					DuelMechanics.launchWager(p1,p2);
+			if (DuelMechanics.isPendingDuel(p1.getUniqueId())) {
+				if (DuelMechanics.isPendingDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
+					DuelMechanics.launchWager(p1.getUniqueId(),p2.getUniqueId());
 //					DuelMechanics.setupDuel(p1, p2);
 				} else {
-					if (!DuelMechanics.isOnCooldown(p1)) {
-						DuelMechanics.cancelRequestedDuel(p1);
-						DuelMechanics.sendDuelRequest(p1, p2);
+					if (!DuelMechanics.isOnCooldown(p1.getUniqueId())) {
+						DuelMechanics.cancelRequestedDuel(p1.getUniqueId());
+						DuelMechanics.sendDuelRequest(p1.getUniqueId(), p2.getUniqueId());
 					} else {
 						p1.sendMessage(ChatColor.RED + "You must wait to send another Duel Request");
 						return;
@@ -175,9 +173,9 @@ public class MainListener implements Listener {
 
 				}
 			} else {
-				if (DuelMechanics.isPendingDuel(p2))
-					DuelMechanics.cancelRequestedDuel(p2);
-				DuelMechanics.sendDuelRequest(p1, p2);
+				if (DuelMechanics.isPendingDuel(p2.getUniqueId()))
+					DuelMechanics.cancelRequestedDuel(p2.getUniqueId());
+				DuelMechanics.sendDuelRequest(p1.getUniqueId(), p2.getUniqueId());
 			}
 			}
 		}

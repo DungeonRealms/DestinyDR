@@ -3,43 +3,43 @@
  */
 package net.dungeonrealms.duel;
 
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-
 import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.UUID;
 
 /**
  * Created by Chase on Sep 20, 2015
  */
 public class DuelWager {
-	public Player p1;
-	public Player p2;
+	public UUID p1UUID;
+	public UUID p2UUID;
 	public ItemTier armorTier;
 	public ItemTier weaponTier;
 	public ArrayList<ItemStack> winningItems = new ArrayList<>();
 	public boolean completed = false;
 	
-	public DuelWager(Player p1, Player p2) {
-		this.p1 = p1;
-		this.p2 = p2;
+	public DuelWager(UUID p1UUID, UUID p2UUID) {
+		this.p1UUID = p1UUID;
+		this.p2UUID = p2UUID;
 		armorTier = ItemTier.TIER_5;
 		weaponTier = ItemTier.TIER_5;
 	}
 
 	public void setItemSlot(int slot, ItemStack stack) {
-		p1.getOpenInventory().setItem(slot, stack);
-		p2.getOpenInventory().setItem(slot, stack);
+		Bukkit.getPlayer(p1UUID).getOpenInventory().setItem(slot, stack);
+		Bukkit.getPlayer(p2UUID).getOpenInventory().setItem(slot, stack);
 	}
 
-	public boolean isLeft(Player p) {
-		return (p.getUniqueId() == p1.getUniqueId());
+	public boolean isLeft(UUID uuid) {
+		return (uuid == p1UUID);
 	}
 
 	/**
@@ -123,8 +123,8 @@ public class DuelWager {
 	 */
 	public void startDuel() {
 		completed = true;
-		p1.closeInventory();
-		p2.closeInventory();
+		Bukkit.getPlayer(p1UUID).closeInventory();
+		Bukkit.getPlayer(p2UUID).closeInventory();
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(new TimerTask() {
 			int time = 10;
@@ -132,13 +132,13 @@ public class DuelWager {
 			@Override
 			public void run() {
 			time--;
-			p1.sendMessage(ChatColor.GREEN.toString() + time + ChatColor.YELLOW.toString()
+				Bukkit.getPlayer(p2UUID).sendMessage(ChatColor.GREEN.toString() + time + ChatColor.YELLOW.toString()
 					+ " seconds until the battle begins!");
 			if (time == 0) {
-				p1.sendMessage(ChatColor.GREEN + "Duel started with " + p2.getDisplayName());
-				p2.sendMessage(ChatColor.GREEN + "Duel started with " + p1.getDisplayName());
-				DuelMechanics.DUELS.put(p1.getUniqueId(), p2.getUniqueId());
-				DuelMechanics.DUELS.put(p2.getUniqueId(), p1.getUniqueId());
+				Bukkit.getPlayer(p1UUID).sendMessage(ChatColor.GREEN + "Duel started with " + Bukkit.getPlayer(p2UUID).getDisplayName());
+				Bukkit.getPlayer(p2UUID).sendMessage(ChatColor.GREEN + "Duel started with " + Bukkit.getPlayer(p1UUID).getDisplayName());
+				DuelMechanics.DUELS.put(p1UUID, p2UUID);
+				DuelMechanics.DUELS.put(p2UUID, p1UUID);
 				this.cancel();
 			}
 			}

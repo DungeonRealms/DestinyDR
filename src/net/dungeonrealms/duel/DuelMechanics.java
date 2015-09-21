@@ -3,24 +3,20 @@
  */
 package net.dungeonrealms.duel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Created by Chase on Sep 20, 2015
@@ -33,34 +29,32 @@ public class DuelMechanics {
 
 	// ALL PLAYERS IN A DUEL
 	/**
-	 * @param p1
-	 * @param p2
+	 * @param p1UUID
+	 * @param p2UUID
 	 */
-	public static void sendDuelRequest(Player p1, Player p2) {
-		PENDING_DUELS.put(p1.getUniqueId(), p2.getUniqueId());
-		PENDING_DUELS.put(p2.getUniqueId(), p1.getUniqueId());
-		cooldown.add(p1.getUniqueId());
+	public static void sendDuelRequest(UUID p1UUID, UUID p2UUID) {
+		PENDING_DUELS.put(p1UUID, p2UUID);
+		PENDING_DUELS.put(p2UUID, p1UUID);
+		cooldown.add(p1UUID);
 		// REMOVE PLAYER FROM COOLDOWN AFTER 10 SECONDS
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-			cooldown.remove(p1.getUniqueId());
-		} , 5 * 20L);
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> cooldown.remove(p1UUID), 5 * 20L);
 
-		p1.sendMessage(ChatColor.YELLOW.toString() + "Duel Request has been sent to " + p2.getDisplayName()
-			+ " they have 10 seconds to respond to your duel request!");
-		p2.sendMessage(ChatColor.YELLOW.toString() + "Duel request received from " + p1.getDisplayName()
-			+ " hit them back to accept");
+		Bukkit.getPlayer(p1UUID).sendMessage(ChatColor.YELLOW.toString() + "Duel Request has been sent to " + Bukkit.getPlayer(p2UUID).getDisplayName()
+				+ " they have 10 seconds to respond to your duel request!");
+		Bukkit.getPlayer(p2UUID).sendMessage(ChatColor.YELLOW.toString() + "Duel request received from " + Bukkit.getPlayer(p1UUID).getDisplayName()
+				+ " hit them back to accept");
 	}
 
-	public static boolean isPendingDuel(Player p) {
-		return PENDING_DUELS.containsKey(p.getUniqueId());
+	public static boolean isPendingDuel(UUID uuid) {
+		return PENDING_DUELS.containsKey(uuid);
 	}
 
-	public static boolean isDueling(Player p) {
-		return DUELS.containsKey(p.getUniqueId());
+	public static boolean isDueling(UUID uuid) {
+		return DUELS.containsKey(uuid);
 	}
 
-	public static void cancelRequestedDuel(Player p) {
-		UUID uuid1 = PENDING_DUELS.get(p.getUniqueId());
+	public static void cancelRequestedDuel(UUID uuid) {
+		UUID uuid1 = PENDING_DUELS.get(uuid);
 		UUID uuid2 = PENDING_DUELS.get(uuid1);
 		PENDING_DUELS.remove(uuid1);
 		PENDING_DUELS.remove(uuid2);
@@ -69,48 +63,48 @@ public class DuelMechanics {
 	/**
 	 * Player2 is the loser.
 	 * 
-	 * @param p1
-	 * @param p2
+	 * @param p1UUID
+	 * @param p2UUID
 	 */
-	public static void endDuel(Player p1, Player p2) {
-		Bukkit.broadcastMessage(p1.getDisplayName() + " has defeated " + p2.getDisplayName() + " in a duel.");
-		DuelMechanics.DUELS.remove(p1.getUniqueId());
-		DuelMechanics.DUELS.remove(p2.getUniqueId());
+	public static void endDuel(UUID p1UUID, UUID p2UUID) {
+		Bukkit.broadcastMessage(Bukkit.getPlayer(p1UUID).getDisplayName() + " has defeated " + Bukkit.getPlayer(p2UUID).getDisplayName() + " in a duel.");
+		DuelMechanics.DUELS.remove(p1UUID);
+		DuelMechanics.DUELS.remove(p2UUID);
 	}
 
 	/**
-	 * @param p1
-	 * @param p2
+	 * @param p1UUID
+	 * @param p2UUID
 	 * @return
 	 */
-	public static boolean isDuelPartner(Player p1, Player p2) {
-		return DUELS.get(p1.getUniqueId()) == p2.getUniqueId();
+	public static boolean isDuelPartner(UUID p1UUID, UUID p2UUID) {
+		return DUELS.get(p1UUID) == p2UUID;
 	}
 
-	public static boolean isPendingDuelPartner(Player p1, Player p2) {
-		return PENDING_DUELS.get(p1.getUniqueId()) == p2.getUniqueId();
+	public static boolean isPendingDuelPartner(UUID p1UUID, UUID p2UUID) {
+		return PENDING_DUELS.get(p1UUID) == p2UUID;
 	}
 
 	/**
 	 * @return
 	 */
-	public static boolean isOnCooldown(Player p1) {
-		return cooldown.contains(p1.getUniqueId());
+	public static boolean isOnCooldown(UUID uuid) {
+		return cooldown.contains(uuid);
 	}
 
 	/**
-	 * @param p1
-	 * @param p2
+	 * @param p1UUID
+	 * @param p2UUID
 	 */
 	// 0, 8 Confirm
 	// 4, 13, 22, 27,28,29, 31,33,34,35 Seperator
 	// 30 Armor Tier, 32 weapon tier
 	// LEFT ITEMS 1,2,3 9, 10, 11, 12, 18, 19, 20, 21
 	// RIGHT ITEMS 23,24,25,26 , 5,6,7, 14,15,16,17
-	public static void launchWager(Player p1, Player p2) {
-		DuelWager wager = new DuelWager(p1, p2);
+	public static void launchWager(UUID p1UUID, UUID p2UUID) {
+		DuelWager wager = new DuelWager(p1UUID, p2UUID);
 		WAGERS.add(wager);
-		Inventory inv = Bukkit.createInventory(null, 36, p1.getName() + "  vs. " + p2.getName());
+		Inventory inv = Bukkit.createInventory(null, 36, Bukkit.getPlayer(p1UUID).getName() + "  vs. " + Bukkit.getPlayer(p2UUID).getName());
 		ItemStack seperator = ItemManager.createItem(Material.BONE, " ", null);
 		ItemStack armorTier = ItemManager.createItem(Material.GOLD_CHESTPLATE, "Armor Tier Limit", null);
 		ItemStack weaponTier = ItemManager.createItem(Material.GOLD_SWORD, "Weapon Tier Limit", null);
@@ -137,19 +131,19 @@ public class DuelMechanics {
 		inv.setItem(4, seperator);
 		inv.setItem(30, armorTier);
 		inv.setItem(32, weaponTier);
-		p1.openInventory(inv);
-		p2.openInventory(inv);
+		Bukkit.getPlayer(p1UUID).openInventory(inv);
+		Bukkit.getPlayer(p2UUID).openInventory(inv);
 
 	}
 
 	/**
-	 * @param player
+	 * @param uuid
 	 * @return
 	 */
-	public static DuelWager getWager(Player player) {
+	public static DuelWager getWager(UUID uuid) {
 		for (int i = 0; i < WAGERS.size(); i++) {
 			DuelWager current = WAGERS.get(i);
-			if (current.p1.getUniqueId() == player.getUniqueId() || current.p2.getUniqueId() == player.getUniqueId())
+			if (current.p1UUID == uuid || current.p2UUID == uuid)
 			return current;
 		}
 		return null;

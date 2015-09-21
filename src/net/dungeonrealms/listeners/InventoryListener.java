@@ -1,7 +1,10 @@
 package net.dungeonrealms.listeners;
 
-import java.util.Arrays;
-
+import net.dungeonrealms.duel.DuelMechanics;
+import net.dungeonrealms.duel.DuelWager;
+import net.dungeonrealms.mechanics.ItemManager;
+import net.md_5.bungee.api.ChatColor;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -14,11 +17,7 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 
-import net.dungeonrealms.duel.DuelMechanics;
-import net.dungeonrealms.duel.DuelWager;
-import net.dungeonrealms.mechanics.ItemManager;
-import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.Arrays;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -48,7 +47,7 @@ public class InventoryListener implements Listener {
 	public void onDuelWagerClick(InventoryClickEvent e) {
 		if (e.getInventory().getTitle().contains("vs.")) {
 			Player p = (Player) e.getWhoClicked();
-			DuelWager wager = DuelMechanics.getWager(p);
+			DuelWager wager = DuelMechanics.getWager(p.getUniqueId());
 			int slot = e.getRawSlot();
 			ItemStack stack = e.getCurrentItem();
 			if (stack.getType() == Material.BONE) {
@@ -61,7 +60,7 @@ public class InventoryListener implements Listener {
 			e.setCancelled(true);
 			wager.cycleWeapon();
 			} else if (slot == 0) {
-			if (wager.isLeft(p)) {
+			if (wager.isLeft(p.getUniqueId())) {
 				// Left clicked
 				e.setCancelled(true);
 				if (CraftItemStack.asNMSCopy(stack).getTag().getString("state").equalsIgnoreCase("notready")) {
@@ -90,7 +89,7 @@ public class InventoryListener implements Listener {
 				return;
 			}
 			} else if (slot == 8) {
-			if (!wager.isLeft(p)) {
+			if (!wager.isLeft(p.getUniqueId())) {
 				// Right Clicked
 				e.setCancelled(true);
 				if (CraftItemStack.asNMSCopy(stack).getTag().getString("state").equalsIgnoreCase("notready")) {
@@ -119,7 +118,7 @@ public class InventoryListener implements Listener {
 				return;
 			}
 			} else if (slot < 36) {
-			if (isLeftSlot(slot) && wager.isLeft(p)) {
+			if (isLeftSlot(slot) && wager.isLeft(p.getUniqueId())) {
 
 			} else {
 
@@ -141,13 +140,13 @@ public class InventoryListener implements Listener {
 	public void onDuelWagerClosed(InventoryCloseEvent event) {
 		if (event.getInventory().getTitle().contains("vs.")) {
 
-			DuelWager wager = DuelMechanics.getWager((Player) event.getPlayer());
+			DuelWager wager = DuelMechanics.getWager(event.getPlayer().getUniqueId());
 			if (wager != null) {
 			if (!wager.completed) {
-				if (wager.p1.getOpenInventory() != null && Bukkit.getPlayer(wager.p1.getUniqueId()) != null)
-					wager.p1.closeInventory();
-				if (wager.p2.getOpenInventory() != null && Bukkit.getPlayer(wager.p2.getUniqueId()) != null)
-					wager.p2.closeInventory();
+				if (Bukkit.getPlayer(wager.p1UUID).getOpenInventory() != null && Bukkit.getPlayer(wager.p1UUID) != null)
+					Bukkit.getPlayer(wager.p1UUID).closeInventory();
+				if (Bukkit.getPlayer(wager.p2UUID).getOpenInventory() != null && Bukkit.getPlayer(wager.p2UUID) != null)
+					Bukkit.getPlayer(wager.p2UUID).closeInventory();
 				DuelMechanics.removeWager(wager);
 			}
 			}

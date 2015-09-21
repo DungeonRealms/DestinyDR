@@ -31,6 +31,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by Chase on Sep 18, 2015
@@ -50,7 +51,7 @@ public class BankListener implements Listener {
                 tileEntity.a(nbt);
                 if (nbt.hasKey("isBank")) {
                     e.setCancelled(true);
-                    e.getPlayer().openInventory(getBank(e.getPlayer()));
+                    e.getPlayer().openInventory(getBank(e.getPlayer().getUniqueId()));
                     e.getPlayer().playSound(e.getPlayer().getLocation(), "random.chestopen", 1, 1);
                 }
             }
@@ -71,7 +72,7 @@ public class BankListener implements Listener {
                         if (e.getCursor() != null) {
                             if (e.getRawSlot() == 8) {
                                 if (e.getClick() == ClickType.LEFT) {
-                                    openHowManyGems(player);
+                                    openHowManyGems(player.getUniqueId());
                                 } else if (e.getClick() == ClickType.RIGHT) {
 
                                 }
@@ -86,7 +87,7 @@ public class BankListener implements Listener {
                                 ItemStack bankItem = new ItemStack(Material.EMERALD);
                                 ItemMeta meta = bankItem.getItemMeta();
                                 meta.setDisplayName(
-                                        getPlayerGems(player) + ChatColor.BOLD.toString() + ChatColor.GREEN + " Gem(s)");
+                                        getPlayerGems(player.getUniqueId()) + ChatColor.BOLD.toString() + ChatColor.GREEN + " Gem(s)");
                                 ArrayList<String> lore = new ArrayList<>();
                                 lore.add(ChatColor.GREEN.toString() + "Left Click " + " to withdraw Raw Gems.");
                                 lore.add(ChatColor.GREEN.toString() + "Right Click " + " to create a Bank Note.");
@@ -95,7 +96,7 @@ public class BankListener implements Listener {
                                 net.minecraft.server.v1_8_R3.ItemStack nmsBank = CraftItemStack.asNMSCopy(bankItem);
                                 nmsBank.getTag().setString("type", "bank");
                                 e.getInventory().setItem(8, CraftItemStack.asBukkitCopy(nmsBank));
-                                checkOtherBankSlots(e.getInventory(), player);
+                                checkOtherBankSlots(e.getInventory(), player.getUniqueId());
                             }
                         }
                     }
@@ -125,7 +126,7 @@ public class BankListener implements Listener {
                         if (number == 0) {
                             return;
                         }
-                        int currentGems = getPlayerGems(player.getPlayer());
+                        int currentGems = getPlayerGems(player.getUniqueId());
                         try {
                             if (number < 0) {
                                 player.getPlayer().sendMessage("You can't ask for negative money!");
@@ -133,7 +134,7 @@ public class BankListener implements Listener {
                                 player.getPlayer().sendMessage("You only have " + currentGems);
                             } else {
                                 ItemStack stack = BankMechanics.gem.clone();
-                                if (hasSpaceInInventory(player.getPlayer(), number)) {
+                                if (hasSpaceInInventory(player.getUniqueId(), number)) {
                                     Player p = player.getPlayer();
                                     DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(), EnumOperators.$INC,
                                             "info.gems", -number);
@@ -169,7 +170,7 @@ public class BankListener implements Listener {
      *
      * @param inventory
      */
-    private void checkOtherBankSlots(Inventory inventory, Player player) {
+    private void checkOtherBankSlots(Inventory inventory, UUID uuid) {
         for (int i = 0; i < 8; i++) {
             if (inventory.getItem(i) != null) {
                 Utils.log.info(i + " not null");
@@ -179,8 +180,8 @@ public class BankListener implements Listener {
                     if (stack != null) {
                         inventory.remove(stack);
                         inventory.getItem(8).getItemMeta()
-                                .setDisplayName("Withdraw " + getPlayerGems(player) + stack.getAmount() + " Gem(s)");
-                        BankMechanics.addGemsToPlayer(player, stack.getAmount());
+                                .setDisplayName("Withdraw " + getPlayerGems(uuid) + stack.getAmount() + " Gem(s)");
+                        BankMechanics.addGemsToPlayer(Bukkit.getPlayer(uuid), stack.getAmount());
                     }
                 }
             }
@@ -220,11 +221,11 @@ public class BankListener implements Listener {
     /**
      * Checks if player has room in inventory for ammount of gems to withdraw.
      */
-    public boolean hasSpaceInInventory(Player p, int Gems_worth) {
+    public boolean hasSpaceInInventory(UUID uuid, int Gems_worth) {
         if (Gems_worth > 64) {
             int space_needed = Math.round(Gems_worth / 64) + 1;
             int count = 0;
-            ItemStack[] contents = p.getInventory().getContents();
+            ItemStack[] contents = Bukkit.getPlayer(uuid).getInventory().getContents();
             for (ItemStack content : contents) {
                 if (content == null || content.getType() == Material.AIR) {
                     count++;
@@ -233,14 +234,14 @@ public class BankListener implements Listener {
             int empty_slots = count;
 
             if (space_needed > empty_slots) {
-                p.sendMessage(ChatColor.RED + "You do not have enough space in your inventory to withdraw " + Gems_worth
+                Bukkit.getPlayer(uuid).sendMessage(ChatColor.RED + "You do not have enough space in your inventory to withdraw " + Gems_worth
                         + " GEM(s).");
-                p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "REQ: " + space_needed + " slots");
+                Bukkit.getPlayer(uuid).sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "REQ: " + space_needed + " slots");
                 return false;
             } else
                 return true;
         }
-        if (p.getInventory().firstEmpty() == -1)
+        if (Bukkit.getPlayer(uuid).getInventory().firstEmpty() == -1)
             return false;
         return true;
     }
@@ -248,9 +249,9 @@ public class BankListener implements Listener {
     /**
      * Opens a GUI asking how many gems the player would like to withdraw.
      *
-     * @param player
+     * @param uuid
      */
-    public void openHowManyGems(Player player) {
+    public void openHowManyGems(UUID uuid) {
         Inventory inv = Bukkit.createInventory(null, 27, "How Many?");
         ItemStack item0 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "-1000", null,
                 DyeColor.RED.getWoolData());
@@ -281,20 +282,20 @@ public class BankListener implements Listener {
         inv.setItem(7, item7);
         inv.setItem(8, item8);
         inv.setItem(26, confimItem);
-        player.openInventory(inv);
+        Bukkit.getPlayer(uuid).openInventory(inv);
     }
 
     /**
      * Gets an Inventory specific for player.
      *
-     * @param player
+     * @param uuid
      * @return
      */
-    private Inventory getBank(Player player) {
+    private Inventory getBank(UUID uuid) {
         Inventory inv = Bukkit.createInventory(null, 9, "Bank Chest");
         ItemStack bankItem = new ItemStack(Material.EMERALD);
         ItemMeta meta = bankItem.getItemMeta();
-        meta.setDisplayName(getPlayerGems(player) + ChatColor.BOLD.toString() + ChatColor.GREEN + " Gem(s)");
+        meta.setDisplayName(getPlayerGems(uuid) + ChatColor.BOLD.toString() + ChatColor.GREEN + " Gem(s)");
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GREEN.toString() + "Left Click to withdraw Raw Gems.");
         lore.add(ChatColor.GREEN.toString() + "Right Click to create a Bank Note.");
@@ -309,11 +310,11 @@ public class BankListener implements Listener {
     /**
      * Get Player Gems.
      *
-     * @param player
+     * @param uuid
      * @return
      */
-    private int getPlayerGems(Player player) {
-        return (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, player.getUniqueId());
+    private int getPlayerGems(UUID uuid) {
+        return (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, uuid);
     }
 
 }
