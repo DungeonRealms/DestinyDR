@@ -58,10 +58,27 @@ public class ParticleAPI {
         }
     }
 
+    /**
+     * Gets the a list of nearby players from a location within a given radius
+     * @param location
+     * @param radius
+     * @since 1.0
+     */
     private static List<Player> getNearbyPlayers(Location location, int radius) {
         return location.getWorld().getPlayers().stream().filter(player -> location.distance(player.getLocation()) <= radius).collect(Collectors.toList());
     }
 
+    /**
+     * Sends a particle to a location so that every player within 25 blocks can see it
+     * @param particleEffect
+     * @param location
+     * @param xOffset
+     * @param yOffset
+     * @param zOffset
+     * @param particleSpeed
+     * @param particleCount
+     * @since 1.0
+     */
     public static void sendParticleToLocation(final ParticleEffect particleEffect, final Location location, final float xOffset, final float yOffset, final float zOffset, final float particleSpeed, final int particleCount) {
         Object packet = null;
         try {
@@ -79,6 +96,17 @@ public class ParticleAPI {
         }
     }
 
+    /**
+     * Creates a new packet to send to players with given parameters
+     * @param particleEffect
+     * @param location
+     * @param xOffset
+     * @param yOffset
+     * @param zOffset
+     * @param particleSpeed
+     * @param particleCount
+     * @since 1.0
+     */
     private static Object newPacket(ParticleEffect particleEffect, Location location, float xOffset, float yOffset, float zOffset, float particleSpeed, int particleCount) throws Exception {
         Object packet = new PacketPlayOutWorldParticles();
         setPacketValue(packet, "a", particleEffect.getParticle());
@@ -93,12 +121,25 @@ public class ParticleAPI {
         return packet;
     }
 
+    /**
+     * Sets the packets value so that the location etc registers correctly
+     * @param instance
+     * @param fieldName
+     * @param value
+     * @since 1.0
+     */
     private static void setPacketValue(Object instance, String fieldName, Object value) throws Exception {
         Field field = instance.getClass().getDeclaredField(fieldName);
         field.setAccessible(true);
         field.set(instance, value);
     }
 
+    /**
+     * Sends the packet to a player
+     * @param uuid
+     * @param packet
+     * @since 1.0
+     */
     private static void sendPacketToPlayer(UUID uuid, Object packet) {
         ((CraftPlayer) Bukkit.getPlayer(uuid)).getHandle().playerConnection.sendPacket((Packet) packet);
     }
