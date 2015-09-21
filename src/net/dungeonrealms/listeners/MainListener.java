@@ -162,7 +162,8 @@ public class MainListener implements Listener {
 			}
 			if (DuelMechanics.isPendingDuel(p1)) {
 				if (DuelMechanics.isDuelPartner(p1, p2)) {
-					DuelMechanics.setupDuel(p1, p2);
+					DuelMechanics.launchWager(p1,p2);
+//					DuelMechanics.setupDuel(p1, p2);
 				} else {
 					if (!DuelMechanics.isOnCooldown(p1)) {
 						DuelMechanics.cancelRequestedDuel(p1);

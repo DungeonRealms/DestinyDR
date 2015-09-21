@@ -269,7 +269,7 @@ public class BankListener implements Listener {
                 DyeColor.LIME.getWoolData());
         ItemStack item8 = ItemManager.createItemWithData(Material.STAINED_GLASS_PANE, "1000", null,
                 DyeColor.LIME.getWoolData());
-        ItemStack confimItem = ItemManager.createItemWithData(Material.INK_SACK, "Confirm", null, (short) 10);
+        ItemStack confimItem = ItemManager.createItemWithData(Material.INK_SACK, "Confirm", null, DyeColor.LIME.getDyeData());
 
         inv.setItem(0, item0);
         inv.setItem(1, item1);
