@@ -48,11 +48,13 @@ public class DuelWager {
 		ItemTier[] list = ItemTier.values();
 		int j = 0;
 		for (int i = 0; i < list.length; i++) {
-			if (list[i] == weaponTier)
+			if (list[i] == weaponTier) {
 			j = i + 1;
-			if (j > list.length)
-			j = 0;
-			break;
+			if (j > list.length) {
+				j = 0;
+				break;
+			}
+			}
 		}
 		weaponTier = list[j];
 		setItemSlot(32, getWeaponItem());
@@ -84,11 +86,13 @@ public class DuelWager {
 		ItemTier[] list = ItemTier.values();
 		int j = 0;
 		for (int i = 0; i < list.length; i++) {
-			if (list[i] == armorTier)
+			if (list[i] == armorTier) {
 			j = i + 1;
-			if (j > list.length)
-			j = 0;
-			break;
+			if (j > list.length) {
+				j = 0;
+				break;
+			}
+			}
 		}
 		armorTier = list[j];
 		setItemSlot(30, getArmorItem());
@@ -116,7 +120,7 @@ public class DuelWager {
 	/**
 	 * 
 	 */
-	public  void startDuel() {
+	public void startDuel() {
 		DuelMechanics.cancelRequestedDuel(p1);
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(new TimerTask() {
