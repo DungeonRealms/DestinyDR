@@ -18,6 +18,7 @@ import com.connorlinfoot.bountifulapi.BountifulAPI;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.duel.DuelMechanics;
+import net.dungeonrealms.duel.DuelWager;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.mechanics.WebAPI;
@@ -148,9 +149,12 @@ public class MainListener implements Listener {
 			if (DuelMechanics.isDuelPartner(p1, p2)) {
 				if (p2.getHealth() - e.getDamage() <= 0) {
 					// if they're gonna die this hit end duel
-					e.setCancelled(true);
-					p2.setHealth(0.5);
-					DuelMechanics.endDuel(p1, p2);
+					DuelWager wager = DuelMechanics.getWager(p1);
+					if (wager != null) {
+						e.setCancelled(true);
+						p2.setHealth(0.5);
+						wager.endDuel(p1, p2);
+					}
 				}
 			} else
 				p1.sendMessage("That's not you're dueling partner!");
@@ -162,8 +166,9 @@ public class MainListener implements Listener {
 			}
 			if (DuelMechanics.isPendingDuel(p1)) {
 				if (DuelMechanics.isPendingDuelPartner(p1, p2)) {
-					DuelMechanics.launchWager(p1,p2);
-//					DuelMechanics.setupDuel(p1, p2);
+					DuelMechanics.launchWager(p1, p2);
+					// Remove from pending
+					DuelMechanics.cancelRequestedDuel(p1);
 				} else {
 					if (!DuelMechanics.isOnCooldown(p1)) {
 						DuelMechanics.cancelRequestedDuel(p1);

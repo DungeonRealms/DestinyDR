@@ -7,11 +7,15 @@ import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.items.Item.ItemTier;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.md_5.bungee.api.ChatColor;
 
@@ -23,14 +27,15 @@ public class DuelWager {
 	public Player p2;
 	public ItemTier armorTier;
 	public ItemTier weaponTier;
-	public ArrayList<ItemStack> winningItems = new ArrayList<>();
+	public ArrayList<ItemStack> winningItems;
 	public boolean completed = false;
-	
+
 	public DuelWager(Player p1, Player p2) {
 		this.p1 = p1;
 		this.p2 = p2;
 		armorTier = ItemTier.TIER_5;
 		weaponTier = ItemTier.TIER_5;
+		winningItems = new ArrayList<>();
 	}
 
 	public void setItemSlot(int slot, ItemStack stack) {
@@ -119,12 +124,31 @@ public class DuelWager {
 	}
 
 	/**
+	 * Player2 is the loser.
+	 * 
+	 * @param p1
+	 * @param p2
+	 */
+	public void endDuel(Player winner, Player loser) {
+		Bukkit.broadcastMessage(winner.getDisplayName() + " has defeated " + loser.getDisplayName() + " in a duel.");
+		for (int i = 0; i < winningItems.size(); i++) {
+			winner.getInventory().addItem(winningItems.get(i));
+			Utils.log.info(winningItems.get(i).getType() + " added to winner");
+		}
+		DuelMechanics.DUELS.remove(p1.getUniqueId());
+		DuelMechanics.DUELS.remove(p2.getUniqueId());
+		DuelMechanics.PENDING_DUELS.remove(p1.getUniqueId());
+		DuelMechanics.PENDING_DUELS.remove(p2.getUniqueId());
+		DuelMechanics.WAGERS.remove(this);
+
+	}
+
+	/**
 	 * 
 	 */
 	public void startDuel() {
 		completed = true;
-		p1.closeInventory();
-		p2.closeInventory();
+		saveWagerItems();
 		Timer timer = new Timer();
 		timer.scheduleAtFixedRate(new TimerTask() {
 			int time = 10;
@@ -143,8 +167,23 @@ public class DuelWager {
 			}
 			}
 
-		}, 0, 10 * 1000l);
+		}, 0, 20 * 20L);
+		p1.closeInventory();
+		p2.closeInventory();
 
+	}
+
+	/**
+	 * 
+	 */
+	private void saveWagerItems() {
+		int[] slots = new int[] { 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21, 23, 24, 25, 26, 5, 6, 7, 14, 15, 16, 17 };
+		InventoryView inv = p1.getOpenInventory();
+		for (int i = 0; i < slots.length; i++) {
+			ItemStack current = inv.getItem(slots[i]);
+			if (current != null && current.getType() != Material.AIR)
+			winningItems.add(current);
+		}
 	}
 
 }

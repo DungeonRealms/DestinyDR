@@ -66,17 +66,7 @@ public class DuelMechanics {
 		PENDING_DUELS.remove(uuid2);
 	}
 
-	/**
-	 * Player2 is the loser.
-	 * 
-	 * @param p1
-	 * @param p2
-	 */
-	public static void endDuel(Player p1, Player p2) {
-		Bukkit.broadcastMessage(p1.getDisplayName() + " has defeated " + p2.getDisplayName() + " in a duel.");
-		DuelMechanics.DUELS.remove(p1.getUniqueId());
-		DuelMechanics.DUELS.remove(p2.getUniqueId());
-	}
+
 
 	/**
 	 * @param p1
@@ -122,6 +112,7 @@ public class DuelMechanics {
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setString("state", "notready");
 		nms.setTag(nbt);
+		nms.c(ChatColor.YELLOW + "READY");
 		inv.setItem(0, CraftItemStack.asBukkitCopy(nms));
 		inv.setItem(8, CraftItemStack.asBukkitCopy(nms));
 		inv.setItem(4, seperator);

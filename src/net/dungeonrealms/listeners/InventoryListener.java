@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -51,6 +52,8 @@ public class InventoryListener implements Listener {
 			DuelWager wager = DuelMechanics.getWager(p);
 			int slot = e.getRawSlot();
 			ItemStack stack = e.getCurrentItem();
+			if (stack == null)
+			return;
 			if (stack.getType() == Material.BONE) {
 			e.setCancelled(true);
 			return;
@@ -71,6 +74,7 @@ public class InventoryListener implements Listener {
 					NBTTagCompound nbt = new NBTTagCompound();
 					nbt.setString("state", "ready");
 					nms.setTag(nbt);
+					nms.c(ChatColor.YELLOW.toString() + "Ready");
 					wager.setItemSlot(0, CraftItemStack.asBukkitCopy(nms));
 					if (CraftItemStack.asNMSCopy(e.getInventory().getItem(8)).getTag().getString("state")
 						.equalsIgnoreCase("ready")) {
@@ -83,6 +87,7 @@ public class InventoryListener implements Listener {
 					NBTTagCompound nbt = new NBTTagCompound();
 					nbt.setString("state", "notready");
 					nms.setTag(nbt);
+					nms.c(ChatColor.YELLOW.toString() + "Not Ready");
 					wager.setItemSlot(0, CraftItemStack.asBukkitCopy(nms));
 				}
 			} else {
@@ -100,6 +105,7 @@ public class InventoryListener implements Listener {
 					NBTTagCompound nbt = new NBTTagCompound();
 					nbt.setString("state", "ready");
 					nms.setTag(nbt);
+					nms.c(ChatColor.YELLOW.toString() + "Ready");
 					wager.setItemSlot(8, CraftItemStack.asBukkitCopy(nms));
 					if (CraftItemStack.asNMSCopy(e.getInventory().getItem(0)).getTag().getString("state")
 						.equalsIgnoreCase("ready")) {
@@ -112,6 +118,7 @@ public class InventoryListener implements Listener {
 					NBTTagCompound nbt = new NBTTagCompound();
 					nbt.setString("state", "notready");
 					nms.setTag(nbt);
+					nms.c(ChatColor.YELLOW.toString() + "Not Ready");
 					wager.setItemSlot(8, CraftItemStack.asBukkitCopy(nms));
 				}
 			} else {
@@ -119,10 +126,17 @@ public class InventoryListener implements Listener {
 				return;
 			}
 			} else if (slot < 36) {
-			if (isLeftSlot(slot) && wager.isLeft(p)) {
+			if (isLeftSlot(slot)) {
+				if (wager.isLeft(p)) {
 
+				} else {
+					e.setCancelled(true);
+				}
 			} else {
-
+				if (!wager.isLeft(p)) {
+				} else {
+					e.setCancelled(true);
+				}
 			}
 			}
 		}
@@ -134,7 +148,10 @@ public class InventoryListener implements Listener {
 	 */
 	private boolean isLeftSlot(int slot) {
 		int[] left = new int[] { 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21 };
-		return Arrays.asList(left).contains(slot);
+		for (int i = 0; i < left.length; i++)
+			if (left[i] == slot)
+			return true;
+		return false;
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
@@ -144,11 +161,9 @@ public class InventoryListener implements Listener {
 			DuelWager wager = DuelMechanics.getWager((Player) event.getPlayer());
 			if (wager != null) {
 			if (!wager.completed) {
-				if (wager.p1.getOpenInventory() != null && Bukkit.getPlayer(wager.p1.getUniqueId()) != null)
-					wager.p1.closeInventory();
-				if (wager.p2.getOpenInventory() != null && Bukkit.getPlayer(wager.p2.getUniqueId()) != null)
-					wager.p2.closeInventory();
 				DuelMechanics.removeWager(wager);
+				wager.p1.closeInventory();
+				wager.p2.closeInventory();
 			}
 			}
 		}
