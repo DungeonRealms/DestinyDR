@@ -42,9 +42,9 @@ public class ItemGenerator {
         ArrayList<Item.AttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(tier.getAttributeRange()));
         ItemMeta meta = item.getItemMeta();
         List<String> list = new NameGenerator().next();
-        meta.setDisplayName(ChatColor.GRAY + "[" + ChatColor.WHITE + "T" + tier.getId() + ChatColor.GRAY + "]" + " " + list.get(0) + " " + list.get(1) + " " + list.get(2));
+        meta.setDisplayName(ChatColor.GRAY + "[" + ChatColor.WHITE + "T" + tier.getTierId() + ChatColor.GRAY + "]" + " " + list.get(0) + " " + list.get(1) + " " + list.get(2));
         List<String> itemLore = new ArrayList<>();
-        itemLore.add(ChatColor.WHITE + "Held in Main Hand");
+        itemLore.add(ChatColor.WHITE + "One handed          " + type.getName());
 
         HashMap<Item.AttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
 
@@ -53,10 +53,10 @@ public class ItemGenerator {
             attributeTypeIntegerHashMap.put(aType, i);
             itemLore.add(ChatColor.GREEN + "+" + ChatColor.WHITE + i + " " + aType.getName());
         }
-        itemLore.add(ChatColor.WHITE + "Requires Level " + String.valueOf(tier.getRangeValues()[0]));
-        itemLore.add(ChatColor.WHITE + "Item level NILL");
-        itemLore.add(ChatColor.GRAY + "Rarity: " + modifier.getName());
-        itemLore.add("");
+        itemLore.add(ChatColor.GRAY + "Requires Level: " + ChatColor.GOLD + String.valueOf(tier.getRangeValues()[0]));
+        itemLore.add(ChatColor.GRAY + "Item Level: " + ChatColor.GOLD + 738);
+        itemLore.add(ChatColor.GRAY + "Item Tier: " + ChatColor.GOLD + tier.getTierId());
+        itemLore.add(ChatColor.GRAY + "Item Rarity: " + modifier.getName());
         meta.setLore(itemLore);
         item.setItemMeta(meta);
 
@@ -64,6 +64,11 @@ public class ItemGenerator {
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("weapon"));
+
+        //Settings NBT for the Attribute Class. () -> itemType, itemTier, itemModifier
+        tag.set("itemType", new NBTTagInt(type.getId()));
+        tag.set("itemTier", new NBTTagInt(tier.getId()));
+        tag.set("itemModifier", new NBTTagInt(modifier.getId()));
 
         /*
         The line below removes the weapons attributes.
