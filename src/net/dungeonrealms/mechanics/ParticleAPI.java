@@ -4,12 +4,14 @@ import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 /**
@@ -70,7 +72,7 @@ public class ParticleAPI {
 
         for (Player player : getNearbyPlayers(location, 25)) {
             try {
-                sendPacketToPlayer(player, packet);
+                sendPacketToPlayer(player.getUniqueId(), packet);
             } catch (Exception e) {
                 Utils.log.info("Unable to send particle packet to player " + player.getName());
             }
@@ -97,7 +99,7 @@ public class ParticleAPI {
         field.set(instance, value);
     }
 
-    private static void sendPacketToPlayer(Player player, Object packet) {
-        ((CraftPlayer)player).getHandle().playerConnection.sendPacket((Packet) packet);
+    private static void sendPacketToPlayer(UUID uuid, Object packet) {
+        ((CraftPlayer) Bukkit.getPlayer(uuid)).getHandle().playerConnection.sendPacket((Packet) packet);
     }
 }

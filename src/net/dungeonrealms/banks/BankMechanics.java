@@ -3,20 +3,17 @@
  */
 package net.dungeonrealms.banks;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.NBTTagDouble;
-import net.minecraft.server.v1_8_R3.NBTTagString;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Chase on Sep 18, 2015
@@ -48,10 +45,10 @@ public class BankMechanics {
 	}
 
 	/**
-	 * @param player
+	 * @param uuid
 	 */
-	public static void addGemsToPlayer(Player player, int num) {
-		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, "info.gems", num);
+	public static void addGemsToPlayer(UUID uuid, int num) {
+		DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, "info.gems", num);
 	}
 
 }
