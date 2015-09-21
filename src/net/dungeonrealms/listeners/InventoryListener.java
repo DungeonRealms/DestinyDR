@@ -1,8 +1,5 @@
 package net.dungeonrealms.listeners;
 
-import java.util.Arrays;
-
-import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -12,11 +9,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -48,6 +45,10 @@ public class InventoryListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onDuelWagerClick(InventoryClickEvent e) {
 		if (e.getInventory().getTitle().contains("vs.")) {
+			if(e.isShiftClick()){
+				e.setCancelled(true);
+				return;
+			}
 			Player p = (Player) e.getWhoClicked();
 			DuelWager wager = DuelMechanics.getWager(p.getUniqueId());
 			int slot = e.getRawSlot();
@@ -126,17 +127,21 @@ public class InventoryListener implements Listener {
 				return;
 			}
 			} else if (slot < 36) {
-			if (isLeftSlot(slot)) {
-				if (wager.isLeft(p)) {
+			if (e.isLeftClick()) {
+				if (isLeftSlot(slot)) {
+					if (wager.isLeft(p)) {
 
+					} else {
+						e.setCancelled(true);
+					}
 				} else {
-					e.setCancelled(true);
+					if (!wager.isLeft(p)) {
+					} else {
+						e.setCancelled(true);
+					}
 				}
 			} else {
-				if (!wager.isLeft(p)) {
-				} else {
-					e.setCancelled(true);
-				}
+				e.setCancelled(true);
 			}
 			}
 		}
@@ -155,12 +160,19 @@ public class InventoryListener implements Listener {
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onDragItemInDuelWager(InventoryDragEvent event) {
+		if (event.getInventory().getTitle().contains("vs."))
+			event.setCancelled(true);
+	}
+
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onDuelWagerClosed(InventoryCloseEvent event) {
 		if (event.getInventory().getTitle().contains("vs.")) {
 			Player p = (Player) event.getPlayer();
 			DuelWager wager = DuelMechanics.getWager(p.getUniqueId());
 			if (wager != null) {
 			if (!wager.completed) {
+				wager.giveItemsBack();
 				DuelMechanics.removeWager(wager);
 				wager.p1.closeInventory();
 				wager.p2.closeInventory();

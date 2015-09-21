@@ -40,10 +40,15 @@ public class DuelMechanics {
 		PENDING_DUELS.put(p1, p2);
 		PENDING_DUELS.put(p2, p1);
 		cooldown.add(p1);
+		// REMOVE REQUEST AFTER 5 SECONDS
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+			PENDING_DUELS.remove(p1);
+			PENDING_DUELS.remove(p2);
+		} , 5 * 20L);
 		// REMOVE PLAYER FROM COOLDOWN AFTER 10 SECONDS
 		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 			cooldown.remove(p1);
-		} , 5 * 20L);
+		} , 10 * 20L);
 		Player player1 = Bukkit.getPlayer(p1);
 		Player player2 = Bukkit.getPlayer(p2);
 		player1.sendMessage(ChatColor.YELLOW.toString() + "Duel Request has been sent to " + player2.getDisplayName()
@@ -61,13 +66,13 @@ public class DuelMechanics {
 	}
 
 	public static void cancelRequestedDuel(UUID p) {
-		UUID uuid1 = PENDING_DUELS.get(p);
-		UUID uuid2 = PENDING_DUELS.get(uuid1);
-		PENDING_DUELS.remove(uuid1);
-		PENDING_DUELS.remove(uuid2);
+		if (PENDING_DUELS.containsKey(p)) {
+			UUID uuid1 = PENDING_DUELS.get(p);
+			UUID uuid2 = PENDING_DUELS.get(uuid1);
+			PENDING_DUELS.remove(uuid1);
+			PENDING_DUELS.remove(uuid2);
+		}
 	}
-
-
 
 	/**
 	 * @param p1
@@ -141,7 +146,7 @@ public class DuelMechanics {
 	public static DuelWager getWager(UUID uuid) {
 		for (int i = 0; i < WAGERS.size(); i++) {
 			DuelWager current = WAGERS.get(i);
-			if (current.p1.getUniqueId() ==uuid || current.p2.getUniqueId() == uuid)
+			if (current.p1.getUniqueId() == uuid || current.p2.getUniqueId() == uuid)
 			return current;
 		}
 		return null;

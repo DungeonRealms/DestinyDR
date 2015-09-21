@@ -188,4 +188,27 @@ public class DuelWager {
 		}
 	}
 
+	/**
+	 * LEFT ITEMS 1,2,3 9, 10, 11, 12, 18, 19, 20, 21 RIGHT ITEMS 23,24,25,26 ,
+	 * 5,6,7, 14,15,16,17
+	 * 
+	 */
+	public void giveItemsBack() {
+		InventoryView inv = p1.getOpenInventory();
+		int[] left = new int[] { 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21 };
+		int[] right = new int[] { 23, 24, 25, 26, 5, 6, 7, 14, 15, 16, 17 };
+		for (int i = 0; i < left.length; i++) {
+			ItemStack current = inv.getItem(left[i]);
+			if (current != null && current.getType() != Material.AIR) {
+			p1.getInventory().addItem(current);
+			}
+		}
+		for (int i = 0; i < right.length; i++) {
+			ItemStack current = inv.getItem(right[i]);
+			if (current != null && current.getType() != Material.AIR) {
+			p2.getInventory().addItem(current);
+			}
+		}
+	}
+
 }
