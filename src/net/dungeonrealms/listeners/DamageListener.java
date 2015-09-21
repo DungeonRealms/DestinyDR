@@ -86,7 +86,7 @@ public class DamageListener implements Listener {
     }
 
     /**
-     * Listen for the players weapon hitting an entity
+     * Test to check EventPriorities
      * @param event
      * @since 1.0
      */
@@ -100,7 +100,8 @@ public class DamageListener implements Listener {
     }
 
     /**
-     * Listen for the players weapon hitting an entity
+     * Listen for the players firing projectiles
+     * Used to apply metadata from the nbt data of the bow
      * @param event
      * @since 1.0
      */

@@ -157,7 +157,7 @@ public class DamageAPI {
     }
 
     /**
-     * Calculates the weapon damage based on the nbt tag of an item, the attacker and receiver
+     * Calculates the weapon damage based on the metadata of the projectile, the attacker and receiver
      * @param attacker
      * @param reciever
      * @param projectile
