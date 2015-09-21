@@ -59,6 +59,7 @@ public class InventoryListener implements Listener {
 			wager.cycleWeapon();
 			} else if (slot == 0) {
 			if (wager.isLeft(p)) {
+				//Left clicked
 				e.setCancelled(true);
 				if (CraftItemStack.asNMSCopy(stack).getTag().getString("state").equalsIgnoreCase("notready")) {
 					ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
@@ -68,7 +69,8 @@ public class InventoryListener implements Listener {
 					nbt.setString("state", "ready");
 					nms.setTag(nbt);
 					wager.setItemSlot(0, CraftItemStack.asBukkitCopy(nms));
-					// Check if other player ready
+					if(CraftItemStack.asNMSCopy(e.getInventory().getItem(8)).getTag().getString("state").equalsIgnoreCase("ready"))
+						wager.startDuel();
 				} else {
 					ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
 						ChatColor.YELLOW.toString() + "Not Ready", null, DyeColor.GRAY.getDyeData());
@@ -78,13 +80,13 @@ public class InventoryListener implements Listener {
 					nms.setTag(nbt);
 					wager.setItemSlot(0, CraftItemStack.asBukkitCopy(nms));
 				}
-				// CHeck if other player ready
 			} else {
 				e.setCancelled(true);
 				return;
 			}
 			} else if (slot == 8) {
 			if (!wager.isLeft(p)) {
+				//Right Clicked
 				e.setCancelled(true);
 				if (CraftItemStack.asNMSCopy(stack).getTag().getString("state").equalsIgnoreCase("notready")) {
 					ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
@@ -94,7 +96,8 @@ public class InventoryListener implements Listener {
 					nbt.setString("state", "ready");
 					nms.setTag(nbt);
 					wager.setItemSlot(8, CraftItemStack.asBukkitCopy(nms));
-					// Check if other player ready
+					if(CraftItemStack.asNMSCopy(e.getInventory().getItem(0)).getTag().getString("state").equalsIgnoreCase("ready"))
+						wager.startDuel();
 				} else {
 					ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
 						ChatColor.YELLOW.toString() + "Not Ready", null, DyeColor.GRAY.getDyeData());

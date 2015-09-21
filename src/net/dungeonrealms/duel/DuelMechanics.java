@@ -64,33 +64,7 @@ public class DuelMechanics {
 		PENDING_DUELS.remove(uuid2);
 	}
 
-	/**
-	 * @param p1
-	 * @param p2
-	 */
-	public static void setupDuel(Player p1, Player p2) {
-		cancelRequestedDuel(p1);
-		Timer timer = new Timer();
-		timer.scheduleAtFixedRate(new TimerTask() {
-			int time = 10;
 
-			@Override
-			public void run() {
-			time--;
-			p1.sendMessage(ChatColor.GREEN.toString() + time + ChatColor.YELLOW.toString()
-					+ " seconds until the battle begins!");
-			if (time == 0) {
-				p1.sendMessage(ChatColor.GREEN + "Duel started with " + p2.getDisplayName());
-				p2.sendMessage(ChatColor.GREEN + "Duel started with " + p1.getDisplayName());
-				DUELS.put(p1.getUniqueId(), p2.getUniqueId());
-				DUELS.put(p2.getUniqueId(), p1.getUniqueId());
-				this.cancel();
-			}
-			}
-
-		}, 0, 20l);
-
-	}
 
 	/**
 	 * Player2 is the loser.
