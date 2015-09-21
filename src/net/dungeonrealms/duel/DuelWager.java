@@ -133,7 +133,6 @@ public class DuelWager {
 		Bukkit.broadcastMessage(winner.getDisplayName() + " has defeated " + loser.getDisplayName() + " in a duel.");
 		for (int i = 0; i < winningItems.size(); i++) {
 			winner.getInventory().addItem(winningItems.get(i));
-			Utils.log.info(winningItems.get(i).getType() + " added to winner");
 		}
 		DuelMechanics.DUELS.remove(p1.getUniqueId());
 		DuelMechanics.DUELS.remove(p2.getUniqueId());
@@ -156,18 +155,21 @@ public class DuelWager {
 			@Override
 			public void run() {
 			time--;
-			p1.sendMessage(ChatColor.GREEN.toString() + time + ChatColor.YELLOW.toString()
-					+ " seconds until the battle begins!");
 			if (time == 0) {
 				p1.sendMessage(ChatColor.GREEN + "Duel started with " + p2.getDisplayName());
 				p2.sendMessage(ChatColor.GREEN + "Duel started with " + p1.getDisplayName());
 				DuelMechanics.DUELS.put(p1.getUniqueId(), p2.getUniqueId());
 				DuelMechanics.DUELS.put(p2.getUniqueId(), p1.getUniqueId());
 				this.cancel();
+			} else {
+				p1.sendMessage(ChatColor.GREEN.toString() + time + ChatColor.YELLOW.toString()
+						+ " seconds until the battle begins!");
+				p2.sendMessage(ChatColor.GREEN.toString() + time + ChatColor.YELLOW.toString()
+						+ " seconds until the battle begins!");
 			}
 			}
 
-		}, 0, 20 * 20L);
+		}, 0, 1000);
 		p1.closeInventory();
 		p2.closeInventory();
 
