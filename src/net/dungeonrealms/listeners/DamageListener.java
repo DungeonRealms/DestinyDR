@@ -102,7 +102,6 @@ public class DamageListener implements Listener {
 
     /**
      * Listen for Entities being damaged by non Entities.
-     * NOT TO BE USED FOR PLAYERS
      * Mainly used for damage cancelling
      *
      * @param event
