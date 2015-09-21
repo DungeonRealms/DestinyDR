@@ -2,16 +2,14 @@ package net.dungeonrealms.listeners;
 
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.items.Attribute;
+import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.mastery.NMSUtils;
-import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -21,7 +19,6 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -60,164 +57,33 @@ public class DamageListener implements Listener {
     }
 
     /**
-     * Listen for the players weapon.
-     * MELEE ONLY
-     *
+     * Listen for the players weapon hitting an entity
      * @param event
      * @since 1.0
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerMeleeHitEntity(EntityDamageByEntityEvent event) {
-        if (!(event.getDamager() instanceof Player)) return;
+        if ((!(event.getDamager() instanceof Player)) && (event.getDamager().getType() != EntityType.ARROW)) return;
         //Make sure the player is HOLDING something!
-        if (((Player) event.getDamager()).getItemInHand() == null) return;
-        //Check if the item has NBT, all our custom weapons will have NBT.
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) event.getDamager()).getItemInHand()));
-        if (nmsItem == null || nmsItem.getTag() == null) return;
-        //Get the NBT of the item the player is holding.
-        NBTTagCompound tag = nmsItem.getTag();
-        //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
-        if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
-        if (((Player) event.getDamager()).getItemInHand().getType() ==  Material.BOW) {
-            return;
-        }
-        Entity entityDamged = event.getEntity();
-        ItemStack ourItem = ((Player) event.getDamager()).getItemInHand();
-        int weaponTier = new Attribute(ourItem).getItemTier().getId();
-        double damage = tag.getDouble("damage");
-        Bukkit.broadcastMessage("BaseDMG: " + damage);
-        boolean isHitCrit = false;
-        if (entityDamged instanceof Player) {
-            if (tag.getInt("vsPlayers") != 0) {
-                damage += tag.getInt("vsPlayers");
-                Bukkit.broadcastMessage("VSMONSTER: " + damage);
-                //THIS IS DR'S FORMULA. I'M NOT SURE WHY THEY ALWAYS DIVIDE BY 100 SURELY YOU'D JUST SET THE DATA TO 80 INSTEAD OF 800 ETC.
-                //TODO: PROBABLY CHANGE
-            }
+        double finalDamage = 0;
+        if (event.getDamager() instanceof Player) {
+            Player attacker = (Player) event.getDamager();
+            if (attacker.getItemInHand() == null) return;
+            //Check if the item has NBT, all our custom weapons will have NBT.
+            net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attacker.getItemInHand()));
+            if (nmsItem == null || nmsItem.getTag() == null) return;
+            //Get the NBT of the item the player is holding.
+            NBTTagCompound tag = nmsItem.getTag();
+            //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
+            if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
+            finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);
         } else {
-            if (entityDamged.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-                Bukkit.broadcastMessage("IsMonster");
-                if (tag.getInt("vsMonsters") != 0) {
-                    damage += tag.getInt("vsMonsters");
-                    Bukkit.broadcastMessage("VSMONSTER: " + damage);
-                    //THIS IS DR'S FORMULA. I'M NOT SURE WHY THEY ALWAYS DIVIDE BY 100 SURELY YOU'D JUST SET THE DATA TO 80 INSTEAD OF 800 ETC.
-                    // TODO: PROBABLY CHANGE
-                }
+            Arrow attackingArrow = (Arrow) event.getDamager();
+            if (attackingArrow.getShooter() != null && attackingArrow.getShooter() instanceof Player) {
+                //TODO: GET DATA FROM ARROW OBJECT AFTER WE APPLY IT IN PROJECTILE FIRE EVENT
             }
         }
-
-        //TODO: THIS WAS BEING USED IN DR BUT THE TIER OF THE ITEM WAS HARDCODED TO 0. WHY? NO CLUE. SHOULD WE KEEP OR REMOVE?
-        if (tag.getInt("fireDamage") != 0) {
-            switch (weaponTier) {
-                case 0:
-                    entityDamged.setFireTicks(15);
-                    break;
-                case 1:
-                    entityDamged.setFireTicks(25);
-                    break;
-                case 2:
-                    entityDamged.setFireTicks(30);
-                    break;
-                case 3:
-                    entityDamged.setFireTicks(35);
-                    break;
-                case 4:
-                    entityDamged.setFireTicks(40);
-                    break;
-            }
-            damage += tag.getInt("fireDamage");
-            Bukkit.broadcastMessage("FIRE: " + damage);
-        }
-
-        LivingEntity le = (LivingEntity) entityDamged;
-        if (tag.getInt("iceDamage") != 0) {
-            switch (weaponTier) {
-                case 0:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 0));
-                    break;
-                case 1:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 0));
-                    break;
-                case 2:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 0));
-                    break;
-                case 3:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
-                    break;
-                case 4:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 1));
-                    break;
-            }
-            damage += tag.getInt("iceDamage");
-            Bukkit.broadcastMessage("ICE: " + damage);
-        }
-
-        if (tag.getInt("poisonDamage") != 0) {
-            switch (weaponTier) {
-                case 0:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
-                    break;
-                case 1:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 0));
-                    break;
-                case 2:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 0));
-                    break;
-                case 3:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 1));
-                    break;
-                case 4:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 1));
-                    break;
-            }
-            damage += tag.getInt("poisonDamage");
-            Bukkit.broadcastMessage("POISON: " + damage);
-        }
-
-        if (tag.getInt("criticalHit") != 0) {
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, entityDamged.getLocation(),
-                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 50);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            isHitCrit = true;
-        }
-
-        if (tag.getInt("lifesteal") != 0) {
-            //TODO: LIFESTEAL WHEN WE HAVE OUR CUSTOM HP SHIT DONE
-        }
-
-        if (tag.getInt("blind") != 0) {
-            //TODO: BLIND. NOT SURE IF WE WANT THIS. PRETTY RETARDED
-        }
-
-        if (((Player) event.getDamager()).hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
-            int potionTier = 0;
-            for (PotionEffect potionEffect : ((Player) event.getDamager()).getActivePotionEffects()) {
-                if (potionEffect.getType() == PotionEffectType.INCREASE_DAMAGE) {
-                    potionTier = potionEffect.getAmplifier();
-                    break;
-                }
-            }
-            switch (potionTier) {
-                case 0:
-                    damage *= 1.1;
-                    break;
-                case 1:
-                    damage *= 1.3;
-                    break;
-                case 2:
-                    damage *= 1.5;
-                    break;
-            }
-        }
-        if (isHitCrit) {
-            damage = damage * 1.5;
-            Bukkit.broadcastMessage("Crit: " + damage);
-        }
-        Bukkit.broadcastMessage("Final Attack damage: " + damage);
-        event.setDamage(damage);
+        event.setDamage(finalDamage);
     }
 
     /**
