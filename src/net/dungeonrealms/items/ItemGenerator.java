@@ -4,6 +4,7 @@ import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagInt;
 import net.minecraft.server.v1_8_R3.NBTTagList;
+import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -62,6 +63,7 @@ public class ItemGenerator {
         //Time for some NMS on the item, (Backend attributes for reading).
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set("type", new NBTTagString("weapon"));
 
         /*
         The line below removes the weapons attributes.

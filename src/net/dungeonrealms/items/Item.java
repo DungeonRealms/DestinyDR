@@ -134,7 +134,8 @@ public class Item {
         DEXTERITY(10, "Dexterity", "deterity"),
         ICE_DAMAGE(11, "IceDamage", "iceDamage"),
         FIRE_DAMAGE(12, "FireDamage", "fireDamage"),
-        ACCURACY(13, "Accuracy", "accuracy"),;
+        POISON_DAMAGE(13, "PoisonDamage", "poisonDamage"),
+        ACCURACY(14, "Accuracy", "accuracy");
 
         private int id;
         private String name;

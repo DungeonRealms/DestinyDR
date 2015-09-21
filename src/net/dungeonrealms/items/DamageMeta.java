@@ -31,6 +31,8 @@ public class DamageMeta {
                                 return random(1, 6);
                             case ICE_DAMAGE:
                                 return random(1, 6);
+                            case POISON_DAMAGE:
+                                return random(1, 6);
                             case KNOCK_BACK:
                                 return random(1, 6);
                             case LIFE_STEAL:
@@ -61,6 +63,8 @@ public class DamageMeta {
                             case FIRE_DAMAGE:
                                 return random(1, 9);
                             case ICE_DAMAGE:
+                                return random(1, 9);
+                            case POISON_DAMAGE:
                                 return random(1, 9);
                             case KNOCK_BACK:
                                 return random(1, 8);
@@ -93,6 +97,8 @@ public class DamageMeta {
                                 return random(2, 3);
                             case ICE_DAMAGE:
                                 return random(2, 6);
+                            case POISON_DAMAGE:
+                                return random(2, 6);
                             case KNOCK_BACK:
                                 return random(2, 5);
                             case LIFE_STEAL:
@@ -124,6 +130,8 @@ public class DamageMeta {
                                 return random(5, 13);
                             case ICE_DAMAGE:
                                 return random(5, 13);
+                            case POISON_DAMAGE:
+                                return random(5, 13);
                             case KNOCK_BACK:
                                 return random(5, 12);
                             case LIFE_STEAL:
@@ -154,6 +162,8 @@ public class DamageMeta {
                             case FIRE_DAMAGE:
                                 return random(5, 25);
                             case ICE_DAMAGE:
+                                return random(5, 26);
+                            case POISON_DAMAGE:
                                 return random(5, 26);
                             case KNOCK_BACK:
                                 return random(5, 22);
@@ -190,6 +200,8 @@ public class DamageMeta {
                                 return random(1, 3);
                             case ICE_DAMAGE:
                                 return random(1, 3);
+                            case POISON_DAMAGE:
+                                return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
                             case LIFE_STEAL:
@@ -220,6 +232,8 @@ public class DamageMeta {
                             case FIRE_DAMAGE:
                                 return random(1, 3);
                             case ICE_DAMAGE:
+                                return random(1, 3);
+                            case POISON_DAMAGE:
                                 return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
@@ -252,6 +266,8 @@ public class DamageMeta {
                                 return random(1, 3);
                             case ICE_DAMAGE:
                                 return random(1, 3);
+                            case POISON_DAMAGE:
+                                return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
                             case LIFE_STEAL:
@@ -283,6 +299,8 @@ public class DamageMeta {
                                 return random(1, 3);
                             case ICE_DAMAGE:
                                 return random(1, 3);
+                            case POISON_DAMAGE:
+                                return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
                             case LIFE_STEAL:
@@ -313,6 +331,8 @@ public class DamageMeta {
                             case FIRE_DAMAGE:
                                 return random(1, 3);
                             case ICE_DAMAGE:
+                                return random(1, 3);
+                            case POISON_DAMAGE:
                                 return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
@@ -349,6 +369,8 @@ public class DamageMeta {
                                 return random(1, 3);
                             case ICE_DAMAGE:
                                 return random(1, 3);
+                            case POISON_DAMAGE:
+                                return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
                             case LIFE_STEAL:
@@ -379,6 +401,8 @@ public class DamageMeta {
                             case FIRE_DAMAGE:
                                 return random(1, 3);
                             case ICE_DAMAGE:
+                                return random(1, 3);
+                            case POISON_DAMAGE:
                                 return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
@@ -411,6 +435,8 @@ public class DamageMeta {
                                 return random(1, 3);
                             case ICE_DAMAGE:
                                 return random(1, 3);
+                            case POISON_DAMAGE:
+                                return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
                             case LIFE_STEAL:
@@ -442,6 +468,8 @@ public class DamageMeta {
                                 return random(1, 3);
                             case ICE_DAMAGE:
                                 return random(1, 3);
+                            case POISON_DAMAGE:
+                                return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
                             case LIFE_STEAL:
@@ -472,6 +500,8 @@ public class DamageMeta {
                             case FIRE_DAMAGE:
                                 return random(1, 3);
                             case ICE_DAMAGE:
+                                return random(1, 3);
+                            case POISON_DAMAGE:
                                 return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
@@ -508,6 +538,8 @@ public class DamageMeta {
                                 return random(1, 3);
                             case ICE_DAMAGE:
                                 return random(1, 3);
+                            case POISON_DAMAGE:
+                                return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
                             case LIFE_STEAL:
@@ -538,6 +570,8 @@ public class DamageMeta {
                             case FIRE_DAMAGE:
                                 return random(1, 3);
                             case ICE_DAMAGE:
+                                return random(1, 3);
+                            case POISON_DAMAGE:
                                 return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
@@ -570,6 +604,8 @@ public class DamageMeta {
                                 return random(1, 3);
                             case ICE_DAMAGE:
                                 return random(1, 3);
+                            case POISON_DAMAGE:
+                                return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
                             case LIFE_STEAL:
@@ -601,6 +637,8 @@ public class DamageMeta {
                                 return random(1, 3);
                             case ICE_DAMAGE:
                                 return random(1, 3);
+                            case POISON_DAMAGE:
+                                return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
                             case LIFE_STEAL:
@@ -631,6 +669,8 @@ public class DamageMeta {
                             case FIRE_DAMAGE:
                                 return random(1, 3);
                             case ICE_DAMAGE:
+                                return random(1, 3);
+                            case POISON_DAMAGE:
                                 return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
@@ -667,6 +707,8 @@ public class DamageMeta {
                                 return random(1, 3);
                             case ICE_DAMAGE:
                                 return random(1, 3);
+                            case POISON_DAMAGE:
+                                return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
                             case LIFE_STEAL:
@@ -697,6 +739,8 @@ public class DamageMeta {
                             case FIRE_DAMAGE:
                                 return random(1, 3);
                             case ICE_DAMAGE:
+                                return random(1, 3);
+                            case POISON_DAMAGE:
                                 return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
@@ -729,6 +773,8 @@ public class DamageMeta {
                                 return random(1, 3);
                             case ICE_DAMAGE:
                                 return random(1, 3);
+                            case POISON_DAMAGE:
+                                return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
                             case LIFE_STEAL:
@@ -760,6 +806,8 @@ public class DamageMeta {
                                 return random(1, 3);
                             case ICE_DAMAGE:
                                 return random(1, 3);
+                            case POISON_DAMAGE:
+                                return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
                             case LIFE_STEAL:
@@ -790,6 +838,8 @@ public class DamageMeta {
                             case FIRE_DAMAGE:
                                 return random(1, 3);
                             case ICE_DAMAGE:
+                                return random(1, 3);
+                            case POISON_DAMAGE:
                                 return random(1, 3);
                             case KNOCK_BACK:
                                 return random(1, 2);
