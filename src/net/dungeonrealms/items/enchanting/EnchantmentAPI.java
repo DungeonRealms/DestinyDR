@@ -16,6 +16,11 @@ import java.util.List;
  */
 public class EnchantmentAPI {
 
+    /**
+     * Checks the item to see if its a protection scroll
+     * @param itemStack
+     * @since 1.0
+     */
     public static boolean isProtectionScroll(ItemStack itemStack) {
         if (itemStack.getType() != Material.EMPTY_MAP) {
             return false;
@@ -25,6 +30,12 @@ public class EnchantmentAPI {
         return !(tag == null || nmsItem == null) && tag.getString("type").equalsIgnoreCase("protection");
     }
 
+    /**
+     * Checks the item to see if the scroll is for the correct item (weapon/armor)
+     * @param scroll
+     * @param itemToProtect
+     * @since 1.0
+     */
     public static boolean isCorrectProtectionScroll(ItemStack scroll, ItemStack itemToProtect) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(scroll);
         NBTTagCompound tag = nmsItem.getTag();
@@ -32,27 +43,53 @@ public class EnchantmentAPI {
                 && isItemArmor(itemToProtect) && doItemTiersMatch(scroll, itemToProtect);
     }
 
+    /**
+     * Checks the item to see if its a weapon
+     * @param itemStack
+     * @since 1.0
+     */
     public static boolean isItemWeapon(ItemStack itemStack) {
         Item.ItemType itemType = new Attribute(itemStack).getItemType();
         return itemType == Item.ItemType.AXE || itemType == Item.ItemType.POLE_ARM || itemType == Item.ItemType.SWORD;
     }
 
+    /**
+     * Checks the item to see if its armor
+     * @param itemStack
+     * @since 1.0
+     */
     public static boolean isItemArmor(ItemStack itemStack) {
         Item.ItemType itemType = new Attribute(itemStack).getItemType();
         //TODO: CHECK WHEN ARMORTYPE IS ADDED
         return false;
     }
 
+    /**
+     * Checks the items to see if the tiers match
+     * @param itemStack
+     * @param toCompare
+     * @since 1.0
+     */
     public static boolean doItemTiersMatch(ItemStack itemStack, ItemStack toCompare) {
         return new Attribute(itemStack).getItemTier() == new Attribute(toCompare).getItemTier();
     }
 
+    /**
+     * Checks the item to see if its already protected
+     * @param itemStack
+     * @since 1.0
+     */
     public static boolean isItemProtected(ItemStack itemStack) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
         return !tag.getString("protected").equalsIgnoreCase("false");
     }
 
+    /**
+     * Removes the items protection (have to check if its protected before doing this!)
+     * @param itemStack
+     * @since 1.0
+     */
     public static ItemStack removeItemProtection(ItemStack itemStack) {
         ItemMeta meta = itemStack.getItemMeta();
         List<String> lore = meta.getLore();
@@ -66,6 +103,11 @@ public class EnchantmentAPI {
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
 
+    /**
+     * Adds protection to the item (have to check that its not protected before doing this!)
+     * @param itemStack
+     * @since 1.0
+     */
     public static ItemStack addItemProtection(ItemStack itemStack) {
         ItemMeta meta = itemStack.getItemMeta();
         List<String> lore = meta.getLore();
