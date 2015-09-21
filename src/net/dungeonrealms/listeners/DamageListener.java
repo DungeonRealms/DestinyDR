@@ -110,9 +110,10 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onEntityDamaged(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player) return;
-        if (event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.DROWNING || event.getCause() == DamageCause.FALL
-                || event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.FIRE) {
+        //if (event.getEntity() instanceof Player) return;
+        if (event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.DROWNING
+                || event.getCause() == DamageCause.FALL || event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.FIRE
+                || event.getCause() == DamageCause.ENTITY_EXPLOSION || event.getCause() == DamageCause.BLOCK_EXPLOSION) {
             event.setCancelled(true);
             event.getEntity().setFireTicks(0);
         }

@@ -43,7 +43,8 @@ public class CommandAdd implements CommandExecutor {
                     player.getInventory().addItem(new ItemGenerator().next());
                     break;
                 case "particle":
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.getById(Integer.valueOf(args[2])),player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
+                    if (args[1] != null)
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.getById(Integer.valueOf(args[1])),player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
                     break;
             }
         }
