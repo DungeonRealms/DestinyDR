@@ -61,6 +61,12 @@ public class DamageAPI {
 
         LivingEntity leReceiver = (LivingEntity) receiver;
         if (tag.getInt("fireDamage") != 0) {
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, receiver.getLocation(),
+                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             switch (weaponTier) {
                 case 0:
                     leReceiver.setFireTicks(15);
@@ -82,6 +88,12 @@ public class DamageAPI {
         }
 
         if (tag.getInt("iceDamage") != 0) {
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SNOWBALL_POOF, receiver.getLocation(),
+                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             switch (weaponTier) {
                 case 0:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 0));
@@ -103,6 +115,12 @@ public class DamageAPI {
         }
 
         if (tag.getInt("poisonDamage") != 0) {
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.TOWN_AURA, receiver.getLocation(),
+                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             switch (weaponTier) {
                 case 0:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
@@ -127,7 +145,7 @@ public class DamageAPI {
             if (new Random().nextInt(99) < tag.getInt("criticalHit")) {
                 try {
                     ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, receiver.getLocation(),
-                            new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 50);
+                            new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -153,6 +171,12 @@ public class DamageAPI {
                 }
 
                 if (canTargetBeBlinded) {
+                    try {
+                        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SMALL_SMOKE, receiver.getLocation(),
+                                new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                     switch (weaponTier) {
                         case 0:
                             leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 30, 1));
@@ -238,6 +262,12 @@ public class DamageAPI {
 
         LivingEntity leReceiver = (LivingEntity) receiver;
         if (projectile.getMetadata("fireDamage").get(0).asInt() != 0) {
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, receiver.getLocation(),
+                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             switch (projectile.getMetadata("tier").get(0).asInt()) {
                 case 0:
                     leReceiver.setFireTicks(15);
@@ -259,6 +289,12 @@ public class DamageAPI {
         }
 
         if (projectile.getMetadata("iceDamage").get(0).asInt() != 0) {
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SNOWBALL_POOF, receiver.getLocation(),
+                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             switch (projectile.getMetadata("tier").get(0).asInt()) {
                 case 0:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 0));
@@ -280,6 +316,12 @@ public class DamageAPI {
         }
 
         if (projectile.getMetadata("poisonDamage").get(0).asInt() != 0) {
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.TOWN_AURA, receiver.getLocation(),
+                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             switch (projectile.getMetadata("tier").get(0).asInt()) {
                 case 0:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
@@ -304,7 +346,7 @@ public class DamageAPI {
             if (new Random().nextInt(99) < projectile.getMetadata("criticalHit").get(0).asInt()) {
                 try {
                     ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, receiver.getLocation(),
-                            new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 50);
+                            new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
@@ -330,6 +372,12 @@ public class DamageAPI {
                 }
 
                 if (canTargetBeBlinded) {
+                    try {
+                        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SMALL_SMOKE, receiver.getLocation(),
+                                new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+                    } catch (Exception ex) {
+                        ex.printStackTrace();
+                    }
                     switch (projectile.getMetadata("tier").get(0).asInt()) {
                         case 0:
                             leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 30, 1));
