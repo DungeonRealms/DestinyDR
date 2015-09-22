@@ -53,15 +53,15 @@ public class ArmorGenerator {
      */
     ItemStack getArmor(Armor.EquipmentType type, Armor.ArmorTier tier, Armor.ArmorModifier modifier) {
         ItemStack item = getBaseItem(type, tier);
-        ArrayList<Item.AttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(tier.getAttributeRange()));
+        ArrayList<Armor.ArmorAttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(tier.getAttributeRange()));
         ItemMeta meta = item.getItemMeta();
         List<String> list = new NameGenerator().next();
         meta.setDisplayName(ChatColor.GRAY + "[" + ChatColor.WHITE + "T" + tier.getTierId() + ChatColor.GRAY + "]" + " " + list.get(0) + " " + list.get(1) + " " + list.get(2));
         List<String> itemLore = new ArrayList<>();
 
-        HashMap<Item.AttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
+        HashMap<Armor.ArmorAttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
 
-        for (Item.AttributeType aType : attributeTypes) {
+        for (Armor.ArmorAttributeType aType : attributeTypes) {
             int i = new DamageMeta().nextArmor(tier, modifier);
             attributeTypeIntegerHashMap.put(aType, i);
             itemLore.add(ChatColor.GREEN + "+" + ChatColor.WHITE + i + " " + aType.getName());
@@ -89,7 +89,7 @@ public class ArmorGenerator {
          */
         tag.set("AttributeModifiers", new NBTTagList());
 
-        for (Map.Entry<Item.AttributeType, Integer> entry : attributeTypeIntegerHashMap.entrySet()) {
+        for (Map.Entry<Armor.ArmorAttributeType, Integer> entry : attributeTypeIntegerHashMap.entrySet()) {
             tag.set(entry.getKey().getNBTName(), new NBTTagInt(entry.getValue()));
         }
 
@@ -135,14 +135,13 @@ public class ArmorGenerator {
      * @return
      * @since 1.0
      */
-    ArrayList<Item.AttributeType> getRandomAttributes(int amountOfAttributes) {
-        ArrayList<Item.AttributeType> attributeList = new ArrayList<>();
+    ArrayList<Armor.ArmorAttributeType> getRandomAttributes(int amountOfAttributes) {
+        ArrayList<Armor.ArmorAttributeType> attributeList = new ArrayList<>();
         //We always want to add Damage to the Item. Since AttributeModifiers are removed. Completely.
-        attributeList.add(Item.AttributeType.DAMAGE);
         for (int i = 0; i < amountOfAttributes; i++) {
             int random = new Random().nextInt(Item.AttributeType.values().length);
-            if (!attributeList.contains(Item.AttributeType.getById(random))) {
-                attributeList.add(Item.AttributeType.getById(random));
+            if (!attributeList.contains(Armor.ArmorAttributeType.getById(random))) {
+                attributeList.add(Armor.ArmorAttributeType.getById(random));
             } else {
                 i--;
             }
