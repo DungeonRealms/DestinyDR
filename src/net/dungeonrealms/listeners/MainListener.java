@@ -16,6 +16,7 @@ import org.bukkit.event.vehicle.VehicleExitEvent;
 
 import com.connorlinfoot.bountifulapi.BountifulAPI;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
@@ -137,13 +138,21 @@ public class MainListener implements Listener {
 			}
 			EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
 		}
+
+		// Player leaves while in duel
+		if (DuelMechanics.isDueling(event.getPlayer().getUniqueId())) {
+			DuelMechanics.getWager(event.getPlayer().getUniqueId()).handleLogOut(event.getPlayer().getUniqueId());
+		}
 	}
 
+	//mostly duel mechanics.
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void playerPunchPlayer(EntityDamageByEntityEvent e) {
 		if (e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
 			Player p1 = (Player) e.getDamager();
 			Player p2 = (Player) e.getEntity();
+			if (API.isInPVPRegion(p1.getUniqueId()) && API.isInPVPRegion(p2.getUniqueId()))
+			return;
 			if (DuelMechanics.isDueling(p2.getUniqueId())) {
 			// If player they're punching is their duel partner
 			if (DuelMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {

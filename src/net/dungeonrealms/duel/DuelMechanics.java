@@ -110,8 +110,6 @@ public class DuelMechanics {
 		ItemStack seperator = ItemManager.createItem(Material.BONE, " ", null);
 		ItemStack armorTier = ItemManager.createItem(Material.GOLD_CHESTPLATE, "Armor Tier Limit", null);
 		ItemStack weaponTier = ItemManager.createItem(Material.GOLD_SWORD, "Weapon Tier Limit", null);
-		ItemStack confirm = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "Ready",
-			null, DyeColor.GRAY.getDyeData());
 		ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "Ready", null,
 			DyeColor.GRAY.getDyeData());
 		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);

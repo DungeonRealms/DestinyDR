@@ -3,6 +3,7 @@ package net.dungeonrealms.entities;
 import java.util.HashMap;
 import java.util.UUID;
 
+import net.dungeonrealms.entities.types.monsters.EntityFireImp;
 import net.dungeonrealms.entities.types.monsters.EntityPirate;
 import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
 import net.dungeonrealms.entities.types.mounts.Horse;
@@ -49,6 +50,7 @@ public class Entities {
 
         nmsUtils.registerEntity("Pirate", 54, EntityZombie.class, EntityPirate.class);
         nmsUtils.registerEntity("RangedPirate", 54, EntityZombie.class, EntityRangedPirate.class);
+        nmsUtils.registerEntity("Fire Imp", 54, EntityZombie.class, EntityFireImp.class);
 
         nmsUtils.registerEntity("PetCaveSpider", 59, EntityCaveSpider.class, CaveSpider.class);
         nmsUtils.registerEntity("PetBabyZombie", 54, EntityZombie.class, BabyZombie.class);

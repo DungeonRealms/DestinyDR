@@ -1,5 +1,6 @@
 package net.dungeonrealms.commands;
 
+import net.dungeonrealms.entities.types.monsters.EntityFireImp;
 import net.dungeonrealms.entities.types.monsters.EntityPirate;
 import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
 import net.dungeonrealms.entities.utils.BuffUtils;
@@ -78,6 +79,12 @@ public class CommandSpawn implements CommandExecutor {
                		 }else if(args[1].equalsIgnoreCase("rangedpirate")){
                          World world = ((CraftWorld) player.getWorld()).getHandle();
                          EntityRangedPirate zombie = new EntityRangedPirate(world, EnumEntityType.HOSTILE_MOB, 1);
+                         zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
+                         world.addEntity(zombie, SpawnReason.CUSTOM);
+                         zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
+               		 }else if(args[1].equalsIgnoreCase("imp")){
+                         World world = ((CraftWorld) player.getWorld()).getHandle();
+                         EntityFireImp zombie = new EntityFireImp(world, 1, EnumEntityType.HOSTILE_MOB);
                          zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
                          world.addEntity(zombie, SpawnReason.CUSTOM);
                          zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());

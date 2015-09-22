@@ -17,6 +17,7 @@ import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.EntityHuman;
+import net.minecraft.server.v1_8_R3.EntityLiving;
 import net.minecraft.server.v1_8_R3.EntitySkeleton;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.PathfinderGoalArrowAttack;
@@ -86,23 +87,59 @@ public abstract class RangedEntitySkeleton extends EntitySkeleton {
 		super(world);
 	}
 
+	@Override
+	public abstract void a(EntityLiving entityliving, float f);
+
 	public abstract void setStats();
 
-	public abstract void setArmor(int tier);
+	public void setArmor(int tier) {
+		ItemStack[] armor = getTierArmor(tier);
+		// weapon, boots, legs, chest, helmet/head
+		ItemStack weapon = getTierWeapon(tier);
+		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
+		this.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
+		this.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
+		this.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
+		this.setEquipment(4, this.getHead());
+	}
 
 	protected String getCustomEntityName() {
 		return this.name;
 	}
 
-	protected net.minecraft.server.v1_8_R3.ItemStack getHead(String name) {
+	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
 		ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 		SkullMeta meta = (SkullMeta) head.getItemMeta();
-		meta.setOwner(name);
+		meta.setOwner(mobHead);
 		head.setItemMeta(meta);
 		return CraftItemStack.asNMSCopy(head);
 	}
 
-	public abstract ItemStack getTierWeapon(int tier);
+	public ItemStack getTierWeapon(int tier) {
+		return new ItemStack(Material.BOW, 1);
+	}
 
-	public abstract ItemStack[] getTierArmor(int tier);
+	public ItemStack[] getTierArmor(int tier) {
+		if (tier == 1) {
+			return new ItemStack[] { new ItemStack(Material.LEATHER_BOOTS, 1),
+				new ItemStack(Material.LEATHER_LEGGINGS, 1), new ItemStack(Material.LEATHER_CHESTPLATE, 1),
+				new ItemStack(Material.LEATHER_HELMET, 1) };
+		} else if (tier == 2) {
+			return new ItemStack[] { new ItemStack(Material.CHAINMAIL_BOOTS, 1),
+				new ItemStack(Material.CHAINMAIL_LEGGINGS, 1), new ItemStack(Material.CHAINMAIL_CHESTPLATE, 1),
+				new ItemStack(Material.CHAINMAIL_HELMET, 1) };
+		} else if (tier == 3) {
+			return new ItemStack[] { new ItemStack(Material.IRON_BOOTS, 1), new ItemStack(Material.IRON_LEGGINGS, 1),
+				new ItemStack(Material.IRON_CHESTPLATE, 1), new ItemStack(Material.IRON_HELMET, 1) };
+		} else if (tier == 4) {
+			return new ItemStack[] { new ItemStack(Material.DIAMOND_BOOTS, 1),
+				new ItemStack(Material.DIAMOND_LEGGINGS, 1), new ItemStack(Material.DIAMOND_CHESTPLATE, 1),
+				new ItemStack(Material.DIAMOND_HELMET, 1) };
+
+		} else if (tier == 5) {
+			return new ItemStack[] { new ItemStack(Material.GOLD_BOOTS, 1), new ItemStack(Material.GOLD_LEGGINGS, 1),
+				new ItemStack(Material.GOLD_CHESTPLATE, 1), new ItemStack(Material.GOLD_HELMET, 1) };
+		}
+		return null;
+	}
 }

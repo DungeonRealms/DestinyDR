@@ -6,16 +6,17 @@ package net.dungeonrealms.duel;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.Item.ItemTier;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.md_5.bungee.api.ChatColor;
 
@@ -29,6 +30,7 @@ public class DuelWager {
 	public ItemTier weaponTier;
 	public ArrayList<ItemStack> winningItems;
 	public boolean completed = false;
+	public int timerID;
 
 	public DuelWager(Player p1, Player p2) {
 		this.p1 = p1;
@@ -170,14 +172,35 @@ public class DuelWager {
 			}
 
 		}, 0, 1000);
+		timerID = Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+			ItemStack[] p1armor = p1.getInventory().getArmorContents();
+			ItemStack[] p2armor = p2.getInventory().getArmorContents();
+			for (int i = 0; i < p1armor.length; i++) {
+			if (!isTier(p1armor[i])) {
+				ItemStack stack = p1armor[i];
+				p1armor[i] = null;
+				p1.getInventory().setArmorContents(p1armor);
+				p1.getInventory().addItem(stack);
+			}
+			}
+		} , 1000);
 		p1.closeInventory();
 		p2.closeInventory();
 
 	}
 
 	/**
-	 * 
+	 * @param itemStack
+	 * @return
 	 */
+	private boolean isTier(ItemStack itemStack) {
+
+		return false;
+	}
+
+	/**
+			 * 
+			 */
 	private void saveWagerItems() {
 		int[] slots = new int[] { 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21, 23, 24, 25, 26, 5, 6, 7, 14, 15, 16, 17 };
 		InventoryView inv = p1.getOpenInventory();
@@ -208,6 +231,17 @@ public class DuelWager {
 			if (current != null && current.getType() != Material.AIR) {
 			p2.getInventory().addItem(current);
 			}
+		}
+	}
+
+	/**
+	 * @param uniqueId
+	 */
+	public void handleLogOut(UUID uuid) {
+		if (p1.getUniqueId() == uuid) {
+			endDuel(p2, p1);
+		} else {
+			endDuel(p1, p1);
 		}
 	}
 

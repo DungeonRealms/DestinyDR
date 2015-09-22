@@ -46,16 +46,6 @@ public class EntityRangedPirate extends RangedEntitySkeleton {
 	}
 
 	@Override
-	public ItemStack[] getTierArmor(int tier) {
-		if (tier == 1) {
-			return new ItemStack[] { new ItemStack(Material.LEATHER_BOOTS, 1),
-				new ItemStack(Material.LEATHER_LEGGINGS, 1), new ItemStack(Material.LEATHER_CHESTPLATE, 1),
-				new ItemStack(Material.LEATHER_HELMET, 1) };
-		}
-		return null;
-	}
-
-	@Override
 	public void setStats() {
 
 	}
@@ -80,23 +70,6 @@ public class EntityRangedPirate extends RangedEntitySkeleton {
 		case 2:
 			this.a(Items.BOAT, 1);
 		}
-	}
-
-	@Override
-	public void setArmor(int tier) {
-		ItemStack[] armor = getTierArmor(tier);
-		// weapon, boots, legs, chest, helmet/head
-		ItemStack weapon = getTierWeapon(tier);
-		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-		this.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
-		this.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
-		this.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
-		this.setEquipment(4, this.getHead("samsamsam1234"));
-	}
-
-	@Override
-	public ItemStack getTierWeapon(int tier) {
-		return new ItemStack(Material.BOW, 1);
 	}
 
 	@Override
