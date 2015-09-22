@@ -204,6 +204,19 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onEntityDamaged(EntityDamageEvent event) {
         //if (event.getEntity() instanceof Player) return;
+        if (!(event.getEntity().hasMetadata("type"))) return;
+        String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
+        switch (metaValue) {
+            case "pet":
+                event.setCancelled(true);
+                event.getEntity().setFireTicks(0);
+                break;
+            case "mount":
+                event.setCancelled(true);
+                event.getEntity().setFireTicks(0);
+                break;
+            default:
+        }
         if (event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.DROWNING
                 || event.getCause() == DamageCause.FALL || event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.FIRE
                 || event.getCause() == DamageCause.ENTITY_EXPLOSION || event.getCause() == DamageCause.BLOCK_EXPLOSION) {
