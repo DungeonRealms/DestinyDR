@@ -48,6 +48,8 @@ public class InventoryListener implements Listener {
 		event.setCancelled(true);
 	}
 
+	
+	//Handles when the player clicks the duel wager inventory.
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onDuelWagerClick(InventoryClickEvent e) {
 		if (e.getInventory().getTitle().contains("vs.")) {
@@ -157,6 +159,7 @@ public class InventoryListener implements Listener {
 	 * @param slot
 	 * @return
 	 */
+	//Checks if the slot, is the specified number.
 	private boolean isLeftSlot(int slot) {
 		int[] left = new int[] { 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21 };
 		for (int i = 0; i < left.length; i++)
@@ -171,6 +174,8 @@ public class InventoryListener implements Listener {
 			event.setCancelled(true);
 	}
 
+	
+	//Called when player switches Item in their inventory.
 	@EventHandler(priority = EventPriority.HIGH)
 	public void playerSwitchItem(PlayerItemHeldEvent ev) {
 		if(ev.getPlayer().isOp() || ev.getPlayer().getGameMode() == GameMode.CREATIVE)
@@ -194,6 +199,7 @@ public class InventoryListener implements Listener {
 		}
 	}
 
+	//Closes both players wager inventory if opened.
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onDuelWagerClosed(InventoryCloseEvent event) {
 		if (event.getInventory().getTitle().contains("vs.")) {
