@@ -1,5 +1,17 @@
 package net.dungeonrealms.commands;
 
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Wolf;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+
+import net.dungeonrealms.entities.types.monsters.EntityBandit;
 import net.dungeonrealms.entities.types.monsters.EntityFireImp;
 import net.dungeonrealms.entities.types.monsters.EntityPirate;
 import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
@@ -12,16 +24,6 @@ import net.dungeonrealms.mastery.NBTUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.World;
-import org.bukkit.Bukkit;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Wolf;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -88,6 +90,13 @@ public class CommandSpawn implements CommandExecutor {
                          zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
                          world.addEntity(zombie, SpawnReason.CUSTOM);
                          zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
+               		 }else if(args[1].equalsIgnoreCase("bandit")){
+                         World world = ((CraftWorld) player.getWorld()).getHandle();
+                         EntityBandit zombie = new EntityBandit(world, 1, EnumEntityType.HOSTILE_MOB);
+                         zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
+                         world.addEntity(zombie, SpawnReason.CUSTOM);
+                         zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
+
                		 }
                	 }
                 }

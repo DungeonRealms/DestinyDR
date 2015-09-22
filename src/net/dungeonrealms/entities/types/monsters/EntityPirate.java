@@ -1,7 +1,5 @@
 package net.dungeonrealms.entities.types.monsters;
 
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.banks.BankMechanics;

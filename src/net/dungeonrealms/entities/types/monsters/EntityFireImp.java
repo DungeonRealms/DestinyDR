@@ -6,7 +6,6 @@ package net.dungeonrealms.entities.types.monsters;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.util.Vector;
 
 import net.dungeonrealms.entities.types.RangedEntitySkeleton;
 import net.dungeonrealms.enums.EnumEntityType;

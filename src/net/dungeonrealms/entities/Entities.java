@@ -3,6 +3,7 @@ package net.dungeonrealms.entities;
 import java.util.HashMap;
 import java.util.UUID;
 
+import net.dungeonrealms.entities.types.monsters.EntityBandit;
 import net.dungeonrealms.entities.types.monsters.EntityFireImp;
 import net.dungeonrealms.entities.types.monsters.EntityPirate;
 import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
@@ -26,6 +27,7 @@ import net.minecraft.server.v1_8_R3.EntityOcelot;
 import net.minecraft.server.v1_8_R3.EntityPigZombie;
 import net.minecraft.server.v1_8_R3.EntityRabbit;
 import net.minecraft.server.v1_8_R3.EntitySilverfish;
+import net.minecraft.server.v1_8_R3.EntitySkeleton;
 import net.minecraft.server.v1_8_R3.EntityWolf;
 import net.minecraft.server.v1_8_R3.EntityZombie;
 
@@ -51,6 +53,7 @@ public class Entities {
         nmsUtils.registerEntity("Pirate", 54, EntityZombie.class, EntityPirate.class);
         nmsUtils.registerEntity("RangedPirate", 54, EntityZombie.class, EntityRangedPirate.class);
         nmsUtils.registerEntity("Fire Imp", 54, EntityZombie.class, EntityFireImp.class);
+        nmsUtils.registerEntity("Bandit", 51, EntitySkeleton.class, EntityBandit.class);
 
         nmsUtils.registerEntity("PetCaveSpider", 59, EntityCaveSpider.class, CaveSpider.class);
         nmsUtils.registerEntity("PetBabyZombie", 54, EntityZombie.class, BabyZombie.class);
