@@ -66,6 +66,7 @@ public class DungeonRealms extends JavaPlugin {
         getCommand("analyze").setExecutor(new CommandAnalyze());
         getCommand("lag").setExecutor(new CommandLag());
         getCommand("party").setExecutor(new CommandParty());
+        getCommand("set").setExecutor(new CommandSet());
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
 
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "s/");

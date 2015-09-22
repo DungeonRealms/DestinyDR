@@ -20,3 +20,5 @@ commands:
         description: Shows server information.
     party:
         description: The main party command.
+    set:
+        description: the main set command.

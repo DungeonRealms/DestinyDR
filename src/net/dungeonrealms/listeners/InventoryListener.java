@@ -1,6 +1,7 @@
 package net.dungeonrealms.listeners;
 
 import org.bukkit.DyeColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -10,11 +11,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
+import net.dungeonrealms.items.Item;
+import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.mechanics.ItemManager;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
@@ -45,9 +51,9 @@ public class InventoryListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onDuelWagerClick(InventoryClickEvent e) {
 		if (e.getInventory().getTitle().contains("vs.")) {
-			if(e.isShiftClick()){
-				e.setCancelled(true);
-				return;
+			if (e.isShiftClick()) {
+			e.setCancelled(true);
+			return;
 			}
 			Player p = (Player) e.getWhoClicked();
 			DuelWager wager = DuelMechanics.getWager(p.getUniqueId());
@@ -163,6 +169,29 @@ public class InventoryListener implements Listener {
 	public void onDragItemInDuelWager(InventoryDragEvent event) {
 		if (event.getInventory().getTitle().contains("vs."))
 			event.setCancelled(true);
+	}
+
+	@EventHandler(priority = EventPriority.HIGH)
+	public void playerSwitchItem(PlayerItemHeldEvent ev) {
+		if(ev.getPlayer().isOp() || ev.getPlayer().getGameMode() == GameMode.CREATIVE)
+			return;
+		int slot = ev.getNewSlot();
+		if (ev.getPlayer().getInventory().getItem(slot) != null) {
+			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack
+				.asNMSCopy(ev.getPlayer().getInventory().getItem(slot));
+			if (nms.hasTag()) {
+			if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon")) {
+		      ItemTier tier = Item.ItemTier.getById(nms.getTag().getInt("itemTier"));
+				int minLevel = tier.getRangeValues()[0];
+				Player p = ev.getPlayer();
+				int pLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, p.getUniqueId());
+				if(pLevel < minLevel){
+					p.sendMessage(ChatColor.RED + "You must be level " + ChatColor.YELLOW.toString() + minLevel + ChatColor.RED.toString()+ " to wield this weapon!");
+					ev.setCancelled(true);
+				}
+			}
+			}
+		}
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
