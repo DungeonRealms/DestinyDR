@@ -74,14 +74,15 @@ public class MetadataUtils {
         projectile.setMetadata("damage", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getDouble("damage")));
         projectile.setMetadata("vsPlayers", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("vsPlayers")));
         projectile.setMetadata("vsMonsters", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("vsMonsters")));
+        projectile.setMetadata("pureDamage", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("pureDamage")));
+        projectile.setMetadata("armorPenetration", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("armorPenetration")));
+        projectile.setMetadata("accuracy", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("accuracy")));
         projectile.setMetadata("fireDamage", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("fireDamage")));
         projectile.setMetadata("iceDamage", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("iceDamage")));
         projectile.setMetadata("poisonDamage", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("poisonDamage")));
         projectile.setMetadata("criticalHit", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("criticalHit")));
         projectile.setMetadata("lifesteal", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("lifesteal")));
         projectile.setMetadata("blind", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("blind")));
-        projectile.setMetadata("pureDamage", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("pureDamage")));
-        projectile.setMetadata("armorPenetration", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("armorPenetration")));
         projectile.setMetadata("vitality", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("vitality")));
         projectile.setMetadata("accuracy", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("accuracy")));
         projectile.setMetadata("deterity", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("deterity")));

@@ -221,16 +221,16 @@ public class DamageAPI {
             }
         }
 
-        if (receiver.getMetadata("pureDamage").get(0).asInt() != 0) {
-            damage += receiver.getMetadata("pureDamage").get(0).asInt();
+        if (projectile.getMetadata("pureDamage").get(0).asInt() != 0) {
+            damage += projectile.getMetadata("pureDamage").get(0).asInt();
         }
 
-        if (receiver.getMetadata("armorPenetration").get(0).asInt() != 0) {
-            damage += receiver.getMetadata("armorPenetration").get(0).asInt();
+        if (projectile.getMetadata("armorPenetration").get(0).asInt() != 0) {
+            damage += projectile.getMetadata("armorPenetration").get(0).asInt();
         }
 
-        if (receiver.getMetadata("accuracy").get(0).asInt() != 0) {
-            damage += receiver.getMetadata("accuracy").get(0).asInt();
+        if (projectile.getMetadata("accuracy").get(0).asInt() != 0) {
+            damage += projectile.getMetadata("accuracy").get(0).asInt();
         }
 
         LivingEntity leReceiver = (LivingEntity) receiver;
