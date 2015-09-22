@@ -3,12 +3,6 @@
  */
 package net.dungeonrealms.entities.types.monsters;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import org.bukkit.metadata.FixedMetadataValue;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.types.MeleeEntityZombie;
 import net.dungeonrealms.enums.EnumEntityType;
@@ -16,6 +10,11 @@ import net.dungeonrealms.mastery.Utils;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
+import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Chase on Sep 21, 2015
@@ -27,8 +26,6 @@ public class EntityBandit extends MeleeEntityZombie {
 
 	/**
 	 * @param world
-	 * @param mobName
-	 * @param mobHead
 	 * @param tier
 	 * @param entityType
 	 */

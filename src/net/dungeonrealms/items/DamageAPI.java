@@ -8,6 +8,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -27,10 +28,12 @@ public class DamageAPI {
      * @param tag
      * @since 1.0
      */
-    public static double calculateWeaponDamage(Player attacker, Entity receiver, NBTTagCompound tag) {
-        ItemStack ourItem = attacker.getItemInHand();
+    public static double calculateWeaponDamage(LivingEntity attacker, Entity receiver, NBTTagCompound tag) {
+        EntityEquipment entityEquipment = attacker.getEquipment();
+        ItemStack ourItem = entityEquipment.getItemInHand();
         int weaponTier = new Attribute(ourItem).getItemTier().getId();
         double damage = tag.getDouble("damage");
+        Bukkit.broadcastMessage("base damage" + damage);
         boolean isHitCrit = false;
         if (receiver instanceof Player) {
             if (tag.getInt("vsPlayers") != 0) {
@@ -206,7 +209,7 @@ public class DamageAPI {
      * @param projectile
      * @since 1.0
      */
-    public static double calculateProjectileDamage(Player attacker, Entity receiver, Projectile projectile) {
+    public static double calculateProjectileDamage(LivingEntity attacker, Entity receiver, Projectile projectile) {
         double damage = projectile.getMetadata("damage").get(0).asDouble();
         boolean isHitCrit = false;
         if (receiver instanceof Player) {
