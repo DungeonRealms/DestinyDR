@@ -72,27 +72,30 @@ public class CommandSpawn implements CommandExecutor {
                 }
                 case "monster":{
                	 if(args.length >= 2){
+               		 int tier = 1;
+               		 if(args.length == 3)
+               		  tier = Integer.parseInt(args[2]);
                		 if(args[1].equalsIgnoreCase("pirate")){
                          World world = ((CraftWorld) player.getWorld()).getHandle();
-                         EntityPirate zombie = new EntityPirate(world, EnumEntityType.HOSTILE_MOB, 1);
+                         EntityPirate zombie = new EntityPirate(world, EnumEntityType.HOSTILE_MOB, tier);
                          zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
                          world.addEntity(zombie, SpawnReason.CUSTOM);
                          zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
                		 }else if(args[1].equalsIgnoreCase("rangedpirate")){
                          World world = ((CraftWorld) player.getWorld()).getHandle();
-                         EntityRangedPirate zombie = new EntityRangedPirate(world, EnumEntityType.HOSTILE_MOB, 1);
+                         EntityRangedPirate zombie = new EntityRangedPirate(world, EnumEntityType.HOSTILE_MOB, tier);
                          zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
                          world.addEntity(zombie, SpawnReason.CUSTOM);
                          zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
                		 }else if(args[1].equalsIgnoreCase("imp")){
                          World world = ((CraftWorld) player.getWorld()).getHandle();
-                         EntityFireImp zombie = new EntityFireImp(world, 1, EnumEntityType.HOSTILE_MOB);
+                         EntityFireImp zombie = new EntityFireImp(world, tier, EnumEntityType.HOSTILE_MOB);
                          zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
                          world.addEntity(zombie, SpawnReason.CUSTOM);
                          zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
                		 }else if(args[1].equalsIgnoreCase("bandit")){
                          World world = ((CraftWorld) player.getWorld()).getHandle();
-                         EntityBandit zombie = new EntityBandit(world, 1, EnumEntityType.HOSTILE_MOB);
+                         EntityBandit zombie = new EntityBandit(world, tier, EnumEntityType.HOSTILE_MOB);
                          zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
                          world.addEntity(zombie, SpawnReason.CUSTOM);
                          zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());

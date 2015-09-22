@@ -20,14 +20,21 @@ public class EntityPirate extends MeleeEntityZombie {
 	public EnumEntityType entityType;
 
 	public EntityPirate(World world, EnumEntityType entityType, int tier) {
-		super(world);
+		super(world, "pirate", getRandomHead(), tier, entityType);
 		this.entityType = entityType;
 		int level = Utils.getRandomFromTier(tier);
 		MetadataUtils.registerEntityMetadata(this, this.entityType, tier, level);
 		EntityStats.setMonsterStats(this, level);
 		this.setCustomName(ChatColor.GOLD + "Pirate");
 		this.setCustomNameVisible(true);
-		setArmor(1);
+	}
+
+	/**
+	 * @return
+	 */
+	private static String getRandomHead() {
+		String[] list = new String[] { "samsamsam1234" };
+		return list[Utils.randInt(0, list.length -1)];
 	}
 
 	public EntityPirate(World world) {
@@ -68,7 +75,7 @@ public class EntityPirate extends MeleeEntityZombie {
 
 	@Override
 	protected String bo() {
-		return "random.bowhit";
+		return "game.player.hurt";
 	}
 
 	@Override

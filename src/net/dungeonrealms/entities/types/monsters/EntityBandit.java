@@ -65,7 +65,8 @@ public class EntityBandit extends MeleeEntityZombie {
 	 * @return
 	 */
 	private static String getRandomHead() {
-		return "Steve";
+		String[] list = new String[] { "Spy", "Demoman" };
+		return list[Utils.randInt(0, list.length - 1)];
 	}
 
 	@Override
@@ -83,4 +84,8 @@ public class EntityBandit extends MeleeEntityZombie {
 
 	}
 
+	@Override
+	protected String bo() {
+		return "game.player.hurt";
+	}
 }

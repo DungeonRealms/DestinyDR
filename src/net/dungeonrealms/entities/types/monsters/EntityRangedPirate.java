@@ -24,7 +24,7 @@ import net.minecraft.server.v1_8_R3.World;
 public class EntityRangedPirate extends RangedEntitySkeleton {
 
 	public EntityRangedPirate(World world, EnumEntityType entityType, int tier) {
-		super(world);
+		super(world, "pirate", getRandomHead(), tier, entityType);
 		this.entityType = entityType;
 		int level = Utils.getRandomFromTier(tier);
 		MetadataUtils.registerEntityMetadata(this, this.entityType, tier, level);
@@ -37,7 +37,10 @@ public class EntityRangedPirate extends RangedEntitySkeleton {
 	public EntityRangedPirate(World world) {
 		super(world);
 	}
-
+	private static String getRandomHead() {
+		String[] list = new String[] { "samsamsam1234" };
+		return list[Utils.randInt(0, list.length - 1)];
+	}
 	@Override
 	public void a(EntityLiving entityliving, float f) { // 14 -
 														// world.difficulty.a()
@@ -82,7 +85,7 @@ public class EntityRangedPirate extends RangedEntitySkeleton {
 
 	@Override
 	protected String bo() {
-		return "random.bowhit";
+		return "game.player.hurt";
 	}
 
 	@Override

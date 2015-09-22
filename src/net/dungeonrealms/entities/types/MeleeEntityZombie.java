@@ -63,13 +63,15 @@ public abstract class MeleeEntityZombie extends EntityZombie {
 		this.name = mobName;
 		this.mobHead = mobHead;
 		this.entityType = entityType;
+		Utils.log.info("Tier " + tier);
 		setArmor(tier);
 		this.getBukkitEntity().setCustomNameVisible(true);
-		this.getBukkitEntity().setCustomName(ChatColor.GOLD.toString() + ChatColor.UNDERLINE.toString() + mobName);
 		int level = Utils.getRandomFromTier(tier);
 		MetadataUtils.registerEntityMetadata(this, this.entityType, tier, level);
 		EntityStats.setMonsterStats(this, level);
 		setStats();
+		this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
+			+ ChatColor.GOLD.toString() + ChatColor.UNDERLINE.toString() + mobName);
 	}
 
 	@Override
@@ -157,5 +159,19 @@ public abstract class MeleeEntityZombie extends EntityZombie {
 				new ItemStack(Material.GOLD_CHESTPLATE, 1), new ItemStack(Material.GOLD_HELMET, 1) };
 		}
 		return null;
+	}
+	@Override
+	protected String z() {
+		return "";
+	}
+
+	@Override
+	protected String bo() {
+		return "game.player.hurt";
+	}
+
+	@Override
+	protected String bp() {
+		return "mob.ghast.scream";
 	}
 }
