@@ -23,21 +23,21 @@ public class DamageAPI {
     /**
      * Calculates the weapon damage based on the nbt tag of an item, the attacker and receiver
      * @param attacker
-     * @param reciever
+     * @param receiver
      * @param tag
      * @since 1.0
      */
-    public static double calculateWeaponDamage(Player attacker, Entity reciever, NBTTagCompound tag) {
+    public static double calculateWeaponDamage(Player attacker, Entity receiver, NBTTagCompound tag) {
         ItemStack ourItem = attacker.getItemInHand();
         int weaponTier = new Attribute(ourItem).getItemTier().getId();
         double damage = tag.getDouble("damage");
         boolean isHitCrit = false;
-        if (reciever instanceof Player) {
+        if (receiver instanceof Player) {
             if (tag.getInt("vsPlayers") != 0) {
                 damage += tag.getInt("vsPlayers");
             }
         } else {
-            if (reciever.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+            if (receiver.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                 if (tag.getInt("vsMonsters") != 0) {
                     damage += tag.getInt("vsMonsters");
                 }
@@ -56,7 +56,7 @@ public class DamageAPI {
             damage += tag.getInt("accuracy");
         }
 
-        LivingEntity leReceiver = (LivingEntity) reciever;
+        LivingEntity leReceiver = (LivingEntity) receiver;
         if (tag.getInt("fireDamage") != 0) {
             switch (weaponTier) {
                 case 0:
@@ -123,7 +123,7 @@ public class DamageAPI {
         if (tag.getInt("criticalHit") != 0) {
             if (new Random().nextInt(99) < tag.getInt("criticalHit")) {
                 try {
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, reciever.getLocation(),
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, receiver.getLocation(),
                             new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 50);
                 } catch (Exception ex) {
                     ex.printStackTrace();
@@ -202,38 +202,38 @@ public class DamageAPI {
     /**
      * Calculates the weapon damage based on the metadata of the projectile, the attacker and receiver
      * @param attacker
-     * @param reciever
+     * @param receiver
      * @param projectile
      * @since 1.0
      */
-    public static double calculateProjectileDamage(Player attacker, Entity reciever, Projectile projectile) {
+    public static double calculateProjectileDamage(Player attacker, Entity receiver, Projectile projectile) {
         double damage = projectile.getMetadata("damage").get(0).asDouble();
         boolean isHitCrit = false;
-        if (reciever instanceof Player) {
+        if (receiver instanceof Player) {
             if (projectile.getMetadata("vsPlayers").get(0).asInt() != 0) {
                 damage += projectile.getMetadata("vsPlayers").get(0).asInt();
             }
         } else {
-            if (reciever.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+            if (receiver.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                 if (projectile.getMetadata("vsMonsters").get(0).asInt() != 0) {
                     damage += projectile.getMetadata("vsMonsters").get(0).asInt();
                 }
             }
         }
 
-        if (reciever.getMetadata("pureDamage").get(0).asInt() != 0) {
-            damage += reciever.getMetadata("pureDamage").get(0).asInt();
+        if (receiver.getMetadata("pureDamage").get(0).asInt() != 0) {
+            damage += receiver.getMetadata("pureDamage").get(0).asInt();
         }
 
-        if (reciever.getMetadata("armorPenetration").get(0).asInt() != 0) {
-            damage += reciever.getMetadata("armorPenetration").get(0).asInt();
+        if (receiver.getMetadata("armorPenetration").get(0).asInt() != 0) {
+            damage += receiver.getMetadata("armorPenetration").get(0).asInt();
         }
 
-        if (reciever.getMetadata("accuracy").get(0).asInt() != 0) {
-            damage += reciever.getMetadata("accuracy").get(0).asInt();
+        if (receiver.getMetadata("accuracy").get(0).asInt() != 0) {
+            damage += receiver.getMetadata("accuracy").get(0).asInt();
         }
 
-        LivingEntity leReceiver = (LivingEntity) reciever;
+        LivingEntity leReceiver = (LivingEntity) receiver;
         if (projectile.getMetadata("fireDamage").get(0).asInt() != 0) {
             switch (projectile.getMetadata("tier").get(0).asInt()) {
                 case 0:
@@ -300,7 +300,7 @@ public class DamageAPI {
         if (projectile.getMetadata("criticalHit").get(0).asInt() != 0) {
             if (new Random().nextInt(99) < projectile.getMetadata("criticalHit").get(0).asInt()) {
                 try {
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, reciever.getLocation(),
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, receiver.getLocation(),
                             new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 50);
                 } catch (Exception ex) {
                     ex.printStackTrace();
