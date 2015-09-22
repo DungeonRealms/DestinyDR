@@ -35,15 +35,11 @@ public class DamageAPI {
         if (reciever instanceof Player) {
             if (tag.getInt("vsPlayers") != 0) {
                 damage += tag.getInt("vsPlayers");
-                //THIS IS DR'S FORMULA. I'M NOT SURE WHY THEY ALWAYS DIVIDE BY 100 SURELY YOU'D JUST SET THE DATA TO 80 INSTEAD OF 800 ETC.
-                //TODO: PROBABLY CHANGE
             }
         } else {
             if (reciever.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                 if (tag.getInt("vsMonsters") != 0) {
                     damage += tag.getInt("vsMonsters");
-                    //THIS IS DR'S FORMULA. I'M NOT SURE WHY THEY ALWAYS DIVIDE BY 100 SURELY YOU'D JUST SET THE DATA TO 80 INSTEAD OF 800 ETC.
-                    // TODO: PROBABLY CHANGE
                 }
             }
         }
@@ -61,7 +57,6 @@ public class DamageAPI {
         }
 
         LivingEntity leReceiver = (LivingEntity) reciever;
-        //TODO: THIS WAS BEING USED IN DR BUT THE TIER OF THE ITEM WAS HARDCODED TO 0. WHY? NO CLUE. SHOULD WE KEEP OR REMOVE?
         if (tag.getInt("fireDamage") != 0) {
             switch (weaponTier) {
                 case 0:
@@ -217,15 +212,11 @@ public class DamageAPI {
         if (reciever instanceof Player) {
             if (projectile.getMetadata("vsPlayers").get(0).asInt() != 0) {
                 damage += projectile.getMetadata("vsPlayers").get(0).asInt();
-                //THIS IS DR'S FORMULA. I'M NOT SURE WHY THEY ALWAYS DIVIDE BY 100 SURELY YOU'D JUST SET THE DATA TO 80 INSTEAD OF 800 ETC.
-                //TODO: PROBABLY CHANGE
             }
         } else {
             if (reciever.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                 if (projectile.getMetadata("vsMonsters").get(0).asInt() != 0) {
                     damage += projectile.getMetadata("vsMonsters").get(0).asInt();
-                    //THIS IS DR'S FORMULA. I'M NOT SURE WHY THEY ALWAYS DIVIDE BY 100 SURELY YOU'D JUST SET THE DATA TO 80 INSTEAD OF 800 ETC.
-                    // TODO: PROBABLY CHANGE
                 }
             }
         }
@@ -243,7 +234,6 @@ public class DamageAPI {
         }
 
         LivingEntity leReceiver = (LivingEntity) reciever;
-        //TODO: THIS WAS BEING USED IN DR BUT THE TIER OF THE ITEM WAS HARDCODED TO 0. WHY? NO CLUE. SHOULD WE KEEP OR REMOVE?
         if (projectile.getMetadata("fireDamage").get(0).asInt() != 0) {
             switch (projectile.getMetadata("tier").get(0).asInt()) {
                 case 0:
