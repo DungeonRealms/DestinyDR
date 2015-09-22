@@ -19,7 +19,6 @@ import java.util.*;
  * Created by Nick on 9/21/2015.
  */
 public class ArmorGenerator {
-
     /**
      * Get a defined ArmorStack.
      *
