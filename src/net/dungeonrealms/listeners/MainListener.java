@@ -146,7 +146,7 @@ public class MainListener implements Listener {
 	}
 
 	//mostly duel mechanics.
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void playerPunchPlayer(EntityDamageByEntityEvent e) {
 		if (e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
 			Player p1 = (Player) e.getDamager();
