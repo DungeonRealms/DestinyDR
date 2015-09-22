@@ -4,6 +4,7 @@ import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,8 +16,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -52,6 +56,7 @@ public class DamageListener implements Listener {
 
     /**
      * Listen for the players weapon hitting an entity
+     * Used for calculating damage based on player weapon
      * @param event
      * @since 1.0
      */
@@ -83,6 +88,7 @@ public class DamageListener implements Listener {
 
     /**
      * Listen for the monsters hitting a player
+     * Used for calculating damage based on mob weapon
      * @param event
      * @since 1.0
      */
@@ -125,11 +131,32 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
     public void onPlayerMeleeHitEntityREDUCETEST(EntityDamageByEntityEvent event) {
-        if ((!(event.getDamager() instanceof Player)) && (event.getDamager().getType() != EntityType.ARROW)) return;
-        Bukkit.broadcastMessage("Previous Damage " + String.valueOf(event.getDamage()));
+        //if ((!(event.getDamager() instanceof Player)) && (event.getDamager().getType() != EntityType.ARROW)) return;
+        //if (event.getDamager() instanceof Player) {
+            double armourReducedDamage;
+            LivingEntity attacker = (LivingEntity) event.getDamager();
+            LivingEntity defender = (LivingEntity) event.getEntity();
+            EntityEquipment defenderEquipment = defender.getEquipment();
+            if (defenderEquipment.getArmorContents() == null) return;
+            ItemStack[] defenderArmor = defenderEquipment.getArmorContents();
+            armourReducedDamage = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor);
+            Bukkit.broadcastMessage("Previous Damage " + String.valueOf(event.getDamage()));
 
-        event.setDamage(event.getDamage() / 2);
-        Bukkit.broadcastMessage("Armor Reduced Damage " + String.valueOf(event.getDamage()));
+            if (event.getDamage() - armourReducedDamage <= 0 || armourReducedDamage == -1) {
+                //The defender dodged the attack
+                event.setDamage(0);
+                Bukkit.broadcastMessage("Attack did 0 Damage after armor, dodging");
+                try {
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, defender.getLocation(),
+                            new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 20);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+            } else {
+                event.setDamage(event.getDamage() - armourReducedDamage);
+                Bukkit.broadcastMessage("Armor Reduced Damage " + String.valueOf(event.getDamage()));
+            }
+        //}
     }
 
     /**
@@ -137,7 +164,7 @@ public class DamageListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
+    /*@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
     public void onMobMeleeHitPlayerREDUCETEST(EntityDamageByEntityEvent event) {
         if ((!(event.getDamager() instanceof Monster)) && (event.getDamager().getType() != EntityType.ARROW)) return;
         if (!(event.getEntity() instanceof Player)) return;
@@ -145,7 +172,7 @@ public class DamageListener implements Listener {
 
         event.setDamage(event.getDamage() / 2);
         Bukkit.broadcastMessage("Armor Reduced Damage " + String.valueOf(event.getDamage()));
-    }
+    }*/
 
     /**
      * Listen for Living Entities (Mobs/Players etc) [NOT DISPENSERS] firing projectiles

@@ -61,7 +61,7 @@ public class ArmorGenerator {
         HashMap<Armor.ArmorAttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
 
         for (Armor.ArmorAttributeType aType : attributeTypes) {
-            int i = new DamageMeta().nextArmor(tier, modifier);
+            int i = new DamageMeta().nextArmor(tier, modifier, aType);
             attributeTypeIntegerHashMap.put(aType, i);
             itemLore.add(ChatColor.GREEN + "+" + ChatColor.WHITE + i + " " + aType.getName());
         }
