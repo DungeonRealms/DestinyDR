@@ -48,45 +48,57 @@ public class DamageAPI {
             }
         }
 
+        if (tag.getInt("pureDamage") != 0) {
+            damage += tag.getInt("pureDamage");
+        }
+
+        if (tag.getInt("armorPenetration") != 0) {
+            damage += tag.getInt("armorPenetration");
+        }
+
+        if (tag.getInt("accuracy") != 0) {
+            damage += tag.getInt("accuracy");
+        }
+
+        LivingEntity leReceiver = (LivingEntity) reciever;
         //TODO: THIS WAS BEING USED IN DR BUT THE TIER OF THE ITEM WAS HARDCODED TO 0. WHY? NO CLUE. SHOULD WE KEEP OR REMOVE?
         if (tag.getInt("fireDamage") != 0) {
             switch (weaponTier) {
                 case 0:
-                    reciever.setFireTicks(15);
+                    leReceiver.setFireTicks(15);
                     break;
                 case 1:
-                    reciever.setFireTicks(25);
+                    leReceiver.setFireTicks(25);
                     break;
                 case 2:
-                    reciever.setFireTicks(30);
+                    leReceiver.setFireTicks(30);
                     break;
                 case 3:
-                    reciever.setFireTicks(35);
+                    leReceiver.setFireTicks(35);
                     break;
                 case 4:
-                    reciever.setFireTicks(40);
+                    leReceiver.setFireTicks(40);
                     break;
             }
             damage += tag.getInt("fireDamage");
         }
 
-        LivingEntity le = (LivingEntity) reciever;
         if (tag.getInt("iceDamage") != 0) {
             switch (weaponTier) {
                 case 0:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 0));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 0));
                     break;
                 case 1:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 0));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 0));
                     break;
                 case 2:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 0));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 0));
                     break;
                 case 3:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
                     break;
                 case 4:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 1));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 1));
                     break;
             }
             damage += tag.getInt("iceDamage");
@@ -95,32 +107,34 @@ public class DamageAPI {
         if (tag.getInt("poisonDamage") != 0) {
             switch (weaponTier) {
                 case 0:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
                     break;
                 case 1:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 0));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 0));
                     break;
                 case 2:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 0));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 0));
                     break;
                 case 3:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 1));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 1));
                     break;
                 case 4:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 1));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 1));
                     break;
             }
             damage += tag.getInt("poisonDamage");
         }
 
         if (tag.getInt("criticalHit") != 0) {
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, reciever.getLocation(),
-                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 50);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            if (new Random().nextInt(99) < tag.getInt("criticalHit")) {
+                try {
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, reciever.getLocation(),
+                            new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 50);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                isHitCrit = true;
             }
-            isHitCrit = true;
         }
 
         if (tag.getInt("lifesteal") != 0) {
@@ -130,10 +144,10 @@ public class DamageAPI {
         if (tag.getInt("blind") != 0) {
             boolean canTargetBeBlinded = false;
             if (new Random().nextInt(99) < tag.getInt("blind")) {
-                if (!le.hasPotionEffect(PotionEffectType.BLINDNESS)) {
+                if (!leReceiver.hasPotionEffect(PotionEffectType.BLINDNESS)) {
                     canTargetBeBlinded = true;
-                } else if (le.hasMetadata("blind")) {
-                    long last_blind = le.getMetadata("blind").get(0).asLong();
+                } else if (leReceiver.hasMetadata("blind")) {
+                    long last_blind = leReceiver.getMetadata("blind").get(0).asLong();
                     if ((System.currentTimeMillis() - last_blind) <= (10 * 1000)) {
                         // Less than 10 seconds, do nothing.
                         canTargetBeBlinded = false;
@@ -143,22 +157,22 @@ public class DamageAPI {
                 if (canTargetBeBlinded) {
                     switch (weaponTier) {
                         case 0:
-                            le.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 30, 1));
+                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 30, 1));
                             break;
                         case 1:
-                            le.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1));
+                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1));
                             break;
                         case 2:
-                            le.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 1));
+                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 1));
                             break;
                         case 3:
-                            le.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
+                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
                             break;
                         case 4:
-                            le.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
+                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
                             break;
                     }
-                    le.setMetadata("blind", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+                    leReceiver.setMetadata("blind", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                 }
             }
         }
@@ -214,6 +228,18 @@ public class DamageAPI {
                     // TODO: PROBABLY CHANGE
                 }
             }
+        }
+
+        if (reciever.getMetadata("pureDamage").get(0).asInt() != 0) {
+            damage += reciever.getMetadata("pureDamage").get(0).asInt();
+        }
+
+        if (reciever.getMetadata("armorPenetration").get(0).asInt() != 0) {
+            damage += reciever.getMetadata("armorPenetration").get(0).asInt();
+        }
+
+        if (reciever.getMetadata("accuracy").get(0).asInt() != 0) {
+            damage += reciever.getMetadata("accuracy").get(0).asInt();
         }
 
         LivingEntity leReceiver = (LivingEntity) reciever;
@@ -282,13 +308,15 @@ public class DamageAPI {
         }
 
         if (projectile.getMetadata("criticalHit").get(0).asInt() != 0) {
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, reciever.getLocation(),
-                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 50);
-            } catch (Exception ex) {
-                ex.printStackTrace();
+            if (new Random().nextInt(99) < projectile.getMetadata("criticalHit").get(0).asInt()) {
+                try {
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, reciever.getLocation(),
+                            new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 50);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                isHitCrit = true;
             }
-            isHitCrit = true;
         }
 
         if (projectile.getMetadata("lifesteal").get(0).asInt() != 0) {
