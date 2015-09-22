@@ -16,6 +16,11 @@ import java.util.UUID;
  */
 public class TeleportAPI {
 
+    /**
+     * Checks if the player can use their hearthstone
+     * @param uuid
+     * @since 1.0
+     */
     public static boolean canUseHearthstone(UUID uuid) {
         if (Teleportation.PLAYER_TELEPORT_COOLDOWNS.containsKey(uuid)) {
             if (Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(uuid) <= 0) {
@@ -25,18 +30,41 @@ public class TeleportAPI {
         return false;
     }
 
+    /**
+     * Adds a cooldown to the players hearthstone
+     * @param uuid
+     * @since 1.0
+     */
     public static void addPlayerHearthstoneCD(UUID uuid, int cooldown) {
         Teleportation.PLAYER_TELEPORT_COOLDOWNS.put(uuid, cooldown);
     }
 
+    /**
+     * Adds the player to the currently teleporting list
+     * Used for checking if the player is moving/in combat etc
+     * @param uuid
+     * @since 1.0
+     */
     public static void addPlayerCurrentlyTeleporting(UUID uuid, Location location) {
         Teleportation.PLAYERS_TELEPORTING.put(uuid, location);
     }
 
+    /**
+     * Checks if the player is in the currently teleporting list
+     * Used for checking if the player is moving/in combat etc
+     * @param uuid
+     * @since 1.0
+     */
     public static boolean isPlayerCurrentlyTeleporting(UUID uuid) {
         return Teleportation.PLAYERS_TELEPORTING.containsKey(uuid);
     }
 
+    /**
+     * Removes the player to the currently teleporting list
+     * Used for checking if the player is moving/in combat etc
+     * @param uuid
+     * @since 1.0
+     */
     public static boolean removePlayerCurrentlyTeleporting(UUID uuid) {
         if (Teleportation.PLAYERS_TELEPORTING.containsKey(uuid)) {
             Teleportation.PLAYERS_TELEPORTING.remove(uuid);
@@ -45,10 +73,20 @@ public class TeleportAPI {
         return false;
     }
 
+    /**
+     * Gets the players cooldown on hearthstone usage
+     * @param uuid
+     * @since 1.0
+     */
     public static int getPlayerHearthstoneCD(UUID uuid) {
         return Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(uuid);
     }
 
+    /**
+     * Checks if the item is a teleportation book
+     * @param itemStack
+     * @since 1.0
+     */
     public static boolean isTeleportBook(ItemStack itemStack) {
         if (itemStack.getType() != Material.BOOK) {
             return false;
@@ -64,6 +102,11 @@ public class TeleportAPI {
         return true;
     }
 
+    /**
+     * Checks if the item is a hearthstone
+     * @param itemStack
+     * @since 1.0
+     */
     public static boolean isHearthstone(ItemStack itemStack) {
         if (itemStack.getType() != Material.QUARTZ) {
             return false;
@@ -79,6 +122,11 @@ public class TeleportAPI {
         return true;
     }
 
+    /**
+     * Gets the location of a players hearthstone from Mongo
+     * @param uuid
+     * @since 1.0
+     */
     public static String getLocationFromDatabase(UUID uuid) {
         if (DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid) != null) {
             return DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid).toString();
@@ -87,6 +135,11 @@ public class TeleportAPI {
         }
     }
 
+    /**
+     * Gets the location of a teleport from a given string
+     * @param location
+     * @since 1.0
+     */
     public static Location getLocationFromString(String location) {
         switch (location) {
             case "starter": {
@@ -119,6 +172,10 @@ public class TeleportAPI {
         }
     }
 
+    /**
+     * Returns a random string "location"
+     * @since 1.0
+     */
     public static String getRandomTeleportString() {
         switch (new Random().nextInt(6)) {
             case 0: {

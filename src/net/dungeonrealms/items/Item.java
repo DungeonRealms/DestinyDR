@@ -42,19 +42,21 @@ public class Item {
     }
 
     public enum ItemTier {
-        TIER_1(0, new Integer[]{1, 10}, ItemMaterial.WOOD, 3),
-        TIER_2(1, new Integer[]{10, 20}, ItemMaterial.STONE,4),
-        TIER_3(2, new Integer[]{20, 30}, ItemMaterial.IRON,6),
-        TIER_4(3, new Integer[]{30, 40}, ItemMaterial.DIAMOND,8),
-        TIER_5(4, new Integer[]{40, 50}, ItemMaterial.GOLD,13),;
+        TIER_1(0, 1, new Integer[]{1, 10}, ItemMaterial.WOOD, 3),
+        TIER_2(1, 2, new Integer[]{10, 20}, ItemMaterial.STONE, 4),
+        TIER_3(2, 3, new Integer[]{20, 30}, ItemMaterial.IRON, 6),
+        TIER_4(3, 4, new Integer[]{30, 40}, ItemMaterial.DIAMOND, 8),
+        TIER_5(4, 5, new Integer[]{40, 50}, ItemMaterial.GOLD, 13),;
 
         private int id;
+        private int tierId;
         private Integer[] rangeValues;
         private ItemMaterial material;
         private int attributeRange;
 
-        ItemTier(int id, Integer[] rangeValues, ItemMaterial material, int attributeRange) {
+        ItemTier(int id, int tierId, Integer[] rangeValues, ItemMaterial material, int attributeRange) {
             this.id = id;
+            this.tierId = tierId;
             this.rangeValues = rangeValues;
             this.material = material;
             this.attributeRange = attributeRange;
@@ -62,6 +64,10 @@ public class Item {
 
         public int getId() {
             return id;
+        }
+
+        public int getTierId() {
+            return tierId;
         }
 
         public Integer[] getRangeValues() {
@@ -134,7 +140,8 @@ public class Item {
         DEXTERITY(10, "Dexterity", "deterity"),
         ICE_DAMAGE(11, "IceDamage", "iceDamage"),
         FIRE_DAMAGE(12, "FireDamage", "fireDamage"),
-        ACCURACY(13, "Accuracy", "accuracy"),;
+        POISON_DAMAGE(13, "PoisonDamage", "poisonDamage"),
+        ACCURACY(14, "Accuracy", "accuracy");
 
         private int id;
         private String name;

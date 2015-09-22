@@ -3,12 +3,10 @@
  */
 package net.dungeonrealms.duel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
-
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mechanics.ItemManager;
+import net.md_5.bungee.api.ChatColor;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -17,10 +15,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mechanics.ItemManager;
-import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Created by Chase on Sep 20, 2015
@@ -138,7 +135,7 @@ public class DuelMechanics {
 	}
 
 	/**
-	 * @param player
+	 * @param uuid
 	 * @return
 	 */
 	public static DuelWager getWager(UUID uuid) {
