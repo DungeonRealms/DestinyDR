@@ -1,6 +1,7 @@
 package net.dungeonrealms.commands;
 
 import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -42,9 +43,12 @@ public class CommandAdd implements CommandExecutor {
                 case "weapon":
                     player.getInventory().addItem(new ItemGenerator().next());
                     break;
+                case "armor":
+                    player.getInventory().addItem(new ArmorGenerator().next());
+                    break;
                 case "particle":
                     if (args[1] != null)
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.getById(Integer.valueOf(args[1])),player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
+                        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.getById(Integer.valueOf(args[1])), player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
                     break;
             }
         }

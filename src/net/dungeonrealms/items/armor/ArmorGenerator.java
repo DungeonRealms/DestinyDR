@@ -1,6 +1,8 @@
-package net.dungeonrealms.items;
+package net.dungeonrealms.items.armor;
 
-import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.items.DamageMeta;
+import net.dungeonrealms.items.Item;
+import net.dungeonrealms.items.NameGenerator;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagInt;
 import net.minecraft.server.v1_8_R3.NBTTagList;
@@ -14,12 +16,12 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.*;
 
 /**
- * Created by Nick on 9/19/2015.
+ * Created by Nick on 9/21/2015.
  */
-public class ItemGenerator {
+public class ArmorGenerator {
 
     /**
-     * Get a defined "random"istic item.
+     * Get a defined ArmorStack.
      *
      * @param type
      * @param tier
@@ -27,61 +29,59 @@ public class ItemGenerator {
      * @return
      * @since 1.0
      */
-    public ItemStack getDefinedStack(Item.ItemType type, Item.ItemTier tier, Item.ItemModifier modifier) {
-        return getWeapon(type, tier, modifier);
+    public ItemStack getDefinedStack(Armor.EquipmentType type, Armor.ArmorTier tier, Armor.ArmorModifier modifier) {
+        return getArmor(type, tier, modifier);
     }
 
     /**
-     * allows, new ItemGenerator().next() -> ItemStack.
+     * Gets a random set of armor.
      *
      * @return
      * @since 1.0
      */
     public ItemStack next() {
-        return getWeapon(getRandomItemType(), getRandomItemTier(), getRandomItemModifier());
+        return getArmor(getRandomEquipmentType(), getRandomItemTier(), getRandomItemModifier());
     }
 
     /**
      * Used for the next() method above.
      *
-     * @param type
      * @param tier
      * @param modifier
      * @return
      * @since 1.0
      */
-    ItemStack getWeapon(Item.ItemType type, Item.ItemTier tier, Item.ItemModifier modifier) {
+    ItemStack getArmor(Armor.EquipmentType type, Armor.ArmorTier tier, Armor.ArmorModifier modifier) {
         ItemStack item = getBaseItem(type, tier);
         ArrayList<Item.AttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(tier.getAttributeRange()));
         ItemMeta meta = item.getItemMeta();
         List<String> list = new NameGenerator().next();
         meta.setDisplayName(ChatColor.GRAY + "[" + ChatColor.WHITE + "T" + tier.getTierId() + ChatColor.GRAY + "]" + " " + list.get(0) + " " + list.get(1) + " " + list.get(2));
         List<String> itemLore = new ArrayList<>();
-        itemLore.add(ChatColor.WHITE + "One handed          " + type.getName());
 
         HashMap<Item.AttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
 
         for (Item.AttributeType aType : attributeTypes) {
-            int i = new DamageMeta().nextWeapon(tier, modifier, aType);
+            int i = new DamageMeta().nextArmor(tier, modifier);
             attributeTypeIntegerHashMap.put(aType, i);
             itemLore.add(ChatColor.GREEN + "+" + ChatColor.WHITE + i + " " + aType.getName());
         }
         itemLore.add(ChatColor.GRAY + "Requires Level: " + ChatColor.GOLD + String.valueOf(tier.getRangeValues()[0]));
-        itemLore.add(ChatColor.GRAY + "Item Level: " + ChatColor.GOLD + 738);
-        itemLore.add(ChatColor.GRAY + "Item Tier: " + ChatColor.GOLD + tier.getTierId());
-        itemLore.add(ChatColor.GRAY + "Item Rarity: " + modifier.getName());
+        itemLore.add(ChatColor.GRAY + "Armor Level: " + ChatColor.GOLD + 738);
+        itemLore.add(ChatColor.GRAY + "Armor Tier: " + ChatColor.GOLD + tier.getTierId());
+        itemLore.add(ChatColor.GRAY + "Armor Rarity: " + modifier.getName());
         meta.setLore(itemLore);
         item.setItemMeta(meta);
 
         //Time for some NMS on the item, (Backend attributes for reading).
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-        tag.set("type", new NBTTagString("weapon"));
+        tag.set("type", new NBTTagString("armor"));
 
         //Settings NBT for the Attribute Class. () -> itemType, itemTier, itemModifier
-        tag.set("itemType", new NBTTagInt(type.getId()));
-        tag.set("itemTier", new NBTTagInt(tier.getId()));
-        tag.set("itemModifier", new NBTTagInt(modifier.getId()));
+        tag.set("armorType", new NBTTagInt(type.getId()));
+        tag.set("armorTier", new NBTTagInt(tier.getId()));
+        tag.set("armorModifier", new NBTTagInt(modifier.getId()));
 
         /*
         The line below removes the weapons attributes.
@@ -99,33 +99,33 @@ public class ItemGenerator {
     }
 
     /**
-     * Gets a random ItemType
+     * Gets a random Equipment.
      *
      * @return
      * @since 1.0
      */
-    public Item.ItemType getRandomItemType() {
-        return Item.ItemType.getById(new Random().nextInt(Item.ItemType.values().length - 0) + 0);
+    public Armor.EquipmentType getRandomEquipmentType() {
+        return Armor.EquipmentType.getById(new Random().nextInt(Armor.EquipmentType.values().length - 0) + 0);
     }
 
     /**
-     * Gets a radnom ItemTier
+     * Gets a random Armor Tier
      *
      * @return
      * @since 1.0
      */
-    public Item.ItemTier getRandomItemTier() {
-        return Item.ItemTier.getById(new Random().nextInt(Item.ItemTier.values().length - 0) + 0);
+    public Armor.ArmorTier getRandomItemTier() {
+        return Armor.ArmorTier.getById(new Random().nextInt(Armor.ArmorTier.values().length - 0) + 0);
     }
 
     /**
-     * Gets a random ItemModifier
+     * Gets a random ArmorModifier
      *
      * @return
      * @since 1.0
      */
-    public Item.ItemModifier getRandomItemModifier() {
-        return Item.ItemModifier.getById(new Random().nextInt(Item.ItemModifier.values().length - 0) + 0);
+    public Armor.ArmorModifier getRandomItemModifier() {
+        return Armor.ArmorModifier.getById(new Random().nextInt(Armor.ArmorModifier.values().length - 0) + 0);
     }
 
     /**
@@ -153,70 +153,66 @@ public class ItemGenerator {
     /**
      * Returns ItemStack Material based on item type and tier.
      *
-     * @param type
      * @param tier
      * @return
      * @since 1.0
      */
-    ItemStack getBaseItem(Item.ItemType type, Item.ItemTier tier) {
+    ItemStack getBaseItem(Armor.EquipmentType type, Armor.ArmorTier tier) {
         switch (type) {
-            case SWORD:
+            case HELMET:
                 switch (tier) {
                     case TIER_1:
-                        return new ItemStack(Material.WOOD_SWORD);
+                        return new ItemStack(Material.LEATHER_HELMET);
                     case TIER_2:
-                        return new ItemStack(Material.STONE_SWORD);
+                        return new ItemStack(Material.CHAINMAIL_HELMET);
                     case TIER_3:
-                        return new ItemStack(Material.IRON_SWORD);
+                        return new ItemStack(Material.IRON_HELMET);
                     case TIER_4:
-                        return new ItemStack(Material.DIAMOND_SWORD);
+                        return new ItemStack(Material.DIAMOND_HELMET);
                     case TIER_5:
-                        return new ItemStack(Material.GOLD_SWORD);
+                        return new ItemStack(Material.GOLD_HELMET);
                 }
-            case AXE:
+            case CHESTPLATE:
                 switch (tier) {
                     case TIER_1:
-                        return new ItemStack(Material.WOOD_AXE);
+                        return new ItemStack(Material.LEATHER_CHESTPLATE);
                     case TIER_2:
-                        return new ItemStack(Material.STONE_AXE);
+                        return new ItemStack(Material.CHAINMAIL_CHESTPLATE);
                     case TIER_3:
-                        return new ItemStack(Material.IRON_AXE);
+                        return new ItemStack(Material.IRON_CHESTPLATE);
                     case TIER_4:
-                        return new ItemStack(Material.DIAMOND_AXE);
+                        return new ItemStack(Material.DIAMOND_CHESTPLATE);
                     case TIER_5:
-                        return new ItemStack(Material.GOLD_AXE);
+                        return new ItemStack(Material.GOLD_CHESTPLATE);
                 }
-            case POLE_ARM:
+            case LEGGINGS:
                 switch (tier) {
                     case TIER_1:
-                        return new ItemStack(Material.WOOD_SPADE);
+                        return new ItemStack(Material.LEATHER_CHESTPLATE);
                     case TIER_2:
-                        return new ItemStack(Material.STONE_SPADE);
+                        return new ItemStack(Material.CHAINMAIL_CHESTPLATE);
                     case TIER_3:
-                        return new ItemStack(Material.IRON_SPADE);
+                        return new ItemStack(Material.IRON_CHESTPLATE);
                     case TIER_4:
-                        return new ItemStack(Material.DIAMOND_SPADE);
+                        return new ItemStack(Material.DIAMOND_CHESTPLATE);
                     case TIER_5:
-                        return new ItemStack(Material.GOLD_SPADE);
+                        return new ItemStack(Material.GOLD_CHESTPLATE);
                 }
-            case STAFF:
+            case BOOTS:
                 switch (tier) {
                     case TIER_1:
-                        return new ItemStack(Material.WOOD_HOE);
+                        return new ItemStack(Material.LEATHER_CHESTPLATE);
                     case TIER_2:
-                        return new ItemStack(Material.STONE_HOE);
+                        return new ItemStack(Material.CHAINMAIL_CHESTPLATE);
                     case TIER_3:
-                        return new ItemStack(Material.IRON_HOE);
+                        return new ItemStack(Material.IRON_CHESTPLATE);
                     case TIER_4:
-                        return new ItemStack(Material.DIAMOND_HOE);
+                        return new ItemStack(Material.DIAMOND_CHESTPLATE);
                     case TIER_5:
-                        return new ItemStack(Material.GOLD_HOE);
+                        return new ItemStack(Material.GOLD_CHESTPLATE);
                 }
-            case BOW:
-                return new ItemStack(Material.BOW);
-            default:
-                Utils.log.warning("ItemGenerator couldn't find getBaseItem().. " + type.getName());
         }
         return null;
     }
 }
+
