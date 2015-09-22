@@ -70,7 +70,7 @@ public class MetadataUtils {
      * @param projectile
      * @since 1.0
      */
-    public static void registerProjectileMetadata(NBTTagCompound tag, Projectile projectile) {
+    public static void registerProjectileMetadata(NBTTagCompound tag, Projectile projectile, int weaponTier) {
         projectile.setMetadata("damage", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getDouble("damage")));
         projectile.setMetadata("vsPlayers", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("vsPlayers")));
         projectile.setMetadata("vsMonsters", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("vsMonsters")));
@@ -85,6 +85,6 @@ public class MetadataUtils {
         projectile.setMetadata("vitality", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("vitality")));
         projectile.setMetadata("accuracy", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("accuracy")));
         projectile.setMetadata("deterity", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("deterity")));
-        projectile.setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("tier")));
+        projectile.setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), weaponTier));
     }
 }

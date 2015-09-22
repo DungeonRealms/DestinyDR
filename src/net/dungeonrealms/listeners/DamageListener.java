@@ -2,6 +2,7 @@ package net.dungeonrealms.listeners;
 
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.NMSUtils;
@@ -114,8 +115,9 @@ public class DamageListener implements Listener {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(shooter.getItemInHand()));
         if (nmsItem == null || nmsItem.getTag() == null) return;
         //Get the NBT of the item the player is holding.
+        int weaponTier = new Attribute(shooter.getItemInHand()).getItemTier().getId();
         NBTTagCompound tag = nmsItem.getTag();
-        MetadataUtils.registerProjectileMetadata(tag, event.getEntity());
+        MetadataUtils.registerProjectileMetadata(tag, event.getEntity(), weaponTier);
         Bukkit.broadcastMessage("Projectile Meta Registered");
     }
 

@@ -1,5 +1,6 @@
 package net.dungeonrealms.items;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
@@ -8,6 +9,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -126,7 +128,39 @@ public class DamageAPI {
         }
 
         if (tag.getInt("blind") != 0) {
-            //TODO: BLIND. NOT SURE IF WE WANT THIS. PRETTY RETARDED
+            boolean canTargetBeBlinded = false;
+            if (new Random().nextInt(99) < tag.getInt("blind")) {
+                if (!le.hasPotionEffect(PotionEffectType.BLINDNESS)) {
+                    canTargetBeBlinded = true;
+                } else if (le.hasMetadata("blind")) {
+                    long last_blind = le.getMetadata("blind").get(0).asLong();
+                    if ((System.currentTimeMillis() - last_blind) <= (10 * 1000)) {
+                        // Less than 10 seconds, do nothing.
+                        canTargetBeBlinded = false;
+                    }
+                }
+
+                if (canTargetBeBlinded) {
+                    switch (weaponTier) {
+                        case 0:
+                            le.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 30, 1));
+                            break;
+                        case 1:
+                            le.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1));
+                            break;
+                        case 2:
+                            le.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 1));
+                            break;
+                        case 3:
+                            le.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
+                            break;
+                        case 4:
+                            le.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
+                            break;
+                    }
+                    le.setMetadata("blind", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+                }
+            }
         }
 
         if (attacker.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
@@ -182,45 +216,45 @@ public class DamageAPI {
             }
         }
 
+        LivingEntity leReceiver = (LivingEntity) reciever;
         //TODO: THIS WAS BEING USED IN DR BUT THE TIER OF THE ITEM WAS HARDCODED TO 0. WHY? NO CLUE. SHOULD WE KEEP OR REMOVE?
         if (projectile.getMetadata("fireDamage").get(0).asInt() != 0) {
             switch (projectile.getMetadata("tier").get(0).asInt()) {
                 case 0:
-                    reciever.setFireTicks(15);
+                    leReceiver.setFireTicks(15);
                     break;
                 case 1:
-                    reciever.setFireTicks(25);
+                    leReceiver.setFireTicks(25);
                     break;
                 case 2:
-                    reciever.setFireTicks(30);
+                    leReceiver.setFireTicks(30);
                     break;
                 case 3:
-                    reciever.setFireTicks(35);
+                    leReceiver.setFireTicks(35);
                     break;
                 case 4:
-                    reciever.setFireTicks(40);
+                    leReceiver.setFireTicks(40);
                     break;
             }
             damage += projectile.getMetadata("fireDamage").get(0).asInt();
         }
 
-        LivingEntity le = (LivingEntity) reciever;
         if (projectile.getMetadata("iceDamage").get(0).asInt() != 0) {
             switch (projectile.getMetadata("tier").get(0).asInt()) {
                 case 0:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 0));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 0));
                     break;
                 case 1:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 0));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 0));
                     break;
                 case 2:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 0));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 0));
                     break;
                 case 3:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
                     break;
                 case 4:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 1));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 1));
                     break;
             }
             damage +=  projectile.getMetadata("iceDamage").get(0).asInt();
@@ -229,19 +263,19 @@ public class DamageAPI {
         if (projectile.getMetadata("poisonDamage").get(0).asInt() != 0) {
             switch (projectile.getMetadata("tier").get(0).asInt()) {
                 case 0:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
                     break;
                 case 1:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 0));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 0));
                     break;
                 case 2:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 0));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 0));
                     break;
                 case 3:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 1));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 1));
                     break;
                 case 4:
-                    le.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 1));
+                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 1));
                     break;
             }
             damage +=  projectile.getMetadata("poisonDamage").get(0).asInt();
@@ -262,7 +296,39 @@ public class DamageAPI {
         }
 
         if (projectile.getMetadata("blind").get(0).asInt() != 0) {
-            //TODO: BLIND. NOT SURE IF WE WANT THIS. PRETTY RETARDED
+            boolean canTargetBeBlinded = false;
+            if (new Random().nextInt(99) < projectile.getMetadata("blind").get(0).asInt()) {
+                if (!leReceiver.hasPotionEffect(PotionEffectType.BLINDNESS)) {
+                    canTargetBeBlinded = true;
+                } else if (leReceiver.hasMetadata("blind")) {
+                    long last_blind = leReceiver.getMetadata("blind").get(0).asLong();
+                    if ((System.currentTimeMillis() - last_blind) <= (10 * 1000)) {
+                        // Less than 10 seconds, do nothing.
+                        canTargetBeBlinded = false;
+                    }
+                }
+
+                if (canTargetBeBlinded) {
+                    switch (projectile.getMetadata("tier").get(0).asInt()) {
+                        case 0:
+                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 30, 1));
+                            break;
+                        case 1:
+                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1));
+                            break;
+                        case 2:
+                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 1));
+                            break;
+                        case 3:
+                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
+                            break;
+                        case 4:
+                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
+                            break;
+                    }
+                    leReceiver.setMetadata("blind", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+                }
+            }
         }
 
         if (attacker.hasPotionEffect(PotionEffectType.INCREASE_DAMAGE)) {
