@@ -1,7 +1,16 @@
 package net.dungeonrealms.listeners;
 
-import java.util.Map;
-
+import com.connorlinfoot.bountifulapi.BountifulAPI;
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.duel.DuelMechanics;
+import net.dungeonrealms.duel.DuelWager;
+import net.dungeonrealms.entities.utils.EntityAPI;
+import net.dungeonrealms.mechanics.PlayerManager;
+import net.dungeonrealms.mechanics.WebAPI;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.teleportation.TeleportAPI;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -14,18 +23,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 
-import com.connorlinfoot.bountifulapi.BountifulAPI;
-
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.duel.DuelMechanics;
-import net.dungeonrealms.duel.DuelWager;
-import net.dungeonrealms.entities.utils.EntityAPI;
-import net.dungeonrealms.mechanics.PlayerManager;
-import net.dungeonrealms.mechanics.WebAPI;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.teleportation.TeleportAPI;
-import net.md_5.bungee.api.ChatColor;
+import java.util.Map;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -148,52 +146,50 @@ public class MainListener implements Listener {
 	//mostly duel mechanics.
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void playerPunchPlayer(EntityDamageByEntityEvent e) {
-		if (e.getEntity() instanceof Player && e.getDamager() instanceof Player) {
-			Player p1 = (Player) e.getDamager();
-			Player p2 = (Player) e.getEntity();
-			if (API.isInPVPRegion(p1.getUniqueId()) && API.isInPVPRegion(p2.getUniqueId()))
-			return;
-			if (DuelMechanics.isDueling(p2.getUniqueId())) {
-			// If player they're punching is their duel partner
-			if (DuelMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
-				if (p2.getHealth() - e.getDamage() <= 0) {
-					// if they're gonna die this hit end duel
-					DuelWager wager = DuelMechanics.getWager(p1.getUniqueId());
-					if (wager != null) {
-						e.setCancelled(true);
-						p2.setHealth(0.5);
-						wager.endDuel(p1, p2);
-					}
-				}
-			} else
-				p1.sendMessage("That's not you're dueling partner!");
-			} else {
-			e.setCancelled(true);
-			if (DuelMechanics.isOnCooldown(p1.getUniqueId())) {
-				p1.sendMessage(ChatColor.RED + "You must wait to send another Duel Request");
-				return;
-			}
-			if (DuelMechanics.isPendingDuel(p1.getUniqueId())) {
-				if (DuelMechanics.isPendingDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
-					DuelMechanics.launchWager(p1, p2);
-					// Remove from pending
-					DuelMechanics.cancelRequestedDuel(p1.getUniqueId());
-				} else {
-					if (!DuelMechanics.isOnCooldown(p1.getUniqueId())) {
-						DuelMechanics.cancelRequestedDuel(p1.getUniqueId());
-						DuelMechanics.sendDuelRequest(p1.getUniqueId(), p2.getUniqueId());
-					} else {
-						p1.sendMessage(ChatColor.RED + "You must wait to send another Duel Request");
-						return;
-					}
+		if (!(e.getEntity() instanceof Player && e.getDamager() instanceof Player)) return;
+		Player p1 = (Player) e.getDamager();
+		Player p2 = (Player) e.getEntity();
+		if (API.isInPVPRegion(p1.getUniqueId()) && API.isInPVPRegion(p2.getUniqueId())) return;
+		if (DuelMechanics.isDueling(p2.getUniqueId())) {
+        // If player they're punching is their duel partner
+        if (DuelMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
+            if (p2.getHealth() - e.getDamage() <= 0) {
+                // if they're gonna die this hit end duel
+                DuelWager wager = DuelMechanics.getWager(p1.getUniqueId());
+                if (wager != null) {
+                    e.setCancelled(true);
+                    p2.setHealth(0.5);
+                    wager.endDuel(p1, p2);
+                }
+            }
+        } else
+            p1.sendMessage("That's not you're dueling partner!");
+        } else {
+        e.setCancelled(true);
+        if (DuelMechanics.isOnCooldown(p1.getUniqueId())) {
+            p1.sendMessage(ChatColor.RED + "You must wait to send another Duel Request");
+            return;
+        }
+        if (DuelMechanics.isPendingDuel(p1.getUniqueId())) {
+            if (DuelMechanics.isPendingDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
+                DuelMechanics.launchWager(p1, p2);
+                // Remove from pending
+                DuelMechanics.cancelRequestedDuel(p1.getUniqueId());
+            } else {
+                if (!DuelMechanics.isOnCooldown(p1.getUniqueId())) {
+                    DuelMechanics.cancelRequestedDuel(p1.getUniqueId());
+                    DuelMechanics.sendDuelRequest(p1.getUniqueId(), p2.getUniqueId());
+                } else {
+                    p1.sendMessage(ChatColor.RED + "You must wait to send another Duel Request");
+                    return;
+                }
 
-				}
-			} else {
-				if (DuelMechanics.isPendingDuel(p2.getUniqueId()))
-					DuelMechanics.cancelRequestedDuel(p2.getUniqueId());
-				DuelMechanics.sendDuelRequest(p1.getUniqueId(), p2.getUniqueId());
-			}
-			}
-		}
+            }
+        } else {
+            if (DuelMechanics.isPendingDuel(p2.getUniqueId()))
+                DuelMechanics.cancelRequestedDuel(p2.getUniqueId());
+            DuelMechanics.sendDuelRequest(p1.getUniqueId(), p2.getUniqueId());
+        }
+        }
 	}
 }

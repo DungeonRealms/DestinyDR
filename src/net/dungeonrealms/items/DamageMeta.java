@@ -1,6 +1,6 @@
 package net.dungeonrealms.items;
 
-import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.items.armor.Armor;
 
 import java.util.Random;
 
@@ -9,7 +9,26 @@ import java.util.Random;
  */
 public class DamageMeta {
 
-    public int next(Item.ItemTier tier, Item.ItemModifier modifier, Item.AttributeType type) {
+    public int nextArmor(Armor.ArmorTier tier, Armor.ArmorModifier modifier) {
+        switch (tier) {
+            case TIER_1:
+                switch (modifier) {
+                    case COMMON:
+                        return random(1, 6);
+                }
+        }
+        return 0;
+    }
+
+    /**
+     *
+     * @param tier
+     * @param modifier
+     * @param type
+     * @return
+     * @since 1.0
+     */
+    public int nextWeapon(Item.ItemTier tier, Item.ItemModifier modifier, Item.AttributeType type) {
         switch (tier) {
             case TIER_1:
                 switch (modifier) {
@@ -857,7 +876,6 @@ public class DamageMeta {
                 }
                 break;
             default:
-                Utils.log.warning("Unable to switch() data of DamageMeta for " + tier.getMaterial());
         }
         return 0;
     }

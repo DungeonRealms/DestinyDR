@@ -1,28 +1,22 @@
 package net.dungeonrealms.listeners;
 
 import net.dungeonrealms.entities.utils.EntityAPI;
-import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.NMSUtils;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
-import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -62,7 +56,7 @@ public class DamageListener implements Listener {
      * @since 1.0
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
-    public void onPlayerMeleeHitEntity(EntityDamageByEntityEvent event) {
+    public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
         if ((!(event.getDamager() instanceof Player)) && (event.getDamager().getType() != EntityType.ARROW)) return;
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
@@ -79,12 +73,50 @@ public class DamageListener implements Listener {
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);
         } else {
             Arrow attackingArrow = (Arrow) event.getDamager();
+            if (!(((Arrow) event.getDamager()).getShooter() instanceof Player)) return;
             if (attackingArrow.getShooter() != null && attackingArrow.getShooter() instanceof Player) {
                 finalDamage = DamageAPI.calculateProjectileDamage((Player)attackingArrow.getShooter(), event.getEntity(), attackingArrow);
             }
         }
         event.setDamage(finalDamage);
     }
+
+    /**
+     * Listen for the monsters hitting a player
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
+    public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
+        if ((!(event.getDamager() instanceof Monster)) && (event.getDamager().getType() != EntityType.ARROW)) return;
+        if (!(event.getEntity() instanceof Player)) return;
+        //Make sure the player is HOLDING something!
+        double finalDamage = 0;
+        if (event.getDamager() instanceof Monster) {
+            Monster attacker = (Monster) event.getDamager();
+            EntityEquipment attackerEquipment = attacker.getEquipment();
+            if (attackerEquipment.getItemInHand() == null) return;
+            //Check if the item has NBT, all our custom weapons will have NBT.
+            net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attackerEquipment.getItemInHand()));
+            if (nmsItem == null || nmsItem.getTag() == null) {
+                Bukkit.broadcastMessage("MOB " + event.getDamager() + " does not have one of our custom weapons. CHASE!!!!!!");
+                return;
+            }
+            //Get the NBT of the item the player is holding.
+            NBTTagCompound tag = nmsItem.getTag();
+            //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
+            if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
+            finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);
+        } else {
+            Arrow attackingArrow = (Arrow) event.getDamager();
+            if (!(((Arrow) event.getDamager()).getShooter() instanceof Monster)) return;
+            if (attackingArrow.getShooter() != null && attackingArrow.getShooter() instanceof Player) {
+                finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity)attackingArrow.getShooter(), event.getEntity(), attackingArrow);
+            }
+        }
+        event.setDamage(finalDamage);
+    }
+
 
     /**
      * Test to check EventPriorities
@@ -101,21 +133,37 @@ public class DamageListener implements Listener {
     }
 
     /**
-     * Listen for the players firing projectiles
-     * Used to apply metadata from the nbt data of the bow
+     * Test to check EventPriorities
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
+    public void onMobMeleeHitPlayerREDUCETEST(EntityDamageByEntityEvent event) {
+        if ((!(event.getDamager() instanceof Monster)) && (event.getDamager().getType() != EntityType.ARROW)) return;
+        if (!(event.getEntity() instanceof Player)) return;
+        Bukkit.broadcastMessage("Previous Damage " + String.valueOf(event.getDamage()));
+
+        event.setDamage(event.getDamage() / 2);
+        Bukkit.broadcastMessage("Armor Reduced Damage " + String.valueOf(event.getDamage()));
+    }
+
+    /**
+     * Listen for Living Entities (Mobs/Players etc) [NOT DISPENSERS] firing projectiles
+     * Used to apply metadata from the nbt data of the bow in the entities hand
      * @param event
      * @since 1.0
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
-    public void onPlayerFireProjectile(ProjectileLaunchEvent event) {
-        if (!(event.getEntity().getShooter() instanceof Player) &&(event.getEntityType() != EntityType.ARROW)) return;
-        Player shooter = (Player) event.getEntity().getShooter();
-        if (shooter.getItemInHand() == null) return;
+    public void onLivingEntityFireProjectile(ProjectileLaunchEvent event) {
+        if (!(event.getEntity().getShooter() instanceof LivingEntity) &&(event.getEntityType() != EntityType.ARROW)) return;
+        LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
+        EntityEquipment entityEquipment = shooter.getEquipment();
+        if (entityEquipment.getItemInHand() == null) return;
         //Check if the item has NBT, all our custom weapons will have NBT.
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(shooter.getItemInHand()));
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(entityEquipment.getItemInHand()));
         if (nmsItem == null || nmsItem.getTag() == null) return;
         //Get the NBT of the item the player is holding.
-        int weaponTier = new Attribute(shooter.getItemInHand()).getItemTier().getId();
+        int weaponTier = new Attribute(entityEquipment.getItemInHand()).getItemTier().getId();
         NBTTagCompound tag = nmsItem.getTag();
         MetadataUtils.registerProjectileMetadata(tag, event.getEntity(), weaponTier);
         Bukkit.broadcastMessage("Projectile Meta Registered");
@@ -156,6 +204,19 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onEntityDamaged(EntityDamageEvent event) {
         //if (event.getEntity() instanceof Player) return;
+        if (!(event.getEntity().hasMetadata("type"))) return;
+        String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
+        switch (metaValue) {
+            case "pet":
+                event.setCancelled(true);
+                event.getEntity().setFireTicks(0);
+                break;
+            case "mount":
+                event.setCancelled(true);
+                event.getEntity().setFireTicks(0);
+                break;
+            default:
+        }
         if (event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.DROWNING
                 || event.getCause() == DamageCause.FALL || event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.FIRE
                 || event.getCause() == DamageCause.ENTITY_EXPLOSION || event.getCause() == DamageCause.BLOCK_EXPLOSION) {
@@ -190,31 +251,6 @@ public class DamageListener implements Listener {
             }
             EntityAPI.getPlayerMount(event.getEntity().getUniqueId());
             event.getEntity().sendMessage("For it's own safety, your mount has returned to the stable.");
-        }
-    }
-
-    /**
-     * Listen for monsters damaging players
-     * NOT TO BE USED FOR PLAYERS
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void onMonsterDamagePlayer(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player)) return;
-        int finalDamage = 0;
-        Player p = (Player) event.getEntity();
-        net.minecraft.server.v1_8_R3.Entity nmsMonster = NMSUtils.getNMSEntity(event.getDamager());
-        if (event.getDamager().hasMetadata("type") && event.getDamager().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-            EntityStats.Stats stats = EntityStats.getMonsterStats(nmsMonster);
-            Random random = new Random();
-            if (random.nextBoolean()) {
-                finalDamage = stats.atk + random.nextInt(10);
-            } else {
-                finalDamage = stats.atk - random.nextInt(10);
-            }
-            p.sendMessage(finalDamage + "dealt to you");
         }
     }
 }

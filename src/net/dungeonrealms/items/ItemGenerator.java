@@ -19,6 +19,19 @@ import java.util.*;
 public class ItemGenerator {
 
     /**
+     * Get a defined "random"istic item.
+     *
+     * @param type
+     * @param tier
+     * @param modifier
+     * @return
+     * @since 1.0
+     */
+    public ItemStack getDefinedStack(Item.ItemType type, Item.ItemTier tier, Item.ItemModifier modifier) {
+        return getWeapon(type, tier, modifier);
+    }
+
+    /**
      * allows, new ItemGenerator().next() -> ItemStack.
      *
      * @return
@@ -49,7 +62,7 @@ public class ItemGenerator {
         HashMap<Item.AttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
 
         for (Item.AttributeType aType : attributeTypes) {
-            int i = new DamageMeta().next(tier, modifier, aType);
+            int i = new DamageMeta().nextWeapon(tier, modifier, aType);
             attributeTypeIntegerHashMap.put(aType, i);
             itemLore.add(ChatColor.GREEN + "+" + ChatColor.WHITE + i + " " + aType.getName());
         }
@@ -124,11 +137,14 @@ public class ItemGenerator {
      */
     ArrayList<Item.AttributeType> getRandomAttributes(int amountOfAttributes) {
         ArrayList<Item.AttributeType> attributeList = new ArrayList<>();
+        //We always want to add Damage to the Item. Since AttributeModifiers are removed. Completely.
         attributeList.add(Item.AttributeType.DAMAGE);
         for (int i = 0; i < amountOfAttributes; i++) {
             int random = new Random().nextInt(Item.AttributeType.values().length);
             if (!attributeList.contains(Item.AttributeType.getById(random))) {
                 attributeList.add(Item.AttributeType.getById(random));
+            } else {
+                i--;
             }
         }
         return attributeList;
@@ -199,7 +215,7 @@ public class ItemGenerator {
             case BOW:
                 return new ItemStack(Material.BOW);
             default:
-                Utils.log.warning("ItemGenerator couldn't find getBaseItem().. " + type.getName() + " " + tier.getMaterial());
+                Utils.log.warning("ItemGenerator couldn't find getBaseItem().. " + type.getName());
         }
         return null;
     }
