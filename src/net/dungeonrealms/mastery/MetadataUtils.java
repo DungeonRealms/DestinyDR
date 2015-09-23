@@ -4,6 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Projectile;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffectType;
@@ -87,5 +88,6 @@ public class MetadataUtils {
         projectile.setMetadata("accuracy", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("accuracy")));
         projectile.setMetadata("deterity", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("deterity")));
         projectile.setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), weaponTier));
+        Bukkit.broadcastMessage("Reigstered META FOR PROJECTILE");
     }
 }

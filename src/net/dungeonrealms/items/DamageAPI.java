@@ -434,7 +434,7 @@ public class DamageAPI {
      * @param defenderArmor
      * @since 1.0
      */
-    public static double calculateArmorReduction(LivingEntity attacker, Entity defender, ItemStack[] defenderArmor) {
+    public static double calculateArmorReduction(Entity attacker, Entity defender, ItemStack[] defenderArmor) {
         double damageToBlock[] = new double[4];
         double totalArmorReduction;
         NBTTagCompound nmsTags[] = new NBTTagCompound[4];

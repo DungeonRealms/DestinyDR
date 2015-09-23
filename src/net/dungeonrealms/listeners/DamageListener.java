@@ -36,6 +36,7 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBuffExplode(EntityExplodeEvent event) {
+        event.blockList().clear();
         if (!(event.getEntity().hasMetadata("type"))) return;
         if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("buff")) {
             event.setCancelled(true);
@@ -62,7 +63,7 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
-        if ((!(event.getDamager() instanceof Player)) && (event.getDamager().getType() != EntityType.ARROW)) return;
+        if ((!(event.getDamager() instanceof Player)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL))) return;
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
         if (event.getDamager() instanceof Player) {
@@ -77,11 +78,17 @@ public class DamageListener implements Listener {
             if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
             attacker.getItemInHand().setDurability(((short) -1));
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);
-        } else {
+        } else if (event.getDamager().getType() == EntityType.ARROW) {
             Arrow attackingArrow = (Arrow) event.getDamager();
-            if (!(((Arrow) event.getDamager()).getShooter() instanceof Player)) return;
+            if (!(attackingArrow.getShooter() instanceof Player)) return;
             if (attackingArrow.getShooter() != null && attackingArrow.getShooter() instanceof Player) {
                 finalDamage = DamageAPI.calculateProjectileDamage((Player)attackingArrow.getShooter(), event.getEntity(), attackingArrow);
+            }
+        } else if (event.getDamager().getType() == EntityType.WITHER_SKULL) {
+            WitherSkull staffProjectile = (WitherSkull) event.getDamager();
+            if (!(staffProjectile.getShooter() instanceof Player)) return;
+            if (staffProjectile.getShooter() != null && staffProjectile.getShooter() instanceof Player) {
+                finalDamage = DamageAPI.calculateProjectileDamage((Player)staffProjectile.getShooter(), event.getEntity(), staffProjectile);
             }
         }
         event.setDamage(finalDamage);
@@ -95,7 +102,7 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
-        if ((!(event.getDamager() instanceof Monster)) && (event.getDamager().getType() != EntityType.ARROW)) return;
+        if ((!(event.getDamager() instanceof Monster)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL))) return;
         if (!(event.getEntity() instanceof Player)) return;
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
@@ -115,12 +122,14 @@ public class DamageListener implements Listener {
             //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
             if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);
-        } else {
+        } else if (event.getDamager().getType() == EntityType.ARROW) {
             Arrow attackingArrow = (Arrow) event.getDamager();
-            if (!(((Arrow) event.getDamager()).getShooter() instanceof Monster)) return;
-            if (attackingArrow.getShooter() != null && attackingArrow.getShooter() instanceof Player) {
-                finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity)attackingArrow.getShooter(), event.getEntity(), attackingArrow);
-            }
+            if (!(attackingArrow.getShooter() instanceof Monster)) return;
+            finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity)attackingArrow.getShooter(), event.getEntity(), attackingArrow);
+        } else if (event.getDamager().getType() == EntityType.WITHER_SKULL) {
+            WitherSkull staffProjectile = (WitherSkull) event.getDamager();
+            if (!(staffProjectile.getShooter() instanceof Monster)) return;
+            finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity)staffProjectile.getShooter(), event.getEntity(), staffProjectile);
         }
         event.setDamage(finalDamage);
     }
@@ -133,22 +142,36 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
     public void onPlayerMeleeHitEntityREDUCETEST(EntityDamageByEntityEvent event) {
-        //if ((!(event.getDamager() instanceof Player)) && (event.getDamager().getType() != EntityType.ARROW)) return;
-        //if (event.getDamager() instanceof Player) {
-            double armourReducedDamage;
+        if ((!(event.getDamager() instanceof LivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
+            return;
+        if (!(event.getEntity() instanceof LivingEntity)) return;
+        double armourReducedDamage = 0;
+        LivingEntity defender = (LivingEntity) event.getEntity();
+        EntityEquipment defenderEquipment = defender.getEquipment();
+        if (defenderEquipment.getArmorContents() == null) return;
+        ItemStack[] defenderArmor = defenderEquipment.getArmorContents();
+        defenderArmor[0].setDurability((short) -1);
+        defenderArmor[1].setDurability((short) -1);
+        defenderArmor[2].setDurability((short) -1);
+        defenderArmor[3].setDurability((short) -1);
+        if (event.getDamager() instanceof LivingEntity) {
             LivingEntity attacker = (LivingEntity) event.getDamager();
-            LivingEntity defender = (LivingEntity) event.getEntity();
-            EntityEquipment defenderEquipment = defender.getEquipment();
-            if (defenderEquipment.getArmorContents() == null) return;
-            ItemStack[] defenderArmor = defenderEquipment.getArmorContents();
-            defenderArmor[0].setDurability((short) -1);
-            defenderArmor[1].setDurability((short) -1);
-            defenderArmor[2].setDurability((short) -1);
-            defenderArmor[3].setDurability((short) -1);
             armourReducedDamage = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor);
             Bukkit.broadcastMessage("Previous Damage " + String.valueOf(event.getDamage()));
-
-            if (event.getDamage() - armourReducedDamage <= 0 || armourReducedDamage == -1) {
+        } else if (event.getDamager().getType() == EntityType.ARROW) {
+            Arrow attackingArrow = (Arrow) event.getDamager();
+            if (!(attackingArrow.getShooter() instanceof LivingEntity)) return;
+            if (attackingArrow.getShooter() instanceof Monster) {
+                armourReducedDamage = DamageAPI.calculateArmorReduction(attackingArrow, defender, defenderArmor);
+            }
+        } else if (event.getDamager().getType() == EntityType.WITHER_SKULL) {
+            WitherSkull staffProjectile = (WitherSkull) event.getDamager();
+            if (!(staffProjectile.getShooter() instanceof LivingEntity)) return;
+            if (staffProjectile.getShooter() instanceof Monster) {
+                armourReducedDamage = DamageAPI.calculateArmorReduction(staffProjectile, defender, defenderArmor);
+            }
+        }
+        if (event.getDamage() - armourReducedDamage <= 0 || armourReducedDamage == -1) {
                 //The defender dodged the attack
                 event.setDamage(0);
                 Bukkit.broadcastMessage("Attack did 0 Damage after armor, dodging");
@@ -169,7 +192,7 @@ public class DamageListener implements Listener {
                 event.setDamage(event.getDamage() - armourReducedDamage);
                 Bukkit.broadcastMessage("Armor Reduced Damage " + String.valueOf(event.getDamage()));
             }
-        //}
+            //}
     }
 
     /**
@@ -195,7 +218,7 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onLivingEntityFireProjectile(ProjectileLaunchEvent event) {
-        if (!(event.getEntity().getShooter() instanceof LivingEntity) &&(event.getEntityType() != EntityType.ARROW)) return;
+        if (!(event.getEntity().getShooter() instanceof Player) && ((event.getEntityType() != EntityType.ARROW) && (event.getEntityType() != EntityType.WITHER_SKULL))) return;
         LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
         EntityEquipment entityEquipment = shooter.getEquipment();
         if (entityEquipment.getItemInHand() == null) return;
@@ -207,7 +230,6 @@ public class DamageListener implements Listener {
         int weaponTier = new Attribute(entityEquipment.getItemInHand()).getItemTier().getId();
         NBTTagCompound tag = nmsItem.getTag();
         MetadataUtils.registerProjectileMetadata(tag, event.getEntity(), weaponTier);
-        Bukkit.broadcastMessage("Projectile Meta Registered");
     }
 
     /**
