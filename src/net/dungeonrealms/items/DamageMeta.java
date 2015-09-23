@@ -9,15 +9,19 @@ import java.util.Random;
  */
 public class DamageMeta {
 
-    public int nextArmor(Armor.ArmorTier tier, Armor.ArmorModifier modifier) {
+    public int nextArmor(Armor.ArmorTier tier, Armor.ArmorModifier modifier, Armor.ArmorAttributeType type) {
         switch (tier) {
             case TIER_1:
                 switch (modifier) {
                     case COMMON:
-                        return random(1, 6);
+                        switch (type) {
+                            case ARMOR:
+                                return random(1,6);
+                        }
+                        break;
                 }
         }
-        return 0;
+        return 5;
     }
 
     /**

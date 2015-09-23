@@ -35,7 +35,8 @@ public class ParticleAPI {
         LARGE_SMOKE(12, EnumParticle.SMOKE_LARGE),
         RED_DUST(13, EnumParticle.REDSTONE),
         SNOWBALL_POOF(14, EnumParticle.SNOWBALL),
-        SMALL_SMOKE(15, EnumParticle.SMOKE_NORMAL);
+        SMALL_SMOKE(15, EnumParticle.SMOKE_NORMAL),
+        CLOUD(16, EnumParticle.CLOUD);
 
         private int id;
         private EnumParticle particle;

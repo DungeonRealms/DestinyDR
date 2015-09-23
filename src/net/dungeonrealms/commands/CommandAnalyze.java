@@ -32,7 +32,8 @@ public class CommandAnalyze implements CommandExecutor {
                     }
                     player.sendMessage(new String[]{
                             "Type: " + tag.getString("type"),
-                            "Damage: " + tag.getDouble("damage")
+                            "Damage: " + tag.getDouble("damage"),
+                            "Armor: " + tag.getInt("armor")
                     });
                     break;
                 case "lookat":

@@ -118,7 +118,7 @@ public class Armor {
     }
 
     public enum ArmorAttributeType {
-        ARMOR(0, "Armor", "Armor"),
+        ARMOR(0, "Armor", "armor"),
         HEALTH_POINTS(1, "Health Points", "healthPoints"),
         HEALTH_REGEN(2, "Health Regen", "healthRegen"),
         ENERGY(3, "Energy", "energy"),
@@ -157,7 +157,7 @@ public class Armor {
 
         public static ArmorAttributeType getById(int id) {
             for (ArmorAttributeType at : values()) {
-                if (at.id == id) {
+                if (at.getId() == id) {
                     return at;
                 }
             }

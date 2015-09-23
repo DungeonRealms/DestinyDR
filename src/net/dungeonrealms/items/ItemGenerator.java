@@ -54,7 +54,7 @@ public class ItemGenerator {
         ItemStack item = getBaseItem(type, tier);
         ArrayList<Item.AttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(tier.getAttributeRange()));
         ItemMeta meta = item.getItemMeta();
-        List<String> list = new NameGenerator().next();
+        List<String> list = new NameGenerator().next(type);
         meta.setDisplayName(ChatColor.GRAY + "[" + ChatColor.WHITE + "T" + tier.getTierId() + ChatColor.GRAY + "]" + " " + list.get(0) + " " + list.get(1) + " " + list.get(2));
         List<String> itemLore = new ArrayList<>();
         itemLore.add(ChatColor.WHITE + "One handed          " + type.getName());

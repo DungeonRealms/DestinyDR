@@ -54,14 +54,14 @@ public class ArmorGenerator {
         ItemStack item = getBaseItem(type, tier);
         ArrayList<Armor.ArmorAttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(tier.getAttributeRange()));
         ItemMeta meta = item.getItemMeta();
-        List<String> list = new NameGenerator().next();
-        meta.setDisplayName(ChatColor.GRAY + "[" + ChatColor.WHITE + "T" + tier.getTierId() + ChatColor.GRAY + "]" + " " + list.get(0) + " " + list.get(1) + " " + list.get(2));
+        List<String> list = new NameGenerator().next(type);
+        meta.setDisplayName(list.get(0) + " " + list.get(1) + " " + list.get(2));
         List<String> itemLore = new ArrayList<>();
 
         HashMap<Armor.ArmorAttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
 
         for (Armor.ArmorAttributeType aType : attributeTypes) {
-            int i = new DamageMeta().nextArmor(tier, modifier);
+            int i = new DamageMeta().nextArmor(tier, modifier, aType);
             attributeTypeIntegerHashMap.put(aType, i);
             itemLore.add(ChatColor.GREEN + "+" + ChatColor.WHITE + i + " " + aType.getName());
         }

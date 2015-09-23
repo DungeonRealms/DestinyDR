@@ -4,6 +4,8 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -33,7 +35,6 @@ public class DamageAPI {
         ItemStack ourItem = entityEquipment.getItemInHand();
         int weaponTier = new Attribute(ourItem).getItemTier().getId();
         double damage = tag.getDouble("damage");
-        Bukkit.broadcastMessage("base damage" + damage);
         boolean isHitCrit = false;
         if (receiver instanceof Player) {
             if (tag.getInt("vsPlayers") != 0) {
@@ -222,7 +223,6 @@ public class DamageAPI {
         if (isHitCrit) {
             damage = damage * 1.5;
         }
-        Bukkit.broadcastMessage("Final Attack damage: " + damage);
         return damage;
     }
 
@@ -425,5 +425,87 @@ public class DamageAPI {
         }
         Bukkit.broadcastMessage("Final Attack damage: " + damage);
         return damage;
+    }
+
+    /**
+     * Calculates the new damage based on the armor of the defender and the previous damage
+     * @param attacker
+     * @param defender
+     * @param defenderArmor
+     * @since 1.0
+     */
+    public static double calculateArmorReduction(LivingEntity attacker, Entity defender, ItemStack[] defenderArmor) {
+        double damageToBlock[] = new double[4];
+        double totalArmorReduction;
+        NBTTagCompound nmsTags[] = new NBTTagCompound[4];
+        LivingEntity leDefender = (LivingEntity) defender;
+        if (defenderArmor[3].getType() != null && defenderArmor[3].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(defenderArmor[3]).getTag() != null) {
+                nmsTags[0] = CraftItemStack.asNMSCopy(defenderArmor[3]).getTag();
+            }
+        }
+        if (defenderArmor[2].getType() != null && defenderArmor[2].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(defenderArmor[2]).getTag() != null) {
+                nmsTags[1] = CraftItemStack.asNMSCopy(defenderArmor[2]).getTag();
+            }
+        }
+        if (defenderArmor[1].getType() != null && defenderArmor[1].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(defenderArmor[1]).getTag() != null) {
+                nmsTags[2] = CraftItemStack.asNMSCopy(defenderArmor[1]).getTag();
+            }
+        }
+        if (defenderArmor[0] != null && defenderArmor[0].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(defenderArmor[0]).getTag() != null) {
+                nmsTags[3] = CraftItemStack.asNMSCopy(defenderArmor[0]).getTag();
+            }
+        }
+        for (int i = 0; i < nmsTags.length; i++) {
+            if (nmsTags[i] == null) {
+                damageToBlock[i] += 0;
+            } else {
+                damageToBlock[i]= nmsTags[i].getInt("armor");
+                if (nmsTags[i].getInt("block") != 0) {
+                    damageToBlock[i] += nmsTags[0].getInt("block");
+                }
+                if (nmsTags[i].getInt("dodge") != 0) {
+                    if (new Random().nextInt(99) < nmsTags[i].getInt("dodge")) {
+                        if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
+                            leDefender.removePotionEffect(PotionEffectType.SLOW);
+                        }
+                        if (leDefender.hasPotionEffect(PotionEffectType.POISON)) {
+                            leDefender.removePotionEffect(PotionEffectType.POISON);
+                        }
+                        try {
+                            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, defender.getLocation(),
+                                    new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        damageToBlock[i] = -1;
+                    }
+                }
+                if (nmsTags[i].getInt("strength") != 0) {
+                    damageToBlock[i] += nmsTags[i].getInt("strength");
+                }
+                if (nmsTags[i].getInt("fireResistance") != 0) {
+                    if (leDefender.getFireTicks() > 0) {
+                        try {
+                            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPLASH, defender.getLocation(),
+                                    new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        leDefender.setFireTicks(0);
+                        damageToBlock[i] += nmsTags[i].getInt("fireResistance");
+                    }
+                }
+            }
+        }
+        if (damageToBlock[0] == -1 || damageToBlock[1] == -1 || damageToBlock[2] == -1 || damageToBlock[3] == -1) {
+            totalArmorReduction = -1;
+        } else {
+            totalArmorReduction = damageToBlock[0] + damageToBlock[1] + damageToBlock[2] + damageToBlock[3];
+        }
+        return totalArmorReduction;
     }
 }
