@@ -219,7 +219,6 @@ public class FTPUtils {
             Utils.log.warning("[REALM] Unable to find local cache to remove Realm for player " + uuid.toString());
         }
     }
-
     /**
      * The final Zip..
      *
