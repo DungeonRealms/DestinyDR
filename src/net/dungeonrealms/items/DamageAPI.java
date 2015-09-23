@@ -435,7 +435,8 @@ public class DamageAPI {
      * @since 1.0
      */
     public static double calculateArmorReduction(LivingEntity attacker, Entity defender, ItemStack[] defenderArmor) {
-        double damageToBlock = 0;
+        double damageToBlock[] = new double[4];
+        double totalArmorReduction;
         NBTTagCompound nmsTags[] = new NBTTagCompound[4];
         LivingEntity leDefender = (LivingEntity) defender;
         if (defenderArmor[3].getType() != null && defenderArmor[3].getType() != Material.AIR) {
@@ -460,11 +461,11 @@ public class DamageAPI {
         }
         for (int i = 0; i < nmsTags.length; i++) {
             if (nmsTags[i] == null) {
-                damageToBlock += 0;
+                damageToBlock[i] += 0;
             } else {
-                damageToBlock = nmsTags[i].getInt("armor");
+                damageToBlock[i]= nmsTags[i].getInt("armor");
                 if (nmsTags[i].getInt("block") != 0) {
-                    damageToBlock += nmsTags[0].getInt("block");
+                    damageToBlock[i] += nmsTags[0].getInt("block");
                 }
                 if (nmsTags[i].getInt("dodge") != 0) {
                     if (new Random().nextInt(99) < nmsTags[i].getInt("dodge")) {
@@ -480,11 +481,11 @@ public class DamageAPI {
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
-                        damageToBlock = -1;
+                        damageToBlock[i] = -1;
                     }
                 }
                 if (nmsTags[i].getInt("strength") != 0) {
-                    damageToBlock += nmsTags[i].getInt("strength");
+                    damageToBlock[i] += nmsTags[i].getInt("strength");
                 }
                 if (nmsTags[i].getInt("fireResistance") != 0) {
                     if (leDefender.getFireTicks() > 0) {
@@ -495,11 +496,16 @@ public class DamageAPI {
                             ex.printStackTrace();
                         }
                         leDefender.setFireTicks(0);
-                        damageToBlock += nmsTags[i].getInt("fireResistance");
+                        damageToBlock[i] += nmsTags[i].getInt("fireResistance");
                     }
                 }
             }
         }
-        return damageToBlock;
+        if (damageToBlock[0] == -1 || damageToBlock[1] == -1 || damageToBlock[2] == -1 || damageToBlock[3] == -1) {
+            totalArmorReduction = -1;
+        } else {
+            totalArmorReduction = damageToBlock[0] + damageToBlock[1] + damageToBlock[2] + damageToBlock[3];
+        }
+        return totalArmorReduction;
     }
 }
