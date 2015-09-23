@@ -19,11 +19,16 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import com.minebone.anvilapi.core.AnvilApi;
+import com.minebone.anvilapi.nms.anvil.AnvilClickEvent;
+import com.minebone.anvilapi.nms.anvil.AnvilClickEventHandler;
+import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
+import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.mastery.Utils;
@@ -75,9 +80,112 @@ public class BankListener implements Listener {
 					if (e.getCursor() != null) {
 						if (e.getRawSlot() == 8) {
 						if (e.getClick() == ClickType.LEFT) {
-							openHowManyGems(player.getUniqueId());
+							AnvilGUIInterface gui = AnvilApi.createNewGUI(player, new AnvilClickEventHandler() {
+								@Override
+								public void onAnvilClick(final AnvilClickEvent event) {
+									if (event.getSlot() == AnvilSlot.OUTPUT) {
+									int number = 0;
+									try {
+										number = Integer.parseInt(event.getName());
+									} catch (Exception exc) {
+										event.setWillClose(true);
+										event.setWillDestroy(true);
+										Bukkit.getPlayer(event.getPlayerName())
+												.sendMessage("Please enter a valid number");
+										return;
+									}
+									event.setWillClose(true);
+									event.setWillDestroy(true);
+									int currentGems = getPlayerGems(player.getUniqueId());
+									if (number < 0) {
+										player.getPlayer().sendMessage("You can't ask for negative money!");
+									} else if (number > currentGems) {
+										player.getPlayer().sendMessage("You only have " + currentGems);
+									} else {
+										ItemStack stack = BankMechanics.gem.clone();
+										if (hasSpaceInInventory(player.getUniqueId(), number)) {
+											Player p = player.getPlayer();
+											DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(),
+													EnumOperators.$INC, "info.gems", -number);
+											while (number > 0) {
+												while (number > 64) {
+												ItemStack item = stack.clone();
+												item.setAmount(64);
+												p.getInventory().setItem(p.getInventory().firstEmpty(), item);
+												number -= 64;
+												}
+												ItemStack item = stack.clone();
+												item.setAmount(number);
+												p.getInventory().setItem(p.getInventory().firstEmpty(), item);
+												number = 0;
+											}
+											player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
+										}
+									}
+
+									}
+								}
+							});
+							ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
+							ItemMeta meta = stack.getItemMeta();
+							meta.setDisplayName("Withdraw?");
+							stack.setItemMeta(meta);
+							gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
+							player.closeInventory();
+							gui.open();
+							// openHowManyGems(player.getUniqueId());
 						} else if (e.getClick() == ClickType.RIGHT) {
-							openHowMuch(player.getUniqueId());
+							// openHowMuch(player.getUniqueId());
+
+							AnvilGUIInterface gui = AnvilApi.createNewGUI(player, new AnvilClickEventHandler() {
+								@Override
+								public void onAnvilClick(final AnvilClickEvent event) {
+									if (event.getSlot() == AnvilSlot.OUTPUT) {
+									int number = 0;
+									try {
+										number = Integer.parseInt(event.getName());
+									} catch (Exception exc) {
+										event.setWillClose(true);
+										event.setWillDestroy(true);
+										Bukkit.getPlayer(event.getPlayerName())
+												.sendMessage("Please enter a valid number");
+										return;
+									}
+									event.setWillClose(true);
+									event.setWillDestroy(true);
+									int currentGems = getPlayerGems(player.getUniqueId());
+									if (number < 0) {
+										player.getPlayer().sendMessage("You can't ask for negative money!");
+									} else if (number > currentGems) {
+										player.getPlayer().sendMessage("You only have " + currentGems);
+									} else {
+										ItemStack stack = BankMechanics.banknote.clone();
+										ItemMeta meta = stack.getItemMeta();
+										ArrayList<String> lore = new ArrayList<String>();
+										lore.add(ChatColor.BOLD.toString() + "Value: " + ChatColor.WHITE.toString()
+												+ number);
+										meta.setLore(lore);
+										stack.setItemMeta(meta);
+										net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+										nms.getTag().setInt("worth", number);
+										Player p = player.getPlayer();
+										p.getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
+										DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(),
+												EnumOperators.$INC, "info.gems", -number);
+										player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
+										
+									}
+
+									}
+								}
+							});
+							ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
+							ItemMeta meta = stack.getItemMeta();
+							meta.setDisplayName("Withdraw?");
+							stack.setItemMeta(meta);
+							gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
+							player.closeInventory();
+							gui.open();
 						}
 						}
 					}
@@ -434,8 +542,6 @@ public class BankListener implements Listener {
 		storagenms.getTag().setString("type", "storage");
 		inv.setItem(0, CraftItemStack.asBukkitCopy(storagenms));
 
-		
-		
 		ItemMeta meta = bankItem.getItemMeta();
 		meta.setDisplayName(getPlayerGems(uuid) + ChatColor.BOLD.toString() + ChatColor.GREEN + " Gem(s)");
 		ArrayList<String> lore = new ArrayList<>();
