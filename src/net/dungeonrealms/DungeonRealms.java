@@ -6,6 +6,7 @@ import net.dungeonrealms.commands.*;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.listeners.*;
+import net.dungeonrealms.mastery.FTPUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.Database;
@@ -67,6 +68,8 @@ public class DungeonRealms extends JavaPlugin {
         getCommand("lag").setExecutor(new CommandLag());
         getCommand("party").setExecutor(new CommandParty());
         getCommand("set").setExecutor(new CommandSet());
+
+        FTPUtils.startInitialization();
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
 
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "s/");

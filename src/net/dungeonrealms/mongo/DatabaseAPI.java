@@ -28,6 +28,14 @@ public class DatabaseAPI {
     public static volatile HashMap<UUID, Document> PLAYERS = new HashMap<>();
     public static volatile ArrayList<UUID> REQUEST_NEW_DATA = new ArrayList<>();
 
+    /**
+     * Updates a players information in Mongo and returns the updated result.
+     * @param uuid
+     * @param EO
+     * @param variable
+     * @param object
+     * @since 1.0
+     */
     public void update(UUID uuid, EnumOperators EO, String variable, Object object) {
         Database.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable, object)),
                 (result, t) -> {
@@ -38,6 +46,13 @@ public class DatabaseAPI {
                 });
     }
 
+    /**
+     * Returns the object that's requested.
+     * @param data
+     * @param uuid
+     * @return
+     * @since 1.0
+     */
     public Object getData(EnumData data, UUID uuid) {
         switch (data) {
             /*
@@ -69,10 +84,19 @@ public class DatabaseAPI {
         return null;
     }
 
+    /**
+     * Starts the Initialization of DatabaseAPI.
+     */
     public void startInitialization() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> REQUEST_NEW_DATA.forEach(this::requestPlayer), 0, 20l);
     }
 
+    /**
+     * Is fired to grab a player from Mongo
+     * if they don't exist. Fire addNewPlayer() creation.
+     * @param uuid
+     * @since 1.0
+     */
     public void requestPlayer(UUID uuid) {
         Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first((document, throwable) -> {
             if (document == null) {
@@ -86,6 +110,11 @@ public class DatabaseAPI {
         });
     }
 
+    /**
+     * Adds a new player to Mongo Creates Document here.
+     * @param uuid
+     * @since 1.0
+     */
     public void addNewPlayer(UUID uuid) {
         Document newPlayerDocument =
                 new Document("info",
@@ -95,7 +124,7 @@ public class DatabaseAPI {
                                 .append("ecash", 0)
                                 .append("firstLogin", System.currentTimeMillis() / 1000L)
                                 .append("lastLogin", 0l)
-                                .append("netLevel", 0)
+                                .append("netLevel", 1)
                                 .append("experience", 0f)
                                 .append("rank", "DEFAULT")
                                 .append("hearthstone", "starter")

@@ -2,8 +2,10 @@ package net.dungeonrealms.commands;
 
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
+import net.dungeonrealms.mastery.FTPUtils;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.mechanics.XRandom;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagDouble;
 import net.minecraft.server.v1_8_R3.NBTTagString;
@@ -28,6 +30,12 @@ public class CommandAdd implements CommandExecutor {
         Player player = (Player) s;
         if (args.length > 0) {
             switch (args[0]) {
+                case "realm":
+                    new FTPUtils().downloadRealm(player.getUniqueId());
+                    break;
+                case "random":
+                    player.sendMessage("Xorshift is: " + new XRandom().nextInt(Integer.parseInt(args[1])));
+                    break;
                 case "nbt":
                     net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(new ItemStack(Material.STICK));
                     NBTTagCompound tag = nms.getTag() == null ? new NBTTagCompound() : nms.getTag();

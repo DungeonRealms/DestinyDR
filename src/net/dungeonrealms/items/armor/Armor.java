@@ -157,7 +157,7 @@ public class Armor {
 
         public static ArmorAttributeType getById(int id) {
             for (ArmorAttributeType at : values()) {
-                if (at.id == id) {
+                if (at.getId() == id) {
                     return at;
                 }
             }
