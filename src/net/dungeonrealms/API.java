@@ -35,13 +35,20 @@ public class API {
 		}
 		return (WorldGuardPlugin) plugin;
 	}
-
-	public static boolean isInPVPRegion(UUID uuid) {
+	/**
+	 * @param event
+	 * @since 1.0
+	 * Checks if player is in a region that denys PVP
+	 */
+	public static boolean isInSafeRegion(UUID uuid) {
 		Player p = Bukkit.getPlayer(uuid);
 		ApplicableRegionSet region = getWorldGuard().getRegionManager(p.getWorld())
 			.getApplicableRegions(p.getLocation());
 		if (region.getFlag(DefaultFlag.PVP) != null) {
-			return region.allows(DefaultFlag.PVP);
+			if (region.allows(DefaultFlag.PVP))
+			return false;
+			else
+			return true;
 		} else {
 			return false;
 		}

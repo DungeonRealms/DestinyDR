@@ -5,6 +5,7 @@ package net.dungeonrealms.banks;
 
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumOperators;
+import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -21,15 +22,16 @@ import java.util.UUID;
 public class BankMechanics {
 
 	public static ItemStack gem;
+	public static ItemStack banknote;
 
 	public static void init() {
-		gem = loadCurrency();
+		loadCurrency();
 	}
 
 	/**
 	 * @return
 	 */
-	private static ItemStack loadCurrency() {
+	private static void loadCurrency() {
 		ItemStack item = new ItemStack(Material.EMERALD, 1);
 		ItemMeta meta = item.getItemMeta();
 		List<String> lore = new ArrayList<String>();
@@ -41,7 +43,21 @@ public class BankMechanics {
 		NBTTagCompound tag = nms.getTag() == null ? new NBTTagCompound() : nms.getTag();
 		tag.setString("type", "money");
 		nms.setTag(tag);
-		return CraftItemStack.asBukkitCopy(nms);
+		gem = CraftItemStack.asBukkitCopy(nms);
+
+		ItemStack item2 = new ItemStack(Material.PAPER, 1);
+		ItemMeta meta2 = item.getItemMeta();
+		List<String> lore2 = new ArrayList<String>();
+		lore2.add(ChatColor.WHITE.toString() + ChatColor.BOLD.toString() + "Value: " + ChatColor.WHITE.toString());
+		meta2.setLore(lore2);
+		meta2.setDisplayName(ChatColor.GREEN.toString() + "Bank Note");
+		item2.setItemMeta(meta2);
+		net.minecraft.server.v1_8_R3.ItemStack nms2 = CraftItemStack.asNMSCopy(item2);
+		NBTTagCompound tag2 = nms2.getTag() == null ? new NBTTagCompound() : nms2.getTag();
+		tag2.setString("type", "money");
+		tag2.setInt("worth", 0);
+		nms2.setTag(tag2);
+		banknote = CraftItemStack.asBukkitCopy(nms2);
 	}
 
 	/**

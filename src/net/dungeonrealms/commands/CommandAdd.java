@@ -8,6 +8,7 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagDouble;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -15,6 +16,8 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import com.sk89q.worldedit.blocks.Blocks;
 
 import java.util.Random;
 
@@ -50,6 +53,13 @@ public class CommandAdd implements CommandExecutor {
                     if (args[1] != null)
                         ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.getById(Integer.valueOf(args[1])), player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
                     break;
+                case "bank":
+                   net.minecraft.server.v1_8_R3.ItemStack nmsBank = CraftItemStack.asNMSCopy(new ItemStack(Material.ENDER_CHEST));
+                   NBTTagCompound Banktag = nmsBank.getTag() == null ? new NBTTagCompound() : nmsBank.getTag();
+                   Banktag.set("type", new NBTTagString("bank"));
+                   nmsBank.setTag(Banktag);
+                   player.getInventory().addItem(CraftItemStack.asBukkitCopy(nmsBank));
+
             }
         }
 

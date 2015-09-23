@@ -28,6 +28,10 @@ public class CommandSet implements CommandExecutor {
 				int lvl = Integer.parseInt(args[1]);
 				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.netLevel", lvl);
 				s.sendMessage("Level set to " + lvl);
+			case "gems":
+				int gems = Integer.parseInt(args[1]);
+				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.gems", gems);
+				s.sendMessage("Gems set to " + gems);
 			}
 		}
 		return true;

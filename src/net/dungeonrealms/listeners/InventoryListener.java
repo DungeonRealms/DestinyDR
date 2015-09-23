@@ -49,7 +49,11 @@ public class InventoryListener implements Listener {
 	}
 
 	
-	//Handles when the player clicks the duel wager inventory.
+	/**
+	 * @param event
+	 * @since 1.0
+	 * Handling wager inventory, when  a player clicks the inventory.
+	 */	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onDuelWagerClick(InventoryClickEvent e) {
 		if (e.getInventory().getTitle().contains("vs.")) {
@@ -157,9 +161,8 @@ public class InventoryListener implements Listener {
 
 	/**
 	 * @param slot
-	 * @return
+	 * Check if slot is specified slot
 	 */
-	//Checks if the slot, is the specified number.
 	private boolean isLeftSlot(int slot) {
 		int[] left = new int[] { 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21 };
 		for (int i = 0; i < left.length; i++)
@@ -167,15 +170,24 @@ public class InventoryListener implements Listener {
 			return true;
 		return false;
 	}
-
+	/**
+	 * @param event
+	 * @since 1.0
+	 * Dragging is naughty.
+	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onDragItemInDuelWager(InventoryDragEvent event) {
-		if (event.getInventory().getTitle().contains("vs."))
+		if (event.getInventory().getTitle().contains("vs.") || event.getInventory().getTitle().contains("Bank"))
 			event.setCancelled(true);
 	}
 
 	
-	//Called when player switches Item in their inventory.
+	/**
+	 * @param event
+	 * @since 1.0
+	 * Called when a player swithced
+	 */
+	
 	@EventHandler(priority = EventPriority.HIGH)
 	public void playerSwitchItem(PlayerItemHeldEvent ev) {
 		if(ev.getPlayer().isOp() || ev.getPlayer().getGameMode() == GameMode.CREATIVE)
@@ -199,7 +211,12 @@ public class InventoryListener implements Listener {
 		}
 	}
 
-	//Closes both players wager inventory if opened.
+	/**
+	 * @param event
+	 * @since 1.0
+	 * Closes bother players wager inventory.
+	 */
+
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onDuelWagerClosed(InventoryCloseEvent event) {
 		if (event.getInventory().getTitle().contains("vs.")) {

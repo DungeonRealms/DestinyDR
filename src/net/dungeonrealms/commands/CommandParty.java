@@ -13,6 +13,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import net.dungeonrealms.party.PartyMechanics;
+import net.md_5.bungee.api.ChatColor;
 
 public class CommandParty implements CommandExecutor {
 
@@ -33,18 +34,27 @@ public class CommandParty implements CommandExecutor {
                    PartyMechanics.getInstance().createParty(uuid);
                    break;
                case "invite":
+               	if(args.length < 1){
+               		s.sendMessage(ChatColor.RED + "/party invite <player>");
+               		return false;
+               	}
                    PartyMechanics.getInstance().inviteToParty(PartyMechanics.getInstance().getParty(uuid), Bukkit.getPlayer(args[1]).getUniqueId());
                    break;
                case "disband":
                    PartyMechanics.getInstance().disbandParty(PartyMechanics.getInstance().getParty(uuid));
                    break;
                case "kick":
+               	if(args.length < 1){
+               		s.sendMessage(ChatColor.RED + "/party invite <player>");
+               		return false;
+               	}
                    PartyMechanics.getInstance().kickPlayer(PartyMechanics.getInstance().getParty(uuid), Bukkit.getPlayer(args[1]).getUniqueId());
                    break;
                default:
                    player.sendMessage("ERROR DEFAULT CALLED()..");
            }
-       }
+       }else
+      	 s.sendMessage(ChatColor.RED + "/party <create, invite, kick, disband>");
        return false;
    }
 

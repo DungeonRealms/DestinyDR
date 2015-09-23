@@ -143,13 +143,17 @@ public class MainListener implements Listener {
 		}
 	}
 
-	//mostly duel mechanics.
+	/**
+	 * @param event
+	 * @since 1.0
+	 * Handling Duels. When a player punches another player.
+	 */
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void playerPunchPlayer(EntityDamageByEntityEvent e) {
 		if (!(e.getEntity() instanceof Player && e.getDamager() instanceof Player)) return;
 		Player p1 = (Player) e.getDamager();
 		Player p2 = (Player) e.getEntity();
-		if (API.isInPVPRegion(p1.getUniqueId()) && API.isInPVPRegion(p2.getUniqueId())) return;
+		if (API.isInSafeRegion(p1.getUniqueId()) && API.isInSafeRegion(p2.getUniqueId())){
 		if (DuelMechanics.isDueling(p2.getUniqueId())) {
         // If player they're punching is their duel partner
         if (DuelMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
@@ -189,6 +193,7 @@ public class MainListener implements Listener {
             if (DuelMechanics.isPendingDuel(p2.getUniqueId()))
                 DuelMechanics.cancelRequestedDuel(p2.getUniqueId());
             DuelMechanics.sendDuelRequest(p1.getUniqueId(), p2.getUniqueId());
+        }
         }
         }
 	}
