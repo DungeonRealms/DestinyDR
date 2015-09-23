@@ -437,6 +437,7 @@ public class DamageAPI {
     public static double calculateArmorReduction(LivingEntity attacker, Entity defender, ItemStack[] defenderArmor) {
         double damageToBlock = 0;
         NBTTagCompound nmsTags[] = new NBTTagCompound[4];
+        LivingEntity leDefender = (LivingEntity) defender;
         if (defenderArmor[3].getType() != null && defenderArmor[3].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(defenderArmor[3]).getTag() != null) {
                 nmsTags[0] = CraftItemStack.asNMSCopy(defenderArmor[3]).getTag();
@@ -467,8 +468,14 @@ public class DamageAPI {
                 }
                 if (nmsTags[i].getInt("dodge") != 0) {
                     if (new Random().nextInt(99) < nmsTags[i].getInt("dodge")) {
+                        if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
+                            leDefender.removePotionEffect(PotionEffectType.SLOW);
+                        }
+                        if (leDefender.hasPotionEffect(PotionEffectType.POISON)) {
+                            leDefender.removePotionEffect(PotionEffectType.POISON);
+                        }
                         try {
-                            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, defender.getLocation(),
+                            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, defender.getLocation(),
                                     new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
                         } catch (Exception ex) {
                             ex.printStackTrace();
@@ -480,14 +487,14 @@ public class DamageAPI {
                     damageToBlock += nmsTags[i].getInt("strength");
                 }
                 if (nmsTags[i].getInt("fireResistance") != 0) {
-                    if (defender.getFireTicks() > 0) {
+                    if (leDefender.getFireTicks() > 0) {
                         try {
                             ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPLASH, defender.getLocation(),
                                     new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
                         } catch (Exception ex) {
                             ex.printStackTrace();
                         }
-                        defender.setFireTicks(0);
+                        leDefender.setFireTicks(0);
                         damageToBlock += nmsTags[i].getInt("fireResistance");
                     }
                 }
