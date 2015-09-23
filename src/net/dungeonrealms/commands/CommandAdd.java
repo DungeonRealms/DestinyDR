@@ -10,7 +10,6 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagDouble;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Material;
-import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -18,8 +17,6 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import com.sk89q.worldedit.blocks.Blocks;
 
 import java.util.Random;
 
@@ -33,6 +30,9 @@ public class CommandAdd implements CommandExecutor {
         Player player = (Player) s;
         if (args.length > 0) {
             switch (args[0]) {
+                case "uploadrealm":
+                    new FTPUtils().uploadRealm(player.getUniqueId());
+                    break;
                 case "realm":
                     new FTPUtils().downloadRealm(player.getUniqueId());
                     break;
