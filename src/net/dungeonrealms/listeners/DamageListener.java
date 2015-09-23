@@ -75,6 +75,7 @@ public class DamageListener implements Listener {
             NBTTagCompound tag = nmsItem.getTag();
             //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
             if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
+            attacker.getItemInHand().setDurability(((short) -1));
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);
         } else {
             Arrow attackingArrow = (Arrow) event.getDamager();
@@ -102,6 +103,7 @@ public class DamageListener implements Listener {
             Monster attacker = (Monster) event.getDamager();
             EntityEquipment attackerEquipment = attacker.getEquipment();
             if (attackerEquipment.getItemInHand() == null) return;
+            attackerEquipment.getItemInHand().setDurability(((short) -1));
             //Check if the item has NBT, all our custom weapons will have NBT.
             net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attackerEquipment.getItemInHand()));
             if (nmsItem == null || nmsItem.getTag() == null) {
@@ -139,6 +141,10 @@ public class DamageListener implements Listener {
             EntityEquipment defenderEquipment = defender.getEquipment();
             if (defenderEquipment.getArmorContents() == null) return;
             ItemStack[] defenderArmor = defenderEquipment.getArmorContents();
+            defenderArmor[0].setDurability((short) -1);
+            defenderArmor[1].setDurability((short) -1);
+            defenderArmor[2].setDurability((short) -1);
+            defenderArmor[3].setDurability((short) -1);
             armourReducedDamage = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor);
             Bukkit.broadcastMessage("Previous Damage " + String.valueOf(event.getDamage()));
 
@@ -186,6 +192,7 @@ public class DamageListener implements Listener {
         LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
         EntityEquipment entityEquipment = shooter.getEquipment();
         if (entityEquipment.getItemInHand() == null) return;
+        entityEquipment.getItemInHand().setDurability((short) -1);
         //Check if the item has NBT, all our custom weapons will have NBT.
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(entityEquipment.getItemInHand()));
         if (nmsItem == null || nmsItem.getTag() == null) return;
