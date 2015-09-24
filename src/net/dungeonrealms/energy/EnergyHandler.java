@@ -142,8 +142,15 @@ public class EnergyHandler {
         Bukkit.getOnlinePlayers().stream().filter(player -> player.isSprinting() || player.hasMetadata("sprinting")).forEach(player -> {
             removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 0.14F);
             if (getPlayerCurrentEnergy(player.getUniqueId()) <= 0 || player.hasMetadata("starving")) {
+                int playerFood = player.getFoodLevel();
                 player.setSprinting(false);
                 player.removeMetadata("sprinting", DungeonRealms.getInstance());
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 10)), 0L);
+                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "**EXHAUSTED**");
+                player.setFoodLevel(1);
+                player.setFoodLevel(playerFood);
+                //TODO: THIS IS A SUPER SKETCHY WAY OF PREVENTING LEFT-CONTROL SPRINTING FROM OVERRIDING. As its CLIENTSIDE setSprinting(false) only cancels it for one tick
+                //TODO: Since this is a plugin and not a mod, we can't toggle keypresses clientside. RIP.
             }
         });
     }
@@ -174,7 +181,7 @@ public class EnergyHandler {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 40, 0)), 0L);
             } else {
                 player.removeMetadata("starving", DungeonRealms.getInstance());
-                player.removePotionEffect(PotionEffectType.HUNGER);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.removePotionEffect(PotionEffectType.HUNGER), 0L);
             }
         });
     }
