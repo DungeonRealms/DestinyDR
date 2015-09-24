@@ -15,6 +15,7 @@ import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.party.PartyMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -78,6 +79,10 @@ public class DungeonRealms extends JavaPlugin {
         Utils.log.info("DungeonRealms Finished Registering FTP() ... FINISHED!");
 
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "s/");
+
+        if (Bukkit.getOnlinePlayers().size() > 0) {
+            Bukkit.broadcastMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "A reload has been invoked.");
+        }
 
     }
 
