@@ -66,7 +66,9 @@ public class FTPUtils {
         if (REALMS.get(uuid) != FTPStatus.DOWNLOADED) return;
         AsyncUtils.pool.submit(() -> {
             Utils.log.info("[REALM] [ASYNC] Starting Compression for player realm " + uuid.toString());
-            zipFolder(DungeonRealms.getInstance().getDataFolder() + "/realms/" + uuid.toString(), DungeonRealms.getInstance().getDataFolder() + "/realms/uploading/");
+            zipFolder(DungeonRealms.getInstance().getDataFolder() + "/realms/" + uuid.toString(), DungeonRealms.getInstance().getDataFolder() + "/realms/uploading/" + uuid.toString() + ".zip");
+            Utils.log.info("[REALM] [ASYNC] Deleting local cache of unzipped realm " + uuid.toString());
+            deleteRecursive(new File(DungeonRealms.getInstance().getDataFolder() + "/realms/" + uuid.toString()));
             FTPClient ftpClient = new FTPClient();
             try {
                 ftpClient.connect(HOST);
@@ -85,8 +87,31 @@ public class FTPUtils {
                 Utils.log.info("[REALM] [ASYNC] Successfully uploaded player realm " + uuid.toString());
             } catch (IOException e) {
                 e.printStackTrace();
+            } finally {
+                Utils.log.info("[REALM] [ASYNC] Deleting local cache of realm " + uuid.toString());
+                deleteRecursive(new File(DungeonRealms.getInstance().getDataFolder() + "/realms/uploading/" + uuid.toString() + ".zip"));
             }
         });
+    }
+
+    /**
+     * Deletes file recursively.
+     *
+     * @param path
+     * @since 1.0
+     */
+    public boolean deleteRecursive(File path) {
+        if (path.exists()) {
+            File[] files = path.listFiles();
+            for (int i = 0; i < files.length; i++) {
+                if (files[i].isDirectory()) {
+                    deleteRecursive(files[i]);
+                } else {
+                    files[i].delete();
+                }
+            }
+        }
+        return (path.delete());
     }
 
     /**
@@ -214,7 +239,7 @@ public class FTPUtils {
      * @since 1.0
      */
     public void deleteLocalCache(UUID uuid) {
-        Utils.log.info("[REALM] Removing dcached realm for " + uuid.toString());
+        Utils.log.info("[REALM] Removing cached realm for " + uuid.toString());
         File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloading/" + uuid.toString() + ".zip");
         if (TEMP_LOCAL_LOCATION.exists()) {
             TEMP_LOCAL_LOCATION.delete();
@@ -222,6 +247,7 @@ public class FTPUtils {
             Utils.log.warning("[REALM] Unable to find local cache to remove Realm for player " + uuid.toString());
         }
     }
+
     /**
      * The final Zip..
      *
