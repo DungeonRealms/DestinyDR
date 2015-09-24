@@ -68,7 +68,7 @@ public class MainListener implements Listener {
             }, 5l);
         }
         for (String s : WebAPI.JOIN_INFORMATION) {
-            player.sendMessage(s);
+            player.sendMessage(ChatColor.translateAlternateColorCodes('&', s));
         }
         TeleportAPI.addPlayerHearthstoneCD(event.getPlayer().getUniqueId(), 120);
         PlayerManager.checkInventory(player);
