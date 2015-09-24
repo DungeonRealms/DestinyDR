@@ -122,8 +122,10 @@ public class EnergyHandler {
                 regenAmount += 0;
             } else {
                 if (nmsTag.getInt("energyRegen") != 0) {
-                    regenAmount += ((nmsTag.getInt("energyRegen") * 0.015F) / 100.0F);
-                    Bukkit.broadcastMessage("PLAYER REGENERATING DUE TO ARMOR");
+                    regenAmount += (regenAmount/100.F) * nmsTag.getInt("energyRegen");
+                }
+                if (nmsTag.getInt("intellect") != 0) {
+                    regenAmount += (regenAmount/100.F) * (nmsTag.getInt("intellect"));
                 }
             }
         }

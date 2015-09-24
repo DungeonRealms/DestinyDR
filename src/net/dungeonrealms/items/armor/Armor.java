@@ -121,17 +121,16 @@ public class Armor {
         ARMOR(0, "Armor", "armor"),
         HEALTH_POINTS(1, "Health Points", "healthPoints"),
         HEALTH_REGEN(2, "Health Regen", "healthRegen"),
-        ENERGY(3, "Energy", "energy"),
-        ENERGY_REGEN(4, "Energy Regen", "energyRegen"),
-        INTELLECT(5, "Intellect", "intellect"),
-        FIRE_RESISTANCE(6, "Fire Resistance", "fireResistance"),
-        BLOCK(7, "Block", "block"),
-        GEM_FIND(8, "Gem Find", "gemFind"),
-        THORNS(9, "Thorns", "thorns"),
-        STRENGTH(10, "Strength", "strength"),
-        VITALITY(11, "Vitality", "vitality"),
-        DODGE(12, "Dodge", "dodge"),
-        DAMAGE(13, "Damage", "damage"),;
+        ENERGY_REGEN(3, "Energy Regen", "energyRegen"),
+        INTELLECT(4, "Intellect", "intellect"),
+        FIRE_RESISTANCE(5, "Fire Resistance", "fireResistance"),
+        BLOCK(6, "Block", "block"),
+        GEM_FIND(7, "Gem Find", "gemFind"),
+        THORNS(8, "Thorns", "thorns"),
+        STRENGTH(9, "Strength", "strength"),
+        VITALITY(10, "Vitality", "vitality"),
+        DODGE(11, "Dodge", "dodge"),
+        DAMAGE(12, "Damage", "damage"),;
 
         private int id;
         private String name;
