@@ -1,5 +1,6 @@
 package net.dungeonrealms.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
@@ -13,6 +14,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
@@ -21,6 +23,8 @@ import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.shops.Shop;
+import net.dungeonrealms.shops.ShopMechanics;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
@@ -47,13 +51,65 @@ public class InventoryListener implements Listener {
 			return;
 		event.setCancelled(true);
 	}
-
-	
 	/**
+	 * Handling Shops being clicked.
 	 * @param event
 	 * @since 1.0
-	 * Handling wager inventory, when  a player clicks the inventory.
-	 */	
+	 */
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void shopClicked(InventoryClickEvent event) {
+		if (event.getInventory().getTitle().contains("@")) {
+			String owner = event.getInventory().getTitle().split("@")[1];
+			Player shopOwner = Bukkit.getPlayer(owner);
+			Player clicker = (Player) event.getWhoClicked();
+			Shop shop = ShopMechanics.shops.get(shopOwner.getUniqueId());
+			ItemStack item = event.getCurrentItem();
+			if (item != null) {
+			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+			if (clicker.getUniqueId() == shopOwner.getUniqueId()) {
+				if (nms.hasTag()) {
+					if (nms.getTag().hasKey("status")) {
+						event.setCancelled(true);
+						if (nms.getTag().getString("status").equalsIgnoreCase("off")) {
+						shop.isopen = true;
+						int slot = event.getRawSlot();
+						ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.LIME.getDyeData());
+						ItemMeta meta = button.getItemMeta();
+						meta.setDisplayName(ChatColor.RED.toString() + "Close Shop");
+						button.setItemMeta(meta);
+						net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
+						nmsButton.getTag().setString("status", "on");
+						shop.inventory.setItem(slot, CraftItemStack.asBukkitCopy(nmsButton));
+						} else {
+						shop.isopen = false;
+						ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.GRAY.getDyeData());
+						ItemMeta meta = button.getItemMeta();
+						meta.setDisplayName(ChatColor.YELLOW.toString() + "Open Shop");
+						button.setItemMeta(meta);
+						net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
+						nmsButton.getTag().setString("status", "off");
+						shop.inventory.setItem(8, CraftItemStack.asBukkitCopy(nmsButton));
+
+						}
+					}
+				} else {
+					if (shop.isopen){
+//						clicker.closeInventory();
+						clicker.sendMessage(ChatColor.RED + "You must close the shop before you can edit");
+						event.setCancelled(true);
+					}
+				}
+			} else {
+				event.setCancelled(true);
+			}
+			}
+		}
+	}
+
+	/**
+	 * @param event
+	 * @since 1.0 Handling wager inventory, when a player clicks the inventory.
+	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onDuelWagerClick(InventoryClickEvent e) {
 		if (e.getInventory().getTitle().contains("vs.")) {
@@ -161,7 +217,7 @@ public class InventoryListener implements Listener {
 
 	/**
 	 * @param slot
-	 * Check if slot is specified slot
+	 *           Check if slot is specified slot
 	 */
 	private boolean isLeftSlot(int slot) {
 		int[] left = new int[] { 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21 };
@@ -170,10 +226,10 @@ public class InventoryListener implements Listener {
 			return true;
 		return false;
 	}
+
 	/**
 	 * @param event
-	 * @since 1.0
-	 * Dragging is naughty.
+	 * @since 1.0 Dragging is naughty.
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onDragItemInDuelWager(InventoryDragEvent event) {
@@ -181,16 +237,14 @@ public class InventoryListener implements Listener {
 			event.setCancelled(true);
 	}
 
-	
 	/**
 	 * @param event
-	 * @since 1.0
-	 * Called when a player swithced
+	 * @since 1.0 Called when a player swithced
 	 */
-	
+
 	@EventHandler(priority = EventPriority.HIGH)
 	public void playerSwitchItem(PlayerItemHeldEvent ev) {
-		if(ev.getPlayer().isOp() || ev.getPlayer().getGameMode() == GameMode.CREATIVE)
+		if (ev.getPlayer().isOp() || ev.getPlayer().getGameMode() == GameMode.CREATIVE)
 			return;
 		int slot = ev.getNewSlot();
 		if (ev.getPlayer().getInventory().getItem(slot) != null) {
@@ -198,12 +252,13 @@ public class InventoryListener implements Listener {
 				.asNMSCopy(ev.getPlayer().getInventory().getItem(slot));
 			if (nms.hasTag()) {
 			if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon")) {
-		      ItemTier tier = Item.ItemTier.getById(nms.getTag().getInt("itemTier"));
+				ItemTier tier = Item.ItemTier.getById(nms.getTag().getInt("itemTier"));
 				int minLevel = tier.getRangeValues()[0];
 				Player p = ev.getPlayer();
 				int pLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, p.getUniqueId());
-				if(pLevel < minLevel){
-					p.sendMessage(ChatColor.RED + "You must be level " + ChatColor.YELLOW.toString() + minLevel + ChatColor.RED.toString()+ " to wield this weapon!");
+				if (pLevel < minLevel) {
+					p.sendMessage(ChatColor.RED + "You must be level " + ChatColor.YELLOW.toString() + minLevel
+						+ ChatColor.RED.toString() + " to wield this weapon!");
 					ev.setCancelled(true);
 				}
 			}
@@ -213,8 +268,7 @@ public class InventoryListener implements Listener {
 
 	/**
 	 * @param event
-	 * @since 1.0
-	 * Closes bother players wager inventory.
+	 * @since 1.0 Closes bother players wager inventory.
 	 */
 
 	@EventHandler(priority = EventPriority.HIGHEST)

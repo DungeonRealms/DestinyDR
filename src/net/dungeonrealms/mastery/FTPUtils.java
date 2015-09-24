@@ -20,7 +20,10 @@ import java.util.zip.ZipOutputStream;
 public class FTPUtils {
 
     public static volatile HashMap<UUID, FTPStatus> REALMS = new HashMap<>();
-
+/**
+ * NAUGHTEY, NAUGHTEY
+ * Created by Chase on Sep 23, 2015
+ */
     enum FTPStatus {
         FAILED("Failed"),
         DOWNLOADING("Downloading"),
