@@ -45,12 +45,9 @@ public class BankListener implements Listener {
                 Block b = e.getClickedBlock();
                 ItemStack stack = new ItemStack(b.getType(), 1);
                 NBTTagCompound nbt = CraftItemStack.asNMSCopy(stack).getTag();
-                // if (nbt.hasKey("type") &&
-                // nbt.getString("type").equalsIgnoreCase("bank")) {
                 e.setCancelled(true);
                 e.getPlayer().openInventory(getBank(e.getPlayer().getUniqueId()));
                 e.getPlayer().playSound(e.getPlayer().getLocation(), "random.chestopen", 1, 1);
-                // }
             }
         }
     }

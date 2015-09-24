@@ -23,7 +23,6 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
-import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Map;
 
@@ -149,7 +148,7 @@ public class MainListener implements Listener {
     }
 
     /**
-     * @param event
+     * @param e
      * @since 1.0
      * Handling Duels. When a player punches another player.
      */
