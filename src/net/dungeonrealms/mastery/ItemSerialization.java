@@ -18,8 +18,13 @@ import io.netty.buffer.Unpooled;
 import net.minecraft.server.v1_8_R3.PacketDataSerializer;
 
 public class ItemSerialization {
-
-	public static InputStream serialize(Collection<ItemStack> items) throws IOException {
+	/**
+	 * Serializes a list of items to a String
+	 * 
+	 * @param event
+	 * @since 1.0
+	 */
+	public static String serialize(Collection<ItemStack> items) throws IOException {
 		ByteArrayInputStream ret = null;
 		if (!items.isEmpty()) {
 			ByteBuf buf = Unpooled.buffer();
@@ -29,10 +34,17 @@ public class ItemSerialization {
 			serializer.a(CraftItemStack.asNMSCopy(item));
 			ret = new ByteArrayInputStream(serializer.array());
 		}
-		return ret;
+		return IOUtils.toString(ret, "UTF-8");
 	}
 
-	public static List<ItemStack> deserialize(InputStream input) throws IOException {
+	/**
+	 * Deserializes a String to a list of items.
+	 * 
+	 * @param event
+	 * @since 1.0
+	 */
+	public static List<ItemStack> deserialize(String source) throws IOException {
+		InputStream input = IOUtils.toInputStream(source, "UTF-8");
 		List<ItemStack> items = new ArrayList<>();
 		DataInputStream in = new DataInputStream(input);
 		ByteBuf buf = Unpooled.buffer();

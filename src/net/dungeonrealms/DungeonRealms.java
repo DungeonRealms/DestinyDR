@@ -47,6 +47,7 @@ public class DungeonRealms extends JavaPlugin {
         pm.registerEvents(new InventoryListener(), this);
         pm.registerEvents(new BlockListener(), this);
         pm.registerEvents(new BankListener(), this);
+        pm.registerEvents(new ShopListener(), this);
         Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
 
         WebAPI.fetchPrerequisites();
@@ -68,11 +69,10 @@ public class DungeonRealms extends JavaPlugin {
         getCommand("lag").setExecutor(new CommandLag());
         getCommand("party").setExecutor(new CommandParty());
         getCommand("set").setExecutor(new CommandSet());
+        Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         Utils.log.info("DungeonRealms Registering FTP() ... STARTING ...");
         FTPUtils.startInitialization();
         Utils.log.info("DungeonRealms Finished Registering FTP() ... FINISHED!");
-
-        Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
 
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "s/");
 

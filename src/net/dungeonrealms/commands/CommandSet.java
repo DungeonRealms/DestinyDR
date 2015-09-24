@@ -15,6 +15,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.commons.io.IOUtils;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -58,7 +59,8 @@ public class CommandSet implements CommandExecutor {
 				try {
 					File file = new File(DungeonRealms.getInstance().getDataFolder() + "//file.json");
 					file.createNewFile();
-					inputStream = ItemSerialization.serialize(items);
+					String text = ItemSerialization.serialize(items);
+					inputStream = IOUtils.toInputStream(text, "UTF-8");
 					// read this file into InputStream
 					outputStream = new FileOutputStream(file);
 
@@ -98,7 +100,8 @@ public class CommandSet implements CommandExecutor {
 			File file = new File(DungeonRealms.getInstance().getDataFolder() + "//file.json");
 			try {
 				InputStream inputStream = new FileInputStream(file);
-				List<ItemStack> items = ItemSerialization.deserialize(inputStream);
+				String source = IOUtils.toString(inputStream, "UTF-8");
+				List<ItemStack> items = ItemSerialization.deserialize(source);
 				for (int i = 0; i < items.size(); i++) {
 					if (items.get(i) != null) {
 						player.getInventory().addItem(items.get(i));
