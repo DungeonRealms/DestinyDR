@@ -342,25 +342,4 @@ public class DamageListener implements Listener {
             event.getEntity().sendMessage("For it's own safety, your mount has returned to the stable.");
         }
     }
-
-    /**
-     * Listen for Monsters dying
-     * handles their item drops based
-     * on their tier and killers luck chance
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onMonsterDeathDropItems(EntityDeathEvent event) {
-        if (!(event.getEntity().hasMetadata("type"))) return;
-        if (!(event.getEntity() instanceof Monster)) return;
-        if (event.getEntity().getKiller() == null) return;
-        Player killer = event.getEntity().getKiller();
-        int playerLuck = DamageAPI.calculatePlayerLuck(killer);
-        int mobTier = event.getEntity().getMetadata("tier").get(0).asInt();
-        if (new Random().nextInt(99) > ((20 - mobTier) + playerLuck)) {
-            event.getDrops().clear();
-        }
-    }
 }
