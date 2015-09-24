@@ -43,9 +43,7 @@ public class DuelMechanics {
 			PENDING_DUELS.remove(p2);
 		} , 5 * 20L);
 		// REMOVE PLAYER FROM COOLDOWN AFTER 10 SECONDS
-		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-			cooldown.remove(p1);
-		} , 10 * 20L);
+		Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> cooldown.remove(p1), 10 * 20L);
 		Player player1 = Bukkit.getPlayer(p1);
 		Player player2 = Bukkit.getPlayer(p2);
 		player1.sendMessage(ChatColor.YELLOW.toString() + "Duel Request has been sent to " + player2.getDisplayName()
@@ -96,7 +94,7 @@ public class DuelMechanics {
 	 * @param p2
 	 */
 	// 0, 8 Confirm
-	// 4, 13, 22, 27,28,29, 31,33,34,35 Seperator
+	// 4, 13, 22, 27,28,29, 31,33,34,35 separator
 	// 30 Armor Tier, 32 weapon tier
 	// LEFT ITEMS 1,2,3 9, 10, 11, 12, 18, 19, 20, 21
 	// RIGHT ITEMS 23,24,25,26 , 5,6,7, 14,15,16,17
@@ -104,7 +102,7 @@ public class DuelMechanics {
 		DuelWager wager = new DuelWager(p1, p2);
 		WAGERS.add(wager);
 		Inventory inv = Bukkit.createInventory(null, 36, p1.getName() + "  vs. " + p2.getName());
-		ItemStack seperator = ItemManager.createItem(Material.BONE, " ", null);
+		ItemStack separator = ItemManager.createItem(Material.BONE, " ", null);
 		ItemStack armorTier = ItemManager.createItem(Material.GOLD_CHESTPLATE, "Armor Tier Limit", null);
 		ItemStack weaponTier = ItemManager.createItem(Material.GOLD_SWORD, "Weapon Tier Limit", null);
 		ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "Ready", null,
@@ -116,17 +114,17 @@ public class DuelMechanics {
 		nms.c(ChatColor.YELLOW + "READY");
 		inv.setItem(0, CraftItemStack.asBukkitCopy(nms));
 		inv.setItem(8, CraftItemStack.asBukkitCopy(nms));
-		inv.setItem(4, seperator);
-		inv.setItem(13, seperator);
-		inv.setItem(22, seperator);
-		inv.setItem(27, seperator);
-		inv.setItem(28, seperator);
-		inv.setItem(29, seperator);
-		inv.setItem(31, seperator);
-		inv.setItem(33, seperator);
-		inv.setItem(34, seperator);
-		inv.setItem(35, seperator);
-		inv.setItem(4, seperator);
+		inv.setItem(4, separator);
+		inv.setItem(13, separator);
+		inv.setItem(22, separator);
+		inv.setItem(27, separator);
+		inv.setItem(28, separator);
+		inv.setItem(29, separator);
+		inv.setItem(31, separator);
+		inv.setItem(33, separator);
+		inv.setItem(34, separator);
+		inv.setItem(35, separator);
+		inv.setItem(4, separator);
 		inv.setItem(30, armorTier);
 		inv.setItem(32, weaponTier);
 		p1.openInventory(inv);

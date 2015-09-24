@@ -617,4 +617,44 @@ public class DamageAPI {
         }
         return totalArmorReduction;
     }
+
+    public static int calculatePlayerLuck(Player player) {
+        int playerLuck[] = new int[4];
+        int totalLuck;
+        NBTTagCompound nmsTags[] = new NBTTagCompound[4];
+        EntityEquipment playerEquipment = player.getEquipment();
+        ItemStack[] playerArmor = playerEquipment.getArmorContents();
+        if (playerArmor[3].getType() != null && playerArmor[3].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(playerArmor[3]).getTag() != null) {
+                nmsTags[0] = CraftItemStack.asNMSCopy(playerArmor[3]).getTag();
+            }
+        }
+        if (playerArmor[2].getType() != null && playerArmor[2].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(playerArmor[2]).getTag() != null) {
+                nmsTags[1] = CraftItemStack.asNMSCopy(playerArmor[2]).getTag();
+            }
+        }
+        if (playerArmor[1].getType() != null && playerArmor[1].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(playerArmor[1]).getTag() != null) {
+                nmsTags[2] = CraftItemStack.asNMSCopy(playerArmor[1]).getTag();
+            }
+        }
+        if (playerArmor[0] != null && playerArmor[0].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(playerArmor[0]).getTag() != null) {
+                nmsTags[3] = CraftItemStack.asNMSCopy(playerArmor[0]).getTag();
+            }
+        }
+        for (int i = 0; i < nmsTags.length; i++) {
+            if (nmsTags[i] == null) {
+                playerLuck[i] += 0;
+            } else {
+                if (nmsTags[i].getInt("luck") != 0) {
+                    playerLuck[i] = nmsTags[i].getInt("luck");
+                }
+            }
+        }
+        totalLuck = playerLuck[0] + playerLuck[1] + playerLuck[2] + playerLuck[3];
+
+        return totalLuck;
+    }
 }

@@ -8,7 +8,7 @@ import org.bukkit.entity.Player;
  */
 public class PlayerManager {
     public static void checkInventory(Player player) {
-        player.getInventory().setItem(7, ItemManager.getHearthStone("HearthStone", new String[]{
+        player.getInventory().setItem(7, ItemManager.createHearthStone("HearthStone", new String[]{
                 ChatColor.GRAY + "(Right-Click) " + ChatColor.AQUA + "Back to your hearthstone location!"
         }));
         player.getInventory().setItem(8, ItemManager.getPlayerProfile(player, "Player Profile", new String[]{

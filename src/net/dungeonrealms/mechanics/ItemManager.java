@@ -26,7 +26,7 @@ public class ItemManager {
 	 * @return
 	 * @since 1.0
 	 */
-	public static ItemStack getHearthStone(String name, String[] lore) {
+	public static ItemStack createHearthStone(String name, String[] lore) {
 		ItemStack rawStack = new ItemStack(Material.QUARTZ);
 		ItemMeta meta = rawStack.getItemMeta();
 		meta.setDisplayName(name);

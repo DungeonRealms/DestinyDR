@@ -125,7 +125,7 @@ public class Armor {
         INTELLECT(4, "Intellect", "intellect"),
         FIRE_RESISTANCE(5, "Fire Resistance", "fireResistance"),
         BLOCK(6, "Block", "block"),
-        GEM_FIND(7, "Gem Find", "gemFind"),
+        LUCK(7, "Luck", "luck"),
         THORNS(8, "Thorns", "thorns"),
         STRENGTH(9, "Strength", "strength"),
         VITALITY(10, "Vitality", "vitality"),
