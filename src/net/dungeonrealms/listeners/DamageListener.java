@@ -1,5 +1,6 @@
 package net.dungeonrealms.listeners;
 
+import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.DamageAPI;
@@ -8,6 +9,7 @@ import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -76,6 +78,17 @@ public class DamageListener implements Listener {
             NBTTagCompound tag = nmsItem.getTag();
             //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
             if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
+            if (attacker.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(attacker.getUniqueId()) <= 0) {
+                event.setCancelled(true);
+                attacker.playSound(attacker.getLocation(), Sound.WOLF_PANT, 12F, 1.5F);
+                try {
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, event.getEntity().getLocation().add(0,1,0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                return;
+            }
+            EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getItemInHand()));
             attacker.getItemInHand().setDurability(((short) -1));
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);
         } else if (event.getDamager().getType() == EntityType.ARROW) {
@@ -211,6 +224,19 @@ public class DamageListener implements Listener {
         if (nmsItem == null || nmsItem.getTag() == null) return;
         //Get the NBT of the item the player is holding.
         int weaponTier = new Attribute(entityEquipment.getItemInHand()).getItemTier().getId();
+        Player player = (Player) shooter;
+        if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player.getUniqueId()) <= 0) {
+            event.setCancelled(true);
+            event.getEntity().remove();
+            player.playSound(shooter.getLocation(), Sound.WOLF_PANT, 12F, 1.5F);
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, event.getEntity().getLocation().add(0,1,0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return;
+        }
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(player.getItemInHand()));
         NBTTagCompound tag = nmsItem.getTag();
         MetadataUtils.registerProjectileMetadata(tag, event.getEntity(), weaponTier);
     }

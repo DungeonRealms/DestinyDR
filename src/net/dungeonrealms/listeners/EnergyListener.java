@@ -1,0 +1,154 @@
+package net.dungeonrealms.listeners;
+
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.energy.EnergyHandler;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.player.PlayerAnimationEvent;
+import org.bukkit.event.player.PlayerExpChangeEvent;
+import org.bukkit.event.player.PlayerToggleSprintEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.Random;
+
+/**
+ * Created by Kieran on 9/24/2015.
+ */
+public class EnergyListener implements Listener {
+
+    /**
+     * Checks for players starving
+     * adds hunger potion effect and metadata
+     * to be used at a later time
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerStarveDamage(EntityDamageEvent event) {
+        if (event.getCause() != EntityDamageEvent.DamageCause.STARVATION) return;
+        if (!(event.getEntity() instanceof Player)) return;
+        event.setCancelled(true);
+        event.setDamage(0);
+        Player player = (Player) event.getEntity();
+        if (!(player.hasPotionEffect(PotionEffectType.HUNGER))) {
+            player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 50, 0));
+            if (!(player.hasMetadata("starving"))) {
+                player.setMetadata("starving", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
+                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "**STARVING**");
+            }
+        }
+    }
+
+    /**
+     * Checks for players starting sprinting or stopping sprinting
+     * adds/removes correct metadata, applies inital energy reduction
+     * cancels if player can't sprint
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerToggleSprint(PlayerToggleSprintEvent event) {
+        if (!(event.getPlayer().isSprinting())) {
+            if (!(event.getPlayer().hasMetadata("starving"))) {
+                EnergyHandler.removeEnergyFromPlayerAndUpdate(event.getPlayer().getUniqueId(), 0.15F);
+                event.getPlayer().setMetadata("sprinting", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
+            } else {
+                event.setCancelled(true);
+                event.getPlayer().setSprinting(false);
+                return;
+            }
+        } if (event.getPlayer().isSprinting()) {
+            event.getPlayer().removeMetadata("sprinting", DungeonRealms.getInstance());
+        }
+    }
+
+    /**
+     * Checks players food level changes
+     * removes hunger potion effect and metadata
+     * to be used at a later time
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerFoodLevelChange(FoodLevelChangeEvent event) {
+        if (!(event.getEntity() instanceof Player)) return;
+        Player player = (Player) event.getEntity();
+        if (event.getFoodLevel() < player.getFoodLevel()) {
+            if (new Random().nextInt(4) >= 1) {
+                event.setCancelled(true);
+                return;
+            }
+        }
+        if (event.getFoodLevel() > 0 && player.hasMetadata("starving")) {
+            player.removeMetadata("starving", DungeonRealms.getInstance());
+            player.removePotionEffect(PotionEffectType.HUNGER);
+        }
+    }
+
+    /**
+     * Cancels the base MC Exp change
+     * as we use exp for energy
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerMCExpChange(PlayerExpChangeEvent event) {
+        event.setAmount(0);
+    }
+
+    /**
+     * Safety check, cancels mobs/players
+     * dropping MC exp
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onEntityDeathDropExp(EntityDeathEvent event) {
+        event.setDroppedExp(0);
+    }
+
+    /**
+     * Handles players swining their fists/items
+     * removes energy or cancels the event if they can't
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerAnimation(PlayerAnimationEvent event) {
+        Player player = event.getPlayer();
+        ItemStack playerWeapon = player.getItemInHand();
+
+        if (playerWeapon == null) {
+            playerWeapon = new ItemStack(Material.AIR);
+        }
+        float energyToRemove = EnergyHandler.getWeaponSwingEnergyCost(playerWeapon);
+        if (playerWeapon.getType() == Material.BOW) {
+            energyToRemove += 0.15F;
+        }
+
+        if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player.getUniqueId()) <= 0) {
+            event.setCancelled(true);
+            return;
+        }
+
+        Bukkit.broadcastMessage("SWING SWING!");
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), energyToRemove);
+    }
+}

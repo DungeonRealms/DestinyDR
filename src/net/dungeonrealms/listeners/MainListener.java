@@ -5,6 +5,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
+import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.mechanics.WebAPI;
@@ -22,6 +23,7 @@ import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Map;
 
@@ -70,7 +72,7 @@ public class MainListener implements Listener {
         }
         TeleportAPI.addPlayerHearthstoneCD(event.getPlayer().getUniqueId(), 120);
         PlayerManager.checkInventory(player);
-
+        EnergyHandler.handleLogin(player.getUniqueId());
     }
 
     /**
@@ -119,29 +121,31 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        if (EntityAPI.hasPetOut(event.getPlayer().getUniqueId())) {
-            net.minecraft.server.v1_8_R3.Entity playerPet = EntityAPI.getPlayerPet(event.getPlayer().getUniqueId());
+        Player player = event.getPlayer();
+        if (EntityAPI.hasPetOut(player.getUniqueId())) {
+            net.minecraft.server.v1_8_R3.Entity playerPet = EntityAPI.getPlayerPet(player.getUniqueId());
             if (playerPet.isAlive()) { // Safety check
                 playerPet.dead = true;
             }
-            EntityAPI.removePlayerPetList(event.getPlayer().getUniqueId());
+            EntityAPI.removePlayerPetList(player.getUniqueId());
         }
 
-        if (EntityAPI.hasMountOut(event.getPlayer().getUniqueId())) {
-            net.minecraft.server.v1_8_R3.Entity playerMount = EntityAPI.getPlayerMount(event.getPlayer().getUniqueId());
+        if (EntityAPI.hasMountOut(player.getUniqueId())) {
+            net.minecraft.server.v1_8_R3.Entity playerMount = EntityAPI.getPlayerMount(player.getUniqueId());
             if (playerMount.isAlive()) { // Safety check
                 if (playerMount.passenger != null) {
                     playerMount.passenger = null;
                 }
                 playerMount.dead = true;
             }
-            EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
+            EntityAPI.removePlayerMountList(player.getUniqueId());
         }
 
         // Player leaves while in duel
-        if (DuelMechanics.isDueling(event.getPlayer().getUniqueId())) {
-            DuelMechanics.getWager(event.getPlayer().getUniqueId()).handleLogOut(event.getPlayer().getUniqueId());
+        if (DuelMechanics.isDueling(player.getUniqueId())) {
+            DuelMechanics.getWager(player.getUniqueId()).handleLogOut(player.getUniqueId());
         }
+        EnergyHandler.handleLogout(player.getUniqueId());
     }
 
     /**

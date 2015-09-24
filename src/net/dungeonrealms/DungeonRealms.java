@@ -3,6 +3,7 @@ package net.dungeonrealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.commands.*;
+import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.listeners.*;
@@ -48,6 +49,7 @@ public class DungeonRealms extends JavaPlugin {
         pm.registerEvents(new BlockListener(), this);
         pm.registerEvents(new BankListener(), this);
         pm.registerEvents(new ShopListener(), this);
+        pm.registerEvents(new EnergyListener(), this);
         Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
 
         WebAPI.fetchPrerequisites();
@@ -56,6 +58,7 @@ public class DungeonRealms extends JavaPlugin {
         Teleportation.getInstance().startInitialization();
         CombatLog.getInstance().startInitialization();
         PartyMechanics.getInstance().startInitialization();
+        EnergyHandler.getInstance().startInitialization();
 
         Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
         Entities.getInstance().startInitialization();
