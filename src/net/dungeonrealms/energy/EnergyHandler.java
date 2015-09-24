@@ -31,7 +31,7 @@ public class EnergyHandler {
 
     public void startInitialization() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::regenerateAllPlayerEnergy, 40, 3L);
-        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::removePlayerEnergySprint, 40, 8L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::removePlayerEnergySprint, 40, 9L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::addStarvingPotionEffect, 40, 15L);
     }
 
@@ -66,11 +66,12 @@ public class EnergyHandler {
                 continue;
             }
             float regenAmount = getPlayerEnergyRegenerationAmount(player.getUniqueId());
+            Bukkit.broadcastMessage(String.valueOf(regenAmount));
             if (!(player.hasPotionEffect(PotionEffectType.SLOW_DIGGING))) {
                 if (player.hasMetadata("starving")) {
                     regenAmount = 0.07F;
                 }
-                regenAmount = regenAmount / 6.2F;
+                regenAmount = regenAmount / 6.3F;
                 //TODO: FISH SOMETHING GIVES REGEN I DUNNO PROFESSION MECHANICS.
                 addEnergyToPlayerAndUpdate(player.getUniqueId(), regenAmount);
             }
@@ -78,17 +79,20 @@ public class EnergyHandler {
     }
 
     public static float getPlayerCurrentEnergy(UUID uuid) {
-        return Bukkit.getPlayer(uuid).getExp();
+        Player player = Bukkit.getPlayer(uuid);
+        return player.getExp();
     }
 
     public static void updatePlayerEnergyBar(UUID uuid) {
-        if ((Bukkit.getPlayer(uuid).getExp()) > 1) {
-            Bukkit.getPlayer(uuid).setLevel(100);
-        } else if ((Bukkit.getPlayer(uuid).getExp()) < 0) {
-            Bukkit.getPlayer(uuid).setLevel(0);
-        } else {
-            Bukkit.getPlayer(uuid).setLevel(((int) Bukkit.getPlayer(uuid).getExp() * 100));
+        float currExp = getPlayerCurrentEnergy(uuid);
+        double percent = currExp * 100.00D;
+        if (percent > 100) {
+            percent = 100;
         }
+        if (percent < 0) {
+            percent = 0;
+        }
+        Bukkit.getPlayer(uuid).setLevel(((int) percent));
     }
 
     public float getPlayerEnergyRegenerationAmount(UUID uuid) {
@@ -122,7 +126,7 @@ public class EnergyHandler {
                 regenAmount += 0;
             } else {
                 if (nmsTag.getInt("energyRegen") != 0) {
-                    regenAmount += (regenAmount/100.F) * nmsTag.getInt("energyRegen");
+                    regenAmount += (regenAmount/100.F) * (nmsTag.getInt("energyRegen") + 2);
                 }
                 if (nmsTag.getInt("intellect") != 0) {
                     regenAmount += ((nmsTag.getInt("intellect") * 0.015F) / 100.0F);
@@ -142,7 +146,7 @@ public class EnergyHandler {
 
     private void removePlayerEnergySprint() {
         Bukkit.getOnlinePlayers().stream().filter(player -> player.isSprinting() || player.hasMetadata("sprinting")).forEach(player -> {
-            removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 0.14F);
+            removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 0.135F);
             if (getPlayerCurrentEnergy(player.getUniqueId()) <= 0 || player.hasMetadata("starving")) {
                 int playerFood = player.getFoodLevel();
                 player.setSprinting(false);
@@ -166,9 +170,9 @@ public class EnergyHandler {
             }
         }
         player.setMetadata("last_energy_remove", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-        if (player.getExp() <= 0) return;
-        if ((player.getExp() - amountToRemove) <= 0) {
-            player.setExp(0.F);
+        if (getPlayerCurrentEnergy(uuid) <= 0) return;
+        if ((getPlayerCurrentEnergy(uuid) - amountToRemove) <= 0) {
+            player.setExp(0.0F);
             updatePlayerEnergyBar(uuid);
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 50, 4)), 0L);
             return;
