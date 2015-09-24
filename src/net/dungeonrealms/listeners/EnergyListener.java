@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
@@ -150,5 +151,30 @@ public class EnergyListener implements Listener {
 
         Bukkit.broadcastMessage("SWING SWING!");
         EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), energyToRemove);
+    }
+
+    /**
+     * Handles players deaths, removing metadata
+     * and potion effects
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Player player = event.getEntity();
+        if (!player.hasPotionEffect(PotionEffectType.HUNGER) && !player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) && !player.hasMetadata("starving") && !player.hasMetadata("sprinting")) return;
+        if (player.hasPotionEffect(PotionEffectType.HUNGER)) {
+            player.removePotionEffect(PotionEffectType.HUNGER);
+        }
+        if (player.hasMetadata("starving")) {
+            player.removeMetadata("starving", DungeonRealms.getInstance());
+        }
+        if (player.hasMetadata("sprinting")) {
+            player.removeMetadata("sprinting", DungeonRealms.getInstance());
+        }
+        if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING)) {
+            player.removePotionEffect(PotionEffectType.SLOW_DIGGING);
+        }
     }
 }
