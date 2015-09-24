@@ -130,7 +130,8 @@ public class Armor {
         STRENGTH(9, "Strength", "strength"),
         VITALITY(10, "Vitality", "vitality"),
         DODGE(11, "Dodge", "dodge"),
-        DAMAGE(12, "Damage", "damage"),;
+        DAMAGE(12, "Damage", "damage"),
+        DEXTERITY(13, "Dexterity", "dexterity");
 
         private int id;
         private String name;

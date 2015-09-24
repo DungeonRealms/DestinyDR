@@ -93,6 +93,14 @@ public class DamageAPI {
             damage += tag.getInt("accuracy");
         }
 
+        if (tag.getInt("strength") != 0) {
+            damage += (damage * (tag.getInt("strength") * 0.023D) / 100D);
+        }
+
+        if (tag.getInt("vitality") != 0) {
+            damage += (damage * (tag.getInt("vitality") * 0.023D) / 100D);
+        }
+
         LivingEntity leReceiver = (LivingEntity) receiver;
         if (tag.getInt("fireDamage") != 0) {
             try {
@@ -327,6 +335,14 @@ public class DamageAPI {
             damage += projectile.getMetadata("accuracy").get(0).asInt();
         }
 
+        if (projectile.getMetadata("dexterity").get(0).asInt() != 0) {
+            damage += (damage * (projectile.getMetadata("dexterity").get(0).asInt() * 0.023D) / 100D);
+        }
+
+        if (projectile.getMetadata("intellect").get(0).asInt() != 0) {
+            damage += (damage * (projectile.getMetadata("intellect").get(0).asInt() * 0.02D) / 100D);
+        }
+
         LivingEntity leReceiver = (LivingEntity) receiver;
         if (projectile.getMetadata("fireDamage").get(0).asInt() != 0) {
             try {
@@ -532,15 +548,43 @@ public class DamageAPI {
             } else {
                 damageToBlock[i]= nmsTags[i].getInt("armor");
                 if (nmsTags[i].getInt("block") != 0) {
-                    damageToBlock[i] += nmsTags[0].getInt("block");
-                }
-                if (nmsTags[i].getInt("dodge") != 0) {
-                    if (new Random().nextInt(99) < nmsTags[i].getInt("dodge")) {
+                    int blockChance = nmsTags[0].getInt("block");
+                    if (nmsTags[i].getInt("strength") != 0) {
+                        blockChance += (nmsTags[i].getInt("strength") * 0.017);
+                    }
+                    if (new Random().nextInt(99) < blockChance) {
                         if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
                             leDefender.removePotionEffect(PotionEffectType.SLOW);
                         }
                         if (leDefender.hasPotionEffect(PotionEffectType.POISON)) {
                             leDefender.removePotionEffect(PotionEffectType.POISON);
+                        }
+                        if (leDefender.getFireTicks() > 0) {
+                            leDefender.setFireTicks(0);
+                        }
+                        try {
+                            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, defender.getLocation(),
+                                    new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        damageToBlock[i] = -2;
+                    }
+                }
+                if (nmsTags[i].getInt("dodge") != 0) {
+                    int dodgeChance = nmsTags[i].getInt("dodge");
+                    if (nmsTags[i].getInt("dexterity") != 0) {
+                        dodgeChance += (nmsTags[i].getInt("dexterity") * 0.017);
+                    }
+                    if (new Random().nextInt(99) < dodgeChance) {
+                        if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
+                            leDefender.removePotionEffect(PotionEffectType.SLOW);
+                        }
+                        if (leDefender.hasPotionEffect(PotionEffectType.POISON)) {
+                            leDefender.removePotionEffect(PotionEffectType.POISON);
+                        }
+                        if (leDefender.getFireTicks() > 0) {
+                            leDefender.setFireTicks(0);
                         }
                         try {
                             ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, defender.getLocation(),
@@ -552,7 +596,7 @@ public class DamageAPI {
                     }
                 }
                 if (nmsTags[i].getInt("strength") != 0) {
-                    damageToBlock[i] += nmsTags[i].getInt("strength");
+                    damageToBlock[i] += (nmsTags[i].getInt("strength") * 0.023D) / 100D;
                 }
                 if (nmsTags[i].getInt("fireResistance") != 0) {
                     if (leDefender.getFireTicks() > 0) {
@@ -570,6 +614,8 @@ public class DamageAPI {
         }
         if (damageToBlock[0] == -1 || damageToBlock[1] == -1 || damageToBlock[2] == -1 || damageToBlock[3] == -1) {
             totalArmorReduction = -1;
+        } else if (damageToBlock[0] == -2 || damageToBlock[1] == -2 || damageToBlock[2] == -2 || damageToBlock[3] == -2) {
+            totalArmorReduction = -2;
         } else {
             totalArmorReduction = damageToBlock[0] + damageToBlock[1] + damageToBlock[2] + damageToBlock[3];
         }
