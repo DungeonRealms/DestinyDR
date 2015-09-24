@@ -60,11 +60,11 @@ public class ArmorGenerator {
 
         HashMap<Armor.ArmorAttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
 
-        for (Armor.ArmorAttributeType aType : attributeTypes) {
+        attributeTypes.stream().filter(aType -> aType != null).forEach(aType -> {
             int i = new DamageMeta().nextArmor(tier, modifier, aType);
             attributeTypeIntegerHashMap.put(aType, i);
             itemLore.add(ChatColor.GREEN + "+" + ChatColor.WHITE + i + " " + aType.getName());
-        }
+        });
         itemLore.add(ChatColor.GRAY + "Requires Level: " + ChatColor.GOLD + String.valueOf(tier.getRangeValues()[0]));
         itemLore.add(ChatColor.GRAY + "Armor Level: " + ChatColor.GOLD + 738);
         itemLore.add(ChatColor.GRAY + "Armor Tier: " + ChatColor.GOLD + tier.getTierId());
@@ -104,7 +104,7 @@ public class ArmorGenerator {
      * @since 1.0
      */
     public Armor.EquipmentType getRandomEquipmentType() {
-        return Armor.EquipmentType.getById(new Random().nextInt(Armor.EquipmentType.values().length - 0) + 0);
+        return Armor.EquipmentType.getById(new Random().nextInt(Armor.EquipmentType.values().length));
     }
 
     /**
@@ -114,7 +114,7 @@ public class ArmorGenerator {
      * @since 1.0
      */
     public Armor.ArmorTier getRandomItemTier() {
-        return Armor.ArmorTier.getById(new Random().nextInt(Armor.ArmorTier.values().length - 0) + 0);
+        return Armor.ArmorTier.getById(new Random().nextInt(Armor.ArmorTier.values().length));
     }
 
     /**
@@ -124,7 +124,7 @@ public class ArmorGenerator {
      * @since 1.0
      */
     public Armor.ArmorModifier getRandomItemModifier() {
-        return Armor.ArmorModifier.getById(new Random().nextInt(Armor.ArmorModifier.values().length - 0) + 0);
+        return Armor.ArmorModifier.getById(new Random().nextInt(Armor.ArmorModifier.values().length));
     }
 
     /**
@@ -186,28 +186,28 @@ public class ArmorGenerator {
             case LEGGINGS:
                 switch (tier) {
                     case TIER_1:
-                        return new ItemStack(Material.LEATHER_CHESTPLATE);
+                        return new ItemStack(Material.LEATHER_LEGGINGS);
                     case TIER_2:
-                        return new ItemStack(Material.CHAINMAIL_CHESTPLATE);
+                        return new ItemStack(Material.CHAINMAIL_LEGGINGS);
                     case TIER_3:
-                        return new ItemStack(Material.IRON_CHESTPLATE);
+                        return new ItemStack(Material.IRON_LEGGINGS);
                     case TIER_4:
-                        return new ItemStack(Material.DIAMOND_CHESTPLATE);
+                        return new ItemStack(Material.DIAMOND_LEGGINGS);
                     case TIER_5:
-                        return new ItemStack(Material.GOLD_CHESTPLATE);
+                        return new ItemStack(Material.GOLD_LEGGINGS);
                 }
             case BOOTS:
                 switch (tier) {
                     case TIER_1:
-                        return new ItemStack(Material.LEATHER_CHESTPLATE);
+                        return new ItemStack(Material.LEATHER_BOOTS);
                     case TIER_2:
-                        return new ItemStack(Material.CHAINMAIL_CHESTPLATE);
+                        return new ItemStack(Material.CHAINMAIL_BOOTS);
                     case TIER_3:
-                        return new ItemStack(Material.IRON_CHESTPLATE);
+                        return new ItemStack(Material.IRON_BOOTS);
                     case TIER_4:
-                        return new ItemStack(Material.DIAMOND_CHESTPLATE);
+                        return new ItemStack(Material.DIAMOND_BOOTS);
                     case TIER_5:
-                        return new ItemStack(Material.GOLD_CHESTPLATE);
+                        return new ItemStack(Material.GOLD_BOOTS);
                 }
         }
         return null;

@@ -65,11 +65,11 @@ public class ItemGenerator {
 
         HashMap<Item.AttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
 
-        for (Item.AttributeType aType : attributeTypes) {
+        attributeTypes.stream().filter(aType -> aType != null).forEach(aType -> {
             int i = new DamageMeta().nextWeapon(tier, modifier, aType);
             attributeTypeIntegerHashMap.put(aType, i);
             itemLore.add(ChatColor.GREEN + "+" + ChatColor.WHITE + i + " " + aType.getName());
-        }
+        });
         itemLore.add(ChatColor.GRAY + "Requires Level: " + ChatColor.GOLD + String.valueOf(tier.getRangeValues()[0]));
         itemLore.add(ChatColor.GRAY + "Item Level: " + ChatColor.GOLD + 738);
         itemLore.add(ChatColor.GRAY + "Item Tier: " + ChatColor.GOLD + tier.getTierId());
@@ -109,7 +109,7 @@ public class ItemGenerator {
      * @since 1.0
      */
     public Item.ItemType getRandomItemType() {
-        return Item.ItemType.getById(new Random().nextInt(Item.ItemType.values().length - 0) + 0);
+        return Item.ItemType.getById(new Random().nextInt(Item.ItemType.values().length));
     }
 
     /**
@@ -119,7 +119,7 @@ public class ItemGenerator {
      * @since 1.0
      */
     public Item.ItemTier getRandomItemTier() {
-        return Item.ItemTier.getById(new Random().nextInt(Item.ItemTier.values().length - 0) + 0);
+        return Item.ItemTier.getById(new Random().nextInt(Item.ItemTier.values().length));
     }
 
     /**
@@ -129,7 +129,7 @@ public class ItemGenerator {
      * @since 1.0
      */
     public Item.ItemModifier getRandomItemModifier() {
-        return Item.ItemModifier.getById(new Random().nextInt(Item.ItemModifier.values().length - 0) + 0);
+        return Item.ItemModifier.getById(new Random().nextInt(Item.ItemModifier.values().length));
     }
 
     /**

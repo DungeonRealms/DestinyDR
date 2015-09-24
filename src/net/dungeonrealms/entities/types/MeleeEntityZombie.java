@@ -58,7 +58,7 @@ public abstract class MeleeEntityZombie extends EntityZombie {
 		this.getBukkitEntity().setCustomNameVisible(true);
 		int level = Utils.getRandomFromTier(tier);
 		MetadataUtils.registerEntityMetadata(this, this.entityType, tier, level);
-		EntityStats.setMonsterStats(this, level);
+		EntityStats.setMonsterStats(this, level, tier);
 		setStats();
 		this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
 			+ ChatColor.GOLD.toString() + ChatColor.UNDERLINE.toString() + mobName);

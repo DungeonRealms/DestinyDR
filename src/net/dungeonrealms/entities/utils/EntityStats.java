@@ -24,25 +24,13 @@ public class EntityStats {
             this.spd = spd;
         }
 
-        public static Stats getRandomStats(int lvl) {
-            int mobTier = 1;
-            int lvldef = 0;
-            int lvlatk = 0;
-            int lvlhp = 0;
-            int lvlspd = 0;
-            if (lvl < 10) {
-                mobTier = 1;
-            } else if (lvl >= 10 && lvl < 20) {
-                mobTier = 2;
-            } else if (lvl >= 20 && lvl < 30) {
-                mobTier = 3;
-            } else if (lvl >= 30 && lvl < 40) {
-                mobTier = 4;
-            } else if (lvl >= 40) {
-                mobTier = 5;
-            }
+        public static Stats getRandomStats(int lvl, int tier) {
+            int lvldef;
+            int lvlatk;
+            int lvlhp;
+            int lvlspd;
             Random random = new Random();
-            switch (mobTier) {
+            switch (tier) {
                 case 1:
                     lvldef = (lvl + 5) + (random.nextInt(5) - 3);
                     lvlhp = (lvl * 10) + (random.nextInt(30) - 20);
@@ -73,6 +61,12 @@ public class EntityStats {
                     lvlatk = (lvl + 85) + (random.nextInt(80) - 50);
                     lvlspd = (lvl + 85) + (random.nextInt(80) - 50);
                     break;
+                default:
+                    lvldef = (lvl + 40) + (random.nextInt(35) - 20);
+                    lvlhp = (lvl * 20) + (random.nextInt(75) - 50);
+                    lvlatk = (lvl + 40) + (random.nextInt(35) - 20);
+                    lvlspd = (lvl + 40) + (random.nextInt(35) - 20);
+                    break;
             }
             return new Stats(lvldef, lvlhp, lvlatk, lvlspd);
         }
@@ -86,8 +80,8 @@ public class EntityStats {
         return new Stats(def, hp, atk, spd);
     }
 
-    public static void setMonsterStats(Entity entity, int lvl) {
-        Stats stat = Stats.getRandomStats(lvl);
+    public static void setMonsterStats(Entity entity, int lvl, int tier) {
+        Stats stat = Stats.getRandomStats(lvl, tier);
         entity.getBukkitEntity().setMetadata("hp", new FixedMetadataValue(DungeonRealms.getInstance(), stat.hp));
         entity.getBukkitEntity().setMetadata("def", new FixedMetadataValue(DungeonRealms.getInstance(), stat.def));
         entity.getBukkitEntity().setMetadata("atk", new FixedMetadataValue(DungeonRealms.getInstance(), stat.atk));

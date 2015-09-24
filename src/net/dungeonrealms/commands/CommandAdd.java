@@ -62,11 +62,12 @@ public class CommandAdd implements CommandExecutor {
                         ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.getById(Integer.valueOf(args[1])), player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
                     break;
                 case "bank":
-                   net.minecraft.server.v1_8_R3.ItemStack nmsBank = CraftItemStack.asNMSCopy(new ItemStack(Material.ENDER_CHEST));
-                   NBTTagCompound Banktag = nmsBank.getTag() == null ? new NBTTagCompound() : nmsBank.getTag();
-                   Banktag.set("type", new NBTTagString("bank"));
-                   nmsBank.setTag(Banktag);
-                   player.getInventory().addItem(CraftItemStack.asBukkitCopy(nmsBank));
+                    net.minecraft.server.v1_8_R3.ItemStack nmsBank = CraftItemStack.asNMSCopy(new ItemStack(Material.ENDER_CHEST));
+                    NBTTagCompound Banktag = nmsBank.getTag() == null ? new NBTTagCompound() : nmsBank.getTag();
+                    Banktag.set("type", new NBTTagString("bank"));
+                    nmsBank.setTag(Banktag);
+                    player.getInventory().addItem(CraftItemStack.asBukkitCopy(nmsBank));
+                    break;
 
             }
         }

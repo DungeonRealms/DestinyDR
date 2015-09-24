@@ -208,7 +208,7 @@ public class BankListener implements Listener {
 							if (e.getCursor().getType() == Material.EMERALD)
 								size = 1;
 							else
-								size = 1 * nms.getTag().getInt("worth");
+								size = nms.getTag().getInt("worth");
 						}
 						BankMechanics.addGemsToPlayer(player.getUniqueId(), size);
 						ItemStack bankItem = new ItemStack(Material.EMERALD);

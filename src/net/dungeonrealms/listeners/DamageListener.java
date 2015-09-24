@@ -104,7 +104,6 @@ public class DamageListener implements Listener {
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
         if ((!(event.getDamager() instanceof Monster)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL))) return;
         if (!(event.getEntity() instanceof Player)) return;
-        //Make sure the player is HOLDING something!
         double finalDamage = 0;
         if (event.getDamager() instanceof Monster) {
             Monster attacker = (Monster) event.getDamager();
@@ -117,9 +116,9 @@ public class DamageListener implements Listener {
                 Bukkit.broadcastMessage("MOB " + event.getDamager() + " does not have one of our custom weapons. CHASE!!!!!!");
                 return;
             }
-            //Get the NBT of the item the player is holding.
+            //Get the NBT of the item the mob is holding.
             NBTTagCompound tag = nmsItem.getTag();
-            //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
+            //Check if it's a {WEAPON} the mob is hitting with. Once of our custom ones!
             if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);
         } else if (event.getDamager().getType() == EntityType.ARROW) {
@@ -136,12 +135,12 @@ public class DamageListener implements Listener {
 
 
     /**
-     * Test to check EventPriorities
+     * Reduces damage after it is set previously based on the defenders armor
      * @param event
      * @since 1.0
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
-    public void onPlayerMeleeHitEntityREDUCETEST(EntityDamageByEntityEvent event) {
+    public void onArmorReduceBaseDamage(EntityDamageByEntityEvent event) {
         if ((!(event.getDamager() instanceof LivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
             return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
@@ -192,26 +191,10 @@ public class DamageListener implements Listener {
                 event.setDamage(event.getDamage() - armourReducedDamage);
                 Bukkit.broadcastMessage("Armor Reduced Damage " + String.valueOf(event.getDamage()));
             }
-            //}
     }
 
     /**
-     * Test to check EventPriorities
-     * @param event
-     * @since 1.0
-     */
-    /*@EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
-    public void onMobMeleeHitPlayerREDUCETEST(EntityDamageByEntityEvent event) {
-        if ((!(event.getDamager() instanceof Monster)) && (event.getDamager().getType() != EntityType.ARROW)) return;
-        if (!(event.getEntity() instanceof Player)) return;
-        Bukkit.broadcastMessage("Previous Damage " + String.valueOf(event.getDamage()));
-
-        event.setDamage(event.getDamage() / 2);
-        Bukkit.broadcastMessage("Armor Reduced Damage " + String.valueOf(event.getDamage()));
-    }*/
-
-    /**
-     * Listen for Living Entities (Mobs/Players etc) [NOT DISPENSERS] firing projectiles
+     * Listen for Players [NOT DISPENSERS/MOBS] firing projectiles
      * Used to apply metadata from the nbt data of the bow in the entities hand
      * @param event
      * @since 1.0
@@ -244,6 +227,10 @@ public class DamageListener implements Listener {
     public void petDamageListener(EntityDamageByEntityEvent event) {
         if (!(event.getEntity().hasMetadata("type"))) return;
         if (event.getEntity() instanceof Player) return;
+        if (event.getDamager() instanceof Player) {
+            Player player = (Player) event.getDamager();
+            player.getItemInHand().setDurability((short) -1);
+        }
         String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
         switch (metaValue) {
             case "pet":

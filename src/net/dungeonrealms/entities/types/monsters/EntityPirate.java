@@ -24,7 +24,7 @@ public class EntityPirate extends MeleeEntityZombie {
 		this.entityType = entityType;
 		int level = Utils.getRandomFromTier(tier);
 		MetadataUtils.registerEntityMetadata(this, this.entityType, tier, level);
-		EntityStats.setMonsterStats(this, level);
+		EntityStats.setMonsterStats(this, level, tier);
 		this.setCustomName(ChatColor.GOLD + "Pirate");
 		this.setCustomNameVisible(true);
 	}

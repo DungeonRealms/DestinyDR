@@ -32,9 +32,42 @@ public class DamageAPI {
      */
     public static double calculateWeaponDamage(LivingEntity attacker, Entity receiver, NBTTagCompound tag) {
         EntityEquipment entityEquipment = attacker.getEquipment();
+        ItemStack[] attackerArmor = entityEquipment.getArmorContents();
+        NBTTagCompound nmsTags[] = new NBTTagCompound[4];
+        double damage = 0;
+        if (attackerArmor[3].getType() != null && attackerArmor[3].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(attackerArmor[3]).getTag() != null) {
+                nmsTags[0] = CraftItemStack.asNMSCopy(attackerArmor[3]).getTag();
+            }
+        }
+        if (attackerArmor[2].getType() != null && attackerArmor[2].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(attackerArmor[2]).getTag() != null) {
+                nmsTags[1] = CraftItemStack.asNMSCopy(attackerArmor[2]).getTag();
+            }
+        }
+        if (attackerArmor[1].getType() != null && attackerArmor[1].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(attackerArmor[1]).getTag() != null) {
+                nmsTags[2] = CraftItemStack.asNMSCopy(attackerArmor[1]).getTag();
+            }
+        }
+        if (attackerArmor[0] != null && attackerArmor[0].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(attackerArmor[0]).getTag() != null) {
+                nmsTags[3] = CraftItemStack.asNMSCopy(attackerArmor[0]).getTag();
+            }
+        }
+        for (NBTTagCompound nmsTag : nmsTags) {
+            if (nmsTag == null) {
+                damage += 0;
+            } else {
+                if (nmsTag.getInt("damage") != 0) {
+                    damage += nmsTag.getInt("damage");
+                    Bukkit.broadcastMessage("DAMAGE INCREASED DUE TO ARMOR");
+                }
+            }
+        }
         ItemStack ourItem = entityEquipment.getItemInHand();
         int weaponTier = new Attribute(ourItem).getItemTier().getId();
-        double damage = tag.getDouble("damage");
+        damage += tag.getDouble("damage");
         boolean isHitCrit = false;
         if (receiver instanceof Player) {
             if (tag.getInt("vsPlayers") != 0) {
@@ -234,7 +267,41 @@ public class DamageAPI {
      * @since 1.0
      */
     public static double calculateProjectileDamage(LivingEntity attacker, Entity receiver, Projectile projectile) {
-        double damage = projectile.getMetadata("damage").get(0).asDouble();
+        EntityEquipment entityEquipment = attacker.getEquipment();
+        ItemStack[] attackerArmor = entityEquipment.getArmorContents();
+        NBTTagCompound nmsTags[] = new NBTTagCompound[4];
+        double damage = 0;
+        if (attackerArmor[3].getType() != null && attackerArmor[3].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(attackerArmor[3]).getTag() != null) {
+                nmsTags[0] = CraftItemStack.asNMSCopy(attackerArmor[3]).getTag();
+            }
+        }
+        if (attackerArmor[2].getType() != null && attackerArmor[2].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(attackerArmor[2]).getTag() != null) {
+                nmsTags[1] = CraftItemStack.asNMSCopy(attackerArmor[2]).getTag();
+            }
+        }
+        if (attackerArmor[1].getType() != null && attackerArmor[1].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(attackerArmor[1]).getTag() != null) {
+                nmsTags[2] = CraftItemStack.asNMSCopy(attackerArmor[1]).getTag();
+            }
+        }
+        if (attackerArmor[0] != null && attackerArmor[0].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(attackerArmor[0]).getTag() != null) {
+                nmsTags[3] = CraftItemStack.asNMSCopy(attackerArmor[0]).getTag();
+            }
+        }
+        for (NBTTagCompound nmsTag : nmsTags) {
+            if (nmsTag == null) {
+                damage += 0;
+            } else {
+                if (nmsTag.getInt("damage") != 0) {
+                    damage += nmsTag.getInt("damage");
+                    Bukkit.broadcastMessage("DAMAGE INCREASED DUE TO ARMOR");
+                }
+            }
+        }
+        damage += projectile.getMetadata("damage").get(0).asDouble();
         boolean isHitCrit = false;
         if (receiver instanceof Player) {
             if (projectile.getMetadata("vsPlayers").get(0).asInt() != 0) {

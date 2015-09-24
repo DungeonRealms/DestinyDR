@@ -1,5 +1,17 @@
 package net.dungeonrealms.listeners;
 
+import net.dungeonrealms.duel.DuelMechanics;
+import net.dungeonrealms.duel.DuelWager;
+import net.dungeonrealms.items.Item;
+import net.dungeonrealms.items.Item.ItemTier;
+import net.dungeonrealms.items.armor.Armor;
+import net.dungeonrealms.mechanics.ItemManager;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.shops.Shop;
+import net.dungeonrealms.shops.ShopMechanics;
+import net.md_5.bungee.api.ChatColor;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.GameMode;
@@ -9,24 +21,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
-import net.dungeonrealms.duel.DuelMechanics;
-import net.dungeonrealms.duel.DuelWager;
-import net.dungeonrealms.items.Item;
-import net.dungeonrealms.items.Item.ItemTier;
-import net.dungeonrealms.mechanics.ItemManager;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.shops.Shop;
-import net.dungeonrealms.shops.ShopMechanics;
-import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -242,7 +240,7 @@ public class InventoryListener implements Listener {
 	 * @since 1.0 Called when a player swithced
 	 */
 
-	@EventHandler(priority = EventPriority.HIGH)
+	@EventHandler(priority = EventPriority.LOWEST)
 	public void playerSwitchItem(PlayerItemHeldEvent ev) {
 		if (ev.getPlayer().isOp() || ev.getPlayer().getGameMode() == GameMode.CREATIVE)
 			return;

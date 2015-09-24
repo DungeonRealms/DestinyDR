@@ -8,7 +8,7 @@ import org.bukkit.ChatColor;
 public class Armor {
 
     public enum EquipmentType {
-        HELMET(0, "Helment"),
+        HELMET(0, "Helmet"),
         CHESTPLATE(1, "Chestplate"),
         LEGGINGS(2, "Leggings"),
         BOOTS(3, "Boots");
@@ -35,7 +35,7 @@ public class Armor {
                     return it;
                 }
             }
-            return null;
+            return getById(0);
         }
     }
 
