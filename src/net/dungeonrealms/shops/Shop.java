@@ -3,6 +3,7 @@
  */
 package net.dungeonrealms.shops;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -103,6 +104,17 @@ public class Shop {
 			if (nms.getTag().hasKey("status"))
 				continue;
 			inventory.setItem(i, null);
+			ItemMeta meta = current.getItemMeta();
+			List<String> lore = meta.getLore();
+			for (int j = 0; j < lore.size(); j++) {
+			String currentStr = lore.get(j);
+			if (currentStr.contains("Price")) {
+				lore.remove(j);
+				break;
+			}
+			}
+			meta.setLore(lore);
+			current.setItemMeta(meta);
 			getOwner().getInventory().addItem(current);
 
 		}

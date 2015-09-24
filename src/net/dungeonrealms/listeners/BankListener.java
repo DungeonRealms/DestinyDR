@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -25,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.minebone.anvilapi.core.AnvilApi;
+import com.minebone.anvilapi.core.AnvilApiCore;
 import com.minebone.anvilapi.nms.anvil.AnvilClickEvent;
 import com.minebone.anvilapi.nms.anvil.AnvilClickEventHandler;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
@@ -32,7 +32,6 @@ import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
