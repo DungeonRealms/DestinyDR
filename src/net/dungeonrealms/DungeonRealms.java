@@ -24,7 +24,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  */
 public class DungeonRealms extends JavaPlugin {
 
-    static DungeonRealms instance = null;
+    private static DungeonRealms instance = null;
 
     public static DungeonRealms getInstance() {
         return instance;

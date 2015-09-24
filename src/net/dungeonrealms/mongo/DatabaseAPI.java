@@ -16,7 +16,7 @@ import java.util.UUID;
  */
 public class DatabaseAPI {
 
-    static DatabaseAPI instance = null;
+    private static DatabaseAPI instance = null;
 
     public static DatabaseAPI getInstance() {
         if (instance == null) {
@@ -26,7 +26,7 @@ public class DatabaseAPI {
     }
 
     public static volatile HashMap<UUID, Document> PLAYERS = new HashMap<>();
-    public static volatile ArrayList<UUID> REQUEST_NEW_DATA = new ArrayList<>();
+    private static volatile ArrayList<UUID> REQUEST_NEW_DATA = new ArrayList<>();
 
     /**
      * Updates a players information in Mongo and returns the updated result.
@@ -119,7 +119,7 @@ public class DatabaseAPI {
      * @param uuid
      * @since 1.0
      */
-    public void addNewPlayer(UUID uuid) {
+    private void addNewPlayer(UUID uuid) {
         Document newPlayerDocument =
                 new Document("info",
                         new Document("uuid", uuid.toString())

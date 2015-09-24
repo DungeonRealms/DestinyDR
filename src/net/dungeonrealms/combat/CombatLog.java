@@ -13,7 +13,7 @@ import java.util.UUID;
  */
 public class CombatLog {
 
-    static CombatLog instance = null;
+    private static CombatLog instance = null;
 
     public static CombatLog getInstance() {
         if (instance == null) {
@@ -48,7 +48,7 @@ public class CombatLog {
         }
     }
 
-    public static void removeFromCombat(UUID uuid) {
+    private static void removeFromCombat(UUID uuid) {
         if (isInCombat(uuid)) {
             COMBAT.remove(uuid);
             if (Bukkit.getPlayer(uuid) != null) {

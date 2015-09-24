@@ -13,8 +13,8 @@ import java.util.UUID;
 public class EnderDragon extends EntityEnderDragon {
 
     public String mobName;
-    public UUID ownerUUID;
-    public EnumEntityType entityType;
+    private UUID ownerUUID;
+    private EnumEntityType entityType;
 
     public EnderDragon(World world, UUID ownerUUID, EnumEntityType entityType) {
         super(world);

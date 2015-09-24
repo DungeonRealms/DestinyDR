@@ -50,7 +50,7 @@ public class ArmorGenerator {
      * @return
      * @since 1.0
      */
-    ItemStack getArmor(Armor.EquipmentType type, Armor.ArmorTier tier, Armor.ArmorModifier modifier) {
+    private ItemStack getArmor(Armor.EquipmentType type, Armor.ArmorTier tier, Armor.ArmorModifier modifier) {
         ItemStack item = getBaseItem(type, tier);
         ArrayList<Armor.ArmorAttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(tier.getAttributeRange()));
         ItemMeta meta = item.getItemMeta();
@@ -103,7 +103,7 @@ public class ArmorGenerator {
      * @return
      * @since 1.0
      */
-    public Armor.EquipmentType getRandomEquipmentType() {
+    private Armor.EquipmentType getRandomEquipmentType() {
         return Armor.EquipmentType.getById(new Random().nextInt(Armor.EquipmentType.values().length));
     }
 
@@ -113,7 +113,7 @@ public class ArmorGenerator {
      * @return
      * @since 1.0
      */
-    public Armor.ArmorTier getRandomItemTier() {
+    private Armor.ArmorTier getRandomItemTier() {
         return Armor.ArmorTier.getById(new Random().nextInt(Armor.ArmorTier.values().length));
     }
 
@@ -123,7 +123,7 @@ public class ArmorGenerator {
      * @return
      * @since 1.0
      */
-    public Armor.ArmorModifier getRandomItemModifier() {
+    private Armor.ArmorModifier getRandomItemModifier() {
         return Armor.ArmorModifier.getById(new Random().nextInt(Armor.ArmorModifier.values().length));
     }
 
@@ -134,7 +134,7 @@ public class ArmorGenerator {
      * @return
      * @since 1.0
      */
-    ArrayList<Armor.ArmorAttributeType> getRandomAttributes(int amountOfAttributes) {
+    private ArrayList<Armor.ArmorAttributeType> getRandomAttributes(int amountOfAttributes) {
         ArrayList<Armor.ArmorAttributeType> attributeList = new ArrayList<>();
         //We always want to add Damage to the Item. Since AttributeModifiers are removed. Completely.
         for (int i = 0; i < amountOfAttributes; i++) {
@@ -155,7 +155,7 @@ public class ArmorGenerator {
      * @return
      * @since 1.0
      */
-    ItemStack getBaseItem(Armor.EquipmentType type, Armor.ArmorTier tier) {
+    private ItemStack getBaseItem(Armor.EquipmentType type, Armor.ArmorTier tier) {
         switch (type) {
             case HELMET:
                 switch (tier) {

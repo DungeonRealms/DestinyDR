@@ -13,10 +13,10 @@ import java.util.UUID;
  */
 public class Horse extends EntityHorse {
 
-    public UUID ownerUUID;
-    public EnumEntityType entityType;
-    public int horseType;
-    public double horseSpeed;
+    private UUID ownerUUID;
+    private EnumEntityType entityType;
+    private int horseType;
+    private double horseSpeed;
 
     public Horse(World world, int horseType, double horseSpeed, UUID ownerUUID, EnumEntityType entityType) {
         super(world);

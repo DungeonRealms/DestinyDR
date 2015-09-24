@@ -12,9 +12,9 @@ import java.util.UUID;
  */
 public class Endermite extends EntityEndermite {
 
-    public String mobName;
-    public UUID ownerUUID;
-    public EnumEntityType entityType;
+    private String mobName;
+    private UUID ownerUUID;
+    private EnumEntityType entityType;
 
     public Endermite(World world, String mobName, UUID ownerUUID, EnumEntityType entityType) {
         super(world);

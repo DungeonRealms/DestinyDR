@@ -885,7 +885,7 @@ public class DamageMeta {
     }
 
 
-    int random(int min, int max) {
+    private int random(int min, int max) {
         return new Random().nextInt(max - min) + min;
     }
 }

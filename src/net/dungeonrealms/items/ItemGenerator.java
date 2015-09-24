@@ -54,7 +54,7 @@ public class ItemGenerator {
      * @return
      * @since 1.0
      */
-    ItemStack getWeapon(Item.ItemType type, Item.ItemTier tier, Item.ItemModifier modifier) {
+    private ItemStack getWeapon(Item.ItemType type, Item.ItemTier tier, Item.ItemModifier modifier) {
         ItemStack item = getBaseItem(type, tier);
         ArrayList<Item.AttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(tier.getAttributeRange()));
         ItemMeta meta = item.getItemMeta();
@@ -108,7 +108,7 @@ public class ItemGenerator {
      * @return
      * @since 1.0
      */
-    public Item.ItemType getRandomItemType() {
+    private Item.ItemType getRandomItemType() {
         return Item.ItemType.getById(new Random().nextInt(Item.ItemType.values().length));
     }
 
@@ -118,7 +118,7 @@ public class ItemGenerator {
      * @return
      * @since 1.0
      */
-    public Item.ItemTier getRandomItemTier() {
+    private Item.ItemTier getRandomItemTier() {
         return Item.ItemTier.getById(new Random().nextInt(Item.ItemTier.values().length));
     }
 
@@ -128,7 +128,7 @@ public class ItemGenerator {
      * @return
      * @since 1.0
      */
-    public Item.ItemModifier getRandomItemModifier() {
+    private Item.ItemModifier getRandomItemModifier() {
         return Item.ItemModifier.getById(new Random().nextInt(Item.ItemModifier.values().length));
     }
 
@@ -139,7 +139,7 @@ public class ItemGenerator {
      * @return
      * @since 1.0
      */
-    ArrayList<Item.AttributeType> getRandomAttributes(int amountOfAttributes) {
+    private ArrayList<Item.AttributeType> getRandomAttributes(int amountOfAttributes) {
         ArrayList<Item.AttributeType> attributeList = new ArrayList<>();
         //We always want to add Damage to the Item. Since AttributeModifiers are removed. Completely.
         attributeList.add(Item.AttributeType.DAMAGE);
@@ -162,7 +162,7 @@ public class ItemGenerator {
      * @return
      * @since 1.0
      */
-    ItemStack getBaseItem(Item.ItemType type, Item.ItemTier tier) {
+    private ItemStack getBaseItem(Item.ItemType type, Item.ItemTier tier) {
         switch (type) {
             case SWORD:
                 switch (tier) {

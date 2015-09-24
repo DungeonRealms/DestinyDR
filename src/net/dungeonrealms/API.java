@@ -1,15 +1,14 @@
 package net.dungeonrealms;
 
-import java.rmi.activation.UnknownObjectException;
-import java.util.UUID;
-
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import java.rmi.activation.UnknownObjectException;
+import java.util.UUID;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -22,7 +21,7 @@ public class API {
 	 * @return
 	 * @since 1.0
 	 */
-	public static WorldGuardPlugin getWorldGuard() {
+	private static WorldGuardPlugin getWorldGuard() {
 		Plugin plugin = DungeonRealms.getInstance().getServer().getPluginManager().getPlugin("WorldGuard");
 		if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
 			try {
@@ -34,19 +33,15 @@ public class API {
 		return (WorldGuardPlugin) plugin;
 	}
 	/**
-	 * @param event
+	 * @param uuid
 	 * @since 1.0
 	 * Checks if player is in a region that denys PVP
 	 */
 	public static boolean isInSafeRegion(UUID uuid) {
 		Player p = Bukkit.getPlayer(uuid);
-		ApplicableRegionSet region = getWorldGuard().getRegionManager(p.getWorld())
-			.getApplicableRegions(p.getLocation());
+		ApplicableRegionSet region = getWorldGuard().getRegionManager(p.getWorld()).getApplicableRegions(p.getLocation());
 		if (region.getFlag(DefaultFlag.PVP) != null) {
-			if (region.allows(DefaultFlag.PVP))
-			return false;
-			else
-			return true;
+			return !region.allows(DefaultFlag.PVP);
 		} else {
 			return false;
 		}

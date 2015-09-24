@@ -14,7 +14,7 @@ import java.util.List;
 /**
  * Created by Kieran on 9/20/2015.
  */
-public class EnchantmentAPI {
+class EnchantmentAPI {
 
     /**
      * Checks the item to see if its a protection scroll
@@ -48,7 +48,7 @@ public class EnchantmentAPI {
      * @param itemStack
      * @since 1.0
      */
-    public static boolean isItemWeapon(ItemStack itemStack) {
+    private static boolean isItemWeapon(ItemStack itemStack) {
         Item.ItemType itemType = new Attribute(itemStack).getItemType();
         return itemType == Item.ItemType.AXE || itemType == Item.ItemType.POLE_ARM || itemType == Item.ItemType.SWORD;
     }
@@ -58,7 +58,7 @@ public class EnchantmentAPI {
      * @param itemStack
      * @since 1.0
      */
-    public static boolean isItemArmor(ItemStack itemStack) {
+    private static boolean isItemArmor(ItemStack itemStack) {
         Item.ItemType itemType = new Attribute(itemStack).getItemType();
         //TODO: CHECK WHEN ARMORTYPE IS ADDED
         return false;
@@ -70,7 +70,7 @@ public class EnchantmentAPI {
      * @param toCompare
      * @since 1.0
      */
-    public static boolean doItemTiersMatch(ItemStack itemStack, ItemStack toCompare) {
+    private static boolean doItemTiersMatch(ItemStack itemStack, ItemStack toCompare) {
         return new Attribute(itemStack).getItemTier() == new Attribute(toCompare).getItemTier();
     }
 

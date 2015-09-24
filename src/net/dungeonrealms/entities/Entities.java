@@ -36,7 +36,7 @@ import net.minecraft.server.v1_8_R3.EntityZombie;
  */
 public class Entities {
 
-    static Entities instance = null;
+    private static Entities instance = null;
     public static HashMap<UUID, Entity> PLAYER_PETS = new HashMap<>();
     public static HashMap<UUID, Entity> PLAYER_MOUNTS = new HashMap<>();
 

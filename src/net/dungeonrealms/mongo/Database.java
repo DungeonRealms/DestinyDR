@@ -12,7 +12,7 @@ import org.bson.Document;
  */
 public class Database {
 
-    static Database instance = null;
+    private static Database instance = null;
 
     public static Database getInstance() {
         if (instance == null) {
@@ -22,7 +22,7 @@ public class Database {
     }
 
     public static MongoClient mongoClient = null;
-    public static MongoDatabase database = null;
+    private static MongoDatabase database = null;
     public static MongoCollection<Document> collection = null;
 
     public void initConnection() {

@@ -96,10 +96,7 @@ public class TeleportAPI {
         if (tag == null || nmsItem == null) {
             return false;
         }
-        if (!(tag.getString("type").equalsIgnoreCase("teleport"))) {
-            return false;
-        }
-        return true;
+        return tag.getString("type").equalsIgnoreCase("teleport");
     }
 
     /**
@@ -116,10 +113,7 @@ public class TeleportAPI {
         if (tag == null || nmsItem == null) {
             return false;
         }
-        if (!(tag.getString("type").equalsIgnoreCase("important") && tag.getString("usage").equalsIgnoreCase("hearthstone"))) {
-            return false;
-        }
-        return true;
+        return tag.getString("type").equalsIgnoreCase("important") && tag.getString("usage").equalsIgnoreCase("hearthstone");
     }
 
     /**

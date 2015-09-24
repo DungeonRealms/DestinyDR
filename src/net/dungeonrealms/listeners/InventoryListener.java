@@ -1,32 +1,8 @@
 package net.dungeonrealms.listeners;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import com.minebone.anvilapi.core.AnvilApi;
-import com.minebone.anvilapi.nms.anvil.AnvilClickEvent;
-import com.minebone.anvilapi.nms.anvil.AnvilClickEventHandler;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
-
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
 import net.dungeonrealms.items.Item;
@@ -38,6 +14,21 @@ import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -270,7 +261,6 @@ public class InventoryListener implements Listener {
                 return;
             if (stack.getType() == Material.BONE) {
                 e.setCancelled(true);
-                return;
             } else if (slot == 30) {
                 e.setCancelled(true);
                 wager.cycleArmor();
@@ -306,7 +296,6 @@ public class InventoryListener implements Listener {
                     }
                 } else {
                     e.setCancelled(true);
-                    return;
                 }
             } else if (slot == 8) {
                 if (!wager.isLeft(p)) {
@@ -337,7 +326,6 @@ public class InventoryListener implements Listener {
                     }
                 } else {
                     e.setCancelled(true);
-                    return;
                 }
             } else if (slot < 36) {
                 if (e.isLeftClick()) {
@@ -388,23 +376,23 @@ public class InventoryListener implements Listener {
      */
 
     @EventHandler(priority = EventPriority.LOWEST)
-    public void playerSwitchItem(PlayerItemHeldEvent ev) {
-        if (ev.getPlayer().isOp() || ev.getPlayer().getGameMode() == GameMode.CREATIVE)
+    public void playerSwitchItem(PlayerItemHeldEvent event) {
+        if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE)
             return;
-        int slot = ev.getNewSlot();
-        if (ev.getPlayer().getInventory().getItem(slot) != null) {
+        int slot = event.getNewSlot();
+        if (event.getPlayer().getInventory().getItem(slot) != null) {
             net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack
-                    .asNMSCopy(ev.getPlayer().getInventory().getItem(slot));
+                    .asNMSCopy(event.getPlayer().getInventory().getItem(slot));
             if (nms.hasTag()) {
                 if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon")) {
                     ItemTier tier = Item.ItemTier.getById(nms.getTag().getInt("itemTier"));
                     int minLevel = tier.getRangeValues()[0];
-                    Player p = ev.getPlayer();
+                    Player p = event.getPlayer();
                     int pLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, p.getUniqueId());
                     if (pLevel < minLevel) {
                         p.sendMessage(ChatColor.RED + "You must be level " + ChatColor.YELLOW.toString() + minLevel
                                 + ChatColor.RED.toString() + " to wield this weapon!");
-                        ev.setCancelled(true);
+                        event.setCancelled(true);
                     }
                 }
             }

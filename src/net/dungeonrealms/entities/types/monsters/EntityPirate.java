@@ -17,7 +17,7 @@ import net.minecraft.server.v1_8_R3.World;
  * Created by Nick on 9/17/2015.
  */
 public class EntityPirate extends MeleeEntityZombie {
-	public EnumEntityType entityType;
+	private EnumEntityType entityType;
 
 	public EntityPirate(World world, EnumEntityType entityType, int tier) {
 		super(world, "pirate", getRandomHead(), tier, entityType);

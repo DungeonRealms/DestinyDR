@@ -40,11 +40,11 @@ public class NameGenerator {
      * @return
      * @since 1.0
      */
-    List<String> getRandomItemName(Armor.EquipmentType type) {
+    private List<String> getRandomItemName(Armor.EquipmentType type) {
         List<String> name = new ArrayList<>();
         name.add(type.getName());
-        name.add(middle.get(new Random().nextInt(middle.size() - 0) + 0));
-        name.add(last.get(new Random().nextInt(last.size() - 0) + 0));
+        name.add(middle.get(new Random().nextInt(middle.size())));
+        name.add(last.get(new Random().nextInt(last.size())));
         return name;
     }
 
@@ -55,18 +55,18 @@ public class NameGenerator {
      * @return
      * @since 1.0
      */
-    List<String> getRandomItemName(Item.ItemType type) {
+    private List<String> getRandomItemName(Item.ItemType type) {
         List<String> name = new ArrayList<>();
         name.add(type.getName());
-        name.add(middle.get(new Random().nextInt(middle.size() - 0) + 0));
-        name.add(last.get(new Random().nextInt(last.size() - 0) + 0));
+        name.add(middle.get(new Random().nextInt(middle.size())));
+        name.add(last.get(new Random().nextInt(last.size())));
         return name;
     }
 
     /**
      * Synonyms of
      */
-    public List<String> middle = Arrays.asList(
+    private List<String> middle = Arrays.asList(
             "Of",
             "The"
     );
@@ -74,7 +74,7 @@ public class NameGenerator {
     /**
      * Suffix words
      */
-    public List<String> last = Arrays.asList(
+    private List<String> last = Arrays.asList(
             "Afrit",
             "Alfar",
             "Astomi",

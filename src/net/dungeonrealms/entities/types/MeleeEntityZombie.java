@@ -23,11 +23,11 @@ import java.util.Random;
 
 public abstract class MeleeEntityZombie extends EntityZombie {
 
-	public String name;
-	public String mobHead;
-	public EnumEntityType entityType;
+	private String name;
+	private String mobHead;
+	private EnumEntityType entityType;
 
-	public MeleeEntityZombie(World world, String mobName, String mobHead, int tier, EnumEntityType entityType) {
+	protected MeleeEntityZombie(World world, String mobName, String mobHead, int tier, EnumEntityType entityType) {
 		this(world);
 		try {
 			Field bField = PathfinderGoalSelector.class.getDeclaredField("b");
@@ -70,11 +70,11 @@ public abstract class MeleeEntityZombie extends EntityZombie {
 	@Override
 	protected abstract void getRareDrop();
 
-	public MeleeEntityZombie(World world) {
+	protected MeleeEntityZombie(World world) {
 		super(world);
 	}
 
-	public abstract void setStats();
+	protected abstract void setStats();
 
 	public static Object getPrivateField(String fieldName, Class clazz, Object object) {
 		Field field;
@@ -93,7 +93,7 @@ public abstract class MeleeEntityZombie extends EntityZombie {
 		return this.name;
 	}
 
-	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
+	private net.minecraft.server.v1_8_R3.ItemStack getHead() {
 		ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 		SkullMeta meta = (SkullMeta) head.getItemMeta();
 		meta.setOwner(mobHead);
@@ -101,7 +101,7 @@ public abstract class MeleeEntityZombie extends EntityZombie {
 		return CraftItemStack.asNMSCopy(head);
 	}
 
-	public void setArmor(int tier) {
+	private void setArmor(int tier) {
 		ItemStack[] armor = getTierArmor(tier);
 		// weapon, boots, legs, chest, helmet/head
 		ItemStack weapon = getTierWeapon(tier);
@@ -112,7 +112,7 @@ public abstract class MeleeEntityZombie extends EntityZombie {
 		this.setEquipment(4, this.getHead());
 	}
 
-	public ItemStack getTierWeapon(int tier) {
+	private ItemStack getTierWeapon(int tier) {
 		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.getById(new Random().nextInt(net.dungeonrealms.items.Item.ItemType.values().length - 2)), net.dungeonrealms.items.Item.ItemTier.getById(tier));
 		//TODO: MAKE THIS TAKE A TIER AND BASE IT ON THAT. DO THE SAME WITH ARMOR DON'T JUST CREATE NEW SHITTY BUKKIT ONES.
 		/*
@@ -130,7 +130,7 @@ public abstract class MeleeEntityZombie extends EntityZombie {
 		return new ItemStack(Material.WOOD_SWORD, 1);*/
 	}
 
-	public ItemStack[] getTierArmor(int tier) {
+	private ItemStack[] getTierArmor(int tier) {
 		if (tier == 1) {
 			return new ItemStack[] { new ItemStack(Material.LEATHER_BOOTS, 1),
 				new ItemStack(Material.LEATHER_LEGGINGS, 1), new ItemStack(Material.LEATHER_CHESTPLATE, 1),

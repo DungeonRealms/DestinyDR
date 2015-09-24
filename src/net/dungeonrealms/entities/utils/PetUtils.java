@@ -2,7 +2,6 @@ package net.dungeonrealms.entities.utils;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.Entities;
-import net.dungeonrealms.entities.types.*;
 import net.dungeonrealms.entities.types.pets.BabyZombie;
 import net.dungeonrealms.entities.types.pets.BabyZombiePig;
 import net.dungeonrealms.entities.types.pets.CaveSpider;
@@ -31,7 +30,7 @@ import java.util.UUID;
  */
 public class PetUtils {
 
-    static PetUtils instance = null;
+    private static PetUtils instance = null;
     public static PetUtils getInstance() {
         if (instance == null) {
             return new PetUtils();
@@ -71,7 +70,7 @@ public class PetUtils {
         }, 100L, 100L);
     }
 
-    public static void makePet(EntityLiving e, UUID toFollow) {
+    private static void makePet(EntityLiving e, UUID toFollow) {
         try {
             Object nms_entity = e;
             if (nms_entity instanceof EntityInsentient) {

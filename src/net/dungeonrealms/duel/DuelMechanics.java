@@ -25,7 +25,7 @@ import java.util.UUID;
 public class DuelMechanics {
 	public static HashMap<UUID, UUID> PENDING_DUELS = new HashMap<>();
 	public static HashMap<UUID, UUID> DUELS = new HashMap<>();
-	public static ArrayList<UUID> cooldown = new ArrayList<>();
+	private static ArrayList<UUID> cooldown = new ArrayList<>();
 	public static ArrayList<DuelWager> WAGERS = new ArrayList<>();
 
 	// ALL PLAYERS IN A DUEL

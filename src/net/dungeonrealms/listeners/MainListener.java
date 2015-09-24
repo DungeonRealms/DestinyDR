@@ -189,7 +189,6 @@ public class MainListener implements Listener {
                             DuelMechanics.sendDuelRequest(p1.getUniqueId(), p2.getUniqueId());
                         } else {
                             p1.sendMessage(ChatColor.RED + "You must wait to send another Duel Request");
-                            return;
                         }
 
                     }

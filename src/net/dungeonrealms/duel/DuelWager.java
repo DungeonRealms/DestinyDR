@@ -15,7 +15,6 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.md_5.bungee.api.ChatColor;
@@ -26,11 +25,11 @@ import net.md_5.bungee.api.ChatColor;
 public class DuelWager {
 	public Player p1;
 	public Player p2;
-	public ItemTier armorTier;
-	public ItemTier weaponTier;
-	public ArrayList<ItemStack> winningItems;
+	private ItemTier armorTier;
+	private ItemTier weaponTier;
+	private ArrayList<ItemStack> winningItems;
 	public boolean completed = false;
-	public int timerID;
+	private int timerID;
 
 	public DuelWager(Player p1, Player p2) {
 		this.p1 = p1;
@@ -128,8 +127,8 @@ public class DuelWager {
 	/**
 	 * Player2 is the loser.
 	 * 
-	 * @param p1
-	 * @param p2
+	 * @param winner
+	 * @param loser
 	 */
 	public void endDuel(Player winner, Player loser) {
 		Bukkit.broadcastMessage(winner.getDisplayName() + " has defeated " + loser.getDisplayName() + " in a duel.");

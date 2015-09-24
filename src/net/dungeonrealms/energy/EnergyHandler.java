@@ -20,7 +20,7 @@ import java.util.UUID;
  */
 public class EnergyHandler {
 
-    static EnergyHandler instance = null;
+    private static EnergyHandler instance = null;
 
     public static EnergyHandler getInstance() {
         if (instance == null) {
@@ -82,7 +82,7 @@ public class EnergyHandler {
         return player.getExp();
     }
 
-    public static void updatePlayerEnergyBar(UUID uuid) {
+    private static void updatePlayerEnergyBar(UUID uuid) {
         float currExp = getPlayerCurrentEnergy(uuid);
         double percent = currExp * 100.00D;
         if (percent > 100) {
@@ -94,7 +94,7 @@ public class EnergyHandler {
         Bukkit.getPlayer(uuid).setLevel(((int) percent));
     }
 
-    public float getPlayerEnergyRegenerationAmount(UUID uuid) {
+    private float getPlayerEnergyRegenerationAmount(UUID uuid) {
         float regenAmount = 0.15F;
         Player player = Bukkit.getPlayer(uuid);
         EntityEquipment playerEquipment = player.getEquipment();
@@ -135,7 +135,7 @@ public class EnergyHandler {
         return regenAmount;
     }
 
-    public static void addEnergyToPlayerAndUpdate(UUID uuid, float amountToAdd) {
+    private static void addEnergyToPlayerAndUpdate(UUID uuid, float amountToAdd) {
         if (getPlayerCurrentEnergy(uuid) == 1) {
             return;
         }
@@ -180,7 +180,7 @@ public class EnergyHandler {
         updatePlayerEnergyBar(uuid);
     }
 
-    public void addStarvingPotionEffect() {
+    private void addStarvingPotionEffect() {
         Bukkit.getOnlinePlayers().stream().filter(player -> player.hasPotionEffect(PotionEffectType.HUNGER) && player.hasMetadata("starving")).forEach(player -> {
             if (player.getFoodLevel() <= 0) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 40, 0)), 0L);

@@ -10,7 +10,7 @@ import net.minecraft.server.v1_8_R3.World;
  */
 public class EnderCrystal extends EntityEnderCrystal {
 
-    public EnumEntityType entityType;
+    private EnumEntityType entityType;
 
     public EnderCrystal(World world, EnumEntityType entityType) {
         super(world);

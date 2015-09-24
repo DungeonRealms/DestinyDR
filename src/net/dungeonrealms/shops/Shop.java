@@ -1,6 +1,3 @@
-/**
- *
- */
 package net.dungeonrealms.shops;
 
 import net.dungeonrealms.mechanics.ParticleAPI;
@@ -24,8 +21,8 @@ import java.util.UUID;
  * Created by Chase on Sep 23, 2015
  */
 public class Shop {
-    public UUID owner;
-    public String shopName;
+    private UUID owner;
+    private String shopName;
     public boolean isopen;
     public Inventory inventory;
     public Block block;

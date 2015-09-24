@@ -16,7 +16,7 @@ public class XRandom {
         this(System.nanoTime());
     }
 
-    public XRandom(long seed) {
+    private XRandom(long seed) {
         u = seed ^ v;
         nextLong();
         v = u;
@@ -25,18 +25,17 @@ public class XRandom {
         nextLong();
     }
 
-    public long nextLong() {
+    private long nextLong() {
         try {
             u = u * 2862933555777941757L + 7046029254386353087L;
             v ^= v >>> 17;
             v ^= v << 31;
             v ^= v >>> 8;
-            w = 4294957665L * (w & 0xffffffff) + (w >>> 32);
+            w = 4294957665L * (w) + (w >>> 32);
             long x = u ^ (u << 21);
             x ^= x >>> 35;
             x ^= x << 4;
-            long ret = (x + v) ^ w;
-            return ret;
+            return (x + v) ^ w;
         } catch (Exception e) {
             e.printStackTrace();
         }

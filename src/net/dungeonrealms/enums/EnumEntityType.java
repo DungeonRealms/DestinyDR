@@ -27,7 +27,7 @@ public enum  EnumEntityType {
         return rawName;
     }
 
-    public static EnumEntityType getByIdValue(int id) {
+    private static EnumEntityType getByIdValue(int id) {
         for (EnumEntityType entityType : values()) {
             if (entityType.id == id) {
                 return entityType;

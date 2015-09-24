@@ -392,7 +392,7 @@ public class BankListener implements Listener {
      * @param Gems_worth being added
      * @since 1.0
      */
-    public boolean hasSpaceInInventory(UUID uuid, int Gems_worth) {
+    private boolean hasSpaceInInventory(UUID uuid, int Gems_worth) {
         if (Gems_worth > 64) {
             int space_needed = Math.round(Gems_worth / 64) + 1;
             int count = 0;
@@ -412,9 +412,7 @@ public class BankListener implements Listener {
             } else
                 return true;
         }
-        if (Bukkit.getPlayer(uuid).getInventory().firstEmpty() == -1)
-            return false;
-        return true;
+        return Bukkit.getPlayer(uuid).getInventory().firstEmpty() != -1;
     }
 
     /**

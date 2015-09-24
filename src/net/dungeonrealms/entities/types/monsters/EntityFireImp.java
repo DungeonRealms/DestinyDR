@@ -29,7 +29,7 @@ public class EntityFireImp extends RangedEntitySkeleton {
 	 * @param entityType
 	 */
 
-	int tier;
+	private int tier;
 	public EntityFireImp(World world, int tier, EnumEntityType entityType) {
 		super(world, "Fire Imp", "Satan", tier, entityType);
 		this.tier = tier;

@@ -22,7 +22,7 @@ import java.util.UUID;
  */
 public class Teleportation {
 
-    static Teleportation instance = null;
+    private static Teleportation instance = null;
     public static Teleportation getInstance() {
         if (instance == null) {
             return new Teleportation();
@@ -35,7 +35,7 @@ public class Teleportation {
 
     public static Location Harrison_Field;
     public static Location Dark_Oak_Tavern;
-    public static Location Deadpeaks_Mountain_Camp;
+    private static Location Deadpeaks_Mountain_Camp;
     public static Location Trollsbane_tavern;
     public static Location Tripoli;
     public static Location Gloomy_Hollows;

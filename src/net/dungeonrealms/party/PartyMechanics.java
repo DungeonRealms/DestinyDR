@@ -13,7 +13,7 @@ import java.util.UUID;
  */
 public class PartyMechanics {
 
-    static PartyMechanics instance = null;
+    private static PartyMechanics instance = null;
 
     public static PartyMechanics getInstance() {
         if (instance == null) {
@@ -23,7 +23,7 @@ public class PartyMechanics {
     }
 
 
-    public static ArrayList<Party> PARTIES = new ArrayList<>();
+    private static ArrayList<Party> PARTIES = new ArrayList<>();
 
 
     public void createParty(UUID uuid) {
@@ -38,7 +38,7 @@ public class PartyMechanics {
         }
     }
 
-    public boolean isInParty(UUID uuid) {
+    private boolean isInParty(UUID uuid) {
         for (Party p : PARTIES) {
             if (p.getMembers().contains(uuid) || p.getOwner().equals(uuid)) {
                 return true;
@@ -47,7 +47,7 @@ public class PartyMechanics {
         return false;
     }
 
-    public boolean isOwner(UUID uuid) {
+    private boolean isOwner(UUID uuid) {
         for (Party p : PARTIES) {
             if (p.getOwner().equals(uuid)) {
                 return true;
@@ -106,7 +106,7 @@ public class PartyMechanics {
         }, 0, 20L);
     }
 
-    public void setScoreboard(Party party) {
+    private void setScoreboard(Party party) {
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         Scoreboard board = manager.getNewScoreboard();
         Objective objective = board.registerNewObjective("test", "dummy");

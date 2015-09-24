@@ -22,14 +22,14 @@ import java.lang.reflect.Field;
  * Created by Chase on Sep 19, 2015
  */
 public abstract class RangedEntitySkeleton extends EntitySkeleton {
-	public String name;
-	public String mobHead;
-	public EnumEntityType entityType;
+	private String name;
+	private String mobHead;
+	protected EnumEntityType entityType;
 
 	/**
 	 * @param world
 	 */
-	public RangedEntitySkeleton(World world, String mobName, String mobHead, int tier, EnumEntityType entityType) {
+	protected RangedEntitySkeleton(World world, String mobName, String mobHead, int tier, EnumEntityType entityType) {
 		super(world);
 		try {
 			Field bField = PathfinderGoalSelector.class.getDeclaredField("b");
@@ -71,16 +71,16 @@ public abstract class RangedEntitySkeleton extends EntitySkeleton {
 	@Override
 	protected abstract void getRareDrop();
 
-	public RangedEntitySkeleton(World world) {
+	protected RangedEntitySkeleton(World world) {
 		super(world);
 	}
 
 	@Override
 	public abstract void a(EntityLiving entityliving, float f);
 
-	public abstract void setStats();
+	protected abstract void setStats();
 
-	public void setArmor(int tier) {
+	protected void setArmor(int tier) {
 		ItemStack[] armor = getTierArmor(tier);
 		// weapon, boots, legs, chest, helmet/head
 		ItemStack weapon = getTierWeapon(tier);
@@ -103,11 +103,11 @@ public abstract class RangedEntitySkeleton extends EntitySkeleton {
 		return CraftItemStack.asNMSCopy(head);
 	}
 
-	public ItemStack getTierWeapon(int tier) {
+	private ItemStack getTierWeapon(int tier) {
 		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.BOW, net.dungeonrealms.items.Item.ItemTier.getById(tier));
 	}
 
-	public ItemStack[] getTierArmor(int tier) {
+	private ItemStack[] getTierArmor(int tier) {
 		if (tier == 1) {
 			return new ItemStack[] { new ItemStack(Material.LEATHER_BOOTS, 1),
 				new ItemStack(Material.LEATHER_LEGGINGS, 1), new ItemStack(Material.LEATHER_CHESTPLATE, 1),

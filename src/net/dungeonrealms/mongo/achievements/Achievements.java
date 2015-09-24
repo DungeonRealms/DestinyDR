@@ -16,7 +16,7 @@ import java.util.UUID;
  */
 public class Achievements {
 
-    static Achievements instance = null;
+    private static Achievements instance = null;
 
     public static Achievements getInstance() {
         if (instance == null) {
@@ -25,7 +25,7 @@ public class Achievements {
         return instance;
     }
 
-    public boolean hasAchievement(UUID uuid, EnumAchievements achievement) {
+    private boolean hasAchievement(UUID uuid, EnumAchievements achievement) {
         Object info = DatabaseAPI.PLAYERS.get(uuid).get("collectibles");
         ArrayList<String> TEMP_LIST = (ArrayList<String>) ((Document) info).get("achievements");
         if (TEMP_LIST == null) {
