@@ -30,6 +30,7 @@ public class DatabaseAPI {
 
     /**
      * Updates a players information in Mongo and returns the updated result.
+     *
      * @param uuid
      * @param EO
      * @param variable
@@ -48,6 +49,7 @@ public class DatabaseAPI {
 
     /**
      * Returns the object that's requested.
+     *
      * @param data
      * @param uuid
      * @return
@@ -94,6 +96,7 @@ public class DatabaseAPI {
     /**
      * Is fired to grab a player from Mongo
      * if they don't exist. Fire addNewPlayer() creation.
+     *
      * @param uuid
      * @since 1.0
      */
@@ -112,6 +115,7 @@ public class DatabaseAPI {
 
     /**
      * Adds a new player to Mongo Creates Document here.
+     *
      * @param uuid
      * @since 1.0
      */

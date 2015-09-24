@@ -131,7 +131,7 @@ public class Item {
         KNOCK_BACK(7, "KnockBack", "knockback"),
         LIFE_STEAL(8, "LifeSteal", "lifesteal"),
         VITALITY(9, "Vitality", "vitality"),
-        DEXTERITY(10, "Dexterity", "deterity"),
+        DEXTERITY(10, "Dexterity", "dexterity"),
         ICE_DAMAGE(11, "IceDamage", "iceDamage"),
         FIRE_DAMAGE(12, "FireDamage", "fireDamage"),
         POISON_DAMAGE(13, "PoisonDamage", "poisonDamage"),

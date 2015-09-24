@@ -84,9 +84,10 @@ public class MetadataUtils {
         projectile.setMetadata("criticalHit", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("criticalHit")));
         projectile.setMetadata("lifesteal", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("lifesteal")));
         projectile.setMetadata("blind", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("blind")));
+        projectile.setMetadata("strength", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("strength")));
         projectile.setMetadata("vitality", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("vitality")));
         projectile.setMetadata("accuracy", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("accuracy")));
-        projectile.setMetadata("deterity", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("deterity")));
+        projectile.setMetadata("dexterity", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("dexterity")));
         projectile.setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), weaponTier));
         Bukkit.broadcastMessage("Reigstered META FOR PROJECTILE");
     }

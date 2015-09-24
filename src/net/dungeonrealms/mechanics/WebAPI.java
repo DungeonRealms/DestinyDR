@@ -33,7 +33,7 @@ public class WebAPI {
                     if (line.startsWith("A>")) {
                         ANNOUNCEMENTS.put(line.replace("A>", ""), Integer.valueOf(line.split(",")[1]));
                     } else if (line.startsWith("M>")) {
-                        JOIN_INFORMATION.add(line.replace(">M", ""));
+                        JOIN_INFORMATION.add(line.replace("M>", ""));
                     }
                 }
             } catch (MalformedURLException e) {

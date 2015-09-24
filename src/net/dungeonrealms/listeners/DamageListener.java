@@ -183,27 +183,43 @@ public class DamageListener implements Listener {
                 armourReducedDamage = DamageAPI.calculateArmorReduction(staffProjectile, defender, defenderArmor);
             }
         }
-        if (event.getDamage() - armourReducedDamage <= 0 || armourReducedDamage == -1) {
-                //The defender dodged the attack
-                event.setDamage(0);
-                Bukkit.broadcastMessage("Attack did 0 Damage after armor, dodging");
-                LivingEntity leDefender = (LivingEntity) event.getEntity();
-                if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
-                    leDefender.removePotionEffect(PotionEffectType.SLOW);
-                }
-                if (leDefender.hasPotionEffect(PotionEffectType.POISON)) {
-                    leDefender.removePotionEffect(PotionEffectType.POISON);
-                }
-                try {
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, defender.getLocation(),
-                            new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 20);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-            } else {
-                event.setDamage(event.getDamage() - armourReducedDamage);
-                Bukkit.broadcastMessage("Armor Reduced Damage " + String.valueOf(event.getDamage()));
+        if (armourReducedDamage == -1) {
+            //The defender dodged the attack
+            event.setDamage(0);
+            Bukkit.broadcastMessage("Defender dodged the attack");
+            LivingEntity leDefender = (LivingEntity) event.getEntity();
+            if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
+                leDefender.removePotionEffect(PotionEffectType.SLOW);
             }
+            if (leDefender.hasPotionEffect(PotionEffectType.POISON)) {
+                leDefender.removePotionEffect(PotionEffectType.POISON);
+            }
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, defender.getLocation(),
+                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 20);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } else if (event.getDamage() - armourReducedDamage == 0 || armourReducedDamage == -2) {
+            event.setDamage(0);
+            Bukkit.broadcastMessage("Attack did 0 Damage after armor, blocking");
+            LivingEntity leDefender = (LivingEntity) event.getEntity();
+            if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
+                leDefender.removePotionEffect(PotionEffectType.SLOW);
+            }
+            if (leDefender.hasPotionEffect(PotionEffectType.POISON)) {
+                leDefender.removePotionEffect(PotionEffectType.POISON);
+            }
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, defender.getLocation(),
+                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 20);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+        } else {
+            event.setDamage(event.getDamage() - armourReducedDamage);
+            Bukkit.broadcastMessage("Armor Reduced Damage " + String.valueOf(event.getDamage()));
+        }
     }
 
     /**
