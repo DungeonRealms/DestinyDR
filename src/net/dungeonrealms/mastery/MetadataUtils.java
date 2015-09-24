@@ -84,6 +84,7 @@ public class MetadataUtils {
         projectile.setMetadata("criticalHit", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("criticalHit")));
         projectile.setMetadata("lifesteal", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("lifesteal")));
         projectile.setMetadata("blind", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("blind")));
+        projectile.setMetadata("intellect", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("intellect")));
         projectile.setMetadata("strength", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("strength")));
         projectile.setMetadata("vitality", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("vitality")));
         projectile.setMetadata("accuracy", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("accuracy")));

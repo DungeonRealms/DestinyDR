@@ -550,7 +550,7 @@ public class DamageAPI {
                 if (nmsTags[i].getInt("block") != 0) {
                     int blockChance = nmsTags[0].getInt("block");
                     if (nmsTags[i].getInt("strength") != 0) {
-                        blockChance += (nmsTags[i].getInt("strength") * 0.017);
+                        blockChance += (blockChance * (nmsTags[i].getInt("strength") * 0.017));
                     }
                     if (new Random().nextInt(99) < blockChance) {
                         if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
@@ -574,7 +574,7 @@ public class DamageAPI {
                 if (nmsTags[i].getInt("dodge") != 0) {
                     int dodgeChance = nmsTags[i].getInt("dodge");
                     if (nmsTags[i].getInt("dexterity") != 0) {
-                        dodgeChance += (nmsTags[i].getInt("dexterity") * 0.017);
+                        dodgeChance += (dodgeChance * (nmsTags[i].getInt("dexterity") * 0.017));
                     }
                     if (new Random().nextInt(99) < dodgeChance) {
                         if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {

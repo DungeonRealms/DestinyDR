@@ -135,7 +135,9 @@ public class Item {
         ICE_DAMAGE(11, "IceDamage", "iceDamage"),
         FIRE_DAMAGE(12, "FireDamage", "fireDamage"),
         POISON_DAMAGE(13, "PoisonDamage", "poisonDamage"),
-        ACCURACY(14, "Accuracy", "accuracy");
+        ACCURACY(14, "Accuracy", "accuracy"),
+        STRENGTH(15, "Strength", "strength"),
+        INTELLECT(16, "Intellect", "intellect");
 
         private int id;
         private String name;
