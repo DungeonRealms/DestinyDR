@@ -76,6 +76,12 @@ public class Teleportation {
 
     public static void teleportPlayer(UUID uuid, EnumTeleportType teleportType, NBTTagCompound nbt) {
         Player player = Bukkit.getPlayer(uuid);
+        if (player.getWorld().getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName())) {
+            if (teleportType == EnumTeleportType.HEARTHSTONE) {
+                TeleportAPI.addPlayerHearthstoneCD(uuid, 280);
+            }
+            return;
+        }
         TeleportAPI.addPlayerCurrentlyTeleporting(uuid, player.getLocation());
         String locationName;
         if (teleportType == EnumTeleportType.HEARTHSTONE) {
@@ -151,8 +157,10 @@ public class Teleportation {
                     taskTimer[0]--;
                 } else {
                     TeleportAPI.removePlayerCurrentlyTeleporting(uuid);
-                    player.removePotionEffect(PotionEffectType.BLINDNESS);
-                    player.removePotionEffect(PotionEffectType.CONFUSION);
+                    if (teleportType == EnumTeleportType.TELEPORT_BOOK) {
+                        player.removePotionEffect(PotionEffectType.BLINDNESS);
+                        player.removePotionEffect(PotionEffectType.CONFUSION);
+                    }
                     player.sendMessage("Your teleport was canceled due to moving!");
                     if (teleportType == EnumTeleportType.HEARTHSTONE) {
                         TeleportAPI.addPlayerHearthstoneCD(uuid, 300);
