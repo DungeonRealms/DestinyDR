@@ -125,7 +125,7 @@ public class EnergyHandler {
                     regenAmount += (regenAmount/100.F) * nmsTag.getInt("energyRegen");
                 }
                 if (nmsTag.getInt("intellect") != 0) {
-                    regenAmount += (regenAmount/100.F) * (nmsTag.getInt("intellect"));
+                    regenAmount += ((nmsTag.getInt("intellect") * 0.015F) / 100.0F);
                 }
             }
         }
