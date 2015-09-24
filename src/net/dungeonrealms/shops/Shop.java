@@ -3,18 +3,13 @@
  */
 package net.dungeonrealms.shops;
 
-import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mechanics.ParticleAPI;
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_8_R3.BlockPosition;
-import net.minecraft.server.v1_8_R3.Packet;
-import net.minecraft.server.v1_8_R3.PacketPlayOutWorldEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -22,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 /**
@@ -116,13 +112,21 @@ public class Shop {
 
         }
         Block chest = getBlock();
+        //TODO: WTF ARE YOU DOING CHASE WE HAVE A PARTICLE API. DON'T CALL THIS SHIT. GOOD BOY
+        /*
         Packet b_particles = new PacketPlayOutWorldEvent(2001,
                 new BlockPosition((int) Math.round(chest.getLocation().getX()),
                         (int) Math.round(chest.getLocation().getY()), (int) Math.round(chest.getLocation().getZ())),
                 54, false);
         ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(
                 chest.getLocation().getX(), chest.getLocation().getY(), chest.getLocation().getZ(), 24,
-                ((CraftWorld) chest.getWorld()).getHandle().dimension, b_particles);
+                ((CraftWorld) chest.getWorld()).getHandle().dimension, b_particles);*/
+        try {
+            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.TOWN_AURA, chest.getLocation(),
+                    new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.6F, 150);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
         chest.getWorld().playSound(chest.getLocation(), Sound.PISTON_RETRACT, 1, 1);
         getBlock().setType(Material.AIR);
         ShopMechanics.shops.remove(owner);

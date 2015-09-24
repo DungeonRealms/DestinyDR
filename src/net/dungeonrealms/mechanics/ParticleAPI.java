@@ -36,7 +36,8 @@ public class ParticleAPI {
         RED_DUST(13, EnumParticle.REDSTONE),
         SNOWBALL_POOF(14, EnumParticle.SNOWBALL),
         SMALL_SMOKE(15, EnumParticle.SMOKE_NORMAL),
-        CLOUD(16, EnumParticle.CLOUD);
+        CLOUD(16, EnumParticle.CLOUD),
+        HAPPY_VILLAGER(17, EnumParticle.VILLAGER_HAPPY);
 
         private int id;
         private EnumParticle particle;

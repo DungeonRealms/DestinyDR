@@ -156,7 +156,7 @@ public class DamageAPI {
 
         if (tag.getInt("poisonDamage") != 0) {
             try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.TOWN_AURA, receiver.getLocation(),
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, receiver.getLocation(),
                         new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -397,7 +397,7 @@ public class DamageAPI {
 
         if (projectile.getMetadata("poisonDamage").get(0).asInt() != 0) {
             try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.TOWN_AURA, receiver.getLocation(),
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, receiver.getLocation(),
                         new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
             } catch (Exception ex) {
                 ex.printStackTrace();
