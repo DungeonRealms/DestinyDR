@@ -2,9 +2,9 @@ package net.dungeonrealms.listeners;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.energy.EnergyHandler;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -15,6 +15,7 @@ import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerExpChangeEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.event.player.PlayerToggleSprintEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -125,6 +126,19 @@ public class EnergyListener implements Listener {
     }
 
     /**
+     * Safety check, cancels players
+     * picking up items
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler (priority = EventPriority.LOWEST)
+    public void onItemPickup(PlayerPickupItemEvent event) {
+        if (!(event.getItem() instanceof ExperienceOrb)) return;
+        event.setCancelled(true);
+    }
+
+    /**
      * Handles players swining their fists/items
      * removes energy or cancels the event if they can't
      *
@@ -149,7 +163,6 @@ public class EnergyListener implements Listener {
             return;
         }
 
-        Bukkit.broadcastMessage("SWING SWING!");
         EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), energyToRemove);
     }
 

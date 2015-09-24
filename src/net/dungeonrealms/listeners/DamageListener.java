@@ -169,7 +169,6 @@ public class DamageListener implements Listener {
         if (event.getDamager() instanceof LivingEntity) {
             LivingEntity attacker = (LivingEntity) event.getDamager();
             armourReducedDamage = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor);
-            Bukkit.broadcastMessage("Previous Damage " + String.valueOf(event.getDamage()));
         } else if (event.getDamager().getType() == EntityType.ARROW) {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof LivingEntity)) return;
@@ -186,7 +185,6 @@ public class DamageListener implements Listener {
         if (armourReducedDamage == -1) {
             //The defender dodged the attack
             event.setDamage(0);
-            Bukkit.broadcastMessage("Defender dodged the attack");
             LivingEntity leDefender = (LivingEntity) event.getEntity();
             if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
                 leDefender.removePotionEffect(PotionEffectType.SLOW);
@@ -202,7 +200,6 @@ public class DamageListener implements Listener {
             }
         } else if (event.getDamage() - armourReducedDamage == 0 || armourReducedDamage == -2) {
             event.setDamage(0);
-            Bukkit.broadcastMessage("Attack did 0 Damage after armor, blocking");
             LivingEntity leDefender = (LivingEntity) event.getEntity();
             if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
                 leDefender.removePotionEffect(PotionEffectType.SLOW);
@@ -218,7 +215,6 @@ public class DamageListener implements Listener {
             }
         } else {
             event.setDamage(event.getDamage() - armourReducedDamage);
-            Bukkit.broadcastMessage("Armor Reduced Damage " + String.valueOf(event.getDamage()));
         }
     }
 

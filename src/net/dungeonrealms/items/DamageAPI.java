@@ -3,7 +3,6 @@ package net.dungeonrealms.items;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
@@ -61,7 +60,6 @@ public class DamageAPI {
             } else {
                 if (nmsTag.getInt("damage") != 0) {
                     damage += nmsTag.getInt("damage");
-                    Bukkit.broadcastMessage("DAMAGE INCREASED DUE TO ARMOR");
                 }
             }
         }
@@ -305,7 +303,6 @@ public class DamageAPI {
             } else {
                 if (nmsTag.getInt("damage") != 0) {
                     damage += nmsTag.getInt("damage");
-                    Bukkit.broadcastMessage("DAMAGE INCREASED DUE TO ARMOR");
                 }
             }
         }
@@ -506,7 +503,6 @@ public class DamageAPI {
         if (isHitCrit) {
             damage = damage * 1.5;
         }
-        Bukkit.broadcastMessage("Final Attack damage: " + damage);
         return damage;
     }
 

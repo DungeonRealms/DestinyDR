@@ -66,7 +66,6 @@ public class EnergyHandler {
                 continue;
             }
             float regenAmount = getPlayerEnergyRegenerationAmount(player.getUniqueId());
-            Bukkit.broadcastMessage(String.valueOf(regenAmount));
             if (!(player.hasPotionEffect(PotionEffectType.SLOW_DIGGING))) {
                 if (player.hasMetadata("starving")) {
                     regenAmount = 0.07F;
