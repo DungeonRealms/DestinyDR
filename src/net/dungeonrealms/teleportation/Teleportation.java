@@ -109,18 +109,28 @@ public class Teleportation {
             player.sendMessage("Teleporting to the Tutorial Island");
         }
 
-        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 220, 2));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 220, 1));
-        player.playSound(player.getLocation(), Sound.AMBIENCE_CAVE, 1F, 1F);
-
-        final int[] taskTimer = {6};
+        ParticleAPI.ParticleEffect[] particleEffect = new ParticleAPI.ParticleEffect[2];
+        final int[] taskTimer = {7};
+        switch (teleportType) {
+            case HEARTHSTONE:
+                particleEffect[0] = ParticleAPI.ParticleEffect.SPELL;
+                particleEffect[1] = ParticleAPI.ParticleEffect.SPELL;
+                break;
+            case TELEPORT_BOOK:
+                particleEffect[0] = ParticleAPI.ParticleEffect.WITCH_MAGIC;
+                particleEffect[1] = ParticleAPI.ParticleEffect.PORTAL;
+                player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 220, 2));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 220, 1));
+                player.playSound(player.getLocation(), Sound.AMBIENCE_CAVE, 1F, 1F);
+                break;
+        }
         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
 
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
                 if (player.getLocation().getX() == PLAYERS_TELEPORTING.get(player.getUniqueId()).getX() && player.getLocation().getZ() == PLAYERS_TELEPORTING.get(player.getUniqueId()).getZ()) {
                     try {
-                        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.WITCH_MAGIC, player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
-                        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.PORTAL, player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 4F, 400);
+                        ParticleAPI.sendParticleToLocation(particleEffect[0], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
+                        ParticleAPI.sendParticleToLocation(particleEffect[1], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 4F, 400);
                     } catch (Exception e) {
                         Utils.log.info("Teleportation tried to send particle to player and failed. Continuing.s");
                     }
@@ -128,12 +138,12 @@ public class Teleportation {
                         if (CombatLog.isInCombat(uuid)) {
                             player.sendMessage("Your teleport has been interrupted by combat!");
                             if (teleportType == EnumTeleportType.HEARTHSTONE) {
-                                TeleportAPI.addPlayerHearthstoneCD(uuid, 300);
+                                TeleportAPI.addPlayerHearthstoneCD(uuid, 280);
                             }
                         } else {
                             player.teleport(location);
                             if (teleportType == EnumTeleportType.HEARTHSTONE) {
-                                TeleportAPI.addPlayerHearthstoneCD(uuid, 300);
+                                TeleportAPI.addPlayerHearthstoneCD(uuid, 280);
                             }
                         }
                         TeleportAPI.removePlayerCurrentlyTeleporting(uuid);
@@ -145,7 +155,7 @@ public class Teleportation {
                     player.removePotionEffect(PotionEffectType.CONFUSION);
                     player.sendMessage("Your teleport was canceled due to moving!");
                     if (teleportType == EnumTeleportType.HEARTHSTONE) {
-                        TeleportAPI.addPlayerHearthstoneCD(uuid, 500);
+                        TeleportAPI.addPlayerHearthstoneCD(uuid, 300);
                     }
                 }
             }
