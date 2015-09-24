@@ -72,7 +72,8 @@ public class EnergyListener implements Listener {
                 event.getPlayer().setSprinting(false);
                 return;
             }
-        } if (event.getPlayer().isSprinting()) {
+        }
+        if (event.getPlayer().isSprinting()) {
             event.getPlayer().removeMetadata("sprinting", DungeonRealms.getInstance());
         }
     }
@@ -176,7 +177,8 @@ public class EnergyListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        if (!player.hasPotionEffect(PotionEffectType.HUNGER) && !player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) && !player.hasMetadata("starving") && !player.hasMetadata("sprinting")) return;
+        if (!player.hasPotionEffect(PotionEffectType.HUNGER) && !player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) && !player.hasMetadata("starving") && !player.hasMetadata("sprinting"))
+            return;
         if (player.hasPotionEffect(PotionEffectType.HUNGER)) {
             player.removePotionEffect(PotionEffectType.HUNGER);
         }
