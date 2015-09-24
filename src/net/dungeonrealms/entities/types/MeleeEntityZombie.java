@@ -2,10 +2,11 @@ package net.dungeonrealms.entities.types;
 
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.enums.EnumEntityType;
-import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.items.*;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.Item;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -14,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
 import java.lang.reflect.Field;
+import java.util.Random;
 
 /**
  * Created by Xwaffle on 8/29/2015.
@@ -111,7 +113,7 @@ public abstract class MeleeEntityZombie extends EntityZombie {
 	}
 
 	public ItemStack getTierWeapon(int tier) {
-		return new ItemGenerator().next();
+		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.getById(new Random().nextInt(net.dungeonrealms.items.Item.ItemType.values().length - 2)), net.dungeonrealms.items.Item.ItemTier.getById(tier));
 		//TODO: MAKE THIS TAKE A TIER AND BASE IT ON THAT. DO THE SAME WITH ARMOR DON'T JUST CREATE NEW SHITTY BUKKIT ONES.
 		/*
 		if (tier == 1) {

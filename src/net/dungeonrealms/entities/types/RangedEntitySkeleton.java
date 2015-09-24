@@ -3,8 +3,12 @@
  */
 package net.dungeonrealms.entities.types;
 
-import java.lang.reflect.Field;
-
+import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.Utils;
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -12,23 +16,7 @@ import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.enums.EnumEntityType;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.EntityHuman;
-import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.EntitySkeleton;
-import net.minecraft.server.v1_8_R3.Item;
-import net.minecraft.server.v1_8_R3.PathfinderGoalArrowAttack;
-import net.minecraft.server.v1_8_R3.PathfinderGoalFloat;
-import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
-import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
-import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
-import net.minecraft.server.v1_8_R3.PathfinderGoalRandomLookaround;
-import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
-import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
-import net.minecraft.server.v1_8_R3.World;
+import java.lang.reflect.Field;
 
 /**
  * Created by Chase on Sep 19, 2015
@@ -116,7 +104,7 @@ public abstract class RangedEntitySkeleton extends EntitySkeleton {
 	}
 
 	public ItemStack getTierWeapon(int tier) {
-		return new ItemStack(Material.BOW, 1);
+		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.BOW, net.dungeonrealms.items.Item.ItemTier.getById(tier));
 	}
 
 	public ItemStack[] getTierArmor(int tier) {

@@ -25,29 +25,55 @@ public class EntityStats {
         }
 
         public static Stats getRandomStats(int lvl) {
+            int mobTier = 1;
+            int lvldef = 0;
+            int lvlatk = 0;
+            int lvlhp = 0;
+            int lvlspd = 0;
+            if (lvl < 10) {
+                mobTier = 1;
+            } else if (lvl >= 10 && lvl < 20) {
+                mobTier = 2;
+            } else if (lvl >= 20 && lvl < 30) {
+                mobTier = 3;
+            } else if (lvl >= 30 && lvl < 40) {
+                mobTier = 4;
+            } else if (lvl >= 40) {
+                mobTier = 5;
+            }
             Random random = new Random();
-            int lvldef;
-            int lvlatk;
-            int lvlhp;
-            int lvlspd;
-            if (random.nextBoolean())
-                lvldef = (lvl * 100) + random.nextInt(20);
-            else
-                lvldef = (lvl * 100) - random.nextInt(20);
-            if (random.nextBoolean())
-                lvlhp = (lvl * 100) + random.nextInt(20);
-            else
-                lvlhp = (lvl * 100) - random.nextInt(20);
-
-            if (random.nextBoolean())
-                lvlatk = (lvl * 100) + random.nextInt(20);
-            else
-                lvlatk = (lvl * 100) - random.nextInt(20);
-            if (random.nextBoolean())
-                lvlspd = (lvl * 100) + random.nextInt(20);
-            else
-                lvlspd = (lvl * 100) - random.nextInt(20);
-
+            switch (mobTier) {
+                case 1:
+                    lvldef = (lvl + 5) + (random.nextInt(5) - 3);
+                    lvlhp = (lvl * 10) + (random.nextInt(30) - 20);
+                    lvlatk = (lvl + 5) + (random.nextInt(5) - 3);
+                    lvlspd = (lvl + 5) + (random.nextInt(5) - 3);
+                    break;
+                case 2:
+                    lvldef = (lvl + 20) + (random.nextInt(20) - 10);
+                    lvlhp = (lvl * 15) + (random.nextInt(50) - 35);
+                    lvlatk = (lvl + 20) + (random.nextInt(20) - 10);
+                    lvlspd = (lvl + 20) + (random.nextInt(20) - 10);
+                    break;
+                case 3:
+                    lvldef = (lvl + 40) + (random.nextInt(35) - 20);
+                    lvlhp = (lvl * 20) + (random.nextInt(75) - 50);
+                    lvlatk = (lvl + 40) + (random.nextInt(35) - 20);
+                    lvlspd = (lvl + 40) + (random.nextInt(35) - 20);
+                    break;
+                case 4:
+                    lvldef = (lvl + 60) + (random.nextInt(55) - 35);
+                    lvlhp = (lvl * 50) + (random.nextInt(100) - 70);
+                    lvlatk = (lvl + 60) + (random.nextInt(55) - 35);
+                    lvlspd = (lvl + 60) + (random.nextInt(55) - 35);
+                    break;
+                case 5:
+                    lvldef = (lvl + 85) + (random.nextInt(80) - 50);
+                    lvlhp = (lvl * 75) + (random.nextInt(150) - 100);
+                    lvlatk = (lvl + 85) + (random.nextInt(80) - 50);
+                    lvlspd = (lvl + 85) + (random.nextInt(80) - 50);
+                    break;
+            }
             return new Stats(lvldef, lvlhp, lvlatk, lvlspd);
         }
     }

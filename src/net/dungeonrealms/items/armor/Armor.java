@@ -127,7 +127,7 @@ public class Armor {
         FIRE_RESISTANCE(6, "Fire Resistance", "fireResistance"),
         BLOCK(7, "Block", "block"),
         GEM_FIND(8, "Gem Find", "gemFind"),
-        THRONES(9, "Thrones", "thornes"),
+        THORNS(9, "Thorns", "thorns"),
         STRENGTH(10, "Strength", "strength"),
         VITALITY(11, "Vitality", "vitality"),
         DODGE(12, "Dodge", "dodge"),
