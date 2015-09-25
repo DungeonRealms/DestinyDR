@@ -6,9 +6,10 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.shops.Shop;
@@ -38,7 +39,7 @@ public class BlockListener implements Listener {
         event.setCancelled(true);
     }
     /**
-     * 
+     * Handles breaking a shop
      * @param BlockBreakEvent
      * @since 1.0
      */
@@ -60,17 +61,54 @@ public class BlockListener implements Listener {
    		}
    		
     }
-    
+ 	/**
+ 	 * Handling Shops being Right clicked.
+ 	 *
+ 	 * @param PlayerInteractEvent
+ 	 * @since 1.0
+ 	 */
+ 	@EventHandler(priority = EventPriority.HIGHEST)
+ 	public void playerRightClickChest(PlayerInteractEvent e) {
+ 		Block block = e.getClickedBlock();
+ 		if (block == null)
+ 			return;
+ 		if (block.getType() != Material.CHEST)
+ 			return;
+ 		Shop shop = ShopMechanics.getShop(block);
+ 		if (shop == null)
+ 			return;
+ 		Action actionType = e.getAction();
+ 		switch (actionType) {
+ 		case RIGHT_CLICK_BLOCK:
+ 			if (shop.isopen || shop.getOwner().getUniqueId() == e.getPlayer().getUniqueId()) {
+ 			e.setCancelled(true);
+ 			e.getPlayer().openInventory(shop.getInv());
+ 			} else if (!shop.isopen) {
+ 			e.setCancelled(true);
+ 			e.getPlayer().sendMessage(ChatColor.RED.toString() + "This shop is closed!");
+ 			}
+ 			break;
+ 		case LEFT_CLICK_BLOCK:
+ 			if (shop.getOwner().getUniqueId() == e.getPlayer().getUniqueId()) {
+ 			e.setCancelled(true);
+ 			shop.deleteShop();
+ 			}
+ 			break;
+ 		default:
+ 		}
+ 	}
     /**
-     * Handling shop breaks, and setting up shops.
+     * Handling setting up shops.
      *
      * @param event
      * @since 1.0
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onBlockDamaged(BlockDamageEvent event) {
-        if (event.getItemInHand() == null) return;
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemInHand());
+    public void onBlockDamaged(PlayerInteractEvent event) {
+        if (event.getItem() == null) return;
+        if(event.getAction().equals(Action.LEFT_CLICK_BLOCK)){
+        if(event.getClickedBlock() == null || event.getClickedBlock().getType() == Material.AIR) return;
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItem());
         if (nmsItem == null) return;
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null || !tag.getString("type").equalsIgnoreCase("important")) return;
@@ -83,8 +121,9 @@ public class BlockListener implements Listener {
                     event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "You already have an active shop");
                     return;
                 }
-                ShopMechanics.setupShop(event.getBlock(), event.getPlayer().getUniqueId());
+                ShopMechanics.setupShop(event.getClickedBlock(), event.getPlayer().getUniqueId());
             }
+        }
         }
     }
 }

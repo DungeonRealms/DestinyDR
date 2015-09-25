@@ -23,7 +23,6 @@ import net.dungeonrealms.listeners.EnergyListener;
 import net.dungeonrealms.listeners.InventoryListener;
 import net.dungeonrealms.listeners.ItemListener;
 import net.dungeonrealms.listeners.MainListener;
-import net.dungeonrealms.listeners.ShopListener;
 import net.dungeonrealms.mastery.FTPUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.WebAPI;
@@ -63,7 +62,6 @@ public class DungeonRealms extends JavaPlugin {
         pm.registerEvents(new InventoryListener(), this);
         pm.registerEvents(new BlockListener(), this);
         pm.registerEvents(new BankListener(), this);
-        pm.registerEvents(new ShopListener(), this);
         pm.registerEvents(new EnergyListener(), this);
         Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
 
