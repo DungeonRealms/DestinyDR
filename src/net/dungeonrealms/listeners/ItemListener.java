@@ -1,7 +1,6 @@
 package net.dungeonrealms.listeners;
 
 import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -90,6 +89,6 @@ public class ItemListener implements Listener {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.SKULL_ITEM) return;
         ItemStack itemStack = player.getItemInHand();
-        PlayerManager.createProfileGUI(player);
+        //TODO: Open player profile GUI.
     }
 }
