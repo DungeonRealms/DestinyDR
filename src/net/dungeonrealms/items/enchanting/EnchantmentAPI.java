@@ -2,19 +2,82 @@ package net.dungeonrealms.items.enchanting;
 
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.Item;
+import net.dungeonrealms.items.armor.Armor;
+import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.lang.reflect.Field;
 import java.util.List;
 
 /**
  * Created by Kieran on 9/20/2015.
  */
-class EnchantmentAPI {
+public class EnchantmentAPI {
+
+    private static EnchantmentAPI instance = null;
+    static Enchantment enchantment = null;
+
+    public static EnchantmentAPI getInstance() {
+        if (instance == null) {
+            return new EnchantmentAPI();
+        }
+        return instance;
+    }
+
+    public void startInitialization() {
+        registerCustomEnchantment();
+    }
+
+    /**
+     * Returns our custom enchantment, registers it
+     * if it isn't already
+     * @since 1.0
+     */
+    public static Enchantment getEnchantment() {
+        if (enchantment == null) {
+            registerCustomEnchantment();
+        }
+        return enchantment;
+    }
+
+    /**
+     * Registers our custom enchantment to act as
+     * a Bukkit enchantment
+     * @since 1.0
+     */
+    public static void registerCustomEnchantment() {
+        FakeEnchant fakeEnchant = new FakeEnchant(121);
+        try {
+            Field field = Enchantment.class.getDeclaredField("acceptingNew");
+            field.setAccessible(true);
+            field.set(null, true);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        try {
+            EnchantmentWrapper.registerEnchantment(fakeEnchant);
+        } catch (IllegalArgumentException iaex) {
+            iaex.printStackTrace();
+            Utils.log.info("Could not register our custom enchant. Uh oh.");
+        }
+        enchantment = fakeEnchant;
+    }
+
+    /**
+     * Adds our custom enchantment to the specified item
+     * @param itemStack
+     * @since 1.0
+     */
+    public static void addCustomEnchantToItem(ItemStack itemStack) {
+        itemStack.addUnsafeEnchantment(getEnchantment(), 1);
+    }
 
     /**
      * Checks the item to see if its a protection scroll
@@ -50,7 +113,7 @@ class EnchantmentAPI {
      */
     private static boolean isItemWeapon(ItemStack itemStack) {
         Item.ItemType itemType = new Attribute(itemStack).getItemType();
-        return itemType == Item.ItemType.AXE || itemType == Item.ItemType.POLE_ARM || itemType == Item.ItemType.SWORD;
+        return itemType == Item.ItemType.AXE || itemType == Item.ItemType.POLE_ARM || itemType == Item.ItemType.SWORD || itemType == Item.ItemType.STAFF || itemType == Item.ItemType.BOW;
     }
 
     /**
@@ -59,9 +122,8 @@ class EnchantmentAPI {
      * @since 1.0
      */
     private static boolean isItemArmor(ItemStack itemStack) {
-        Item.ItemType itemType = new Attribute(itemStack).getItemType();
-        //TODO: CHECK WHEN ARMORTYPE IS ADDED
-        return false;
+        Armor.EquipmentType armorType = new Attribute(itemStack).getArmorType();
+        return armorType == Armor.EquipmentType.BOOTS || armorType == Armor.EquipmentType.LEGGINGS || armorType == Armor.EquipmentType.HELMET || armorType == Armor.EquipmentType.CHESTPLATE;
     }
 
     /**
@@ -71,6 +133,7 @@ class EnchantmentAPI {
      * @since 1.0
      */
     private static boolean doItemTiersMatch(ItemStack itemStack, ItemStack toCompare) {
+        //TODO THIS
         return new Attribute(itemStack).getItemTier() == new Attribute(toCompare).getItemTier();
     }
 
@@ -86,38 +149,80 @@ class EnchantmentAPI {
     }
 
     /**
-     * Removes the items protection (have to check if its protected before doing this!)
+     * Removes the items protection
      * @param itemStack
      * @since 1.0
      */
     public static ItemStack removeItemProtection(ItemStack itemStack) {
-        ItemMeta meta = itemStack.getItemMeta();
-        List<String> lore = meta.getLore();
-        lore.remove("PROTECTED");
-        meta.setLore(lore);
-        itemStack.setItemMeta(meta);
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-        NBTTagCompound tag = nmsStack.getTag();
-        tag.set("protected", new NBTTagString("false"));
-        nmsStack.setTag(tag);
-        return CraftItemStack.asBukkitCopy(nmsStack);
+        if (isItemProtected(itemStack)) {
+            ItemMeta meta = itemStack.getItemMeta();
+            List<String> lore = meta.getLore();
+            lore.remove("PROTECTED");
+            meta.setLore(lore);
+            itemStack.setItemMeta(meta);
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+            NBTTagCompound tag = nmsStack.getTag();
+            tag.set("protected", new NBTTagString("false"));
+            nmsStack.setTag(tag);
+            return CraftItemStack.asBukkitCopy(nmsStack);
+        } else {
+            return itemStack;
+        }
     }
 
     /**
-     * Adds protection to the item (have to check that its not protected before doing this!)
+     * Adds protection to the item
      * @param itemStack
      * @since 1.0
      */
     public static ItemStack addItemProtection(ItemStack itemStack) {
-        ItemMeta meta = itemStack.getItemMeta();
-        List<String> lore = meta.getLore();
-        lore.add("PROTECTED");
-        meta.setLore(lore);
-        itemStack.setItemMeta(meta);
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-        NBTTagCompound tag = nmsStack.getTag();
-        tag.set("protected", new NBTTagString("true"));
-        nmsStack.setTag(tag);
-        return CraftItemStack.asBukkitCopy(nmsStack);
+        if (!(isItemProtected(itemStack))) {
+            ItemMeta meta = itemStack.getItemMeta();
+            List<String> lore = meta.getLore();
+            lore.add("PROTECTED");
+            meta.setLore(lore);
+            itemStack.setItemMeta(meta);
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+            NBTTagCompound tag = nmsStack.getTag();
+            tag.set("protected", new NBTTagString("true"));
+            nmsStack.setTag(tag);
+            return CraftItemStack.asBukkitCopy(nmsStack);
+        } else {
+            return itemStack;
+        }
+    }
+
+    /**
+     * Checks the item to see how many enchant levels
+     * it currently has
+     * @param itemStack
+     * @since 1.0
+     */
+    public static int getItemEnchantmentLevel(ItemStack itemStack) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+        NBTTagCompound tag = nmsItem.getTag();
+        if (tag.getInt("enchantment") == 0) {
+            return 0;
+        } else {
+            return tag.getInt("enchantment");
+        }
+    }
+
+    public ItemStack enchantItem(ItemStack itemStack, int enchantmentLevel) {
+        //TODO:
+        //If enchant level is above 3 and it fails. Item will be destroyed, if not then you will only lose enchantment scroll.
+        //WEAPONS 5% DAMAGE Increase.
+        //ARMOR 5% HP Increase + (5% HP REGEN OR 1% ENERGY REGEN)
+        if (isItemArmor(itemStack)) {
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+            //Enchant Item
+            return CraftItemStack.asBukkitCopy(nmsStack);
+        }
+        if (isItemWeapon(itemStack)) {
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+            //Enchant Armor
+            return CraftItemStack.asBukkitCopy(nmsStack);
+        }
+        return itemStack;
     }
 }
