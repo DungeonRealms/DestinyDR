@@ -1,6 +1,7 @@
 package net.dungeonrealms.listeners;
 
 import net.dungeonrealms.combat.CombatLog;
+import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -75,5 +76,20 @@ public class ItemListener implements Listener {
             player.sendMessage(
                     ChatColor.GREEN.toString() + ChatColor.BOLD + "TELEPORT " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player.getUniqueId()) + "s" + ChatColor.RED + ")");
         }
+    }
+
+    /**
+     * Handles player clicking with their profile
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerUseProfileItem(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
+        if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.SKULL_ITEM) return;
+        ItemStack itemStack = player.getItemInHand();
+        PlayerManager.createProfileGUI(player);
     }
 }
