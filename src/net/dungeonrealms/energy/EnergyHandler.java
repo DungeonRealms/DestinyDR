@@ -150,7 +150,7 @@ public class EnergyHandler {
                 int playerFood = player.getFoodLevel();
                 player.setSprinting(false);
                 player.removeMetadata("sprinting", DungeonRealms.getInstance());
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 10)), 0L);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20, 10)), 0L);
                 player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "**EXHAUSTED**");
                 player.setFoodLevel(1);
                 player.setFoodLevel(playerFood);

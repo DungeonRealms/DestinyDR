@@ -121,6 +121,7 @@ public class Teleportation {
             case HEARTHSTONE:
                 particleEffect[0] = ParticleAPI.ParticleEffect.SPELL;
                 particleEffect[1] = ParticleAPI.ParticleEffect.SPELL;
+                player.playSound(player.getLocation(), Sound.WITHER_DEATH, 1F, 1F);
                 break;
             case TELEPORT_BOOK:
                 particleEffect[0] = ParticleAPI.ParticleEffect.WITCH_MAGIC;

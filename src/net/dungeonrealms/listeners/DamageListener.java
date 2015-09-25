@@ -199,7 +199,8 @@ public class DamageListener implements Listener {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-        } else if (event.getDamage() - armourReducedDamage == 0 || armourReducedDamage == -2) {
+        }
+        if (event.getDamage() - armourReducedDamage <= 0 || armourReducedDamage == -2) {
             event.setDamage(0);
             LivingEntity leDefender = (LivingEntity) event.getEntity();
             if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {

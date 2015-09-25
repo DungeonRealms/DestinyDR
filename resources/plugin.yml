@@ -19,6 +19,11 @@ commands:
         usage: /<command>
         description: Shows server information.
     party:
+        usage: </command>
         description: The main party command.
     set:
-        description: the main set command.
+        usage: /<command>
+        description: The main set command.
+    list:
+        usage: /<command>
+        description: Shows amount of players currently online.
