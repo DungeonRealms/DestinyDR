@@ -1,13 +1,17 @@
 package net.dungeonrealms.listeners;
 
+import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.inventory.ItemStack;
 
+import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -33,7 +37,30 @@ public class BlockListener implements Listener {
         if (tag == null || !tag.getString("type").equalsIgnoreCase("important")) return;
         event.setCancelled(true);
     }
-
+    /**
+     * 
+     * @param BlockBreakEvent
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void blockBreak(BlockBreakEvent e){
+   		Block block = e.getBlock();
+   		if (block == null)
+   			return;
+   		if (block.getType() != Material.CHEST)
+   			return;
+   		Shop shop = ShopMechanics.getShop(block);
+   		if (shop == null){
+   			return;
+   		}else{
+   			e.setCancelled(true);
+   			if(e.getPlayer().isOp()){
+   				shop.deleteShop();
+   			}
+   		}
+   		
+    }
+    
     /**
      * Handling shop breaks, and setting up shops.
      *
@@ -47,7 +74,7 @@ public class BlockListener implements Listener {
         if (nmsItem == null) return;
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null || !tag.getString("type").equalsIgnoreCase("important")) return;
-        event.setCancelled(true);
+        event.setCancelled(true);	
         if (event.getPlayer().isSneaking()) {
             ItemStack item = event.getPlayer().getItemInHand();
             net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
