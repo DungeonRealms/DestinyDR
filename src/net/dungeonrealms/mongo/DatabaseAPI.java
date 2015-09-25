@@ -3,6 +3,7 @@ package net.dungeonrealms.mongo;
 import com.mongodb.client.model.Filters;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.rank.Subscription;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -58,7 +59,7 @@ public class DatabaseAPI {
     public Object getData(EnumData data, UUID uuid) {
         switch (data) {
             /*
-            Player Variables
+            Player Variables Main Document().
              */
             case HEALTH:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("health", Integer.class);
@@ -70,8 +71,6 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("isPlaying", Boolean.class);
             case LEVEL:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("netLevel", Integer.class);
-            case RANK:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("rank", String.class);
             case GEMS:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("gems", Integer.class);
             case HEARTHSTONE:
@@ -79,8 +78,25 @@ public class DatabaseAPI {
             case ECASH:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("ecash", Integer.class);
             /*
+            Rank Things. Different Sub-Document().
+             */
+            case RANK:
+                return ((Document) PLAYERS.get(uuid).get("rank")).get("rank", String.class);
+            case RANK_EXISTENCE:
+                return ((Document) PLAYERS.get(uuid).get("rank")).get("lastPurchase", Long.class);
+            case PURCHASE_HISTORY:
+                return ((Document) PLAYERS.get(uuid).get("rank")).get("purchaseHistory", ArrayList.class);
+            /*
             Player Attribute Variables
              */
+            case STRENGTH:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("attributes.strength", Integer.class);
+            case DEXTERITY:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("attributes.dexterity", Integer.class);
+            case INTELLECT:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("attributes.intellect", Integer.class);
+            case VITALITY:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("attributes.vitality", Integer.class);
             default:
         }
         return null;
@@ -88,9 +104,11 @@ public class DatabaseAPI {
 
     /**
      * Starts the Initialization of DatabaseAPI.
+     *
+     * @since 1.0
      */
     public void startInitialization() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> REQUEST_NEW_DATA.forEach(this::requestPlayer), 0, 20l);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> REQUEST_NEW_DATA.forEach(this::requestPlayer), 0, 1l);
     }
 
     /**
@@ -109,6 +127,8 @@ public class DatabaseAPI {
                     REQUEST_NEW_DATA.remove(uuid);
                 }
                 PLAYERS.put(uuid, document);
+                //Put The player in the Rank List so it be be iterated and checked for subscription length.
+                Subscription.PLAYER_RANK.add(uuid);
             }
         });
     }
@@ -130,12 +150,19 @@ public class DatabaseAPI {
                                 .append("lastLogin", 0l)
                                 .append("netLevel", 1)
                                 .append("experience", 0f)
-                                .append("rank", "DEFAULT")
                                 .append("hearthstone", "starter")
                                 .append("isPlaying", true)
-                                .append("attributes", new Document("strength", 1).append("dexterity", 1).append("intellect", 1).append("vitality", 1))
-                                .append("collectibles", new Document("achievements", new ArrayList<String>())
-                                ));
+                                .append("attributes",
+                                        new Document("strength", 1).append("dexterity", 1).append("intellect", 1).append("vitality", 1))
+                                .append("collectibles",
+                                        new Document("achievements", new ArrayList<String>())))
+                        .append("rank",
+                                new Document("lastPurchase", 0l)
+                                        .append("purchaseHistory", new ArrayList<String>())
+                                        .append("rank", "DEFAULT")
+
+
+                        );
         Database.collection.insertOne(newPlayerDocument, (aVoid, throwable) -> {
             REQUEST_NEW_DATA.add(uuid);
             Utils.log.info("Requesting new data for : " + uuid);

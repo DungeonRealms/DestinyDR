@@ -9,11 +9,14 @@ public enum EnumData {
     FIRST_LOGIN,
     LAST_LOGIN,
     LEVEL,
-    RANK,
     IS_PLAYING,
     GEMS,
     HEARTHSTONE,
     ECASH,
+
+    RANK,
+    RANK_EXISTENCE,
+    PURCHASE_HISTORY,
 
     /*
     Player Attributes

@@ -1,5 +1,6 @@
 package net.dungeonrealms.commands;
 
+import net.dungeonrealms.anticheat.AntiProxy;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.FTPUtils;
@@ -30,6 +31,9 @@ public class CommandAdd implements CommandExecutor {
         Player player = (Player) s;
         if (args.length > 0) {
             switch (args[0]) {
+                case "proxy":
+                    player.sendMessage(String.valueOf(AntiProxy.getInstance().isProxying(player.getUniqueId(), player.getAddress().getAddress())));
+                    break;
                 case "uploadrealm":
                     new FTPUtils().uploadRealm(player.getUniqueId());
                     break;

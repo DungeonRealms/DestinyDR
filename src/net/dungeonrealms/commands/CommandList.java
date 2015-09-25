@@ -31,6 +31,6 @@ public class CommandList implements CommandExecutor {
         commandSender.sendMessage(ChatColor.GREEN + "Players Online: " + ChatColor.LIGHT_PURPLE + onlinePlayers + ChatColor.GRAY + "/" + ChatColor.LIGHT_PURPLE + Bukkit.getMaxPlayers());
         commandSender.sendMessage(ChatColor.GRAY + "[" + ChatColor.GOLD + players.toString() + ChatColor.GRAY + "]");
 
-        return false;
+        return true;
     }
 }

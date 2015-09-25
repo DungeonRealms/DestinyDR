@@ -14,6 +14,7 @@ import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.party.PartyMechanics;
+import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
 import org.bukkit.Bukkit;
@@ -51,7 +52,6 @@ public class DungeonRealms extends JavaPlugin {
         pm.registerEvents(new InventoryListener(), this);
         pm.registerEvents(new BlockListener(), this);
         pm.registerEvents(new BankListener(), this);
-        pm.registerEvents(new ShopListener(), this);
         pm.registerEvents(new EnergyListener(), this);
         Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
 
@@ -63,6 +63,7 @@ public class DungeonRealms extends JavaPlugin {
         PartyMechanics.getInstance().startInitialization();
         EnergyHandler.getInstance().startInitialization();
         EnchantmentAPI.getInstance().startInitialization();
+        Subscription.getInstance().startInitialization();
 
         Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
         Entities.getInstance().startInitialization();
