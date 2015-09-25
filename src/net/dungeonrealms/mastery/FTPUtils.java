@@ -19,11 +19,8 @@ import java.util.zip.ZipOutputStream;
  */
 public class FTPUtils {
 
-    private static volatile HashMap<UUID, FTPStatus> REALMS = new HashMap<>();
-/**
- * NAUGHTEY, NAUGHTEY
- * Created by Chase on Sep 23, 2015
- */
+    public static volatile HashMap<UUID, FTPStatus> REALMS = new HashMap<>();
+
     enum FTPStatus {
         FAILED("Failed"),
         DOWNLOADING("Downloading"),
@@ -41,10 +38,10 @@ public class FTPUtils {
         }
     }
 
-    private String HOST = "167.114.65.102";
-    private int port = 21;
-    private String USER = "dr.23";
-    private String PASSWORD = "devpass123";
+    String HOST = "167.114.65.102";
+    int port = 21;
+    String USER = "dr.23";
+    String PASSWORD = "devpass123";
 
     /**
      * Checks for proper local folders.
@@ -100,7 +97,7 @@ public class FTPUtils {
      * @param path
      * @since 1.0
      */
-    private boolean deleteRecursive(File path) {
+    public boolean deleteRecursive(File path) {
         if (path.exists()) {
             File[] files = path.listFiles();
             for (File file : files) {
@@ -179,7 +176,7 @@ public class FTPUtils {
      * @return
      * @throws IOException
      */
-    private boolean checkFileExists(FTPClient ftpClient, String filePath) {
+    boolean checkFileExists(FTPClient ftpClient, String filePath) {
         InputStream inputStream = null;
         try {
             inputStream = ftpClient.retrieveFileStream(filePath);
@@ -199,7 +196,7 @@ public class FTPUtils {
      * @param zipFile
      * @since 1.0
      */
-    private void unZip(ZipFile zipFile, UUID uuid) {
+    public void unZip(ZipFile zipFile, UUID uuid) {
         Utils.log.info("[REALM] LEFT -> [ASYNC].. Unzipping Realm for " + uuid.toString());
         try {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
@@ -236,7 +233,7 @@ public class FTPUtils {
      * @param uuid
      * @since 1.0
      */
-    private void deleteLocalCache(UUID uuid) {
+    public void deleteLocalCache(UUID uuid) {
         Utils.log.info("[REALM] Removing cached realm for " + uuid.toString());
         File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloading/" + uuid.toString() + ".zip");
         if (TEMP_LOCAL_LOCATION.exists()) {
@@ -254,7 +251,7 @@ public class FTPUtils {
      * @throws Exception
      * @since 1.0
      */
-    private void zipFolder(String srcFolder, String destZipFile) {
+    public void zipFolder(String srcFolder, String destZipFile) {
         try {
             ZipOutputStream zip = null;
             FileOutputStream fileWriter = null;
@@ -279,7 +276,7 @@ public class FTPUtils {
      * @throws Exception
      * @since 1.0
      */
-    private void addFileToZip(String path, String srcFile, ZipOutputStream zip) throws Exception {
+    public void addFileToZip(String path, String srcFile, ZipOutputStream zip) throws Exception {
         File folder = new File(srcFile);
         if (folder.isDirectory()) {
             addFolderToZip(path, srcFile, zip);
@@ -303,7 +300,7 @@ public class FTPUtils {
      * @throws Exception
      * @since 1.0
      */
-    private void addFolderToZip(String path, String srcFolder, ZipOutputStream zip) throws Exception {
+    public void addFolderToZip(String path, String srcFolder, ZipOutputStream zip) throws Exception {
         File folder = new File(srcFolder);
 
         for (String fileName : folder.list()) {
