@@ -3,9 +3,11 @@
  */
 package net.dungeonrealms.shops;
 
-import java.util.HashMap;
-import java.util.UUID;
-
+import com.minebone.anvilapi.core.AnvilApi;
+import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
+import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+import net.dungeonrealms.banks.BankMechanics;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -15,12 +17,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.minebone.anvilapi.core.AnvilApi;
-import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
-import com.minebone.anvilapi.nms.anvil.AnvilSlot;
-
-import net.dungeonrealms.banks.BankMechanics;
-import net.md_5.bungee.api.ChatColor;
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Created by Chase on Sep 23, 2015
@@ -134,7 +132,7 @@ public class ShopMechanics {
 				p.sendMessage("1");
 				if (current.getType() == Material.EMERALD) {
 					p.sendMessage("2");
-					gemWorth += (1 * current.getAmount());
+					gemWorth += (current.getAmount());
 				} else if (current.getType() == Material.PAPER) {
 					p.sendMessage("3");
 					if (nms.getTag().getInt("worth") == price)

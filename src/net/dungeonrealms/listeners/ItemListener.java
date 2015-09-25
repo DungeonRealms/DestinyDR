@@ -76,4 +76,19 @@ public class ItemListener implements Listener {
                     ChatColor.GREEN.toString() + ChatColor.BOLD + "TELEPORT " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player.getUniqueId()) + "s" + ChatColor.RED + ")");
         }
     }
+
+    /**
+     * Handles player clicking with their profile
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerUseProfileItem(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
+        if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.SKULL_ITEM) return;
+        ItemStack itemStack = player.getItemInHand();
+        //TODO: Open player profile GUI.
+    }
 }

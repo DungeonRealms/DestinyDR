@@ -81,128 +81,118 @@ public class InventoryListener implements Listener {
 						// Clicking status off and on.
 						event.setCancelled(true);
 						if (nms.getTag().getString("status").equalsIgnoreCase("off")) {
-						// Turn shop on
-						shop.isopen = true;
-						shop.toggleHologram();
-						int slot = event.getRawSlot();
-						ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.LIME.getDyeData());
-						ItemMeta meta = button.getItemMeta();
-						meta.setDisplayName(ChatColor.RED.toString() + "Close Shop");
-						button.setItemMeta(meta);
-						net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
-						nmsButton.getTag().setString("status", "on");
-						shop.inventory.setItem(slot, CraftItemStack.asBukkitCopy(nmsButton));
-						} else {
+                            shop.isopen = true;
+                            shop.toggleHologram();
+                            int slot = event.getRawSlot();
+                            ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.LIME.getDyeData());
+                            ItemMeta meta = button.getItemMeta();
+                            meta.setDisplayName(ChatColor.RED.toString() + "Close Shop");
+                            button.setItemMeta(meta);
+                            net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
+                            nmsButton.getTag().setString("status", "on");
+                            shop.inventory.setItem(slot, CraftItemStack.asBukkitCopy(nmsButton));
+                        } else {
 						// Turn shop off;
-						shop.isopen = false;
-						shop.toggleHologram();
-						ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.GRAY.getDyeData());
-						ItemMeta meta = button.getItemMeta();
-						meta.setDisplayName(ChatColor.YELLOW.toString() + "Open Shop");
-						button.setItemMeta(meta);
-						net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
-						nmsButton.getTag().setString("status", "off");
-						shop.inventory.setItem(8, CraftItemStack.asBukkitCopy(nmsButton));
-
+                            shop.isopen = false;
+                            shop.toggleHologram();
+                            ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.GRAY.getDyeData());
+                            ItemMeta meta = button.getItemMeta();
+                            meta.setDisplayName(ChatColor.YELLOW.toString() + "Open Shop");
+                            button.setItemMeta(meta);
+                            net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
+                            nmsButton.getTag().setString("status", "off");
+                            shop.inventory.setItem(8, CraftItemStack.asBukkitCopy(nmsButton));
 						}
 					} else {
 						// Clicking something not Turning shop off or
 						// on.
 						if (shop.isopen) {
 						// make sure shop is off.
-						clicker.sendMessage(ChatColor.RED + "You must close the shop before you can edit");
-						event.setCancelled(true);
+						    clicker.sendMessage(ChatColor.RED + "You must close the shop before you can edit");
+						    event.setCancelled(true);
 						} else {
 						// shop is off
-						int slot = event.getRawSlot();
-						if (slot < shop.inventory.getSize()) {
-							ItemStack stackInSlot = event.getInventory().getItem(slot);
-							ItemStack itemHeld = event.getCursor();
-							// Shop Slot Clicked
-							if (stackInSlot != null && itemHeld.getType() != Material.AIR
-									&& itemHeld.getType() != stackInSlot.getType()) {
+						    int slot = event.getRawSlot();
+						    if (slot < shop.inventory.getSize()) {
+                                ItemStack stackInSlot = event.getInventory().getItem(slot);
+                                ItemStack itemHeld = event.getCursor();
+                                if (stackInSlot != null && itemHeld.getType() != Material.AIR && itemHeld.getType() != stackInSlot.getType()) {
 								// Swaping Items
-								clicker.sendMessage(ChatColor.RED.toString() + "Move item in slot first.");
-								event.setCancelled(true);
-							} else {
-								if (event.isLeftClick()) {
-									ItemStack stack = stackInSlot.clone();
-									ItemMeta meta = stack.getItemMeta();
-									List<String> lore = meta.getLore();
-									if (lore != null)
-									for (int i = 0; i < lore.size(); i++) {
-										String current = lore.get(i);
-										if (current.contains("Price")) {
-											lore.remove(i);
-											break;
-										}
-									}
-									meta.setLore(lore);
-									stack.setItemMeta(meta);
-									event.setCancelled(true);
-									net.minecraft.server.v1_8_R3.ItemStack nms2 = CraftItemStack.asNMSCopy(stack);
-									nms2.getTag().remove("worth");
-									clicker.getInventory().addItem(CraftItemStack.asBukkitCopy(nms2));
-									event.getInventory().setItem(slot, new ItemStack(Material.AIR, 1));
-								} else if (event.isRightClick()) {
-									event.setCancelled(true);
-									Player player = clicker;
-									player.closeInventory();
-									AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
-									if (e.getSlot() == AnvilSlot.OUTPUT) {
-										int number = 0;
-										try {
-											number = Integer.parseInt(e.getName());
-											player.sendMessage("Price set");
-										} catch (Exception exc) {
-											e.setWillClose(true);
-											e.setWillDestroy(true);
-											Bukkit.getPlayer(e.getPlayerName())
-													.sendMessage("Please enter a valid number");
-											return;
-										}
-										if (number < 0) {
-											player.getPlayer().sendMessage("You can't ask for negative money!");
-										} else {
-											ItemStack stack = stackInSlot.clone();
-											ItemMeta meta = stack.getItemMeta();
-											ArrayList<String> lore = new ArrayList<>();
-											lore.add(ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "Price: "
-													+ ChatColor.WHITE.toString() + number + "g");
-											meta.setLore(lore);
-											stack.setItemMeta(meta);
-											net.minecraft.server.v1_8_R3.ItemStack nms1 = CraftItemStack
-													.asNMSCopy(stack);
-											nms1.getTag().setInt("worth", number);
-											shop.inventory.setItem(slot, CraftItemStack.asBukkitCopy(nms1));
-											player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
-											e.setWillClose(true);
-											e.setWillDestroy(true);
-										}
-
-									}
-									});
-									ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
-									ItemMeta meta = stack.getItemMeta();
-									meta.setDisplayName("Price?");
-									stack.setItemMeta(meta);
-									gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
-									gui.open();
-								}
-							}
-						} else {
-							// Owner clicking own inventory
-						}
-						}
-					}
-				} else {
-					// Not owner clicking.
-					if(!shop.isopen){
-						clicker.closeInventory();
+								    clicker.sendMessage(ChatColor.RED.toString() + "Move item in slot first.");
+								    event.setCancelled(true);
+                                } else {
+                                    if (event.isLeftClick()) {
+                                        ItemStack stack = stackInSlot.clone();
+                                        ItemMeta meta = stack.getItemMeta();
+                                        List<String> lore = meta.getLore();
+                                        if (lore != null)
+                                            for (int i = 0; i < lore.size(); i++) {
+                                                String current = lore.get(i);
+                                                if (current.contains("Price")) {
+                                                    lore.remove(i);
+                                                    break;
+                                                }
+                                            }
+                                        meta.setLore(lore);
+                                        stack.setItemMeta(meta);
+                                        event.setCancelled(true);
+                                        net.minecraft.server.v1_8_R3.ItemStack nms2 = CraftItemStack.asNMSCopy(stack);
+                                        nms2.getTag().remove("worth");
+                                        clicker.getInventory().addItem(CraftItemStack.asBukkitCopy(nms2));
+                                        event.getInventory().setItem(slot, new ItemStack(Material.AIR, 1));
+                                    } else if (event.isRightClick()) {
+                                        event.setCancelled(true);
+                                        Player player = clicker;
+                                        player.closeInventory();
+                                        AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
+                                            if (e.getSlot() == AnvilSlot.OUTPUT) {
+                                                int number = 0;
+                                                try {
+                                                    number = Integer.parseInt(e.getName());
+                                                    player.sendMessage("Price set");
+                                                } catch (Exception exc) {
+                                                    e.setWillClose(true);
+                                                    e.setWillDestroy(true);
+                                                    Bukkit.getPlayer(e.getPlayerName()).sendMessage("Please enter a valid number");
+                                                    return;
+                                                }
+                                                if (number < 0) {
+                                                    player.getPlayer().sendMessage("You can't ask for negative money!");
+                                                } else {
+                                                    ItemStack stack = stackInSlot.clone();
+                                                    ItemMeta meta = stack.getItemMeta();
+                                                    ArrayList<String> lore = new ArrayList<>();
+                                                    lore.add(ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "Price: " + ChatColor.WHITE.toString() + number + "g");
+                                                    meta.setLore(lore);
+                                                    stack.setItemMeta(meta);
+                                                    net.minecraft.server.v1_8_R3.ItemStack nms1 = CraftItemStack.asNMSCopy(stack);
+                                                    nms1.getTag().setInt("worth", number);
+                                                    shop.inventory.setItem(slot, CraftItemStack.asBukkitCopy(nms1));
+                                                    player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
+                                                    e.setWillClose(true);
+                                                    e.setWillDestroy(true);
+                                                }
+                                            }
+                                        });
+                                        ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
+                                        ItemMeta meta = stack.getItemMeta();
+                                        meta.setDisplayName("Price?");
+                                        stack.setItemMeta(meta);
+                                        gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
+                                        gui.open();
+                                    }
+                                }
+                            } else {
+                            }
+                        }
+                    }
+                } else {
+                    if(!shop.isopen){
+                        clicker.closeInventory();
 						clicker.sendMessage(ChatColor.RED.toString() + "This shop is closed!");
 						return;
-					}
-					if (event.getRawSlot() < shop.inventory.getSize()) {
+                    }
+                    if (event.getRawSlot() < shop.inventory.getSize()) {
 						event.setCancelled(true);
 						if (event.isLeftClick()) {
 						if (nms != null) {
@@ -216,12 +206,12 @@ public class InventoryListener implements Listener {
 								if (lore != null)
 									for (int i = 0; i < lore.size(); i++) {
 									String current = lore.get(i);
-									if (current.contains("Price")) {
-										lore.remove(i);
-										break;
-									}
-									}
-								meta.setLore(lore);
+                                        if (current.contains("Price")) {
+                                            lore.remove(i);
+                                            break;
+                                        }
+                                    }
+                                meta.setLore(lore);
 								stack.setItemMeta(meta);
 								stack.setAmount(1);
 								event.setCancelled(true);
@@ -234,12 +224,12 @@ public class InventoryListener implements Listener {
 							} else {
 								clicker.sendMessage("not enought money");
 							}
-						}
-						}
+                        }
+                        }
 					}
 				}
-			}
-			} else { // Setting new item to shop
+            }
+            } else { // Setting new item to shop
 			if (event.getRawSlot() < shop.inventory.getSize()) {
 				ItemStack itemHeld = event.getCursor();
 				if (itemHeld.getType() == Material.AIR)
@@ -257,27 +247,26 @@ public class InventoryListener implements Listener {
 					if (event1.getSlot() == AnvilSlot.OUTPUT) {
 						int number = 0;
 						try {
-						number = Integer.parseInt(event1.getName());
+                            number = Integer.parseInt(event1.getName());
 						} catch (Exception exc) {
-						event1.setWillClose(true);
-						event1.setWillDestroy(true);
-						Bukkit.getPlayer(event1.getPlayerName()).sendMessage("Please enter a valid number");
-						return;
+                            event1.setWillClose(true);
+                            event1.setWillDestroy(true);
+                            Bukkit.getPlayer(event1.getPlayerName()).sendMessage("Please enter a valid number");
+                            return;
 						}
-						event1.setWillClose(true);
+                        event1.setWillClose(true);
 						event1.setWillDestroy(true);
 						if (number < 0) {
-						player.getPlayer().sendMessage("You can't ask for negative money!");
+                            player.getPlayer().sendMessage("You can't ask for negative money!");
 						} else {
-						ItemStack stack = itemHeld.clone();
-						ItemMeta meta = stack.getItemMeta();
-						ArrayList<String> lore = new ArrayList<>();
-						lore.add(ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "Price: "
-								+ ChatColor.WHITE.toString() + number);
-						meta.setLore(lore);
-						stack.setItemMeta(meta);
-						net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-						nms.getTag().setInt("worth", number);
+                            ItemStack stack = itemHeld.clone();
+                            ItemMeta meta = stack.getItemMeta();
+                            ArrayList<String> lore = new ArrayList<>();
+                            lore.add(ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "Price: " + ChatColor.WHITE.toString() + number);
+                            meta.setLore(lore);
+                            stack.setItemMeta(meta);
+                            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+                            nms.getTag().setInt("worth", number);
 						if (shop.inventory.firstEmpty() >= 0) {
 							shop.inventory.addItem(CraftItemStack.asBukkitCopy(nms));
 							player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
@@ -288,11 +277,10 @@ public class InventoryListener implements Listener {
 							player.getInventory().addItem(itemHeld);
 							player.sendMessage("There is no room for this item in your Shop");
 						}
-						}
-
-					}
+                        }
+                    }
 				});
-				ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
+                ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
 				ItemMeta meta = stack.getItemMeta();
 				meta.setDisplayName("Price?");
 				stack.setItemMeta(meta);
@@ -312,8 +300,8 @@ public class InventoryListener implements Listener {
 	public void onDuelWagerClick(InventoryClickEvent e) {
 		if (e.getInventory().getTitle().contains("vs.")) {
 			if (e.isShiftClick()) {
-			e.setCancelled(true);
-			return;
+                e.setCancelled(true);
+                return;
 			}
 			Player p = (Player) e.getWhoClicked();
 			DuelWager wager = DuelMechanics.getWager(p.getUniqueId());
@@ -322,19 +310,19 @@ public class InventoryListener implements Listener {
 			if (stack == null)
 			return;
 			if (stack.getType() == Material.BONE) {
-			e.setCancelled(true);
+                e.setCancelled(true);
 			} else if (slot == 30) {
-			e.setCancelled(true);
-			wager.cycleArmor();
+                e.setCancelled(true);
+                wager.cycleArmor();
 			} else if (slot == 32) {
-			e.setCancelled(true);
-			wager.cycleWeapon();
+                e.setCancelled(true);
+                wager.cycleWeapon();
 			} else if (slot == 0) {
 			if (wager.isLeft(p)) {
 				// Left clicked
 				e.setCancelled(true);
 				if (CraftItemStack.asNMSCopy(stack).getTag().getString("state").equalsIgnoreCase("notready")) {
-					ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
+                    ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
 						ChatColor.YELLOW.toString() + "Ready", null, DyeColor.LIME.getDyeData());
 					net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
 					NBTTagCompound nbt = new NBTTagCompound();
@@ -342,8 +330,7 @@ public class InventoryListener implements Listener {
 					nms.setTag(nbt);
 					nms.c(ChatColor.YELLOW.toString() + "Ready");
 					wager.setItemSlot(0, CraftItemStack.asBukkitCopy(nms));
-					if (CraftItemStack.asNMSCopy(e.getInventory().getItem(8)).getTag().getString("state")
-						.equalsIgnoreCase("ready")) {
+					if (CraftItemStack.asNMSCopy(e.getInventory().getItem(8)).getTag().getString("state").equalsIgnoreCase("ready")) {
 						wager.startDuel();
 					}
 				} else {
@@ -416,9 +403,9 @@ public class InventoryListener implements Listener {
 	 */
 	private boolean isLeftSlot(int slot) {
 		int[] left = new int[] { 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21 };
-		for (int i = 0; i < left.length; i++)
-			if (left[i] == slot)
-			return true;
+        for (int aLeft : left)
+            if (aLeft == slot)
+                return true;
 		return false;
 	}
 
@@ -444,21 +431,19 @@ public class InventoryListener implements Listener {
 			return;
 		int slot = event.getNewSlot();
 		if (event.getPlayer().getInventory().getItem(slot) != null) {
-			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack
-				.asNMSCopy(event.getPlayer().getInventory().getItem(slot));
+			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getPlayer().getInventory().getItem(slot));
 			if (nms.hasTag()) {
-			if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon")) {
-				ItemTier tier = Item.ItemTier.getById(nms.getTag().getInt("itemTier"));
-				int minLevel = tier.getRangeValues()[0];
-				Player p = event.getPlayer();
-				int pLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, p.getUniqueId());
-				if (pLevel < minLevel) {
-					p.sendMessage(ChatColor.RED + "You must be level " + ChatColor.YELLOW.toString() + minLevel
-						+ ChatColor.RED.toString() + " to wield this weapon!");
-					event.setCancelled(true);
-				}
-			}
-			}
+                if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon")) {
+                    ItemTier tier = Item.ItemTier.getById(nms.getTag().getInt("itemTier"));
+                    int minLevel = tier.getRangeValues()[0];
+                    Player p = event.getPlayer();
+                    int pLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, p.getUniqueId());
+                    if (pLevel < minLevel) {
+                        p.sendMessage(ChatColor.RED + "You must be level " + ChatColor.YELLOW.toString() + minLevel + ChatColor.RED.toString() + " to wield this weapon!");
+                        event.setCancelled(true);
+                    }
+                }
+            }
 		}
 	}
 
@@ -473,12 +458,12 @@ public class InventoryListener implements Listener {
 			Player p = (Player) event.getPlayer();
 			DuelWager wager = DuelMechanics.getWager(p.getUniqueId());
 			if (wager != null) {
-			if (!wager.completed) {
-				wager.giveItemsBack();
-				DuelMechanics.removeWager(wager);
-				wager.p1.closeInventory();
-				wager.p2.closeInventory();
-			}
+                if (!wager.completed) {
+                    wager.giveItemsBack();
+                    DuelMechanics.removeWager(wager);
+                    wager.p1.closeInventory();
+                    wager.p2.closeInventory();
+                }
 			}
 		}
 	}

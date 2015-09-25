@@ -1,13 +1,10 @@
 package net.dungeonrealms.shops;
 
-import java.util.List;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+import net.dungeonrealms.DungeonRealms;
+import net.md_5.bungee.api.ChatColor;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -15,11 +12,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-
-import net.dungeonrealms.DungeonRealms;
-import net.md_5.bungee.api.ChatColor;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Chase on Sep 23, 2015
@@ -109,26 +103,26 @@ public class Shop {
 		for (int i = 0; i < inventory.getSize(); i++) {
 			ItemStack current = inventory.getItem(i);
 			if (current == null)
-			continue;
+				continue;
 			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(current);
 			if (nms.hasTag())
-			if (nms.getTag().hasKey("status"))
-				continue;
+				if (nms.getTag().hasKey("status"))
+					continue;
 			inventory.setItem(i, null);
 			ItemMeta meta = current.getItemMeta();
 			List<String> lore = meta.getLore();
 			for (int j = 0; j < lore.size(); j++) {
-			String currentStr = lore.get(j);
-			if (currentStr.contains("Price")) {
-				lore.remove(j);
-				break;
-			}
+				String currentStr = lore.get(j);
+				if (currentStr.contains("Price")) {
+					lore.remove(j);
+					break;
+				}
 			}
 			nms.getTag().remove("worth");
 			meta.setLore(lore);
 			current.setItemMeta(meta);
 			if (getOwner() != null) {
-			getOwner().getInventory().addItem(current);
+				getOwner().getInventory().addItem(current);
 			} else {
 			// Collection Bin
 			}

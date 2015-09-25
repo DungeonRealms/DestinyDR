@@ -1,5 +1,6 @@
 package net.dungeonrealms.mechanics;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.Packet;
@@ -10,9 +11,7 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
 import java.lang.reflect.Field;
-import java.util.List;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Created by Kieran on 9/20/2015.
@@ -63,16 +62,6 @@ public class ParticleAPI {
     }
 
     /**
-     * Gets the a list of nearby players from a location within a given radius
-     * @param location
-     * @param radius
-     * @since 1.0
-     */
-    private static List<Player> getNearbyPlayers(Location location, int radius) {
-        return location.getWorld().getPlayers().stream().filter(player -> location.distance(player.getLocation()) <= radius).collect(Collectors.toList());
-    }
-
-    /**
      * Sends a particle to a location so that every player within 25 blocks can see it
      * @param particleEffect
      * @param location
@@ -91,7 +80,7 @@ public class ParticleAPI {
             Utils.log.info("Something went wrong creating a packet");
         }
 
-        for (Player player : getNearbyPlayers(location, 25)) {
+        for (Player player : API.getNearbyPlayers(location, 25)) {
             try {
                 sendPacketToPlayer(player.getUniqueId(), packet);
             } catch (Exception e) {

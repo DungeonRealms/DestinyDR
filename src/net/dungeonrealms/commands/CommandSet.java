@@ -96,9 +96,7 @@ public class CommandSet implements CommandExecutor {
 					InputStream inputStream = new FileInputStream(file);
 					String source = IOUtils.toString(inputStream, "UTF-8");
 					List<ItemStack> items = ItemSerialization.deserialize(source);
-					items.stream().filter(item -> item != null).forEach(item -> {
-						player.getInventory().addItem(item);
-					});
+					items.stream().filter(item -> item != null).forEach(item -> player.getInventory().addItem(item));
 				} catch (IOException e) {
 					// TODO Auto-generated catch block
 					e.printStackTrace();

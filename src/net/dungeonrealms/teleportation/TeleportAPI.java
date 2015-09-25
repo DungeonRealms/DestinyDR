@@ -3,6 +3,7 @@ package net.dungeonrealms.teleportation;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -23,7 +24,7 @@ public class TeleportAPI {
      */
     public static boolean canUseHearthstone(UUID uuid) {
         if (Teleportation.PLAYER_TELEPORT_COOLDOWNS.containsKey(uuid)) {
-            if (Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(uuid) <= 0) {
+            if (Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(uuid) <= 0 && Bukkit.getPlayer(uuid).getWorld().getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName())) {
                 return true;
             }
         }
@@ -93,10 +94,7 @@ public class TeleportAPI {
         }
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
-        if (tag == null || nmsItem == null) {
-            return false;
-        }
-        return tag.getString("type").equalsIgnoreCase("teleport");
+        return !(tag == null || nmsItem == null) && tag.getString("type").equalsIgnoreCase("teleport");
     }
 
     /**
@@ -110,10 +108,7 @@ public class TeleportAPI {
         }
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
-        if (tag == null || nmsItem == null) {
-            return false;
-        }
-        return tag.getString("type").equalsIgnoreCase("important") && tag.getString("usage").equalsIgnoreCase("hearthstone");
+        return !(tag == null || nmsItem == null) && tag.getString("type").equalsIgnoreCase("important") && tag.getString("usage").equalsIgnoreCase("hearthstone");
     }
 
     /**

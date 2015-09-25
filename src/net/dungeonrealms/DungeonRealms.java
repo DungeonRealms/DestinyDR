@@ -85,6 +85,7 @@ public class DungeonRealms extends JavaPlugin {
         getCommand("lag").setExecutor(new CommandLag());
         getCommand("party").setExecutor(new CommandParty());
         getCommand("set").setExecutor(new CommandSet());
+        getCommand("list").setExecutor(new CommandList());
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         Utils.log.info("DungeonRealms Registering FTP() ... STARTING ...");
         FTPUtils.startInitialization();

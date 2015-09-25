@@ -141,7 +141,7 @@ public class BankListener implements Listener {
                                             } else {
                                                 ItemStack stack = BankMechanics.banknote.clone();
                                                 ItemMeta meta = stack.getItemMeta();
-                                                ArrayList<String> lore = new ArrayList<String>();
+                                                ArrayList<String> lore = new ArrayList<>();
                                                 lore.add(ChatColor.BOLD.toString() + "Value: " + ChatColor.WHITE.toString()
                                                         + number);
                                                 meta.setLore(lore);
@@ -333,7 +333,7 @@ public class BankListener implements Listener {
                             } else {
                                 ItemStack stack = BankMechanics.banknote.clone();
                                 ItemMeta meta = stack.getItemMeta();
-                                ArrayList<String> lore = new ArrayList<String>();
+                                ArrayList<String> lore = new ArrayList<>();
                                 lore.add(ChatColor.BOLD.toString() + "Value: " + ChatColor.WHITE.toString() + number);
                                 meta.setLore(lore);
                                 stack.setItemMeta(meta);
