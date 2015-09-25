@@ -1,23 +1,37 @@
 package net.dungeonrealms;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.commands.*;
+import net.dungeonrealms.commands.CommandAdd;
+import net.dungeonrealms.commands.CommandAnalyze;
+import net.dungeonrealms.commands.CommandLag;
+import net.dungeonrealms.commands.CommandParty;
+import net.dungeonrealms.commands.CommandSet;
+import net.dungeonrealms.commands.CommandSpawn;
 import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.PetUtils;
-import net.dungeonrealms.listeners.*;
+import net.dungeonrealms.listeners.BankListener;
+import net.dungeonrealms.listeners.BlockListener;
+import net.dungeonrealms.listeners.DamageListener;
+import net.dungeonrealms.listeners.EnergyListener;
+import net.dungeonrealms.listeners.InventoryListener;
+import net.dungeonrealms.listeners.ItemListener;
+import net.dungeonrealms.listeners.MainListener;
+import net.dungeonrealms.listeners.ShopListener;
 import net.dungeonrealms.mastery.FTPUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.party.PartyMechanics;
+import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -88,6 +102,8 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     public void onDisable() {
+   	 ShopMechanics.deleteAllShops();
+   	 Bukkit.getWorlds().get(0).save();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
         Database.mongoClient.close();
     }

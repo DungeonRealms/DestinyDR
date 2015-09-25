@@ -46,7 +46,7 @@ public class BankMechanics {
 		gem = CraftItemStack.asBukkitCopy(nms);
 
 		ItemStack item2 = new ItemStack(Material.PAPER, 1);
-		ItemMeta meta2 = item.getItemMeta();
+		ItemMeta meta2 = item2.getItemMeta();
 		List<String> lore2 = new ArrayList<String>();
 		lore2.add(ChatColor.WHITE.toString() + ChatColor.BOLD.toString() + "Value: " + ChatColor.WHITE.toString());
 		meta2.setLore(lore2);
@@ -58,6 +58,22 @@ public class BankMechanics {
 		tag2.setInt("worth", 0);
 		nms2.setTag(tag2);
 		banknote = CraftItemStack.asBukkitCopy(nms2);
+	}
+	
+	public static ItemStack createBankNote(int ammount){
+		ItemStack item2 = new ItemStack(Material.PAPER, 1);
+		ItemMeta meta2 = item2.getItemMeta();
+		List<String> lore2 = new ArrayList<String>();
+		lore2.add(ChatColor.WHITE.toString() + ChatColor.BOLD.toString() + "Value: " + ChatColor.WHITE.toString());
+		meta2.setLore(lore2);
+		meta2.setDisplayName(ChatColor.GREEN.toString() + "Bank Note");
+		item2.setItemMeta(meta2);
+		net.minecraft.server.v1_8_R3.ItemStack nms2 = CraftItemStack.asNMSCopy(item2);
+		NBTTagCompound tag2 = nms2.getTag() == null ? new NBTTagCompound() : nms2.getTag();
+		tag2.setString("type", "money");
+		tag2.setInt("worth", ammount);
+		nms2.setTag(tag2);
+		return CraftItemStack.asBukkitCopy(nms2);
 	}
 
 	/**
