@@ -20,34 +20,31 @@ public class ShopListener implements Listener {
 	/**
 	 * Handling Shops being Right clicked.
 	 *
-	 * @param PlayerInteractEvent
+	 * @param event
 	 * @since 1.0
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void playerRightClickChest(PlayerInteractEvent e) {
-		Block block = e.getClickedBlock();
-		if (block == null)
-			return;
-		if (block.getType() != Material.CHEST)
-			return;
+	public void playerRightClickChest(PlayerInteractEvent event) {
+		Block block = event.getClickedBlock();
+		if (block == null) return;
+		if (block.getType() != Material.CHEST) return;
 		Shop shop = ShopMechanics.getShop(block);
-		if (shop == null)
-			return;
-		Action actionType = e.getAction();
+		if (shop == null) return;
+		Action actionType = event.getAction();
 		switch (actionType) {
 		case RIGHT_CLICK_BLOCK:
-			if (shop.isopen || shop.getOwner().getUniqueId() == e.getPlayer().getUniqueId()) {
-			e.setCancelled(true);
-			e.getPlayer().openInventory(shop.getInv());
+			if (shop.isopen || shop.getOwner().getUniqueId() == event.getPlayer().getUniqueId()) {
+				event.setCancelled(true);
+				event.getPlayer().openInventory(shop.getInv());
 			} else if (!shop.isopen) {
-			e.setCancelled(true);
-			e.getPlayer().sendMessage(ChatColor.RED.toString() + "This shop is closed!");
+				event.setCancelled(true);
+				event.getPlayer().sendMessage(ChatColor.RED.toString() + "This shop is closed!");
 			}
 			break;
 		case LEFT_CLICK_BLOCK:
-			if (shop.getOwner().getUniqueId() == e.getPlayer().getUniqueId()) {
-			e.setCancelled(true);
-			shop.deleteShop();
+			if (shop.getOwner().getUniqueId() == event.getPlayer().getUniqueId()) {
+				event.setCancelled(true);
+				shop.deleteShop();
 			}
 			break;
 		default:
