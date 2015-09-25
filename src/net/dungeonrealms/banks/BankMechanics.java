@@ -34,7 +34,7 @@ public class BankMechanics {
 	private static void loadCurrency() {
 		ItemStack item = new ItemStack(Material.EMERALD, 1);
 		ItemMeta meta = item.getItemMeta();
-		List<String> lore = new ArrayList<String>();
+		List<String> lore = new ArrayList<>();
 		lore.add("The currency of Andalucia");
 		meta.setLore(lore);
 		meta.setDisplayName("Gem");
@@ -47,7 +47,7 @@ public class BankMechanics {
 
 		ItemStack item2 = new ItemStack(Material.PAPER, 1);
 		ItemMeta meta2 = item2.getItemMeta();
-		List<String> lore2 = new ArrayList<String>();
+		List<String> lore2 = new ArrayList<>();
 		lore2.add(ChatColor.WHITE.toString() + ChatColor.BOLD.toString() + "Value: " + ChatColor.WHITE.toString());
 		meta2.setLore(lore2);
 		meta2.setDisplayName(ChatColor.GREEN.toString() + "Bank Note");
@@ -63,7 +63,7 @@ public class BankMechanics {
 	public static ItemStack createBankNote(int ammount){
 		ItemStack item2 = new ItemStack(Material.PAPER, 1);
 		ItemMeta meta2 = item2.getItemMeta();
-		List<String> lore2 = new ArrayList<String>();
+		List<String> lore2 = new ArrayList<>();
 		lore2.add(ChatColor.WHITE.toString() + ChatColor.BOLD.toString() + "Value: " + ChatColor.WHITE.toString());
 		meta2.setLore(lore2);
 		meta2.setDisplayName(ChatColor.GREEN.toString() + "Bank Note");

@@ -103,11 +103,11 @@ public class FTPUtils {
     private boolean deleteRecursive(File path) {
         if (path.exists()) {
             File[] files = path.listFiles();
-            for (int i = 0; i < files.length; i++) {
-                if (files[i].isDirectory()) {
-                    deleteRecursive(files[i]);
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    deleteRecursive(file);
                 } else {
-                    files[i].delete();
+                    file.delete();
                 }
             }
         }
@@ -217,8 +217,6 @@ public class FTPUtils {
                     out.close();
                 }
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

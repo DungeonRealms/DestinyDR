@@ -43,11 +43,7 @@ public class API {
 	public static boolean isInSafeRegion(UUID uuid) {
 		Player p = Bukkit.getPlayer(uuid);
 		ApplicableRegionSet region = getWorldGuard().getRegionManager(p.getWorld()).getApplicableRegions(p.getLocation());
-		if (region.getFlag(DefaultFlag.PVP) != null) {
-			return !region.allows(DefaultFlag.PVP);
-		} else {
-			return false;
-		}
+		return region.getFlag(DefaultFlag.PVP) != null && !region.allows(DefaultFlag.PVP);
 	}
 
 	/**

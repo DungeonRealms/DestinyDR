@@ -403,9 +403,9 @@ public class InventoryListener implements Listener {
 	 */
 	private boolean isLeftSlot(int slot) {
 		int[] left = new int[] { 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21 };
-		for (int i = 0; i < left.length; i++)
-			if (left[i] == slot)
-			return true;
+        for (int aLeft : left)
+            if (aLeft == slot)
+                return true;
 		return false;
 	}
 

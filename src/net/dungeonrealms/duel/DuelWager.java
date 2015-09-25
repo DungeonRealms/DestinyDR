@@ -132,8 +132,8 @@ public class DuelWager {
 	 */
 	public void endDuel(Player winner, Player loser) {
 		Bukkit.broadcastMessage(winner.getDisplayName() + " has defeated " + loser.getDisplayName() + " in a duel.");
-		for (int i = 0; i < winningItems.size(); i++) {
-			winner.getInventory().addItem(winningItems.get(i));
+		for (ItemStack winningItem : winningItems) {
+			winner.getInventory().addItem(winningItem);
 		}
 		DuelMechanics.DUELS.remove(p1.getUniqueId());
 		DuelMechanics.DUELS.remove(p2.getUniqueId());
@@ -203,10 +203,10 @@ public class DuelWager {
 	private void saveWagerItems() {
 		int[] slots = new int[] { 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21, 23, 24, 25, 26, 5, 6, 7, 14, 15, 16, 17 };
 		InventoryView inv = p1.getOpenInventory();
-		for (int i = 0; i < slots.length; i++) {
-			ItemStack current = inv.getItem(slots[i]);
+		for (int slot : slots) {
+			ItemStack current = inv.getItem(slot);
 			if (current != null && current.getType() != Material.AIR)
-			winningItems.add(current);
+				winningItems.add(current);
 		}
 	}
 
@@ -219,16 +219,16 @@ public class DuelWager {
 		InventoryView inv = p1.getOpenInventory();
 		int[] left = new int[] { 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21 };
 		int[] right = new int[] { 23, 24, 25, 26, 5, 6, 7, 14, 15, 16, 17 };
-		for (int i = 0; i < left.length; i++) {
-			ItemStack current = inv.getItem(left[i]);
+		for (int aLeft : left) {
+			ItemStack current = inv.getItem(aLeft);
 			if (current != null && current.getType() != Material.AIR) {
-			p1.getInventory().addItem(current);
+				p1.getInventory().addItem(current);
 			}
 		}
-		for (int i = 0; i < right.length; i++) {
-			ItemStack current = inv.getItem(right[i]);
+		for (int aRight : right) {
+			ItemStack current = inv.getItem(aRight);
 			if (current != null && current.getType() != Material.AIR) {
-			p2.getInventory().addItem(current);
+				p2.getInventory().addItem(current);
 			}
 		}
 	}

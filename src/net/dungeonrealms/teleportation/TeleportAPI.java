@@ -94,10 +94,7 @@ public class TeleportAPI {
         }
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
-        if (tag == null || nmsItem == null) {
-            return false;
-        }
-        return tag.getString("type").equalsIgnoreCase("teleport");
+        return !(tag == null || nmsItem == null) && tag.getString("type").equalsIgnoreCase("teleport");
     }
 
     /**
@@ -111,10 +108,7 @@ public class TeleportAPI {
         }
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
-        if (tag == null || nmsItem == null) {
-            return false;
-        }
-        return tag.getString("type").equalsIgnoreCase("important") && tag.getString("usage").equalsIgnoreCase("hearthstone");
+        return !(tag == null || nmsItem == null) && tag.getString("type").equalsIgnoreCase("important") && tag.getString("usage").equalsIgnoreCase("hearthstone");
     }
 
     /**

@@ -137,10 +137,9 @@ public class DuelMechanics {
 	 * @return
 	 */
 	public static DuelWager getWager(UUID uuid) {
-		for (int i = 0; i < WAGERS.size(); i++) {
-			DuelWager current = WAGERS.get(i);
+		for (DuelWager current : WAGERS) {
 			if (current.p1.getUniqueId() == uuid || current.p2.getUniqueId() == uuid)
-			return current;
+				return current;
 		}
 		return null;
 	}
