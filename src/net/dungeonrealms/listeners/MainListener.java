@@ -3,6 +3,7 @@ package net.dungeonrealms.listeners;
 import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
 import net.dungeonrealms.energy.EnergyHandler;
@@ -72,6 +73,7 @@ public class MainListener implements Listener {
         TeleportAPI.addPlayerHearthstoneCD(event.getPlayer().getUniqueId(), 120);
         PlayerManager.checkInventory(player);
         EnergyHandler.handleLogin(player.getUniqueId());
+        BankMechanics.handleLogin(event.getPlayer().getUniqueId());
     }
 
     /**
@@ -145,6 +147,7 @@ public class MainListener implements Listener {
             DuelMechanics.getWager(player.getUniqueId()).handleLogOut(player.getUniqueId());
         }
         EnergyHandler.handleLogout(player.getUniqueId());
+        BankMechanics.handleLogout(event.getPlayer().getUniqueId());
     }
 
     /**

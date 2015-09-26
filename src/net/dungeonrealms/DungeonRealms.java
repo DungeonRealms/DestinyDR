@@ -10,6 +10,7 @@ import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.commands.CommandAdd;
 import net.dungeonrealms.commands.CommandAnalyze;
 import net.dungeonrealms.commands.CommandLag;
+import net.dungeonrealms.commands.CommandList;
 import net.dungeonrealms.commands.CommandParty;
 import net.dungeonrealms.commands.CommandSet;
 import net.dungeonrealms.commands.CommandSpawn;
