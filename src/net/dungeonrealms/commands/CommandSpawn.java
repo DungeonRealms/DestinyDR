@@ -46,7 +46,7 @@ public class CommandSpawn implements CommandExecutor {
                     break;
                 case "pet": {
                     if (!EntityAPI.hasPetOut(player.getUniqueId())) {
-                        PetUtils.spawnPet(player.getUniqueId(), 10);
+                        PetUtils.spawnPet(player.getUniqueId(), 9);
                         Utils.log.info("Spawned Pet");
                     } else {
                         player.sendMessage("You already have a pet summoned");
