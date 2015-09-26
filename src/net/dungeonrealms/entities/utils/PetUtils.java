@@ -2,15 +2,7 @@ package net.dungeonrealms.entities.utils;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.Entities;
-import net.dungeonrealms.entities.types.pets.BabyZombie;
-import net.dungeonrealms.entities.types.pets.BabyZombiePig;
-import net.dungeonrealms.entities.types.pets.CaveSpider;
-import net.dungeonrealms.entities.types.pets.Chicken;
-import net.dungeonrealms.entities.types.pets.Endermite;
-import net.dungeonrealms.entities.types.pets.Ocelot;
-import net.dungeonrealms.entities.types.pets.Rabbit;
-import net.dungeonrealms.entities.types.pets.Silverfish;
-import net.dungeonrealms.entities.types.pets.Wolf;
+import net.dungeonrealms.entities.types.pets.*;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
@@ -241,6 +233,18 @@ public class PetUtils {
                 player.sendMessage("Endermite pet Spawned!");
                 makePet(petEndermite, player.getUniqueId());
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petEndermite);
+                player.closeInventory();
+                break;
+            }
+            case 9: {
+                Snowman petSnowman = new Snowman(world, "Pet Snowman", player.getUniqueId(), EnumEntityType.PET);
+                petSnowman.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+                world.addEntity(petSnowman, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                petSnowman.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
+                player.playSound(player.getLocation(), Sound.STEP_SNOW, 1F, 1F);
+                player.sendMessage("Snowman pet Spawned!");
+                makePet(petSnowman, player.getUniqueId());
+                EntityAPI.addPlayerPetList(player.getUniqueId(), petSnowman);
                 player.closeInventory();
                 break;
             }

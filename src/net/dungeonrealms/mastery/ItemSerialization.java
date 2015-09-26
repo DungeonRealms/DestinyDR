@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * Created by Nick on 9/24/2015.
+ */
 public class ItemSerialization {
     /**
      * Serializes a list of items to a String

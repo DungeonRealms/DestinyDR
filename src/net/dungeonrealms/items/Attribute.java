@@ -1,5 +1,6 @@
 package net.dungeonrealms.items;
 
+import net.dungeonrealms.items.armor.Armor;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
@@ -30,6 +31,11 @@ public class Attribute {
     public Item.ItemModifier getItemModifier() {
         NBTTagCompound tag = nmsStack.getTag();
         return Item.ItemModifier.getById(tag.getInt("itemModifier"));
+    }
+
+    public Armor.EquipmentType getArmorType() {
+        NBTTagCompound tag = nmsStack.getTag();
+        return Armor.EquipmentType.getById(tag.getInt("equipmentType"));
     }
 
     public ItemStack getItem() {

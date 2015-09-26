@@ -11,6 +11,7 @@ import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -54,6 +55,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        Subscription.getInstance().handleJoin(event);
         if (WebAPI.ANNOUNCEMENTS != null && WebAPI.ANNOUNCEMENTS.size() > 0) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 for (Map.Entry<String, Integer> e : WebAPI.ANNOUNCEMENTS.entrySet()) {

@@ -29,7 +29,7 @@ public class Achievements {
         Object info = DatabaseAPI.PLAYERS.get(uuid).get("collectibles");
         ArrayList<String> TEMP_LIST = (ArrayList<String>) ((Document) info).get("achievements");
         if (TEMP_LIST == null) {
-            Utils.log.warning("Unable to process hasAchievemnt() method for " + uuid + " the list is NULL!?");
+            Utils.log.warning("Unable to process hasAchievement() method for " + uuid + " the list is NULL!?");
         }
         return TEMP_LIST.contains(achievement.getMongoName());
     }
