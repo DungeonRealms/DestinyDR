@@ -40,7 +40,7 @@ public class DungeonRealms extends JavaPlugin {
 
     public void onEnable() {
         long START_TIME = System.currentTimeMillis() / 1000L;
-        Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
+        Utils.log.info("DungeonRealms onEnable(=) ... STARTING UP");
         Database.getInstance().initConnection();
         DatabaseAPI.getInstance().startInitialization();
         PluginManager pm = Bukkit.getPluginManager();

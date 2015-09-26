@@ -54,8 +54,8 @@ public class Subscription {
      */
     public void checkSubscription(Player player) {
         long currentTime = System.currentTimeMillis() / 1000l;
-        int endTime = (int) DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId());
-        int time = (int) ((endTime - currentTime) / 1000l);
+        long endTime = (long) DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId());
+        long time = (long) ((endTime - currentTime) / 1000l);
         if (time == 0 && PLAYER_RANK.contains(player.getUniqueId())) {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "rank.rank", "DEFAULT");
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "rank.lastPurchase", 0);
@@ -76,7 +76,7 @@ public class Subscription {
             Player player = event.getPlayer();
             if (player == null) return;
             long currentTime = System.currentTimeMillis() / 1000l;
-            int endTime = (int) DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId());
+            long endTime = (Long) DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId());
             int hoursLeft = (int) ((endTime - currentTime) / 1000l);
             if (hoursLeft > 10) {
                 player.sendMessage(ChatColor.YELLOW + "Current Subscription Length " + ChatColor.AQUA.toString() + ChatColor.BOLD + hoursLeft + ChatColor.YELLOW + " hours.");
