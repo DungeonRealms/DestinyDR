@@ -92,7 +92,7 @@ public class Item {
         RARE(2, ChatColor.AQUA + "Rare" + ChatColor.RESET),
         UNIQUE(3, ChatColor.YELLOW + "Unique" + ChatColor.RESET),
         //not used, for the lols.
-        LEGENDARY(4, ChatColor.GOLD + "Legendary" + ChatColor.RESET),;
+        LEGENDARY(4, ChatColor.DARK_PURPLE + "Legendary" + ChatColor.RESET),;
 
         private int id;
         private String name;
