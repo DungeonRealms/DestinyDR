@@ -226,7 +226,7 @@ public class DamageListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onLivingEntityFireProjectile(ProjectileLaunchEvent event) {
         if (!(event.getEntity().getShooter() instanceof Player) && ((event.getEntityType() != EntityType.ARROW) && (event.getEntityType() != EntityType.WITHER_SKULL))) return;
         LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();

@@ -3,34 +3,21 @@
  */
 package net.dungeonrealms.banks;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
-import org.apache.commons.io.IOUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.ItemSerialization;
-import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.io.IOException;
+import java.util.*;
 
 /**
  * Created by Chase on Sep 18, 2015
@@ -49,16 +36,16 @@ public class BankMechanics {
 		if (storage.containsKey(uuid)) {
 			Inventory inv = storage.get(uuid).inv;
 			try {
-			String serializedInv = ItemSerialization.serialize(Arrays.asList(inv.getContents()));
-			storage.remove(uuid);
-			DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.storage", serializedInv);
-			// TODO Update MONGO with @serializedInv string.
+				String serializedInv = ItemSerialization.serialize(Arrays.asList(inv.getContents()));
+				storage.remove(uuid);
+				DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.storage", serializedInv);
+				// TODO Update MONGO with @serializedInv string.
 			} catch (IOException e) {
 			e.printStackTrace();
 			}
 		}
       try {
-			DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.player", ItemSerialization.serialize(Arrays.asList(Bukkit.getPlayer(uuid).getInventory().getContents())));
+		  DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.player", ItemSerialization.serialize(Arrays.asList(Bukkit.getPlayer(uuid).getInventory().getContents())));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -70,10 +57,7 @@ public class BankMechanics {
 		if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
 			try {
 				List<ItemStack> items = ItemSerialization.deserialize(playerInv);
-			for (int i = 0; i < items.size(); i++) {
-				if (items.get(i) != null && items.get(i).getType() != Material.AIR)
-					Bukkit.getPlayer(uuid).getInventory().addItem(items.get(i));
-			}
+				items.stream().filter(item -> item != null && item.getType() != Material.AIR).forEach(item -> Bukkit.getPlayer(uuid).getInventory().addItem(item));
 			} catch (IOException e) {
 			e.printStackTrace();
 			}
@@ -82,9 +66,9 @@ public class BankMechanics {
 		if (source != null && source.length() > 0) {
 			List<ItemStack> items;
 			try {
-			items = ItemSerialization.deserialize(source);
-			Storage storageTemp = new Storage(uuid, items);
-			storage.put(uuid, storageTemp);
+				items = ItemSerialization.deserialize(source);
+				Storage storageTemp = new Storage(uuid, items);
+				storage.put(uuid, storageTemp);
 			} catch (IOException e) {
 			e.printStackTrace();
 			}
@@ -126,7 +110,7 @@ public class BankMechanics {
 		banknote = CraftItemStack.asBukkitCopy(nms2);
 	}
 
-	public static ItemStack createBankNote(int ammount) {
+	public static ItemStack createBankNote(int amount) {
 		ItemStack item2 = new ItemStack(Material.PAPER, 1);
 		ItemMeta meta2 = item2.getItemMeta();
 		List<String> lore2 = new ArrayList<>();
@@ -137,13 +121,14 @@ public class BankMechanics {
 		net.minecraft.server.v1_8_R3.ItemStack nms2 = CraftItemStack.asNMSCopy(item2);
 		NBTTagCompound tag2 = nms2.getTag() == null ? new NBTTagCompound() : nms2.getTag();
 		tag2.setString("type", "money");
-		tag2.setInt("worth", ammount);
+		tag2.setInt("worth", amount);
 		nms2.setTag(tag2);
 		return CraftItemStack.asBukkitCopy(nms2);
 	}
 
 	/**
 	 * @param uuid
+	 * @param num
 	 */
 	public static void addGemsToPlayer(UUID uuid, int num) {
 		DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, "info.gems", num);

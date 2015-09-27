@@ -42,11 +42,11 @@ public class Item {
     }
 
     public enum ItemTier {
-        TIER_1(0, 1, new Integer[]{1, 10}, 3),
-        TIER_2(1, 2, new Integer[]{10, 20}, 4),
-        TIER_3(2, 3, new Integer[]{20, 30}, 6),
-        TIER_4(3, 4, new Integer[]{30, 40}, 8),
-        TIER_5(4, 5, new Integer[]{40, 50}, 13),;
+        TIER_1(0, 1, new Integer[]{1, 10}, 2),
+        TIER_2(1, 2, new Integer[]{10, 20}, 3),
+        TIER_3(2, 3, new Integer[]{20, 30}, 5),
+        TIER_4(3, 4, new Integer[]{30, 40}, 7),
+        TIER_5(4, 5, new Integer[]{40, 50}, 9),;
 
         private int id;
         private int tierId;
