@@ -40,7 +40,7 @@ public class DungeonRealms extends JavaPlugin {
 
     public void onEnable() {
         long START_TIME = System.currentTimeMillis() / 1000L;
-        Utils.log.info("DungeonRealms onEnable(=) ... STARTING UP");
+        Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
         Database.getInstance().initConnection();
         DatabaseAPI.getInstance().startInitialization();
         PluginManager pm = Bukkit.getPluginManager();
@@ -78,6 +78,7 @@ public class DungeonRealms extends JavaPlugin {
         getCommand("party").setExecutor(new CommandParty());
         getCommand("set").setExecutor(new CommandSet());
         getCommand("list").setExecutor(new CommandList());
+        getCommand("profile").setExecutor(new CommandProfile());
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         Utils.log.info("DungeonRealms Registering FTP() ... STARTING ...");
         FTPUtils.startInitialization();

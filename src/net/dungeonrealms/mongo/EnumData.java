@@ -18,6 +18,12 @@ public enum EnumData {
     RANK_EXISTENCE,
     PURCHASE_HISTORY,
 
+    INVENTORY_COLLECTION_BIN,
+    INVENTORY_MULE,
+    INVENTORY_STORAGE,
+    INVENTORY,
+
+
     /*
     Player Attributes
      */

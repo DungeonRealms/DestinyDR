@@ -6,24 +6,19 @@ website: http://www.dungeonrealms.net
 depend: [BountifulAPI, WorldGuard]
 description: The new dungeonrealms!
 commands:
+    profile:
+        description: Opens the players profile.
     spawn:
-        usage: /<command>
         description: Handles manual spawning.
     add:
-        usage: /<command>
         description: Handles manual spawning items.
     analyze:
-        usage: /<command>
         description: Handles analyzing items/mobs.
     lag:
-        usage: /<command>
         description: Shows server information.
     party:
-        usage: </command>
         description: The main party command.
     set:
-        usage: /<command>
         description: The main set command.
     list:
-        usage: /<command>
         description: Shows amount of players currently online.

@@ -97,6 +97,17 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("attributes.intellect", Integer.class);
             case VITALITY:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("attributes.vitality", Integer.class);
+            /*
+            Player Storage
+             */
+            case INVENTORY_COLLECTION_BIN:
+                return ((Document) PLAYERS.get(uuid).get("inventory")).get("collection_bin", String.class);
+            case INVENTORY_MULE:
+                return ((Document) PLAYERS.get(uuid).get("inventory")).get("mule", String.class);
+            case INVENTORY_STORAGE:
+                return ((Document) PLAYERS.get(uuid).get("inventory")).get("storage", String.class);
+            case INVENTORY:
+                return ((Document) PLAYERS.get(uuid).get("inventory")).get("player", String.class);
             default:
         }
         return null;
@@ -159,9 +170,12 @@ public class DatabaseAPI {
                         .append("rank",
                                 new Document("lastPurchase", 0l)
                                         .append("purchaseHistory", new ArrayList<String>())
-                                        .append("rank", "DEFAULT")
-
-
+                                        .append("rank", "DEFAULT"))
+                        .append("inventory",
+                                new Document("collection_bin", "")
+                                        .append("mule", "")
+                                        .append("storage", "")
+                                        .append("player", "")
                         );
         Database.collection.insertOne(newPlayerDocument, (aVoid, throwable) -> {
             REQUEST_NEW_DATA.add(uuid);

@@ -35,6 +35,7 @@ public class AntiProxy {
      * proxyifier detector to detect dem negro from 2 farm fields
      * away.
      *
+     * @param uuid
      * @param ip
      * @return
      * @since 1.0

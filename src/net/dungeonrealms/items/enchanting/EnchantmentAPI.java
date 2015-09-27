@@ -38,6 +38,7 @@ public class EnchantmentAPI {
     /**
      * Returns our custom enchantment, registers it
      * if it isn't already
+     *
      * @since 1.0
      */
     public static Enchantment getEnchantment() {
@@ -50,6 +51,7 @@ public class EnchantmentAPI {
     /**
      * Registers our custom enchantment to act as
      * a Bukkit enchantment
+     *
      * @since 1.0
      */
     public static void registerCustomEnchantment() {
@@ -72,6 +74,7 @@ public class EnchantmentAPI {
 
     /**
      * Adds our custom enchantment to the specified item
+     *
      * @param itemStack
      * @since 1.0
      */
@@ -81,6 +84,7 @@ public class EnchantmentAPI {
 
     /**
      * Checks the item to see if its a protection scroll
+     *
      * @param itemStack
      * @since 1.0
      */
@@ -95,6 +99,7 @@ public class EnchantmentAPI {
 
     /**
      * Checks the item to see if the scroll is for the correct item (weapon/armor)
+     *
      * @param scroll
      * @param itemToProtect
      * @since 1.0
@@ -108,6 +113,7 @@ public class EnchantmentAPI {
 
     /**
      * Checks the item to see if its a weapon
+     *
      * @param itemStack
      * @since 1.0
      */
@@ -118,6 +124,7 @@ public class EnchantmentAPI {
 
     /**
      * Checks the item to see if its armor
+     *
      * @param itemStack
      * @since 1.0
      */
@@ -128,6 +135,7 @@ public class EnchantmentAPI {
 
     /**
      * Checks the items to see if the tiers match
+     *
      * @param itemStack
      * @param toCompare
      * @since 1.0
@@ -139,6 +147,7 @@ public class EnchantmentAPI {
 
     /**
      * Checks the item to see if its already protected
+     *
      * @param itemStack
      * @since 1.0
      */
@@ -150,6 +159,7 @@ public class EnchantmentAPI {
 
     /**
      * Removes the items protection
+     *
      * @param itemStack
      * @since 1.0
      */
@@ -172,6 +182,7 @@ public class EnchantmentAPI {
 
     /**
      * Adds protection to the item
+     *
      * @param itemStack
      * @since 1.0
      */
@@ -195,6 +206,7 @@ public class EnchantmentAPI {
     /**
      * Checks the item to see how many enchant levels
      * it currently has
+     *
      * @param itemStack
      * @since 1.0
      */

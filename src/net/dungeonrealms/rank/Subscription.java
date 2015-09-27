@@ -40,6 +40,10 @@ public class Subscription {
     void startTimer() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for (UUID uuid : PLAYER_RANK) {
+                if (Bukkit.getPlayer(uuid) == null) {
+                    PLAYER_RANK.remove(uuid);
+                    return;
+                }
                 checkSubscription(Bukkit.getPlayer(uuid));
             }
         }, 20 * 3, 20 * 15l);
