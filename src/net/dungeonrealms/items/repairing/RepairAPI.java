@@ -118,17 +118,17 @@ public class RepairAPI {
         return tag != null && tag.getString("type").equalsIgnoreCase("scrap");
     }
 
-    public static void setCustomItemDurability(ItemStack itemStack, int durability) {
+    public static void setCustomItemDurability(ItemStack itemStack, double durability) {
         try {
             Repairable repairable = (Repairable) itemStack.getItemMeta();
-            repairable.setRepairCost(durability);
+            repairable.setRepairCost((int) durability);
             itemStack.setItemMeta((ItemMeta) repairable);
 
             if (EnchantmentAPI.getItemEnchantmentLevel(itemStack) >= 4) {
                 EnchantmentAPI.addCustomEnchantToItem(itemStack);
             }
 
-            setPercentageDurabilityBar(itemStack, durability);
+            //setPercentageDurabilityBar(itemStack, durability);
         } catch (Exception e) {
             e.printStackTrace();
         }

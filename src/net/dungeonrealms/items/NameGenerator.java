@@ -68,7 +68,6 @@ public class NameGenerator {
      */
     private List<String> middle = Arrays.asList(
             "Of",
-            "The",
             "Of The"
     );
 

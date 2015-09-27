@@ -6,6 +6,8 @@ import net.dungeonrealms.commands.*;
 import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.PetUtils;
+import net.dungeonrealms.items.DRBow;
+import net.dungeonrealms.items.ItemRegistry;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
 import net.dungeonrealms.listeners.*;
 import net.dungeonrealms.mastery.FTPUtils;
@@ -17,6 +19,7 @@ import net.dungeonrealms.party.PartyMechanics;
 import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
+import net.minecraft.server.v1_8_R3.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginManager;
@@ -83,6 +86,10 @@ public class DungeonRealms extends JavaPlugin {
         Utils.log.info("DungeonRealms Registering FTP() ... STARTING ...");
         FTPUtils.startInitialization();
         Utils.log.info("DungeonRealms Finished Registering FTP() ... FINISHED!");
+
+        Item itemBow = new DRBow();
+        ItemRegistry itemRegistry = new ItemRegistry();
+        itemRegistry.register("minecraft:bow", itemBow);
 
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "s/");
 

@@ -240,6 +240,7 @@ public class DamageListener implements Listener {
         if (!(shooter instanceof Player)) return;
         int weaponTier = new Attribute(entityEquipment.getItemInHand()).getItemTier().getId();
         Player player = (Player) shooter;
+        player.updateInventory();
         if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player.getUniqueId()) <= 0) {
             event.setCancelled(true);
             event.getEntity().remove();

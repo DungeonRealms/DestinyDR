@@ -1,10 +1,7 @@
 package net.dungeonrealms.items;
 
 import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.NBTTagInt;
-import net.minecraft.server.v1_8_R3.NBTTagList;
-import net.minecraft.server.v1_8_R3.NBTTagString;
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -238,7 +235,8 @@ public class ItemGenerator {
                         return new ItemStack(Material.GOLD_HOE);
                 }
             case BOW:
-                return new ItemStack(Material.BOW);
+                net.minecraft.server.v1_8_R3.ItemStack test = new net.minecraft.server.v1_8_R3.ItemStack(Items.BOW);
+                return (CraftItemStack.asBukkitCopy(test));
             default:
                 Utils.log.warning("ItemGenerator couldn't find getBaseItem().. " + type.getName());
         }
