@@ -68,6 +68,10 @@ public class DamageMeta {
                                 return random(1, 4);
                             case VS_PLAYER:
                                 return random(1, 3);
+                            case STRENGTH:
+                                return random(1, 3);
+                            case INTELLECT:
+                                return random(1, 6);
                         }
                     case UNCOMMON:
                         switch (type) {
@@ -96,11 +100,15 @@ public class DamageMeta {
                             case PURE_DAMAGE:
                                 return random(2, 5);
                             case VITALITY:
-                                return random(1, 9);
+                                return random(1, 3);
                             case VS_MONSTERS:
                                 return random(1, 7);
                             case VS_PLAYER:
                                 return random(1, 8);
+                            case STRENGTH:
+                                return random(1, 3);
+                            case INTELLECT:
+                                return random(1, 3);
                         }
                     case RARE:
                         switch (type) {
@@ -134,6 +142,10 @@ public class DamageMeta {
                                 return random(2, 12);
                             case VS_PLAYER:
                                 return random(2, 3);
+                            case STRENGTH:
+                                return random(2, 6);
+                            case INTELLECT:
+                                return random(2, 6);
                         }
                     case UNIQUE:
                         switch (type) {
@@ -167,6 +179,10 @@ public class DamageMeta {
                                 return random(5, 14);
                             case VS_PLAYER:
                                 return random(5, 8);
+                            case STRENGTH:
+                                return random(3, 7);
+                            case INTELLECT:
+                                return random(3, 7);
                         }
                     case LEGENDARY:
                         switch (type) {
@@ -200,6 +216,10 @@ public class DamageMeta {
                                 return random(5, 21);
                             case VS_PLAYER:
                                 return random(5, 26);
+                            case STRENGTH:
+                                return random(4, 10);
+                            case INTELLECT:
+                                return random(4, 10);
                         }
                 }
                 break;
@@ -237,6 +257,10 @@ public class DamageMeta {
                                 return random(8, 12);
                             case VS_PLAYER:
                                 return random(4, 9);
+                            case STRENGTH:
+                                return random(7, 10);
+                            case INTELLECT:
+                                return random(7, 10);
                         }
                     case UNCOMMON:
                         switch (type) {
@@ -270,6 +294,10 @@ public class DamageMeta {
                                 return random(10, 18);
                             case VS_PLAYER:
                                 return random(5, 10);
+                            case STRENGTH:
+                                return random(7, 10);
+                            case INTELLECT:
+                                return random(7, 10);
                         }
                     case RARE:
                         switch (type) {
@@ -303,6 +331,10 @@ public class DamageMeta {
                                 return random(15, 22);
                             case VS_PLAYER:
                                 return random(6, 10);
+                            case STRENGTH:
+                                return random(7, 13);
+                            case INTELLECT:
+                                return random(7, 13);
                         }
                     case UNIQUE:
                         switch (type) {
@@ -336,6 +368,10 @@ public class DamageMeta {
                                 return random(18, 22);
                             case VS_PLAYER:
                                 return random(8, 10);
+                            case STRENGTH:
+                                return random(9, 13);
+                            case INTELLECT:
+                                return random(9, 13);
                         }
                     case LEGENDARY:
                         switch (type) {
@@ -369,6 +405,10 @@ public class DamageMeta {
                                 return random(18, 25);
                             case VS_PLAYER:
                                 return random(8, 13);
+                            case STRENGTH:
+                                return random(10, 13);
+                            case INTELLECT:
+                                return random(10, 13);
                         }
                 }
                 break;
@@ -406,6 +446,10 @@ public class DamageMeta {
                                 return random(18, 27);
                             case VS_PLAYER:
                                 return random(15, 25);
+                            case STRENGTH:
+                                return random(14, 18);
+                            case INTELLECT:
+                                return random(14, 18);
                         }
                     case UNCOMMON:
                         switch (type) {
@@ -439,6 +483,10 @@ public class DamageMeta {
                                 return random(25, 27);
                             case VS_PLAYER:
                                 return random(25, 30);
+                            case STRENGTH:
+                                return random(15, 19);
+                            case INTELLECT:
+                                return random(15, 19);
                         }
                     case RARE:
                         switch (type) {
@@ -472,6 +520,10 @@ public class DamageMeta {
                                 return random(25, 30);
                             case VS_PLAYER:
                                 return random(25, 30);
+                            case STRENGTH:
+                                return random(15, 20);
+                            case INTELLECT:
+                                return random(15, 20);
                         }
                     case UNIQUE:
                         switch (type) {
@@ -505,6 +557,10 @@ public class DamageMeta {
                                 return random(25, 30);
                             case VS_PLAYER:
                                 return random(25, 30);
+                            case STRENGTH:
+                                return random(15, 23);
+                            case INTELLECT:
+                                return random(15, 23);
                         }
                     case LEGENDARY:
                         switch (type) {
@@ -538,6 +594,10 @@ public class DamageMeta {
                                 return random(25, 32);
                             case VS_PLAYER:
                                 return random(25, 32);
+                            case STRENGTH:
+                                return random(15, 25);
+                            case INTELLECT:
+                                return random(15, 25);
                         }
                 }
                 break;
@@ -575,6 +635,10 @@ public class DamageMeta {
                                 return random(27, 32);
                             case VS_PLAYER:
                                 return random(27, 32);
+                            case STRENGTH:
+                                return random(17, 25);
+                            case INTELLECT:
+                                return random(17, 25);
                         }
                     case UNCOMMON:
                         switch (type) {
@@ -608,6 +672,10 @@ public class DamageMeta {
                                 return random(27, 32);
                             case VS_PLAYER:
                                 return random(27, 32);
+                            case STRENGTH:
+                                return random(19, 25);
+                            case INTELLECT:
+                                return random(19, 25);
                         }
                     case RARE:
                         switch (type) {
@@ -641,6 +709,10 @@ public class DamageMeta {
                                 return random(27, 34);
                             case VS_PLAYER:
                                 return random(27, 32);
+                            case STRENGTH:
+                                return random(21, 25);
+                            case INTELLECT:
+                                return random(21, 25);
                         }
                     case UNIQUE:
                         switch (type) {
@@ -674,6 +746,10 @@ public class DamageMeta {
                                 return random(30, 34);
                             case VS_PLAYER:
                                 return random(30, 34);
+                            case STRENGTH:
+                                return random(24, 27);
+                            case INTELLECT:
+                                return random(24, 27);
                         }
                     case LEGENDARY:
                         switch (type) {
@@ -707,6 +783,10 @@ public class DamageMeta {
                                 return random(30, 35);
                             case VS_PLAYER:
                                 return random(30, 35);
+                            case STRENGTH:
+                                return random(24, 28);
+                            case INTELLECT:
+                                return random(24, 28);
                         }
                 }
                 break;
@@ -744,6 +824,10 @@ public class DamageMeta {
                                 return random(30, 37);
                             case VS_PLAYER:
                                 return random(30, 37);
+                            case STRENGTH:
+                                return random(25, 28);
+                            case INTELLECT:
+                                return random(25, 28);
                         }
                     case UNCOMMON:
                         switch (type) {
@@ -777,6 +861,10 @@ public class DamageMeta {
                                 return random(31, 37);
                             case VS_PLAYER:
                                 return random(31, 37);
+                            case STRENGTH:
+                                return random(25, 30);
+                            case INTELLECT:
+                                return random(25, 30);
                         }
                     case RARE:
                         switch (type) {
@@ -810,6 +898,10 @@ public class DamageMeta {
                                 return random(31, 37);
                             case VS_PLAYER:
                                 return random(31, 37);
+                            case STRENGTH:
+                                return random(25, 31);
+                            case INTELLECT:
+                                return random(25, 31);
                         }
                     case UNIQUE:
                         switch (type) {
@@ -843,6 +935,10 @@ public class DamageMeta {
                                 return random(31, 42);
                             case VS_PLAYER:
                                 return random(31, 42);
+                            case STRENGTH:
+                                return random(25, 31);
+                            case INTELLECT:
+                                return random(25, 31);
                         }
                     case LEGENDARY:
                         switch (type) {
@@ -876,6 +972,10 @@ public class DamageMeta {
                                 return random(34, 44);
                             case VS_PLAYER:
                                 return random(34, 44);
+                            case STRENGTH:
+                                return random(27, 31);
+                            case INTELLECT:
+                                return random(27, 31);
                         }
                 }
                 break;

@@ -91,7 +91,16 @@ public class NameGenerator {
             "Cerberus",
             "Ch`i Lin",
             "Cyclops",
-            "Dwarf"
+            "Dwarf",
+            "Camelot",
+            "Hood",
+            "Robin",
+            "Alba",
+            "Aang",
+            "Katara",
+            "Darkness",
+            "Light",
+            "Balance"
     );
 
 }
