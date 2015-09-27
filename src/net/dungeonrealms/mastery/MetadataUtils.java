@@ -88,6 +88,6 @@ public class MetadataUtils {
         projectile.setMetadata("vitality", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("vitality")));
         projectile.setMetadata("accuracy", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("accuracy")));
         projectile.setMetadata("dexterity", new FixedMetadataValue(DungeonRealms.getInstance(), tag.getInt("dexterity")));
-        projectile.setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), weaponTier));
+        projectile.setMetadata("itemTier", new FixedMetadataValue(DungeonRealms.getInstance(), weaponTier));
     }
 }
