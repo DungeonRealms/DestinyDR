@@ -25,7 +25,6 @@ import java.util.UUID;
  */
 public class ShopMechanics {
 	public static HashMap<UUID, Shop> shops = new HashMap<>();
-	public static HashMap<Player, Integer> playersWithBows = new HashMap<>();
 
 	/**
 	 * setup new shop for player
