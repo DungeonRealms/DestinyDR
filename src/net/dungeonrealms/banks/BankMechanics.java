@@ -4,7 +4,6 @@
 package net.dungeonrealms.banks;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -26,7 +25,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -50,92 +51,47 @@ public class BankMechanics {
 			try {
 			String serializedInv = ItemSerialization.serialize(Arrays.asList(inv.getContents()));
 			storage.remove(uuid);
-
-			Player player = Bukkit.getPlayer(uuid);
-			if (player.getItemInHand() != null) {
-				List<ItemStack> items = Arrays.asList(inv.getContents());
-
-				InputStream inputStream = null;
-				OutputStream outputStream = null;
-
-				try {
-					File file = new File(
-						DungeonRealms.getInstance().getDataFolder() + "/" + player.getName().toLowerCase() + ".json");
-					if(file.exists())
-						file.delete();
-					file.createNewFile();
-					String text = ItemSerialization.serialize(items);
-					inputStream = IOUtils.toInputStream(text, "UTF-8");
-					// read this file into InputStream
-					outputStream = new FileOutputStream(file);
-
-					int read = 0;
-					byte[] bytes = new byte[1024];
-
-					while ((read = inputStream.read(bytes)) != -1) {
-						outputStream.write(bytes, 0, read);
-					}
-
-					System.out.println("Done!");
-
-				} catch (IOException e) {
-					e.printStackTrace();
-				} finally {
-					player.setItemInHand(null);
-					if (inputStream != null) {
-						try {
-						inputStream.close();
-						} catch (IOException e) {
-						e.printStackTrace();
-						}
-					}
-					if (outputStream != null) {
-						try {
-						// outputStream.flush();
-						outputStream.close();
-						} catch (IOException e) {
-						e.printStackTrace();
-						}
-
-					}
-				}
-
-			}
-
+			DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.storage", serializedInv);
 			// TODO Update MONGO with @serializedInv string.
 			} catch (IOException e) {
 			e.printStackTrace();
 			}
 		}
+      try {
+			DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.player", ItemSerialization.serialize(Arrays.asList(Bukkit.getPlayer(uuid).getInventory().getContents())));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static void handleLogin(UUID uuid) {
-
-		// TODO SETUP MONGO
-		// String serializedInv = "get from mongo";
-
-		Player player = Bukkit.getPlayer(uuid);
-		File file = new File(
-			DungeonRealms.getInstance().getDataFolder() + "/" + player.getName().toLowerCase() + ".json");
-		if (file.exists()){
+		Bukkit.broadcastMessage("player logged in");
+		String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
+		if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
 			try {
-			InputStream inputStream = new FileInputStream(file);
-			String source = IOUtils.toString(inputStream, "UTF-8");
-			List<ItemStack> items = ItemSerialization.deserialize(source);
-//			items.stream().filter(item -> item != null).forEach(item -> player.getInventory().addItem(item));
-			
+				List<ItemStack> items = ItemSerialization.deserialize(playerInv);
+			for (int i = 0; i < items.size(); i++) {
+				if (items.get(i) != null && items.get(i).getType() != Material.AIR)
+					Bukkit.getPlayer(uuid).getInventory().addItem(items.get(i));
+			}
+			} catch (IOException e) {
+			e.printStackTrace();
+			}
+		}
+		String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
+		if (source != null && source.length() > 0) {
+			List<ItemStack> items;
+			try {
+			items = ItemSerialization.deserialize(source);
 			Storage storageTemp = new Storage(uuid, items);
 			storage.put(uuid, storageTemp);
 			} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 			}
 		}else{
 			Storage storageTemp = new Storage(uuid);
 			storage.put(uuid, storageTemp);
 		}
-		// List<ItemStack> contents =
-		// ItemSerialization.deserialize(serializedInv);
 	}
 
 	/**
