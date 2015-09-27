@@ -1,6 +1,7 @@
 package net.dungeonrealms.items;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Material;
@@ -65,7 +66,8 @@ public class DamageAPI {
         }
         ItemStack ourItem = entityEquipment.getItemInHand();
         int weaponTier = new Attribute(ourItem).getItemTier().getId();
-        damage += tag.getDouble("damage");
+        int damageRandomizer = ItemGenerator.getRandomDamageVariable(weaponTier);
+        damage = (double) Utils.randInt((int) Math.round(tag.getDouble("damage") - (tag.getDouble("damage") / damageRandomizer)), (int) Math.round(tag.getDouble("damage") + (tag.getDouble("damage") / (damageRandomizer - 1))));
         boolean isHitCrit = false;
         if (receiver instanceof Player) {
             if (tag.getInt("vsPlayers") != 0) {
@@ -262,7 +264,7 @@ public class DamageAPI {
         if (isHitCrit) {
             damage = damage * 1.5;
         }
-        return damage;
+        return Math.round(damage);
     }
 
     /**
@@ -306,7 +308,9 @@ public class DamageAPI {
                 }
             }
         }
-        damage += projectile.getMetadata("damage").get(0).asDouble();
+        int damageRandomizer = ItemGenerator.getRandomDamageVariable(projectile.getMetadata("itemTier").get(0).asInt());
+        damage = (double) Utils.randInt(((int) Math.round(projectile.getMetadata("damage").get(0).asDouble() - projectile.getMetadata("damage").get(0).asDouble() / damageRandomizer)),
+                (int) Math.round(projectile.getMetadata("damage").get(0).asDouble() + projectile.getMetadata("damage").get(0).asDouble() / (damageRandomizer - 1)));
         boolean isHitCrit = false;
         if (receiver instanceof Player) {
             if (projectile.getMetadata("vsPlayers").get(0).asInt() != 0) {
@@ -348,7 +352,7 @@ public class DamageAPI {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            switch (projectile.getMetadata("tier").get(0).asInt()) {
+            switch (projectile.getMetadata("itemTier").get(0).asInt()) {
                 case 0:
                     leReceiver.setFireTicks(15);
                     break;
@@ -375,7 +379,7 @@ public class DamageAPI {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            switch (projectile.getMetadata("tier").get(0).asInt()) {
+            switch (projectile.getMetadata("itemTier").get(0).asInt()) {
                 case 0:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 0));
                     break;
@@ -402,7 +406,7 @@ public class DamageAPI {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            switch (projectile.getMetadata("tier").get(0).asInt()) {
+            switch (projectile.getMetadata("itemTier").get(0).asInt()) {
                 case 0:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
                     break;
@@ -458,7 +462,7 @@ public class DamageAPI {
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-                    switch (projectile.getMetadata("tier").get(0).asInt()) {
+                    switch (projectile.getMetadata("itemTier").get(0).asInt()) {
                         case 0:
                             leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 30, 1));
                             break;
@@ -503,7 +507,7 @@ public class DamageAPI {
         if (isHitCrit) {
             damage = damage * 1.5;
         }
-        return damage;
+        return Math.round(damage);
     }
 
     /**
@@ -615,7 +619,7 @@ public class DamageAPI {
         } else {
             totalArmorReduction = damageToBlock[0] + damageToBlock[1] + damageToBlock[2] + damageToBlock[3];
         }
-        return totalArmorReduction;
+        return Math.round(totalArmorReduction);
     }
 
     public static int calculatePlayerLuck(Player player) {
@@ -655,6 +659,6 @@ public class DamageAPI {
         }
         totalLuck = playerLuck[0] + playerLuck[1] + playerLuck[2] + playerLuck[3];
 
-        return totalLuck;
+        return Math.round(totalLuck);
     }
 }

@@ -24,7 +24,7 @@ public class RepairAPI {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return 0 ;
-        if (tag.getInt("tier") == 0) return 0; //Broken tier item.
+        if (tag.getInt("itemTier") == 0) return 0; //Broken tier item.
         if (tag.getString("type").equalsIgnoreCase("weapon")) {
             double damagePercentCost = tag.getInt("damage") * 0.1;
             double weaponDurabilityLeft = getItemDurabilityValue(itemStack);
@@ -32,7 +32,7 @@ public class RepairAPI {
                 weaponDurabilityLeft = 99;
             }
             totalRepairCost = ((100 - weaponDurabilityLeft) * damagePercentCost);
-            switch (tag.getInt("tier")) {
+            switch (tag.getInt("itemTier")) {
                 case 1:
                     totalRepairCost *= 1.05;
                     break;
@@ -61,7 +61,7 @@ public class RepairAPI {
                 armorDurabilityLeft = 99;
             }
             totalRepairCost = ((100 - armorDurabilityLeft) * armorPercentCost);
-            switch (tag.getInt("tier")) {
+            switch (tag.getInt("itemTier")) {
                 case 1:
                     totalRepairCost *= 1.05;
                     break;
@@ -95,7 +95,7 @@ public class RepairAPI {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return 0 ;
-        if (tag.getInt("tier") == 0) return 0; //Broken tier item.
+        if (tag.getInt("itemTier") == 0) return 0; //Broken tier item.
         double percentDurability = ((itemStack.getType().getMaxDurability() - itemStack.getDurability()) / itemStack.getType().getMaxDurability()); //Weird DR formula?
         if (tag.getString("type").equalsIgnoreCase("weapon")) {
             return Math.round(percentDurability * (1450 / 15));
@@ -138,7 +138,7 @@ public class RepairAPI {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return;
-        if (tag.getInt("tier") == 0) return; //Broken tier item.
+        if (tag.getInt("itemTier") == 0) return; //Broken tier item.
         double newDurability = getItemDurabilityValue(itemStack);
         if (newDurability < 1 && percent < 99) {
             newDurability = 1;
@@ -150,7 +150,7 @@ public class RepairAPI {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return;
-        if (tag.getInt("tier") == 0) return; //Broken tier item.
+        if (tag.getInt("itemTier") == 0) return; //Broken tier item.
         double newItemDurability = (getItemDurabilityValue(itemStack) - amountToSubtract);
         switch (tag.getString("type")) {
             case "weapon":
