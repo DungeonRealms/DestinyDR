@@ -64,7 +64,7 @@ public class Shop {
 	 */
 	private Inventory createNewInv() {
 		Inventory inv = Bukkit.createInventory(null, getSize(owner),
-			shopName + " - z" + Bukkit.getPlayer(owner).getName());
+			shopName + " - @" + Bukkit.getPlayer(owner).getName());
 		ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.GRAY.getDyeData());
 		ItemMeta meta = button.getItemMeta();
 		meta.setDisplayName(ChatColor.YELLOW.toString() + "Open Shop");
