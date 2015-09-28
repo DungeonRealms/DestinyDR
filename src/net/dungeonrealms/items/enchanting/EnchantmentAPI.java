@@ -66,7 +66,6 @@ public class EnchantmentAPI {
         try {
             EnchantmentWrapper.registerEnchantment(fakeEnchant);
         } catch (IllegalArgumentException iaex) {
-            iaex.printStackTrace();
             Utils.log.info("Could not register our custom enchant. Uh oh.");
         }
         enchantment = fakeEnchant;
