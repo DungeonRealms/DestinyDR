@@ -24,6 +24,7 @@ public class Database {
     public static MongoClient mongoClient = null;
     private static MongoDatabase database = null;
     public static MongoCollection<Document> collection = null;
+    public static MongoCollection<Document> ranks = null;
 
     public void initConnection() {
         Utils.log.info("DungeonRealms Starting [MONGODB] Connection...");
@@ -31,6 +32,7 @@ public class Database {
         mongoClient = MongoClients.create("mongodb://druser:drpass@ds051970.mongolab.com:51970/dungeonrealms");
         database = mongoClient.getDatabase("dungeonrealms");
         collection = database.getCollection("player_data");
+        ranks = database.getCollection("ranks");
         Utils.log.info("DungeonRealms [MONGODB] has connected successfully!");
     }
 

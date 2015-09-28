@@ -67,7 +67,7 @@ public class ItemGenerator {
             attributeTypeIntegerHashMap.put(aType, i);
             if (aType == Item.AttributeType.DAMAGE) {
                 int damageRandomizer = getRandomDamageVariable(tier.getTierId());
-                itemLore.add(ChatColor.GREEN + "+ " + ChatColor.RED + Math.round((i-(i/damageRandomizer))) + ChatColor.WHITE + " - " + ChatColor.RED + Math.round((i+(i/(damageRandomizer - 1)))) + ChatColor.WHITE + " " + aType.getName());
+                itemLore.add(ChatColor.GREEN + "+ " + ChatColor.RED + Math.round((i - (i / damageRandomizer))) + ChatColor.WHITE + " - " + ChatColor.RED + Math.round((i + (i / (damageRandomizer - 1)))) + ChatColor.WHITE + " " + aType.getName());
             } else {
                 itemLore.add(ChatColor.GREEN + "+ " + ChatColor.WHITE + i + " " + aType.getName());
             }

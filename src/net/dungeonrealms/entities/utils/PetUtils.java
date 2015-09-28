@@ -23,6 +23,7 @@ import java.util.UUID;
 public class PetUtils {
 
     private static PetUtils instance = null;
+
     public static PetUtils getInstance() {
         if (instance == null) {
             return new PetUtils();
@@ -33,6 +34,7 @@ public class PetUtils {
     private static Field gsa;
     private static Field goalSelector;
     private static Field targetSelector;
+
     static {
         try {
             gsa = PathfinderGoalSelector.class.getDeclaredField("b");
@@ -84,6 +86,7 @@ public class PetUtils {
         private EntityInsentient entity;
         private PathEntity path;
         private UUID p;
+
         public PathfinderGoalWalktoTile(EntityInsentient entitycreature, UUID p) {
             this.entity = entitycreature;
             this.p = p;
@@ -117,9 +120,9 @@ public class PetUtils {
             //TODO: Add check for Achievements to see if Player has pet and can use it.
             case 0: {
                 CaveSpider petCaveSpider = new CaveSpider(world, "Pet Cave Spider", player.getUniqueId(), EnumEntityType.PET);
-                petCaveSpider.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0 , 0);
+                petCaveSpider.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petCaveSpider, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                petCaveSpider.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0 , 0);
+                petCaveSpider.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 player.playSound(player.getLocation(), Sound.SPIDER_IDLE, 1F, 1F);
                 player.sendMessage("Cave Spider Pet Spawned!");
                 makePet(petCaveSpider, player.getUniqueId());
@@ -128,10 +131,10 @@ public class PetUtils {
                 break;
             }
             case 1: {
-                BabyZombie petBabyZombie  = new BabyZombie(world, "Pet Baby Zombie", player.getUniqueId(), EnumEntityType.PET);
-                petBabyZombie.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0 , 0);
+                BabyZombie petBabyZombie = new BabyZombie(world, "Pet Baby Zombie", player.getUniqueId(), EnumEntityType.PET);
+                petBabyZombie.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petBabyZombie, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                petBabyZombie.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0 , 0);
+                petBabyZombie.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 player.playSound(player.getLocation(), Sound.ZOMBIE_IDLE, 1F, 1F);
                 player.sendMessage("Zombie pet Spawned!");
                 makePet(petBabyZombie, player.getUniqueId());
@@ -141,9 +144,9 @@ public class PetUtils {
             }
             case 2: {
                 BabyZombiePig petBabyZombiePig = new BabyZombiePig(world, "Pet Baby PigZombie", player.getUniqueId(), EnumEntityType.PET);
-                petBabyZombiePig.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0 , 0);
+                petBabyZombiePig.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petBabyZombiePig, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                petBabyZombiePig.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0 , 0);
+                petBabyZombiePig.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 petBabyZombiePig.setBaby(true);
                 petBabyZombiePig.angerLevel = 0;
                 player.playSound(player.getLocation(), Sound.ZOMBIE_PIG_IDLE, 1F, 1F);
@@ -155,9 +158,9 @@ public class PetUtils {
             }
             case 3: {
                 Wolf petWolf = new Wolf(world, "Pet Wolf", player.getUniqueId(), EnumEntityType.PET);
-                petWolf.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0 , 0);
+                petWolf.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petWolf, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                petWolf.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0 , 0);
+                petWolf.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 petWolf.setAngry(false);
                 petWolf.setTamed(true);
                 petWolf.ageLocked = true;
@@ -171,9 +174,9 @@ public class PetUtils {
             }
             case 4: {
                 Chicken petChicken = new Chicken(world, "Pet Chicken", player.getUniqueId(), EnumEntityType.PET);
-                petChicken.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0 , 0);
+                petChicken.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petChicken, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                petChicken.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0 , 0);
+                petChicken.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 petChicken.setAge(0);
                 petChicken.ageLocked = true;
                 player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1F, 1F);
@@ -185,9 +188,9 @@ public class PetUtils {
             }
             case 5: {
                 Ocelot petOcelot = new Ocelot(world, "Pet Ocelot", player.getUniqueId(), EnumEntityType.PET);
-                petOcelot.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0 , 0);
+                petOcelot.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petOcelot, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                petOcelot.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0 , 0);
+                petOcelot.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 petOcelot.setAge(0);
                 petOcelot.ageLocked = true;
                 petOcelot.setTamed(true);

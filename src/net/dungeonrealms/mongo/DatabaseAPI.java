@@ -77,6 +77,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("hearthstone", Location.class);
             case ECASH:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("ecash", Integer.class);
+            case FRIENDS:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("friends", ArrayList.class);
             /*
             Rank Things. Different Sub-Document().
              */
@@ -163,6 +165,7 @@ public class DatabaseAPI {
                                 .append("experience", 0f)
                                 .append("hearthstone", "starter")
                                 .append("isPlaying", true)
+                                .append("friends", new ArrayList<>())
                                 .append("attributes",
                                         new Document("strength", 1).append("dexterity", 1).append("intellect", 1).append("vitality", 1))
                                 .append("collectibles",

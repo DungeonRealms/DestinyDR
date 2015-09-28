@@ -13,6 +13,7 @@ public enum EnumData {
     GEMS,
     HEARTHSTONE,
     ECASH,
+    FRIENDS,
 
     RANK,
     RANK_EXISTENCE,

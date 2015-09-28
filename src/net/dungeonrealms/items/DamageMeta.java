@@ -16,7 +16,7 @@ public class DamageMeta {
                     case COMMON:
                         switch (type) {
                             case ARMOR:
-                                return random(1,6);
+                                return random(1, 6);
                         }
                         break;
                 }
@@ -25,7 +25,6 @@ public class DamageMeta {
     }
 
     /**
-     *
      * @param tier
      * @param modifier
      * @param type

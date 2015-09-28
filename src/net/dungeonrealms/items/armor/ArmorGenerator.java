@@ -1,7 +1,6 @@
 package net.dungeonrealms.items.armor;
 
 import net.dungeonrealms.items.DamageMeta;
-import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.NameGenerator;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagInt;
@@ -138,7 +137,7 @@ public class ArmorGenerator {
         ArrayList<Armor.ArmorAttributeType> attributeList = new ArrayList<>();
         //We always want to add Damage to the Item. Since AttributeModifiers are removed. Completely.
         for (int i = 0; i < amountOfAttributes; i++) {
-            int random = new Random().nextInt(Item.AttributeType.values().length);
+            int random = new Random().nextInt(Armor.ArmorAttributeType.values().length);
             if (!attributeList.contains(Armor.ArmorAttributeType.getById(random))) {
                 attributeList.add(Armor.ArmorAttributeType.getById(random));
             } else {

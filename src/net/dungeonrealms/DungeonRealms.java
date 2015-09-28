@@ -21,7 +21,6 @@ import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.Item;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -82,6 +81,7 @@ public class DungeonRealms extends JavaPlugin {
         getCommand("set").setExecutor(new CommandSet());
         getCommand("list").setExecutor(new CommandList());
         getCommand("profile").setExecutor(new CommandProfile());
+        getCommand("rank").setExecutor(new CommandRank());
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         Utils.log.info("DungeonRealms Registering FTP() ... STARTING ...");
         FTPUtils.startInitialization();
@@ -91,17 +91,12 @@ public class DungeonRealms extends JavaPlugin {
         ItemRegistry itemRegistry = new ItemRegistry();
         itemRegistry.register("minecraft:bow", itemBow);
 
-        Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "s/");
-
-        if (Bukkit.getOnlinePlayers().size() > 0) {
-            Bukkit.broadcastMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "A reload has been invoked.");
-        }
+        Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
 
     }
 
     public void onDisable() {
-   	 ShopMechanics.deleteAllShops();
-   	 Bukkit.getWorlds().get(0).save();
+        ShopMechanics.deleteAllShops();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
         Database.mongoClient.close();
     }

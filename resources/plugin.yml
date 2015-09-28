@@ -6,6 +6,8 @@ website: http://www.dungeonrealms.net
 depend: [BountifulAPI, WorldGuard]
 description: The new dungeonrealms!
 commands:
+    rank:
+        description: Ranks and things for admins.
     profile:
         description: Opens the players profile.
     spawn:
