@@ -22,7 +22,7 @@ public class DRBow extends ItemBow {
     @Override
     public void a(ItemStack itemstack, World world, EntityHuman entityhuman, int i) {
         boolean flag = true;
-        if(flag || entityhuman.inventory.b(Items.ARROW)) {
+        if(flag) {
             int j = this.d(itemstack) - i;
             float f = (float)j / 20.0F;
             f = (f * f + f * 2.0F) / 3.0F;

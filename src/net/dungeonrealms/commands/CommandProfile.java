@@ -33,8 +33,8 @@ public class CommandProfile implements CommandExecutor {
                 .setOption(0, new ItemStack(Material.EXP_BOTTLE), ChatColor.GREEN + "Attributes", new String[]{
                         ChatColor.DARK_GRAY + "Player Attributes",
                         "",
-                        ChatColor.GRAY + "As you play throughout our RPG, your",
-                        ChatColor.GRAY + "player will acquire attribute points.",
+                        ChatColor.GRAY + "As you play throughout Dungeon Realms,",
+                        ChatColor.GRAY + "your player will acquire attribute points.",
                         ChatColor.GRAY + "With Attribute points you can improve",
                         ChatColor.GRAY + "several of many individual character",
                         ChatColor.GRAY + "skills!",
@@ -46,8 +46,8 @@ public class CommandProfile implements CommandExecutor {
                         "",
                         ChatColor.GRAY + "Want a friendly companion",
                         ChatColor.GRAY + "to bring along on your",
-                        ChatColor.GRAY + "adventures? Pets are your",
-                        ChatColor.GRAY + "solutions!",
+                        ChatColor.GRAY + "adventures? Pets are the",
+                        ChatColor.GRAY + "solution!",
                         "",
                         ChatColor.YELLOW + "Click to view Player Pets!"
                 })
@@ -55,7 +55,7 @@ public class CommandProfile implements CommandExecutor {
                         ChatColor.DARK_GRAY + "Micro Transactions",
                         "",
                         ChatColor.GRAY + "Want to access to more awesomeness?",
-                        ChatColor.GRAY + "Consider donating to support the RPG",
+                        ChatColor.GRAY + "Consider donating to support Dungeon Realms",
                         ChatColor.GRAY + "in return you'll receive several in-game",
                         ChatColor.GRAY + "perks!",
                         "",

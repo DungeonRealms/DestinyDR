@@ -572,7 +572,7 @@ public class DamageMeta {
                             case CRITICAL_HIT:
                                 return random(16, 25);
                             case DAMAGE:
-                                return random(180, 210);
+                                return random(180, 200);
                             case DEXTERITY:
                                 return random(15, 25);
                             case FIRE_DAMAGE:
@@ -613,7 +613,7 @@ public class DamageMeta {
                             case CRITICAL_HIT:
                                 return random(16, 25);
                             case DAMAGE:
-                                return random(190, 215);
+                                return random(190, 205);
                             case DEXTERITY:
                                 return random(24, 30);
                             case FIRE_DAMAGE:
@@ -650,7 +650,7 @@ public class DamageMeta {
                             case CRITICAL_HIT:
                                 return random(16, 25);
                             case DAMAGE:
-                                return random(205, 220);
+                                return random(205, 210);
                             case DEXTERITY:
                                 return random(26, 30);
                             case FIRE_DAMAGE:
@@ -687,7 +687,7 @@ public class DamageMeta {
                             case CRITICAL_HIT:
                                 return random(18, 25);
                             case DAMAGE:
-                                return random(215, 245);
+                                return random(215, 235);
                             case DEXTERITY:
                                 return random(26, 33);
                             case FIRE_DAMAGE:
@@ -724,7 +724,7 @@ public class DamageMeta {
                             case CRITICAL_HIT:
                                 return random(18, 25);
                             case DAMAGE:
-                                return random(240, 280);
+                                return random(240, 270);
                             case DEXTERITY:
                                 return random(27, 33);
                             case FIRE_DAMAGE:
@@ -761,7 +761,7 @@ public class DamageMeta {
                             case CRITICAL_HIT:
                                 return random(18, 25);
                             case DAMAGE:
-                                return random(265, 295);
+                                return random(265, 285);
                             case DEXTERITY:
                                 return random(27, 34);
                             case FIRE_DAMAGE:
@@ -802,7 +802,7 @@ public class DamageMeta {
                             case CRITICAL_HIT:
                                 return random(18, 25);
                             case DAMAGE:
-                                return random(250, 300);
+                                return random(250, 290);
                             case DEXTERITY:
                                 return random(27, 35);
                             case FIRE_DAMAGE:
@@ -839,7 +839,7 @@ public class DamageMeta {
                             case CRITICAL_HIT:
                                 return random(18, 25);
                             case DAMAGE:
-                                return random(270, 320);
+                                return random(270, 310);
                             case DEXTERITY:
                                 return random(27, 36);
                             case FIRE_DAMAGE:
@@ -876,7 +876,7 @@ public class DamageMeta {
                             case CRITICAL_HIT:
                                 return random(19, 26);
                             case DAMAGE:
-                                return random(290, 350);
+                                return random(290, 340);
                             case DEXTERITY:
                                 return random(29, 39);
                             case FIRE_DAMAGE:
@@ -913,7 +913,7 @@ public class DamageMeta {
                             case CRITICAL_HIT:
                                 return random(18, 27);
                             case DAMAGE:
-                                return random(300, 345);
+                                return random(300, 335);
                             case DEXTERITY:
                                 return random(27, 40);
                             case FIRE_DAMAGE:
@@ -950,7 +950,7 @@ public class DamageMeta {
                             case CRITICAL_HIT:
                                 return random(18, 30);
                             case DAMAGE:
-                                return random(330, 370);
+                                return random(330, 360);
                             case DEXTERITY:
                                 return random(30, 40);
                             case FIRE_DAMAGE:
