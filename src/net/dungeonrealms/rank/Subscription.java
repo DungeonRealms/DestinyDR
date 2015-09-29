@@ -27,7 +27,7 @@ public class Subscription {
         return instance;
     }
 
-    public static ArrayList<UUID> PLAYER_RANK = new ArrayList<>();
+    public static ArrayList<UUID> PLAYER_SUBSCRIPTION = new ArrayList<>();
 
 
     public void startInitialization() {
@@ -39,9 +39,9 @@ public class Subscription {
 
     void startTimer() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            for (UUID uuid : PLAYER_RANK) {
+            for (UUID uuid : PLAYER_SUBSCRIPTION) {
                 if (Bukkit.getPlayer(uuid) == null) {
-                    PLAYER_RANK.remove(uuid);
+                    PLAYER_SUBSCRIPTION.remove(uuid);
                     return;
                 }
                 checkSubscription(Bukkit.getPlayer(uuid));
@@ -59,8 +59,8 @@ public class Subscription {
     public void checkSubscription(Player player) {
         long currentTime = System.currentTimeMillis() / 1000l;
         long endTime = (long) DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId());
-        long time = (long) ((endTime - currentTime) / 1000l);
-        if (time == 0 && PLAYER_RANK.contains(player.getUniqueId())) {
+        long time = (endTime - currentTime) / 1000l;
+        if (time == 0 && PLAYER_SUBSCRIPTION.contains(player.getUniqueId())) {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "rank.rank", "DEFAULT");
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "rank.lastPurchase", 0);
             player.sendMessage(ChatColor.RED + "Your subscription has expired!");

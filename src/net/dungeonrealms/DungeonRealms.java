@@ -16,6 +16,7 @@ import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.party.PartyMechanics;
+import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.spawning.SpawningMechanics;
@@ -67,6 +68,7 @@ public class DungeonRealms extends JavaPlugin {
         EnergyHandler.getInstance().startInitialization();
         EnchantmentAPI.getInstance().startInitialization();
         Subscription.getInstance().startInitialization();
+        Rank.getInstance().startInitialization();
 
         Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
         Entities.getInstance().startInitialization();

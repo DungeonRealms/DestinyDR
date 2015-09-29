@@ -1,6 +1,9 @@
 package net.dungeonrealms.commands;
 
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.rank.Rank;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -24,12 +27,13 @@ public class CommandRank implements CommandExecutor {
 
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("set")) {
-                //TODO: Set a rank
+                Rank.getInstance().setRank(Bukkit.getPlayer(args[1]).getUniqueId(), args[2]);
+                DatabaseAPI.getInstance().update(Bukkit.getPlayer(args[1]).getUniqueId(), EnumOperators.$SET, "rank.rank", args[2]);
             } else if (args[0].equals("create")) {
                 if (args[1] == null || args[2] == null || args[3] == null) return false;
                 Rank.getInstance().createNewRank(args[1], args[2], args[3]);
                 player.sendMessage(ChatColor.GREEN + "[RANK] " + ChatColor.YELLOW + "Created a new rank " + args[1]);
-            } else if (args[0].equalsIgnoreCase("addpermissions") || args[0].equalsIgnoreCase("addp")) {
+            } else if (args[0].equalsIgnoreCase("addpermission") || args[0].equalsIgnoreCase("addp")) {
                 if (args[1] == null || args[2] == null) return false;
                 Rank.getInstance().addPermission(args[1], args[2]);
                 player.sendMessage(ChatColor.GREEN + "[RANK] " + ChatColor.YELLOW + "Added permission " + args[2] + " for rank " + args[1]);
