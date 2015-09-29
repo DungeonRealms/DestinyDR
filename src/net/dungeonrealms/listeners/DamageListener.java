@@ -365,6 +365,9 @@ public class DamageListener implements Listener {
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
+        if (event.getPlayer().getItemInHand() == null) {
+            return;
+        }
         Item.ItemType itemType = new Attribute(event.getPlayer().getItemInHand()).getItemType();
         if (itemType != Item.ItemType.STAFF) {
             return;
@@ -387,5 +390,14 @@ public class DamageListener implements Listener {
         }
         DamageAPI.fireStaffProjectile(event.getPlayer(), event.getPlayer().getItemInHand(), nmsItem.getTag());
         EnergyHandler.removeEnergyFromPlayerAndUpdate(event.getPlayer().getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(event.getPlayer().getItemInHand()));
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    public void onStaffProjectileExplode(ExplosionPrimeEvent event) {
+        if (!(event.getEntity() instanceof WitherSkull)) {
+            return;
+        }
+        event.setCancelled(false);
+        event.setRadius(0);
     }
 }
