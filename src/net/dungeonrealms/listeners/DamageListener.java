@@ -1,5 +1,37 @@
 package net.dungeonrealms.listeners;
 
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.WitherSkull;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
+
+import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.items.Attribute;
@@ -8,24 +40,6 @@ import net.dungeonrealms.items.Item;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.*;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.*;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
-import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -59,7 +73,23 @@ public class DamageListener implements Listener {
             }
         }
     }
-
+    
+    /**
+     * Cancel World Guard PVP flag if players are dueling.
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void disallowPVPEvent(DisallowedPVPEvent event){
+   	 Player p1 = event.getAttacker();
+   	 Player p2 = event.getDefender();
+   	 if(DuelMechanics.isDueling(p1.getUniqueId()) && DuelMechanics.isDueling(p2.getUniqueId())){
+   		 if(DuelMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())){
+   			 event.setCancelled(true);
+   		 }
+   	 }
+    }
+    
+    
     /**
      * Listen for the players weapon hitting an entity
      * Used for calculating damage based on player weapon

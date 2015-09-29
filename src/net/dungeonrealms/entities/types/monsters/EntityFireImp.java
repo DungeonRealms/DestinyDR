@@ -13,6 +13,7 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
 
+import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.types.RangedEntitySkeleton;
 import net.dungeonrealms.enums.EnumEntityType;
 
@@ -30,6 +31,7 @@ public class EntityFireImp extends RangedEntitySkeleton {
 	 */
 
 	private int tier;
+
 	public EntityFireImp(World world, int tier, EnumEntityType entityType) {
 		super(world, "Fire Imp", "Satan", tier, entityType);
 		this.tier = tier;
@@ -47,11 +49,11 @@ public class EntityFireImp extends RangedEntitySkeleton {
 		chestplate.setItemMeta(lam);
 		boots.setItemMeta(lam);
 		ItemStack lchest = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-      	LeatherArmorMeta lch = (LeatherArmorMeta)lchest.getItemMeta();
-      	lch.setColor(Color.fromRGB(176, 23, 23));
-      	lchest.setItemMeta(lch);
+		LeatherArmorMeta lch = (LeatherArmorMeta) lchest.getItemMeta();
+		lch.setColor(Color.fromRGB(176, 23, 23));
+		lchest.setItemMeta(lch);
 		// weapon, boots, legs, chest, helmet/head
-		//this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
+		// this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
 		this.setEquipment(1, CraftItemStack.asNMSCopy(boots));
 		this.setEquipment(2, CraftItemStack.asNMSCopy(leggings));
 		this.setEquipment(3, CraftItemStack.asNMSCopy(chestplate));
@@ -60,6 +62,9 @@ public class EntityFireImp extends RangedEntitySkeleton {
 
 	@Override
 	protected Item getLoot() {
+		ItemStack item = BankMechanics.gem.clone();
+		item.setAmount(this.random.nextInt(5));
+		this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation(), item);
 		return null;
 	}
 
@@ -81,7 +86,7 @@ public class EntityFireImp extends RangedEntitySkeleton {
 			- (this.locY + (double) (this.length / 2.0F));
 		double d2 = entity.locZ - this.locZ;
 		EntityWitherSkull entityWitherSkull = new EntityWitherSkull(this.world, this,
-				d0 + this.random.nextGaussian() * (double) f1, d1, d2 + this.random.nextGaussian() * (double) f1);
+			d0 + this.random.nextGaussian() * (double) f1, d1, d2 + this.random.nextGaussian() * (double) f1);
 		entityWitherSkull.locY = this.locY + (double) (this.length / 2.0F) + 0.5D;
 		Projectile projectileWitherSkull = (Projectile) entityWitherSkull.getBukkitEntity();
 		projectileWitherSkull.setVelocity(projectileWitherSkull.getVelocity().multiply(1.35));
