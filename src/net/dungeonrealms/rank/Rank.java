@@ -51,9 +51,7 @@ public class Rank {
 
 
     public void startInitialization() {
-        Database.ranks.find().forEach(printDocumentBlock, (aVoid, throwable) -> {
-            Utils.log.warning("[RANK] [ASYNC] Successfully grabbed all existing ranks!");
-        });
+        Database.ranks.find().forEach(printDocumentBlock, (aVoid, throwable) -> Utils.log.warning("[RANK] [ASYNC] Successfully grabbed all existing ranks!"));
     }
 
     /**
@@ -83,9 +81,7 @@ public class Rank {
      */
     public void addPermission(String rank, String permission) {
         Database.ranks.updateOne(Filters.eq("rank.name", rank.toUpperCase()), new Document(EnumOperators.$PUSH.getUO(), new Document("rank.permissions", permission)),
-                (result, t) -> {
-                    Utils.log.info("[ASYNC] DatabaseAPI update() called .. addPermission()... METHOD");
-                });
+                (result, t) -> Utils.log.info("[ASYNC] DatabaseAPI update() called .. addPermission()... METHOD"));
     }
 
     /**

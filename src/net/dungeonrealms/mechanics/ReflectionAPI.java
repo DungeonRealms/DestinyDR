@@ -34,7 +34,7 @@ public class ReflectionAPI {
      * @return the field
      */
     public static Field findField(Class<?> target, Class<?> fieldType, int index, boolean reverse) {
-        List<Field> fields = new ArrayList<Field>();
+        List<Field> fields = new ArrayList<>();
         fields.addAll(Arrays.asList(target.getDeclaredFields()));
         if (reverse) {
             Collections.reverse(fields);
@@ -71,7 +71,7 @@ public class ReflectionAPI {
      * @return the fields
      */
     public static Field[] findFields(Class<?> target, Class<?> fieldType, int depth) {
-        List<Field> list = new ArrayList<Field>();
+        List<Field> list = new ArrayList<>();
         while (target != null && target != Object.class) {
             for (Field field : target.getDeclaredFields()) {
                 field.setAccessible(true);
@@ -111,7 +111,7 @@ public class ReflectionAPI {
      * @return the objects
      */
     public static Object[] findFieldsAndGet(Class<?> target, Class<?> fieldType, Object targetObject, int depth) {
-        List<Object> list = new ArrayList<Object>();
+        List<Object> list = new ArrayList<>();
         while (target != null && target != Object.class) {
             for (Field field : target.getDeclaredFields()) {
                 field.setAccessible(true);

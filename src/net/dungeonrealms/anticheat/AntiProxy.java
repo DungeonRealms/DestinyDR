@@ -74,9 +74,7 @@ public class AntiProxy {
 
         try {
             return isProxy.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
         return false;

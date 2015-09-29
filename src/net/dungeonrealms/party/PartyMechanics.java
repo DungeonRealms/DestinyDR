@@ -99,9 +99,7 @@ public class PartyMechanics {
     }
 
     public void startInitialization() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            PARTIES.forEach(this::setScoreboard);
-        }, 0, 20L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> PARTIES.forEach(this::setScoreboard), 0, 20L);
     }
 
     private void setScoreboard(Party party) {

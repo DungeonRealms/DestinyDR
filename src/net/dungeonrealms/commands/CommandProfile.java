@@ -24,9 +24,7 @@ public class CommandProfile implements CommandExecutor {
 
         Player player = (Player) s;
 
-        GUI profileMain = new GUI("Profile", 27, event -> {
-                event.setWillClose(false);
-        }, DungeonRealms.getInstance())
+        GUI profileMain = new GUI("Profile", 27, event -> event.setWillClose(false), DungeonRealms.getInstance())
                 .setOption(4, Utils.getPlayerHead(player), ChatColor.GREEN + player.getName() + "'s Profile", new String[]{
                         ChatColor.DARK_GRAY + "Player Profile"
                 })

@@ -46,7 +46,7 @@ public class MobSpawner {
 		armorstand.getBukkitEntity().setMetadata("type",
 			new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
 		String temp = "";
-		for (int i = 0; i < type.length; i++) {
+		for (String aType : type) {
 			temp += type[1] + ",";
 		}
 		armorstand.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
@@ -78,7 +78,7 @@ public class MobSpawner {
 			return true;
 	}
 
-	private HashMap<Entity, Location> toSpawn = new HashMap<Entity, Location>();
+	private HashMap<Entity, Location> toSpawn = new HashMap<>();
 
 	public void spawnIn() {
 		new Timer().schedule(new TimerTask() {

@@ -73,7 +73,7 @@ public class GUI implements Listener {
                 handler.onOptionClick(e);
                 if (e.willClose()) {
                     final Player p = (Player) event.getWhoClicked();
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, () -> p.closeInventory(), 1);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, p::closeInventory, 1);
                 }
                 if (e.willDestroy()) {
                     destroy();
