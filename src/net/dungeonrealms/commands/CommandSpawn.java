@@ -114,11 +114,11 @@ public class CommandSpawn implements CommandExecutor {
 						player.getLocation().getZ());
 				} else if (args[1].equalsIgnoreCase("golem")) {
 					World world = ((CraftWorld) player.getWorld()).getHandle();
-					EntityGolem zombie = new EntityGolem(world);
-					zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(),
+					EntityGolem golem = new EntityGolem(world, tier, EnumEntityType.HOSTILE_MOB);
+					golem.setPosition(player.getLocation().getX(), player.getLocation().getY(),
 						player.getLocation().getZ());
-					world.addEntity(zombie, SpawnReason.CUSTOM);
-					zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(),
+					world.addEntity(golem, SpawnReason.CUSTOM);
+					golem.setPosition(player.getLocation().getX(), player.getLocation().getY(),
 						player.getLocation().getZ());
 
 				}

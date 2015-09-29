@@ -362,7 +362,7 @@ public class DamageListener implements Listener {
         if (!event.hasItem()) {
             return;
         }
-        if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
         Item.ItemType itemType = new Attribute(event.getPlayer().getItemInHand()).getItemType();
