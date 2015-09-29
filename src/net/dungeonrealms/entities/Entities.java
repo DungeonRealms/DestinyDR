@@ -2,6 +2,7 @@ package net.dungeonrealms.entities;
 
 import net.dungeonrealms.entities.types.monsters.EntityBandit;
 import net.dungeonrealms.entities.types.monsters.EntityFireImp;
+import net.dungeonrealms.entities.types.monsters.EntityGolem;
 import net.dungeonrealms.entities.types.monsters.EntityPirate;
 import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
 import net.dungeonrealms.entities.types.mounts.EnderDragon;
@@ -36,7 +37,8 @@ public class Entities {
         nmsUtils.registerEntity("RangedPirate", 54, EntityZombie.class, EntityRangedPirate.class);
         nmsUtils.registerEntity("Fire Imp", 54, EntityZombie.class, EntityFireImp.class);
         nmsUtils.registerEntity("Bandit", 51, EntitySkeleton.class, EntityBandit.class);
-
+        nmsUtils.registerEntity("Enchanted Golem", 99, net.minecraft.server.v1_8_R3.EntityGolem.class, EntityGolem.class);
+        
         nmsUtils.registerEntity("PetCaveSpider", 59, EntityCaveSpider.class, CaveSpider.class);
         nmsUtils.registerEntity("PetBabyZombie", 54, EntityZombie.class, BabyZombie.class);
         nmsUtils.registerEntity("PetBabyZombiePig", 57, EntityPigZombie.class, BabyZombiePig.class);

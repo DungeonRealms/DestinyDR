@@ -18,6 +18,7 @@ import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.party.PartyMechanics;
 import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.shops.ShopMechanics;
+import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.Item;
 import org.bukkit.Bukkit;
@@ -90,7 +91,7 @@ public class DungeonRealms extends JavaPlugin {
         Item itemBow = new DRBow();
         ItemRegistry itemRegistry = new ItemRegistry();
         itemRegistry.register("minecraft:bow", itemBow);
-
+        SpawningMechanics.loadSpawners();
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
 
     }
