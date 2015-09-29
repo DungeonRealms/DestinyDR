@@ -23,11 +23,11 @@ import java.util.Random;
 
 public abstract class MeleeEntityZombie extends EntityZombie {
 
-	private String name;
-	private String mobHead;
-	private EnumEntityType entityType;
+	protected String name;
+	protected String mobHead;
+	protected EnumEntityType entityType;
 
-	protected MeleeEntityZombie(World world, String mobName, String mobHead, int tier, EnumEntityType entityType) {
+	protected MeleeEntityZombie(World world, String mobName, String mobHead, int tier, EnumEntityType entityType, boolean setArmor) {
 		this(world);
 		try {
 			Field bField = PathfinderGoalSelector.class.getDeclaredField("b");
@@ -53,7 +53,7 @@ public abstract class MeleeEntityZombie extends EntityZombie {
 		this.name = mobName;
 		this.mobHead = mobHead;
 		this.entityType = entityType;
-		Utils.log.info("Tier " + tier);
+		if(setArmor)
 		setArmor(tier);
 		this.getBukkitEntity().setCustomNameVisible(true);
 		int level = Utils.getRandomFromTier(tier);
@@ -93,7 +93,7 @@ public abstract class MeleeEntityZombie extends EntityZombie {
 		return this.name;
 	}
 
-	private net.minecraft.server.v1_8_R3.ItemStack getHead() {
+	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
 		ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 		SkullMeta meta = (SkullMeta) head.getItemMeta();
 		meta.setOwner(mobHead);

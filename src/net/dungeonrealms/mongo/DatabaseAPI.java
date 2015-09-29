@@ -3,6 +3,7 @@ package net.dungeonrealms.mongo;
 import com.mongodb.client.model.Filters;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -141,7 +142,8 @@ public class DatabaseAPI {
                 }
                 PLAYERS.put(uuid, document);
                 //Put The player in the Rank List so it be be iterated and checked for subscription length.
-                Subscription.PLAYER_RANK.add(uuid);
+                Subscription.PLAYER_SUBSCRIPTION.add(uuid);
+                Rank.getInstance().handleLogin(uuid);
             }
         });
     }

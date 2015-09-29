@@ -30,7 +30,7 @@ public class EntityBandit extends MeleeEntityZombie {
      * @param entityType
      */
     public EntityBandit(World world, int tier, EnumEntityType entityType) {
-        super(world, getRandomName(false), getRandomHead(), tier, entityType);
+        super(world, getRandomName(false), getRandomHead(), tier, entityType, true);
         checkPoison();
     }
 

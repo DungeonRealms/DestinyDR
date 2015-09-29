@@ -20,7 +20,7 @@ public class EntityPirate extends MeleeEntityZombie {
 	private EnumEntityType entityType;
 
 	public EntityPirate(World world, EnumEntityType entityType, int tier) {
-		super(world, "pirate", getRandomHead(), tier, entityType);
+		super(world, "pirate", getRandomHead(), tier, entityType, true);
 		this.entityType = entityType;
 		int level = Utils.getRandomFromTier(tier);
 		MetadataUtils.registerEntityMetadata(this, this.entityType, tier, level);
