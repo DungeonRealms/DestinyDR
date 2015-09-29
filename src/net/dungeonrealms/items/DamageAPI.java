@@ -1,15 +1,13 @@
 package net.dungeonrealms.items;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -65,7 +63,7 @@ public class DamageAPI {
             }
         }
         ItemStack ourItem = entityEquipment.getItemInHand();
-        int weaponTier = new Attribute(ourItem).getItemTier().getId();
+        int weaponTier = new Attribute(ourItem).getItemTier().getTierId();
         int damageRandomizer = ItemGenerator.getRandomDamageVariable(weaponTier);
         damage = (double) Utils.randInt((int) Math.round(tag.getDouble("damage") - (tag.getDouble("damage") / damageRandomizer)), (int) Math.round(tag.getDouble("damage") + (tag.getDouble("damage") / (damageRandomizer - 1))));
         boolean isHitCrit = false;
@@ -110,19 +108,19 @@ public class DamageAPI {
                 ex.printStackTrace();
             }
             switch (weaponTier) {
-                case 0:
+                case 1:
                     leReceiver.setFireTicks(15);
                     break;
-                case 1:
+                case 2:
                     leReceiver.setFireTicks(25);
                     break;
-                case 2:
+                case 3:
                     leReceiver.setFireTicks(30);
                     break;
-                case 3:
+                case 4:
                     leReceiver.setFireTicks(35);
                     break;
-                case 4:
+                case 5:
                     leReceiver.setFireTicks(40);
                     break;
             }
@@ -137,19 +135,19 @@ public class DamageAPI {
                 ex.printStackTrace();
             }
             switch (weaponTier) {
-                case 0:
+                case 1:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 0));
                     break;
-                case 1:
+                case 2:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 0));
                     break;
-                case 2:
+                case 3:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 0));
                     break;
-                case 3:
+                case 4:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
                     break;
-                case 4:
+                case 5:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 1));
                     break;
             }
@@ -164,19 +162,19 @@ public class DamageAPI {
                 ex.printStackTrace();
             }
             switch (weaponTier) {
-                case 0:
+                case 1:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
                     break;
-                case 1:
+                case 2:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 0));
                     break;
-                case 2:
+                case 3:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 0));
                     break;
-                case 3:
+                case 4:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 1));
                     break;
-                case 4:
+                case 5:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 1));
                     break;
             }
@@ -220,19 +218,19 @@ public class DamageAPI {
                         ex.printStackTrace();
                     }
                     switch (weaponTier) {
-                        case 0:
+                        case 1:
                             leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 30, 1));
                             break;
-                        case 1:
+                        case 2:
                             leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1));
                             break;
-                        case 2:
+                        case 3:
                             leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 1));
                             break;
-                        case 3:
+                        case 4:
                             leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
                             break;
-                        case 4:
+                        case 5:
                             leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
                             break;
                     }
@@ -353,19 +351,19 @@ public class DamageAPI {
                 ex.printStackTrace();
             }
             switch (projectile.getMetadata("itemTier").get(0).asInt()) {
-                case 0:
+                case 1:
                     leReceiver.setFireTicks(15);
                     break;
-                case 1:
+                case 2:
                     leReceiver.setFireTicks(25);
                     break;
-                case 2:
+                case 3:
                     leReceiver.setFireTicks(30);
                     break;
-                case 3:
+                case 4:
                     leReceiver.setFireTicks(35);
                     break;
-                case 4:
+                case 5:
                     leReceiver.setFireTicks(40);
                     break;
             }
@@ -380,19 +378,19 @@ public class DamageAPI {
                 ex.printStackTrace();
             }
             switch (projectile.getMetadata("itemTier").get(0).asInt()) {
-                case 0:
+                case 1:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 0));
                     break;
-                case 1:
+                case 2:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 0));
                     break;
-                case 2:
+                case 3:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 0));
                     break;
-                case 3:
+                case 4:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
                     break;
-                case 4:
+                case 5:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 1));
                     break;
             }
@@ -407,19 +405,19 @@ public class DamageAPI {
                 ex.printStackTrace();
             }
             switch (projectile.getMetadata("itemTier").get(0).asInt()) {
-                case 0:
+                case 1:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
                     break;
-                case 1:
+                case 2:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 0));
                     break;
-                case 2:
+                case 3:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 0));
                     break;
-                case 3:
+                case 4:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 1));
                     break;
-                case 4:
+                case 5:
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 1));
                     break;
             }
@@ -463,19 +461,19 @@ public class DamageAPI {
                         ex.printStackTrace();
                     }
                     switch (projectile.getMetadata("itemTier").get(0).asInt()) {
-                        case 0:
+                        case 1:
                             leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 30, 1));
                             break;
-                        case 1:
+                        case 2:
                             leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1));
                             break;
-                        case 2:
+                        case 3:
                             leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 1));
                             break;
-                        case 3:
+                        case 4:
                             leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
                             break;
-                        case 4:
+                        case 5:
                             leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
                             break;
                     }
@@ -660,5 +658,28 @@ public class DamageAPI {
         totalLuck = playerLuck[0] + playerLuck[1] + playerLuck[2] + playerLuck[3];
 
         return Math.round(totalLuck);
+    }
+
+    public static void fireStaffProjectile(Player player, ItemStack itemStack, NBTTagCompound tag) {
+        int weaponTier = new Attribute(itemStack).getItemTier().getTierId();
+        Projectile projectile = player.launchProjectile(WitherSkull.class);
+        switch (weaponTier) {
+            case 1:
+                projectile.setVelocity(projectile.getVelocity().multiply(1.05));
+                break;
+            case 2:
+                projectile.setVelocity(projectile.getVelocity().multiply(1.25));
+                break;
+            case 3:
+                projectile.setVelocity(projectile.getVelocity().multiply(1.50));
+                break;
+            case 4:
+                projectile.setVelocity(projectile.getVelocity().multiply(2.0));
+                break;
+            case 5:
+                projectile.setVelocity(projectile.getVelocity().multiply(2.5));
+                break;
+        }
+        MetadataUtils.registerProjectileMetadata(tag, projectile, weaponTier);
     }
 }

@@ -84,6 +84,7 @@ public class EntityFireImp extends RangedEntitySkeleton {
 				d0 + this.random.nextGaussian() * (double) f1, d1, d2 + this.random.nextGaussian() * (double) f1);
 		entityWitherSkull.locY = this.locY + (double) (this.length / 2.0F) + 0.5D;
 		Projectile projectileWitherSkull = (Projectile) entityWitherSkull.getBukkitEntity();
+		projectileWitherSkull.setVelocity(projectileWitherSkull.getVelocity().multiply(1.35));
 		net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
 		NBTTagCompound tag = nmsItem.getTag();
 		MetadataUtils.registerProjectileMetadata(tag, projectileWitherSkull, tier);

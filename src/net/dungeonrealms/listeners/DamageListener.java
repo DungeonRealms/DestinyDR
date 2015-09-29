@@ -4,6 +4,7 @@ import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.DamageAPI;
+import net.dungeonrealms.items.Item;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -15,8 +16,10 @@ import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -238,7 +241,7 @@ public class DamageListener implements Listener {
         if (nmsItem == null || nmsItem.getTag() == null) return;
         //Get the NBT of the item the player is holding.
         if (!(shooter instanceof Player)) return;
-        int weaponTier = new Attribute(entityEquipment.getItemInHand()).getItemTier().getId();
+        int weaponTier = new Attribute(entityEquipment.getItemInHand()).getItemTier().getTierId();
         Player player = (Player) shooter;
         player.updateInventory();
         if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player.getUniqueId()) <= 0) {
@@ -253,8 +256,7 @@ public class DamageListener implements Listener {
             return;
         }
         EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(player.getItemInHand()));
-        NBTTagCompound tag = nmsItem.getTag();
-        MetadataUtils.registerProjectileMetadata(tag, event.getEntity(), weaponTier);
+        MetadataUtils.registerProjectileMetadata(nmsItem.getTag(), event.getEntity(), weaponTier);
     }
 
     /**
@@ -345,5 +347,45 @@ public class DamageListener implements Listener {
             EntityAPI.getPlayerMount(event.getEntity().getUniqueId());
             event.getEntity().sendMessage("For it's own safety, your mount has returned to the stable.");
         }
+    }
+
+    /**
+     * Listen for Players using their "staff" item
+     * Checks to see if they can, and
+     * then fires the staff projectile
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    public void onPlayerUseStaff(PlayerInteractEvent event) {
+        if (!event.hasItem()) {
+            return;
+        }
+        if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+            return;
+        }
+        Item.ItemType itemType = new Attribute(event.getPlayer().getItemInHand()).getItemType();
+        if (itemType != Item.ItemType.STAFF) {
+            return;
+        }
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getPlayer().getItemInHand()));
+        if (nmsItem == null || nmsItem.getTag() == null) return;
+        if (event.getPlayer().isInsideVehicle()) {
+            event.setCancelled(true);
+            return;
+        }
+        if (event.getPlayer().hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(event.getPlayer().getUniqueId()) <= 0) {
+            event.setCancelled(true);
+            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.WOLF_PANT, 12F, 1.5F);
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, event.getPlayer().getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return;
+        }
+        DamageAPI.fireStaffProjectile(event.getPlayer(), event.getPlayer().getItemInHand(), nmsItem.getTag());
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(event.getPlayer().getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(event.getPlayer().getItemInHand()));
     }
 }
