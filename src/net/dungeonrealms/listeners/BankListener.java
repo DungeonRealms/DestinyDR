@@ -226,7 +226,7 @@ public class BankListener implements Listener {
 					if (e.getCurrentItem().getType() == Material.EMERALD)
 						size = e.getCurrentItem().getAmount();
 					else if (e.getCurrentItem().getType() == Material.PAPER) {
-						size = nms.getTag().getInt("worth");
+						size = e.getCurrentItem().getAmount() * nms.getTag().getInt("worth");
 					}
 					if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
 						e.setCancelled(true);

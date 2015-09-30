@@ -51,6 +51,8 @@ public class Storage {
 	 * @return
 	 */
 	private int getStorageSize(Player p) {
+		if(p.getName().equalsIgnoreCase("Xwaffle"))
+			return 18;
 		return 9;
 	}
 }

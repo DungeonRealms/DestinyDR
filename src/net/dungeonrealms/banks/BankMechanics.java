@@ -47,9 +47,12 @@ public class BankMechanics {
 			ArrayList<ItemStack> list = new ArrayList<>();
 			for (int i = 0; i < listItems.length; i++) {
 				ItemStack item = listItems[i];
-				if(item != null)
-				list.add(item);
+				if (item != null && item.getType() != Material.AIR)
+					list.add(item);
 			}
+			if (list.isEmpty())
+				for (int i = 0; i < inv.getSize(); i++)
+					list.add(new ItemStack(Material.AIR));
 			try {
 				String serializedInv = ItemSerialization.serialize(list);
 				storage.remove(uuid);
@@ -68,9 +71,11 @@ public class BankMechanics {
 			if (item != null && item.getType() != Material.AIR)
 				list.add(item);
 			}
-			if (!list.isEmpty())
+			if (list.isEmpty())
+			for (int i = 0; i < inv.getSize(); i++)
+				list.add(new ItemStack(Material.AIR));
 			DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.player",
-					ItemSerialization.serialize(list));
+				ItemSerialization.serialize(list));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
