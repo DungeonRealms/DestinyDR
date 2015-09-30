@@ -395,12 +395,13 @@ public class DamageListener implements Listener {
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getPlayer().getItemInHand()));
+        if (nmsItem == null || nmsItem.getTag() == null || !nmsItem.getTag().hasKey("itemType")) return;
+        
         Item.ItemType itemType = new Attribute(event.getPlayer().getItemInHand()).getItemType();
         if (itemType != Item.ItemType.STAFF) {
             return;
         }
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getPlayer().getItemInHand()));
-        if (nmsItem == null || nmsItem.getTag() == null) return;
         if (event.getPlayer().isInsideVehicle()) {
             event.setCancelled(true);
             return;

@@ -54,7 +54,7 @@ public class ItemSerialization {
         PacketDataSerializer serializer = new PacketDataSerializer(buf);
         try {
             int count = buf.readInt();
-            for (int i = 0; i <= count; i++) {
+            for (int i = 0; i < count; i++) {
                 net.minecraft.server.v1_8_R3.ItemStack item = serializer.i();
                 if (item != null) {
                     items.add(CraftItemStack.asCraftMirror(item));
