@@ -3,8 +3,6 @@ package net.dungeonrealms.spawning;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -12,6 +10,7 @@ import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
@@ -81,7 +80,7 @@ public class MobSpawner {
 	private HashMap<Entity, Location> toSpawn = new HashMap<>();
 
 	public void spawnIn() {
-		new Timer().schedule(new TimerTask() {
+		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), new BukkitRunnable() {
 
 			@Override
 			public void run() {
@@ -118,14 +117,14 @@ public class MobSpawner {
 			}
 			entity.setLocation(loc.getX() + new XRandom().nextInt(10), loc.getY(),
 					loc.getZ() + new XRandom().nextInt(10), 1, 1);
-			// world.addEntity(entity, SpawnReason.CUSTOM);
+//			 world.addEntity(entity, SpawnReason.CUSTOM);
 			toSpawn.put(entity, new Location(Bukkit.getWorlds().get(0), loc.getX() + new XRandom().nextInt(10),
 					loc.getY(), loc.getZ() + new XRandom().nextInt(10), 1, 1));
 			spawnedMonsters.add(entity);
 			Bukkit.broadcastMessage("Spawned " + mob + " in at " + loc.toString());
 			}
 
-		}, 0L, 10 * 1000);
+		}, 20L, 4 * 20);
 	}
 
 	public void doSpawn() {
@@ -133,7 +132,7 @@ public class MobSpawner {
 			Entity ent = (Entity) toSpawn.keySet().toArray()[0];
 			Location loc = (Location) toSpawn.values().toArray()[0];
 			ent.setLocation(loc.getX(), loc.getY(), loc.getZ(), 1, 1);
-			armorstand.getWorld().addEntity(ent, SpawnReason.CUSTOM);
+			((CraftWorld)Bukkit.getWorlds().get(0)).getHandle().addEntity(ent, SpawnReason.CUSTOM);
 			ent.setLocation(loc.getX(), loc.getY(), loc.getZ(), 1, 1);
 			toSpawn.remove(ent);
 		}

@@ -6,6 +6,7 @@ import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.NMSUtils;
@@ -19,13 +20,14 @@ public class SpawningMechanics {
 	private static ArrayList<MobSpawner> spawners = new ArrayList<>();
 
 	public static void updateSpawners() {
+		if(spawners.size() > 0)
 		for (MobSpawner current : spawners) {
 			if (current.playersAround()) {
-				if (!current.isSpawning) {
-					current.isSpawning = true;
-					current.spawnIn();
-					current.doSpawn();
-				}
+			if (!current.isSpawning) {
+				current.isSpawning = true;
+				current.spawnIn();
+				current.doSpawn();
+			}
 			}
 		}
 	}
@@ -39,17 +41,21 @@ public class SpawningMechanics {
 		List<Entity> list = Bukkit.getWorlds().get(0).getEntities();
 		for (Entity aList : list) {
 			if (aList instanceof EntityArmorStand || aList instanceof ArmorStand) {
-				net.minecraft.server.v1_8_R3.Entity nms = NMSUtils.getNMSEntity(aList);
-				if (nms.getNBTTag() != null && nms.getNBTTag().hasKey("type")) {
-					if (nms.getNBTTag().getString("type").equalsIgnoreCase("spawner")) {
-						spawners.add(new MobSpawner((EntityArmorStand) nms));
-					}
+			net.minecraft.server.v1_8_R3.Entity nms = NMSUtils.getNMSEntity(aList);
+			if (nms.getNBTTag() != null && nms.getNBTTag().hasKey("type")) {
+				if (nms.getNBTTag().getString("type").equalsIgnoreCase("spawner")) {
+					spawners.add(new MobSpawner((EntityArmorStand) nms));
 				}
+			}
 			} else {
-				Utils.log.info(aList.getClass().getSimpleName());
+			Utils.log.info(aList.getClass().getSimpleName());
 			}
 		}
-		Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), SpawningMechanics::updateSpawners, 20l,
-			20 * 20l);
+		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), new BukkitRunnable() {
+			@Override
+			public void run() {
+			updateSpawners();
+			}
+		}, 0, 3 * 20L);
 	}
 }
