@@ -11,7 +11,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.TimeZone;
+import java.util.UUID;
 
 /**
  * Created by Nick on 9/24/2015.
@@ -58,7 +60,7 @@ public class Subscription {
      */
     public void checkSubscription(Player player) {
         long currentTime = System.currentTimeMillis() / 1000l;
-        long endTime = (long) DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId());
+        long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId())));
         long time = (endTime - currentTime) / 1000l;
         if (time == 0 && PLAYER_SUBSCRIPTION.contains(player.getUniqueId())) {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "rank.rank", "DEFAULT");
@@ -66,6 +68,20 @@ public class Subscription {
             player.sendMessage(ChatColor.RED + "Your subscription has expired!");
             SoundAPI.getInstance().playSound("random.anvil_break", player);
         }
+    }
+
+    /**
+     * Returns the players remaining subscription time!
+     *
+     * @param player
+     * @return
+     * @since 1.0
+     */
+    public int getHoursLeft(Player player) {
+        long currentTime = System.currentTimeMillis() / 1000l;
+        long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId())));
+        int hoursLeft = (int) ((endTime - currentTime) / 1000l);
+        return hoursLeft;
     }
 
     /**
@@ -80,14 +96,14 @@ public class Subscription {
             Player player = event.getPlayer();
             if (player == null) return;
             long currentTime = System.currentTimeMillis() / 1000l;
-            long endTime = (Long) DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId());
+            long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId())));
             int hoursLeft = (int) ((endTime - currentTime) / 1000l);
             if (hoursLeft > 10) {
                 player.sendMessage(ChatColor.YELLOW + "Current Subscription Length " + ChatColor.AQUA.toString() + ChatColor.BOLD + hoursLeft + ChatColor.YELLOW + " hours.");
             } else if (hoursLeft <= 9 && hoursLeft >= 3) {
                 player.sendMessage(ChatColor.YELLOW + "Your subscription will end soon! " + ChatColor.AQUA.toString() + ChatColor.BOLD + hoursLeft + ChatColor.YELLOW + " hours.");
             } else if (hoursLeft <= 0) {
-                player.sendMessage(ChatColor.RED + "Your subscription has ended!");
+                player.sendMessage(ChatColor.RED + "Your subscriber package has run out!");
             }
         }, 20 * 5);
     }
