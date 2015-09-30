@@ -33,7 +33,6 @@ public class Storage {
 		Inventory inv = Bukkit.createInventory(null, getStorageSize(Bukkit.getPlayer(uuid)), "Storage");
 		for(int i = 0; i<contents.size();i++){
 		inv.addItem(contents.get(i));
-		contents.remove(i);
 		}
 		this.inv = inv;
 	}

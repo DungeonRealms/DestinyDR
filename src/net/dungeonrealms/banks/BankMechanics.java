@@ -19,6 +19,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
@@ -46,17 +47,16 @@ public class BankMechanics {
 			ArrayList<ItemStack> list = new ArrayList<>();
 			for (int i = 0; i < listItems.length; i++) {
 				ItemStack item = listItems[i];
-				if (item != null && item.getType() != Material.AIR)
-					list.add(item);
+				if(item != null)
+				list.add(item);
 			}
-			if (!list.isEmpty())
-				try {
-					String serializedInv = ItemSerialization.serialize(list);
-					storage.remove(uuid);
-					DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.storage", serializedInv);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			try {
+				String serializedInv = ItemSerialization.serialize(list);
+				storage.remove(uuid);
+				DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.storage", serializedInv);
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 			}
 		}
 		try {
