@@ -19,53 +19,53 @@ import org.bukkit.inventory.ItemStack;
  */
 public class EntityGolem extends MeleeEntityZombie {
 
-	public EntityGolem(World world, int tier, EnumEntityType entityType) {
-		super(world, "Golem", null, tier, entityType, true);
-		this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().next()));
-		int level = Utils.getRandomFromTier(tier);
-		MetadataUtils.registerEntityMetadata(this, entityType, tier, level);
-		EntityStats.setMonsterStats(this, level, tier);
-		this.setCustomName(ChatColor.GOLD + "Golem");
-		this.setCustomNameVisible(true);
-	}
+    public EntityGolem(World world, int tier, EnumEntityType entityType) {
+        super(world, "Golem", null, tier, entityType, true);
+        this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().next()));
+        int level = Utils.getRandomFromTier(tier);
+        MetadataUtils.registerEntityMetadata(this, entityType, tier, level);
+        EntityStats.setMonsterStats(this, level, tier);
+        this.setCustomName(ChatColor.GOLD + "Golem");
+        this.setCustomNameVisible(true);
+    }
 
-	/**
-	 * @param world
-	 */
-	public EntityGolem(World world) {
-		super(world);
-	}
+    /**
+     * @param world
+     */
+    public EntityGolem(World world) {
+        super(world);
+    }
 
-	/**
-	 * @return
-	 */
-	private static int getLvl() {
-		return new XRandom().nextInt(2);
-	}
+    /**
+     * @return
+     */
+    private static int getLvl() {
+        return new XRandom().nextInt(2);
+    }
 
-	/**
-	 * @return
-	 */
-	private static String setName() {
-		return "Enchanted Iron Golem";
-	}
+    /**
+     * @return
+     */
+    private static String setName() {
+        return "Enchanted Iron Golem";
+    }
 
-	@Override
-	protected Item getLoot() {
-		ItemStack item = BankMechanics.gem.clone();
-		item.setAmount(this.random.nextInt(5));
-		this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation(), item);
-		return null;
-	}
+    @Override
+    protected Item getLoot() {
+        ItemStack item = BankMechanics.gem.clone();
+        item.setAmount(this.random.nextInt(5));
+        this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation(), item);
+        return null;
+    }
 
-	@Override
-	protected void getRareDrop() {
+    @Override
+    protected void getRareDrop() {
 
-	}
+    }
 
-	@Override
-	protected void setStats() {
+    @Override
+    protected void setStats() {
 
-	}
+    }
 
 }

@@ -134,16 +134,17 @@ public class DamageListener implements Listener {
     }
 
 
-
     /**
      * Listen for the monsters hitting a player
      * Used for calculating damage based on mob weapon
+     *
      * @param event
      * @since 1.0
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
-        if ((!(event.getDamager() instanceof Monster)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL))) return;
+        if ((!(event.getDamager() instanceof Monster)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
+            return;
         if (!(event.getEntity() instanceof Player)) return;
         double finalDamage = 0;
         if (event.getDamager() instanceof Monster) {
@@ -165,11 +166,11 @@ public class DamageListener implements Listener {
         } else if (event.getDamager().getType() == EntityType.ARROW) {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof Monster)) return;
-            finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity)attackingArrow.getShooter(), event.getEntity(), attackingArrow);
+            finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
         } else if (event.getDamager().getType() == EntityType.WITHER_SKULL) {
             WitherSkull staffProjectile = (WitherSkull) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof Monster)) return;
-            finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity)staffProjectile.getShooter(), event.getEntity(), staffProjectile);
+            finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
         }
         event.setDamage(finalDamage);
     }
@@ -177,6 +178,7 @@ public class DamageListener implements Listener {
 
     /**
      * Reduces damage after it is set previously based on the defenders armor
+     *
      * @param event
      * @since 1.0
      */
@@ -261,12 +263,14 @@ public class DamageListener implements Listener {
     /**
      * Listen for Players [NOT DISPENSERS/MOBS] firing projectiles
      * Used to apply metadata from the nbt data of the bow in the entities hand
+     *
      * @param event
      * @since 1.0
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onLivingEntityFireProjectile(ProjectileLaunchEvent event) {
-        if (!(event.getEntity().getShooter() instanceof Player) && ((event.getEntityType() != EntityType.ARROW) && (event.getEntityType() != EntityType.WITHER_SKULL))) return;
+        if (!(event.getEntity().getShooter() instanceof Player) && ((event.getEntityType() != EntityType.ARROW) && (event.getEntityType() != EntityType.WITHER_SKULL)))
+            return;
         LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
         EntityEquipment entityEquipment = shooter.getEquipment();
         if (entityEquipment.getItemInHand() == null) return;
@@ -284,7 +288,7 @@ public class DamageListener implements Listener {
             event.getEntity().remove();
             player.playSound(shooter.getLocation(), Sound.WOLF_PANT, 12F, 1.5F);
             try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, event.getEntity().getLocation().add(0,1,0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, event.getEntity().getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
@@ -402,7 +406,7 @@ public class DamageListener implements Listener {
         }
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getPlayer().getItemInHand()));
         if (nmsItem == null || nmsItem.getTag() == null || !nmsItem.getTag().hasKey("itemType")) return;
-        
+
         Item.ItemType itemType = new Attribute(event.getPlayer().getItemInHand()).getItemType();
         if (itemType != Item.ItemType.STAFF) {
             return;

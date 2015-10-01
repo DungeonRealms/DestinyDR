@@ -133,7 +133,7 @@ public class EnergyListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler (priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onItemPickup(PlayerPickupItemEvent event) {
         if (!(event.getItem() instanceof ExperienceOrb)) return;
         event.setCancelled(true);

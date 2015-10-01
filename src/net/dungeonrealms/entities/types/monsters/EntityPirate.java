@@ -18,66 +18,66 @@ import net.minecraft.server.v1_8_R3.World;
  */
 public class EntityPirate extends MeleeEntityZombie {
 
-	public EntityPirate(World world, EnumEntityType entityType, int tier) {
-		super(world, "pirate", getRandomHead(), tier, entityType, true);
-		int level = Utils.getRandomFromTier(tier);
-		MetadataUtils.registerEntityMetadata(this, entityType, tier, level);
-		EntityStats.setMonsterStats(this, level, tier);
-		this.setCustomName(ChatColor.GOLD + "Pirate");
-		this.setCustomNameVisible(true);
-	}
+    public EntityPirate(World world, EnumEntityType entityType, int tier) {
+        super(world, "pirate", getRandomHead(), tier, entityType, true);
+        int level = Utils.getRandomFromTier(tier);
+        MetadataUtils.registerEntityMetadata(this, entityType, tier, level);
+        EntityStats.setMonsterStats(this, level, tier);
+        this.setCustomName(ChatColor.GOLD + "Pirate");
+        this.setCustomNameVisible(true);
+    }
 
-	/**
-	 * @return
-	 */
-	private static String getRandomHead() {
-		String[] list = new String[] { "samsamsam1234" };
-		return list[Utils.randInt(0, list.length -1)];
-	}
+    /**
+     * @return
+     */
+    private static String getRandomHead() {
+        String[] list = new String[]{"samsamsam1234"};
+        return list[Utils.randInt(0, list.length - 1)];
+    }
 
-	public EntityPirate(World world) {
-		super(world);
-	}
+    public EntityPirate(World world) {
+        super(world);
+    }
 
-	@Override
-	public void setStats() {
+    @Override
+    public void setStats() {
 
-	}
+    }
 
-	@Override
-	protected Item getLoot() {
-		ItemStack item = BankMechanics.gem.clone();
-		item.setAmount(this.random.nextInt(5));
-		this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation(), item);
-		return null;
-	}
+    @Override
+    protected Item getLoot() {
+        ItemStack item = BankMechanics.gem.clone();
+        item.setAmount(this.random.nextInt(5));
+        this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation(), item);
+        return null;
+    }
 
-	@Override
-	protected void getRareDrop() {
-		switch (this.random.nextInt(3)) {
-		case 0:
-			this.a(Items.GOLD_NUGGET, 1);
-			break;
-		case 1:
-			this.a(Items.WOODEN_SWORD, 1);
-			break;
-		case 2:
-			this.a(Items.BOAT, 1);
-		}
-	}
+    @Override
+    protected void getRareDrop() {
+        switch (this.random.nextInt(3)) {
+            case 0:
+                this.a(Items.GOLD_NUGGET, 1);
+                break;
+            case 1:
+                this.a(Items.WOODEN_SWORD, 1);
+                break;
+            case 2:
+                this.a(Items.BOAT, 1);
+        }
+    }
 
-	@Override
-	protected String z() {
-		return "mob.zombie.say";
-	}
+    @Override
+    protected String z() {
+        return "mob.zombie.say";
+    }
 
-	@Override
-	protected String bo() {
-		return "game.player.hurt";
-	}
+    @Override
+    protected String bo() {
+        return "game.player.hurt";
+    }
 
-	@Override
-	protected String bp() {
-		return "mob.zombie.death";
-	}
+    @Override
+    protected String bp() {
+        return "mob.zombie.death";
+    }
 }

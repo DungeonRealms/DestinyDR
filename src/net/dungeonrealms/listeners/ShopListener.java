@@ -17,38 +17,38 @@ import net.md_5.bungee.api.ChatColor;
  */
 public class ShopListener implements Listener {
 
-	/**
-	 * Handling Shops being Right clicked.
-	 *
-	 * @param event
-	 * @since 1.0
-	 */
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void playerRightClickChest(PlayerInteractEvent event) {
-		Block block = event.getClickedBlock();
-		if (block == null) return;
-		if (block.getType() != Material.CHEST) return;
-		Shop shop = ShopMechanics.getShop(block);
-		if (shop == null) return;
-		Action actionType = event.getAction();
-		switch (actionType) {
-		case RIGHT_CLICK_BLOCK:
-			if (shop.isopen || shop.getOwner().getUniqueId() == event.getPlayer().getUniqueId()) {
-				event.setCancelled(true);
-				event.getPlayer().openInventory(shop.getInv());
-			} else if (!shop.isopen) {
-				event.setCancelled(true);
-				event.getPlayer().sendMessage(ChatColor.RED.toString() + "This shop is closed!");
-			}
-			break;
-		case LEFT_CLICK_BLOCK:
-			if (shop.getOwner().getUniqueId() == event.getPlayer().getUniqueId()) {
-				event.setCancelled(true);
-				shop.deleteShop();
-			}
-			break;
-		default:
-		}
-	}
+    /**
+     * Handling Shops being Right clicked.
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void playerRightClickChest(PlayerInteractEvent event) {
+        Block block = event.getClickedBlock();
+        if (block == null) return;
+        if (block.getType() != Material.CHEST) return;
+        Shop shop = ShopMechanics.getShop(block);
+        if (shop == null) return;
+        Action actionType = event.getAction();
+        switch (actionType) {
+            case RIGHT_CLICK_BLOCK:
+                if (shop.isopen || shop.getOwner().getUniqueId() == event.getPlayer().getUniqueId()) {
+                    event.setCancelled(true);
+                    event.getPlayer().openInventory(shop.getInv());
+                } else if (!shop.isopen) {
+                    event.setCancelled(true);
+                    event.getPlayer().sendMessage(ChatColor.RED.toString() + "This shop is closed!");
+                }
+                break;
+            case LEFT_CLICK_BLOCK:
+                if (shop.getOwner().getUniqueId() == event.getPlayer().getUniqueId()) {
+                    event.setCancelled(true);
+                    shop.deleteShop();
+                }
+                break;
+            default:
+        }
+    }
 
 }

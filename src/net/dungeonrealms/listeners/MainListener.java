@@ -85,8 +85,8 @@ public class MainListener implements Listener {
         for (String s : WebAPI.JOIN_INFORMATION) {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', s));
         }
- 			player.getInventory().clear();
-         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> BankMechanics.handleLogin(player.getUniqueId()), 80L);
+        player.getInventory().clear();
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> BankMechanics.handleLogin(player.getUniqueId()), 80L);
         TeleportAPI.addPlayerHearthstoneCD(event.getPlayer().getUniqueId(), 120);
         PlayerManager.checkInventory(player);
         EnergyHandler.handleLogin(player.getUniqueId());

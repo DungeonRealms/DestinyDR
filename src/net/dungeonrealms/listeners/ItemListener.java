@@ -45,7 +45,8 @@ public class ItemListener implements Listener {
     public void onPlayerUseTeleportItem(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
-        if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.QUARTZ && player.getItemInHand().getType() != Material.BOOK) return;
+        if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.QUARTZ && player.getItemInHand().getType() != Material.BOOK)
+            return;
         ItemStack itemStack = player.getItemInHand();
         if (!(CombatLog.isInCombat(event.getPlayer().getUniqueId()))) {
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {

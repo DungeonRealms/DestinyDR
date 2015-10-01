@@ -125,7 +125,7 @@ public class EnergyHandler {
                 regenAmount += 0;
             } else {
                 if (nmsTag.getInt("energyRegen") != 0) {
-                    regenAmount += (regenAmount/100.F) * (nmsTag.getInt("energyRegen") + 2);
+                    regenAmount += (regenAmount / 100.F) * (nmsTag.getInt("energyRegen") + 2);
                 }
                 if (nmsTag.getInt("intellect") != 0) {
                     regenAmount += ((nmsTag.getInt("intellect") * 0.015F) / 100.0F);
@@ -164,7 +164,7 @@ public class EnergyHandler {
         Player player = Bukkit.getPlayer(uuid);
         if (player.isOp()) return;
         if (player.hasMetadata("last_energy_remove")) {
-            if ((System.currentTimeMillis() -  player.getMetadata("last_energy_remove").get(0).asLong()) < 100) {
+            if ((System.currentTimeMillis() - player.getMetadata("last_energy_remove").get(0).asLong()) < 100) {
                 return;
             }
         }

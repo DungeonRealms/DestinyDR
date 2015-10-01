@@ -58,7 +58,7 @@ public class CommandLag implements CommandExecutor {
                 System.out.println("Corrupted Chunk data on world " + w);
             }
             commandSender.sendMessage(ChatColor.GREEN + "World Type: " + ChatColor.WHITE + worldType + ChatColor.GREEN + " World Name: " + ChatColor.WHITE + w.getName());
-            commandSender.sendMessage(ChatColor.GREEN + "Loaded Chunks: " + ChatColor.WHITE + + w.getLoadedChunks().length);
+            commandSender.sendMessage(ChatColor.GREEN + "Loaded Chunks: " + ChatColor.WHITE + +w.getLoadedChunks().length);
             commandSender.sendMessage(ChatColor.GREEN + "Current Entities: " + ChatColor.WHITE + w.getEntities().size() + ChatColor.GREEN + " Current TileEntities: " + ChatColor.WHITE + tileEntities);
             commandSender.sendMessage("");
         }
