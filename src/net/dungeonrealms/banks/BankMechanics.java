@@ -3,13 +3,12 @@
  */
 package net.dungeonrealms.banks;
 
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
+import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.md_5.bungee.api.ChatColor;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -18,13 +17,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import net.dungeonrealms.mastery.ItemSerialization;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.mongo.EnumOperators;
-import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Chase on Sep 18, 2015
@@ -45,11 +42,10 @@ public class BankMechanics {
 			if (inv != null) {
 			ItemStack[] listItems = inv.getContents();
 			ArrayList<ItemStack> list = new ArrayList<>();
-			for (int i = 0; i < listItems.length; i++) {
-				ItemStack item = listItems[i];
-				if (item != null && item.getType() != Material.AIR)
-					list.add(item);
-			}
+				for (ItemStack item : listItems) {
+					if (item != null && item.getType() != Material.AIR)
+						list.add(item);
+				}
 			if (list.isEmpty())
 				for (int i = 0; i < inv.getSize(); i++)
 					list.add(new ItemStack(Material.AIR));
@@ -66,10 +62,9 @@ public class BankMechanics {
 			PlayerInventory inv = Bukkit.getPlayer(uuid).getInventory();
 			ItemStack[] listItems = inv.getContents();
 			ArrayList<ItemStack> list = new ArrayList<>();
-			for (int i = 0; i < listItems.length; i++) {
-			ItemStack item = listItems[i];
-			if (item != null && item.getType() != Material.AIR)
-				list.add(item);
+			for (ItemStack item : listItems) {
+				if (item != null && item.getType() != Material.AIR)
+					list.add(item);
 			}
 			if (list.isEmpty())
 			for (int i = 0; i < inv.getSize(); i++)

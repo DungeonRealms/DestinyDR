@@ -1,17 +1,16 @@
 package net.dungeonrealms.spawning;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.NMSUtils;
+import net.dungeonrealms.mastery.Utils;
+import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mastery.NMSUtils;
-import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.EntityArmorStand;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Chase on Sep 28, 2015
@@ -21,15 +20,11 @@ public class SpawningMechanics {
 
 	public static void updateSpawners() {
 		if(spawners.size() > 0)
-		for (MobSpawner current : spawners) {
-			if (current.playersAround()) {
-			if (!current.isSpawning) {
+			spawners.stream().filter(MobSpawner::playersAround).filter(current -> !current.isSpawning).forEach(current -> {
 				current.isSpawning = true;
 				current.spawnIn();
 				current.doSpawn();
-			}
-			}
-		}
+			});
 	}
 
 	public static void add(MobSpawner spawner) {

@@ -1,14 +1,7 @@
 package net.dungeonrealms.mechanics;
 
-import java.io.IOException;
-import java.util.Arrays;
-
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-
-import net.dungeonrealms.mastery.ItemSerialization;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumOperators;
 
 /**
  * Created by Nick on 9/18/2015.
