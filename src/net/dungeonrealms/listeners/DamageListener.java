@@ -205,16 +205,11 @@ public class DamageListener implements Listener {
                 if (nmsItem != null && nmsItem.getTag() != null) {
                     if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.POLE_ARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
                         DamageAPI.polearmAOEProcessing.add(attacker);
-                        for (Entity entityNear : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
-                            if (entityNear instanceof LivingEntity && entityNear != event.getEntity()) {
-                                ((LivingEntity) entityNear).damage((event.getDamage()), attacker);
-                                Vector unitVector = entityNear.getLocation().toVector().subtract(entityNear.getLocation().toVector()).normalize();
-                                if (attacker != null) {
-                                    unitVector = entityNear.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
-                                }
-                                entityNear.setVelocity(unitVector.multiply(0.10D));
-                            }
-                        }
+                        event.getEntity().getNearbyEntities(2.5, 3, 2.5).stream().filter(entityNear -> entityNear instanceof LivingEntity && entityNear != event.getEntity()).forEach(entityNear -> {
+                            ((LivingEntity) entityNear).damage((event.getDamage()), attacker);
+                            Vector unitVector = entityNear.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
+                            entityNear.setVelocity(unitVector.multiply(0.15D));
+                        });
                         DamageAPI.polearmAOEProcessing.remove(attacker);
                     }
                 }
