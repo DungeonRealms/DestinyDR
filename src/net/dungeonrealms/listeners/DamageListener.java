@@ -198,11 +198,14 @@ public class DamageListener implements Listener {
             LivingEntity attacker = (LivingEntity) event.getDamager();
             armourReducedDamage = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor);
             if (attacker.getEquipment().getItemInHand() != null && attacker.getEquipment().getItemInHand().getType() != Material.AIR) {
-                if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.POLE_ARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
-                    DamageAPI.polearmAOEProcessing.add(attacker);
-                    event.getEntity().getNearbyEntities(2.5, 3, 2.5).stream().filter(entity -> entity instanceof LivingEntity && entity != event.getEntity()).filter(entity -> event.getDamage() > 0)
-                            .forEach(entity -> ((LivingEntity) entity).damage((event.getDamage()), attacker));
-                    DamageAPI.polearmAOEProcessing.remove(attacker);
+                net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attacker.getEquipment().getItemInHand()));
+                if (nmsItem != null && nmsItem.getTag() != null) {
+                    if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.POLE_ARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
+                        DamageAPI.polearmAOEProcessing.add(attacker);
+                        event.getEntity().getNearbyEntities(2.5, 3, 2.5).stream().filter(entity -> entity instanceof LivingEntity && entity != event.getEntity()).filter(entity -> event.getDamage() > 0)
+                                .forEach(entity -> ((LivingEntity) entity).damage((event.getDamage()), attacker));
+                        DamageAPI.polearmAOEProcessing.remove(attacker);
+                    }
                 }
             }
         } else if (event.getDamager().getType() == EntityType.ARROW) {
