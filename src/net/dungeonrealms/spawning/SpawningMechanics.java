@@ -25,6 +25,10 @@ public class SpawningMechanics {
                 }
             }
     }
+    
+    public static ArrayList<MobSpawner> getSpawners(){
+   	 return spawners;
+    }
 
     public static void add(MobSpawner spawner) {
         spawners.add(spawner);
@@ -46,6 +50,13 @@ public class SpawningMechanics {
             }
         }
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> updateSpawners(),
-                0, 6 * 20L);
+                0, 10 * 20L);
     }
+
+	/**
+	 * @param i
+	 */
+	public static void remove(int i) {
+		spawners.remove(i);
+	}
 }

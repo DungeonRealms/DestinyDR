@@ -8,7 +8,10 @@ import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.Item;
 import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.spawning.MobSpawner;
+import net.dungeonrealms.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,6 +31,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.ArrayList;
 import java.util.Random;
 
 /**
@@ -349,6 +353,17 @@ public class DamageListener implements Listener {
                 event.setCancelled(true);
                 event.getEntity().setFireTicks(0);
                 break;
+            case"spawner":
+      			ArrayList<MobSpawner> list = SpawningMechanics.getSpawners();
+      			for (int i = 0; i < list.size(); i++) {
+      			MobSpawner current = list.get(i);
+      			if (current.loc.getBlockX() == event.getEntity().getLocation().getBlockX() &&
+      					current.loc.getBlockY() == event.getEntity().getLocation().getBlockY() && 
+      					current.loc.getBlockZ() == event.getEntity().getLocation().getBlockZ()) 
+      				current.killMobs();
+      				SpawningMechanics.remove(i);
+      			}
+      			break;
             default:
         }
         if (event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.DROWNING
