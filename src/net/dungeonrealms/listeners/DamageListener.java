@@ -198,6 +198,8 @@ public class DamageListener implements Listener {
         if (event.getDamager() instanceof LivingEntity) {
             LivingEntity attacker = (LivingEntity) event.getDamager();
             armourReducedDamage = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor);
+            if(attacker.getEquipment().getItemInHand() == null)
+            	return;
             if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.POLE_ARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
                 DamageAPI.polearmAOEProcessing.add(attacker);
                 for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
