@@ -27,6 +27,7 @@ import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import java.util.Random;
 
@@ -204,8 +205,16 @@ public class DamageListener implements Listener {
                 if (nmsItem != null && nmsItem.getTag() != null) {
                     if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.POLE_ARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
                         DamageAPI.polearmAOEProcessing.add(attacker);
-                        event.getEntity().getNearbyEntities(2.5, 3, 2.5).stream().filter(entity -> entity instanceof LivingEntity && entity != event.getEntity()).filter(entity -> event.getDamage() > 0)
-                                .forEach(entity -> ((LivingEntity) entity).damage((event.getDamage()), attacker));
+                        for (Entity entityNear : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
+                            if (entityNear instanceof LivingEntity && entityNear != event.getEntity()) {
+                                ((LivingEntity) entityNear).damage((event.getDamage()), attacker);
+                                Vector unitVector = entityNear.getLocation().toVector().subtract(entityNear.getLocation().toVector()).normalize();
+                                if (attacker != null) {
+                                    unitVector = entityNear.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
+                                }
+                                entityNear.setVelocity(unitVector.multiply(0.10D));
+                            }
+                        }
                         DamageAPI.polearmAOEProcessing.remove(attacker);
                     }
                 }
