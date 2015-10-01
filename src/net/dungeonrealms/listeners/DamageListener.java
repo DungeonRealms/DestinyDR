@@ -1,36 +1,6 @@
 package net.dungeonrealms.listeners;
 
-import java.util.Random;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.WitherSkull;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
-
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.utils.EntityAPI;
@@ -40,6 +10,24 @@ import net.dungeonrealms.items.Item;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -73,35 +61,39 @@ public class DamageListener implements Listener {
             }
         }
     }
-    
+
     /**
      * Cancel World Guard PVP flag if players are dueling.
+     *
      * @param event
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void disallowPVPEvent(DisallowedPVPEvent event){
-   	 Player p1 = event.getAttacker();
-   	 Player p2 = event.getDefender();
-   	 if(DuelMechanics.isDueling(p1.getUniqueId()) && DuelMechanics.isDueling(p2.getUniqueId())){
-   		 if(DuelMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())){
-   			 event.setCancelled(true);
-   		 }
-   	 }
+    public void disallowPVPEvent(DisallowedPVPEvent event) {
+        Player p1 = event.getAttacker();
+        Player p2 = event.getDefender();
+        if (DuelMechanics.isDueling(p1.getUniqueId()) && DuelMechanics.isDueling(p2.getUniqueId())) {
+            if (DuelMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
+                event.setCancelled(true);
+            }
+        }
     }
-    
-    
+
+
     /**
      * Listen for the players weapon hitting an entity
      * Used for calculating damage based on player weapon
+     *
      * @param event
      * @since 1.0
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
-        if ((!(event.getDamager() instanceof Player)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL))) return;
+        if ((!(event.getDamager() instanceof Player)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
+            return;
         if (!(event.getEntity().hasMetadata("type"))) return;
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
+        boolean isPlayerHitting = false;
         if (event.getDamager() instanceof Player) {
             Player attacker = (Player) event.getDamager();
             if (attacker.getItemInHand() == null) return;
@@ -116,12 +108,13 @@ public class DamageListener implements Listener {
                 event.setCancelled(true);
                 attacker.playSound(attacker.getLocation(), Sound.WOLF_PANT, 12F, 1.5F);
                 try {
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, event.getEntity().getLocation().add(0,1,0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, event.getEntity().getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
                 } catch (Exception ex) {
                     ex.printStackTrace();
                 }
                 return;
             }
+            isPlayerHitting = true;
             EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getItemInHand()));
             attacker.getItemInHand().setDurability(((short) -1));
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);
@@ -129,17 +122,19 @@ public class DamageListener implements Listener {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof Player)) return;
             if (attackingArrow.getShooter() != null && attackingArrow.getShooter() instanceof Player) {
-                finalDamage = DamageAPI.calculateProjectileDamage((Player)attackingArrow.getShooter(), event.getEntity(), attackingArrow);
+                finalDamage = DamageAPI.calculateProjectileDamage((Player) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
             }
         } else if (event.getDamager().getType() == EntityType.WITHER_SKULL) {
             WitherSkull staffProjectile = (WitherSkull) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof Player)) return;
             if (staffProjectile.getShooter() != null && staffProjectile.getShooter() instanceof Player) {
-                finalDamage = DamageAPI.calculateProjectileDamage((Player)staffProjectile.getShooter(), event.getEntity(), staffProjectile);
+                finalDamage = DamageAPI.calculateProjectileDamage((Player) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
             }
         }
         event.setDamage(finalDamage);
     }
+
+
 
     /**
      * Listen for the monsters hitting a player
@@ -203,6 +198,17 @@ public class DamageListener implements Listener {
         if (event.getDamager() instanceof LivingEntity) {
             LivingEntity attacker = (LivingEntity) event.getDamager();
             armourReducedDamage = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor);
+            if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.POLE_ARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
+                DamageAPI.polearmAOEProcessing.add(attacker);
+                for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
+                    if (entity instanceof LivingEntity && entity != event.getEntity()) {
+                        if ((event.getDamage() - armourReducedDamage) > 0) {
+                            ((LivingEntity) entity).damage((event.getDamage() - armourReducedDamage), attacker);
+                        }
+                    }
+                }
+                DamageAPI.polearmAOEProcessing.remove(attacker);
+            }
         } else if (event.getDamager().getType() == EntityType.ARROW) {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof LivingEntity)) return;
