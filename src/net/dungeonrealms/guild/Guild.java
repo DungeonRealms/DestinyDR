@@ -40,6 +40,7 @@ public class Guild {
             Database.guilds.insertOne(
                     new Document("info",
                             new Document("name", name)
+                                    .append("info", "")
                                     .append("clanTag", clanTag)
                                     .append("owner", owner.toString())
                                     .append("officers", new ArrayList<String>())
@@ -51,10 +52,11 @@ public class Guild {
                             Object info = document.get("info");
                             UUID ownerUUID = (UUID) ((Document) info).get("owner");
                             String guildName = ((Document) info).getString("name");
+                            String guildInfo = ((Document) info).getString("info");
                             String guildClanTag = ((Document) info).getString("clanTag");
                             List<UUID> guildOfficers = (List<UUID>) ((Document) info).get("officers");
                             List<UUID> guildMembers = (List<UUID>) ((Document) info).get("members");
-                            GUILDS.add(new GuildBlob(ownerUUID, guildName, guildClanTag, guildOfficers, guildMembers));
+                            GUILDS.add(new GuildBlob(ownerUUID, guildName, guildInfo, guildClanTag, guildOfficers, guildMembers));
                             Utils.log.info("[GUILD] Cached Guild (" + name + ") w/ tag (" + clanTag + ") in volatile memory!");
                         });
                     });
@@ -66,13 +68,15 @@ public class Guild {
     class GuildBlob {
         private UUID owner;
         private String name;
+        private String info;
         private String clanTag;
         private List<UUID> officers;
         private List<UUID> members;
 
-        public GuildBlob(UUID owner, String name, String clanTag, List<UUID> officers, List<UUID> members) {
+        public GuildBlob(UUID owner, String name, String info, String clanTag, List<UUID> officers, List<UUID> members) {
             this.owner = owner;
             this.name = name;
+            this.info = info;
             this.clanTag = clanTag;
             this.officers = officers;
             this.members = members;
@@ -84,6 +88,10 @@ public class Guild {
 
         public String getName() {
             return name;
+        }
+
+        public String getInfo() {
+            return info;
         }
 
         public String getClanTag() {

@@ -104,7 +104,6 @@ public class Rank {
             attachment.setPermission(s, true);
         }
 
-        player.setPlayerListName(ChatColor.translateAlternateColorCodes('&', PLAYER_RANKS.get(player.getUniqueId()).getPrefix()) + " " + player.getName());
         player.setDisplayName(ChatColor.translateAlternateColorCodes('&', PLAYER_RANKS.get(player.getUniqueId()).getPrefix()) + " " + player.getName());
 
     }
