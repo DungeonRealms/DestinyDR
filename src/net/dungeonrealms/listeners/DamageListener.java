@@ -93,7 +93,6 @@ public class DamageListener implements Listener {
         if (!(event.getEntity().hasMetadata("type"))) return;
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
-        boolean isPlayerHitting = false;
         if (event.getDamager() instanceof Player) {
             Player attacker = (Player) event.getDamager();
             if (attacker.getItemInHand() == null) return;
@@ -114,7 +113,6 @@ public class DamageListener implements Listener {
                 }
                 return;
             }
-            isPlayerHitting = true;
             EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getItemInHand()));
             attacker.getItemInHand().setDurability(((short) -1));
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);

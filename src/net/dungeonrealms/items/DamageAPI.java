@@ -619,6 +619,26 @@ public class DamageAPI {
             totalArmorReduction = -2;
         } else {
             totalArmorReduction = damageToBlock[0] + damageToBlock[1] + damageToBlock[2] + damageToBlock[3];
+            if (leDefender.hasPotionEffect(PotionEffectType.DAMAGE_RESISTANCE)) {
+                int potionTier = 1;
+                for (PotionEffect pe : leDefender.getActivePotionEffects()) {
+                    if (pe.getType() == PotionEffectType.DAMAGE_RESISTANCE) {
+                        potionTier = pe.getAmplifier();
+                        break;
+                    }
+                }
+                switch (potionTier) {
+                    case 1:
+                        totalArmorReduction *= 1.05;
+                        break;
+                    case 2:
+                        totalArmorReduction *= 1.1;
+                        break;
+                    case 3:
+                        totalArmorReduction *= 1.2;
+                        break;
+                }
+            }
         }
         return Math.round(totalArmorReduction);
     }
