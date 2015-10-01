@@ -119,7 +119,7 @@ public class AntiCheat {
         return tag.getString("u");
     }
 
-    /**
+     /**
      * Check to see if item contains 'u' field.
      *
      * @param item
@@ -142,7 +142,7 @@ public class AntiCheat {
     public ItemStack applyAntiDupe(ItemStack item) {
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = nmsStack.getTag();
-        if (tag == null || tag.hasKey("u")) return null;
+        if (tag == null || tag.hasKey("u")) return item;
         tag.set("u", new NBTTagString(System.currentTimeMillis() + item.getType().toString()));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
