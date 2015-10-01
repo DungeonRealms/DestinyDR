@@ -7,7 +7,6 @@ import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.BufferedReader;
@@ -95,8 +94,6 @@ public class AntiCheat {
      * @since 1.0
      */
     public boolean watchForDupes(InventoryClickEvent event) {
-        if (event.getInventory().getType() != null && event.getInventory().getType() == InventoryType.CREATIVE)
-            return false;
         ItemStack checkItem = event.getCursor();
         if (checkItem == null) return false;
         if (!isRegistered(checkItem)) return false;
@@ -118,7 +115,7 @@ public class AntiCheat {
     public String getUniqueEpochIdentifier(ItemStack item) {
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = nmsStack.getTag();
-        if (tag == null || tag.hasKey("u")) return null;
+        if (tag == null || !tag.hasKey("u")) return null;
         return tag.getString("u");
     }
 
@@ -142,7 +139,7 @@ public class AntiCheat {
      * @return
      * @since 1.0
      */
-    public ItemStack injectAntiDupe(ItemStack item) {
+    public ItemStack applyAntiDupe(ItemStack item) {
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null || tag.hasKey("u")) return null;
