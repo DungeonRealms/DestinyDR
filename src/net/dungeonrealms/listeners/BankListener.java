@@ -230,7 +230,6 @@ public class BankListener implements Listener {
 					}
 					if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
 						e.setCancelled(true);
-						Utils.log.info("Added Gem");
 						BankMechanics.addGemsToPlayer(player.getUniqueId(), size);
 						e.setCurrentItem(null);
 						ItemStack bankItem = new ItemStack(Material.EMERALD);

@@ -1,8 +1,8 @@
 package net.dungeonrealms.spawning;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -10,7 +10,6 @@ import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
@@ -19,7 +18,7 @@ import net.dungeonrealms.entities.types.monsters.EntityFireImp;
 import net.dungeonrealms.entities.types.monsters.EntityPirate;
 import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
 import net.dungeonrealms.enums.EnumEntityType;
-import net.dungeonrealms.mechanics.XRandom;
+import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.World;
@@ -45,14 +44,13 @@ public class MobSpawner {
 		armorstand.getBukkitEntity().setMetadata("type",
 			new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
 		String temp = "";
-		for (String aType : type) {
-			temp += type[1] + ",";
+		for (int i = 0; i < type.length; i++) {
+			temp += type[i] + ",";
 		}
 		armorstand.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
 		armorstand.getBukkitEntity().setMetadata("monsters", new FixedMetadataValue(DungeonRealms.getInstance(), temp));
 		armorstand.setInvisible(false);
 		armorstand.setPosition(loc.getX(), loc.getY(), loc.getZ());
-		// armorstand.spawnIn(world);
 		world.addEntity(armorstand, SpawnReason.CUSTOM);
 		armorstand.setPosition(loc.getX(), loc.getY(), loc.getZ());
 	}
@@ -65,76 +63,74 @@ public class MobSpawner {
 		isSpawning = false;
 		armorstand = stand;
 		armorstand.setInvisible(false);
-		Bukkit.broadcastMessage("Loaded a spawner");
 	}
 
 	public boolean playersAround() {
 		List<Player> players = API.getNearbyPlayers(loc, 20);
-		Bukkit.broadcastMessage(players.size() + " ");
 		if (players == null || players.size() <= 0)
 			return false;
 		else
 			return true;
 	}
 
-	private HashMap<Entity, Location> toSpawn = new HashMap<>();
-
 	public void spawnIn() {
-		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), new BukkitRunnable() {
-
-			@Override
-			public void run() {
-			for (int i = 0; i < spawnedMonsters.size(); i++) {
-				if (spawnedMonsters.get(i).dead)
-					spawnedMonsters.remove(i);
+		for (int i = 0; i < spawnedMonsters.size(); i++) {
+			if (!spawnedMonsters.get(i).isAlive())
+			spawnedMonsters.remove(i);
+		}
+		if (isSpawning) {
+			if (!playersAround()) {
+			if (spawnedMonsters.size() > 0)
+				for (Entity ent : spawnedMonsters) {
+					ent.die();
+					ent.dead = true;
+					ent.getBukkitEntity().remove();
+					armorstand.getWorld().kill(ent);
+					spawnedMonsters.remove(ent);
+				}
+			isSpawning = false;
+			return;
 			}
-			if (!playersAround() || !isSpawning) {
-				Bukkit.broadcastMessage("timer cancelled");
-				Bukkit.broadcastMessage(playersAround() + "");
-				Bukkit.broadcastMessage(isSpawning + "");
-				isSpawning = false;
-				this.cancel();
+		} else {
+			if (!playersAround()) {
+			return;
+			} else {
+			isSpawning = true;
 			}
-
-			// Max spawn ammount
-			if (spawnedMonsters.size() > 4) {
-				Bukkit.broadcastMessage("max spawn reached for spawner");
-				return;
-			}
+		}
+		// Max spawn ammount
+		if (spawnedMonsters.size() > 4) {
+			Bukkit.broadcastMessage("max spawn reached for spawner");
+			return;
+		}
+		for (int i = 0; i < 4 - spawnedMonsters.size(); i++) {
 			Entity entity = null;
-			String mob = spawnType[new XRandom().nextInt(spawnType.length - 1)];
+			String mob = spawnType[new Random().nextInt(spawnType.length)];
+			Utils.log.info(mob);
 			World world = armorstand.getWorld();
 			EnumEntityType type = EnumEntityType.HOSTILE_MOB;
 			switch (mob) {
 			case "bandit":
-				entity = new EntityBandit(world, tier, type);
+			entity = new EntityBandit(world, tier, type);
+			break;
 			case "rangedpirate":
-				entity = new EntityRangedPirate(world, type, tier);
+			entity = new EntityRangedPirate(world, type, tier);
+			break;
 			case "pirate":
-				entity = new EntityPirate(world, type, tier);
+			entity = new EntityPirate(world, type, tier);
+			break;
 			case "imp":
-				entity = new EntityFireImp(world, tier, type);
+			entity = new EntityFireImp(world, tier, type);
+			break;
 			}
-			entity.setLocation(loc.getX() + new XRandom().nextInt(10), loc.getY(),
-					loc.getZ() + new XRandom().nextInt(10), 1, 1);
-//			 world.addEntity(entity, SpawnReason.CUSTOM);
-			toSpawn.put(entity, new Location(Bukkit.getWorlds().get(0), loc.getX() + new XRandom().nextInt(10),
-					loc.getY(), loc.getZ() + new XRandom().nextInt(10), 1, 1));
+			Location location = new Location(Bukkit.getWorlds().get(0), loc.getX() + new Random().nextInt(3),
+				loc.getY(), loc.getZ() + new Random().nextInt(3));
+			entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+			world.addEntity(entity, SpawnReason.CUSTOM);
+			entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 			spawnedMonsters.add(entity);
-			Bukkit.broadcastMessage("Spawned " + mob + " in at " + loc.toString());
-			}
-
-		}, 20L, 4 * 20);
-	}
-
-	public void doSpawn() {
-		while (toSpawn.size() > 0) {
-			Entity ent = (Entity) toSpawn.keySet().toArray()[0];
-			Location loc = (Location) toSpawn.values().toArray()[0];
-			ent.setLocation(loc.getX(), loc.getY(), loc.getZ(), 1, 1);
-			((CraftWorld)Bukkit.getWorlds().get(0)).getHandle().addEntity(ent, SpawnReason.CUSTOM);
-			ent.setLocation(loc.getX(), loc.getY(), loc.getZ(), 1, 1);
-			toSpawn.remove(ent);
 		}
+
 	}
+
 }
