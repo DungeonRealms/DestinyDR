@@ -3,13 +3,13 @@
  */
 package net.dungeonrealms.banks;
 
-import java.util.List;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Chase on Sep 25, 2015
@@ -31,9 +31,7 @@ public class Storage {
 	public Storage(UUID uuid, List<ItemStack> contents) {
 		ownerUUID = uuid;
 		Inventory inv = Bukkit.createInventory(null, getStorageSize(Bukkit.getPlayer(uuid)), "Storage");
-		for (ItemStack content : contents) {
-			inv.addItem(content);
-		}
+		contents.forEach(inv::addItem);
 		this.inv = inv;
 	}
 
