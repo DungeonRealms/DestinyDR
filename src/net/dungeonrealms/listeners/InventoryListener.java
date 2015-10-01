@@ -3,7 +3,6 @@ package net.dungeonrealms.listeners;
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
-import net.dungeonrealms.anticheat.AntiDupe;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
 import net.dungeonrealms.duel.DuelMechanics;
@@ -46,9 +45,6 @@ public class InventoryListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onInventoryClick(InventoryClickEvent event) {
-        if (AntiDupe.getInstance().clickEvent(event)) {
-            Bukkit.broadcastMessage(event.getWhoClicked().getName() + " TRIED TO DUPLICATE! ARG!");
-        }
         if (event.getCurrentItem() == null) return;
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getCurrentItem());
         if (nmsItem == null) return;

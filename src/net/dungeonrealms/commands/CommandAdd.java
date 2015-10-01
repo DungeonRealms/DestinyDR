@@ -1,6 +1,6 @@
 package net.dungeonrealms.commands;
 
-import net.dungeonrealms.anticheat.AntiProxy;
+import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.inventory.Menu;
 import net.dungeonrealms.items.ItemGenerator;
@@ -37,7 +37,7 @@ public class CommandAdd implements CommandExecutor {
                     Guild.getInstance().createGuild(args[1], args[2], player.getUniqueId());
                     break;
                 case "proxy":
-                    player.sendMessage(String.valueOf(AntiProxy.getInstance().isProxying(player.getUniqueId(), player.getAddress().getAddress())));
+                    player.sendMessage(String.valueOf(AntiCheat.getInstance().isProxying(player.getUniqueId(), player.getAddress().getAddress())));
                     break;
                 case "uploadrealm":
                     new FTPUtils().uploadRealm(player.getUniqueId());
