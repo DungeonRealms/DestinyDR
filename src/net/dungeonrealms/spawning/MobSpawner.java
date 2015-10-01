@@ -1,16 +1,5 @@
 package net.dungeonrealms.spawning;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.metadata.FixedMetadataValue;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.types.monsters.EntityBandit;
@@ -22,6 +11,16 @@ import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.World;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Chase on Sep 25, 2015
@@ -44,8 +43,8 @@ public class MobSpawner {
 		armorstand.getBukkitEntity().setMetadata("type",
 			new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
 		String temp = "";
-		for (int i = 0; i < type.length; i++) {
-			temp += type[i] + ",";
+		for (String aType : type) {
+			temp += aType + ",";
 		}
 		armorstand.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
 		armorstand.getBukkitEntity().setMetadata("monsters", new FixedMetadataValue(DungeonRealms.getInstance(), temp));
@@ -67,10 +66,7 @@ public class MobSpawner {
 
 	public boolean playersAround() {
 		List<Player> players = API.getNearbyPlayers(loc, 20);
-		if (players == null || players.size() <= 0)
-			return false;
-		else
-			return true;
+		return !(players == null || players.size() <= 0);
 	}
 
 	public void spawnIn() {
@@ -125,9 +121,11 @@ public class MobSpawner {
 			}
 			Location location = new Location(Bukkit.getWorlds().get(0), loc.getX() + new Random().nextInt(3),
 				loc.getY(), loc.getZ() + new Random().nextInt(3));
-			entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-			world.addEntity(entity, SpawnReason.CUSTOM);
-			entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+			if (entity != null) {
+				entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+				world.addEntity(entity, SpawnReason.CUSTOM);
+				entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+			}
 			spawnedMonsters.add(entity);
 		}
 
