@@ -12,6 +12,7 @@ import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.*;
@@ -198,18 +199,16 @@ public class DamageListener implements Listener {
         if (event.getDamager() instanceof LivingEntity) {
             LivingEntity attacker = (LivingEntity) event.getDamager();
             armourReducedDamage = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor);
-            if(attacker.getEquipment().getItemInHand() == null)
-            	return;
-            if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.POLE_ARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
-                DamageAPI.polearmAOEProcessing.add(attacker);
-                for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
-                    if (entity instanceof LivingEntity && entity != event.getEntity()) {
-                        if ((event.getDamage() - armourReducedDamage) > 0) {
-                            ((LivingEntity) entity).damage((event.getDamage() - armourReducedDamage), attacker);
-                        }
+            if (attacker.getEquipment().getItemInHand() != null && attacker.getEquipment().getItemInHand().getType() != Material.AIR) {
+                net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attacker.getEquipment().getItemInHand()));
+                if (nmsItem != null && nmsItem.getTag() != null) {
+                    if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.POLE_ARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
+                        DamageAPI.polearmAOEProcessing.add(attacker);
+                        event.getEntity().getNearbyEntities(2.5, 3, 2.5).stream().filter(entity -> entity instanceof LivingEntity && entity != event.getEntity()).filter(entity -> event.getDamage() > 0)
+                                .forEach(entity -> ((LivingEntity) entity).damage((event.getDamage()), attacker));
+                        DamageAPI.polearmAOEProcessing.remove(attacker);
                     }
                 }
-                DamageAPI.polearmAOEProcessing.remove(attacker);
             }
         } else if (event.getDamager().getType() == EntityType.ARROW) {
             Arrow attackingArrow = (Arrow) event.getDamager();
