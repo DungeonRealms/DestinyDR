@@ -3,7 +3,7 @@ package net.dungeonrealms.enums;
 /**
  * Created by Kieran on 9/18/2015.
  */
-public enum  EnumEntityType {
+public enum EnumEntityType {
 
     PET(0, "PET"),
     MOUNT(1, "MOUNT"),

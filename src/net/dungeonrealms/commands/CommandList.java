@@ -20,7 +20,7 @@ public class CommandList implements CommandExecutor {
 
         StringBuilder players = new StringBuilder();
 
-        for(Player player : Bukkit.getOnlinePlayers()) {
+        for (Player player : Bukkit.getOnlinePlayers()) {
             if (players.length() > 0) {
                 players.append(ChatColor.AQUA).append(", ").append(ChatColor.GOLD);
             }

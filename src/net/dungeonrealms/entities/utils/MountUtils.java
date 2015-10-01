@@ -29,10 +29,10 @@ public class MountUtils {
                 Horse mountHorse = new Horse(world, 0, 0.25D, player.getUniqueId(), EnumEntityType.MOUNT);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0 , 0);
+                mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 mountHorse.getBukkitEntity().setPassenger(player);
                 org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
-                HorseInventory horseInventory =  horse.getInventory();
+                HorseInventory horseInventory = horse.getInventory();
                 horseInventory.setSaddle(new ItemStack(Material.SADDLE));
                 horseInventory.setArmor(new ItemStack(Material.IRON_BARDING));
                 player.playSound(player.getLocation(), Sound.HORSE_IDLE, 1F, 1F);
@@ -48,7 +48,7 @@ public class MountUtils {
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 mountHorse.getBukkitEntity().setPassenger(player);
                 org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
-                HorseInventory horseInventory =  horse.getInventory();
+                HorseInventory horseInventory = horse.getInventory();
                 horseInventory.setSaddle(new ItemStack(Material.SADDLE));
                 horseInventory.setArmor(new ItemStack(Material.GOLD_BARDING));
                 player.playSound(player.getLocation(), Sound.HORSE_IDLE, 1F, 1F);
@@ -64,7 +64,7 @@ public class MountUtils {
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 mountHorse.getBukkitEntity().setPassenger(player);
                 org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
-                HorseInventory horseInventory =  horse.getInventory();
+                HorseInventory horseInventory = horse.getInventory();
                 horseInventory.setSaddle(new ItemStack(Material.SADDLE));
                 horseInventory.setArmor(new ItemStack(Material.DIAMOND_BARDING));
                 player.playSound(player.getLocation(), Sound.HORSE_IDLE, 1F, 1F);
@@ -95,7 +95,7 @@ public class MountUtils {
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 mountHorse.getBukkitEntity().setPassenger(player);
                 org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
-                HorseInventory horseInventory =  horse.getInventory();
+                HorseInventory horseInventory = horse.getInventory();
                 horseInventory.setSaddle(new ItemStack(Material.SADDLE));
                 player.playSound(player.getLocation(), Sound.HORSE_ZOMBIE_IDLE, 1F, 1F);
                 player.sendMessage("Mount Spawned!");
