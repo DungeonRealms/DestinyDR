@@ -1,5 +1,6 @@
 package net.dungeonrealms.items;
 
+import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.ChatColor;
@@ -100,7 +101,7 @@ public class ItemGenerator {
 
         nmsStack.setTag(tag);
 
-        return CraftItemStack.asBukkitCopy(nmsStack);
+        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
 
     /**
