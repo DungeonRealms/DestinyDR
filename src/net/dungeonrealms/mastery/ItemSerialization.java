@@ -1,66 +1,60 @@
 package net.dungeonrealms.mastery;
 
-import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import net.minecraft.server.v1_8_R3.PacketDataSerializer;
-import org.apache.commons.io.IOUtils;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.List;
+import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
 /**
- * Created by Nick on 9/24/2015.
+ * Created by Xwaffle on 9/24/2015.
  */
 public class ItemSerialization {
 	/**
-	 * Serializes a list of items to a String
-	 *
-	 * @param items
-	 * @since 1.0
+	 * 
+	 * Converts an Inventory to a string
+	 * 
+	 * @param i
+	 * @return String
 	 */
-	public static String serialize(Collection<ItemStack> items) throws IOException {
-		ByteArrayInputStream ret = null;
-		if (!items.isEmpty()) {
-			ByteBuf buf = Unpooled.buffer();
-			PacketDataSerializer serializer = new PacketDataSerializer(buf);
-			buf.writeInt(items.size());
-			for (ItemStack item : items)
-			serializer.a(CraftItemStack.asNMSCopy(item));
-			ret = new ByteArrayInputStream(serializer.array());
+	
+	public static String toString(Inventory i) {
+		YamlConfiguration configuration = new YamlConfiguration();
+		configuration.set("Title", i.getTitle());
+		configuration.set("Size", i.getSize());
+		for (int a = 0; a < i.getSize(); a++) {
+			ItemStack s = i.getItem(a);
+			if (s == null)
+			s = new ItemStack(Material.AIR, 1);
+			configuration.set("Contents." + a, s);
 		}
-		return IOUtils.toString(ret, "UTF-8");
+		return Base64Coder.encodeString(configuration.saveToString());
 	}
 
+	
 	/**
-	 * Deserializes a String to a list of items.
-	 *
-	 * @param source
-	 * @since 1.0
+	 * 
+	 * Conerts String to an Inventory.
+	 * 
+	 * @param s
+	 * @return Inventory
 	 */
-	public static List<ItemStack> deserialize(String source) throws IOException {
-		InputStream input = IOUtils.toInputStream(source, "UTF-8");
-		List<ItemStack> items = new ArrayList<>();
-		DataInputStream in = new DataInputStream(input);
-		ByteBuf buf = Unpooled.buffer();
-		buf.writeBytes(IOUtils.toByteArray(in));
-		PacketDataSerializer serializer = new PacketDataSerializer(buf);
-		int count = buf.readInt();
-		for (int i = 0; i < count; i++) {
-			net.minecraft.server.v1_8_R3.ItemStack item = serializer.i();
-			if (item != null) {
-			items.add(CraftItemStack.asCraftMirror(item));
-			}
+	public static Inventory fromString(String s) {
+		YamlConfiguration configuration = new YamlConfiguration();
+		try {
+			configuration.loadFromString(Base64Coder.decodeString(s));
+			Inventory i = Bukkit.createInventory(null, configuration.getInt("Size"), configuration.getString("Title"));
+			ConfigurationSection contents = configuration.getConfigurationSection("Contents");
+			for (String index : contents.getKeys(false))
+			if (contents.getItemStack(index) != null)
+				i.setItem(Integer.parseInt(index), contents.getItemStack(index));
+			return i;
+		} catch (InvalidConfigurationException e) {
+			return null;
 		}
-		if (items.size() == 0)
-			items.add(new ItemStack(Material.AIR));
-		return items;
 	}
+
 }

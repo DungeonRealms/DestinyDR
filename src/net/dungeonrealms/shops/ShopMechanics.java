@@ -7,6 +7,7 @@ import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.banks.BankMechanics;
+import net.dungeonrealms.mastery.Utils;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -105,6 +106,7 @@ public class ShopMechanics {
 			while (shops.size() > 0) {
 			shops.get(0).deleteShop();
 			shops.remove(0);
+			Utils.log.info("A Shop deleted");
 			}
 			Thread.sleep(1000);
 		} catch (InterruptedException e) {
