@@ -48,7 +48,7 @@ public class MobSpawner {
 		}
 		armorstand.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
 		armorstand.getBukkitEntity().setMetadata("monsters", new FixedMetadataValue(DungeonRealms.getInstance(), temp));
-		armorstand.setInvisible(false);
+		armorstand.setInvisible(true);
 		armorstand.setPosition(loc.getX(), loc.getY(), loc.getZ());
 		world.addEntity(armorstand, SpawnReason.CUSTOM);
 		armorstand.setPosition(loc.getX(), loc.getY(), loc.getZ());
@@ -61,7 +61,7 @@ public class MobSpawner {
 		this.tier = stand.getBukkitEntity().getMetadata("tier").get(0).asInt();
 		isSpawning = false;
 		armorstand = stand;
-		armorstand.setInvisible(false);
+		armorstand.setInvisible(true);
 	}
 
 	public boolean playersAround() {

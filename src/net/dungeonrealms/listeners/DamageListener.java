@@ -1,6 +1,43 @@
 package net.dungeonrealms.listeners;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.WitherSkull;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
+
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
+
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.utils.EntityAPI;
@@ -10,30 +47,11 @@ import net.dungeonrealms.items.Item;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.spawning.MobSpawner;
 import net.dungeonrealms.spawning.SpawningMechanics;
+import net.dungeonrealms.teleportation.TeleportAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.*;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.*;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
-
-import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -97,9 +115,39 @@ public class DamageListener implements Listener {
         if ((!(event.getDamager() instanceof Player)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
             return;
         if (!(event.getEntity().hasMetadata("type"))) return;
+        //Armor Stand Spawner check.
+        if(event.getEntity().getType() == EntityType.ARMOR_STAND){
+      	 if(event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("spawner")){
+      		 Player attacker = (Player) event.getDamager();
+      		 if(attacker.isOp() || attacker.getGameMode() == GameMode.CREATIVE){
+      			 ArrayList<MobSpawner> list = SpawningMechanics.getSpawners();
+      			 for (int i = 0; i < list.size(); i++) {
+      				 MobSpawner current = list.get(i);
+      				 if (current.loc.getBlockX() == event.getEntity().getLocation().getBlockX() &&
+      						 current.loc.getBlockY() == event.getEntity().getLocation().getBlockY() && 
+      						 current.loc.getBlockZ() == event.getEntity().getLocation().getBlockZ()) {
+      					 current.killMobs();
+      					 event.getEntity().remove();
+      					 SpawningMechanics.remove(i);
+      					 break;
+      				 }
+      			 }
+         	}else{
+         		event.setDamage(0);
+         		event.setCancelled(true);
+     				return;
+         	}
+  			}else{
+      		event.setDamage(0);
+  				event.setCancelled(true);
+  				return;
+  			}
+				return;
+        }
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
         if (event.getDamager() instanceof Player) {
+      	  
             Player attacker = (Player) event.getDamager();
             if (attacker.getItemInHand() == null) return;
             //Check if the item has NBT, all our custom weapons will have NBT.
@@ -357,17 +405,9 @@ public class DamageListener implements Listener {
                 event.setCancelled(true);
                 event.getEntity().setFireTicks(0);
                 break;
-            case"spawner":
-      			ArrayList<MobSpawner> list = SpawningMechanics.getSpawners();
-      			for (int i = 0; i < list.size(); i++) {
-      			MobSpawner current = list.get(i);
-      			if (current.loc.getBlockX() == event.getEntity().getLocation().getBlockX() &&
-      					current.loc.getBlockY() == event.getEntity().getLocation().getBlockY() && 
-      					current.loc.getBlockZ() == event.getEntity().getLocation().getBlockZ()) 
-      				current.killMobs();
-      				SpawningMechanics.remove(i);
-      			}
-      			break;
+            case "spawner":
+            	event.setCancelled(true);
+            	break;
             default:
         }
         if (event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.DROWNING
@@ -387,7 +427,15 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerDeath(EntityDeathEvent event) {
-        if (!(event.getEntity() instanceof Player)) return;
+        if (!(event.getEntity() instanceof Player)){
+           List<ItemStack> list = event.getDrops();
+           for(int i = 0;i <list.size();i++){
+         	  ItemStack item = list.get(i);
+         	  if(item.getType() == Material.SKULL || item.getType() == Material.SKULL_ITEM)
+					list.remove(i);
+           }
+
+        }else{
         if (EntityAPI.hasPetOut(event.getEntity().getUniqueId())) {
             net.minecraft.server.v1_8_R3.Entity pet = EntityAPI.getPlayerPet(event.getEntity().getUniqueId());
             if (!pet.getBukkitEntity().isDead()) { //Safety check
@@ -405,8 +453,34 @@ public class DamageListener implements Listener {
             EntityAPI.getPlayerMount(event.getEntity().getUniqueId());
             event.getEntity().sendMessage("For it's own safety, your mount has returned to the stable.");
         }
+        List<ItemStack> list = event.getDrops();
+       ((Player)event.getEntity()).getInventory().setItem(8, null);
+        for(int i = 0;i <list.size();i++){
+      	  ItemStack item = list.get(i);
+//      	  if(item.getType() == Material.SKULL || item.getType() == Material.SKULL_ITEM){
+//				list.remove(i);
+//				continue;
+//      	  }
+      	  Utils.log.info(item.getType().name());
+      	  net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+      	  if(nms.hasTag()){
+      		  if(nms.getTag().hasKey("type"))
+      		  Utils.log.info(nms.getTag().getString("type"));
+      		  if(nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")){
+      			  list.remove(i);
+      			  continue;
+      		  }
+      	  }
+        }
     }
+    }
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void onPlayerRespawn(PlayerRespawnEvent event){
+   	 Player player = event.getPlayer();
+       TeleportAPI.addPlayerHearthstoneCD(player.getUniqueId(), 120);
+       PlayerManager.checkInventory(player.getUniqueId());
 
+    }
     /**
      * Listen for Players using their "staff" item
      * Checks to see if they can, and

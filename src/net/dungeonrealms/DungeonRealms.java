@@ -103,6 +103,7 @@ public class DungeonRealms extends JavaPlugin {
 
     public void onDisable() {
         ShopMechanics.deleteAllShops();
+        BankMechanics.logoutAllPlayers();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
         Database.mongoClient.close();
     }
