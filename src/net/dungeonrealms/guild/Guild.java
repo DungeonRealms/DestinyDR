@@ -115,7 +115,6 @@ public class Guild {
 
     }
 
-
     public class GuildBlob {
         private UUID owner;
         private String name;

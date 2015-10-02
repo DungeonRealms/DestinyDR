@@ -38,12 +38,10 @@ public class Chat {
         if (r != null && !r.getPrefix().equals("null")) {
             prefix.append(ChatColor.translateAlternateColorCodes('&', "[" + r.getPrefix() + ChatColor.RESET + "]"));
         }
-
         Guild.GuildBlob g = Guild.getInstance().getGuild(uuid);
         if (g != null) {
             prefix.append(ChatColor.translateAlternateColorCodes('&', " (" + g.getClanTag() + ChatColor.RESET + ")"));
         }
-
         event.setFormat(prefix.toString() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage());
     }
 
