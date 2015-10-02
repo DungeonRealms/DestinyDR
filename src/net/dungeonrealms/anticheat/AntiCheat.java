@@ -128,8 +128,7 @@ public class AntiCheat {
      */
     public boolean isRegistered(ItemStack item) {
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
-        if (nmsStack == null || nmsStack.getTag() == null) return false;
-        return nmsStack.getTag().hasKey("u");
+        return !(nmsStack == null || nmsStack.getTag() == null) && nmsStack.getTag().hasKey("u");
     }
 
     /**

@@ -19,11 +19,7 @@ public class SpawningMechanics {
 
     public static void updateSpawners() {
         if (spawners.size() > 0)
-            for (MobSpawner current : spawners) {
-                if (current.playersAround()) {
-                    current.spawnIn();
-                }
-            }
+            spawners.stream().filter(MobSpawner::playersAround).forEach(net.dungeonrealms.spawning.MobSpawner::spawnIn);
     }
     
     public static ArrayList<MobSpawner> getSpawners(){
@@ -49,7 +45,7 @@ public class SpawningMechanics {
                 Utils.log.info(aList.getClass().getSimpleName());
             }
         }
-        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> updateSpawners(),
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), SpawningMechanics::updateSpawners,
                 0, 10 * 20L);
     }
 

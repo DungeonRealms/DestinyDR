@@ -3,9 +3,7 @@ package net.dungeonrealms.banks;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
 
-import java.util.List;
 import java.util.UUID;
 
 /**

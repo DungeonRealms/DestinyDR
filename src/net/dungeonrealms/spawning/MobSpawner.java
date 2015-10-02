@@ -43,8 +43,8 @@ public class MobSpawner {
 		armorstand.getBukkitEntity().setMetadata("type",
 			new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
 		String temp = "";
-		for (int i = 0; i < type.length; i++) {
-			temp += type[i] + ",";
+		for (String aType : type) {
+			temp += aType + ",";
 		}
 		armorstand.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
 		armorstand.getBukkitEntity().setMetadata("monsters", new FixedMetadataValue(DungeonRealms.getInstance(), temp));
@@ -136,9 +136,9 @@ public class MobSpawner {
 	 * 
 	 */
 	public void killMobs() {
-		for (int i = 0; i < spawnedMonsters.size(); i++) {
-			spawnedMonsters.get(i).getBukkitEntity().remove();
-			armorstand.getWorld().kill(spawnedMonsters.get(i));
+		for (Entity spawnedMonster : spawnedMonsters) {
+			spawnedMonster.getBukkitEntity().remove();
+			armorstand.getWorld().kill(spawnedMonster);
 		}
 	}
 }

@@ -3,17 +3,14 @@ package net.dungeonrealms.listeners;
 import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.chat.Chat;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
 import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.utils.EntityAPI;
-import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.rank.Subscription;
-import net.dungeonrealms.teleportation.TeleportAPI;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -86,7 +83,7 @@ public class MainListener implements Listener {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', s));
         }
         player.getInventory().clear();
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> BankMechanics.handleLogin(player.getUniqueId()), 80L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> API.handleLogin(player.getUniqueId()), 80L);
         EnergyHandler.handleLogin(player.getUniqueId());
     }
 
@@ -161,7 +158,7 @@ public class MainListener implements Listener {
             DuelMechanics.getWager(player.getUniqueId()).handleLogOut(player.getUniqueId());
         }
         EnergyHandler.handleLogout(player.getUniqueId());
-        BankMechanics.handleLogout(event.getPlayer().getUniqueId());
+        API.handleLogout(event.getPlayer().getUniqueId());
     }
 
     /**
