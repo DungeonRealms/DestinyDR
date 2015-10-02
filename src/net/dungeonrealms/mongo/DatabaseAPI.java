@@ -2,6 +2,7 @@ package net.dungeonrealms.mongo;
 
 import com.mongodb.client.model.Filters;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
@@ -80,6 +81,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("ecash", Integer.class);
             case FRIENDS:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("friends", ArrayList.class);
+            case GUILD:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("guild", String.class);
             /*
             Rank Things. Different Sub-Document().
              */
@@ -122,7 +125,7 @@ public class DatabaseAPI {
      * @since 1.0
      */
     public void startInitialization() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> REQUEST_NEW_DATA.forEach(this::requestPlayer), 0, 1l);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> REQUEST_NEW_DATA.forEach(this::requestPlayer), 0, 5l);
     }
 
     /**
@@ -137,13 +140,19 @@ public class DatabaseAPI {
             if (document == null) {
                 addNewPlayer(uuid);
             } else if (document != null) {
+                PLAYERS.put(uuid, document);
                 if (REQUEST_NEW_DATA.contains(uuid)) {
                     REQUEST_NEW_DATA.remove(uuid);
                 }
-                PLAYERS.put(uuid, document);
-                //Put The player in the Rank List so it be be iterated and checked for subscription length.
-                Subscription.PLAYER_SUBSCRIPTION.add(uuid);
-                Rank.getInstance().handleLogin(uuid);
+
+                /**
+                 * Things below here are ESSENTIAL.
+                 * THIS IS THE MOTHERPOINT OF THE ENTIRE
+                 * PLUGIN.
+                 */
+                Subscription.getInstance().doAdd(uuid);
+                Rank.getInstance().doGet(uuid);
+                Guild.getInstance().doGet(uuid);
             }
         });
     }
@@ -168,6 +177,7 @@ public class DatabaseAPI {
                                 .append("hearthstone", "starter")
                                 .append("isPlaying", true)
                                 .append("friends", new ArrayList<>())
+                                .append("guild", "")
                                 .append("attributes",
                                         new Document("strength", 1).append("dexterity", 1).append("intellect", 1).append("vitality", 1))
                                 .append("collectibles",

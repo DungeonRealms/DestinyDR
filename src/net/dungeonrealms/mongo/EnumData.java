@@ -24,6 +24,8 @@ public enum EnumData {
     INVENTORY_STORAGE,
     INVENTORY,
 
+    GUILD,
+
 
     /*
     Player Attributes
