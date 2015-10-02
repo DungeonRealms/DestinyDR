@@ -43,6 +43,8 @@ public class DungeonRealms extends JavaPlugin {
         instance = this;
     }
 
+    //Fucking Gay Niggers
+
     public void onEnable() {
         long START_TIME = System.currentTimeMillis() / 1000L;
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
