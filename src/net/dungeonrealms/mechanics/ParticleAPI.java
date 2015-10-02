@@ -37,7 +37,8 @@ public class ParticleAPI {
         SMALL_SMOKE(15, "smallsmoke", EnumParticle.SMOKE_NORMAL),
         CLOUD(16, "cloud", EnumParticle.CLOUD),
         HAPPY_VILLAGER(17, "villagerhappy", EnumParticle.VILLAGER_HAPPY),
-        SPELL(18, "spell", EnumParticle.SPELL);
+        SPELL(18, "spell", EnumParticle.SPELL),
+        SNOW_SHOVEL(19, "snowshovel", EnumParticle.SNOW_SHOVEL);
 
         private int id;
         private String rawName;

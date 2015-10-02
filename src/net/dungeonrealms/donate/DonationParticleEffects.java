@@ -23,6 +23,10 @@ public class DonationParticleEffects {
         return instance;
     }
 
+    //CLOSED BETA PAYERS = RED_DUST
+    //HALLOWEEN PLAYERS = SMALL_SMOKE
+    //CHRISTMAS PLAYERS = SNOW_SHOVEL
+
     public static HashMap<Player, ParticleAPI.ParticleEffect> playerParticleEffects = new HashMap<>();
 
     public void startInitialization() {
