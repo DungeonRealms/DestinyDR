@@ -3,7 +3,7 @@ package net.dungeonrealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.commands.*;
-import net.dungeonrealms.donate.DonationParticleEffects;
+import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.PetUtils;
@@ -71,7 +71,7 @@ public class DungeonRealms extends JavaPlugin {
         EnchantmentAPI.getInstance().startInitialization();
         Subscription.getInstance().startInitialization();
         Rank.getInstance().startInitialization();
-        DonationParticleEffects.getInstance().startInitialization();
+        DonationEffects.getInstance().startInitialization();
 
         Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
         Entities.getInstance().startInitialization();

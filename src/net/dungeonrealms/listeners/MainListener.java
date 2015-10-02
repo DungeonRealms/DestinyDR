@@ -4,6 +4,7 @@ import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.chat.Chat;
+import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
 import net.dungeonrealms.energy.EnergyHandler;
@@ -13,17 +14,16 @@ import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.rank.Subscription;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Map;
 
@@ -162,24 +162,25 @@ public class MainListener implements Listener {
     }
 
     /**
-     * @param e
-     * @since 1.0
      * Handling Duels. When a player punches another player.
+     *
+     * @param event
+     * @since 1.0
      */
     @EventHandler(priority = EventPriority.LOWEST)
-    public void playerPunchPlayer(EntityDamageByEntityEvent e) {
-        if (!(e.getEntity() instanceof Player && e.getDamager() instanceof Player)) return;
-        Player p1 = (Player) e.getDamager();
-        Player p2 = (Player) e.getEntity();
+    public void playerPunchPlayer(EntityDamageByEntityEvent event) {
+        if (!(event.getEntity() instanceof Player && event.getDamager() instanceof Player)) return;
+        Player p1 = (Player) event.getDamager();
+        Player p2 = (Player) event.getEntity();
         if (API.isInSafeRegion(p1.getUniqueId()) && API.isInSafeRegion(p2.getUniqueId())) {
             if (DuelMechanics.isDueling(p2.getUniqueId())) {
                 // If player they're punching is their duel partner
                 if (DuelMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
-                    if (p2.getHealth() - e.getDamage() <= 0) {
+                    if (p2.getHealth() - event.getDamage() <= 0) {
                         // if they're gonna die this hit end duel
                         DuelWager wager = DuelMechanics.getWager(p1.getUniqueId());
                         if (wager != null) {
-                            e.setCancelled(true);
+                            event.setCancelled(true);
                             p2.setHealth(0.5);
                             wager.endDuel(p1, p2);
                         }
@@ -187,7 +188,7 @@ public class MainListener implements Listener {
                 } else
                     p1.sendMessage("That's not you're dueling partner!");
             } else {
-                e.setCancelled(true);
+                event.setCancelled(true);
                 if (DuelMechanics.isOnCooldown(p1.getUniqueId())) {
                     p1.sendMessage(ChatColor.RED + "You must wait to send another Duel Request");
                     return;
@@ -212,6 +213,30 @@ public class MainListener implements Listener {
                     DuelMechanics.sendDuelRequest(p1.getUniqueId(), p2.getUniqueId());
                 }
             }
+        }
+    }
+
+    /**
+     * Checks player movement, adds a trail of gold blocks if they have
+     * the perk and the situation is correct.
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        if (!(DonationEffects.playerGoldBlockTrail.contains(event.getPlayer()))) return;
+        if (!(player.getWorld().getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName()))) return;
+        if (player.getLocation().getBlock().getType() != Material.AIR) return;
+        Material material = player.getLocation().subtract(0, 1, 0).getBlock().getType();
+        if (material == Material.DIRT || material == Material.GRASS || material == Material.STONE || material == Material.COBBLESTONE || material == Material.GRAVEL
+                || material == Material.LOG || material == Material.LEAVES || material == Material.SMOOTH_BRICK || material == Material.BEDROCK || material == Material.GLASS
+                || material == Material.SANDSTONE || material == Material.SAND || material == Material.BOOKSHELF || material == Material.MOSSY_COBBLESTONE || material == Material.OBSIDIAN
+                || material == Material.SNOW_BLOCK || material == Material.ICE || material == Material.CLAY || material == Material.STAINED_CLAY || material == Material.WOOL) {
+            DonationEffects.playerGoldBlockTrailLocation.put(player.getLocation().subtract(0, 1, 0).getBlock().getLocation(), material);
+            player.getLocation().subtract(0, 1, 0).getBlock().setType(Material.GOLD_BLOCK);
+            player.getLocation().subtract(0, 1, 0).getBlock().setMetadata("time", new FixedMetadataValue(DungeonRealms.getInstance(), 10));
         }
     }
 }

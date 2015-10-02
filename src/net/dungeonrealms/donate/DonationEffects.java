@@ -4,21 +4,24 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Kieran on 10/1/2015.
  */
-public class DonationParticleEffects {
+public class DonationEffects {
 
-    private static DonationParticleEffects instance = null;
+    private static DonationEffects instance = null;
 
-    public static DonationParticleEffects getInstance() {
+    public static DonationEffects getInstance() {
         if (instance == null) {
-            instance = new DonationParticleEffects();
+            instance = new DonationEffects();
         }
         return instance;
     }
@@ -28,9 +31,12 @@ public class DonationParticleEffects {
     //CHRISTMAS PLAYERS = SNOW_SHOVEL
 
     public static HashMap<Player, ParticleAPI.ParticleEffect> playerParticleEffects = new HashMap<>();
+    public static ConcurrentHashMap<Location, Material> playerGoldBlockTrailLocation = new ConcurrentHashMap<>();
+    public static List<Player> playerGoldBlockTrail = new ArrayList<>();
 
     public void startInitialization() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::spawnPlayerParticleEffects, 40L, 1L);
+        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::removeGoldBlockTrails, 40L, 3L);
     }
 
     private void spawnPlayerParticleEffects() {
@@ -42,5 +48,20 @@ public class DonationParticleEffects {
                 Utils.log.warning("[Donations] [ASYNC] Could not spawn donation particle for player " + player.getName());
             }
         }, 0L));
+    }
+
+    private void removeGoldBlockTrails() {
+        for (Map.Entry<Location, Material> goldTrails : playerGoldBlockTrailLocation.entrySet()) {
+            Location location = goldTrails.getKey();
+            int timeRemaining = location.getBlock().getMetadata("time").get(0).asInt();
+            timeRemaining--;
+            if (timeRemaining <= 0) {
+                Material material = goldTrails.getValue();
+                location.getBlock().setType(material);
+                playerGoldBlockTrailLocation.remove(location);
+            } else {
+                location.getBlock().setMetadata("time", new FixedMetadataValue(DungeonRealms.getInstance(), timeRemaining));
+            }
+        }
     }
 }
