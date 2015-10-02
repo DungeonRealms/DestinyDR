@@ -2,6 +2,7 @@ package net.dungeonrealms.spawning;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
 import net.dungeonrealms.entities.types.monsters.EntityBandit;
 import net.dungeonrealms.entities.types.monsters.EntityFireImp;
 import net.dungeonrealms.entities.types.monsters.EntityPirate;
@@ -108,19 +109,27 @@ public class MobSpawner {
 			Utils.log.info(mob);
 			World world = armorstand.getWorld();
 			EnumEntityType type = EnumEntityType.HOSTILE_MOB;
+			synchronized (this) {
 			switch (mob) {
 			case "bandit":
-			entity = new EntityBandit(world, tier, type);
-			break;
+				entity = new EntityBandit(world, tier, type);
+				break;
 			case "rangedpirate":
-			entity = new EntityRangedPirate(world, type, tier);
-			break;
+				entity = new EntityRangedPirate(world, type, tier);
+				break;
 			case "pirate":
-			entity = new EntityPirate(world, type, tier);
-			break;
+				entity = new EntityPirate(world, type, tier);
+				break;
 			case "imp":
-			entity = new EntityFireImp(world, tier, type);
-			break;
+				entity = new EntityFireImp(world, tier, type);
+				break;
+			case "troll":
+				entity = new BasicMeleeMonster(world, "Troll", "Steve", tier);
+				break;
+			case "goblin":
+				entity = new BasicMeleeMonster(world, "Goblin", "Steve", tier);
+				break;
+			}
 			}
 			Location location = new Location(Bukkit.getWorlds().get(0), loc.getX() + new Random().nextInt(3),
 				loc.getY(), loc.getZ() + new Random().nextInt(3));

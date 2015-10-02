@@ -83,7 +83,7 @@ public class MainListener implements Listener {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', s));
         }
         player.getInventory().clear();
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> API.handleLogin(player.getUniqueId()), 80L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> API.handleLogin(player.getUniqueId()), 20L);
         EnergyHandler.handleLogin(player.getUniqueId());
     }
 
