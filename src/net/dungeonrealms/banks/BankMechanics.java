@@ -55,7 +55,7 @@ public class BankMechanics {
 			Bukkit.getPlayer(uuid).getInventory().setContents(items);
 		}
 		String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
-		if (source != null && source.length() > 0) {
+		if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
 			Inventory inv = ItemSerialization.fromString(source);
 			Storage storageTemp = new Storage(uuid, inv);
 			storage.put(uuid, storageTemp);
