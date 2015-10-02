@@ -102,12 +102,11 @@ public class Shop {
         hologram.delete();
         for (int i = 0; i < inventory.getSize(); i++) {
             ItemStack current = inventory.getItem(i);
-            if (current == null)
-                continue;
+            if (current == null) continue;
             net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(current);
-            if (nms.hasTag())
-                if (nms.getTag().hasKey("status"))
-                    continue;
+            if (nms.hasTag()) {
+                if (nms.getTag().hasKey("status")) continue;
+            }
             inventory.setItem(i, null);
             ItemMeta meta = current.getItemMeta();
             List<String> lore = meta.getLore();
@@ -131,7 +130,7 @@ public class Shop {
         // TODO: WTF ARE YOU DOING CHASE WE HAVE A PARTICLE API. DON'T CALL THIS
         // SHIT. GOOD BOY
         /*
-		 * Packet b_particles = new PacketPlayOutWorldEvent(2001, new
+         * Packet b_particles = new PacketPlayOutWorldEvent(2001, new
 		 * BlockPosition((int) Math.round(chest.getLocation().getX()), (int)
 		 * Math.round(chest.getLocation().getY()), (int)
 		 * Math.round(chest.getLocation().getZ())), 54, false); ((CraftServer)

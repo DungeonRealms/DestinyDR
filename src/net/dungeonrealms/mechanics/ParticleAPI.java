@@ -63,6 +63,7 @@ public class ParticleAPI {
 
     /**
      * Sends a particle to a location so that every player within 25 blocks can see it
+     *
      * @param particleEffect
      * @param location
      * @param xOffset
@@ -91,6 +92,7 @@ public class ParticleAPI {
 
     /**
      * Creates a new packet to send to players with given parameters
+     *
      * @param particleEffect
      * @param location
      * @param xOffset
@@ -116,6 +118,7 @@ public class ParticleAPI {
 
     /**
      * Sets the packets value so that the location etc registers correctly
+     *
      * @param instance
      * @param fieldName
      * @param value
@@ -129,6 +132,7 @@ public class ParticleAPI {
 
     /**
      * Sends the packet to a player
+     *
      * @param uuid
      * @param packet
      * @since 1.0

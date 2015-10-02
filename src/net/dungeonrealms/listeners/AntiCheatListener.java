@@ -26,7 +26,6 @@ public class AntiCheatListener implements Listener {
         if (AntiCheat.getInstance().watchForDupes(event)) {
             Utils.log.warning("[ANTI-CHEAT] [DUPE] Player: " + event.getWhoClicked().getName());
             Bukkit.broadcastMessage(ChatColor.RED + "[AntiCheat]" + ChatColor.BLUE + " Type:" + ChatColor.AQUA + "Duplication " + ChatColor.BLUE + "User:" + ChatColor.AQUA + event.getWhoClicked().getName() + ChatColor.BLUE + " Time:" + ChatColor.AQUA + System.currentTimeMillis());
-
         }
     }
 

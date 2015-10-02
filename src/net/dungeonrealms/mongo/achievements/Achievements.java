@@ -25,6 +25,14 @@ public class Achievements {
         return instance;
     }
 
+    /**
+     * Checks if a player has the achievement.
+     *
+     * @param uuid
+     * @param achievement
+     * @return
+     * @since 1.0
+     */
     private boolean hasAchievement(UUID uuid, EnumAchievements achievement) {
         Object info = DatabaseAPI.PLAYERS.get(uuid).get("collectibles");
         ArrayList<String> TEMP_LIST = (ArrayList<String>) ((Document) info).get("achievements");
@@ -34,6 +42,13 @@ public class Achievements {
         return TEMP_LIST.contains(achievement.getMongoName());
     }
 
+    /**
+     * Gives a player an achievement, performs internal hasCheck.
+     *
+     * @param uuid
+     * @param achievement
+     * @since 1.0
+     */
     public void giveAchievement(UUID uuid, EnumAchievements achievement) {
         if (!(hasAchievement(uuid, achievement))) {
             Database.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document("$push", new Document("collectibles.achievements", achievement.getMongoName())),

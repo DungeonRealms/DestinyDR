@@ -23,6 +23,7 @@ import java.util.UUID;
 public class Teleportation {
 
     private static Teleportation instance = null;
+
     public static Teleportation getInstance() {
         if (instance == null) {
             return new Teleportation();
@@ -74,6 +75,14 @@ public class Teleportation {
         }, 0, 20L);
     }
 
+    /**
+     * Teleports a player to a location.
+     *
+     * @param uuid
+     * @param teleportType
+     * @param nbt
+     * @since 1.0
+     */
     public static void teleportPlayer(UUID uuid, EnumTeleportType teleportType, NBTTagCompound nbt) {
         Player player = Bukkit.getPlayer(uuid);
         if (player.getWorld().getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName())) {
@@ -168,7 +177,7 @@ public class Teleportation {
                     }
                 }
             }
-        },0 ,20L);
+        }, 0, 20L);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 160L);
     }
 }

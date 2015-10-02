@@ -15,11 +15,11 @@ public class ReflectionAPI {
     /**
      * Finds a declared field of a specific type in the target class. With a specific index.
      *
-     * @param target the target class to retrieve the fields from
+     * @param target    the target class to retrieve the fields from
      * @param fieldType the field type that you want to search for
-     * @param index the field index starting in the specified order
+     * @param index     the field index starting in the specified order
      * @return the field
-     * */
+     */
     public static Field findField(Class<?> target, Class<?> fieldType, int index) {
         return findField(target, fieldType, index, false);
     }
@@ -27,10 +27,10 @@ public class ReflectionAPI {
     /**
      * Finds a declared field of a specific type in the target class. With a specific index.
      *
-     * @param target the target class to retrieve the fields from
+     * @param target    the target class to retrieve the fields from
      * @param fieldType the field type that you want to search for
-     * @param index the field index starting in the specified order
-     * @param reverse whether you want to reverse the order of the fields
+     * @param index     the field index starting in the specified order
+     * @param reverse   whether you want to reverse the order of the fields
      * @return the field
      */
     public static Field findField(Class<?> target, Class<?> fieldType, int index, boolean reverse) {
@@ -54,7 +54,7 @@ public class ReflectionAPI {
     /**
      * Finds all the declared fields of a specific type in the target class.
      *
-     * @param target the target class to retrieve the fields from
+     * @param target    the target class to retrieve the fields from
      * @param fieldType the field type that you want to search for
      * @return the fields
      */
@@ -65,9 +65,9 @@ public class ReflectionAPI {
     /**
      * Finds all the declared fields of a specific type in the target class.
      *
-     * @param target the target class to retrieve the fields from
+     * @param target    the target class to retrieve the fields from
      * @param fieldType the field type that you want to search for
-     * @param depth the depth you want to check for underlying classes their fields
+     * @param depth     the depth you want to check for underlying classes their fields
      * @return the fields
      */
     public static Field[] findFields(Class<?> target, Class<?> fieldType, int depth) {
@@ -84,15 +84,15 @@ public class ReflectionAPI {
                 break;
             }
         }
-            return list.toArray(new Field[list.size()]);
+        return list.toArray(new Field[list.size()]);
     }
 
     /**
      * Finds the objects of all declared fields with a specific type in the
      * target class.
      *
-     * @param target the target class to retrieve the fields from
-     * @param fieldType the field type that you want to search for
+     * @param target       the target class to retrieve the fields from
+     * @param fieldType    the field type that you want to search for
      * @param targetObject the target object you want to retrieve the object of
      * @return the objects
      */
@@ -104,10 +104,10 @@ public class ReflectionAPI {
      * Finds the objects of all declared fields with a specific type in the
      * target class.
      *
-     * @param target the target class to retrieve the fields from
-     * @param fieldType the field type that you want to search for
+     * @param target       the target class to retrieve the fields from
+     * @param fieldType    the field type that you want to search for
      * @param targetObject the target object you want to retrieve the object of
-     * @param depth the depth you want to check for underlying classes their fields
+     * @param depth        the depth you want to check for underlying classes their fields
      * @return the objects
      */
     public static Object[] findFieldsAndGet(Class<?> target, Class<?> fieldType, Object targetObject, int depth) {
