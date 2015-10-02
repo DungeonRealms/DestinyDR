@@ -18,56 +18,59 @@ import java.util.stream.Collectors;
  */
 public class API {
 
-	/**
-	 * Gets the WorldGuard plugin.
-	 *
-	 * @return
-	 * @since 1.0
-	 */
-	private static WorldGuardPlugin getWorldGuard() {
-		Plugin plugin = DungeonRealms.getInstance().getServer().getPluginManager().getPlugin("WorldGuard");
-		if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
-			try {
-			throw new UnknownObjectException("getWorldGuard() of API.class is RETURNING NULL!");
-			} catch (UnknownObjectException e) {
-			e.printStackTrace();
-			}
-		}
-		return (WorldGuardPlugin) plugin;
-	}
-	/**
-	 * @param uuid
-	 * @since 1.0
-	 * Checks if player is in a region that denys PVP
-	 */
-	public static boolean isInSafeRegion(UUID uuid) {
-		Player p = Bukkit.getPlayer(uuid);
-		ApplicableRegionSet region = getWorldGuard().getRegionManager(p.getWorld()).getApplicableRegions(p.getLocation());
-		return region.getFlag(DefaultFlag.PVP) != null && !region.allows(DefaultFlag.PVP);
-	}
+    /**
+     * Gets the WorldGuard plugin.
+     *
+     * @return
+     * @since 1.0
+     */
+    private static WorldGuardPlugin getWorldGuard() {
+        Plugin plugin = DungeonRealms.getInstance().getServer().getPluginManager().getPlugin("WorldGuard");
+        if (plugin == null || !(plugin instanceof WorldGuardPlugin)) {
+            try {
+                throw new UnknownObjectException("getWorldGuard() of API.class is RETURNING NULL!");
+            } catch (UnknownObjectException e) {
+                e.printStackTrace();
+            }
+        }
+        return (WorldGuardPlugin) plugin;
+    }
 
-	/**
-	 * Will check the players region
-	 * 
-	 * @param uuid
-	 * @param region
-	 * @return
-	 * @since 1.0
-	 */
-	public static boolean isPlayerInRegion(UUID uuid, String region) {
-		return getWorldGuard().getRegionManager(Bukkit.getPlayer(uuid).getWorld())
-			.getApplicableRegions(Bukkit.getPlayer(uuid).getLocation()).getRegions().contains(region);
-	}
+    /**
+     * Checks if player is in a region that denys PVP
+     *
+     * @param uuid
+     * @since 1.0
+     */
+    public static boolean isInSafeRegion(UUID uuid) {
+        Player p = Bukkit.getPlayer(uuid);
+        ApplicableRegionSet region = getWorldGuard().getRegionManager(p.getWorld()).getApplicableRegions(p.getLocation());
+        return region.getFlag(DefaultFlag.PVP) != null && !region.allows(DefaultFlag.PVP);
+    }
+
+    /**
+     * Will check the players region
+     *
+     * @param uuid
+     * @param region
+     * @return
+     * @since 1.0
+     */
+    public static boolean isPlayerInRegion(UUID uuid, String region) {
+        return getWorldGuard().getRegionManager(Bukkit.getPlayer(uuid).getWorld())
+                .getApplicableRegions(Bukkit.getPlayer(uuid).getLocation()).getRegions().contains(region);
+    }
 
 
-	/**
-	 * Gets the a list of nearby players from a location within a given radius
-	 * @param location
-	 * @param radius
-	 * @since 1.0
-	 */
-	public static List<Player> getNearbyPlayers(Location location, int radius) {
-		return location.getWorld().getPlayers().stream().filter(player -> location.distance(player.getLocation()) <= radius).collect(Collectors.toList());
-	}
+    /**
+     * Gets the a list of nearby players from a location within a given radius
+     *
+     * @param location
+     * @param radius
+     * @since 1.0
+     */
+    public static List<Player> getNearbyPlayers(Location location, int radius) {
+        return location.getWorld().getPlayers().stream().filter(player -> location.distance(player.getLocation()) <= radius).collect(Collectors.toList());
+    }
 
 }

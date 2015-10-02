@@ -13,8 +13,10 @@ import java.util.Map;
 
 /**
  * Created by Nick on 9/17/2015.
+ * From Bukkit, to register our NPCs.
  */
 public class NMSUtils {
+
     public void registerEntity(String name, int id, Class<? extends EntityInsentient> nmsClass,
                                Class<? extends EntityInsentient> customClass) {
         try {

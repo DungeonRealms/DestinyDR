@@ -36,8 +36,10 @@ import java.util.UUID;
  */
 public class BankListener implements Listener {
     /**
+     * Bank Inventory. When a player moves items
+     *
      * @param e
-     * @since 1.0 Bank Inventory. When a player moves items
+     * @since 1.0
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEnderChestRightClick(PlayerInteractEvent e) {
@@ -54,8 +56,10 @@ public class BankListener implements Listener {
     }
 
     /**
+     * Bank inventorys clicked.
+     *
      * @param e
-     * @since 1.0 Bank inventorys clicked.
+     * @since 1.0
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBankClicked(InventoryClickEvent e) {
@@ -207,7 +211,7 @@ public class BankListener implements Listener {
                                 player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
                             }
                         }
-                    } else if (e.getRawSlot() == 0) {
+                    } else {
                         e.setCancelled(true);
                         Storage storage = BankMechanics.getStorage(player.getUniqueId());
                         if (e.isLeftClick()) {
@@ -365,7 +369,7 @@ public class BankListener implements Listener {
     }
 
     /**
-     * Gets ammount to add, or subtract for each slot clicked in How Many?
+     * Gets amount to add, or subtract for each slot clicked in How Many?
      * Inventory.
      *
      * @param slot

@@ -2,6 +2,8 @@ package net.dungeonrealms.listeners;
 
 import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.mastery.Utils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -23,6 +25,7 @@ public class AntiCheatListener implements Listener {
     public void onClick(InventoryClickEvent event) {
         if (AntiCheat.getInstance().watchForDupes(event)) {
             Utils.log.warning("[ANTI-CHEAT] [DUPE] Player: " + event.getWhoClicked().getName());
+            Bukkit.broadcastMessage(ChatColor.RED + "[AntiCheat]" + ChatColor.BLUE + " Type:" + ChatColor.AQUA + "Duplication " + ChatColor.BLUE + "User:" + ChatColor.AQUA + event.getWhoClicked().getName() + ChatColor.BLUE + " Time:" + ChatColor.AQUA + System.currentTimeMillis());
         }
     }
 

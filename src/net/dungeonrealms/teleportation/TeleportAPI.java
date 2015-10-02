@@ -19,6 +19,7 @@ public class TeleportAPI {
 
     /**
      * Checks if the player can use their hearthstone
+     *
      * @param uuid
      * @since 1.0
      */
@@ -33,6 +34,7 @@ public class TeleportAPI {
 
     /**
      * Adds a cooldown to the players hearthstone
+     *
      * @param uuid
      * @since 1.0
      */
@@ -43,6 +45,7 @@ public class TeleportAPI {
     /**
      * Adds the player to the currently teleporting list
      * Used for checking if the player is moving/in combat etc
+     *
      * @param uuid
      * @since 1.0
      */
@@ -53,6 +56,7 @@ public class TeleportAPI {
     /**
      * Checks if the player is in the currently teleporting list
      * Used for checking if the player is moving/in combat etc
+     *
      * @param uuid
      * @since 1.0
      */
@@ -63,6 +67,7 @@ public class TeleportAPI {
     /**
      * Removes the player to the currently teleporting list
      * Used for checking if the player is moving/in combat etc
+     *
      * @param uuid
      * @since 1.0
      */
@@ -76,6 +81,7 @@ public class TeleportAPI {
 
     /**
      * Gets the players cooldown on hearthstone usage
+     *
      * @param uuid
      * @since 1.0
      */
@@ -85,6 +91,7 @@ public class TeleportAPI {
 
     /**
      * Checks if the item is a teleportation book
+     *
      * @param itemStack
      * @since 1.0
      */
@@ -99,6 +106,7 @@ public class TeleportAPI {
 
     /**
      * Checks if the item is a hearthstone
+     *
      * @param itemStack
      * @since 1.0
      */
@@ -113,6 +121,7 @@ public class TeleportAPI {
 
     /**
      * Gets the location of a players hearthstone from Mongo
+     *
      * @param uuid
      * @since 1.0
      */
@@ -126,6 +135,7 @@ public class TeleportAPI {
 
     /**
      * Gets the location of a teleport from a given string
+     *
      * @param location
      * @since 1.0
      */
@@ -163,6 +173,7 @@ public class TeleportAPI {
 
     /**
      * Returns a random string "location"
+     *
      * @since 1.0
      */
     public static String getRandomTeleportString() {

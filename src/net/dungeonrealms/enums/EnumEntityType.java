@@ -29,7 +29,7 @@ public enum EnumEntityType {
 
     private static EnumEntityType getByIdValue(int id) {
         for (EnumEntityType entityType : values()) {
-            if (entityType.id == id) {
+            if (entityType.getId() == id) {
                 return entityType;
             }
         }

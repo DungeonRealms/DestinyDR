@@ -22,10 +22,14 @@ public class PartyMechanics {
         return instance;
     }
 
-
     private static ArrayList<Party> PARTIES = new ArrayList<>();
 
-
+    /**
+     * Creates a party and gives UUID ownership.
+     *
+     * @param uuid
+     * @since 1.0
+     */
     public void createParty(UUID uuid) {
         if (!(isInParty(uuid))) {
             Party p = new Party(uuid, new ArrayList<>());
@@ -38,6 +42,13 @@ public class PartyMechanics {
         }
     }
 
+    /**
+     * Checks if a player is in a party.
+     *
+     * @param uuid
+     * @return
+     * @since 1.0
+     */
     private boolean isInParty(UUID uuid) {
         for (Party p : PARTIES) {
             if (p.getMembers().contains(uuid) || p.getOwner().equals(uuid)) {
@@ -47,6 +58,14 @@ public class PartyMechanics {
         return false;
     }
 
+    /**
+     * Returners true if the supplied UUID is
+     * owner of a party.
+     *
+     * @param uuid
+     * @return
+     * @since 1.0
+     */
     private boolean isOwner(UUID uuid) {
         for (Party p : PARTIES) {
             if (p.getOwner().equals(uuid)) {
@@ -56,6 +75,13 @@ public class PartyMechanics {
         return false;
     }
 
+    /**
+     * Kicks a player from a party.
+     *
+     * @param party
+     * @param uuid
+     * @since 1.0
+     */
     public void kickPlayer(Party party, UUID uuid) {
         Bukkit.getPlayer(uuid).sendMessage(new String[]{
                 "You have been kicked from the party!"
@@ -63,6 +89,12 @@ public class PartyMechanics {
         party.getMembers().remove(uuid);
     }
 
+    /**
+     * Disbands a[n] party.
+     *
+     * @param party
+     * @since 1.0
+     */
     public void disbandParty(Party party) {
         for (UUID uuid : party.getMembers()) {
             Bukkit.getPlayer(uuid).sendMessage(new String[]{
@@ -72,6 +104,13 @@ public class PartyMechanics {
         PARTIES.remove(party);
     }
 
+    /**
+     * Get the party object of a player
+     *
+     * @param uuid
+     * @return
+     * @since 1.0
+     */
     public Party getParty(UUID uuid) {
         if (isOwner(uuid)) {
             for (Party p : PARTIES) {
@@ -83,6 +122,13 @@ public class PartyMechanics {
         return null;
     }
 
+    /**
+     * Invites a player to a party.
+     *
+     * @param p
+     * @param uuid
+     * @since 1.0
+     */
     public void inviteToParty(Party p, UUID uuid) {
         if (isOwner(p.getOwner())) {
             Party party = getParty(p.getOwner());
@@ -102,6 +148,12 @@ public class PartyMechanics {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> PARTIES.forEach(this::setScoreboard), 0, 20L);
     }
 
+    /**
+     * Sets the scoreboard for a party.
+     *
+     * @param party
+     * @since 1.0
+     */
     private void setScoreboard(Party party) {
         ScoreboardManager manager = Bukkit.getScoreboardManager();
         Scoreboard board = manager.getNewScoreboard();

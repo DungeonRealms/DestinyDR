@@ -16,6 +16,8 @@ import java.util.UUID;
  */
 public class Guild {
 
+    //TODO: Checking other guilds isn't case.. ARG
+
     static Guild instance = null;
 
     public static Guild getInstance() {
@@ -28,6 +30,15 @@ public class Guild {
     ArrayList<GuildBlob> GUILDS = new ArrayList<>();
 
 
+    /**
+     * Creates a guild also checks to make sure it doesn't
+     * exist.
+     *
+     * @param name
+     * @param clanTag
+     * @param owner
+     * @since 1.0
+     */
     public void createGuild(String name, String clanTag, UUID owner) {
 
         Database.guilds.find(Filters.eq("info.name", name)).first((document, throwable) -> {
@@ -40,7 +51,7 @@ public class Guild {
             Database.guilds.insertOne(
                     new Document("info",
                             new Document("name", name)
-                                    .append("info", "")
+                                    .append("motd", "")
                                     .append("clanTag", clanTag)
                                     .append("owner", owner.toString())
                                     .append("officers", new ArrayList<String>())
@@ -52,11 +63,11 @@ public class Guild {
                             Object info = document.get("info");
                             UUID ownerUUID = (UUID) ((Document) info).get("owner");
                             String guildName = ((Document) info).getString("name");
-                            String guildInfo = ((Document) info).getString("info");
+                            String guildMotd = ((Document) info).getString("motd");
                             String guildClanTag = ((Document) info).getString("clanTag");
                             List<UUID> guildOfficers = (List<UUID>) ((Document) info).get("officers");
                             List<UUID> guildMembers = (List<UUID>) ((Document) info).get("members");
-                            GUILDS.add(new GuildBlob(ownerUUID, guildName, guildInfo, guildClanTag, guildOfficers, guildMembers));
+                            GUILDS.add(new GuildBlob(ownerUUID, guildName, guildMotd, guildClanTag, guildOfficers, guildMembers));
                             Utils.log.info("[GUILD] Cached Guild (" + name + ") w/ tag (" + clanTag + ") in volatile memory!");
                         });
                     });
@@ -68,15 +79,15 @@ public class Guild {
     class GuildBlob {
         private UUID owner;
         private String name;
-        private String info;
+        private String motd;
         private String clanTag;
         private List<UUID> officers;
         private List<UUID> members;
 
-        public GuildBlob(UUID owner, String name, String info, String clanTag, List<UUID> officers, List<UUID> members) {
+        public GuildBlob(UUID owner, String name, String motd, String clanTag, List<UUID> officers, List<UUID> members) {
             this.owner = owner;
             this.name = name;
-            this.info = info;
+            this.motd = motd;
             this.clanTag = clanTag;
             this.officers = officers;
             this.members = members;
@@ -90,8 +101,8 @@ public class Guild {
             return name;
         }
 
-        public String getInfo() {
-            return info;
+        public String getMotd() {
+            return motd;
         }
 
         public String getClanTag() {
