@@ -1,7 +1,7 @@
 package net.dungeonrealms.commands;
 
 import net.dungeonrealms.anticheat.AntiCheat;
-import net.dungeonrealms.donate.DonationParticleEffects;
+import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.inventory.Menu;
 import net.dungeonrealms.items.ItemGenerator;
@@ -65,7 +65,10 @@ public class CommandAdd implements CommandExecutor {
                     break;
                 case "trail":
                     if (args[1] != null)
-                        DonationParticleEffects.playerParticleEffects.put(player, ParticleAPI.ParticleEffect.getById(Integer.valueOf(args[1])));
+                        DonationEffects.playerParticleEffects.put(player, ParticleAPI.ParticleEffect.getById(Integer.valueOf(args[1])));
+                    break;
+                case "gold":
+                    DonationEffects.playerGoldBlockTrail.add(player);
                     break;
 
             }
