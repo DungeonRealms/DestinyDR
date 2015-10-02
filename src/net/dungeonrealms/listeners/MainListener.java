@@ -40,7 +40,7 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onChat(AsyncPlayerChatEvent event) {
-        Chat.getInstance().monitorLanguage(event);
+        Chat.getInstance().doChat(event);
     }
 
     /**

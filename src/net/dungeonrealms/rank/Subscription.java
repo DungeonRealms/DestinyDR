@@ -31,6 +31,9 @@ public class Subscription {
 
     public static ArrayList<UUID> PLAYER_SUBSCRIPTION = new ArrayList<>();
 
+    public void doAdd(UUID uuid) {
+        PLAYER_SUBSCRIPTION.add(uuid);
+    }
 
     public void startInitialization() {
         Utils.log.info("[DUNGEON_REALMS] Starting up Subscription() ... STARTING");

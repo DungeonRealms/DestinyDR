@@ -55,6 +55,17 @@ public class Rank {
     }
 
     /**
+     * Gets the players rank.
+     *
+     * @param uuid
+     * @return
+     * @since 1.0
+     */
+    public RankBlob getRank(UUID uuid) {
+        return PLAYER_RANKS.get(uuid);
+    }
+
+    /**
      * Creates a new rank on Mongo Collection ("rank")
      *
      * @param rankName
@@ -69,7 +80,10 @@ public class Rank {
                                 .append("suffix", suffix)
                                 .append("permissions", new ArrayList<String>())
                 );
-        Database.ranks.insertOne(blankRankDocument, (aVoid, throwable) -> Utils.log.warning("Created a new Rank " + rankName));
+        Database.ranks.insertOne(blankRankDocument, (aVoid, throwable) -> {
+            Utils.log.warning("Created a new Rank " + rankName);
+            startInitialization();
+        });
     }
 
     /**
@@ -103,9 +117,6 @@ public class Rank {
         for (String s : rank.getPermissions()) {
             attachment.setPermission(s, true);
         }
-
-        player.setDisplayName(ChatColor.translateAlternateColorCodes('&', PLAYER_RANKS.get(player.getUniqueId()).getPrefix()) + " " + player.getName());
-
     }
 
     /**
@@ -115,18 +126,12 @@ public class Rank {
      *
      * @param uuid
      */
-    public void handleLogin(UUID uuid) {
-        if (Bukkit.getPlayer(uuid) == null) return;
-        Player player = Bukkit.getPlayer(uuid);
+    public void doGet(UUID uuid) {
         PLAYER_RANKS.put(uuid, RAW_RANKS.get(DatabaseAPI.getInstance().getData(EnumData.RANK, uuid)));
-
-        player.setPlayerListName(ChatColor.translateAlternateColorCodes('&', PLAYER_RANKS.get(player.getUniqueId()).getPrefix()) + " " + player.getName());
-        player.setDisplayName(ChatColor.translateAlternateColorCodes('&', PLAYER_RANKS.get(player.getUniqueId()).getPrefix()) + " " + player.getName());
-
-        Utils.log.info("[RANK] Assigned proper rank to player " + uuid.toString());
+        Utils.log.info("[RANK] doGet(" + uuid.toString() + ") retrieved rank.");
     }
 
-    class RankBlob {
+    public class RankBlob {
         private String name;
         private long created;
         private String prefix;
