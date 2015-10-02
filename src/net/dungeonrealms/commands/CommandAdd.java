@@ -1,6 +1,7 @@
 package net.dungeonrealms.commands;
 
 import net.dungeonrealms.anticheat.AntiCheat;
+import net.dungeonrealms.donate.DonationParticleEffects;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.inventory.Menu;
 import net.dungeonrealms.items.ItemGenerator;
@@ -61,6 +62,10 @@ public class CommandAdd implements CommandExecutor {
                     Banktag.set("type", new NBTTagString("bank"));
                     nmsBank.setTag(Banktag);
                     player.getInventory().addItem(CraftItemStack.asBukkitCopy(nmsBank));
+                    break;
+                case "trail":
+                    if (args[1] != null)
+                        DonationParticleEffects.playerParticleEffects.put(player, ParticleAPI.ParticleEffect.getById(Integer.valueOf(args[1])));
                     break;
 
             }

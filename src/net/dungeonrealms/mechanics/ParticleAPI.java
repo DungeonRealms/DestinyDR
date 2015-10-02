@@ -19,37 +19,49 @@ import java.util.UUID;
 public class ParticleAPI {
 
     public enum ParticleEffect {
-        FIREWORKS_SPARK(0, EnumParticle.FIREWORKS_SPARK),
-        BUBBLE(1, EnumParticle.WATER_BUBBLE),
-        TOWN_AURA(2, EnumParticle.TOWN_AURA),
-        CRIT(3, EnumParticle.CRIT),
-        MAGIC_CRIT(4, EnumParticle.CRIT_MAGIC),
-        WITCH_MAGIC(5, EnumParticle.SPELL_WITCH),
-        NOTE(6, EnumParticle.NOTE),
-        PORTAL(7, EnumParticle.PORTAL),
-        ENCHANTMENT_TABLE(8, EnumParticle.ENCHANTMENT_TABLE),
-        FLAME(9, EnumParticle.FLAME),
-        LAVA(10, EnumParticle.LAVA),
-        SPLASH(11, EnumParticle.WATER_SPLASH),
-        LARGE_SMOKE(12, EnumParticle.SMOKE_LARGE),
-        RED_DUST(13, EnumParticle.REDSTONE),
-        SNOWBALL_POOF(14, EnumParticle.SNOWBALL),
-        SMALL_SMOKE(15, EnumParticle.SMOKE_NORMAL),
-        CLOUD(16, EnumParticle.CLOUD),
-        HAPPY_VILLAGER(17, EnumParticle.VILLAGER_HAPPY),
-        SPELL(18, EnumParticle.SPELL);
+        FIREWORKS_SPARK(0, "fireworks", EnumParticle.FIREWORKS_SPARK),
+        BUBBLE(1, "bubble", EnumParticle.WATER_BUBBLE),
+        TOWN_AURA(2, "townaura", EnumParticle.TOWN_AURA),
+        CRIT(3, "critical", EnumParticle.CRIT),
+        MAGIC_CRIT(4, "magiccrit", EnumParticle.CRIT_MAGIC),
+        WITCH_MAGIC(5, "witchmagic", EnumParticle.SPELL_WITCH),
+        NOTE(6, "note", EnumParticle.NOTE),
+        PORTAL(7, "portal", EnumParticle.PORTAL),
+        ENCHANTMENT_TABLE(8, "enchantment", EnumParticle.ENCHANTMENT_TABLE),
+        FLAME(9, "flame", EnumParticle.FLAME),
+        LAVA(10, "lava", EnumParticle.LAVA),
+        SPLASH(11, "splash", EnumParticle.WATER_SPLASH),
+        LARGE_SMOKE(12, "largesmoke", EnumParticle.SMOKE_LARGE),
+        RED_DUST(13, "reddust", EnumParticle.REDSTONE),
+        SNOWBALL_POOF(14, "snowball", EnumParticle.SNOWBALL),
+        SMALL_SMOKE(15, "smallsmoke", EnumParticle.SMOKE_NORMAL),
+        CLOUD(16, "cloud", EnumParticle.CLOUD),
+        HAPPY_VILLAGER(17, "villagerhappy", EnumParticle.VILLAGER_HAPPY),
+        SPELL(18, "spell", EnumParticle.SPELL),
+        SNOW_SHOVEL(19, "snowshovel", EnumParticle.SNOW_SHOVEL);
 
         private int id;
+        private String rawName;
         private EnumParticle particle;
 
-        ParticleEffect(int id, EnumParticle particle) {
+        ParticleEffect(int id, String rawName, EnumParticle particle) {
             this.id = id;
+            this.rawName = rawName;
             this.particle = particle;
         }
 
         public static ParticleEffect getById(int id) {
             for (ParticleEffect particleEffect : values()) {
                 if (particleEffect.id == id) {
+                    return particleEffect;
+                }
+            }
+            return null;
+        }
+
+        public static ParticleEffect getByName(String rawName) {
+            for (ParticleEffect particleEffect : values()) {
+                if (particleEffect.rawName.equalsIgnoreCase(rawName)) {
                     return particleEffect;
                 }
             }
