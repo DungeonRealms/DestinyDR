@@ -13,6 +13,7 @@ import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
  * Created by Xwaffle on 9/24/2015.
  */
 public class ItemSerialization {
+
     /**
      * Converts an Inventory to a string
      *
