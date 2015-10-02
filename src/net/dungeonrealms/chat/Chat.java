@@ -25,7 +25,6 @@ public class Chat {
 
     List<String> TERRIBLE_WORDS = Arrays.asList("shit", "nigger", "wynncraft", "dungeonrealms.us", "myspace.com");
 
-
     /**
      * Monitor the players primary language also check for bad words.
      *
