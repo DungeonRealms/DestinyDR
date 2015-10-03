@@ -16,16 +16,13 @@ public class ClickHandler {
         return instance;
     }
 
-    public void doClick(InventoryClickEvent event) {
+    public void doGuildClick(InventoryClickEvent event) {
         String name = event.getInventory().getName();
         int slot = event.getRawSlot();
         if (slot == -999) return;
         if (name.startsWith("Guild - ")) {
             event.setCancelled(true);
-            if (slot > 54) return;
-            switch (slot) {
-
-            }
+            //if (slot > 54) return;
         }
     }
 }

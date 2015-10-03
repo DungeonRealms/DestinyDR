@@ -66,7 +66,6 @@ public class Guild {
             List<String> guildOfficers = (List<String>) ((Document) info).get("officers");
             List<String> guildMembers = (List<String>) ((Document) info).get("members");
             GUILDS.put(guildName.toUpperCase(), new GuildBlob(ownerUUID, guildName.toUpperCase(), guildMotd, guildClanTag, guildOfficers, guildMembers));
-            Utils.log.info("[GUILD] [ASYNC] Grabbed guild for " + uuid.toString());
         });
     }
 

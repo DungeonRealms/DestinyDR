@@ -46,7 +46,7 @@ public class InventoryListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onImportantInventoryClick(InventoryClickEvent event) {
-        ClickHandler.getInstance().doClick(event);
+        ClickHandler.getInstance().doGuildClick(event);
     }
 
     /**

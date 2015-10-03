@@ -151,6 +151,7 @@ public class DatabaseAPI {
                  * THIS IS THE MOTHERPOINT OF THE ENTIRE
                  * PLUGIN.
                  */
+                //TODO: Make sure this isn't called regularly!!!
                 Subscription.getInstance().doAdd(uuid);
                 Rank.getInstance().doGet(uuid);
                 Guild.getInstance().doGet(uuid);

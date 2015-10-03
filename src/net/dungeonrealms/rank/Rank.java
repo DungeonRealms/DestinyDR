@@ -71,7 +71,8 @@ public class Rank {
      * @param rankName
      * @since 1.0
      */
-    public void createNewRank(String rankName, String prefix, String suffix) {
+    public boolean createNewRank(String rankName, String prefix, String suffix) {
+        if (RAW_RANKS.containsKey(rankName.toUpperCase())) return false;
         Document blankRankDocument =
                 new Document("rank",
                         new Document("name", rankName)
@@ -84,6 +85,7 @@ public class Rank {
             Utils.log.warning("Created a new Rank " + rankName);
             startInitialization();
         });
+        return true;
     }
 
     /**
@@ -95,7 +97,10 @@ public class Rank {
      */
     public void addPermission(String rank, String permission) {
         Database.ranks.updateOne(Filters.eq("rank.name", rank.toUpperCase()), new Document(EnumOperators.$PUSH.getUO(), new Document("rank.permissions", permission)),
-                (result, t) -> Utils.log.info("[ASYNC] DatabaseAPI update() called .. addPermission()... METHOD"));
+                (result, t) -> {
+                    Utils.log.info("[ASYNC] DatabaseAPI update() called .. addPermission()... METHOD");
+                    startInitialization();
+                });
     }
 
     /**
@@ -128,7 +133,6 @@ public class Rank {
      */
     public void doGet(UUID uuid) {
         PLAYER_RANKS.put(uuid, RAW_RANKS.get(DatabaseAPI.getInstance().getData(EnumData.RANK, uuid)));
-        Utils.log.info("[RANK] doGet(" + uuid.toString() + ") retrieved rank.");
     }
 
     public class RankBlob {
