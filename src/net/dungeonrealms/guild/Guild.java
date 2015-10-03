@@ -54,7 +54,7 @@ public class Guild {
      */
     public void doGet(UUID uuid) {
         String rawGuildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid);
-        if (rawGuildName.equals("") || GUILDS.containsKey(rawGuildName)) {
+        if (rawGuildName.equals("")) {
             return;
         }
         Database.guilds.find(Filters.eq("info.name", rawGuildName)).first((guild, error) -> {
@@ -63,8 +63,8 @@ public class Guild {
             String guildMotd = ((Document) info).getString("motd");
             String guildClanTag = ((Document) info).getString("clanTag");
             UUID ownerUUID = UUID.fromString((String) ((Document) info).get("owner"));
-            List<UUID> guildOfficers = (List<UUID>) ((Document) info).get("officers");
-            List<UUID> guildMembers = (List<UUID>) ((Document) info).get("members");
+            List<String> guildOfficers = (List<String>) ((Document) info).get("officers");
+            List<String> guildMembers = (List<String>) ((Document) info).get("members");
             GUILDS.put(guildName.toUpperCase(), new GuildBlob(ownerUUID, guildName.toUpperCase(), guildMotd, guildClanTag, guildOfficers, guildMembers));
             Utils.log.info("[GUILD] [ASYNC] Grabbed guild for " + uuid.toString());
         });
@@ -105,8 +105,8 @@ public class Guild {
                             String guildName = ((Document) info).getString("name");
                             String guildMotd = ((Document) info).getString("motd");
                             String guildClanTag = ((Document) info).getString("clanTag");
-                            List<UUID> guildOfficers = (List<UUID>) ((Document) info).get("officers");
-                            List<UUID> guildMembers = (List<UUID>) ((Document) info).get("members");
+                            List<String> guildOfficers = (ArrayList<String>) ((Document) info).get("officers");
+                            List<String> guildMembers = (ArrayList<String>) ((Document) info).get("members");
                             GUILDS.put(guildName.toUpperCase(), new GuildBlob(ownerUUID, guildName, guildMotd, guildClanTag, guildOfficers, guildMembers));
                             Utils.log.info("[GUILD] Cached Guild (" + name + ") w/ tag (" + clanTag + ") in volatile memory!");
                         });
@@ -120,10 +120,10 @@ public class Guild {
         private String name;
         private String motd;
         private String clanTag;
-        private List<UUID> officers;
-        private List<UUID> members;
+        private List<String> officers;
+        private List<String> members;
 
-        public GuildBlob(UUID owner, String name, String motd, String clanTag, List<UUID> officers, List<UUID> members) {
+        public GuildBlob(UUID owner, String name, String motd, String clanTag, List<String> officers, List<String> members) {
             this.owner = owner;
             this.name = name;
             this.motd = motd;
@@ -148,11 +148,11 @@ public class Guild {
             return clanTag;
         }
 
-        public List<UUID> getOfficers() {
+        public List<String> getOfficers() {
             return officers;
         }
 
-        public List<UUID> getMembers() {
+        public List<String> getMembers() {
             return members;
         }
     }

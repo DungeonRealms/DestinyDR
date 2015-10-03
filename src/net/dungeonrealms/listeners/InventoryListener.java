@@ -7,6 +7,7 @@ import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
+import net.dungeonrealms.handler.ClickHandler;
 import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.mechanics.ItemManager;
@@ -36,6 +37,17 @@ import java.util.List;
  * Created by Nick on 9/18/2015.
  */
 public class InventoryListener implements Listener {
+
+    /**
+     * Handles important inventories (guilds, etc.)
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onImportantInventoryClick(InventoryClickEvent event) {
+        ClickHandler.getInstance().doClick(event);
+    }
 
     /**
      * Disables the clicking of items that contain NBTTag `important` in `type`.

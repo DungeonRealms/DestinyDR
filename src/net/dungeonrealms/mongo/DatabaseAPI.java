@@ -38,6 +38,7 @@ public class DatabaseAPI {
      * @param EO
      * @param variable
      * @param object
+     * @param requestNew TRUE = WILL GET NEW DATA FROM MONGO.
      * @since 1.0
      */
     public void update(UUID uuid, EnumOperators EO, String variable, Object object, boolean requestNew) {
