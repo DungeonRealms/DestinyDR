@@ -40,11 +40,11 @@ public class DatabaseAPI {
      * @param object
      * @since 1.0
      */
-    public void update(UUID uuid, EnumOperators EO, String variable, Object object) {
+    public void update(UUID uuid, EnumOperators EO, String variable, Object object, boolean requestNew) {
         Database.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable, object)),
                 (result, t) -> {
                     Utils.log.info("DatabaseAPI update() called ...");
-                    if (t == null) {
+                    if (t == null && requestNew) {
                         REQUEST_NEW_DATA.add(uuid);
                     }
                 });

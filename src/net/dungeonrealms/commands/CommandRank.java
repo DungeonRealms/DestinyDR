@@ -28,7 +28,7 @@ public class CommandRank implements CommandExecutor {
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("set")) {
                 Rank.getInstance().setRank(Bukkit.getPlayer(args[1]).getUniqueId(), args[2]);
-                DatabaseAPI.getInstance().update(Bukkit.getPlayer(args[1]).getUniqueId(), EnumOperators.$SET, "rank.rank", args[2]);
+                DatabaseAPI.getInstance().update(Bukkit.getPlayer(args[1]).getUniqueId(), EnumOperators.$SET, "rank.rank", args[2], true);
             } else if (args[0].equals("create")) {
                 if (args[1] == null || args[2] == null || args[3] == null) return false;
                 Rank.getInstance().createNewRank(args[1], args[2], args[3]);

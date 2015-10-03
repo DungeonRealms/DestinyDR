@@ -97,7 +97,7 @@ public class Guild {
                                     .append("members", new ArrayList<String>()))
                     , (aVoid, throwable1) -> {
                         Utils.log.info("[GUILD] Creating Guild (" + name + ") w/ tag (" + clanTag + ")");
-                        DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, "info.guild", name.toUpperCase());
+                        DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, "info.guild", name.toUpperCase(), true);
                         Database.guilds.find(Filters.eq("info.name", name.toUpperCase())).first((guild, error) -> {
                             if (guild == null) return;
                             Object info = document.get("info");

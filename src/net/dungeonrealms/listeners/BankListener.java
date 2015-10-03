@@ -95,7 +95,7 @@ public class BankListener implements Listener {
                                             if (hasSpaceInInventory(player.getUniqueId(), number)) {
                                                 Player p = player.getPlayer();
                                                 DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(),
-                                                        EnumOperators.$INC, "info.gems", -number);
+                                                        EnumOperators.$INC, "info.gems", -number, true);
                                                 while (number > 0) {
                                                     while (number > 64) {
                                                         ItemStack item = stack.clone();
@@ -153,7 +153,7 @@ public class BankListener implements Listener {
                                             Player p = player.getPlayer();
                                             p.getInventory().addItem(CraftItemStack.asBukkitCopy(nms1));
                                             DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(),
-                                                    EnumOperators.$INC, "info.gems", -number);
+                                                    EnumOperators.$INC, "info.gems", -number, true);
                                             player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
 
                                         }
@@ -286,7 +286,7 @@ public class BankListener implements Listener {
                                 if (hasSpaceInInventory(player.getUniqueId(), number)) {
                                     Player p = player.getPlayer();
                                     DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(), EnumOperators.$INC,
-                                            "info.gems", -number);
+                                            "info.gems", -number, true);
                                     while (number > 0) {
                                         while (number > 64) {
                                             ItemStack item = stack.clone();
@@ -354,7 +354,7 @@ public class BankListener implements Listener {
                                 Player p = player.getPlayer();
                                 p.getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
                                 DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(), EnumOperators.$INC,
-                                        "info.gems", -number);
+                                        "info.gems", -number, true);
                                 player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
                             }
                             player.closeInventory();

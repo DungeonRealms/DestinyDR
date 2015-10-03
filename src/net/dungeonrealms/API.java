@@ -97,11 +97,11 @@ public class API {
             if (inv != null) {
                 String serializedInv = ItemSerialization.toString(inv);
                 BankMechanics.storage.remove(uuid);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.storage", serializedInv);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.storage", serializedInv, false);
             }
         }
         PlayerInventory inv = Bukkit.getPlayer(uuid).getInventory();
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.player", ItemSerialization.toString(inv));
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.player", ItemSerialization.toString(inv), false);
     }
 
 
@@ -110,8 +110,8 @@ public class API {
      *
      * @since 1.0
      */
-    public static void logoutAllPlayers(){
-        for(int i = 0; i<Bukkit.getOnlinePlayers().size(); i++){
+    public static void logoutAllPlayers() {
+        for (int i = 0; i < Bukkit.getOnlinePlayers().size(); i++) {
             Player p = (Player) Bukkit.getOnlinePlayers().toArray()[i];
             handleLogout(p.getUniqueId());
             p.kickPlayer("Server Restarting!");
