@@ -1,6 +1,8 @@
 package net.dungeonrealms.entities.types.monsters;
 
 import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.items.Item.ItemTier;
+import net.dungeonrealms.items.Item.ItemType;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Color;
@@ -32,7 +34,7 @@ public class EntityFireImp extends RangedEntitySkeleton {
     public EntityFireImp(World world, int tier, EnumEntityType entityType) {
         super(world, "Fire Imp", "Satan", tier, entityType);
         this.tier = tier;
-        this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().next()));
+        this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().getDefinedStack(ItemType.STAFF, ItemTier.getById(tier), ItemGenerator.getRandomItemModifier())));
     }
 
     @Override

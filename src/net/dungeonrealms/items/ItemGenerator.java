@@ -130,7 +130,7 @@ public class ItemGenerator {
      * @return
      * @since 1.0
      */
-    private Item.ItemModifier getRandomItemModifier() {
+    public static Item.ItemModifier getRandomItemModifier() {
         return Item.ItemModifier.getById(new Random().nextInt(Item.ItemModifier.values().length));
     }
 

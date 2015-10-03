@@ -126,7 +126,11 @@ public class CommandSpawn implements CommandExecutor {
                     break;
                 }
                 case "spawner":
-                    MobSpawner spawner = new MobSpawner(player.getLocation(), new String[]{"rangedpirate", "pirate"}, 1);
+               	 String[] monsters = args[1].split(",");
+               	 int tier = 1;
+               	 if(args.length ==3)
+               		 tier = Integer.parseInt(args[2]);
+                    MobSpawner spawner = new MobSpawner(player.getLocation(), monsters,tier);
                     SpawningMechanics.add(spawner);
                     break;
             }

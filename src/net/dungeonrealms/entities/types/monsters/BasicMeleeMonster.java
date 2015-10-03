@@ -27,10 +27,10 @@ public class BasicMeleeMonster extends MeleeEntityZombie{
       int level = Utils.getRandomFromTier(tier);
       MetadataUtils.registerEntityMetadata(this, entityType, tier, level);
       EntityStats.setMonsterStats(this, level, tier);
-      this.setCustomName(mobName);
-      this.setCustomNameVisible(true);
 	}
-
+	public BasicMeleeMonster(World world){
+		super(world);
+	}
 	@Override
 	protected Item getLoot() {
       ItemStack item = BankMechanics.gem.clone();

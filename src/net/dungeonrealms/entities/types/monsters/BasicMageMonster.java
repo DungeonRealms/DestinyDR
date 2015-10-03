@@ -1,15 +1,15 @@
 package net.dungeonrealms.entities.types.monsters;
 
-import org.bukkit.Color;
-import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.types.RangedEntitySkeleton;
 import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.items.Item.ItemTier;
+import net.dungeonrealms.items.Item.ItemType;
+import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.EntityLiving;
 import net.minecraft.server.v1_8_R3.EntityWitherSkull;
@@ -35,29 +35,11 @@ public class BasicMageMonster extends RangedEntitySkeleton{
    public BasicMageMonster(World world, String mobName, String mobHead, int tier) {
        super(world, mobName, mobHead, tier, EnumEntityType.HOSTILE_MOB);
        this.tier = tier;
+       this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().getDefinedStack(ItemType.STAFF, ItemTier.getById(tier), ItemGenerator.getRandomItemModifier())));
    }
-
-   @Override
-   public void setArmor(int tier) {
-       ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS, 1);
-       ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-       ItemStack boots = new ItemStack(Material.LEATHER_BOOTS, 1);
-       LeatherArmorMeta lam = (LeatherArmorMeta) leggings.getItemMeta();
-       lam.setColor(Color.RED);
-       leggings.setItemMeta(lam);
-       chestplate.setItemMeta(lam);
-       boots.setItemMeta(lam);
-       ItemStack lchest = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-       LeatherArmorMeta lch = (LeatherArmorMeta) lchest.getItemMeta();
-       lch.setColor(Color.fromRGB(176, 23, 23));
-       lchest.setItemMeta(lch);
-       // weapon, boots, legs, chest, helmet/head
-       // this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-       this.setEquipment(1, CraftItemStack.asNMSCopy(boots));
-       this.setEquipment(2, CraftItemStack.asNMSCopy(leggings));
-       this.setEquipment(3, CraftItemStack.asNMSCopy(chestplate));
-       this.setEquipment(4, getHead());
-   }
+	public BasicMageMonster(World world){
+		super(world);
+	}
 
    @Override
    protected Item getLoot() {

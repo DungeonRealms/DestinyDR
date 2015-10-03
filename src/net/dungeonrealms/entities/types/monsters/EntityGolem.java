@@ -25,8 +25,6 @@ public class EntityGolem extends MeleeEntityZombie {
         int level = Utils.getRandomFromTier(tier);
         MetadataUtils.registerEntityMetadata(this, entityType, tier, level);
         EntityStats.setMonsterStats(this, level, tier);
-        this.setCustomName(ChatColor.GOLD + "Golem");
-        this.setCustomNameVisible(true);
     }
 
     /**

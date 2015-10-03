@@ -1,17 +1,9 @@
 package net.dungeonrealms.spawning;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
-import net.dungeonrealms.entities.types.monsters.EntityBandit;
-import net.dungeonrealms.entities.types.monsters.EntityFireImp;
-import net.dungeonrealms.entities.types.monsters.EntityPirate;
-import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
-import net.dungeonrealms.enums.EnumEntityType;
-import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.EntityArmorStand;
-import net.minecraft.server.v1_8_R3.World;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
@@ -19,9 +11,21 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.types.monsters.BasicMageMonster;
+import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
+import net.dungeonrealms.entities.types.monsters.EntityBandit;
+import net.dungeonrealms.entities.types.monsters.EntityFireImp;
+import net.dungeonrealms.entities.types.monsters.EntityGolem;
+import net.dungeonrealms.entities.types.monsters.EntityPirate;
+import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
+import net.dungeonrealms.entities.types.monsters.EntitySpider;
+import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.mastery.Utils;
+import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.EntityArmorStand;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Sep 25, 2015
@@ -129,6 +133,17 @@ public class MobSpawner {
 			case "goblin":
 				entity = new BasicMeleeMonster(world, "Goblin", "Steve", tier);
 				break;
+			case "mage":
+				entity = new BasicMageMonster(world, "Mage", "Steve", tier);
+				break;
+			case "spider":
+				entity = new EntitySpider(world, "Spider", tier);
+				break;
+			case "golem":
+				entity = new EntityGolem(world, tier, type);
+				break;
+			default:
+				entity = new EntityBandit(world, tier, type);
 			}
 			}
 			Location location = new Location(Bukkit.getWorlds().get(0), loc.getX() + new Random().nextInt(3),

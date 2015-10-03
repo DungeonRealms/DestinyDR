@@ -19,12 +19,10 @@ import net.minecraft.server.v1_8_R3.World;
 public class EntityPirate extends MeleeEntityZombie {
 
     public EntityPirate(World world, EnumEntityType entityType, int tier) {
-        super(world, "pirate", getRandomHead(), tier, entityType, true);
+        super(world, "Pirate", getRandomHead(), tier, entityType, true);
         int level = Utils.getRandomFromTier(tier);
         MetadataUtils.registerEntityMetadata(this, entityType, tier, level);
         EntityStats.setMonsterStats(this, level, tier);
-        this.setCustomName(ChatColor.GOLD + "Pirate");
-        this.setCustomNameVisible(true);
     }
 
     /**
