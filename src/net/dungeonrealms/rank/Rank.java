@@ -107,7 +107,7 @@ public class Rank {
      */
     public void setRank(UUID uuid, String sRank) {
         if (!RAW_RANKS.containsKey(sRank)) return;
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "rank.rank", sRank);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "rank.rank", sRank, true);
         Player player = Bukkit.getPlayer(uuid);
 
         PermissionAttachment attachment = player.addAttachment(DungeonRealms.getInstance());

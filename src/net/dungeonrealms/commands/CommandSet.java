@@ -26,17 +26,17 @@ public class CommandSet implements CommandExecutor {
             switch (args[0]) {
                 case "level":
                     int lvl = Integer.parseInt(args[1]);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.netLevel", lvl);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.netLevel", lvl, true);
                     s.sendMessage("Level set to " + lvl);
                     break;
                 case "gems":
                     int gems = Integer.parseInt(args[1]);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.gems", gems);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.gems", gems, true);
                     s.sendMessage("Gems set to " + gems);
                     break;
                 case "inv":
-               	 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "inventory.player", "");
-               	 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "inventory.storage", "");
+               	 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "inventory.player", "", true);
+               	 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "inventory.storage", "", true);
                	 break;
             }
         }

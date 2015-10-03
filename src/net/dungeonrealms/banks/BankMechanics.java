@@ -81,7 +81,7 @@ public class BankMechanics {
 	 * @param num
 	 */
 	public static void addGemsToPlayer(UUID uuid, int num) {
-		DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, "info.gems", num);
+		DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, "info.gems", num, true);
 	}
 
 	/**

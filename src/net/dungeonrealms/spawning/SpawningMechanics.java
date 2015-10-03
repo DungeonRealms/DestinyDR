@@ -2,7 +2,6 @@ package net.dungeonrealms.spawning;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.NMSUtils;
-import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.ArmorStand;
@@ -21,9 +20,9 @@ public class SpawningMechanics {
         if (spawners.size() > 0)
             spawners.stream().filter(MobSpawner::playersAround).forEach(net.dungeonrealms.spawning.MobSpawner::spawnIn);
     }
-    
-    public static ArrayList<MobSpawner> getSpawners(){
-   	 return spawners;
+
+    public static ArrayList<MobSpawner> getSpawners() {
+        return spawners;
     }
 
     public static void add(MobSpawner spawner) {
@@ -31,7 +30,6 @@ public class SpawningMechanics {
     }
 
     public static void loadSpawners() {
-        Bukkit.broadcastMessage("spawners loading");
         List<Entity> list = Bukkit.getWorlds().get(0).getEntities();
         for (Entity aList : list) {
             if (aList instanceof EntityArmorStand || aList instanceof ArmorStand) {
@@ -42,17 +40,16 @@ public class SpawningMechanics {
                     }
                 }
             } else {
-                Utils.log.info(aList.getClass().getSimpleName());
             }
         }
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), SpawningMechanics::updateSpawners,
                 0, 10 * 20L);
     }
 
-	/**
-	 * @param i
-	 */
-	public static void remove(int i) {
-		spawners.remove(i);
-	}
+    /**
+     * @param i
+     */
+    public static void remove(int i) {
+        spawners.remove(i);
+    }
 }

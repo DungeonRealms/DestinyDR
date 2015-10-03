@@ -1,5 +1,6 @@
 package net.dungeonrealms.inventory;
 
+import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -14,11 +15,26 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Nick on 9/29/2015.
  */
 public class Menu {
+
+    public static void openPlayerGuildInventory(Player player) {
+        UUID uuid = player.getUniqueId();
+        Guild.GuildBlob g = Guild.getInstance().getGuild(uuid);
+        if (g == null) {
+            player.sendMessage(ChatColor.RED + "You are not in a guild! Or we're having trouble finding it.");
+            return;
+        }
+        Inventory inv = Bukkit.createInventory(null, 54, "Guild - " + ChatColor.translateAlternateColorCodes('&', g.getClanTag()));
+        String name = g.getName();
+        List<UUID> officers = g.getOfficers();
+        List<UUID> members = g.getMembers();
+
+    }
 
     public static void openPlayerPurchaseHistory(Player player) {
         Inventory inv = Bukkit.createInventory(null, 54, "Purchase History");
