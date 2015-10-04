@@ -28,8 +28,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-/**
- * Created by Nick on 9/17/2015.
+/* Copyright (C) CherryIO, LLC - All Rights Reserved
+ * Unauthorized copying and or modifying of this file, via any medium is
+ * strictly prohibited Proprietary and confidential
+ * Written by Nick Doran <nick@cherryio.com>, October 2015
+ * Written by Kieran Proxying <Proxying@cherryio.com>, October 2015
+ * Written by Chase Dimsticks <chase@cherryio.com>, October 2015
  */
 public class DungeonRealms extends JavaPlugin {
 
