@@ -33,7 +33,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * strictly prohibited Proprietary and confidential
  * Written by Nick Doran <nick@cherryio.com>, October 2015
  * Written by Kieran Proxying <Proxying@cherryio.com>, October 2015
- * Written by Chase Dimsticks <chase@cherryio.com>, October 2015
+ * Written by Chase Xwaffle <chase@cherryio.com>, October 2015
  */
 public class DungeonRealms extends JavaPlugin {
 

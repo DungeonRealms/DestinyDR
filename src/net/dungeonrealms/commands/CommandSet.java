@@ -58,8 +58,10 @@ public class CommandSet implements CommandExecutor {
 					if (!file.exists())
 						file.createNewFile();
 					BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
+					writer.newLine();
 					writer.write(player.getLocation().getX() + "," + player.getLocation().getY() + ","
 					        + player.getLocation().getZ() + "=" + args[1] + ":" + tier);
+					writer.close();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
