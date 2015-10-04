@@ -17,7 +17,7 @@ import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.party.PartyMechanics;
+import net.dungeonrealms.party.Party;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.shops.ShopMechanics;
@@ -69,7 +69,7 @@ public class DungeonRealms extends JavaPlugin {
         PetUtils.getInstance().startInitialization();
         Teleportation.getInstance().startInitialization();
         CombatLog.getInstance().startInitialization();
-        PartyMechanics.getInstance().startInitialization();
+        Party.getInstance().startInitialization();
         EnergyHandler.getInstance().startInitialization();
         EnchantmentAPI.getInstance().startInitialization();
         Subscription.getInstance().startInitialization();
