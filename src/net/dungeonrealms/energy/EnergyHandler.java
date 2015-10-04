@@ -150,8 +150,10 @@ public class EnergyHandler {
                 int playerFood = player.getFoodLevel();
                 player.setSprinting(false);
                 player.removeMetadata("sprinting", DungeonRealms.getInstance());
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20, 10)), 0L);
-                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "**EXHAUSTED**");
+                if (!player.hasPotionEffect(PotionEffectType.SLOW)) {
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20, 10)), 0L);
+                    player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "**EXHAUSTED**");
+                }
                 player.setFoodLevel(1);
                 player.setFoodLevel(playerFood);
                 //TODO: THIS IS A SUPER SKETCHY WAY OF PREVENTING LEFT-CONTROL SPRINTING FROM OVERRIDING. As its CLIENTSIDE setSprinting(false) only cancels it for one tick

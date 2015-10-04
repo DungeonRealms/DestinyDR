@@ -142,6 +142,5 @@ public class API {
         }
         TeleportAPI.addPlayerHearthstoneCD(uuid, 120);
         PlayerManager.checkInventory(uuid);
-
     }
 }
