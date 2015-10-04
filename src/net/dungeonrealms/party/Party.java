@@ -1,6 +1,7 @@
 package net.dungeonrealms.party;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.health.HealthHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -28,29 +29,29 @@ public class Party {
     ArrayList<RawParty> PARTIES = new ArrayList<>();
 
     public void startInitialization() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), this::updateParties, 0, 20l);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), this::updateParties, 0, 10L);
     }
 
     public void updateParties() {
         for (RawParty rp : PARTIES) {
             ScoreboardManager manager = Bukkit.getScoreboardManager();
             Scoreboard board = manager.getNewScoreboard();
-            Objective objective = board.registerNewObjective("shit", "nigger");
+            Objective objective = board.registerNewObjective("party", "scoreboard");
             objective.setDisplaySlot(DisplaySlot.SIDEBAR);
             objective.setDisplayName(ChatColor.WHITE + "(" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + ")");
 
             for (Player player : rp.members) {
                 Score score = objective.getScore(player.getName());
-                score.setScore((int) Math.round(player.getHealth()));
+                score.setScore(HealthHandler.getPlayerHPLive(player));
             }
 
             if (rp.getOwner() != null) {
                 Score score = objective.getScore(rp.getOwner().getName());
-                score.setScore((int) Math.round(rp.getOwner().getHealth()));
+                score.setScore(HealthHandler.getPlayerHPLive(rp.getOwner()));
             } else {
                 rp.setOwner(rp.members.get(new Random().nextInt(rp.members.size())));
                 Score score = objective.getScore(rp.getOwner().getName());
-                score.setScore((int) Math.round(rp.getOwner().getHealth()));
+                score.setScore(HealthHandler.getPlayerHPLive(rp.getOwner()));
             }
 
             for (Player members : rp.getMembers()) {

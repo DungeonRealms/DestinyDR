@@ -112,7 +112,6 @@ public class HealthHandler {
                 }
                 continue;
             }
-            amountToHealPlayer += getHealthRegenFromItems(player);
 
             if ((currentHP + amountToHealPlayer) >= maxHP) {
                 player.setHealth(20);
@@ -217,7 +216,7 @@ public class HealthHandler {
             totalHPRegen += getHealthRegenValueOfItem(player.getItemInHand());
         }
 
-        totalHPRegen += 50;
+        totalHPRegen += 5;
 
         return (int) totalHPRegen;
     }
@@ -248,7 +247,7 @@ public class HealthHandler {
         if (player.hasMetadata("regenHP")) {
             return player.getMetadata("regenHP").get(0).asInt();
         } else {
-            return generateMaxHPFromItems(player);
+            return getHealthRegenFromItems(player);
         }
     }
 }

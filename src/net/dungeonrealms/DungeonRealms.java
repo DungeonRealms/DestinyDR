@@ -31,9 +31,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 /* Copyright (C) CherryIO, LLC - All Rights Reserved
  * Unauthorized copying and or modifying of this file, via any medium is
  * strictly prohibited Proprietary and confidential
- * Written by Nick Doran <nick@cherryio.com>, October 2015
- * Written by Kieran Proxying <Proxying@cherryio.com>, October 2015
- * Written by Chase Xwaffle <chase@cherryio.com>, October 2015
+ * Written by Nick Doran (xFinityPro) <nick@cherryio.com>, October 2015
+ * Written by Kieran Quigley (Proxying) <Proxying@cherryio.com>, October 2015
+ * Written by Chase BR (Xwaffle) <chase@cherryio.com>, October 2015
  */
 public class DungeonRealms extends JavaPlugin {
 
