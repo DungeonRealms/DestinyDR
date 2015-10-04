@@ -17,8 +17,6 @@ import java.util.*;
  */
 public class Guild {
 
-    //TODO: Checking other guilds isn't case.. ARG
-
     static Guild instance = null;
 
     public static Guild getInstance() {

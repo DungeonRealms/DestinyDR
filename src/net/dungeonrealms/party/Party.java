@@ -61,6 +61,11 @@ public class Party {
         }
     }
 
+    /**
+     * Creates a party.
+     *
+     * @param player
+     */
     public void createParty(Player player) {
         if (!isInParty(player)) {
             RawParty p = new RawParty(player, new ArrayList<>(), new ArrayList<>());
@@ -73,6 +78,13 @@ public class Party {
         }
     }
 
+    /**
+     * Returns the RawParty of a player.
+     *
+     * @param player
+     * @return
+     * @since 1.0
+     */
     public RawParty getPlayerParty(Player player) {
         for (RawParty rp : PARTIES) {
             if (rp.members.contains(player) || rp.owner.equals(player)) return rp;
@@ -80,6 +92,12 @@ public class Party {
         return null;
     }
 
+    /**
+     * Disbands a party.
+     *
+     * @param party
+     * @since 1.0
+     */
     public void disbandParty(RawParty party) {
         for (Player members : party.getMembers()) {
             members.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
@@ -92,12 +110,26 @@ public class Party {
         PARTIES.remove(party);
     }
 
+    /**
+     * Kicks a player from a party.
+     *
+     * @param party
+     * @param player
+     * @since 1.0
+     */
     public void kickPlayer(RawParty party, Player player) {
         party.getMembers().remove(player);
         player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
         party.owner.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.RED + "You have been kicked from the party!");
     }
 
+    /**
+     * Checks if the player owns a party.
+     *
+     * @param player
+     * @return
+     * @since 1.0
+     */
     public boolean isOwnerOfParty(Player player) {
         for (RawParty rp : PARTIES) {
             if (rp.owner.equals(player)) return true;
@@ -105,10 +137,24 @@ public class Party {
         return false;
     }
 
+    /**
+     * Invites a player to a party.
+     *
+     * @param player
+     * @param party
+     * @since 1.0
+     */
     public void invitePlayer(Player player, RawParty party) {
         party.invitePlayer(player);
     }
 
+    /**
+     * Checks if a player is in a party.
+     *
+     * @param player
+     * @return
+     * @since 1.0
+     */
     public boolean isInParty(Player player) {
         for (RawParty rp : PARTIES) {
             if (rp.members.contains(player) || rp.owner.equals(player)) return true;
@@ -116,6 +162,13 @@ public class Party {
         return false;
     }
 
+    /**
+     * Quits a player out the party, if player is owner.
+     * The party is disbanded!
+     *
+     * @param player
+     * @sicne 1.0
+     */
     public void quitParty(Player player) {
         RawParty party = getPlayerParty(player);
         if (party.members.contains(player)) {

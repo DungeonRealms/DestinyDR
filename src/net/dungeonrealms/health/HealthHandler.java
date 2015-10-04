@@ -198,7 +198,7 @@ public class HealthHandler {
             healthValue += nmsItem.getTag().getInt("healthPoints");
         }
         if (nmsItem.getTag().getInt("vitality") > 0) {
-            healthValue +=  healthValue * ((nmsItem.getTag().getInt("vitality") * 0.034D) / 100.0D);
+            healthValue += healthValue * ((nmsItem.getTag().getInt("vitality") * 0.034D) / 100.0D);
         }
         return healthValue;
     }
@@ -235,7 +235,7 @@ public class HealthHandler {
             healthRegen += nmsItem.getTag().getInt("healthPoints");
         }
         if (nmsItem.getTag().getInt("vitality") > 0) {
-            healthRegen +=  healthRegen * ((nmsItem.getTag().getInt("vitality") * 0.3D) / 100.0D);
+            healthRegen += healthRegen * ((nmsItem.getTag().getInt("vitality") * 0.3D) / 100.0D);
         }
         return healthRegen;
     }
