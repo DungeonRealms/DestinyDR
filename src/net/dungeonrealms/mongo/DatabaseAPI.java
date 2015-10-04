@@ -38,6 +38,7 @@ public class DatabaseAPI {
      * @param EO
      * @param variable
      * @param object
+     * @param requestNew TRUE = WILL GET NEW DATA FROM MONGO.
      * @since 1.0
      */
     public void update(UUID uuid, EnumOperators EO, String variable, Object object, boolean requestNew) {
@@ -150,6 +151,7 @@ public class DatabaseAPI {
                  * THIS IS THE MOTHERPOINT OF THE ENTIRE
                  * PLUGIN.
                  */
+                //TODO: Make sure this isn't called regularly!!!
                 Subscription.getInstance().doAdd(uuid);
                 Rank.getInstance().doGet(uuid);
                 Guild.getInstance().doGet(uuid);

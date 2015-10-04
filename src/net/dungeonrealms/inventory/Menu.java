@@ -13,9 +13,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 /**
  * Created by Nick on 9/29/2015.
@@ -25,14 +23,43 @@ public class Menu {
     public static void openPlayerGuildInventory(Player player) {
         UUID uuid = player.getUniqueId();
         Guild.GuildBlob g = Guild.getInstance().getGuild(uuid);
-        if (g == null) {
-            player.sendMessage(ChatColor.RED + "You are not in a guild! Or we're having trouble finding it.");
-            return;
-        }
         Inventory inv = Bukkit.createInventory(null, 54, "Guild - " + ChatColor.translateAlternateColorCodes('&', g.getClanTag()));
-        String name = g.getName();
-        List<UUID> officers = g.getOfficers();
-        List<UUID> members = g.getMembers();
+
+        inv.setItem(4, editItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Guild Name" + ChatColor.GRAY + ": " + ChatColor.RESET + g.getName(), new String[]{
+                ChatColor.GRAY + "ClanTag: " + g.getClanTag(),
+                ChatColor.GRAY + "Owner: " + Bukkit.getServer().getOfflinePlayer(g.getOwner()).getName(),
+        }));
+
+        inv.setItem(8, editItem(new ItemStack(Material.BOOK_AND_QUILL), ChatColor.RED + "Guild Wars", new String[]{
+                ChatColor.RED + "This feature is upcoming!",
+                ChatColor.GRAY + "Queue: " + ChatColor.AQUA + "0",
+        }));
+
+        List<String> officers = g.getOfficers();
+
+        inv.setItem(18, editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), ChatColor.GREEN + "Guild Officers", new String[]{}));
+        int oi = 19;
+        for (String oUuid : officers) {
+            if (oi > 26) break;
+            inv.setItem(oi, editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), Bukkit.getServer().getOfflinePlayer(UUID.fromString(oUuid)).getName(), new String[]{
+
+            }));
+            oi++;
+        }
+
+        List<String> members = g.getMembers();
+
+        inv.setItem(27, editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), ChatColor.GREEN + "Guild Members", new String[]{}));
+        int moi = 28;
+        for (String mUuid : members) {
+            if (moi > 35) break;
+            inv.setItem(oi, editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), Bukkit.getServer().getOfflinePlayer(UUID.fromString(mUuid)).getName(), new String[]{
+
+            }));
+            moi++;
+        }
+
+        player.openInventory(inv);
 
     }
 

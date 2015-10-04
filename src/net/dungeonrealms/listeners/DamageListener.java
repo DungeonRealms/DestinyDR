@@ -4,6 +4,7 @@ import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.utils.EntityAPI;
+import net.dungeonrealms.health.HealthHandler;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.Item;
@@ -244,11 +245,23 @@ public class DamageListener implements Listener {
                 if (nmsItem != null && nmsItem.getTag() != null) {
                     if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.POLE_ARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
                         DamageAPI.polearmAOEProcessing.add(attacker);
-                        event.getEntity().getNearbyEntities(2.5, 3, 2.5).stream().filter(entityNear -> entityNear instanceof LivingEntity && entityNear != event.getEntity()).forEach(entityNear -> {
-                            ((LivingEntity) entityNear).damage((event.getDamage()), attacker);
-                            Vector unitVector = entityNear.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
-                            entityNear.setVelocity(unitVector.multiply(0.15D));
-                        });
+                        for (Entity entityNear : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
+                            if (entityNear instanceof LivingEntity && entityNear != event.getEntity() && entityNear != event.getDamager()) {
+                                if (event.getEntity().hasMetadata("type")) {
+                                    if (!(entityNear instanceof Player)) {
+                                        break;
+                                    } else {
+                                        ((LivingEntity) entityNear).damage((event.getDamage()), attacker);
+                                        Vector unitVector = entityNear.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
+                                        entityNear.setVelocity(unitVector.multiply(0.15D));
+                                    }
+                                } else {
+                                    ((LivingEntity) entityNear).damage((event.getDamage()), attacker);
+                                    Vector unitVector = entityNear.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
+                                    entityNear.setVelocity(unitVector.multiply(0.15D));
+                                }
+                            }
+                        }
                         DamageAPI.polearmAOEProcessing.remove(attacker);
                     }
                 }
@@ -282,6 +295,7 @@ public class DamageListener implements Listener {
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+            return;
         }
         if (event.getDamage() - armourReducedDamage <= 0 || armourReducedDamage == -2) {
             event.setDamage(0);
@@ -299,6 +313,20 @@ public class DamageListener implements Listener {
                 ex.printStackTrace();
             }
         } else {
+            if (defender instanceof Player) {
+                if (((Player) defender).isBlocking() && ((Player) defender).getItemInHand() != null && ((Player) defender).getItemInHand().getType() != Material.AIR) {
+                    if (new Random().nextInt(100) <= 80) {
+                        double blockDamage = event.getDamage() / 2;
+                        HealthHandler.handlePlayerBeingDamaged((Player) event.getEntity(), (blockDamage - armourReducedDamage));
+                        event.setDamage(0);
+                        return;
+                    }
+                } else {
+                    HealthHandler.handlePlayerBeingDamaged((Player) event.getEntity(), (event.getDamage() - armourReducedDamage));
+                    event.setDamage(0);
+                    return;
+                }
+            }
             event.setDamage(event.getDamage() - armourReducedDamage);
         }
     }

@@ -31,8 +31,12 @@ public class CommandRank implements CommandExecutor {
                 DatabaseAPI.getInstance().update(Bukkit.getPlayer(args[1]).getUniqueId(), EnumOperators.$SET, "rank.rank", args[2], true);
             } else if (args[0].equals("create")) {
                 if (args[1] == null || args[2] == null || args[3] == null) return false;
-                Rank.getInstance().createNewRank(args[1], args[2], args[3]);
-                player.sendMessage(ChatColor.GREEN + "[RANK] " + ChatColor.YELLOW + "Created a new rank " + args[1]);
+                boolean didCreate = Rank.getInstance().createNewRank(args[1], args[2], args[3]);
+                if (didCreate) {
+                    player.sendMessage(ChatColor.GREEN + "[RANK] " + ChatColor.YELLOW + "Created a new rank " + args[1]);
+                } else {
+                    player.sendMessage(ChatColor.RED + "[RANK] " + ChatColor.YELLOW + "That rank already exist!?");
+                }
             } else if (args[0].equalsIgnoreCase("addpermission") || args[0].equalsIgnoreCase("addp")) {
                 if (args[1] == null || args[2] == null) return false;
                 Rank.getInstance().addPermission(args[1], args[2]);

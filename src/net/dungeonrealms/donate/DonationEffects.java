@@ -42,10 +42,10 @@ public class DonationEffects {
     private void spawnPlayerParticleEffects() {
         Bukkit.getOnlinePlayers().stream().filter(playerParticleEffects::containsKey).forEach(player -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             try {
-                ParticleAPI.sendParticleToLocation(playerParticleEffects.get(player), player.getLocation().add(0, 0.22, 0), (new Random().nextFloat()) - 0.4F, (new Random().nextFloat()) - 0.5F, (new Random().nextFloat()) - 0.5F, 0.02F, 7);
+                ParticleAPI.sendParticleToLocation(playerParticleEffects.get(player), player.getLocation().add(0, 0.22, 0), (new Random().nextFloat()) - 0.4F, (new Random().nextFloat()) - 0.5F, (new Random().nextFloat()) - 0.5F, 0.02F, 6);
             } catch (Exception e) {
                 e.printStackTrace();
-                Utils.log.warning("[Donations] [ASYNC] Could not spawn donation particle for player " + player.getName());
+                Utils.log.warning("[Donations] [ASYNC] Could not spawn donation particle " + playerParticleEffects.get(player).name() + " for player " + player.getName());
             }
         }, 0L));
     }

@@ -7,6 +7,7 @@ import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.PetUtils;
+import net.dungeonrealms.health.HealthHandler;
 import net.dungeonrealms.items.DRBow;
 import net.dungeonrealms.items.ItemRegistry;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
@@ -74,6 +75,7 @@ public class DungeonRealms extends JavaPlugin {
         Subscription.getInstance().startInitialization();
         Rank.getInstance().startInitialization();
         DonationEffects.getInstance().startInitialization();
+        HealthHandler.getInstance().startInitialization(); // Still testing.
 
         Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
         Entities.getInstance().startInitialization();
@@ -90,6 +92,7 @@ public class DungeonRealms extends JavaPlugin {
         getCommand("list").setExecutor(new CommandList());
         getCommand("profile").setExecutor(new CommandProfile());
         getCommand("rank").setExecutor(new CommandRank());
+        getCommand("guild").setExecutor(new CommandGuild());
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         Utils.log.info("DungeonRealms Registering FTP() ... STARTING ...");
         FTPUtils.startInitialization();
