@@ -6,7 +6,6 @@ import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
-import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;

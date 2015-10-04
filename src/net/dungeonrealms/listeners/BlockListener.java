@@ -1,7 +1,12 @@
 package net.dungeonrealms.listeners;
 
-import java.util.ArrayList;
-
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.shops.Shop;
+import net.dungeonrealms.shops.ShopMechanics;
+import net.dungeonrealms.spawning.MobSpawner;
+import net.dungeonrealms.spawning.SpawningMechanics;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -14,13 +19,7 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.shops.Shop;
-import net.dungeonrealms.shops.ShopMechanics;
-import net.dungeonrealms.spawning.MobSpawner;
-import net.dungeonrealms.spawning.SpawningMechanics;
-import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.ArrayList;
 
 /**
  * Created by Nick on 9/18/2015.

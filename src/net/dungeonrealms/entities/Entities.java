@@ -1,44 +1,17 @@
 package net.dungeonrealms.entities;
 
-import java.util.HashMap;
-import java.util.UUID;
-
-import net.dungeonrealms.entities.types.monsters.BasicMageMonster;
-import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
-import net.dungeonrealms.entities.types.monsters.EntityBandit;
-import net.dungeonrealms.entities.types.monsters.EntityFireImp;
+import net.dungeonrealms.entities.types.monsters.*;
 import net.dungeonrealms.entities.types.monsters.EntityGolem;
-import net.dungeonrealms.entities.types.monsters.EntityPirate;
-import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
 import net.dungeonrealms.entities.types.monsters.EntitySpider;
 import net.dungeonrealms.entities.types.monsters.EntityWither;
 import net.dungeonrealms.entities.types.mounts.EnderDragon;
 import net.dungeonrealms.entities.types.mounts.Horse;
-import net.dungeonrealms.entities.types.pets.BabyZombie;
-import net.dungeonrealms.entities.types.pets.BabyZombiePig;
-import net.dungeonrealms.entities.types.pets.CaveSpider;
-import net.dungeonrealms.entities.types.pets.Chicken;
-import net.dungeonrealms.entities.types.pets.Endermite;
-import net.dungeonrealms.entities.types.pets.Ocelot;
-import net.dungeonrealms.entities.types.pets.Rabbit;
-import net.dungeonrealms.entities.types.pets.Silverfish;
-import net.dungeonrealms.entities.types.pets.Snowman;
-import net.dungeonrealms.entities.types.pets.Wolf;
+import net.dungeonrealms.entities.types.pets.*;
 import net.dungeonrealms.mastery.NMSUtils;
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.EntityCaveSpider;
-import net.minecraft.server.v1_8_R3.EntityChicken;
-import net.minecraft.server.v1_8_R3.EntityEnderDragon;
-import net.minecraft.server.v1_8_R3.EntityEndermite;
-import net.minecraft.server.v1_8_R3.EntityHorse;
-import net.minecraft.server.v1_8_R3.EntityOcelot;
-import net.minecraft.server.v1_8_R3.EntityPigZombie;
-import net.minecraft.server.v1_8_R3.EntityRabbit;
-import net.minecraft.server.v1_8_R3.EntitySilverfish;
-import net.minecraft.server.v1_8_R3.EntitySkeleton;
-import net.minecraft.server.v1_8_R3.EntitySnowman;
-import net.minecraft.server.v1_8_R3.EntityWolf;
-import net.minecraft.server.v1_8_R3.EntityZombie;
+import net.minecraft.server.v1_8_R3.*;
+
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Created by Kieran on 9/18/2015.

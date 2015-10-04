@@ -1,21 +1,19 @@
 package net.dungeonrealms.entities.types.monsters;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import org.bukkit.inventory.ItemStack;
-
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.types.MeleeEntityZombie;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
-import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.Items;
 import net.minecraft.server.v1_8_R3.World;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Nick on 9/17/2015.

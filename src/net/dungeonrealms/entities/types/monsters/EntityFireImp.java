@@ -1,8 +1,11 @@
 package net.dungeonrealms.entities.types.monsters;
 
-import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.banks.BankMechanics;
+import net.dungeonrealms.entities.types.RangedEntitySkeleton;
+import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.items.Item.ItemType;
+import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Color;
@@ -11,10 +14,6 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.LeatherArmorMeta;
-
-import net.dungeonrealms.banks.BankMechanics;
-import net.dungeonrealms.entities.types.RangedEntitySkeleton;
-import net.dungeonrealms.enums.EnumEntityType;
 
 /**
  * Created by Chase on Sep 21, 2015

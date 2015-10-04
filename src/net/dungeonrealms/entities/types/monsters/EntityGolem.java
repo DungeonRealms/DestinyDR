@@ -7,17 +7,14 @@ import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.XRandom;
-import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by Chase on Sep 28, 2015

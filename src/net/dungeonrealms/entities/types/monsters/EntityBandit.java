@@ -5,10 +5,9 @@ import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.types.MeleeEntityZombie;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.mastery.Utils;
-import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
-
+import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 

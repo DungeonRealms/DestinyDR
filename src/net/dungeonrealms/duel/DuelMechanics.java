@@ -2,9 +2,9 @@ package net.dungeonrealms.duel;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mechanics.ItemManager;
-import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
