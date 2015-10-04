@@ -1,20 +1,19 @@
 package net.dungeonrealms.duel;
 
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
-
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.items.Item.ItemTier;
+import net.dungeonrealms.mechanics.ItemManager;
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.items.Item.ItemTier;
-import net.dungeonrealms.mechanics.ItemManager;
-import net.md_5.bungee.api.ChatColor;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.UUID;
 
 /**
  * Created by Chase on Sep 20, 2015
@@ -230,7 +229,7 @@ public class DuelWager {
     }
 
     /**
-     * @param uniqueId
+     * @param uuid
      */
     public void handleLogOut(UUID uuid) {
         if (p1.getUniqueId() == uuid) {

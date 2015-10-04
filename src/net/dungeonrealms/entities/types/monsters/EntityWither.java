@@ -25,9 +25,11 @@ public class EntityWither extends MeleeEntityZombie{
 		MetadataUtils.registerEntityMetadata(this, entityType, tier, level);
 		EntityStats.setMonsterStats(this, level, tier);
 	}
+
 	public EntityWither(World world){
 		super(world);
 	}
+
 	@Override
 	protected Item getLoot() {
 		return null;

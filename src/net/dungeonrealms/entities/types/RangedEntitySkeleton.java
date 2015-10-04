@@ -64,6 +64,7 @@ public abstract class RangedEntitySkeleton extends EntitySkeleton {
     }
 
     public abstract String getPrefix();
+
     public abstract String getSuffix();
 
     @Override

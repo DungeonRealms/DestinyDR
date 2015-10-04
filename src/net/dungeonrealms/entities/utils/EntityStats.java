@@ -81,7 +81,7 @@ public class EntityStats {
     }
 
     public static void setMonsterElite(Entity ent){
-   	 ent.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), 1));
+        ent.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), 1));
 	}
 
 	public static void setMonsterStats(Entity entity, int lvl, int tier) {

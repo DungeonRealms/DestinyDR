@@ -88,6 +88,8 @@ public class DamageListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
     public void playerBreakArmorStand(EntityDamageByEntityEvent event){
+        if (!(event.getDamager() instanceof Player)) return;
+        if (((Player) event.getDamager()).getGameMode() != GameMode.CREATIVE) return;
        //Armor Stand Spawner check.
        if(event.getEntity().getType() == EntityType.ARMOR_STAND) {
       	 if(!event.getEntity().hasMetadata("type")){
@@ -99,10 +101,9 @@ public class DamageListener implements Listener {
                Player attacker = (Player) event.getDamager();
                if(attacker.isOp() || attacker.getGameMode() == GameMode.CREATIVE){
                    ArrayList<MobSpawner> list = SpawningMechanics.getSpawners();
-                   for (int i = 0; i < list.size(); i++) {
-                       MobSpawner current = list.get(i);
+                   for (MobSpawner current : list) {
                        if (current.loc.getBlockX() == event.getEntity().getLocation().getBlockX() && current.loc.getBlockY() == event.getEntity().getLocation().getBlockY() &&
-     						 current.loc.getBlockZ() == event.getEntity().getLocation().getBlockZ()) {
+                               current.loc.getBlockZ() == event.getEntity().getLocation().getBlockZ()) {
                            current.kill();
                            break;
                        }
@@ -110,12 +111,10 @@ public class DamageListener implements Listener {
                }else {
                    event.setDamage(0);
                    event.setCancelled(true);
-                   return;
                }
            }else {
                event.setDamage(0);
  				event.setCancelled(true);
- 				return;
            }
        }
     }

@@ -1,7 +1,17 @@
 package net.dungeonrealms.commands;
 
-import java.util.Random;
-
+import net.dungeonrealms.entities.types.monsters.*;
+import net.dungeonrealms.entities.utils.BuffUtils;
+import net.dungeonrealms.entities.utils.EntityAPI;
+import net.dungeonrealms.entities.utils.MountUtils;
+import net.dungeonrealms.entities.utils.PetUtils;
+import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.mastery.NBTUtils;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.spawning.MobSpawner;
+import net.dungeonrealms.spawning.SpawningMechanics;
+import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -14,25 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
-import net.dungeonrealms.entities.types.monsters.BasicMageMonster;
-import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
-import net.dungeonrealms.entities.types.monsters.EntityBandit;
-import net.dungeonrealms.entities.types.monsters.EntityFireImp;
-import net.dungeonrealms.entities.types.monsters.EntityGolem;
-import net.dungeonrealms.entities.types.monsters.EntityPirate;
-import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
-import net.dungeonrealms.entities.types.monsters.EntitySpider;
-import net.dungeonrealms.entities.utils.BuffUtils;
-import net.dungeonrealms.entities.utils.EntityAPI;
-import net.dungeonrealms.entities.utils.MountUtils;
-import net.dungeonrealms.entities.utils.PetUtils;
-import net.dungeonrealms.enums.EnumEntityType;
-import net.dungeonrealms.mastery.NBTUtils;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.spawning.MobSpawner;
-import net.dungeonrealms.spawning.SpawningMechanics;
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.World;
+import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -86,48 +78,47 @@ public class CommandSpawn implements CommandExecutor {
                         int tier = 1;
                         if (args.length == 3)
                             tier = Integer.parseInt(args[2]);
-               			EnumEntityType type = EnumEntityType.HOSTILE_MOB;
-               			Entity entity = null;
+                        EnumEntityType type = EnumEntityType.HOSTILE_MOB;
+               			Entity entity;
                			World world = ((CraftWorld)player.getWorld()).getHandle();
                			synchronized (this) {
-               			switch (args[0]) {
-               			case "bandit":
-               				entity = new EntityBandit(world, tier, type);
-               				break;
-               			case "rangedpirate":
-               				entity = new EntityRangedPirate(world, type, tier);
-               				break;
-               			case "pirate":
-               				entity = new EntityPirate(world, type, tier);
-               				break;
-               			case "imp":
-               				entity = new EntityFireImp(world, tier, type);
-               				break;
-               			case "troll":
-               				entity = new BasicMeleeMonster(world, "Troll", "Steve", tier);
-               				break;
-               			case "goblin":
-               				entity = new BasicMeleeMonster(world, "Goblin", "Steve", tier);
-               				break;
-               			case "mage":
-               				entity = new BasicMageMonster(world, "Mage", "Steve", tier);
-               				break;
-               			case "spider":
-               				entity = new EntitySpider(world, "Spider", tier);
-               				break;
-               			case "golem":
-               				entity = new EntityGolem(world, tier, type);
-               				break;
-               			default:
-               				entity = new EntityBandit(world, tier, type);
-               			}
-               			}
+                            switch (args[0]) {
+                                case "bandit":
+                                    entity = new EntityBandit(world, tier, type);
+                                    break;
+                                case "rangedpirate":
+                                    entity = new EntityRangedPirate(world, type, tier);
+                                    break;
+                                case "pirate":
+                                    entity = new EntityPirate(world, type, tier);
+                                    break;
+                                case "imp":
+                                    entity = new EntityFireImp(world, tier, type);
+                                    break;
+                                case "troll":
+                                    entity = new BasicMeleeMonster(world, "Troll", "Steve", tier);
+                                    break;
+                                case "goblin":
+                                    entity = new BasicMeleeMonster(world, "Goblin", "Steve", tier);
+                                    break;
+                                case "mage":
+                                    entity = new BasicMageMonster(world, "Mage", "Steve", tier);
+                                    break;
+                                case "spider":
+                                    entity = new EntitySpider(world, "Spider", tier);
+                                    break;
+                                case "golem":
+                                    entity = new EntityGolem(world, tier, type);
+                                    break;
+                                default:
+                                    entity = new EntityBandit(world, tier, type);
+                            }
+                        }
                			Location location = new Location(world.getWorld(), player.getLocation().getX() + new Random().nextInt(3),
                				player.getLocation().getY(), player.getLocation().getZ() + new Random().nextInt(3));
                			entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                			world.addEntity(entity, SpawnReason.CUSTOM);
                			entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-
                     }
                     break;
                 }
@@ -135,7 +126,7 @@ public class CommandSpawn implements CommandExecutor {
                	 String[] monsters = args[1].split(",");
                	 int tier = 1;
                	 if(args.length ==3)
-               		 tier = Integer.parseInt(args[2]);
+                     tier = Integer.parseInt(args[2]);
                     MobSpawner spawner = new MobSpawner(player.getLocation(), monsters,tier);
                     SpawningMechanics.add(spawner);
                     break;

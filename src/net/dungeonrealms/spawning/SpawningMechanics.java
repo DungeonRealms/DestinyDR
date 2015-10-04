@@ -1,16 +1,9 @@
 package net.dungeonrealms.spawning;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mastery.NMSUtils;
-import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Chase on Sep 28, 2015
@@ -32,14 +25,11 @@ public class SpawningMechanics {
 	}
 
 	public static void killAll(){
-		for(int  i = 0; i <spawners.size();i++){
-			spawners.get(i).kill();
-		}
+		spawners.forEach(net.dungeonrealms.spawning.MobSpawner::kill);
 	}
 	
 	public static void loadSpawners() {
-		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(),
-			SpawningMechanics::updateSpawners, 0, 10 * 20L);
+		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), SpawningMechanics::updateSpawners, 0, 10 * 20L);
 	}
 
 	/**
