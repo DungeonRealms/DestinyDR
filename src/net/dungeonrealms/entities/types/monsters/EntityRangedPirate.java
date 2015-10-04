@@ -18,15 +18,12 @@ public class EntityRangedPirate extends RangedEntitySkeleton {
     private int tier;
 
     public EntityRangedPirate(World world, EnumEntityType entityType, int tier) {
-        super(world, "pirate", getRandomHead(), tier, entityType);
+        super(world, "Ranged Pirate", getRandomHead(), tier, entityType);
         this.entityType = entityType;
         this.tier = tier;
         int level = Utils.getRandomFromTier(tier);
         MetadataUtils.registerEntityMetadata(this, this.entityType, tier, level);
         EntityStats.setMonsterStats(this, level, tier);
-        this.setCustomName(ChatColor.GOLD + "Ranged Pirate");
-        this.setCustomNameVisible(true);
-        setArmor(1);
     }
 
     public EntityRangedPirate(World world) {
@@ -91,4 +88,16 @@ public class EntityRangedPirate extends RangedEntitySkeleton {
     protected String bp() {
         return "mob.zombie.death";
     }
+
+	@Override
+	public String getPrefix() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getSuffix() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

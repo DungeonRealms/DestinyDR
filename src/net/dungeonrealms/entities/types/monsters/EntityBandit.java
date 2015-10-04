@@ -30,7 +30,7 @@ public class EntityBandit extends MeleeEntityZombie {
      * @param entityType
      */
     public EntityBandit(World world, int tier, EnumEntityType entityType) {
-        super(world, getRandomName(false), getRandomHead(), tier, entityType, true);
+        super(world, "Bandit", getRandomHead(), tier, entityType, true);
         checkPoison();
     }
 
@@ -41,21 +41,16 @@ public class EntityBandit extends MeleeEntityZombie {
         if (Utils.randInt(1, 6) == 4) {
             this.getBukkitEntity().setMetadata("special",
                     new FixedMetadataValue(DungeonRealms.getInstance(), "poison"));
-            this.setCustomName(ChatColor.GREEN.toString() + ChatColor.UNDERLINE.toString() + "" + getRandomName(true));
+            this.setCustomName(ChatColor.GREEN.toString() + ChatColor.UNDERLINE.toString() +  getPrefix() + "Poisonous Bandit");
         }
     }
-
-    /**
-     * @return
-     */
-    private static String getRandomName(boolean bool) {
+    @Override
+    public String getPrefix() {
         String[] adjectives = new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy",
                 "Majestic", "Intrigued", "Dignified", "Couragous", "Timid", "Gloomy", "Noble", "Naive", "Black"};
         List<String> list = Arrays.asList(adjectives);
         Collections.shuffle(list);
-        if (bool)
-            return list.get(0) + " Poisonous " + " Bandit";
-        return list.get(0) + " Bandit";
+        return list.get(0) + " ";
     }
 
     /**
@@ -88,4 +83,10 @@ public class EntityBandit extends MeleeEntityZombie {
     protected String bo() {
         return "game.player.hurt";
     }
+
+	@Override
+	public String getSuffix() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

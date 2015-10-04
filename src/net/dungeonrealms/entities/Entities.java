@@ -11,6 +11,7 @@ import net.dungeonrealms.entities.types.monsters.EntityGolem;
 import net.dungeonrealms.entities.types.monsters.EntityPirate;
 import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
 import net.dungeonrealms.entities.types.monsters.EntitySpider;
+import net.dungeonrealms.entities.types.monsters.EntityWither;
 import net.dungeonrealms.entities.types.mounts.EnderDragon;
 import net.dungeonrealms.entities.types.mounts.Horse;
 import net.dungeonrealms.entities.types.pets.BabyZombie;
@@ -66,7 +67,8 @@ public class Entities {
         nmsUtils.registerEntity("DR Spider", 59, net.minecraft.server.v1_8_R3.EntitySpider.class, EntitySpider.class);
         nmsUtils.registerEntity("CustomZombie", 54, EntityZombie.class, BasicMeleeMonster.class);
         nmsUtils.registerEntity("BasicMage", 54, EntityZombie.class, BasicMageMonster.class);
-        
+        nmsUtils.registerEntity("BasicMage", 64, EntityZombie.class, EntityWither.class);
+
         nmsUtils.registerEntity("PetCaveSpider", 59, EntityCaveSpider.class, CaveSpider.class);
         nmsUtils.registerEntity("PetBabyZombie", 54, EntityZombie.class, BabyZombie.class);
         nmsUtils.registerEntity("PetBabyZombiePig", 57, EntityPigZombie.class, BabyZombiePig.class);

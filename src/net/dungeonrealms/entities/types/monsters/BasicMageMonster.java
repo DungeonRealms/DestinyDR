@@ -1,5 +1,9 @@
 package net.dungeonrealms.entities.types.monsters;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
@@ -77,4 +81,15 @@ public class BasicMageMonster extends RangedEntitySkeleton{
        this.makeSound("random.bow", 1.0F, 1.0F / (0.8F));
        this.world.addEntity(entityWitherSkull);
    }
+   @Override
+   public String getPrefix() {
+       String[] adjectives = new String[]{""};
+       List<String> list = Arrays.asList(adjectives);
+       Collections.shuffle(list);
+       return list.get(0) + " Bandit";
+   }
+	@Override
+	public String getSuffix() {
+		return null;
+	}
 }

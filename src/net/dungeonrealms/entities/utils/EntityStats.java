@@ -80,12 +80,16 @@ public class EntityStats {
         return new Stats(def, hp, atk, spd);
     }
 
-    public static void setMonsterStats(Entity entity, int lvl, int tier) {
-        Stats stat = Stats.getRandomStats(lvl, tier);
-        entity.getBukkitEntity().setMetadata("hp", new FixedMetadataValue(DungeonRealms.getInstance(), stat.hp));
-        entity.getBukkitEntity().setMetadata("def", new FixedMetadataValue(DungeonRealms.getInstance(), stat.def));
-        entity.getBukkitEntity().setMetadata("atk", new FixedMetadataValue(DungeonRealms.getInstance(), stat.atk));
-        entity.getBukkitEntity().setMetadata("spd", new FixedMetadataValue(DungeonRealms.getInstance(), stat.spd));
-    }
+    public static void setMonsterElite(Entity ent){
+   	 ent.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), 1));
+	}
+
+	public static void setMonsterStats(Entity entity, int lvl, int tier) {
+		Stats stat = Stats.getRandomStats(lvl, tier);
+		entity.getBukkitEntity().setMetadata("hp", new FixedMetadataValue(DungeonRealms.getInstance(), stat.hp));
+		entity.getBukkitEntity().setMetadata("def", new FixedMetadataValue(DungeonRealms.getInstance(), stat.def));
+		entity.getBukkitEntity().setMetadata("atk", new FixedMetadataValue(DungeonRealms.getInstance(), stat.atk));
+		entity.getBukkitEntity().setMetadata("spd", new FixedMetadataValue(DungeonRealms.getInstance(), stat.spd));
+	}
 
 }

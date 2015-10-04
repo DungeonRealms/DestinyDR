@@ -1,6 +1,9 @@
 package net.dungeonrealms.commands;
 
+import java.util.Random;
+
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -11,11 +14,14 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
+import net.dungeonrealms.entities.types.monsters.BasicMageMonster;
+import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
 import net.dungeonrealms.entities.types.monsters.EntityBandit;
 import net.dungeonrealms.entities.types.monsters.EntityFireImp;
 import net.dungeonrealms.entities.types.monsters.EntityGolem;
 import net.dungeonrealms.entities.types.monsters.EntityPirate;
 import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
+import net.dungeonrealms.entities.types.monsters.EntitySpider;
 import net.dungeonrealms.entities.utils.BuffUtils;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.entities.utils.MountUtils;
@@ -80,48 +86,48 @@ public class CommandSpawn implements CommandExecutor {
                         int tier = 1;
                         if (args.length == 3)
                             tier = Integer.parseInt(args[2]);
-                        if (args[1].equalsIgnoreCase("pirate")) {
-                            World world = ((CraftWorld) player.getWorld()).getHandle();
-                            EntityPirate zombie = new EntityPirate(world, EnumEntityType.HOSTILE_MOB, tier);
-                            zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(),
-                                    player.getLocation().getZ());
-                            world.addEntity(zombie, SpawnReason.CUSTOM);
-                            zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(),
-                                    player.getLocation().getZ());
-                        } else if (args[1].equalsIgnoreCase("rangedpirate")) {
-                            World world = ((CraftWorld) player.getWorld()).getHandle();
-                            EntityRangedPirate zombie = new EntityRangedPirate(world, EnumEntityType.HOSTILE_MOB, tier);
-                            zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(),
-                                    player.getLocation().getZ());
-                            world.addEntity(zombie, SpawnReason.CUSTOM);
-                            zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(),
-                                    player.getLocation().getZ());
-                        } else if (args[1].equalsIgnoreCase("imp")) {
-                            World world = ((CraftWorld) player.getWorld()).getHandle();
-                            EntityFireImp zombie = new EntityFireImp(world, tier, EnumEntityType.HOSTILE_MOB);
-                            zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(),
-                                    player.getLocation().getZ());
-                            world.addEntity(zombie, SpawnReason.CUSTOM);
-                            zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(),
-                                    player.getLocation().getZ());
-                        } else if (args[1].equalsIgnoreCase("bandit")) {
-                            World world = ((CraftWorld) player.getWorld()).getHandle();
-                            EntityBandit zombie = new EntityBandit(world, tier, EnumEntityType.HOSTILE_MOB);
-                            zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(),
-                                    player.getLocation().getZ());
-                            world.addEntity(zombie, SpawnReason.CUSTOM);
-                            zombie.setPosition(player.getLocation().getX(), player.getLocation().getY(),
-                                    player.getLocation().getZ());
-                        } else if (args[1].equalsIgnoreCase("golem")) {
-                            World world = ((CraftWorld) player.getWorld()).getHandle();
-                            EntityGolem golem = new EntityGolem(world, tier, EnumEntityType.HOSTILE_MOB);
-                            golem.setPosition(player.getLocation().getX(), player.getLocation().getY(),
-                                    player.getLocation().getZ());
-                            world.addEntity(golem, SpawnReason.CUSTOM);
-                            golem.setPosition(player.getLocation().getX(), player.getLocation().getY(),
-                                    player.getLocation().getZ());
+               			EnumEntityType type = EnumEntityType.HOSTILE_MOB;
+               			Entity entity = null;
+               			World world = ((CraftWorld)player.getWorld()).getHandle();
+               			synchronized (this) {
+               			switch (args[0]) {
+               			case "bandit":
+               				entity = new EntityBandit(world, tier, type);
+               				break;
+               			case "rangedpirate":
+               				entity = new EntityRangedPirate(world, type, tier);
+               				break;
+               			case "pirate":
+               				entity = new EntityPirate(world, type, tier);
+               				break;
+               			case "imp":
+               				entity = new EntityFireImp(world, tier, type);
+               				break;
+               			case "troll":
+               				entity = new BasicMeleeMonster(world, "Troll", "Steve", tier);
+               				break;
+               			case "goblin":
+               				entity = new BasicMeleeMonster(world, "Goblin", "Steve", tier);
+               				break;
+               			case "mage":
+               				entity = new BasicMageMonster(world, "Mage", "Steve", tier);
+               				break;
+               			case "spider":
+               				entity = new EntitySpider(world, "Spider", tier);
+               				break;
+               			case "golem":
+               				entity = new EntityGolem(world, tier, type);
+               				break;
+               			default:
+               				entity = new EntityBandit(world, tier, type);
+               			}
+               			}
+               			Location location = new Location(world.getWorld(), player.getLocation().getX() + new Random().nextInt(3),
+               				player.getLocation().getY(), player.getLocation().getZ() + new Random().nextInt(3));
+               			entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+               			world.addEntity(entity, SpawnReason.CUSTOM);
+               			entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 
-                        }
                     }
                     break;
                 }

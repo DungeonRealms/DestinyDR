@@ -59,9 +59,12 @@ public abstract class RangedEntitySkeleton extends EntitySkeleton {
         EntityStats.setMonsterStats(this, level, tier);
         setStats();
   		this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
-  				+ ChatColor.GOLD.toString() + ChatColor.UNDERLINE.toString() + mobName);
+  				+ ChatColor.RESET + getPrefix() + mobName + getSuffix());
 
     }
+
+    public abstract String getPrefix();
+    public abstract String getSuffix();
 
     @Override
     protected abstract Item getLoot();

@@ -96,4 +96,16 @@ public class EntityFireImp extends RangedEntitySkeleton {
         this.world.addEntity(entityWitherSkull);
     }
 
+	@Override
+	public String getPrefix() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public String getSuffix() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
 }

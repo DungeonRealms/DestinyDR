@@ -20,7 +20,7 @@ public class EntitySpider extends MeleeEntityZombie {
 	 * @param tier
 	 */
 	public EntitySpider(World world, String mobName, int tier) {
-		super(world, getFirst() + " Spider", "Steve", tier, EnumEntityType.HOSTILE_MOB, true);
+		super(world, "Spider", "Steve", tier, EnumEntityType.HOSTILE_MOB, true);
 	}
 
 	public EntitySpider(World world){
@@ -30,7 +30,8 @@ public class EntitySpider extends MeleeEntityZombie {
 	/**
 	 * @return
 	 */
-	private static String getFirst() {
+	@Override
+	public String getPrefix() {
 		String[] array = new String[]{"Scary", "Spookey", "Hairy"};
 		List<String> list = Arrays.asList(array);
 		Collections.shuffle(list);
@@ -50,6 +51,12 @@ public class EntitySpider extends MeleeEntityZombie {
 	@Override
 	protected void setStats() {
 
+	}
+
+	@Override
+	public String getSuffix() {
+		// TODO Auto-generated method stub
+		return null;
 	}
 
 }

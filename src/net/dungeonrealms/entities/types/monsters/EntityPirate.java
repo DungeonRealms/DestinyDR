@@ -1,5 +1,9 @@
 package net.dungeonrealms.entities.types.monsters;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.banks.BankMechanics;
@@ -78,4 +82,18 @@ public class EntityPirate extends MeleeEntityZombie {
     protected String bp() {
         return "mob.zombie.death";
     }
+
+    @Override
+    public String getPrefix() {
+        String[] adjectives = new String[]{""};
+        List<String> list = Arrays.asList(adjectives);
+        Collections.shuffle(list);
+        return list.get(0);
+    }
+
+	@Override
+	public String getSuffix() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 }

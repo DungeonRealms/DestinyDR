@@ -11,6 +11,11 @@ import net.dungeonrealms.mechanics.XRandom;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
@@ -34,20 +39,6 @@ public class EntityGolem extends MeleeEntityZombie {
         super(world);
     }
 
-    /**
-     * @return
-     */
-    private static int getLvl() {
-        return new XRandom().nextInt(2);
-    }
-
-    /**
-     * @return
-     */
-    private static String setName() {
-        return "Enchanted Iron Golem";
-    }
-
     @Override
     protected Item getLoot() {
         ItemStack item = BankMechanics.gem.clone();
@@ -65,5 +56,19 @@ public class EntityGolem extends MeleeEntityZombie {
     protected void setStats() {
 
     }
+
+    @Override
+    public String getPrefix() {
+        String[] adjectives = new String[]{"Enchanted", "Ironclad", "Enchanted Ironclad", "Ice"};
+        List<String> list = Arrays.asList(adjectives);
+        Collections.shuffle(list);
+        return list.get(0);
+    }
+
+	@Override
+	public String getSuffix() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

@@ -21,6 +21,7 @@ import net.dungeonrealms.entities.types.monsters.EntityGolem;
 import net.dungeonrealms.entities.types.monsters.EntityPirate;
 import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
 import net.dungeonrealms.entities.types.monsters.EntitySpider;
+import net.dungeonrealms.entities.types.monsters.EntityWither;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Entity;
@@ -131,7 +132,7 @@ public class MobSpawner {
 				entity = new BasicMeleeMonster(world, "Troll", "Steve", tier);
 				break;
 			case "goblin":
-				entity = new BasicMeleeMonster(world, "Goblin", "Steve", tier);
+				entity = new BasicMeleeMonster(world, "Goblin", "Shrek", tier);
 				break;
 			case "mage":
 				entity = new BasicMageMonster(world, "Mage", "Steve", tier);
@@ -142,6 +143,10 @@ public class MobSpawner {
 			case "golem":
 				entity = new EntityGolem(world, tier, type);
 				break;
+			case "naga":
+				entity = new BasicMeleeMonster(world, "Naga", "Das_Doktor", tier);
+			case "wither":
+				entity = new EntityWither(world, "Wither", "Steve", tier);
 			default:
 				entity = new EntityBandit(world, tier, type);
 			}
@@ -159,10 +164,13 @@ public class MobSpawner {
 	/**
 	 * 
 	 */
-	public void killMobs() {
+	public void kill() {
 		for (Entity spawnedMonster : spawnedMonsters) {
 			spawnedMonster.getBukkitEntity().remove();
 			armorstand.getWorld().kill(spawnedMonster);
+			armorstand.getWorld().kill(armorstand);
+			armorstand.setHealth(0);
+			SpawningMechanics.remove(this);
 		}
 	}
 }

@@ -85,6 +85,40 @@ public class DamageListener implements Listener {
     }
 
 
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
+    public void playerBreakArmorStand(EntityDamageByEntityEvent event){
+       //Armor Stand Spawner check.
+       if(event.getEntity().getType() == EntityType.ARMOR_STAND) {
+      	 if(!event.getEntity().hasMetadata("type")){
+      		 event.setCancelled(false);
+      		 event.getEntity().remove();
+      		 return;
+      	 }
+           if(event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("spawner")){
+               Player attacker = (Player) event.getDamager();
+               if(attacker.isOp() || attacker.getGameMode() == GameMode.CREATIVE){
+                   ArrayList<MobSpawner> list = SpawningMechanics.getSpawners();
+                   for (int i = 0; i < list.size(); i++) {
+                       MobSpawner current = list.get(i);
+                       if (current.loc.getBlockX() == event.getEntity().getLocation().getBlockX() && current.loc.getBlockY() == event.getEntity().getLocation().getBlockY() &&
+     						 current.loc.getBlockZ() == event.getEntity().getLocation().getBlockZ()) {
+                           current.kill();
+                           break;
+                       }
+                   }
+               }else {
+                   event.setDamage(0);
+                   event.setCancelled(true);
+                   return;
+               }
+           }else {
+               event.setDamage(0);
+ 				event.setCancelled(true);
+ 				return;
+           }
+       }
+    }
+    
     /**
      * Listen for the players weapon hitting an entity
      * Used for calculating damage based on player weapon
@@ -97,34 +131,6 @@ public class DamageListener implements Listener {
         if ((!(event.getDamager() instanceof Player)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
             return;
         if (!(event.getEntity().hasMetadata("type"))) return;
-        //Armor Stand Spawner check.
-        if(event.getEntity().getType() == EntityType.ARMOR_STAND) {
-            if(event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("spawner")){
-                Player attacker = (Player) event.getDamager();
-                if(attacker.isOp() || attacker.getGameMode() == GameMode.CREATIVE){
-                    ArrayList<MobSpawner> list = SpawningMechanics.getSpawners();
-                    for (int i = 0; i < list.size(); i++) {
-                        MobSpawner current = list.get(i);
-                        if (current.loc.getBlockX() == event.getEntity().getLocation().getBlockX() && current.loc.getBlockY() == event.getEntity().getLocation().getBlockY() &&
-      						 current.loc.getBlockZ() == event.getEntity().getLocation().getBlockZ()) {
-                            current.killMobs();
-                            event.getEntity().remove();
-                            SpawningMechanics.remove(i);
-                            break;
-                        }
-                    }
-                }else {
-                    event.setDamage(0);
-                    event.setCancelled(true);
-                    return;
-                }
-            }else {
-                event.setDamage(0);
-  				event.setCancelled(true);
-  				return;
-            }
-            return;
-        }
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
         if (event.getDamager() instanceof Player) {
