@@ -6,12 +6,15 @@ import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.teleportation.Teleportation;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.UUID;
 
@@ -71,8 +74,8 @@ public class HealthHandler {
     }
 
     public static int getPlayerMaxHPOnLogin(UUID uuid) {
-        if ((DatabaseAPI.getInstance().getData(EnumData.HEALTH, uuid) != null) && ((int) DatabaseAPI.getInstance().getData(EnumData.HEALTH, uuid) > 0)) {
-            return (int) DatabaseAPI.getInstance().getData(EnumData.HEALTH, uuid);
+        if ((DatabaseAPI.getInstance().getData(EnumData.HEALTH, uuid) != null) && (Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEALTH, uuid))) > 0)) {
+            return Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEALTH, uuid)));
         } else {
             return generateMaxHPFromItems(Bukkit.getPlayer(uuid)); //This shouldn't happen but safety return. Probably kick them or something if their data cannot be loaded.
         }
@@ -103,36 +106,37 @@ public class HealthHandler {
                 continue;
             }
             //Check their Max HP from wherever we decide to store it.
-            int currentHP = getPlayerHPLive(player);
-            int amountToHealPlayer = getPlayerHPRegenLive(player);
-            int maxHP = getPlayerMaxHPLive(player);
-            if (currentHP + 1 > maxHP) {
-                if (player.getHealth() != 20) {
-                    player.setHealth(20);
-                }
-                continue;
-            }
-
-            if ((currentHP + amountToHealPlayer) >= maxHP) {
-                player.setHealth(20);
-                setPlayerHPLive(player, maxHP);
-            } else if (player.getHealth() <= 19 && ((currentHP + amountToHealPlayer) < maxHP)) {
-                setPlayerHPLive(player, (getPlayerHPLive(player) + amountToHealPlayer));
-                double playerHPPercent = (getPlayerHPLive(player) + amountToHealPlayer) / maxHP;
-                double newPlayerHP = playerHPPercent * 20;
-                if (newPlayerHP >= 19.5D) {
-                    if (playerHPPercent >= 1.0D) {
-                        newPlayerHP = 20;
-                    } else {
-                        newPlayerHP = 19;
+            if (!CombatLog.isInCombat(uuid)) {
+                double currentHP = getPlayerHPLive(player);
+                double amountToHealPlayer = getPlayerHPRegenLive(player);
+                double maxHP = getPlayerMaxHPLive(player);
+                if (currentHP + 1 > maxHP) {
+                    if (player.getHealth() != 20) {
+                        player.setHealth(20);
                     }
+                    continue;
                 }
-                if (newPlayerHP < 1) {
-                    newPlayerHP = 1;
-                }
-                player.setHealth(newPlayerHP);
-            }
 
+                if ((currentHP + amountToHealPlayer) >= maxHP) {
+                    player.setHealth(20);
+                    setPlayerHPLive(player, (int) maxHP);
+                } else if (player.getHealth() <= 19 && ((currentHP + amountToHealPlayer) < maxHP)) {
+                    setPlayerHPLive(player, (int) (getPlayerHPLive(player) + amountToHealPlayer));
+                    double playerHPPercent = (getPlayerHPLive(player) + amountToHealPlayer) / maxHP;
+                    double newPlayerHP = playerHPPercent * 20;
+                    if (newPlayerHP >= 19.50D) {
+                        if (playerHPPercent >= 1.0D) {
+                            newPlayerHP = 20;
+                        } else {
+                            newPlayerHP = 19;
+                        }
+                    }
+                    if (newPlayerHP < 1) {
+                        newPlayerHP = 1;
+                    }
+                    player.setHealth((int) newPlayerHP);
+                }
+            }
         }
     }
 
@@ -147,13 +151,13 @@ public class HealthHandler {
 
         if (newHP <= 0) {
             player.setHealth(0);
+            //respawnPlayer(player);
             return;
         }
 
         setPlayerHPLive(player, (int) newHP);
-        Bukkit.broadcastMessage(String.valueOf(newHP));
         double playerHPPercent = (newHP / maxHP);
-        double newPlayerHPToDisplay = playerHPPercent * 20;
+        double newPlayerHPToDisplay = playerHPPercent * 20.0D;
         int convHPToDisplay = (int) newPlayerHPToDisplay;
         if (convHPToDisplay <= 0) {
             convHPToDisplay = 1;
@@ -162,7 +166,6 @@ public class HealthHandler {
             convHPToDisplay = 20;
         }
         player.setHealth(convHPToDisplay);
-        setPlayerHPLive(player, (int) newHP);
     }
 
     public static int generateMaxHPFromItems(Player player) {
@@ -249,5 +252,14 @@ public class HealthHandler {
         } else {
             return getHealthRegenFromItems(player);
         }
+    }
+
+    public static void respawnPlayer(Player player) {
+        player.teleport(Teleportation.Cyrennica);
+        player.setNoDamageTicks(100);
+        player.setMaximumNoDamageTicks(100);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 4));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 10));
+        player.sendMessage("RESPAWNING AT CYRENNICA");
     }
 }

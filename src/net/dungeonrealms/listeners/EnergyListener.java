@@ -37,7 +37,7 @@ public class EnergyListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOW)
     public void onPlayerStarveDamage(EntityDamageEvent event) {
         if (event.getCause() != EntityDamageEvent.DamageCause.STARVATION) return;
         if (!(event.getEntity() instanceof Player)) return;
@@ -55,7 +55,7 @@ public class EnergyListener implements Listener {
 
     /**
      * Checks for players starting sprinting or stopping sprinting
-     * adds/removes correct metadata, applies inital energy reduction
+     * adds/removes correct metadata, applies initial energy reduction
      * cancels if player can't sprint
      *
      * @param event
@@ -174,7 +174,7 @@ public class EnergyListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
         if (!player.hasPotionEffect(PotionEffectType.HUNGER) && !player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) && !player.hasMetadata("starving") && !player.hasMetadata("sprinting"))

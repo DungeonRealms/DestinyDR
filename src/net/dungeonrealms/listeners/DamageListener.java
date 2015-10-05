@@ -9,11 +9,11 @@ import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.Item;
 import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.spawning.MobSpawner;
 import net.dungeonrealms.spawning.SpawningMechanics;
+import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -172,7 +172,6 @@ public class DamageListener implements Listener {
         }
         event.setDamage(finalDamage);
     }
-
 
     /**
      * Listen for the monsters hitting a player
@@ -429,6 +428,7 @@ public class DamageListener implements Listener {
                 || event.getCause() == DamageCause.FALL || event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.FIRE
                 || event.getCause() == DamageCause.ENTITY_EXPLOSION || event.getCause() == DamageCause.BLOCK_EXPLOSION) {
             event.setCancelled(true);
+            event.setDamage(0);
             event.getEntity().setFireTicks(0);
         }
     }
@@ -441,51 +441,44 @@ public class DamageListener implements Listener {
      * @since 1.0
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
-    public void onPlayerDeath(EntityDeathEvent event) {
-        if (!(event.getEntity() instanceof Player)){
-           List<ItemStack> list = event.getDrops();
-           for(int i = 0;i <list.size();i++){
-               ItemStack item = list.get(i);
-               if(item.getType() == Material.SKULL || item.getType() == Material.SKULL_ITEM) {
-                   list.remove(i);
-               }
-           }
-        } else {
-            if (EntityAPI.hasPetOut(event.getEntity().getUniqueId())) {
-                net.minecraft.server.v1_8_R3.Entity pet = EntityAPI.getPlayerPet(event.getEntity().getUniqueId());
-                if (!pet.getBukkitEntity().isDead()) { //Safety check
-                    pet.getBukkitEntity().remove();
-                }
-                EntityAPI.removePlayerPetList(event.getEntity().getUniqueId());
-                event.getEntity().sendMessage("For it's own safety, your pet has returned to its home.");
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Player player = event.getEntity();
+        if (EntityAPI.hasPetOut(event.getEntity().getUniqueId())) {
+            net.minecraft.server.v1_8_R3.Entity pet = EntityAPI.getPlayerPet(event.getEntity().getUniqueId());
+            if (!pet.getBukkitEntity().isDead()) { //Safety check
+                pet.getBukkitEntity().remove();
             }
-            if (EntityAPI.hasMountOut(event.getEntity().getUniqueId())) {
-                net.minecraft.server.v1_8_R3.Entity mount = EntityAPI.getPlayerMount(event.getEntity().getUniqueId());
-                if (mount.isAlive()) {
-                    mount.getBukkitEntity().remove();
-                }
-                EntityAPI.getPlayerMount(event.getEntity().getUniqueId());
-                event.getEntity().sendMessage("For it's own safety, your mount has returned to the stable.");
+            EntityAPI.removePlayerPetList(event.getEntity().getUniqueId());
+            event.getEntity().sendMessage("For it's own safety, your pet has returned to its home.");
+        }
+        if (EntityAPI.hasMountOut(event.getEntity().getUniqueId())) {
+            net.minecraft.server.v1_8_R3.Entity mount = EntityAPI.getPlayerMount(event.getEntity().getUniqueId());
+            if (mount.isAlive()) {
+                mount.getBukkitEntity().remove();
             }
-            List<ItemStack> list = event.getDrops();
-            ((Player)event.getEntity()).getInventory().setItem(8, null);
-            for(int i = 0;i <list.size();i++){
-                ItemStack item = list.get(i);
-                Utils.log.info(item.getType().name());
-                net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
-                if(nms.hasTag()){
-                    if(nms.getTag().hasKey("type"))
-                        Utils.log.info(nms.getTag().getString("type"));
-                    if(nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")){
-                        list.remove(i);
-                    }
+            EntityAPI.getPlayerMount(event.getEntity().getUniqueId());
+            event.getEntity().sendMessage("For it's own safety, your mount has returned to the stable.");
+        }
+        List<ItemStack> list = event.getDrops();
+        event.getEntity().getInventory().setItem(8, null);
+        for(int i = 0; i < list.size(); i++){
+            ItemStack item = list.get(i);
+            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+            if(nms.hasTag()){
+                if(nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")){
+                    list.remove(i);
                 }
             }
+        }
+        if (player.isDead()) {
+            player.setHealth(1);
+            player.teleport(Teleportation.Cyrennica);
+            player.setFireTicks(0);
         }
     }
 
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onPlayerRespawn(PlayerRespawnEvent event){
        PlayerManager.checkInventory(event.getPlayer().getUniqueId());
     }
