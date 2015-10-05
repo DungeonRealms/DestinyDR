@@ -140,7 +140,7 @@ public class API {
             Storage storageTemp = new Storage(uuid);
             BankMechanics.storage.put(uuid, storageTemp);
         }
-        TeleportAPI.addPlayerHearthstoneCD(uuid, 120);
+        TeleportAPI.addPlayerHearthstoneCD(uuid, 150);
         PlayerManager.checkInventory(uuid);
     }
 }

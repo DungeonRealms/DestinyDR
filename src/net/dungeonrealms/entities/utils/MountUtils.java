@@ -1,8 +1,10 @@
 package net.dungeonrealms.entities.utils;
 
+import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.entities.types.mounts.EnderDragon;
 import net.dungeonrealms.entities.types.mounts.Horse;
 import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -86,6 +88,7 @@ public class MountUtils {
                 player.sendMessage("Mount Spawned!");
                 EntityAPI.addPlayerMountList(player.getUniqueId(), mountHorse);
                 player.closeInventory();
+                DonationEffects.entityParticleEffects.put(mountHorse, ParticleAPI.ParticleEffect.LARGE_SMOKE);
                 break;
             }
             case 6: {

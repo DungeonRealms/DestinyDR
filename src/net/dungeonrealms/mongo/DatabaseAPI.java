@@ -176,7 +176,7 @@ public class DatabaseAPI {
                                 .append("lastLogin", 0l)
                                 .append("netLevel", 1)
                                 .append("experience", 0f)
-                                .append("hearthstone", "starter")
+                                .append("hearthstone", "cyrennica")
                                 .append("isPlaying", true)
                                 .append("friends", new ArrayList<>())
                                 .append("guild", "")

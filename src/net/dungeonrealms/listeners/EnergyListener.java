@@ -2,6 +2,7 @@ package net.dungeonrealms.listeners;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.energy.EnergyHandler;
+import net.minecraft.server.v1_8_R3.EntityExperienceOrb;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.ExperienceOrb;
@@ -135,7 +136,7 @@ public class EnergyListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onItemPickup(PlayerPickupItemEvent event) {
-        if (!(event.getItem() instanceof ExperienceOrb)) return;
+        if (!(event.getItem() instanceof ExperienceOrb) && (!(event.getItem() instanceof EntityExperienceOrb))) return;
         event.setCancelled(true);
     }
 

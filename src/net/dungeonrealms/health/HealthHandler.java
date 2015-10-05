@@ -4,7 +4,6 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.teleportation.Teleportation;
 import org.bukkit.Bukkit;
@@ -74,11 +73,7 @@ public class HealthHandler {
     }
 
     public static int getPlayerMaxHPOnLogin(UUID uuid) {
-        if ((DatabaseAPI.getInstance().getData(EnumData.HEALTH, uuid) != null) && (Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEALTH, uuid))) > 0)) {
-            return Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEALTH, uuid)));
-        } else {
-            return generateMaxHPFromItems(Bukkit.getPlayer(uuid)); //This shouldn't happen but safety return. Probably kick them or something if their data cannot be loaded.
-        }
+        return generateMaxHPFromItems(Bukkit.getPlayer(uuid)); //This shouldn't happen but safety return. Probably kick them or something if their data cannot be loaded.
     }
 
     public static int getPlayerMaxHPLive(Player player) {

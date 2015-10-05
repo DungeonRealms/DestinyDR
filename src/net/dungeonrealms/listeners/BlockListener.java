@@ -1,11 +1,12 @@
 package net.dungeonrealms.listeners;
 
-import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.spawning.MobSpawner;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
@@ -16,6 +17,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -55,7 +57,6 @@ public class BlockListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void blockBreak(BlockBreakEvent e) {
 		Block block = e.getBlock();
-		Utils.log.info(block.getType().name());
 		if (block == null)
 			return;
 		if (block.getType() == Material.CHEST) {
@@ -72,8 +73,6 @@ public class BlockListener implements Listener {
 			ArrayList<MobSpawner> list = SpawningMechanics.getSpawners();
 			for (int i = 0; i < list.size(); i++) {
 			MobSpawner current = list.get(i);
-			Utils.log.info(current.loc.toString());
-			Utils.log.info(block.getLocation().toString());
 			if (current.loc == block.getLocation()) {
 				SpawningMechanics.remove(i);
 			}
@@ -153,6 +152,15 @@ public class BlockListener implements Listener {
 				ShopMechanics.setupShop(event.getClickedBlock(), event.getPlayer().getUniqueId());
 			}
 			}
+		}
+	}
+
+	@EventHandler (priority = EventPriority.LOWEST)
+	public void snowmanMakeSnow(EntityBlockFormEvent event) {
+		if (event.getNewState().getType() == Material.SNOW) {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> event.getBlock().setType(Material.AIR), 60L);
+		} else {
+			event.setCancelled(true);
 		}
 	}
 }

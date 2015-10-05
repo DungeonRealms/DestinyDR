@@ -245,7 +245,7 @@ public class DamageListener implements Listener {
                         DamageAPI.polearmAOEProcessing.add(attacker);
                         for (Entity entityNear : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
                             if (entityNear instanceof LivingEntity && entityNear != event.getEntity() && entityNear != event.getDamager()) {
-                                if (event.getEntity().hasMetadata("type")) {
+                                if (event.getDamager().hasMetadata("type")) {
                                     if (!(entityNear instanceof Player)) {
                                         break;
                                     } else {
@@ -470,11 +470,15 @@ public class DamageListener implements Listener {
                 }
             }
         }
-        if (player.isDead()) {
-            player.setHealth(1);
-            player.teleport(Teleportation.Cyrennica);
-            player.setFireTicks(0);
-        }
+        player.setHealth(1);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 10));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 10));
+        player.teleport(Teleportation.Cyrennica);
+        player.setFireTicks(0);
+        player.setMaximumNoDamageTicks(50);
+        player.setNoDamageTicks(50);
+        player.setFallDistance(0);
+        PlayerManager.checkInventory(event.getEntity().getUniqueId());
     }
 
 

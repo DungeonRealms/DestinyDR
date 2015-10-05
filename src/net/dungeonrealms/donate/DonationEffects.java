@@ -3,6 +3,8 @@ package net.dungeonrealms.donate;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
+import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -31,11 +33,13 @@ public class DonationEffects {
     //CHRISTMAS PLAYERS = SNOW_SHOVEL
 
     public static HashMap<Player, ParticleAPI.ParticleEffect> playerParticleEffects = new HashMap<>();
+    public static HashMap<Entity, ParticleAPI.ParticleEffect> entityParticleEffects = new HashMap<>();
     public static ConcurrentHashMap<Location, Material> playerGoldBlockTrailLocation = new ConcurrentHashMap<>();
     public static List<Player> playerGoldBlockTrail = new ArrayList<>();
 
     public void startInitialization() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::spawnPlayerParticleEffects, 40L, 1L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::spawnEntityParticleEffects, 40L, 1L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::removeGoldBlockTrails, 40L, 3L);
     }
 
@@ -63,5 +67,17 @@ public class DonationEffects {
                 location.getBlock().setMetadata("time", new FixedMetadataValue(DungeonRealms.getInstance(), timeRemaining));
             }
         }
+    }
+
+    private void spawnEntityParticleEffects() {
+        MinecraftServer.getServer().getWorld().entityList.stream().filter(entityParticleEffects::containsKey).forEach(entity -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            Location location = new Location(Bukkit.getWorlds().get(0), entity.locX, entity.locY, entity.locZ);
+            try {
+                ParticleAPI.sendParticleToLocation(entityParticleEffects.get(entity), location.add(0, 0.22, 0), (new Random().nextFloat()) - 0.4F, (new Random().nextFloat()) - 0.5F, (new Random().nextFloat()) - 0.5F, 0.02F, 6);
+            } catch (Exception e) {
+                e.printStackTrace();
+                Utils.log.warning("[Donations] [ASYNC] Could not spawn donation particle " + entityParticleEffects.get(entity).name() + " for entity " + entity.getName());
+            }
+        }, 0L));
     }
 }

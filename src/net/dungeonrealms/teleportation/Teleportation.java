@@ -58,7 +58,7 @@ public class Teleportation {
     }
 
     public void startInitialization() {
-        Cyrennica = new Location(Bukkit.getWorlds().get(0), -367, 83, 390);
+        Cyrennica = new Location(Bukkit.getWorlds().get(0), -367, 84, 390);
         Harrison_Field = new Location(Bukkit.getWorlds().get(0), -594, 58, 687, 92.0F, 1F);
         Dark_Oak_Tavern = new Location(Bukkit.getWorlds().get(0), 280, 58, 1132, 2.0F, 1F);
         Deadpeaks_Mountain_Camp = new Location(Bukkit.getWorlds().get(0), -1173, 105, 1030, -88.0F, 1F);
@@ -85,7 +85,7 @@ public class Teleportation {
      */
     public static void teleportPlayer(UUID uuid, EnumTeleportType teleportType, NBTTagCompound nbt) {
         Player player = Bukkit.getPlayer(uuid);
-        if (player.getWorld().getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName())) {
+        if (!(player.getWorld().getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName()))) {
             if (teleportType == EnumTeleportType.HEARTHSTONE) {
                 TeleportAPI.addPlayerHearthstoneCD(uuid, 280);
             }
@@ -141,14 +141,13 @@ public class Teleportation {
                 break;
         }
         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
                 if (player.getLocation().getX() == PLAYERS_TELEPORTING.get(player.getUniqueId()).getX() && player.getLocation().getZ() == PLAYERS_TELEPORTING.get(player.getUniqueId()).getZ()) {
                     try {
                         ParticleAPI.sendParticleToLocation(particleEffect[0], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
                         ParticleAPI.sendParticleToLocation(particleEffect[1], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 4F, 400);
                     } catch (Exception e) {
-                        Utils.log.info("Teleportation tried to send particle to player and failed. Continuing.s");
+                        Utils.log.info("Teleportation tried to send particle to player and failed. Continuing");
                     }
                     if (taskTimer[0] <= 0) {
                         if (CombatLog.isInCombat(uuid)) {
