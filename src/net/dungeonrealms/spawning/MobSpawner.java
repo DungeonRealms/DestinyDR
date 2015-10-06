@@ -38,7 +38,7 @@ public class MobSpawner {
 		World world = ((CraftWorld) location.getWorld()).getHandle();
 		armorstand = new EntityArmorStand(world);
 		armorstand.getBukkitEntity().setMetadata("type",
-			new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
+		        new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
 		String temp = "";
 		for (String aType : type) {
 			temp += aType + ",";
@@ -72,26 +72,26 @@ public class MobSpawner {
 	public void spawnIn() {
 		for (int i = 0; i < spawnedMonsters.size(); i++) {
 			if (!spawnedMonsters.get(i).isAlive())
-			spawnedMonsters.remove(i);
+				spawnedMonsters.remove(i);
 		}
 		if (isSpawning) {
 			if (!playersAround()) {
-			if (spawnedMonsters.size() > 0)
-				for (Entity ent : spawnedMonsters) {
-					ent.die();
-					ent.dead = true;
-					ent.getBukkitEntity().remove();
-					armorstand.getWorld().kill(ent);
-					spawnedMonsters.remove(ent);
-				}
-			isSpawning = false;
-			return;
+				if (spawnedMonsters.size() > 0)
+					for (Entity ent : spawnedMonsters) {
+						ent.die();
+						ent.dead = true;
+						ent.getBukkitEntity().remove();
+						armorstand.getWorld().kill(ent);
+						spawnedMonsters.remove(ent);
+					}
+				isSpawning = false;
+				return;
 			}
 		} else {
 			if (!playersAround()) {
-			return;
+				return;
 			} else {
-			isSpawning = true;
+				isSpawning = true;
 			}
 		}
 		// Max spawn ammount
@@ -106,44 +106,52 @@ public class MobSpawner {
 			World world = armorstand.getWorld();
 			EnumEntityType type = EnumEntityType.HOSTILE_MOB;
 			synchronized (this) {
-			switch (mob) {
-			case "bandit":
-				entity = new EntityBandit(world, tier, type);
-				break;
-			case "rangedpirate":
-				entity = new EntityRangedPirate(world, type, tier);
-				break;
-			case "pirate":
-				entity = new EntityPirate(world, type, tier);
-				break;
-			case "imp":
-				entity = new EntityFireImp(world, tier, type);
-				break;
-			case "troll":
-				entity = new BasicMeleeMonster(world, "Troll", "Steve", tier);
-				break;
-			case "goblin":
-				entity = new BasicMeleeMonster(world, "Goblin", "Shrek", tier);
-				break;
-			case "mage":
-				entity = new BasicMageMonster(world, "Mage", "Steve", tier);
-				break;
-			case "spider":
-				entity = new EntitySpider(world, "Spider", tier);
-				break;
-			case "golem":
-				entity = new EntityGolem(world, tier, type);
-				break;
-			case "naga":
-				entity = new BasicMeleeMonster(world, "Naga", "Das_Doktor", tier);
-			case "wither":
-				entity = new EntityWither(world, "Wither", "Steve", tier);
-			default:
-				entity = new EntityBandit(world, tier, type);
-			}
+				switch (mob) {
+				case "bandit":
+					entity = new EntityBandit(world, tier, type);
+					break;
+				case "rangedpirate":
+					entity = new EntityRangedPirate(world, type, tier);
+					break;
+				case "pirate":
+					entity = new EntityPirate(world, type, tier);
+					break;
+				case "imp":
+					entity = new EntityFireImp(world, tier, type);
+					break;
+				case "troll":
+					entity = new BasicMeleeMonster(world, "Troll", "Steve", tier);
+					break;
+				case "goblin":
+					entity = new BasicMeleeMonster(world, "Goblin", "Shrek", tier);
+					break;
+				case "mage":
+					entity = new BasicMageMonster(world, "Mage", "Steve", tier);
+					break;
+				case "spider":
+					entity = new EntitySpider(world, "Spider", tier);
+					break;
+				case "golem":
+					entity = new EntityGolem(world, tier, type);
+					break;
+				case "naga":
+					entity = new BasicMeleeMonster(world, "Naga", "Das_Doktor", tier);
+					break;
+				case "wither":
+					entity = new EntityWither(world, "Wither", "Steve", tier);
+					break;
+				case "tripoli":
+					entity = new BasicMeleeMonster(world, "Tripoli Soldier", "Xmattpt", tier);
+					break;
+				case "blaze":
+					entity = new BasicEntityBlaze(world, "Blaze", "Steve", tier);
+					break;
+				default:
+					entity = new EntityBandit(world, tier, type);
+				}
 			}
 			Location location = new Location(Bukkit.getWorlds().get(0), loc.getX() + new Random().nextInt(3),
-				loc.getY(), loc.getZ() + new Random().nextInt(3));
+			        loc.getY(), loc.getZ() + new Random().nextInt(3));
 			entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 			world.addEntity(entity, SpawnReason.CUSTOM);
 			entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);

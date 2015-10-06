@@ -51,7 +51,6 @@ public class CommandSet implements CommandExecutor {
 					player.sendMessage("/set spawner goblin,troll*,bandit 2");
 					return false;
 				}
-				String[] monsters = args[1].split(",");
 				int tier = Integer.parseInt(args[2]);
 				File file = new File(DungeonRealms.getInstance().getDataFolder() + "\\global_spawns.dat");
 				try {

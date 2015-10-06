@@ -40,7 +40,8 @@ public class Entities {
         nmsUtils.registerEntity("DR Spider", 59, net.minecraft.server.v1_8_R3.EntitySpider.class, EntitySpider.class);
         nmsUtils.registerEntity("CustomZombie", 54, EntityZombie.class, BasicMeleeMonster.class);
         nmsUtils.registerEntity("BasicMage", 54, EntityZombie.class, BasicMageMonster.class);
-        nmsUtils.registerEntity("BasicMage", 64, EntityZombie.class, EntityWither.class);
+        nmsUtils.registerEntity("Wither", 64, EntityZombie.class, EntityWither.class);
+        nmsUtils.registerEntity("Blaze", 61, EntityBlaze.class, net.dungeonrealms.entities.types.EntityBlaze.class);
 
         nmsUtils.registerEntity("PetCaveSpider", 59, EntityCaveSpider.class, CaveSpider.class);
         nmsUtils.registerEntity("PetBabyZombie", 54, EntityZombie.class, BabyZombie.class);
