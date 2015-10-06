@@ -1,5 +1,6 @@
 package net.dungeonrealms.entities;
 
+import net.dungeonrealms.entities.types.RangedEntityBlaze;
 import net.dungeonrealms.entities.types.monsters.*;
 import net.dungeonrealms.entities.types.monsters.EntityGolem;
 import net.dungeonrealms.entities.types.monsters.EntitySpider;
@@ -41,7 +42,7 @@ public class Entities {
         nmsUtils.registerEntity("CustomZombie", 54, EntityZombie.class, BasicMeleeMonster.class);
         nmsUtils.registerEntity("BasicMage", 54, EntityZombie.class, BasicMageMonster.class);
         nmsUtils.registerEntity("Wither", 64, EntityZombie.class, EntityWither.class);
-        nmsUtils.registerEntity("Blaze", 61, EntityBlaze.class, net.dungeonrealms.entities.types.EntityBlaze.class);
+        nmsUtils.registerEntity("Blaze", 61, EntityBlaze.class, RangedEntityBlaze.class);
 
         nmsUtils.registerEntity("PetCaveSpider", 59, EntityCaveSpider.class, CaveSpider.class);
         nmsUtils.registerEntity("PetBabyZombie", 54, EntityZombie.class, BabyZombie.class);

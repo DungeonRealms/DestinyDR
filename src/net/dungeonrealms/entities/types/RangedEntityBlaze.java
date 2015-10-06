@@ -1,14 +1,5 @@
 package net.dungeonrealms.entities.types;
 
-import java.lang.reflect.Field;
-import java.util.Random;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
-
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.items.ItemGenerator;
@@ -16,18 +7,24 @@ import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
+
+import java.lang.reflect.Field;
 
 /**
  * Created by Chase on Oct 4, 2015
  */
-public abstract class EntityBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze {
+public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze {
 
 	protected String name;
 	protected String mobHead;
 	protected EnumEntityType entityType;
 
-	protected EntityBlaze(World world, String mobName, String mobHead, int tier, EnumEntityType entityType,
-	        boolean setArmor) {
+	protected RangedEntityBlaze(World world, String mobName, String mobHead, int tier, EnumEntityType entityType, boolean setArmor) {
 		this(world);
 		this.name = mobName;
 		this.mobHead = mobHead;
@@ -49,7 +46,7 @@ public abstract class EntityBlaze extends net.minecraft.server.v1_8_R3.EntityBla
 	@Override
 	protected abstract void getRareDrop();
 
-	protected EntityBlaze(World world) {
+	protected RangedEntityBlaze(World world) {
 		super(world);
 	}
 
@@ -92,10 +89,7 @@ public abstract class EntityBlaze extends net.minecraft.server.v1_8_R3.EntityBla
 	}
 
 	private ItemStack getTierWeapon(int tier) {
-		return new ItemGenerator().next(
-		        net.dungeonrealms.items.Item.ItemType
-		                .getById(new Random().nextInt(net.dungeonrealms.items.Item.ItemType.values().length - 2)),
-		        net.dungeonrealms.items.Item.ItemTier.getById(tier));
+		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.STAFF, net.dungeonrealms.items.Item.ItemTier.getById(tier));
 		// TODO: MAKE THIS TAKE A TIER AND BASE IT ON THAT. DO THE SAME WITH
 		// ARMOR DON'T JUST CREATE NEW SHITTY BUKKIT ONES.
 		/*
