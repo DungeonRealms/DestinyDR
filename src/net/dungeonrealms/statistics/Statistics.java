@@ -25,7 +25,8 @@ public class Statistics {
     //TODO: Need to add more
     enum StatisticType {
         MOB_KILL(0),
-        PLAYER_KILL(1),;
+        PLAYER_KILL(1),
+        DEATHS(2),;
 
         private int id;
 

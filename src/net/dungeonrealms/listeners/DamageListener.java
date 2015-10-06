@@ -435,6 +435,9 @@ public class DamageListener implements Listener {
     /**
      * Listen for Players dying
      * NOT TO BE USED FOR NON-PLAYERS
+     * Drops items, not their head/hearthstone
+     * Saves their first slot
+     * Respawns them at Cyrennica
      *
      * @param event
      * @since 1.0
@@ -442,6 +445,7 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
+        ItemStack itemToSave = null;
         if (EntityAPI.hasPetOut(player.getUniqueId())) {
             net.minecraft.server.v1_8_R3.Entity pet = EntityAPI.getPlayerPet(player.getUniqueId());
             if (!pet.getBukkitEntity().isDead()) { //Safety check
@@ -458,9 +462,15 @@ public class DamageListener implements Listener {
             EntityAPI.getPlayerMount(player.getUniqueId());
             player.sendMessage("For it's own safety, your mount has returned to the stable.");
         }
+        if (player.getInventory().getItem(0) != null && player.getInventory().getItem(0).getType() != Material.AIR) {
+            itemToSave = player.getInventory().getItem(0);
+        }
         event.setDroppedExp(0);
         for (ItemStack itemStack : event.getDrops()) {
             if (itemStack != null) {
+                if (itemStack.equals(itemToSave)) {
+                    break;
+                }
                 net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
                 if (nms.hasTag()) {
                     if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")) {
@@ -472,7 +482,10 @@ public class DamageListener implements Listener {
             }
         }
         event.getDrops().clear();
-        player.setHealth(1);
+        player.setHealth(3);
+        for (PotionEffect potionEffect : player.getActivePotionEffects()) {
+            player.removePotionEffect(potionEffect.getType());
+        }
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 10));
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 10));
         player.teleport(Teleportation.Cyrennica);
@@ -480,7 +493,13 @@ public class DamageListener implements Listener {
         player.setMaximumNoDamageTicks(50);
         player.setNoDamageTicks(50);
         player.setFallDistance(0);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerManager.checkInventory(player.getUniqueId()), 20L);
+        final ItemStack finalItemToSave = itemToSave;
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            PlayerManager.checkInventory(player.getUniqueId());
+            if (finalItemToSave != null) {
+                player.getInventory().addItem(finalItemToSave);
+            }
+        }, 20L);
     }
 
 

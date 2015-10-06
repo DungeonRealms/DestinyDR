@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
  * Created by Nick on 9/11/2015.
  */
 public class CommandList implements CommandExecutor {
+
     @Override
     public boolean onCommand(CommandSender commandSender, Command cmd, String string, String[] args) {
         if (!(commandSender.isOp())) {

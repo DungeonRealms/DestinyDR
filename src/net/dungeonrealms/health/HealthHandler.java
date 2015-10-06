@@ -11,6 +11,7 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
 
 import java.util.UUID;
 
@@ -33,16 +34,42 @@ public class HealthHandler {
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40, 20L);
     }
 
+    /**
+     * Handles players logging in,
+     * sets their metadata to
+     * their correct HP values.
+     *
+     * @param player
+     * @since 1.0
+     */
     public static void handleLoginEvents(Player player) {
         setPlayerMaxHPLive(player, getPlayerMaxHPOnLogin(player.getUniqueId()));
         setPlayerHPLive(player, getPlayerMaxHPOnLogin(player.getUniqueId()));
         setPlayerHPRegenLive(player, getPlayerHPRegenLive(player));
     }
 
+    /**
+     * Handles players logging out,
+     * removes potion effects and
+     * updates mongo for web usage.
+     *
+     * @param player
+     * @since 1.0
+     */
     public static void handleLogoutEvents(Player player) {
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.health", getPlayerMaxHPLive(player), false);
+        for (PotionEffect potionEffect : player.getActivePotionEffects()) {
+            player.removePotionEffect(potionEffect.getType());
+        }
     }
 
+    /**
+     * Updates players "HP Bars"
+     * using the bossbar API
+     *
+     *
+     * @since 1.0
+     */
     private void updatePlayerHPBars() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             UUID uuid = player.getUniqueId();
@@ -52,6 +79,12 @@ public class HealthHandler {
         }
     }
 
+    /**
+     * Returns the players current HP
+     *
+     * @param player
+     * @since 1.0
+     */
     public static int getPlayerHPLive(Player player) {
         if (player.hasMetadata("currentHP")) {
             return player.getMetadata("currentHP").get(0).asInt();
@@ -60,31 +93,76 @@ public class HealthHandler {
         }
     }
 
+    /**
+     * Sets the players HP bar
+     * Called in "updatePlayerHPBars"
+     *
+     * @param uuid
+     * @param hp
+     * @since 1.0
+     */
     public static void setPlayerOverheadHP(UUID uuid, int hp) {
         //Check their Max HP from wherever we decide to store it, get it as a percentage.
         //Update BarAPI thing with it.
     }
 
+    /**
+     * Sets the players HP metadata
+     * to the given value.
+     *
+     * @param player
+     * @param hp
+     * @since 1.0
+     */
     public static void setPlayerHPLive(Player player, int hp) {
         player.setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), hp));
     }
 
+    /**
+     * Returns the players max HP
+     * Called on login (calculates it from items
+     * in their inventory)
+     * Pretty expensive check.
+     *
+     * @param uuid
+     * @since 1.0
+     */
     public static int getPlayerMaxHPOnLogin(UUID uuid) {
-        return generateMaxHPFromItems(Bukkit.getPlayer(uuid)); //This shouldn't happen but safety return. Probably kick them or something if their data cannot be loaded.
+        return calculateMaxHPFromItems(Bukkit.getPlayer(uuid)); //This shouldn't happen but safety return. Probably kick them or something if their data cannot be loaded.
     }
 
+    /**
+     * Returns the players current MaximumHP
+     *
+     * @param player
+     * @since 1.0
+     */
     public static int getPlayerMaxHPLive(Player player) {
         if (player.hasMetadata("maxHP")) {
             return player.getMetadata("maxHP").get(0).asInt();
         } else {
-            return generateMaxHPFromItems(player);
+            return calculateMaxHPFromItems(player);
         }
     }
 
+    /**
+     * Sets the players MaxmimumHP metadata
+     * to the given value.
+     *
+     * @param player
+     * @param maxHP
+     * @since 1.0
+     */
     public static void setPlayerMaxHPLive(Player player, int maxHP) {
         player.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHP));
     }
 
+    /**
+     * Handles all players regenerating
+     * their health.
+     *
+     * @since 1.0
+     */
     private void regenerateHealth() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             UUID uuid = player.getUniqueId();
@@ -132,6 +210,16 @@ public class HealthHandler {
         }
     }
 
+    /**
+     * Called from damage event,
+     * used to update the players
+     * health and kill etc if
+     * necessary
+     *
+     * @param player
+     * @param damage
+     * @since 1.0
+     */
     public static void handlePlayerBeingDamaged(Player player, double damage) {
         double maxHP = getPlayerMaxHPLive(player);
         double currentHP = getPlayerHPLive(player);
@@ -159,7 +247,14 @@ public class HealthHandler {
         player.setHealth(convHPToDisplay);
     }
 
-    public static int generateMaxHPFromItems(Player player) {
+    /**
+     * Calculates the players MaximumHP
+     * from their armor and weapon
+     *
+     * @param player
+     * @since 1.0
+     */
+    public static int calculateMaxHPFromItems(Player player) {
         ItemStack[] playerArmor = player.getInventory().getArmorContents();
         double totalHP = 0;
         for (ItemStack itemStack : playerArmor) {
@@ -178,6 +273,13 @@ public class HealthHandler {
         return (int) totalHP;
     }
 
+    /**
+     * Calculates the HP value
+     * of an itemstack
+     *
+     * @param itemStack
+     * @since 1.0
+     */
     private static int getHealthValueOfItem(ItemStack itemStack) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
         int healthValue = 0;
@@ -196,7 +298,14 @@ public class HealthHandler {
         return healthValue;
     }
 
-    private static int getHealthRegenFromItems(Player player) {
+    /**
+     * Calculates the players HPRegen
+     * from their armor and weapon
+     *
+     * @param player
+     * @since 1.0
+     */
+    private static int calculateHealthRegenFromItems(Player player) {
         ItemStack[] playerArmor = player.getInventory().getArmorContents();
         double totalHPRegen = 0;
         for (ItemStack itemStack : playerArmor) {
@@ -215,6 +324,13 @@ public class HealthHandler {
         return (int) totalHPRegen;
     }
 
+    /**
+     * Calculates the HPRegen value
+     * of an itemstack
+     *
+     * @param itemStack
+     * @since 1.0
+     */
     private static int getHealthRegenValueOfItem(ItemStack itemStack) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
         int healthRegen = 0;
@@ -233,15 +349,29 @@ public class HealthHandler {
         return healthRegen;
     }
 
+    /**
+     * Sets the players HP Regen
+     * metadata to the given amount
+     *
+     * @param player
+     * @param regenAmount
+     * @since 1.0
+     */
     public static void setPlayerHPRegenLive(Player player, int regenAmount) {
         player.setMetadata("regenHP", new FixedMetadataValue(DungeonRealms.getInstance(), regenAmount));
     }
 
+    /**
+     * Returns the players current HPRegen
+     *
+     * @param player
+     * @since 1.0
+     */
     public static int getPlayerHPRegenLive(Player player) {
         if (player.hasMetadata("regenHP")) {
             return player.getMetadata("regenHP").get(0).asInt();
         } else {
-            return getHealthRegenFromItems(player);
+            return calculateHealthRegenFromItems(player);
         }
     }
 }
