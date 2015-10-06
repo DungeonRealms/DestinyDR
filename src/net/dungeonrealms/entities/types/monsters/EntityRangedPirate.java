@@ -88,15 +88,15 @@ public class EntityRangedPirate extends RangedEntitySkeleton {
         return "mob.zombie.death";
     }
 
-	@Override
-	public String getPrefix() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public String getPrefix() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public String getSuffix() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public String getSuffix() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

@@ -8,8 +8,7 @@ public enum EnumOperators {
     $INC(0, "$inc"),
     $MUL(1, "$mul"),
     $PUSH(2, "$push"),
-    $SET(3, "$set"),
-    ;
+    $SET(3, "$set"),;
 
     private int id;
     private String UO;

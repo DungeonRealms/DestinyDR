@@ -5,15 +5,12 @@ import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumOperators;
-import net.dungeonrealms.teleportation.Teleportation;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 import java.util.UUID;
 
@@ -146,7 +143,6 @@ public class HealthHandler {
 
         if (newHP <= 0) {
             player.setHealth(0);
-            //respawnPlayer(player);
             return;
         }
 
@@ -247,14 +243,5 @@ public class HealthHandler {
         } else {
             return getHealthRegenFromItems(player);
         }
-    }
-
-    public static void respawnPlayer(Player player) {
-        player.teleport(Teleportation.Cyrennica);
-        player.setNoDamageTicks(100);
-        player.setMaximumNoDamageTicks(100);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 4));
-        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 10));
-        player.sendMessage("RESPAWNING AT CYRENNICA");
     }
 }

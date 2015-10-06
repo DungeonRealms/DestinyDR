@@ -67,7 +67,7 @@ public class Subscription {
         long time = (endTime - currentTime) / 1000l;
         if (time == 0 && PLAYER_SUBSCRIPTION.contains(player.getUniqueId())) {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "rank.rank", "DEFAULT", true);
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "rank.lastPurchase", 0,true);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "rank.lastPurchase", 0, true);
             player.sendMessage(ChatColor.RED + "Your subscription has expired!");
             SoundAPI.getInstance().playSound("random.anvil_break", player);
         }

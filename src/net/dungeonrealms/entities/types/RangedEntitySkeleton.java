@@ -58,8 +58,8 @@ public abstract class RangedEntitySkeleton extends EntitySkeleton {
         MetadataUtils.registerEntityMetadata(this, this.entityType, tier, level);
         EntityStats.setMonsterStats(this, level, tier);
         setStats();
-  		this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
-  				+ ChatColor.RESET + getPrefix() + mobName + getSuffix());
+        this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
+                + ChatColor.RESET + getPrefix() + mobName + getSuffix());
 
     }
 

@@ -21,7 +21,7 @@ public final class ItemRegistry {
     /**
      * Registers a new item and overrides the old one if present.
      *
-     * @param id the id
+     * @param id   the id
      * @param item the item
      */
     public void register(String id, Item item) {

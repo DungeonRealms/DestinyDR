@@ -19,7 +19,7 @@ public class PlayerManager {
      * @since 1.0
      */
     public static void checkInventory(UUID uuid) {
-   	 Player player = Bukkit.getPlayer(uuid);
+        Player player = Bukkit.getPlayer(uuid);
         player.getInventory().setItem(7, ItemManager.createHearthStone("HearthStone", new String[]{
                 ChatColor.GRAY + "(Right-Click) " + ChatColor.AQUA + "Back to your hearthstone location!"
         }));
