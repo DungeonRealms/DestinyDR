@@ -81,7 +81,7 @@ public class CommandSpawn implements CommandExecutor {
                         EnumEntityType type = EnumEntityType.HOSTILE_MOB;
                         Entity entity;
                         World world = ((CraftWorld) player.getWorld()).getHandle();
-                        switch (args[0]) {
+                        switch (args[1]) {
                             case "bandit":
                                 entity = new EntityBandit(world, tier, type);
                                 break;
@@ -111,6 +111,7 @@ public class CommandSpawn implements CommandExecutor {
                                 break;
                             default:
                                 entity = new EntityBandit(world, tier, type);
+                                break;
                         }
                         Location location = new Location(world.getWorld(), player.getLocation().getX() + new Random().nextInt(3), player.getLocation().getY(), player.getLocation().getZ() + new Random().nextInt(3));
                         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);

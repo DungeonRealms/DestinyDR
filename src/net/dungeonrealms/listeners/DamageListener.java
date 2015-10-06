@@ -2,6 +2,7 @@ package net.dungeonrealms.listeners;
 
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.utils.EntityAPI;
@@ -134,7 +135,6 @@ public class DamageListener implements Listener {
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
         if (event.getDamager() instanceof Player) {
-
             Player attacker = (Player) event.getDamager();
             if (attacker.getItemInHand() == null) return;
             //Check if the item has NBT, all our custom weapons will have NBT.
@@ -154,6 +154,11 @@ public class DamageListener implements Listener {
                 }
                 return;
             }
+            if (CombatLog.isInCombat(attacker.getUniqueId())) {
+                CombatLog.updateCombat(attacker.getUniqueId());
+            } else {
+                CombatLog.addToCombat(attacker.getUniqueId());
+            }
             EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getItemInHand()));
             attacker.getItemInHand().setDurability(((short) -1));
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);
@@ -162,12 +167,22 @@ public class DamageListener implements Listener {
             if (!(attackingArrow.getShooter() instanceof Player)) return;
             if (attackingArrow.getShooter() != null && attackingArrow.getShooter() instanceof Player) {
                 finalDamage = DamageAPI.calculateProjectileDamage((Player) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
+                if (CombatLog.isInCombat(((Player) attackingArrow.getShooter()).getUniqueId())) {
+                    CombatLog.updateCombat(((Player) attackingArrow.getShooter()).getUniqueId());
+                } else {
+                    CombatLog.addToCombat(((Player) attackingArrow.getShooter()).getUniqueId());
+                }
             }
         } else if (event.getDamager().getType() == EntityType.WITHER_SKULL) {
             WitherSkull staffProjectile = (WitherSkull) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof Player)) return;
             if (staffProjectile.getShooter() != null && staffProjectile.getShooter() instanceof Player) {
                 finalDamage = DamageAPI.calculateProjectileDamage((Player) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
+                if (CombatLog.isInCombat(((Player) staffProjectile.getShooter()).getUniqueId())) {
+                    CombatLog.updateCombat(((Player) staffProjectile.getShooter()).getUniqueId());
+                } else {
+                    CombatLog.addToCombat(((Player) staffProjectile.getShooter()).getUniqueId());
+                }
             }
         }
         event.setDamage(finalDamage);
@@ -210,6 +225,11 @@ public class DamageListener implements Listener {
             WitherSkull staffProjectile = (WitherSkull) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof Monster)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
+        }
+        if (CombatLog.isInCombat(event.getEntity().getUniqueId())) {
+            CombatLog.updateCombat(event.getEntity().getUniqueId());
+        } else {
+            CombatLog.addToCombat(event.getEntity().getUniqueId());
         }
         event.setDamage(finalDamage);
     }
@@ -406,22 +426,23 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onEntityDamaged(EntityDamageEvent event) {
-        if (!(event.getEntity().hasMetadata("type"))) return;
-        String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
-        switch (metaValue) {
-            case "pet":
-                event.setCancelled(true);
-                event.getEntity().setFireTicks(0);
-                break;
-            case "mount":
-                event.setCancelled(true);
-                event.getEntity().setFireTicks(0);
-                break;
-            case "spawner":
-                event.setCancelled(true);
-                break;
-            default:
-                break;
+        if (event.getEntity().hasMetadata("type")) {
+            String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
+            switch (metaValue) {
+                case "pet":
+                    event.setCancelled(true);
+                    event.getEntity().setFireTicks(0);
+                    break;
+                case "mount":
+                    event.setCancelled(true);
+                    event.getEntity().setFireTicks(0);
+                    break;
+                case "spawner":
+                    event.setCancelled(true);
+                    break;
+                default:
+                    break;
+            }
         }
         if (event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.DROWNING
                 || event.getCause() == DamageCause.FALL || event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.FIRE
