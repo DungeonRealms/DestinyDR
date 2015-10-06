@@ -79,9 +79,9 @@ public class CommandSpawn implements CommandExecutor {
                         if (args.length == 3)
                             tier = Integer.parseInt(args[2]);
                         EnumEntityType type = EnumEntityType.HOSTILE_MOB;
-               			Entity entity;
-               			World world = ((CraftWorld)player.getWorld()).getHandle();
-               			synchronized (this) {
+                        Entity entity;
+                        World world = ((CraftWorld) player.getWorld()).getHandle();
+                        synchronized (this) {
                             switch (args[0]) {
                                 case "bandit":
                                     entity = new EntityBandit(world, tier, type);
@@ -114,20 +114,20 @@ public class CommandSpawn implements CommandExecutor {
                                     entity = new EntityBandit(world, tier, type);
                             }
                         }
-               			Location location = new Location(world.getWorld(), player.getLocation().getX() + new Random().nextInt(3),
-               				player.getLocation().getY(), player.getLocation().getZ() + new Random().nextInt(3));
-               			entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-               			world.addEntity(entity, SpawnReason.CUSTOM);
-               			entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                        Location location = new Location(world.getWorld(), player.getLocation().getX() + new Random().nextInt(3),
+                                player.getLocation().getY(), player.getLocation().getZ() + new Random().nextInt(3));
+                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                        world.addEntity(entity, SpawnReason.CUSTOM);
+                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                     }
                     break;
                 }
                 case "spawner":
-               	 String[] monsters = args[1].split(",");
-               	 int tier = 1;
-               	 if(args.length ==3)
-                     tier = Integer.parseInt(args[2]);
-                    MobSpawner spawner = new MobSpawner(player.getLocation(), monsters,tier);
+                    String[] monsters = args[1].split(",");
+                    int tier = 1;
+                    if (args.length == 3)
+                        tier = Integer.parseInt(args[2]);
+                    MobSpawner spawner = new MobSpawner(player.getLocation(), monsters, tier);
                     SpawningMechanics.add(spawner);
                     break;
             }

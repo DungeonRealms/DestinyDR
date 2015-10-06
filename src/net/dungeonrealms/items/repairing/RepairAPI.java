@@ -23,7 +23,7 @@ public class RepairAPI {
         double totalRepairCost = 0;
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
-        if (tag == null) return 0 ;
+        if (tag == null) return 0;
         if (tag.getInt("itemTier") == 0) return 0; //Broken tier item.
         if (tag.getString("type").equalsIgnoreCase("weapon")) {
             double damagePercentCost = tag.getInt("damage") * 0.1;
@@ -55,7 +55,7 @@ public class RepairAPI {
             totalRepairCost *= 0.2;
         }
         if (tag.getString("type").equalsIgnoreCase("armor")) {
-            double armorPercentCost =  tag.getInt("armor") * 0.4;
+            double armorPercentCost = tag.getInt("armor") * 0.4;
             double armorDurabilityLeft = getItemDurabilityValue(itemStack);
             if (armorDurabilityLeft > 99) {
                 armorDurabilityLeft = 99;
@@ -94,7 +94,7 @@ public class RepairAPI {
     public static double getItemDurabilityValue(ItemStack itemStack) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
-        if (tag == null) return 0 ;
+        if (tag == null) return 0;
         if (tag.getInt("itemTier") == 0) return 0; //Broken tier item.
         double percentDurability = ((itemStack.getType().getMaxDurability() - itemStack.getDurability()) / itemStack.getType().getMaxDurability()); //Weird DR formula?
         if (tag.getString("type").equalsIgnoreCase("weapon")) {

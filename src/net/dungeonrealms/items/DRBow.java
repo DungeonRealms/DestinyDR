@@ -22,54 +22,54 @@ public class DRBow extends ItemBow {
     @Override
     public void a(ItemStack itemstack, World world, EntityHuman entityhuman, int i) {
         boolean flag = true;
-        if(flag) {
+        if (flag) {
             int j = this.d(itemstack) - i;
-            float f = (float)j / 20.0F;
+            float f = (float) j / 20.0F;
             f = (f * f + f * 2.0F) / 3.0F;
-            if((double)f < 0.1D) {
+            if ((double) f < 0.1D) {
                 return;
             }
 
-            if(f > 1.0F) {
+            if (f > 1.0F) {
                 f = 1.0F;
             }
 
             EntityArrow entityarrow = new EntityArrow(world, entityhuman, f * 2.0F);
-            if(f == 1.0F) {
+            if (f == 1.0F) {
                 entityarrow.setCritical(true);
             }
 
             int k = EnchantmentManager.getEnchantmentLevel(Enchantment.ARROW_DAMAGE.id, itemstack);
-            if(k > 0) {
-                entityarrow.b(entityarrow.j() + (double)k * 0.5D + 0.5D);
+            if (k > 0) {
+                entityarrow.b(entityarrow.j() + (double) k * 0.5D + 0.5D);
             }
 
             int l = EnchantmentManager.getEnchantmentLevel(Enchantment.ARROW_KNOCKBACK.id, itemstack);
-            if(l > 0) {
+            if (l > 0) {
                 entityarrow.setKnockbackStrength(l);
             }
 
-            if(EnchantmentManager.getEnchantmentLevel(Enchantment.ARROW_FIRE.id, itemstack) > 0) {
+            if (EnchantmentManager.getEnchantmentLevel(Enchantment.ARROW_FIRE.id, itemstack) > 0) {
                 EntityCombustEvent event = new EntityCombustEvent(entityarrow.getBukkitEntity(), 100);
                 entityarrow.world.getServer().getPluginManager().callEvent(event);
-                if(!event.isCancelled()) {
+                if (!event.isCancelled()) {
                     entityarrow.setOnFire(event.getDuration());
                 }
             }
 
             EntityShootBowEvent event1 = CraftEventFactory.callEntityShootBowEvent(entityhuman, itemstack, entityarrow, f);
-            if(event1.isCancelled()) {
+            if (event1.isCancelled()) {
                 event1.getProjectile().remove();
                 return;
             }
 
-            if(event1.getProjectile() == entityarrow.getBukkitEntity()) {
+            if (event1.getProjectile() == entityarrow.getBukkitEntity()) {
                 world.addEntity(entityarrow);
             }
 
             itemstack.damage(0, entityhuman);
             world.makeSound(entityhuman, "random.bow", 1.0F, 1.0F / (g.nextFloat() * 0.4F + 1.2F) + f * 0.5F);
-            if(flag) {
+            if (flag) {
                 entityarrow.fromPlayer = 2;
             } else {
                 entityhuman.inventory.a(Items.ARROW);

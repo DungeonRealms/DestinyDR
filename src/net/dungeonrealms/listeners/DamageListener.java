@@ -1,6 +1,7 @@
 package net.dungeonrealms.listeners;
 
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.utils.EntityAPI;
@@ -33,7 +34,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -87,38 +87,38 @@ public class DamageListener implements Listener {
 
 
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
-    public void playerBreakArmorStand(EntityDamageByEntityEvent event){
+    public void playerBreakArmorStand(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player)) return;
         if (((Player) event.getDamager()).getGameMode() != GameMode.CREATIVE) return;
-       //Armor Stand Spawner check.
-       if(event.getEntity().getType() == EntityType.ARMOR_STAND) {
-      	 if(!event.getEntity().hasMetadata("type")){
-      		 event.setCancelled(false);
-      		 event.getEntity().remove();
-      		 return;
-      	 }
-           if(event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("spawner")){
-               Player attacker = (Player) event.getDamager();
-               if(attacker.isOp() || attacker.getGameMode() == GameMode.CREATIVE){
-                   ArrayList<MobSpawner> list = SpawningMechanics.getSpawners();
-                   for (MobSpawner current : list) {
-                       if (current.loc.getBlockX() == event.getEntity().getLocation().getBlockX() && current.loc.getBlockY() == event.getEntity().getLocation().getBlockY() &&
-                               current.loc.getBlockZ() == event.getEntity().getLocation().getBlockZ()) {
-                           current.kill();
-                           break;
-                       }
-                   }
-               }else {
-                   event.setDamage(0);
-                   event.setCancelled(true);
-               }
-           }else {
-               event.setDamage(0);
- 				event.setCancelled(true);
-           }
-       }
+        //Armor Stand Spawner check.
+        if (event.getEntity().getType() == EntityType.ARMOR_STAND) {
+            if (!event.getEntity().hasMetadata("type")) {
+                event.setCancelled(false);
+                event.getEntity().remove();
+                return;
+            }
+            if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("spawner")) {
+                Player attacker = (Player) event.getDamager();
+                if (attacker.isOp() || attacker.getGameMode() == GameMode.CREATIVE) {
+                    ArrayList<MobSpawner> list = SpawningMechanics.getSpawners();
+                    for (MobSpawner current : list) {
+                        if (current.loc.getBlockX() == event.getEntity().getLocation().getBlockX() && current.loc.getBlockY() == event.getEntity().getLocation().getBlockY() &&
+                                current.loc.getBlockZ() == event.getEntity().getLocation().getBlockZ()) {
+                            current.kill();
+                            break;
+                        }
+                    }
+                } else {
+                    event.setDamage(0);
+                    event.setCancelled(true);
+                }
+            } else {
+                event.setDamage(0);
+                event.setCancelled(true);
+            }
+        }
     }
-    
+
     /**
      * Listen for the players weapon hitting an entity
      * Used for calculating damage based on player weapon
@@ -134,7 +134,7 @@ public class DamageListener implements Listener {
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
         if (event.getDamager() instanceof Player) {
-      	  
+
             Player attacker = (Player) event.getDamager();
             if (attacker.getItemInHand() == null) return;
             //Check if the item has NBT, all our custom weapons will have NBT.
@@ -406,7 +406,6 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onEntityDamaged(EntityDamageEvent event) {
-        //if (event.getEntity() instanceof Player) return;
         if (!(event.getEntity().hasMetadata("type"))) return;
         String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
         switch (metaValue) {
@@ -419,8 +418,8 @@ public class DamageListener implements Listener {
                 event.getEntity().setFireTicks(0);
                 break;
             case "spawner":
-            	event.setCancelled(true);
-            	break;
+                event.setCancelled(true);
+                break;
             default:
                 break;
         }
@@ -443,33 +442,36 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getEntity();
-        if (EntityAPI.hasPetOut(event.getEntity().getUniqueId())) {
-            net.minecraft.server.v1_8_R3.Entity pet = EntityAPI.getPlayerPet(event.getEntity().getUniqueId());
+        if (EntityAPI.hasPetOut(player.getUniqueId())) {
+            net.minecraft.server.v1_8_R3.Entity pet = EntityAPI.getPlayerPet(player.getUniqueId());
             if (!pet.getBukkitEntity().isDead()) { //Safety check
                 pet.getBukkitEntity().remove();
             }
-            EntityAPI.removePlayerPetList(event.getEntity().getUniqueId());
-            event.getEntity().sendMessage("For it's own safety, your pet has returned to its home.");
+            EntityAPI.removePlayerPetList(player.getUniqueId());
+            player.sendMessage("For it's own safety, your pet has returned to its home.");
         }
-        if (EntityAPI.hasMountOut(event.getEntity().getUniqueId())) {
-            net.minecraft.server.v1_8_R3.Entity mount = EntityAPI.getPlayerMount(event.getEntity().getUniqueId());
+        if (EntityAPI.hasMountOut(player.getUniqueId())) {
+            net.minecraft.server.v1_8_R3.Entity mount = EntityAPI.getPlayerMount(player.getUniqueId());
             if (mount.isAlive()) {
                 mount.getBukkitEntity().remove();
             }
-            EntityAPI.getPlayerMount(event.getEntity().getUniqueId());
-            event.getEntity().sendMessage("For it's own safety, your mount has returned to the stable.");
+            EntityAPI.getPlayerMount(player.getUniqueId());
+            player.sendMessage("For it's own safety, your mount has returned to the stable.");
         }
-        List<ItemStack> list = event.getDrops();
-        event.getEntity().getInventory().setItem(8, null);
-        for(int i = 0; i < list.size(); i++){
-            ItemStack item = list.get(i);
-            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
-            if(nms.hasTag()){
-                if(nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")){
-                    list.remove(i);
+        event.setDroppedExp(0);
+        for (ItemStack itemStack : event.getDrops()) {
+            if (itemStack != null) {
+                net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
+                if (nms.hasTag()) {
+                    if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")) {
+                        break;
+                    } else {
+                        player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
+                    }
                 }
             }
         }
+        event.getDrops().clear();
         player.setHealth(1);
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 10));
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 10));
@@ -478,14 +480,15 @@ public class DamageListener implements Listener {
         player.setMaximumNoDamageTicks(50);
         player.setNoDamageTicks(50);
         player.setFallDistance(0);
-        PlayerManager.checkInventory(event.getEntity().getUniqueId());
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerManager.checkInventory(player.getUniqueId()), 20L);
     }
 
 
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
-    public void onPlayerRespawn(PlayerRespawnEvent event){
-       PlayerManager.checkInventory(event.getPlayer().getUniqueId());
+    public void onPlayerRespawn(PlayerRespawnEvent event) {
+        PlayerManager.checkInventory(event.getPlayer().getUniqueId());
     }
+
     /**
      * Listen for Players using their "staff" item
      * Checks to see if they can, and

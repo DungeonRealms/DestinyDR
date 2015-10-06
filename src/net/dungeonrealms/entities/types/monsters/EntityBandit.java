@@ -40,9 +40,10 @@ public class EntityBandit extends MeleeEntityZombie {
         if (Utils.randInt(1, 6) == 4) {
             this.getBukkitEntity().setMetadata("special",
                     new FixedMetadataValue(DungeonRealms.getInstance(), "poison"));
-            this.setCustomName(ChatColor.GREEN.toString() + ChatColor.UNDERLINE.toString() +  getPrefix() + "Poisonous Bandit");
+            this.setCustomName(ChatColor.GREEN.toString() + ChatColor.UNDERLINE.toString() + getPrefix() + "Poisonous Bandit");
         }
     }
+
     @Override
     public String getPrefix() {
         String[] adjectives = new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy",
@@ -83,9 +84,9 @@ public class EntityBandit extends MeleeEntityZombie {
         return "game.player.hurt";
     }
 
-	@Override
-	public String getSuffix() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public String getSuffix() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

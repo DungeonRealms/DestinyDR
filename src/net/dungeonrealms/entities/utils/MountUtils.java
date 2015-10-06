@@ -28,7 +28,7 @@ public class MountUtils {
         switch (rawSlot) {
             //TODO: Add check for Achievements to see if Player has mount and can use it.
             case 2: {
-                Horse mountHorse = new Horse(world, 0, 0.25D, player.getUniqueId(), EnumEntityType.MOUNT);
+                Horse mountHorse = new Horse(world, 0, 0.20D, player.getUniqueId(), EnumEntityType.MOUNT);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
@@ -44,7 +44,7 @@ public class MountUtils {
                 break;
             }
             case 3: {
-                Horse mountHorse = new Horse(world, 0, 0.3D, player.getUniqueId(), EnumEntityType.MOUNT);
+                Horse mountHorse = new Horse(world, 0, 0.25D, player.getUniqueId(), EnumEntityType.MOUNT);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
@@ -60,7 +60,7 @@ public class MountUtils {
                 break;
             }
             case 4: {
-                Horse mountHorse = new Horse(world, 0, 0.4D, player.getUniqueId(), EnumEntityType.MOUNT);
+                Horse mountHorse = new Horse(world, 0, 0.3D, player.getUniqueId(), EnumEntityType.MOUNT);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
@@ -76,7 +76,7 @@ public class MountUtils {
                 break;
             }
             case 5: {
-                Horse mountHorse = new Horse(world, 4, 0.4D, player.getUniqueId(), EnumEntityType.MOUNT);
+                Horse mountHorse = new Horse(world, 4, 0.3D, player.getUniqueId(), EnumEntityType.MOUNT);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
@@ -92,7 +92,7 @@ public class MountUtils {
                 break;
             }
             case 6: {
-                Horse mountHorse = new Horse(world, 3, 0.4D, player.getUniqueId(), EnumEntityType.MOUNT);
+                Horse mountHorse = new Horse(world, 3, 0.3D, player.getUniqueId(), EnumEntityType.MOUNT);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);

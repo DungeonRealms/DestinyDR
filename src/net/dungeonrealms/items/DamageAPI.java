@@ -24,8 +24,10 @@ import java.util.Random;
 public class DamageAPI {
 
     public static List<Entity> polearmAOEProcessing = new ArrayList<>();
+
     /**
      * Calculates the weapon damage based on the nbt tag of an item, the attacker and receiver
+     *
      * @param attacker
      * @param receiver
      * @param tag
@@ -270,6 +272,7 @@ public class DamageAPI {
 
     /**
      * Calculates the weapon damage based on the metadata of the projectile, the attacker and receiver
+     *
      * @param attacker
      * @param receiver
      * @param projectile
@@ -397,7 +400,7 @@ public class DamageAPI {
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 1));
                     break;
             }
-            damage +=  projectile.getMetadata("iceDamage").get(0).asInt();
+            damage += projectile.getMetadata("iceDamage").get(0).asInt();
         }
 
         if (projectile.getMetadata("poisonDamage").get(0).asInt() != 0) {
@@ -424,7 +427,7 @@ public class DamageAPI {
                     leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 1));
                     break;
             }
-            damage +=  projectile.getMetadata("poisonDamage").get(0).asInt();
+            damage += projectile.getMetadata("poisonDamage").get(0).asInt();
         }
 
         if (projectile.getMetadata("criticalHit").get(0).asInt() != 0) {
@@ -513,6 +516,7 @@ public class DamageAPI {
 
     /**
      * Calculates the new damage based on the armor of the defender and the previous damage
+     *
      * @param attacker
      * @param defender
      * @param defenderArmor
@@ -547,7 +551,7 @@ public class DamageAPI {
             if (nmsTags[i] == null) {
                 damageToBlock[i] += 0;
             } else {
-                damageToBlock[i]= nmsTags[i].getInt("armor");
+                damageToBlock[i] = nmsTags[i].getInt("armor");
                 if (nmsTags[i].getInt("block") != 0) {
                     int blockChance = nmsTags[0].getInt("block");
                     if (nmsTags[i].getInt("strength") != 0) {

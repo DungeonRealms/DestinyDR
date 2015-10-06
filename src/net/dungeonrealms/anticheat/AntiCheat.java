@@ -119,7 +119,7 @@ public class AntiCheat {
         return tag.getString("u");
     }
 
-     /**
+    /**
      * Check to see if item contains 'u' field.
      *
      * @param item

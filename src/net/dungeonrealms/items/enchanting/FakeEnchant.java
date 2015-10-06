@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * Created by Kieran on 9/25/2015.
  */
-public class FakeEnchant extends EnchantmentWrapper{
+public class FakeEnchant extends EnchantmentWrapper {
 
     public FakeEnchant(int id) {
         super(id);

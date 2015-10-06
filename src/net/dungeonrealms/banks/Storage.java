@@ -11,39 +11,39 @@ import java.util.UUID;
  */
 public class Storage {
 
-	public UUID ownerUUID;
-	public Inventory inv;
+    public UUID ownerUUID;
+    public Inventory inv;
 
-	public Storage(UUID owner) {
-		ownerUUID = owner;
-		inv = getNewStorage();
-	}
+    public Storage(UUID owner) {
+        ownerUUID = owner;
+        inv = getNewStorage();
+    }
 
-	/**
-	 * @param uuid
-	 * @param contents
-	 */
-	public Storage(UUID uuid, Inventory inventory) {
-		ownerUUID = uuid;
-		this.inv = inventory;
-	}
+    /**
+     * @param uuid
+     * @param contents
+     */
+    public Storage(UUID uuid, Inventory inventory) {
+        ownerUUID = uuid;
+        this.inv = inventory;
+    }
 
-	/**
-	 * @return
-	 */
-	private Inventory getNewStorage() {
-		Player p = Bukkit.getPlayer(ownerUUID);
-		int size = getStorageSize(p);
-		return Bukkit.createInventory(p, size, "Storage Chest");
-	}
+    /**
+     * @return
+     */
+    private Inventory getNewStorage() {
+        Player p = Bukkit.getPlayer(ownerUUID);
+        int size = getStorageSize(p);
+        return Bukkit.createInventory(p, size, "Storage Chest");
+    }
 
-	/**
-	 * @param p
-	 * @return
-	 */
-	private int getStorageSize(Player p) {
-		if (p.getName().equalsIgnoreCase("Xwaffle"))
-			return 18;
-		return 9;
-	}
+    /**
+     * @param p
+     * @return
+     */
+    private int getStorageSize(Player p) {
+        if (p.getName().equalsIgnoreCase("Xwaffle"))
+            return 18;
+        return 9;
+    }
 }

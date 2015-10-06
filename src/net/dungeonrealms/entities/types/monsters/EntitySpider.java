@@ -14,49 +14,49 @@ import java.util.List;
  */
 public class EntitySpider extends MeleeEntityZombie {
 
-	/**
-	 * @param world
-	 * @param mobName
-	 * @param tier
-	 */
-	public EntitySpider(World world, String mobName, int tier) {
-		super(world, "Spider", "Steve", tier, EnumEntityType.HOSTILE_MOB, true);
-	}
+    /**
+     * @param world
+     * @param mobName
+     * @param tier
+     */
+    public EntitySpider(World world, String mobName, int tier) {
+        super(world, "Spider", "Steve", tier, EnumEntityType.HOSTILE_MOB, true);
+    }
 
-	public EntitySpider(World world){
-		super(world);
-	}
-	
-	/**
-	 * @return
-	 */
-	@Override
-	public String getPrefix() {
-		String[] array = new String[]{"Scary", "Spookey", "Hairy"};
-		List<String> list = Arrays.asList(array);
-		Collections.shuffle(list);
-		return list.get(0);
-	}
+    public EntitySpider(World world) {
+        super(world);
+    }
 
-	@Override
-	protected Item getLoot() {
-		return null;
-	}
+    /**
+     * @return
+     */
+    @Override
+    public String getPrefix() {
+        String[] array = new String[]{"Scary", "Spookey", "Hairy"};
+        List<String> list = Arrays.asList(array);
+        Collections.shuffle(list);
+        return list.get(0);
+    }
 
-	@Override
-	protected void getRareDrop() {
+    @Override
+    protected Item getLoot() {
+        return null;
+    }
 
-	}
+    @Override
+    protected void getRareDrop() {
 
-	@Override
-	protected void setStats() {
+    }
 
-	}
+    @Override
+    protected void setStats() {
 
-	@Override
-	public String getSuffix() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    }
+
+    @Override
+    public String getSuffix() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 }
