@@ -3,11 +3,13 @@ package net.dungeonrealms.health;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
+import net.dungeonrealms.karma.KarmaHandler;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumOperators;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -220,7 +222,7 @@ public class HealthHandler {
      * @param damage
      * @since 1.0
      */
-    public static void handlePlayerBeingDamaged(Player player, double damage) {
+    public static void handlePlayerBeingDamaged(Player player, Entity damager, double damage) {
         double maxHP = getPlayerMaxHPLive(player);
         double currentHP = getPlayerHPLive(player);
         double newHP = currentHP - damage;
@@ -231,6 +233,7 @@ public class HealthHandler {
 
         if (newHP <= 0) {
             player.setHealth(0);
+            KarmaHandler.handlePlayerPsuedoDeath(player, damager);
             return;
         }
 

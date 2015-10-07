@@ -38,7 +38,7 @@ public class CommandLag implements CommandExecutor {
 
         commandSender.sendMessage(ChatColor.GREEN + "Current Uptime: " + ChatColor.WHITE + fmtHours + "h " + fmtMinutes + "m " + fmtSeconds + "s");
         commandSender.sendMessage(ChatColor.GREEN + "RAM Usage: " + ChatColor.WHITE + (Runtime.getRuntime().freeMemory() / 1024 / 1024) + "MB"
-                + ChatColor.GREEN + "/" + ChatColor.WHITE + (Runtime.getRuntime().totalMemory() / 1024 / 1024 + "MB"));
+                + ChatColor.GREEN + "/" + ChatColor.WHITE + (Runtime.getRuntime().maxMemory() / 1024 / 1024 + "MB"));
         commandSender.sendMessage("");
 
         final Server server = Bukkit.getServer();

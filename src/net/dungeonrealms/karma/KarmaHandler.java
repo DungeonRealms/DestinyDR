@@ -7,7 +7,8 @@ import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.*;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -116,14 +117,26 @@ public class KarmaHandler {
             switch (alignment) {
                 case LAWFUL:
                     playerAlignments.put(player, alignment);
+                    player.sendMessage("");
+                    player.sendMessage(ChatColor.GREEN + "              " + "* YOU ARE NOW " + ChatColor.BOLD + " LAWFUL " + ChatColor.GREEN + "ALIGNMENT *");
+                    player.sendMessage(ChatColor.GRAY + "While lawful, you will not lose any equipped armor on death, instead, all armor will lose 30% of its durability when you die.");
+                    player.sendMessage("");
                     break;
                 case NEUTRAL:
                     playerAlignmentTime.put(player, 120);
                     playerAlignments.put(player, alignment);
+                    player.sendMessage("");
+                    player.sendMessage(ChatColor.YELLOW + "              " + "* YOU ARE NOW " + ChatColor.BOLD + " NEUTRAL " + ChatColor.YELLOW + "ALIGNMENT *");
+                    player.sendMessage(ChatColor.GRAY + "While neutral, you have a 50% chance of dropping your weapon, and a 25% chance of dropping each piece of equipped armor on death.");
+                    player.sendMessage("");
                     break;
                 case CHAOTIC:
-                    playerAlignmentTime.put(player, 120);
+                    playerAlignmentTime.put(player, 1200);
                     playerAlignments.put(player, alignment);
+                    player.sendMessage("");
+                    player.sendMessage(ChatColor.RED + "              " + "* YOU ARE NOW " + ChatColor.BOLD + " CHAOTIC " + ChatColor.RED + "ALIGNMENT *");
+                    player.sendMessage(ChatColor.GRAY + "While chaotic, you cannot enter any major cities or safe zones. If you are killed while chaotic, you will lose everything in your inventory.");
+                    player.sendMessage("");
                     break;
                 default:
                     Utils.log.info("[KARMA] Could not set player " + player.getName() + "'s alignment! UH OH");
@@ -140,4 +153,45 @@ public class KarmaHandler {
         }
     }
 
+    public static void handlePlayerPsuedoDeath(Player player, Entity killer) {
+        LivingEntity leKiller = null;
+        switch (killer.getType()) {
+            case ARROW:
+                Arrow attackingArrow = (Arrow) killer;
+                if (!(attackingArrow.getShooter() instanceof LivingEntity)) break;
+                leKiller = (LivingEntity) attackingArrow.getShooter();
+                break;
+            case WITHER_SKULL:
+                WitherSkull witherSkull = (WitherSkull) killer;
+                if (!(witherSkull.getShooter() instanceof LivingEntity)) break;
+                leKiller = (LivingEntity) witherSkull.getShooter();
+                break;
+            case PLAYER:
+                leKiller = (LivingEntity) killer;
+                break;
+            default:
+                Utils.log.info("[KARMA] Could not find deathcause for player " + player.getName());
+                break;
+        }
+        Player killerPlayer;
+        if (leKiller instanceof Player) {
+            killerPlayer = (Player) leKiller;
+            String alignmentPlayer = getPlayerRawAlignment(player);
+            String alignmentKiller = getPlayerRawAlignment(killerPlayer);
+            if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.LAWFUL.name)) {
+                setPlayerAlignment(killerPlayer, EnumPlayerAlignments.CHAOTIC.name);
+            } else if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.NEUTRAL.name)) {
+                setPlayerAlignment(killerPlayer, alignmentKiller);
+            }
+        }
+    }
+
+    public static void handleAlignmentChanges(Player player) {
+        String alignmentPlayer = getPlayerRawAlignment(player);
+        if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.LAWFUL.name)) {
+            setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL.name);
+        } else if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.NEUTRAL.name)) {
+            setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL.name);
+        }
+    }
 }

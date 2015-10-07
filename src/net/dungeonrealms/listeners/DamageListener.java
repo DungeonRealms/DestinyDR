@@ -160,30 +160,35 @@ public class DamageListener implements Listener {
             } else {
                 CombatLog.addToCombat(attacker.getUniqueId());
             }
+            if (event.getEntity() instanceof Player) {
+                KarmaHandler.handleAlignmentChanges(attacker);
+            }
             EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getItemInHand()));
             attacker.getItemInHand().setDurability(((short) -1));
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);
         } else if (event.getDamager().getType() == EntityType.ARROW) {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof Player)) return;
-            if (attackingArrow.getShooter() != null && attackingArrow.getShooter() instanceof Player) {
-                finalDamage = DamageAPI.calculateProjectileDamage((Player) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
-                if (CombatLog.isInCombat(((Player) attackingArrow.getShooter()).getUniqueId())) {
-                    CombatLog.updateCombat(((Player) attackingArrow.getShooter()).getUniqueId());
-                } else {
-                    CombatLog.addToCombat(((Player) attackingArrow.getShooter()).getUniqueId());
-                }
+            finalDamage = DamageAPI.calculateProjectileDamage((Player) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
+            if (event.getEntity() instanceof Player) {
+                KarmaHandler.handleAlignmentChanges((Player) attackingArrow.getShooter());
+            }
+            if (CombatLog.isInCombat(((Player) attackingArrow.getShooter()).getUniqueId())) {
+                CombatLog.updateCombat(((Player) attackingArrow.getShooter()).getUniqueId());
+            } else {
+                CombatLog.addToCombat(((Player) attackingArrow.getShooter()).getUniqueId());
             }
         } else if (event.getDamager().getType() == EntityType.WITHER_SKULL) {
             WitherSkull staffProjectile = (WitherSkull) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof Player)) return;
-            if (staffProjectile.getShooter() != null && staffProjectile.getShooter() instanceof Player) {
-                finalDamage = DamageAPI.calculateProjectileDamage((Player) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
-                if (CombatLog.isInCombat(((Player) staffProjectile.getShooter()).getUniqueId())) {
-                    CombatLog.updateCombat(((Player) staffProjectile.getShooter()).getUniqueId());
-                } else {
-                    CombatLog.addToCombat(((Player) staffProjectile.getShooter()).getUniqueId());
-                }
+            finalDamage = DamageAPI.calculateProjectileDamage((Player) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
+            if (event.getEntity() instanceof Player) {
+                KarmaHandler.handleAlignmentChanges((Player) staffProjectile.getShooter());
+            }
+            if (CombatLog.isInCombat(((Player) staffProjectile.getShooter()).getUniqueId())) {
+                CombatLog.updateCombat(((Player) staffProjectile.getShooter()).getUniqueId());
+            } else {
+                CombatLog.addToCombat(((Player) staffProjectile.getShooter()).getUniqueId());
             }
         }
         event.setDamage(finalDamage);
@@ -336,12 +341,12 @@ public class DamageListener implements Listener {
                 if (((Player) defender).isBlocking() && ((Player) defender).getItemInHand() != null && ((Player) defender).getItemInHand().getType() != Material.AIR) {
                     if (new Random().nextInt(100) <= 80) {
                         double blockDamage = event.getDamage() / 2;
-                        HealthHandler.handlePlayerBeingDamaged((Player) event.getEntity(), (blockDamage - armourReducedDamage));
+                        HealthHandler.handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (blockDamage - armourReducedDamage));
                         event.setDamage(0);
                         return;
                     }
                 } else {
-                    HealthHandler.handlePlayerBeingDamaged((Player) event.getEntity(), (event.getDamage() - armourReducedDamage));
+                    HealthHandler.handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (event.getDamage() - armourReducedDamage));
                     event.setDamage(0);
                     return;
                 }
@@ -493,9 +498,9 @@ public class DamageListener implements Listener {
         event.setDroppedExp(0);
         for (ItemStack itemStack : event.getDrops()) {
             if (itemStack != null) {
-                    if (itemStack.equals(itemToSave)) {
-                        break;
-                    }
+                if (itemStack.equals(itemToSave)) {
+                    break;
+                }
                 net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
                 if (nms.hasTag()) {
                     if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")) {
