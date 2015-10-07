@@ -84,10 +84,9 @@ public class KarmaHandler {
 
             if (timeLeft <= 0) {
                 if (currentAlignment.equals(EnumPlayerAlignments.CHAOTIC)) {
-                    playerAlignments.put(player, EnumPlayerAlignments.NEUTRAL);
-                    playerAlignmentTime.put(player, 120);
+                    setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL.name);
                 } else if (currentAlignment.equals(EnumPlayerAlignments.NEUTRAL)) {
-                    playerAlignments.put(player, EnumPlayerAlignments.LAWFUL);
+                    setPlayerAlignment(player, EnumPlayerAlignments.LAWFUL.name);
                     playerAlignmentTime.remove(player);
                 }
             } else {
