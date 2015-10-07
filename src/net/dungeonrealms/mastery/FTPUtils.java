@@ -50,6 +50,7 @@ public class FTPUtils {
      * @since 1.0
      */
     public static void startInitialization() {
+        Utils.log.info("DungeonRealms Registering FTP() ... STARTING ...");
         File coreDirectory = DungeonRealms.getInstance().getDataFolder();
         try {
             FileUtils.forceMkdir(new File(coreDirectory + File.separator + "/realms/downloading"));
@@ -57,6 +58,7 @@ public class FTPUtils {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Utils.log.info("DungeonRealms Finished Registering FTP() ... FINISHED!");
     }
 
     public void uploadRealm(UUID uuid) {

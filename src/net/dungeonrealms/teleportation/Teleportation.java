@@ -150,7 +150,7 @@ public class Teleportation {
                         Utils.log.info("Teleportation tried to send particle to player and failed. Continuing");
                     }
                     if (taskTimer[0] <= 0) {
-                        if (CombatLog.isInCombat(uuid)) {
+                        if (CombatLog.isInCombat(player)) {
                             player.sendMessage("Your teleport has been interrupted by combat!");
                             if (teleportType == EnumTeleportType.HEARTHSTONE) {
                                 TeleportAPI.addPlayerHearthstoneCD(uuid, 280);

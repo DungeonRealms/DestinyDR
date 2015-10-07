@@ -1,4 +1,4 @@
-package net.dungeonrealms.karma;
+package net.dungeonrealms.handlers;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
@@ -67,7 +67,7 @@ public class KarmaHandler {
             if (!(playerAlignmentTime.containsKey(player))) {
                 continue;
             }
-            if (CombatLog.isInCombat(player.getUniqueId())) {
+            if (CombatLog.isInCombat(player)) {
                 continue;
             }
             if (currentAlignment.equals(EnumPlayerAlignments.LAWFUL)) {

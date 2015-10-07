@@ -48,7 +48,7 @@ public class ItemListener implements Listener {
         if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.QUARTZ && player.getItemInHand().getType() != Material.BOOK)
             return;
         ItemStack itemStack = player.getItemInHand();
-        if (!(CombatLog.isInCombat(event.getPlayer().getUniqueId()))) {
+        if (!(CombatLog.isInCombat(event.getPlayer()))) {
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
                 player.sendMessage("You cannot restart a teleport during a cast!");
                 return;

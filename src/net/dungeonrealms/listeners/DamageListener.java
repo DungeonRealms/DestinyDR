@@ -6,11 +6,11 @@ import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.utils.EntityAPI;
+import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.health.HealthHandler;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.Item;
-import net.dungeonrealms.karma.KarmaHandler;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
@@ -155,10 +155,10 @@ public class DamageListener implements Listener {
                 }
                 return;
             }
-            if (CombatLog.isInCombat(attacker.getUniqueId())) {
-                CombatLog.updateCombat(attacker.getUniqueId());
+            if (CombatLog.isInCombat(attacker)) {
+                CombatLog.updateCombat(attacker);
             } else {
-                CombatLog.addToCombat(attacker.getUniqueId());
+                CombatLog.addToCombat(attacker);
             }
             if (event.getEntity() instanceof Player) {
                 KarmaHandler.handleAlignmentChanges(attacker);
@@ -173,10 +173,10 @@ public class DamageListener implements Listener {
             if (event.getEntity() instanceof Player) {
                 KarmaHandler.handleAlignmentChanges((Player) attackingArrow.getShooter());
             }
-            if (CombatLog.isInCombat(((Player) attackingArrow.getShooter()).getUniqueId())) {
-                CombatLog.updateCombat(((Player) attackingArrow.getShooter()).getUniqueId());
+            if (CombatLog.isInCombat(((Player) attackingArrow.getShooter()))) {
+                CombatLog.updateCombat(((Player) attackingArrow.getShooter()));
             } else {
-                CombatLog.addToCombat(((Player) attackingArrow.getShooter()).getUniqueId());
+                CombatLog.addToCombat(((Player) attackingArrow.getShooter()));
             }
         } else if (event.getDamager().getType() == EntityType.WITHER_SKULL) {
             WitherSkull staffProjectile = (WitherSkull) event.getDamager();
@@ -185,10 +185,10 @@ public class DamageListener implements Listener {
             if (event.getEntity() instanceof Player) {
                 KarmaHandler.handleAlignmentChanges((Player) staffProjectile.getShooter());
             }
-            if (CombatLog.isInCombat(((Player) staffProjectile.getShooter()).getUniqueId())) {
-                CombatLog.updateCombat(((Player) staffProjectile.getShooter()).getUniqueId());
+            if (CombatLog.isInCombat(((Player) staffProjectile.getShooter()))) {
+                CombatLog.updateCombat(((Player) staffProjectile.getShooter()));
             } else {
-                CombatLog.addToCombat(((Player) staffProjectile.getShooter()).getUniqueId());
+                CombatLog.addToCombat(((Player) staffProjectile.getShooter()));
             }
         }
         event.setDamage(finalDamage);
@@ -232,10 +232,10 @@ public class DamageListener implements Listener {
             if (!(staffProjectile.getShooter() instanceof Monster)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
         }
-        if (CombatLog.isInCombat(event.getEntity().getUniqueId())) {
-            CombatLog.updateCombat(event.getEntity().getUniqueId());
+        if (CombatLog.isInCombat((Player) event.getEntity())) {
+            CombatLog.updateCombat((Player) event.getEntity());
         } else {
-            CombatLog.addToCombat(event.getEntity().getUniqueId());
+            CombatLog.addToCombat((Player) event.getEntity());
         }
         event.setDamage(finalDamage);
     }

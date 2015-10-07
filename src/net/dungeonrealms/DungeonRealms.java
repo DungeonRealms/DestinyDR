@@ -11,7 +11,7 @@ import net.dungeonrealms.health.HealthHandler;
 import net.dungeonrealms.items.DRBow;
 import net.dungeonrealms.items.ItemRegistry;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
-import net.dungeonrealms.karma.KarmaHandler;
+import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.listeners.*;
 import net.dungeonrealms.mastery.FTPUtils;
 import net.dungeonrealms.mastery.Utils;
@@ -29,9 +29,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-/* Copyright (C) CherryIO, LLC - All Rights Reserved
+/*          Copyright (C) CherryIO, LLC - All Rights Reserved
  * Unauthorized copying and or modifying of this file, via any medium is
- * strictly prohibited Proprietary and confidential
+ * STRICTLY prohibited Proprietary and confidential
  * Written by Nick Doran (xFinityPro) <nick@cherryio.com>, October 2015
  * Written by Kieran Quigley (Proxying) <Proxying@cherryio.com>, October 2015
  * Written by Chase BR (Xwaffle) <chase@cherryio.com>, October 2015
@@ -48,8 +48,6 @@ public class DungeonRealms extends JavaPlugin {
         Utils.log.info("DungeonRealms onLoad() ... STARTING UP");
         instance = this;
     }
-
-    //Fucking Gay Niggers
 
     public void onEnable() {
         long START_TIME = System.currentTimeMillis() / 1000L;
@@ -88,7 +86,6 @@ public class DungeonRealms extends JavaPlugin {
         Utils.log.info("DungeonRealms Registering Monsters() ... FINISHED!");
 
         Utils.log.info("DungeonRealms Registering Commands() ... STARTING ...");
-        //If the command doesn't return true; the command will print in chat.
         getCommand("spawn").setExecutor(new CommandSpawn());
         getCommand("add").setExecutor(new CommandAdd());
         getCommand("analyze").setExecutor(new CommandAnalyze());
@@ -100,10 +97,9 @@ public class DungeonRealms extends JavaPlugin {
         getCommand("rank").setExecutor(new CommandRank());
         getCommand("guild").setExecutor(new CommandGuild());
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
-        Utils.log.info("DungeonRealms Registering FTP() ... STARTING ...");
         FTPUtils.startInitialization();
-        Utils.log.info("DungeonRealms Finished Registering FTP() ... FINISHED!");
 
+        //Custom Register
         Item itemBow = new DRBow();
         ItemRegistry itemRegistry = new ItemRegistry();
         itemRegistry.register("minecraft:bow", itemBow);
