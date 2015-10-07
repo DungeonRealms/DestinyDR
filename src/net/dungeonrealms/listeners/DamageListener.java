@@ -75,6 +75,7 @@ public class DamageListener implements Listener {
      * Cancel World Guard PVP flag if players are dueling.
      *
      * @param event
+     * @since 1.0
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void disallowPVPEvent(DisallowedPVPEvent event) {
@@ -87,7 +88,11 @@ public class DamageListener implements Listener {
         }
     }
 
-
+    /**
+     *
+     * @param event
+     * @since 1.0
+     */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
     public void playerBreakArmorStand(EntityDamageByEntityEvent event) {
         if (!(event.getDamager() instanceof Player)) return;

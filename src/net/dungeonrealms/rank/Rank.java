@@ -40,7 +40,6 @@ public class Rank {
     Block<Document> printDocumentBlock = document -> {
         Object info = document.get("rank");
         String name = ((Document) info).getString("name");
-        if (RAW_RANKS.containsKey(name.toUpperCase())) return;
         long created = ((Document) info).getLong("created");
         String prefix = ((Document) info).getString("prefix");
         String suffix = ((Document) info).getString("suffix");

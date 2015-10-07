@@ -3,10 +3,10 @@ package net.dungeonrealms.combat;
 import net.dungeonrealms.DungeonRealms;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 /**
  * Created by Nick on 8/29/2015.
@@ -23,47 +23,35 @@ public class CombatLog {
 
     }
 
-    public static HashMap<UUID, Integer> COMBAT = new HashMap<>();
+    public static HashMap<Player, Integer> COMBAT = new HashMap<>();
 
-    public static boolean isInCombat(UUID uuid) {
-        return COMBAT.containsKey(uuid);
+    public static boolean isInCombat(Player player) {
+        return COMBAT.containsKey(player);
     }
 
-    public static void updateCombat(UUID uuid) {
-        if (isInCombat(uuid)) {
-            COMBAT.put(uuid, 10);
+    public static void updateCombat(Player player) {
+        if (isInCombat(player)) {
+            COMBAT.put(player, 10);
         }
     }
 
-    public static void addToCombat(UUID uuid) {
-        if (!isInCombat(uuid)) {
-            COMBAT.put(uuid, 10);
-            if (Bukkit.getPlayer(uuid) != null) {
-                Bukkit.getPlayer(uuid).sendMessage(new String[]{
-                        "",
-                        ChatColor.RED + "You are now in combat! (10) Seconds!",
-                        ""
-                });
-            }
+    public static void addToCombat(Player player) {
+        if (!isInCombat(player)) {
+            COMBAT.put(player, 10);
+            player.sendMessage(ChatColor.RED + "You are now in combat! (10) Seconds!");
         }
     }
 
-    private static void removeFromCombat(UUID uuid) {
-        if (isInCombat(uuid)) {
-            COMBAT.remove(uuid);
-            if (Bukkit.getPlayer(uuid) != null) {
-                Bukkit.getPlayer(uuid).sendMessage(new String[]{
-                        "",
-                        ChatColor.GREEN + "You are no longer in combat!",
-                        ""
-                });
-            }
+    private static void removeFromCombat(Player player) {
+        if (isInCombat(player)) {
+            COMBAT.remove(player);
+            player.sendMessage(ChatColor.GREEN + "You are no longer in combat!");
         }
     }
 
     public void startInitialization() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            for (Map.Entry<UUID, Integer> e : COMBAT.entrySet()) {
+            for (Map.Entry<Player, Integer> e : COMBAT.entrySet()) {
                 if (e.getValue() == 0) {
                     removeFromCombat(e.getKey());
                 }

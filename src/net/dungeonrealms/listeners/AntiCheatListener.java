@@ -25,7 +25,9 @@ public class AntiCheatListener implements Listener {
     public void onClick(InventoryClickEvent event) {
         if (AntiCheat.getInstance().watchForDupes(event)) {
             Utils.log.warning("[ANTI-CHEAT] [DUPE] Player: " + event.getWhoClicked().getName());
-            Bukkit.broadcastMessage(ChatColor.RED + "[AntiCheat]" + ChatColor.BLUE + " Type:" + ChatColor.AQUA + "Duplication " + ChatColor.BLUE + "User:" + ChatColor.AQUA + event.getWhoClicked().getName() + ChatColor.BLUE + " Time:" + ChatColor.AQUA + System.currentTimeMillis());
+            Bukkit.getOnlinePlayers().stream().filter(player -> player.isOp()).forEach(player -> {
+                Bukkit.broadcastMessage(ChatColor.RED + "(" + ChatColor.RED.toString() + ChatColor.BOLD + "!" + ChatColor.RED + ")" + ChatColor.BLUE + " Type:" + ChatColor.AQUA + " Duplication " + ChatColor.BLUE + "User: " + ChatColor.AQUA + event.getWhoClicked().getName() + ChatColor.BLUE + " Time: " + ChatColor.AQUA + System.currentTimeMillis());
+            });
         }
     }
 
