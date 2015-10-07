@@ -10,6 +10,7 @@ import net.dungeonrealms.health.HealthHandler;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.Item;
+import net.dungeonrealms.karma.KarmaHandler;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
@@ -484,14 +485,17 @@ public class DamageListener implements Listener {
             player.sendMessage("For it's own safety, your mount has returned to the stable.");
         }
         if (player.getInventory().getItem(0) != null && player.getInventory().getItem(0).getType() != Material.AIR) {
-            itemToSave = player.getInventory().getItem(0);
+            if (KarmaHandler.getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.LAWFUL.name()) ||
+                    KarmaHandler.getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.NEUTRAL.name())) {
+                itemToSave = player.getInventory().getItem(0);
+            }
         }
         event.setDroppedExp(0);
         for (ItemStack itemStack : event.getDrops()) {
             if (itemStack != null) {
-                if (itemStack.equals(itemToSave)) {
-                    break;
-                }
+                    if (itemStack.equals(itemToSave)) {
+                        break;
+                    }
                 net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
                 if (nms.hasTag()) {
                     if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")) {

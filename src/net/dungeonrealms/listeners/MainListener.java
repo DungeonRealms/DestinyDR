@@ -10,6 +10,7 @@ import net.dungeonrealms.duel.DuelWager;
 import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.health.HealthHandler;
+import net.dungeonrealms.karma.KarmaHandler;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.rank.Subscription;
@@ -87,6 +88,7 @@ public class MainListener implements Listener {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> API.handleLogin(player.getUniqueId()), 20L);
         EnergyHandler.handleLogin(player.getUniqueId());
         HealthHandler.handleLoginEvents(player);
+        KarmaHandler.handleLoginEvents(player);
     }
 
     /**
@@ -162,6 +164,7 @@ public class MainListener implements Listener {
         EnergyHandler.handleLogout(player.getUniqueId());
         API.handleLogout(player.getUniqueId());
         HealthHandler.handleLogoutEvents(player);
+        KarmaHandler.handleLogoutEvents(player);
     }
 
     /**

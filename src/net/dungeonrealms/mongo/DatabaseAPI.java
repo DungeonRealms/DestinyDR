@@ -8,7 +8,6 @@ import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
 import org.bson.Document;
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -77,13 +76,15 @@ public class DatabaseAPI {
             case GEMS:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("gems", Integer.class);
             case HEARTHSTONE:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("hearthstone", Location.class);
+                return ((Document) PLAYERS.get(uuid).get("info")).get("hearthstone", String.class);
             case ECASH:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("ecash", Integer.class);
             case FRIENDS:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("friends", ArrayList.class);
             case GUILD:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("guild", String.class);
+            case ALIGNMENT:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("alignment", String.class);
             /*
             Rank Things. Different Sub-Document().
              */
@@ -179,6 +180,7 @@ public class DatabaseAPI {
                                 .append("hearthstone", "cyrennica")
                                 .append("isPlaying", true)
                                 .append("friends", new ArrayList<>())
+                                .append("alignment", "lawful")
                                 .append("guild", "")
                                 .append("attributes",
                                         new Document("strength", 1).append("dexterity", 1).append("intellect", 1).append("vitality", 1))

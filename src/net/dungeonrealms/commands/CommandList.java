@@ -5,6 +5,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 /**
@@ -14,6 +15,10 @@ public class CommandList implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command cmd, String string, String[] args) {
+
+        if (commandSender instanceof ConsoleCommandSender) {
+            return false;
+        }
         if (!(commandSender.isOp())) {
             commandSender.sendMessage("You're not OP.");
             return false;

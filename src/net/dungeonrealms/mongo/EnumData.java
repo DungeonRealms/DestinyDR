@@ -14,6 +14,7 @@ public enum EnumData {
     HEARTHSTONE,
     ECASH,
     FRIENDS,
+    ALIGNMENT,
 
     RANK,
     RANK_EXISTENCE,

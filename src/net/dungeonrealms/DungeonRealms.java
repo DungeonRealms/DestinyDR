@@ -11,6 +11,7 @@ import net.dungeonrealms.health.HealthHandler;
 import net.dungeonrealms.items.DRBow;
 import net.dungeonrealms.items.ItemRegistry;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
+import net.dungeonrealms.karma.KarmaHandler;
 import net.dungeonrealms.listeners.*;
 import net.dungeonrealms.mastery.FTPUtils;
 import net.dungeonrealms.mastery.Utils;
@@ -79,7 +80,8 @@ public class DungeonRealms extends JavaPlugin {
         Subscription.getInstance().startInitialization();
         Rank.getInstance().startInitialization();
         DonationEffects.getInstance().startInitialization();
-        HealthHandler.getInstance().startInitialization(); // Still testing.
+        HealthHandler.getInstance().startInitialization();
+        KarmaHandler.getInstance().startInitialization();
 
         Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
         Entities.getInstance().startInitialization();
