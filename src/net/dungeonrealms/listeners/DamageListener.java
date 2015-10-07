@@ -10,7 +10,7 @@ import net.dungeonrealms.health.HealthHandler;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.Item;
-import net.dungeonrealms.karma.KarmaHandler;
+import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;

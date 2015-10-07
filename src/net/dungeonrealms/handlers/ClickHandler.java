@@ -1,4 +1,4 @@
-package net.dungeonrealms.handler;
+package net.dungeonrealms.handlers;
 
 import org.bukkit.event.inventory.InventoryClickEvent;
 

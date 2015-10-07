@@ -1,4 +1,4 @@
-package net.dungeonrealms.karma;
+package net.dungeonrealms.handlers;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;

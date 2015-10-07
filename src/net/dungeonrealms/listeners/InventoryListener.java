@@ -7,7 +7,7 @@ import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
-import net.dungeonrealms.handler.ClickHandler;
+import net.dungeonrealms.handlers.ClickHandler;
 import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.mechanics.ItemManager;

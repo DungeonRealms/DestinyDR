@@ -11,7 +11,7 @@ import net.dungeonrealms.health.HealthHandler;
 import net.dungeonrealms.items.DRBow;
 import net.dungeonrealms.items.ItemRegistry;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
-import net.dungeonrealms.karma.KarmaHandler;
+import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.listeners.*;
 import net.dungeonrealms.mastery.FTPUtils;
 import net.dungeonrealms.mastery.Utils;
