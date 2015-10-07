@@ -172,11 +172,11 @@ public class HealthHandler {
             if (player.hasMetadata("starving")) {
                 continue;
             }
-            if (CombatLog.isInCombat(uuid)) {
+            if (CombatLog.isInCombat(player)) {
                 continue;
             }
             //Check their Max HP from wherever we decide to store it.
-            if (!CombatLog.isInCombat(uuid)) {
+            if (!CombatLog.isInCombat(player)) {
                 double currentHP = getPlayerHPLive(player);
                 double amountToHealPlayer = getPlayerHPRegenLive(player);
                 double maxHP = getPlayerMaxHPLive(player);

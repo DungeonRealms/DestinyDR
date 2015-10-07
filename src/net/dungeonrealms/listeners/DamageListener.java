@@ -89,7 +89,6 @@ public class DamageListener implements Listener {
     }
 
     /**
-     *
      * @param event
      * @since 1.0
      */
@@ -160,10 +159,10 @@ public class DamageListener implements Listener {
                 }
                 return;
             }
-            if (CombatLog.isInCombat(attacker.getUniqueId())) {
-                CombatLog.updateCombat(attacker.getUniqueId());
+            if (CombatLog.isInCombat(attacker)) {
+                CombatLog.updateCombat(attacker);
             } else {
-                CombatLog.addToCombat(attacker.getUniqueId());
+                CombatLog.addToCombat(attacker);
             }
             EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getItemInHand()));
             attacker.getItemInHand().setDurability(((short) -1));
@@ -173,10 +172,10 @@ public class DamageListener implements Listener {
             if (!(attackingArrow.getShooter() instanceof Player)) return;
             if (attackingArrow.getShooter() != null && attackingArrow.getShooter() instanceof Player) {
                 finalDamage = DamageAPI.calculateProjectileDamage((Player) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
-                if (CombatLog.isInCombat(((Player) attackingArrow.getShooter()).getUniqueId())) {
-                    CombatLog.updateCombat(((Player) attackingArrow.getShooter()).getUniqueId());
+                if (CombatLog.isInCombat(((Player) attackingArrow.getShooter()))) {
+                    CombatLog.updateCombat(((Player) attackingArrow.getShooter()));
                 } else {
-                    CombatLog.addToCombat(((Player) attackingArrow.getShooter()).getUniqueId());
+                    CombatLog.addToCombat(((Player) attackingArrow.getShooter()));
                 }
             }
         } else if (event.getDamager().getType() == EntityType.WITHER_SKULL) {
@@ -184,10 +183,10 @@ public class DamageListener implements Listener {
             if (!(staffProjectile.getShooter() instanceof Player)) return;
             if (staffProjectile.getShooter() != null && staffProjectile.getShooter() instanceof Player) {
                 finalDamage = DamageAPI.calculateProjectileDamage((Player) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
-                if (CombatLog.isInCombat(((Player) staffProjectile.getShooter()).getUniqueId())) {
-                    CombatLog.updateCombat(((Player) staffProjectile.getShooter()).getUniqueId());
+                if (CombatLog.isInCombat(((Player) staffProjectile.getShooter()))) {
+                    CombatLog.updateCombat(((Player) staffProjectile.getShooter()));
                 } else {
-                    CombatLog.addToCombat(((Player) staffProjectile.getShooter()).getUniqueId());
+                    CombatLog.addToCombat(((Player) staffProjectile.getShooter()));
                 }
             }
         }
@@ -232,10 +231,10 @@ public class DamageListener implements Listener {
             if (!(staffProjectile.getShooter() instanceof Monster)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
         }
-        if (CombatLog.isInCombat(event.getEntity().getUniqueId())) {
-            CombatLog.updateCombat(event.getEntity().getUniqueId());
+        if (CombatLog.isInCombat((Player) event.getEntity())) {
+            CombatLog.updateCombat((Player) event.getEntity());
         } else {
-            CombatLog.addToCombat(event.getEntity().getUniqueId());
+            CombatLog.addToCombat((Player) event.getEntity());
         }
         event.setDamage(finalDamage);
     }
@@ -498,9 +497,9 @@ public class DamageListener implements Listener {
         event.setDroppedExp(0);
         for (ItemStack itemStack : event.getDrops()) {
             if (itemStack != null) {
-                    if (itemStack.equals(itemToSave)) {
-                        break;
-                    }
+                if (itemStack.equals(itemToSave)) {
+                    break;
+                }
                 net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
                 if (nms.hasTag()) {
                     if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")) {
