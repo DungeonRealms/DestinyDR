@@ -21,7 +21,7 @@ public class Storage {
 
     /**
      * @param uuid
-     * @param contents
+     * @param inventory
      */
     public Storage(UUID uuid, Inventory inventory) {
         ownerUUID = uuid;

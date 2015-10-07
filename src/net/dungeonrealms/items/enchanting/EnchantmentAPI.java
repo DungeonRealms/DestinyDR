@@ -85,6 +85,7 @@ public class EnchantmentAPI {
      * Checks the item to see if its a protection scroll
      *
      * @param itemStack
+     * @return boolean
      * @since 1.0
      */
     public static boolean isProtectionScroll(ItemStack itemStack) {
@@ -101,6 +102,7 @@ public class EnchantmentAPI {
      *
      * @param scroll
      * @param itemToProtect
+     * @return boolean
      * @since 1.0
      */
     public static boolean isCorrectProtectionScroll(ItemStack scroll, ItemStack itemToProtect) {
@@ -114,6 +116,7 @@ public class EnchantmentAPI {
      * Checks the item to see if its a weapon
      *
      * @param itemStack
+     * @return boolean
      * @since 1.0
      */
     private static boolean isItemWeapon(ItemStack itemStack) {
@@ -125,6 +128,7 @@ public class EnchantmentAPI {
      * Checks the item to see if its armor
      *
      * @param itemStack
+     * @return boolean
      * @since 1.0
      */
     private static boolean isItemArmor(ItemStack itemStack) {
@@ -137,6 +141,7 @@ public class EnchantmentAPI {
      *
      * @param itemStack
      * @param toCompare
+     * @return boolean
      * @since 1.0
      */
     private static boolean doItemTiersMatch(ItemStack itemStack, ItemStack toCompare) {
@@ -148,6 +153,7 @@ public class EnchantmentAPI {
      * Checks the item to see if its already protected
      *
      * @param itemStack
+     * @return boolean
      * @since 1.0
      */
     public static boolean isItemProtected(ItemStack itemStack) {
@@ -160,6 +166,7 @@ public class EnchantmentAPI {
      * Removes the items protection
      *
      * @param itemStack
+     * @return ItemStack
      * @since 1.0
      */
     public static ItemStack removeItemProtection(ItemStack itemStack) {

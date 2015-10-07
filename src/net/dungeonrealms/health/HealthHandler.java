@@ -85,6 +85,7 @@ public class HealthHandler {
      * Returns the players current HP
      *
      * @param player
+     * @return int
      * @since 1.0
      */
     public static int getPlayerHPLive(Player player) {
@@ -127,6 +128,7 @@ public class HealthHandler {
      * Pretty expensive check.
      *
      * @param uuid
+     * @return int
      * @since 1.0
      */
     public static int getPlayerMaxHPOnLogin(UUID uuid) {
@@ -137,6 +139,7 @@ public class HealthHandler {
      * Returns the players current MaximumHP
      *
      * @param player
+     * @return int
      * @since 1.0
      */
     public static int getPlayerMaxHPLive(Player player) {
@@ -255,6 +258,7 @@ public class HealthHandler {
      * from their armor and weapon
      *
      * @param player
+     * @return int
      * @since 1.0
      */
     public static int calculateMaxHPFromItems(Player player) {
@@ -281,6 +285,7 @@ public class HealthHandler {
      * of an itemstack
      *
      * @param itemStack
+     * @return int
      * @since 1.0
      */
     private static int getHealthValueOfItem(ItemStack itemStack) {
@@ -306,6 +311,7 @@ public class HealthHandler {
      * from their armor and weapon
      *
      * @param player
+     * @return int
      * @since 1.0
      */
     private static int calculateHealthRegenFromItems(Player player) {
@@ -332,6 +338,7 @@ public class HealthHandler {
      * of an itemstack
      *
      * @param itemStack
+     * @return int
      * @since 1.0
      */
     private static int getHealthRegenValueOfItem(ItemStack itemStack) {
@@ -368,6 +375,7 @@ public class HealthHandler {
      * Returns the players current HPRegen
      *
      * @param player
+     * @return int
      * @since 1.0
      */
     public static int getPlayerHPRegenLive(Player player) {

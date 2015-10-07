@@ -46,9 +46,9 @@ public class KarmaHandler {
         }
 
         public static EnumPlayerAlignments getByName(String rawName) {
-            for (EnumPlayerAlignments particleEffect : values()) {
-                if (particleEffect.name.equalsIgnoreCase(rawName)) {
-                    return particleEffect;
+            for (EnumPlayerAlignments playerAlignments : values()) {
+                if (playerAlignments.name.equalsIgnoreCase(rawName)) {
+                    return playerAlignments;
                 }
             }
             return null;
@@ -59,6 +59,14 @@ public class KarmaHandler {
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::updateAllPlayerAlignments, 100L, 20L);
     }
 
+    /**
+     * Updates all player alignments
+     * from Chaotic->Neutral or Neutral->Lawful
+     * if they are not in combat and in the
+     * main world
+     *
+     * @since 1.0
+     */
     private void updateAllPlayerAlignments() {
         for (Map.Entry<Player, EnumPlayerAlignments> alignment : playerAlignments.entrySet()) {
             Player player = alignment.getKey();
@@ -96,14 +104,38 @@ public class KarmaHandler {
         }
     }
 
+    /**
+     * Handles players logging in,
+     * sets their alignment based on
+     * their mongo document.
+     *
+     * @param player
+     * @since 1.0
+     */
     public static void handleLoginEvents(Player player) {
         setPlayerAlignment(player, getAlignmentOnLogin(player.getUniqueId()));
     }
 
+    /**
+     * Handles players logging out,
+     * updates mongo document with
+     * their alignment.
+     *
+     * @param player
+     * @since 1.0
+     */
     public static void handleLogoutEvents(Player player) {
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.alignment", getPlayerRawAlignment(player), false);
     }
 
+    /**
+     * Returns the players current alignment
+     * as a string.
+     *
+     * @param player
+     * @return String
+     * @since 1.0
+     */
     public static String getPlayerRawAlignment(Player player) {
         if (playerAlignments.containsKey(player)) {
             return playerAlignments.get(player).name;
@@ -111,32 +143,48 @@ public class KarmaHandler {
         return "lawful"; //Should never happen, but safety checks.
     }
 
+    /**
+     * Sets the alignment of a specific player
+     * adds them to hashmap with cooldown
+     * if applicable and sends them a message
+     * detailling what that alignment causes.
+     *
+     * @param player
+     * @param alignmentRawName
+     * @since 1.0
+     */
     public static void setPlayerAlignment(Player player, String alignmentRawName) {
         EnumPlayerAlignments alignment = EnumPlayerAlignments.getByName(alignmentRawName);
         if (alignment != null) {
             switch (alignment) {
                 case LAWFUL:
                     playerAlignments.put(player, alignment);
-                    player.sendMessage("");
-                    player.sendMessage(ChatColor.GREEN + "              " + "* YOU ARE NOW " + ChatColor.BOLD + " LAWFUL " + ChatColor.GREEN + "ALIGNMENT *");
-                    player.sendMessage(ChatColor.GRAY + "While lawful, you will not lose any equipped armor on death, instead, all armor will lose 30% of its durability when you die.");
-                    player.sendMessage("");
+                    player.sendMessage(new String[]{
+                            "",
+                            ChatColor.GREEN + "              " + "* YOU ARE NOW " + ChatColor.BOLD + " LAWFUL " + ChatColor.GREEN + "ALIGNMENT *",
+                            ChatColor.GRAY + "While lawful, you will not lose any equipped armor on death, instead, all armor will lose 30% of its durability when you die.",
+                            ""
+                    });
                     break;
                 case NEUTRAL:
                     playerAlignmentTime.put(player, 120);
                     playerAlignments.put(player, alignment);
-                    player.sendMessage("");
-                    player.sendMessage(ChatColor.YELLOW + "              " + "* YOU ARE NOW " + ChatColor.BOLD + " NEUTRAL " + ChatColor.YELLOW + "ALIGNMENT *");
-                    player.sendMessage(ChatColor.GRAY + "While neutral, you have a 50% chance of dropping your weapon, and a 25% chance of dropping each piece of equipped armor on death.");
-                    player.sendMessage("");
+                    player.sendMessage(new String[]{
+                            "",
+                            ChatColor.YELLOW + "              " + "* YOU ARE NOW " + ChatColor.BOLD + " NEUTRAL " + ChatColor.YELLOW + "ALIGNMENT *",
+                            ChatColor.GRAY + "While neutral, you have a 50% chance of dropping your weapon, and a 25% chance of dropping each piece of equipped armor on death.",
+                            ""
+                    });
                     break;
                 case CHAOTIC:
                     playerAlignmentTime.put(player, 1200);
                     playerAlignments.put(player, alignment);
-                    player.sendMessage("");
-                    player.sendMessage(ChatColor.RED + "              " + "* YOU ARE NOW " + ChatColor.BOLD + " CHAOTIC " + ChatColor.RED + "ALIGNMENT *");
-                    player.sendMessage(ChatColor.GRAY + "While chaotic, you cannot enter any major cities or safe zones. If you are killed while chaotic, you will lose everything in your inventory.");
-                    player.sendMessage("");
+                    player.sendMessage(new String[]{
+                            "",
+                            ChatColor.RED + "              " + "* YOU ARE NOW " + ChatColor.BOLD + " CHAOTIC " + ChatColor.RED + "ALIGNMENT *",
+                            ChatColor.GRAY + "While chaotic, you cannot enter any major cities or safe zones. If you are killed while chaotic, you will lose everything in your inventory.",
+                            ""
+                    });
                     break;
                 default:
                     Utils.log.info("[KARMA] Could not set player " + player.getName() + "'s alignment! UH OH");
@@ -145,14 +193,31 @@ public class KarmaHandler {
         }
     }
 
+    /**
+     * Returns the players current alignment
+     * from Mongo Doc as a string.
+     *
+     * @param uuid
+     * @return String
+     * @since 1.0
+     */
     public static String getAlignmentOnLogin(UUID uuid) {
-        if (DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid) != null) {
+        if (DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid) != null && !String.valueOf(DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid)).equalsIgnoreCase("")) {
             return String.valueOf(DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid));
         } else {
             return "lawful"; //Safety check, but should never return that
         }
     }
 
+    /**
+     * Handles when the player "dies" in combat
+     * Checks to see if they should change alignment
+     * and changes it if they should.
+     *
+     * @param player
+     * @param killer
+     * @since 1.0
+     */
     public static void handlePlayerPsuedoDeath(Player player, Entity killer) {
         LivingEntity leKiller = null;
         switch (killer.getType()) {
@@ -186,6 +251,14 @@ public class KarmaHandler {
         }
     }
 
+    /**
+     * Handles when the player attacks another player
+     * Checks to see if they should change alignment
+     * and changes it if they should.
+     *
+     * @param player
+     * @since 1.0
+     */
     public static void handleAlignmentChanges(Player player) {
         String alignmentPlayer = getPlayerRawAlignment(player);
         if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.LAWFUL.name)) {

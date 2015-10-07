@@ -21,6 +21,7 @@ public class TeleportAPI {
      * Checks if the player can use their hearthstone
      *
      * @param uuid
+     * @return boolean
      * @since 1.0
      */
     public static boolean canUseHearthstone(UUID uuid) {
@@ -58,6 +59,7 @@ public class TeleportAPI {
      * Used for checking if the player is moving/in combat etc
      *
      * @param uuid
+     * @return boolean
      * @since 1.0
      */
     public static boolean isPlayerCurrentlyTeleporting(UUID uuid) {
@@ -69,6 +71,7 @@ public class TeleportAPI {
      * Used for checking if the player is moving/in combat etc
      *
      * @param uuid
+     * @@return boolean
      * @since 1.0
      */
     public static boolean removePlayerCurrentlyTeleporting(UUID uuid) {
@@ -83,6 +86,7 @@ public class TeleportAPI {
      * Gets the players cooldown on hearthstone usage
      *
      * @param uuid
+     * @return int
      * @since 1.0
      */
     public static int getPlayerHearthstoneCD(UUID uuid) {
@@ -93,6 +97,7 @@ public class TeleportAPI {
      * Checks if the item is a teleportation book
      *
      * @param itemStack
+     * @return boolean
      * @since 1.0
      */
     public static boolean isTeleportBook(ItemStack itemStack) {
@@ -108,6 +113,7 @@ public class TeleportAPI {
      * Checks if the item is a hearthstone
      *
      * @param itemStack
+     * @return boolean
      * @since 1.0
      */
     public static boolean isHearthstone(ItemStack itemStack) {
@@ -123,6 +129,7 @@ public class TeleportAPI {
      * Gets the location of a players hearthstone from Mongo
      *
      * @param uuid
+     * @return String
      * @since 1.0
      */
     public static String getLocationFromDatabase(UUID uuid) {
@@ -137,6 +144,7 @@ public class TeleportAPI {
      * Gets the location of a teleport from a given string
      *
      * @param location
+     * @return Location
      * @since 1.0
      */
     public static Location getLocationFromString(String location) {
@@ -174,6 +182,7 @@ public class TeleportAPI {
     /**
      * Returns a random string "location"
      *
+     * @return String
      * @since 1.0
      */
     public static String getRandomTeleportString() {

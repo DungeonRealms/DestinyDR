@@ -35,6 +35,13 @@ public class EnergyHandler {
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::addStarvingPotionEffect, 40, 15L);
     }
 
+    /**
+     * Handles players logging out,
+     * removes metadata from the player
+     *
+     * @param uuid
+     * @since 1.0
+     */
     public static void handleLogout(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         if (player.hasMetadata("starving")) {
@@ -45,6 +52,14 @@ public class EnergyHandler {
         }
     }
 
+    /**
+     * Handles players logging in,
+     * adds metadata to the player if
+     * applicable (no food level).
+     *
+     * @param uuid
+     * @since 1.0
+     */
     public static void handleLogin(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         if (player.getFoodLevel() <= 0) {
@@ -55,6 +70,13 @@ public class EnergyHandler {
         }
     }
 
+    /**
+     * Handles the regeneration of energy
+     * for all players applicable on the
+     * server.
+     *
+     * @since 1.0
+     */
     private void regenerateAllPlayerEnergy() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (getPlayerCurrentEnergy(player.getUniqueId()) == 1.0F) {
@@ -77,11 +99,26 @@ public class EnergyHandler {
         }
     }
 
+    /**
+     * Returns the players current
+     * energy value
+     *
+     * @param uuid
+     * @return float
+     * @since 1.0
+     */
     public static float getPlayerCurrentEnergy(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         return player.getExp();
     }
 
+    /**
+     * Updates the players Minecraft EXP bar
+     * with our custom energy values
+     *
+     * @param uuid
+     * @since 1.0
+     */
     private static void updatePlayerEnergyBar(UUID uuid) {
         float currExp = getPlayerCurrentEnergy(uuid);
         double percent = currExp * 100.00D;
@@ -94,6 +131,14 @@ public class EnergyHandler {
         Bukkit.getPlayer(uuid).setLevel(((int) percent));
     }
 
+    /**
+     * Returns the players current
+     * energy regeneration value
+     *
+     * @param uuid
+     * @return float
+     * @since 1.0
+     */
     private float getPlayerEnergyRegenerationAmount(UUID uuid) {
         float regenAmount = 0.15F;
         Player player = Bukkit.getPlayer(uuid);
@@ -135,6 +180,13 @@ public class EnergyHandler {
         return regenAmount;
     }
 
+    /**
+     * Adds energy to the defined player
+     *
+     * @param uuid
+     * @param amountToAdd
+     * @since 1.0
+     */
     private static void addEnergyToPlayerAndUpdate(UUID uuid, float amountToAdd) {
         if (getPlayerCurrentEnergy(uuid) == 1) {
             return;
@@ -143,6 +195,13 @@ public class EnergyHandler {
         updatePlayerEnergyBar(uuid);
     }
 
+    /**
+     * Handles the removal of energy while
+     * players are sprinting
+     *
+     * @return float
+     * @since 1.0
+     */
     private void removePlayerEnergySprint() {
         Bukkit.getOnlinePlayers().stream().filter(player -> player.isSprinting() || player.hasMetadata("sprinting")).forEach(player -> {
             removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 0.135F);
@@ -162,6 +221,15 @@ public class EnergyHandler {
         });
     }
 
+    /**
+     * Handles the removal of energy from
+     * a player and updates their bar.
+     * Used when auto-attacking etc.
+     *
+     * @param uuid
+     * @param amountToRemove
+     * @since 1.0
+     */
     public static void removeEnergyFromPlayerAndUpdate(UUID uuid, float amountToRemove) {
         Player player = Bukkit.getPlayer(uuid);
         if (player.isOp()) return;
@@ -182,6 +250,13 @@ public class EnergyHandler {
         updatePlayerEnergyBar(uuid);
     }
 
+    /**
+     * Adds the hunger potion effect
+     * to a player and "starving" as
+     * metadata when they have 0 food level.
+     *
+     * @since 1.0
+     */
     private void addStarvingPotionEffect() {
         Bukkit.getOnlinePlayers().stream().filter(player -> player.hasPotionEffect(PotionEffectType.HUNGER) && player.hasMetadata("starving")).forEach(player -> {
             if (player.getFoodLevel() <= 0) {
@@ -193,6 +268,14 @@ public class EnergyHandler {
         });
     }
 
+    /**
+     * Returns the energy cost
+     * of an item
+     *
+     * @param itemStack
+     * @return float
+     * @since 1.0
+     */
     public static float getWeaponSwingEnergyCost(ItemStack itemStack) {
         Material material = itemStack.getType();
 

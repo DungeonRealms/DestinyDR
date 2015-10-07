@@ -37,8 +37,7 @@ public class MobSpawner {
         isSpawning = false;
         World world = ((CraftWorld) location.getWorld()).getHandle();
         armorstand = new EntityArmorStand(world);
-        armorstand.getBukkitEntity().setMetadata("type",
-                new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
+        armorstand.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
         String temp = "";
         for (String aType : type) {
             temp += aType + ",";
