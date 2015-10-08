@@ -141,7 +141,7 @@ public class EnergyListener implements Listener {
     }
 
     /**
-     * Handles players swining their fists/items
+     * Handles players swinging their fists/items
      * removes energy or cancels the event if they can't
      *
      * @param event

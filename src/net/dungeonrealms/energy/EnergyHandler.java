@@ -42,11 +42,11 @@ public class EnergyHandler {
      * @param player
      * @since 1.0
      */
-    public static void handleLogoutEvents(Player player) {
+    public void handleLogoutEvents(Player player) {
         if (player.hasMetadata("starving")) {
             player.removeMetadata("starving", DungeonRealms.getInstance());
         }
-        if (player.hasMetadata("spriting")) {
+        if (player.hasMetadata("sprinting")) {
             player.removeMetadata("sprinting", DungeonRealms.getInstance());
         }
     }
@@ -59,7 +59,7 @@ public class EnergyHandler {
      * @param player
      * @since 1.0
      */
-    public static void handleLoginEvents(Player player) {
+    public void handleLoginEvents(Player player) {
         if (player.getFoodLevel() <= 0) {
             if (!(player.hasMetadata("starving"))) {
                 player.setMetadata("starving", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));

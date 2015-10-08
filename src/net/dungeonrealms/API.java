@@ -109,9 +109,9 @@ public class API {
         }
         PlayerInventory inv = Bukkit.getPlayer(uuid).getInventory();
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.player", ItemSerialization.toString(inv), false);
-        EnergyHandler.handleLogoutEvents(player);
-        HealthHandler.handleLogoutEvents(player);
-        KarmaHandler.handleLogoutEvents(player);
+        EnergyHandler.getInstance().handleLogoutEvents(player);
+        HealthHandler.getInstance().handleLogoutEvents(player);
+        KarmaHandler.getInstance().handleLogoutEvents(player);
     }
 
 
@@ -153,9 +153,9 @@ public class API {
         }
         TeleportAPI.addPlayerHearthstoneCD(uuid, 150);
         PlayerManager.checkInventory(uuid);
-        EnergyHandler.handleLoginEvents(player);
-        HealthHandler.handleLoginEvents(player);
-        KarmaHandler.handleLoginEvents(player);
+        EnergyHandler.getInstance().handleLoginEvents(player);
+        HealthHandler.getInstance().handleLoginEvents(player);
+        KarmaHandler.getInstance().handleLoginEvents(player);
         Subscription.getInstance().doAdd(uuid);
         Rank.getInstance().doGet(uuid);
         Guild.getInstance().doGet(uuid);

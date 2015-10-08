@@ -112,7 +112,7 @@ public class KarmaHandler {
      * @param player
      * @since 1.0
      */
-    public static void handleLoginEvents(Player player) {
+    public void handleLoginEvents(Player player) {
         setPlayerAlignment(player, getAlignmentOnLogin(player.getUniqueId()));
     }
 
@@ -124,7 +124,7 @@ public class KarmaHandler {
      * @param player
      * @since 1.0
      */
-    public static void handleLogoutEvents(Player player) {
+    public void handleLogoutEvents(Player player) {
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.alignment", getPlayerRawAlignment(player), false);
     }
 
@@ -147,7 +147,7 @@ public class KarmaHandler {
      * Sets the alignment of a specific player
      * adds them to hashmap with cooldown
      * if applicable and sends them a message
-     * detailling what that alignment causes.
+     * detailing what that alignment causes.
      *
      * @param player
      * @param alignmentRawName
@@ -155,36 +155,43 @@ public class KarmaHandler {
      */
     public static void setPlayerAlignment(Player player, String alignmentRawName) {
         EnumPlayerAlignments alignment = EnumPlayerAlignments.getByName(alignmentRawName);
+        String playerAlignment = getPlayerRawAlignment(player);
         if (alignment != null) {
             switch (alignment) {
                 case LAWFUL:
+                    if (!(playerAlignment.equalsIgnoreCase(EnumPlayerAlignments.LAWFUL.name))) {
+                        player.sendMessage(new String[]{
+                                "",
+                                ChatColor.GREEN + "              " + "* YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + "LAWFUL" + ChatColor.RESET + ChatColor.GREEN + " ALIGNMENT *",
+                                ChatColor.GRAY + "While lawful, you will not lose any equipped armor on death, instead, all armor will lose 30% of its durability when you die.",
+                                ""
+                        });
+                    }
                     playerAlignments.put(player, alignment);
-                    player.sendMessage(new String[]{
-                            "",
-                            ChatColor.GREEN + "              " + "* YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + "LAWFUL " + ChatColor.GREEN + "ALIGNMENT *",
-                            ChatColor.GRAY + "While lawful, you will not lose any equipped armor on death, instead, all armor will lose 30% of its durability when you die.",
-                            ""
-                    });
                     break;
                 case NEUTRAL:
+                    if (!(playerAlignment.equalsIgnoreCase(EnumPlayerAlignments.NEUTRAL.name))) {
+                        player.sendMessage(new String[]{
+                                "",
+                                ChatColor.YELLOW + "              " + "* YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + "NEUTRAL" + ChatColor.RESET + ChatColor.YELLOW + " ALIGNMENT *",
+                                ChatColor.GRAY + "While neutral, you have a 50% chance of dropping your weapon, and a 25% chance of dropping each piece of equipped armor on death.",
+                                ""
+                        });
+                    }
                     playerAlignmentTime.put(player, 120);
                     playerAlignments.put(player, alignment);
-                    player.sendMessage(new String[]{
-                            "",
-                            ChatColor.YELLOW + "              " + "* YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + "NEUTRAL " + ChatColor.YELLOW + "ALIGNMENT *",
-                            ChatColor.GRAY + "While neutral, you have a 50% chance of dropping your weapon, and a 25% chance of dropping each piece of equipped armor on death.",
-                            ""
-                    });
                     break;
                 case CHAOTIC:
+                    if (!(playerAlignment.equalsIgnoreCase(EnumPlayerAlignments.CHAOTIC.name))) {
+                        player.sendMessage(new String[]{
+                                "",
+                                ChatColor.RED + "              " + "* YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + "CHAOTIC" + ChatColor.RESET + ChatColor.RED + " ALIGNMENT *",
+                                ChatColor.GRAY + "While chaotic, you cannot enter any major cities or safe zones. If you are killed while chaotic, you will lose everything in your inventory.",
+                                ""
+                        });
+                    }
                     playerAlignmentTime.put(player, 1200);
                     playerAlignments.put(player, alignment);
-                    player.sendMessage(new String[]{
-                            "",
-                            ChatColor.RED + "              " + "* YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + "CHAOTIC " + ChatColor.RED + "ALIGNMENT *",
-                            ChatColor.GRAY + "While chaotic, you cannot enter any major cities or safe zones. If you are killed while chaotic, you will lose everything in your inventory.",
-                            ""
-                    });
                     break;
                 default:
                     Utils.log.info("[KARMA] Could not set player " + player.getName() + "'s alignment! UH OH");
