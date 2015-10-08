@@ -4,7 +4,7 @@ import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.commands.*;
 import net.dungeonrealms.donate.DonationEffects;
-import net.dungeonrealms.energy.EnergyHandler;
+import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.handlers.HealthHandler;

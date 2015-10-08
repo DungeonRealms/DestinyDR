@@ -78,12 +78,13 @@ public class CommandSpawn implements CommandExecutor {
                 case "monster": {
                     if (args.length >= 2) {
                         int tier = 1;
+                        if (args.length == 3) {
+                            tier = Integer.parseInt(args[2]);
+                        }
                         boolean elite = false;
-                        if (args.length == 3){
-                        	if(args[2].equalsIgnoreCase("*"))
-                        		elite = true;
-                        	else
-                        		tier = Integer.parseInt(args[2]);
+                        if (args.length == 4) {
+                            if (args[3].equalsIgnoreCase("*"))
+                                elite = true;
                         }
                         EnumEntityType type = EnumEntityType.HOSTILE_MOB;
                         Entity entity;

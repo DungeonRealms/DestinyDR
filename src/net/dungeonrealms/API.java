@@ -5,7 +5,7 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
-import net.dungeonrealms.energy.EnergyHandler;
+import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.HealthHandler;

@@ -4,7 +4,7 @@ import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
-import net.dungeonrealms.energy.EnergyHandler;
+import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.HealthHandler;
@@ -586,5 +586,21 @@ public class DamageListener implements Listener {
         }
         event.setCancelled(false);
         event.setRadius(0);
+    }
+
+    /**
+     * Fired when monster is killed. Checks if the monster is elite.
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
+    public void onMonsterDeath(EntityDeathEvent event){
+        if (event.getEntity() instanceof Player) return;
+        if (!(event.getEntity() instanceof Monster)) return;
+        if (!(event.getEntity().hasMetadata("elite"))) return;
+        if (event.getEntity().hasMetadata("elite")){
+            //Monster is Elite.
+        }
     }
 }

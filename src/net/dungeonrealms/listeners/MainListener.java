@@ -1,27 +1,6 @@
 package net.dungeonrealms.listeners;
 
-import java.util.Map;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.vehicle.VehicleExitEvent;
-import org.bukkit.metadata.FixedMetadataValue;
-
 import com.connorlinfoot.bountifulapi.BountifulAPI;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.chat.Chat;
@@ -32,6 +11,20 @@ import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.rank.Subscription;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.*;
+import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.Map;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -60,15 +53,6 @@ public class MainListener implements Listener {
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
     }
 
-    /**
-     * Fired when monster is killed. Checks if the monster is elite.
-     */
-    @EventHandler(priority = EventPriority.HIGH,ignoreCancelled = false)
-    public void onMonsterDeath(EntityDeathEvent event){
-    	if(event.getEntity().hasMetadata("elite")){
-    		//Monster is Elite.
-    	}
-    }
     
     /**
      * This event is the main event once the player has actually entered the

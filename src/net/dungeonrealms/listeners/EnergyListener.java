@@ -1,7 +1,7 @@
 package net.dungeonrealms.listeners;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.energy.EnergyHandler;
+import net.dungeonrealms.handlers.EnergyHandler;
 import net.minecraft.server.v1_8_R3.EntityExperienceOrb;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
