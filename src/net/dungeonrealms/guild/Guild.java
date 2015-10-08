@@ -2,9 +2,7 @@ package net.dungeonrealms.guild;
 
 import com.mongodb.client.model.Filters;
 import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mongo.Database;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.*;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,10 +26,24 @@ public class Guild {
     }
 
     public void addMember(UUID uuid, String guildName) {
-
+        if (!isMember(guildName, uuid)) {
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "info.members", uuid.toString(), true);
+        }
     }
 
+    @SuppressWarnings("unchecked")
     public boolean isMember(String guildName, UUID uuid) {
+        if (isInGuild(uuid)) {
+            return ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, guildName)).contains(uuid);
+        }
+        return false;
+    }
+
+    @SuppressWarnings("unchecked")
+    public boolean isOfficer(String guildName, UUID uuid) {
+        if (isInGuild(uuid)) {
+            return ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, guildName)).contains(uuid);
+        }
         return false;
     }
 
