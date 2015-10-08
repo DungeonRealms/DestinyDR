@@ -23,10 +23,18 @@ public class BankMechanics {
     public static ItemStack banknote;
     public static HashMap<UUID, Storage> storage = new HashMap<>();
 
-    public static void init() {
-        loadCurrency();
+    private static BankMechanics instance = null;
+
+    public static BankMechanics getInstance() {
+        if (instance == null) {
+            instance = new BankMechanics();
+        }
+        return instance;
     }
 
+    public void startInitialization() {
+        loadCurrency();
+    }
 
     /**
      * @return

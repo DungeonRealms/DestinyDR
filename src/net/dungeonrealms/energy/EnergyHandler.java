@@ -39,11 +39,10 @@ public class EnergyHandler {
      * Handles players logging out,
      * removes metadata from the player
      *
-     * @param uuid
+     * @param player
      * @since 1.0
      */
-    public static void handleLogout(UUID uuid) {
-        Player player = Bukkit.getPlayer(uuid);
+    public static void handleLogoutEvents(Player player) {
         if (player.hasMetadata("starving")) {
             player.removeMetadata("starving", DungeonRealms.getInstance());
         }
@@ -57,11 +56,10 @@ public class EnergyHandler {
      * adds metadata to the player if
      * applicable (no food level).
      *
-     * @param uuid
+     * @param player
      * @since 1.0
      */
-    public static void handleLogin(UUID uuid) {
-        Player player = Bukkit.getPlayer(uuid);
+    public static void handleLoginEvents(Player player) {
         if (player.getFoodLevel() <= 0) {
             if (!(player.hasMetadata("starving"))) {
                 player.setMetadata("starving", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
