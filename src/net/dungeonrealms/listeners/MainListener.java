@@ -7,10 +7,7 @@ import net.dungeonrealms.chat.Chat;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
-import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.utils.EntityAPI;
-import net.dungeonrealms.health.HealthHandler;
-import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.rank.Subscription;
@@ -86,9 +83,6 @@ public class MainListener implements Listener {
         }
         player.getInventory().clear();
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> API.handleLogin(player.getUniqueId()), 20L);
-        EnergyHandler.handleLogin(player.getUniqueId());
-        HealthHandler.handleLoginEvents(player);
-        KarmaHandler.handleLoginEvents(player);
     }
 
     /**
@@ -161,10 +155,7 @@ public class MainListener implements Listener {
         if (DuelMechanics.isDueling(player.getUniqueId())) {
             DuelMechanics.getWager(player.getUniqueId()).handleLogOut(player.getUniqueId());
         }
-        EnergyHandler.handleLogout(player.getUniqueId());
         API.handleLogout(player.getUniqueId());
-        HealthHandler.handleLogoutEvents(player);
-        KarmaHandler.handleLogoutEvents(player);
     }
 
     /**

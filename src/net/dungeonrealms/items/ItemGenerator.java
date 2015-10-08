@@ -163,7 +163,7 @@ public class ItemGenerator {
             case 2:
                 return 5;
             case 3:
-                return 8;
+                return 7;
             case 4:
                 return 11;
             case 5:
