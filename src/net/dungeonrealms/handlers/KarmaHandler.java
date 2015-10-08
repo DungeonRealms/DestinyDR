@@ -161,7 +161,7 @@ public class KarmaHandler {
                     playerAlignments.put(player, alignment);
                     player.sendMessage(new String[]{
                             "",
-                            ChatColor.GREEN + "              " + "* YOU ARE NOW " + ChatColor.BOLD + " LAWFUL " + ChatColor.GREEN + "ALIGNMENT *",
+                            ChatColor.GREEN + "              " + "* YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + "LAWFUL " + ChatColor.GREEN + "ALIGNMENT *",
                             ChatColor.GRAY + "While lawful, you will not lose any equipped armor on death, instead, all armor will lose 30% of its durability when you die.",
                             ""
                     });
@@ -171,7 +171,7 @@ public class KarmaHandler {
                     playerAlignments.put(player, alignment);
                     player.sendMessage(new String[]{
                             "",
-                            ChatColor.YELLOW + "              " + "* YOU ARE NOW " + ChatColor.BOLD + " NEUTRAL " + ChatColor.YELLOW + "ALIGNMENT *",
+                            ChatColor.YELLOW + "              " + "* YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + "NEUTRAL " + ChatColor.YELLOW + "ALIGNMENT *",
                             ChatColor.GRAY + "While neutral, you have a 50% chance of dropping your weapon, and a 25% chance of dropping each piece of equipped armor on death.",
                             ""
                     });
@@ -181,7 +181,7 @@ public class KarmaHandler {
                     playerAlignments.put(player, alignment);
                     player.sendMessage(new String[]{
                             "",
-                            ChatColor.RED + "              " + "* YOU ARE NOW " + ChatColor.BOLD + " CHAOTIC " + ChatColor.RED + "ALIGNMENT *",
+                            ChatColor.RED + "              " + "* YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + "CHAOTIC " + ChatColor.RED + "ALIGNMENT *",
                             ChatColor.GRAY + "While chaotic, you cannot enter any major cities or safe zones. If you are killed while chaotic, you will lose everything in your inventory.",
                             ""
                     });

@@ -79,7 +79,7 @@ public class DungeonRealms extends JavaPlugin {
         DonationEffects.getInstance().startInitialization();
         HealthHandler.getInstance().startInitialization();
         KarmaHandler.getInstance().startInitialization();
-        BankMechanics.init();
+        BankMechanics.getInstance().startInitialization();
 
         Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
         Entities.getInstance().startInitialization();
