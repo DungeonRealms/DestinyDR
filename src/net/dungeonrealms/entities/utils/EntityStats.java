@@ -1,10 +1,12 @@
 package net.dungeonrealms.entities.utils;
 
-import net.dungeonrealms.DungeonRealms;
-import net.minecraft.server.v1_8_R3.Entity;
+import java.util.Random;
+
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.Random;
+import net.dungeonrealms.DungeonRealms;
+import net.md_5.bungee.api.ChatColor;
+import net.minecraft.server.v1_8_R3.Entity;
 
 /**
  * Created by Chase on Sep 18, 2015
@@ -80,11 +82,26 @@ public class EntityStats {
         return new Stats(def, hp, atk, spd);
     }
 
-    public static void setMonsterElite(Entity ent) {
+    public static void setMonsterElite(Entity ent,int lvl, int tier) {
+    	String name = ChatColor.GREEN.toString() + "* " + ent.getCustomName() + ChatColor.GREEN.toString() + " *";
+    	Stats stat = Stats.getRandomStats(lvl,tier);
+    	stat.atk += 10;
+    	stat.hp += 100;
+    	stat.def += 20;
+    	//TODO Idk some type of stat increase.
         ent.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), 1));
+        ent.setCustomName(name);
+        setMonsterState(ent, stat);
     }
 
-    public static void setMonsterStats(Entity entity, int lvl, int tier) {
+    public static void setMonsterState(Entity entity, Stats stat){
+        entity.getBukkitEntity().setMetadata("hp", new FixedMetadataValue(DungeonRealms.getInstance(), stat.hp));
+        entity.getBukkitEntity().setMetadata("def", new FixedMetadataValue(DungeonRealms.getInstance(), stat.def));
+        entity.getBukkitEntity().setMetadata("atk", new FixedMetadataValue(DungeonRealms.getInstance(), stat.atk));
+        entity.getBukkitEntity().setMetadata("spd", new FixedMetadataValue(DungeonRealms.getInstance(), stat.spd));
+    }
+    
+    public static void setMonsterRandomStats(Entity entity, int lvl, int tier) {
         Stats stat = Stats.getRandomStats(lvl, tier);
         entity.getBukkitEntity().setMetadata("hp", new FixedMetadataValue(DungeonRealms.getInstance(), stat.hp));
         entity.getBukkitEntity().setMetadata("def", new FixedMetadataValue(DungeonRealms.getInstance(), stat.def));

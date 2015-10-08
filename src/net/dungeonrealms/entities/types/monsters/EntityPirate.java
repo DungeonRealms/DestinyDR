@@ -26,7 +26,7 @@ public class EntityPirate extends MeleeEntityZombie {
         super(world, EnumMonster.Pirate, tier, entityType, true);
         int level = Utils.getRandomFromTier(tier);
         MetadataUtils.registerEntityMetadata(this, entityType, tier, level);
-        EntityStats.setMonsterStats(this, level, tier);
+        EntityStats.setMonsterRandomStats(this, level, tier);
     }
 
     /**

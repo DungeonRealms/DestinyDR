@@ -28,7 +28,7 @@ public class EntityWitherSkeleton extends MeleeEntityZombie {
         super(world, mon, tier, EnumEntityType.HOSTILE_MOB, true);
         int level = Utils.getRandomFromTier(tier);
         MetadataUtils.registerEntityMetadata(this, entityType, tier, level);
-        EntityStats.setMonsterStats(this, level, tier);
+        EntityStats.setMonsterRandomStats(this, level, tier);
     }
 
     public EntityWitherSkeleton(World world) {

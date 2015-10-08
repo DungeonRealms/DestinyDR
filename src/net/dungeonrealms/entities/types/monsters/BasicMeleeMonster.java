@@ -34,7 +34,7 @@ public class BasicMeleeMonster extends MeleeEntityZombie {
         super(world, type, tier, EnumEntityType.HOSTILE_MOB, true);
         int level = Utils.getRandomFromTier(tier);
         MetadataUtils.registerEntityMetadata(this, entityType, tier, level);
-        EntityStats.setMonsterStats(this, level, tier);
+        EntityStats.setMonsterRandomStats(this, level, tier);
         this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
 				+ ChatColor.RESET + type.getPrefix() + " " + type.name + " " + type.getSuffix());
     }
