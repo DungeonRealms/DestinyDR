@@ -2,10 +2,7 @@ package net.dungeonrealms.mongo;
 
 import com.mongodb.client.model.Filters;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.rank.Rank;
-import net.dungeonrealms.rank.Subscription;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 
@@ -198,9 +195,6 @@ public class DatabaseAPI {
                  * PLUGIN.
                  */
                 //TODO: Make sure this isn't called regularly!!!
-                Subscription.getInstance().doAdd(uuid);
-                Rank.getInstance().doGet(uuid);
-                Guild.getInstance().doGet(uuid);
             }
         });
     }

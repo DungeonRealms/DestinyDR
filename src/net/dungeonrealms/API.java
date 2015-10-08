@@ -6,6 +6,7 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
 import net.dungeonrealms.energy.EnergyHandler;
+import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.health.HealthHandler;
 import net.dungeonrealms.mastery.ItemSerialization;
@@ -13,6 +14,8 @@ import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.rank.Rank;
+import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -153,5 +156,8 @@ public class API {
         EnergyHandler.handleLoginEvents(player);
         HealthHandler.handleLoginEvents(player);
         KarmaHandler.handleLoginEvents(player);
+        Subscription.getInstance().doAdd(uuid);
+        Rank.getInstance().doGet(uuid);
+        Guild.getInstance().doGet(uuid);
     }
 }
