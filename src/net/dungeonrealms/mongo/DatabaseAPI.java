@@ -28,7 +28,10 @@ public class DatabaseAPI {
     }
 
     public static volatile HashMap<UUID, Document> PLAYERS = new HashMap<>();
-    private static volatile ArrayList<UUID> REQUEST_NEW_DATA = new ArrayList<>();
+    public static volatile HashMap<String, Document> GUILDS = new HashMap<>();
+
+    private static volatile ArrayList<UUID> REQUEST_NEW_PLAYER_DOCUMENT = new ArrayList<>();
+    private static volatile ArrayList<String> REQUEST_NEW_GUILD_DOCUMENT = new ArrayList<>();
 
     /**
      * Updates a players information in Mongo and returns the updated result.
@@ -45,7 +48,17 @@ public class DatabaseAPI {
                 (result, exception) -> {
                     Utils.log.info("DatabaseAPI update() called ...");
                     if (exception == null && requestNew) {
-                        REQUEST_NEW_DATA.add(uuid);
+                        REQUEST_NEW_PLAYER_DOCUMENT.add(uuid);
+                    }
+                });
+    }
+
+    public void updateGuild(String guildName, EnumOperators EO, String variable, Object object, boolean requestNew) {
+        Database.guilds.updateOne(Filters.eq("info.name", guildName.toUpperCase()), new Document(EO.getUO(), new Document(variable, object)),
+                (result, exception) -> {
+                    Utils.log.info("DatabaseAPI update() called ...");
+                    if (exception == null && requestNew) {
+                        REQUEST_NEW_GUILD_DOCUMENT.add(guildName);
                     }
                 });
     }
@@ -122,12 +135,44 @@ public class DatabaseAPI {
     }
 
     /**
+     * Returns the object that's requested.
+     *
+     * @param data
+     * @param guildName
+     * @return
+     * @since 1.0
+     */
+    public Object getData(EnumGuildData data, String guildName) {
+        switch (data) {
+            case NAME:
+                return ((Document) GUILDS.get(guildName).get("info")).get("name", String.class);
+            case MOTD:
+                return ((Document) GUILDS.get(guildName).get("info")).get("motd", String.class);
+            case CLAN_TAG:
+                return ((Document) GUILDS.get(guildName).get("info")).get("clanTag", String.class);
+            case OWNER:
+                return ((Document) GUILDS.get(guildName).get("info")).get("owner", String.class);
+            case OFFICERS:
+                return ((Document) GUILDS.get(guildName).get("info")).get("officers", ArrayList.class);
+            case MEMBERS:
+                return ((Document) GUILDS.get(guildName).get("info")).get("members", ArrayList.class);
+            case CREATION_UNIX_DATA:
+                return ((Document) GUILDS.get(guildName).get("info")).get("unixCreation", Long.class);
+            case INVITATIONS:
+                return ((Document) GUILDS.get(guildName).get("info")).get("invitations", Long.class);
+            default:
+        }
+        return null;
+    }
+
+    /**
      * Starts the Initialization of DatabaseAPI.
      *
      * @since 1.0
      */
     public void startInitialization() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> REQUEST_NEW_DATA.forEach(this::requestPlayer), 0, 5l);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> REQUEST_NEW_PLAYER_DOCUMENT.forEach(this::requestPlayer), 0, 5l);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> REQUEST_NEW_GUILD_DOCUMENT.forEach(this::requestGuild), 0, 15l);
     }
 
     /**
@@ -141,10 +186,10 @@ public class DatabaseAPI {
         Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first((document, throwable) -> {
             if (document == null) {
                 addNewPlayer(uuid);
-            } else if (document != null) {
+            } else {
                 PLAYERS.put(uuid, document);
-                if (REQUEST_NEW_DATA.contains(uuid)) {
-                    REQUEST_NEW_DATA.remove(uuid);
+                if (REQUEST_NEW_PLAYER_DOCUMENT.contains(uuid)) {
+                    REQUEST_NEW_PLAYER_DOCUMENT.remove(uuid);
                 }
 
                 /**
@@ -156,6 +201,29 @@ public class DatabaseAPI {
                 Subscription.getInstance().doAdd(uuid);
                 Rank.getInstance().doGet(uuid);
                 Guild.getInstance().doGet(uuid);
+            }
+        });
+    }
+
+    /**
+     * Gets the requested GuildName and puts in Guild.YAVA
+     * class.
+     *
+     * @param guildName
+     * @since 1.0
+     */
+    public void requestGuild(String guildName) {
+        Database.guilds.find(Filters.eq("info.name", guildName)).first((document, throwable) -> {
+            if (document != null) {
+                if (GUILDS.containsKey(guildName)) {
+                    GUILDS.put(guildName, document);
+                    Utils.log.info("[GUILD] [ASYNC] UPDATED Guild=(" + guildName + ") WITH NEW INFORMATION!");
+                } else {
+                    GUILDS.put(guildName, document);
+                    Utils.log.info("[GUILD] [ASYNC] Successfully fetched Guild=(" + guildName + ")");
+                }
+            } else {
+                Utils.log.warning("[GUILD] [ASYNC] FAILED TO RETRIEVE=(" + guildName + ")");
             }
         });
     }
@@ -197,7 +265,7 @@ public class DatabaseAPI {
                                         .append("player", "")
                         );
         Database.collection.insertOne(newPlayerDocument, (aVoid, throwable) -> {
-            REQUEST_NEW_DATA.add(uuid);
+            REQUEST_NEW_PLAYER_DOCUMENT.add(uuid);
             Utils.log.info("Requesting new data for : " + uuid);
         });
     }

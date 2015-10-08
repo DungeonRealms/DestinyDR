@@ -1,6 +1,8 @@
 package net.dungeonrealms.chat;
 
-import net.dungeonrealms.guild.Guild;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumGuildData;
 import net.dungeonrealms.rank.Rank;
 import org.bukkit.ChatColor;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -38,9 +40,10 @@ public class Chat {
         if (r != null && !r.getPrefix().equals("null")) {
             prefix.append(ChatColor.translateAlternateColorCodes('&', "[" + r.getPrefix() + ChatColor.RESET + "]"));
         }
-        Guild.GuildBlob g = Guild.getInstance().getGuild(uuid);
-        if (g != null) {
-            prefix.append(ChatColor.translateAlternateColorCodes('&', " (" + g.getClanTag() + ChatColor.RESET + ")"));
+
+        if (DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid) != null) {
+            String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
+            prefix.append(ChatColor.translateAlternateColorCodes('&', " (" + clanTag + ChatColor.RESET + ")"));
         }
         event.setFormat(prefix.toString() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage());
     }
