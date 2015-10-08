@@ -7,6 +7,7 @@ import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -23,6 +24,18 @@ public class Guild {
             instance = new Guild();
         }
         return instance;
+    }
+
+    /**
+     * Handles GUild Logs.
+     *
+     * @param player
+     * @since 1.0
+     */
+    public void handleLogin(Player player) {
+        if (DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).equals("")) return;
+        String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
+        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "logs.playerLogin", player.getName() + "," + (System.currentTimeMillis() / 1000l), true);
     }
 
     /**
@@ -167,10 +180,16 @@ public class Guild {
                                     .append("clanTag", clanTag)
                                     .append("owner", owner.toString())
                                     .append("officers", new ArrayList<String>())
-                                    .append("members", new ArrayList<String>()))
-                            .append("unixCreation", System.currentTimeMillis() / 1000l)
+                                    .append("members", new ArrayList<String>())
+                                    .append("unixCreation", System.currentTimeMillis() / 1000l))
+                            .append("logs",
+                                    new Document("playerLogin", new ArrayList<String>())
+                                            .append("playerInvites", new ArrayList<String>())
+                                            .append("bankClicks", new ArrayList<String>())
+                            )
                     , (aVoid, throwable1) -> {
                         DatabaseAPI.getInstance().requestGuild(name);
+                        DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, "info.guild", name, true);
                     });
         });
 

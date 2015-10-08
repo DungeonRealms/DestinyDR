@@ -41,7 +41,7 @@ public class Chat {
             prefix.append(ChatColor.translateAlternateColorCodes('&', "[" + r.getPrefix() + ChatColor.RESET + "]"));
         }
 
-        if (DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid) != null) {
+        if (!DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid).equals("")) {
             String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
             prefix.append(ChatColor.translateAlternateColorCodes('&', " (" + clanTag + ChatColor.RESET + ")"));
         }

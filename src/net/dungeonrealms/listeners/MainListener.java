@@ -8,6 +8,7 @@ import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
 import net.dungeonrealms.entities.utils.EntityAPI;
+import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.rank.Subscription;
@@ -53,7 +54,7 @@ public class MainListener implements Listener {
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
     }
 
-    
+
     /**
      * This event is the main event once the player has actually entered the
      * world! It is now safe to do things to the player e.g BountifulAPI or
@@ -78,7 +79,11 @@ public class MainListener implements Listener {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', s));
         }
         player.getInventory().clear();
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> API.handleLogin(player.getUniqueId()), 20L);
+        //I guess this really does work..?
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            API.handleLogin(player.getUniqueId());
+            Guild.getInstance().handleLogin(player);
+        }, 20L);
     }
 
     /**
@@ -89,7 +94,7 @@ public class MainListener implements Listener {
      * @WARNING: THIS EVENT IS VERY INTENSIVE!
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onSpawn(CreatureSpawnEvent event) {
         /*
          * if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM)

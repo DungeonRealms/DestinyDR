@@ -14,4 +14,8 @@ public enum EnumGuildData {
     CREATION_UNIX_DATA,
     INVITATIONS,
 
+    PLAYER_LOGINS,
+    PLAYER_INVITES,
+    BANK_CLICK,
+
 }

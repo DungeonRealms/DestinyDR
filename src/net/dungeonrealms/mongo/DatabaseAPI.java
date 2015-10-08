@@ -160,6 +160,15 @@ public class DatabaseAPI {
                 return ((Document) GUILDS.get(guildName).get("info")).get("unixCreation", Long.class);
             case INVITATIONS:
                 return ((Document) GUILDS.get(guildName).get("info")).get("invitations", Long.class);
+            /*
+            Guild Logs
+             */
+            case PLAYER_LOGINS:
+                return ((Document) GUILDS.get(guildName).get("logs")).get("playerLogin", ArrayList.class);
+            case PLAYER_INVITES:
+                return ((Document) GUILDS.get(guildName).get("logs")).get("playerInvites", ArrayList.class);
+            case BANK_CLICK:
+                return ((Document) GUILDS.get(guildName).get("logs")).get("bankClicks", ArrayList.class);
             default:
         }
         return null;
@@ -216,15 +225,13 @@ public class DatabaseAPI {
     public void requestGuild(String guildName) {
         Database.guilds.find(Filters.eq("info.name", guildName)).first((document, throwable) -> {
             if (document != null) {
-                if (GUILDS.containsKey(guildName)) {
-                    GUILDS.put(guildName, document);
-                    Utils.log.info("[GUILD] [ASYNC] UPDATED Guild=(" + guildName + ") WITH NEW INFORMATION!");
+                GUILDS.put(guildName, document);
+                if (REQUEST_NEW_GUILD_DOCUMENT.contains(guildName)) {
+                    REQUEST_NEW_GUILD_DOCUMENT.remove(guildName);
+                    Utils.log.info("[GUILD] [ASYNC] UPDATED Guild=(" + guildName + ")");
                 } else {
-                    GUILDS.put(guildName, document);
-                    Utils.log.info("[GUILD] [ASYNC] Successfully fetched Guild=(" + guildName + ")");
+                    Utils.log.warning("[GUILD] [ASYNC] FAILED TO RETRIEVE=(" + guildName + ")");
                 }
-            } else {
-                Utils.log.warning("[GUILD] [ASYNC] FAILED TO RETRIEVE=(" + guildName + ")");
             }
         });
     }
@@ -235,6 +242,7 @@ public class DatabaseAPI {
      * @param uuid
      * @since 1.0
      */
+
     private void addNewPlayer(UUID uuid) {
         Document newPlayerDocument =
                 new Document("info",

@@ -22,12 +22,25 @@ public class CommandGuild implements CommandExecutor {
 
         Player player = (Player) s;
 
-        if (DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()) == null) {
+        if (DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).equals("")) {
             player.sendMessage(ChatColor.RED + "You are not in a guild, or we're having trouble finding it.");
             return true;
         }
 
-        Menu.openPlayerGuildInventory(player);
+        if (args.length > 0) {
+            switch (args[0]) {
+                case "invite":
+                    break;
+                case "remove":
+                    break;
+                case "kick":
+                    break;
+                case "chat":
+                    break;
+            }
+        } else {
+            Menu.openPlayerGuildInventory(player);
+        }
 
         return true;
     }
