@@ -8,7 +8,7 @@ import net.dungeonrealms.banks.Storage;
 import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.handlers.KarmaHandler;
-import net.dungeonrealms.health.HealthHandler;
+import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.mongo.DatabaseAPI;

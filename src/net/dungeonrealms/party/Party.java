@@ -1,7 +1,7 @@
 package net.dungeonrealms.party;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.health.HealthHandler;
+import net.dungeonrealms.handlers.HealthHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;

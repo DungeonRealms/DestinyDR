@@ -38,9 +38,11 @@ public class Menu {
                 ChatColor.GRAY + "Guild Master: " + ChatColor.AQUA + Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName(),
         }));
 
-        inv.setItem(8, editItem(new ItemStack(Material.BOOK_AND_QUILL), ChatColor.RED + "Guild Wars", new String[]{
+        inv.setItem(8, editItem(new ItemStack(Material.DIAMOND_SWORD), ChatColor.RED + "Guild Wars", new String[]{
                 ChatColor.RED + "This feature is upcoming!",
-                ChatColor.GRAY + "Queue: " + ChatColor.AQUA + "0",
+        }));
+        inv.setItem(7, editItem(new ItemStack(Material.CHEST), ChatColor.GREEN + "Guild Bank", new String[]{
+                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click" + ChatColor.GRAY + " to open your Guilds Bank!",
         }));
 
         inv.setItem(18, editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), ChatColor.GREEN + "Guild Officers", new String[]{}));

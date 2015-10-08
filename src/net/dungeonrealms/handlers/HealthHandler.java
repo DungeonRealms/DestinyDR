@@ -1,9 +1,8 @@
-package net.dungeonrealms.health;
+package net.dungeonrealms.handlers;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
-import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumOperators;
 import org.bukkit.Bukkit;

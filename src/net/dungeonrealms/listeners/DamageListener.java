@@ -7,7 +7,7 @@ import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.handlers.KarmaHandler;
-import net.dungeonrealms.health.HealthHandler;
+import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.Item;
