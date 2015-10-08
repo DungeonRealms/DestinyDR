@@ -46,7 +46,7 @@ public class DamageMeta {
                             case CRITICAL_HIT:
                                 return random(1, 6);
                             case DAMAGE:
-                                return random(2, 5);
+                                return random(2, 7);
                             case DEXTERITY:
                                 return random(1, 6);
                             case FIRE_DAMAGE:
@@ -83,7 +83,7 @@ public class DamageMeta {
                             case CRITICAL_HIT:
                                 return random(1, 9);
                             case DAMAGE:
-                                return random(2, 9);
+                                return random(4, 9);
                             case DEXTERITY:
                                 return random(2, 8);
                             case FIRE_DAMAGE:
@@ -120,7 +120,7 @@ public class DamageMeta {
                             case CRITICAL_HIT:
                                 return random(2, 5);
                             case DAMAGE:
-                                return random(4, 9);
+                                return random(6, 12);
                             case DEXTERITY:
                                 return random(2, 4);
                             case FIRE_DAMAGE:
@@ -157,7 +157,7 @@ public class DamageMeta {
                             case CRITICAL_HIT:
                                 return random(5, 15);
                             case DAMAGE:
-                                return random(5, 12);
+                                return random(9, 15);
                             case DEXTERITY:
                                 return random(3, 7);
                             case FIRE_DAMAGE:
@@ -194,7 +194,7 @@ public class DamageMeta {
                             case CRITICAL_HIT:
                                 return random(5, 24);
                             case DAMAGE:
-                                return random(5, 16);
+                                return random(10, 18);
                             case DEXTERITY:
                                 return random(4, 10);
                             case FIRE_DAMAGE:

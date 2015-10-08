@@ -161,13 +161,13 @@ public class ItemGenerator {
             case 1:
                 return 2;
             case 2:
-                return 6;
+                return 5;
             case 3:
-                return 9;
+                return 8;
             case 4:
-                return 12;
+                return 11;
             case 5:
-                return 15;
+                return 14;
             default:
                 return 8;
         }
