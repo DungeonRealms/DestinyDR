@@ -2,6 +2,7 @@ package net.dungeonrealms.entities.types.monsters;
 
 import net.dungeonrealms.entities.types.RangedEntityBlaze;
 import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.enums.EnumMonster;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
 
@@ -16,8 +17,8 @@ public class BasicEntityBlaze extends RangedEntityBlaze {
 	 * @param mobHead
 	 * @param tier
 	 */
-	public BasicEntityBlaze(World world, String mobName, String mobHead, int tier) {
-		super(world, mobName, mobHead, tier, EnumEntityType.HOSTILE_MOB, true);
+	public BasicEntityBlaze(World world, EnumMonster mons, int tier) {
+		super(world, mons, tier, EnumEntityType.HOSTILE_MOB, true);
 	}
 
 	public BasicEntityBlaze(World world) {
@@ -37,16 +38,6 @@ public class BasicEntityBlaze extends RangedEntityBlaze {
 	@Override
 	protected void setStats() {
 
-	}
-
-	@Override
-	public String getPrefix() {
-		return null;
-	}
-
-	@Override
-	public String getSuffix() {
-		return null;
 	}
 
 }

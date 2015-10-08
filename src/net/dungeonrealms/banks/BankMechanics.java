@@ -37,6 +37,7 @@ public class BankMechanics {
     }
 
     /**
+     * Pre loads an itemstack version of our currency
      * @return
      */
     private static void loadCurrency() {
@@ -68,6 +69,11 @@ public class BankMechanics {
         banknote = CraftItemStack.asBukkitCopy(nms2);
     }
 
+    /**
+     * Creates a new Bank Note for the set ammount
+     * @param amount
+     * @return
+     */
     public static ItemStack createBankNote(int amount) {
         ItemStack item2 = new ItemStack(Material.PAPER, 1);
         ItemMeta meta2 = item2.getItemMeta();

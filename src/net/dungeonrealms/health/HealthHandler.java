@@ -44,10 +44,11 @@ public class HealthHandler {
      * @param player
      * @since 1.0
      */
-    public static void handleLoginEvents(Player player) {
+    public void handleLoginEvents(Player player) {
         setPlayerMaxHPLive(player, getPlayerMaxHPOnLogin(player.getUniqueId()));
         setPlayerHPLive(player, getPlayerMaxHPOnLogin(player.getUniqueId()));
         setPlayerHPRegenLive(player, getPlayerHPRegenLive(player));
+        player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
     }
 
     /**
@@ -58,7 +59,7 @@ public class HealthHandler {
      * @param player
      * @since 1.0
      */
-    public static void handleLogoutEvents(Player player) {
+    public void handleLogoutEvents(Player player) {
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.health", getPlayerMaxHPLive(player), false);
         for (PotionEffect potionEffect : player.getActivePotionEffects()) {
             player.removePotionEffect(potionEffect.getType());
@@ -151,7 +152,7 @@ public class HealthHandler {
     }
 
     /**
-     * Sets the players MaxmimumHP metadata
+     * Sets the players MaximumHP metadata
      * to the given value.
      *
      * @param player
@@ -235,9 +236,21 @@ public class HealthHandler {
         }
 
         if (newHP <= 0) {
-            player.setHealth(0);
-            KarmaHandler.handlePlayerPsuedoDeath(player, damager);
-            return;
+            if (player.hasMetadata("last_death_time")) {
+                if (player.getMetadata("last_death_time").get(0).asLong() > 100) {
+                    player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+                    player.setHealth(0);
+                    KarmaHandler.handlePlayerPsuedoDeath(player, damager);
+                    Bukkit.broadcastMessage(player.getName() + " has died.");
+                    return;
+                }
+            } else {
+                player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+                player.setHealth(0);
+                KarmaHandler.handlePlayerPsuedoDeath(player, damager);
+                Bukkit.broadcastMessage(player.getName() + " has died.");
+                return;
+            }
         }
 
         setPlayerHPLive(player, (int) newHP);

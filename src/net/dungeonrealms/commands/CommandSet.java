@@ -52,7 +52,7 @@ public class CommandSet implements CommandExecutor {
 					return false;
 				}
 				int tier = Integer.parseInt(args[2]);
-				File file = new File(DungeonRealms.getInstance().getDataFolder() + "\\global_spawns.dat");
+				File file = new File(DungeonRealms.getInstance().getDataFolder() + "\\global_spawns.yml");
 				try {
 					if (!file.exists())
 						file.createNewFile();

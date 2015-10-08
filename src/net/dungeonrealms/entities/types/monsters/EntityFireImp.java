@@ -3,11 +3,17 @@ package net.dungeonrealms.entities.types.monsters;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.types.RangedEntitySkeleton;
 import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.enums.EnumMonster;
 import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.items.Item.ItemType;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.*;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -31,7 +37,7 @@ public class EntityFireImp extends RangedEntitySkeleton {
     private int tier;
 
     public EntityFireImp(World world, int tier, EnumEntityType entityType) {
-        super(world, "Fire Imp", "Satan", tier, entityType);
+        super(world, EnumMonster.FireImp, tier, entityType);
         this.tier = tier;
         this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().getDefinedStack(ItemType.STAFF, ItemTier.getById(tier), ItemGenerator.getRandomItemModifier())));
     }
@@ -93,18 +99,6 @@ public class EntityFireImp extends RangedEntitySkeleton {
         MetadataUtils.registerProjectileMetadata(tag, projectileWitherSkull, tier);
         this.makeSound("random.bow", 1.0F, 1.0F / (0.8F));
         this.world.addEntity(entityWitherSkull);
-    }
-
-    @Override
-    public String getPrefix() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getSuffix() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }

@@ -4,6 +4,7 @@ import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.types.MeleeEntityZombie;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.enums.EnumMonster;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
@@ -22,7 +23,7 @@ import java.util.List;
 public class EntityGolem extends MeleeEntityZombie {
 
     public EntityGolem(World world, int tier, EnumEntityType entityType) {
-        super(world, "Golem", null, tier, entityType, true);
+        super(world, EnumMonster.Golem, tier, entityType, true);
         this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().next()));
         int level = Utils.getRandomFromTier(tier);
         MetadataUtils.registerEntityMetadata(this, entityType, tier, level);
@@ -52,20 +53,6 @@ public class EntityGolem extends MeleeEntityZombie {
     @Override
     protected void setStats() {
 
-    }
-
-    @Override
-    public String getPrefix() {
-        String[] adjectives = new String[]{"Enchanted", "Ironclad", "Enchanted Ironclad", "Ice"};
-        List<String> list = Arrays.asList(adjectives);
-        Collections.shuffle(list);
-        return list.get(0);
-    }
-
-    @Override
-    public String getSuffix() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
 }

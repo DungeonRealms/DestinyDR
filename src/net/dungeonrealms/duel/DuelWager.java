@@ -34,18 +34,27 @@ public class DuelWager {
         weaponTier = ItemTier.TIER_5;
         winningItems = new ArrayList<>();
     }
-
+    /**
+     * updates the Duel Inventory by setting the slot for both players screens
+     * @param slot
+     * @param stack
+     */
     public void setItemSlot(int slot, ItemStack stack) {
         p1.getOpenInventory().setItem(slot, stack);
         p2.getOpenInventory().setItem(slot, stack);
     }
 
+    /**
+     * Checks if the player is on the left side of the inventory.
+     * @param p
+     * @return
+     */
     public boolean isLeft(Player p) {
         return (p.getUniqueId() == p1.getUniqueId());
     }
 
     /**
-     * Go to next Tier
+     * Go to next Tier Weapon for inventory
      */
     public void cycleWeapon() {
         ItemTier[] list = ItemTier.values();
@@ -122,7 +131,7 @@ public class DuelWager {
 
     /**
      * Player2 is the loser.
-     *
+     * Ends the duel for the specified DUel
      * @param winner
      * @param loser
      */
@@ -140,7 +149,7 @@ public class DuelWager {
     }
 
     /**
-     *
+     *Initiates a duel with players from wager.
      */
     public void startDuel() {
         completed = true;
@@ -167,9 +176,13 @@ public class DuelWager {
             }
 
         }, 0, 1000);
+        
+        
         timerID = Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             ItemStack[] p1armor = p1.getInventory().getArmorContents();
             ItemStack[] p2armor = p2.getInventory().getArmorContents();
+            if(!DuelMechanics.isDueling(p1.getUniqueId()))
+            	Bukkit.getScheduler().cancelTask(timerID);//this is okay.
             for (int i = 0; i < p1armor.length; i++) {
                 if (!isTier(p1armor[i])) {
                     ItemStack stack = p1armor[i];
@@ -178,7 +191,15 @@ public class DuelWager {
                     p1.getInventory().addItem(stack);
                 }
             }
-        }, 1000);
+            for (int i = 0; i < p2armor.length; i++) {
+                if (!isTier(p2armor[i])) {
+                    ItemStack stack = p2armor[i];
+                    p1armor[i] = null;
+                    p2.getInventory().setArmorContents(p2armor);
+                    p2.getInventory().addItem(stack);
+                }
+            }
+        },10 * 1000);
         p1.closeInventory();
         p2.closeInventory();
 
@@ -194,7 +215,7 @@ public class DuelWager {
     }
 
     /**
-     *
+     * Save Items that are being waged
      */
     private void saveWagerItems() {
         int[] slots = new int[]{1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21, 23, 24, 25, 26, 5, 6, 7, 14, 15, 16, 17};

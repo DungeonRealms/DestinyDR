@@ -132,7 +132,6 @@ public class DamageListener implements Listener {
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
         if ((!(event.getDamager() instanceof Player)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
             return;
-        if (!(event.getEntity().hasMetadata("type"))) return;
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
         if (event.getDamager() instanceof Player) {
@@ -471,6 +470,7 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerDeath(PlayerDeathEvent event) {
+        event.setDeathMessage("");
         Player player = event.getEntity();
         ItemStack itemToSave = null;
         if (EntityAPI.hasPetOut(player.getUniqueId())) {

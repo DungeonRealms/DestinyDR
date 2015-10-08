@@ -4,9 +4,15 @@ import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.types.RangedEntitySkeleton;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.enums.EnumMonster;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.*;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
 
@@ -17,7 +23,7 @@ public class EntityRangedPirate extends RangedEntitySkeleton {
     private int tier;
 
     public EntityRangedPirate(World world, EnumEntityType entityType, int tier) {
-        super(world, "Ranged Pirate", getRandomHead(), tier, entityType);
+        super(world, EnumMonster.RangedPirate, tier, entityType);
         this.entityType = entityType;
         this.tier = tier;
         int level = Utils.getRandomFromTier(tier);
@@ -88,15 +94,4 @@ public class EntityRangedPirate extends RangedEntitySkeleton {
         return "mob.zombie.death";
     }
 
-    @Override
-    public String getPrefix() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getSuffix() {
-        // TODO Auto-generated method stub
-        return null;
-    }
 }

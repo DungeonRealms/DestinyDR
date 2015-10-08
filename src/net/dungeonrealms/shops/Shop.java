@@ -38,7 +38,10 @@ public class Shop {
         hologram.appendTextLine(ChatColor.BOLD.toString() + ChatColor.RED.toString() + shopName);
         hologram.getVisibilityManager().setVisibleByDefault(true);
     }
-
+    
+    /*
+     * toggles hologram name green and red for on and off.
+     */
     public void toggleHologram() {
         hologram.clearLines();
         if (isopen)

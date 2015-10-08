@@ -458,7 +458,7 @@ public class InventoryListener implements Listener {
 
     /**
      * @param event
-     * @since 1.0 Closes bother players wager inventory.
+     * @since 1.0 Closes both players wager inventory.
      */
 
     @EventHandler(priority = EventPriority.HIGHEST)

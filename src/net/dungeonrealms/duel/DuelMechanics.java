@@ -70,6 +70,9 @@ public class DuelMechanics {
     /**
      * @param p1
      * @param p2
+     * 
+     * check if both players are each others partner
+     * 
      * @return
      */
     public static boolean isDuelPartner(UUID p1, UUID p2) {
@@ -81,6 +84,7 @@ public class DuelMechanics {
     }
 
     /**
+     * Checks if specified UUID is on cooldown for sending a duel
      * @return
      */
     public static boolean isOnCooldown(UUID p1) {
@@ -88,6 +92,7 @@ public class DuelMechanics {
     }
 
     /**
+     * sends both players the wager inventory.
      * @param p1
      * @param p2
      */
@@ -143,6 +148,7 @@ public class DuelMechanics {
     }
 
     /**
+     * remove wagers.
      * @param wager
      */
     public static void removeWager(DuelWager wager) {

@@ -1,19 +1,21 @@
 package net.dungeonrealms.entities.types;
 
-import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.enums.EnumEntityType;
-import net.dungeonrealms.items.ItemGenerator;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.Item;
-import net.minecraft.server.v1_8_R3.World;
+import java.lang.reflect.Field;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.lang.reflect.Field;
+import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.enums.EnumMonster;
+import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.Utils;
+import net.minecraft.server.v1_8_R3.Item;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Oct 4, 2015
@@ -23,11 +25,12 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 	protected String name;
 	protected String mobHead;
 	protected EnumEntityType entityType;
-
-	protected RangedEntityBlaze(World world, String mobName, String mobHead, int tier, EnumEntityType entityType, boolean setArmor) {
+	protected EnumMonster monsterType;
+	public RangedEntityBlaze(World world, EnumMonster monster, int tier, EnumEntityType entityType, boolean setArmor) {
 		this(world);
-		this.name = mobName;
-		this.mobHead = mobHead;
+		monsterType = monster;
+		this.name = monster.name;
+		this.mobHead = monster.mobHead;
 		this.entityType = entityType;
 		if (setArmor)
 			setArmor(tier);
@@ -37,7 +40,7 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 		EntityStats.setMonsterStats(this, level, tier);
 		setStats();
 		this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET
-		        + getPrefix() + mobName + getSuffix());
+		        + monster.getPrefix() + name + monster.getSuffix());
 	}
 
 	@Override
@@ -64,11 +67,9 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 		}
 		return o;
 	}
-
 	protected String getCustomEntityName() {
 		return this.name;
 	}
-
 	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
 		ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 		SkullMeta meta = (SkullMeta) head.getItemMeta();
@@ -76,7 +77,10 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 		head.setItemMeta(meta);
 		return CraftItemStack.asNMSCopy(head);
 	}
-
+	/**
+	 * set monster armor tier.
+	 * @param tier
+	 */
 	private void setArmor(int tier) {
 		ItemStack[] armor = getTierArmor(tier);
 		// weapon, boots, legs, chest, helmet/head
@@ -102,10 +106,13 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 		 */
 	}
 
-	public abstract String getPrefix();
 
-	public abstract String getSuffix();
-
+	/**
+	 * get monster tier Armor as ItemsStack array
+	 * 
+	 * @param tier
+	 * @return
+	 */
 	private ItemStack[] getTierArmor(int tier) {
 		if (tier == 1) {
 			return new ItemStack[] { new ItemStack(Material.LEATHER_BOOTS, 1),

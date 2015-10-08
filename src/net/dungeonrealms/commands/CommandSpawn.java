@@ -6,6 +6,7 @@ import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.entities.utils.MountUtils;
 import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.enums.EnumMonster;
 import net.dungeonrealms.mastery.NBTUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.spawning.MobSpawner;
@@ -95,16 +96,16 @@ public class CommandSpawn implements CommandExecutor {
                                 entity = new EntityFireImp(world, tier, type);
                                 break;
                             case "troll":
-                                entity = new BasicMeleeMonster(world, "Troll", "Steve", tier);
+                                entity = new BasicMeleeMonster(world, EnumMonster.Troll, tier);
                                 break;
                             case "goblin":
-                                entity = new BasicMeleeMonster(world, "Goblin", "Steve", tier);
+                                entity = new BasicMeleeMonster(world, EnumMonster.Goblin, tier);
                                 break;
                             case "mage":
-                                entity = new BasicMageMonster(world, "Mage", "Steve", tier);
+                                entity = new BasicMageMonster(world, EnumMonster.Mage, tier);
                                 break;
                             case "spider":
-                                entity = new EntitySpider(world, "Spider", tier);
+                                entity = new EntitySpider(world, EnumMonster.Spider, tier);
                                 break;
                             case "golem":
                                 entity = new EntityGolem(world, tier, type);
