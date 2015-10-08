@@ -62,10 +62,13 @@ public class EntityGolem extends MeleeEntityZombie {
         return list.get(0);
     }
 
+
     @Override
     public String getSuffix() {
-        // TODO Auto-generated method stub
-        return null;
+        String[] adjectives = new String[]{""};
+        List<String> list = Arrays.asList(adjectives);
+        Collections.shuffle(list);
+        return list.get(0);
     }
 
 }

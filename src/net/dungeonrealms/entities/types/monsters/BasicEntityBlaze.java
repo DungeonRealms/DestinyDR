@@ -1,5 +1,9 @@
 package net.dungeonrealms.entities.types.monsters;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import net.dungeonrealms.entities.types.RangedEntityBlaze;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.minecraft.server.v1_8_R3.Item;
@@ -39,14 +43,19 @@ public class BasicEntityBlaze extends RangedEntityBlaze {
 
 	}
 
-	@Override
-	public String getPrefix() {
-		return null;
-	}
 
-	@Override
-	public String getSuffix() {
-		return null;
-	}
-
+    @Override
+    public String getPrefix() {
+        String[] adjectives = new String[]{""};
+        List<String> list = Arrays.asList(adjectives);
+        Collections.shuffle(list);
+        return list.get(0);
+    }
+    @Override
+    public String getSuffix() {
+        String[] adjectives = new String[]{""};
+        List<String> list = Arrays.asList(adjectives);
+        Collections.shuffle(list);
+        return list.get(0);
+    }
 }

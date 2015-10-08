@@ -104,16 +104,11 @@ public class ShopMechanics {
      * @since 1.0
      */
     public static void deleteAllShops() {
-        try {
             while (shops.size() > 0) {
                 shops.get(0).deleteShop();
                 shops.remove(0);
                 Utils.log.info("A Shop deleted");
             }
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
     }
 

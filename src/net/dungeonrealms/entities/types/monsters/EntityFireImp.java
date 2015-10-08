@@ -8,6 +8,11 @@ import net.dungeonrealms.items.Item.ItemType;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.*;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -95,16 +100,21 @@ public class EntityFireImp extends RangedEntitySkeleton {
         this.world.addEntity(entityWitherSkull);
     }
 
+
     @Override
     public String getPrefix() {
-        // TODO Auto-generated method stub
-        return null;
+        String[] adjectives = new String[]{""};
+        List<String> list = Arrays.asList(adjectives);
+        Collections.shuffle(list);
+        return list.get(0);
     }
 
     @Override
     public String getSuffix() {
-        // TODO Auto-generated method stub
-        return null;
+        String[] adjectives = new String[]{""};
+        List<String> list = Arrays.asList(adjectives);
+        Collections.shuffle(list);
+        return list.get(0);
     }
 
 }

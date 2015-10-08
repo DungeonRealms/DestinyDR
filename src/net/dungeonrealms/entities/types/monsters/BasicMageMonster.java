@@ -80,11 +80,14 @@ public class BasicMageMonster extends RangedEntitySkeleton {
         String[] adjectives = new String[]{""};
         List<String> list = Arrays.asList(adjectives);
         Collections.shuffle(list);
-        return list.get(0) + " Bandit";
+        return list.get(0) + "";
     }
 
     @Override
     public String getSuffix() {
-        return null;
+        String[] adjectives = new String[]{""};
+        List<String> list = Arrays.asList(adjectives);
+        Collections.shuffle(list);
+        return list.get(0);
     }
 }

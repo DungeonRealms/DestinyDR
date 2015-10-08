@@ -60,7 +60,7 @@ public abstract class MeleeEntityZombie extends EntityZombie {
         EntityStats.setMonsterStats(this, level, tier);
         setStats();
         this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
-                + ChatColor.RESET + getPrefix() + mobName + getSuffix());
+				+ ChatColor.RESET + getPrefix() + " " + mobName + " " + getSuffix());
     }
 
     @Override

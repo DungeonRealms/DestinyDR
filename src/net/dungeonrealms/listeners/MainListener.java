@@ -73,11 +73,6 @@ public class MainListener implements Listener {
                 for (Map.Entry<String, Integer> e : WebAPI.ANNOUNCEMENTS.entrySet()) {
                     BountifulAPI.sendTitle(player, 1, e.getValue(), 1, ChatColor.translateAlternateColorCodes('&', e.getKey().split("@")[0]),
                             ChatColor.translateAlternateColorCodes('&', e.getKey().split("@")[1].split(",")[0]));
-                    try {
-                        Thread.sleep(e.getValue() * 20);
-                    } catch (InterruptedException e1) {
-                        e1.printStackTrace();
-                    }
                 }
             }, 5l);
         }

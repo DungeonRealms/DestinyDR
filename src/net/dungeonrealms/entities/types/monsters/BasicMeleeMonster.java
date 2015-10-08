@@ -31,11 +31,8 @@ public class BasicMeleeMonster extends MeleeEntityZombie {
         int level = Utils.getRandomFromTier(tier);
         MetadataUtils.registerEntityMetadata(this, entityType, tier, level);
         EntityStats.setMonsterStats(this, level, tier);
-//		String special = getSpecial();
-//		String cc = getChatColor(special);
-//		if (!special.equalsIgnoreCase("null"))
-//			this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
-//				+ ChatColor.RESET + getPrefix() + mobName + special + getSuffix());
+        this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
+				+ ChatColor.RESET + getPrefix() + " " + mobName + " " + getSuffix());
     }
 
     /**
@@ -96,14 +93,20 @@ public class BasicMeleeMonster extends MeleeEntityZombie {
 
     @Override
     public String getPrefix() {
-        String[] adjectives = null;
+        String[] adjectives = new String[]{""};
         switch (name) {
-            case "naga":
+            case "Naga":
                 adjectives = new String[]{"Weak"};
                 break;
-            case "troll":
-                adjectives = new String[]{""};
+            case "Troll":
+                adjectives = new String[]{"Strong", "Smelly"};
                 break;
+            case "Goblin":
+            	adjectives = new String[]{"Short", "Ugly", "Smelly"};
+            	break;
+            case "Tripoli":
+            	adjectives = new String[]{""};
+            	break;
         }
         List<String> list = Arrays.asList(adjectives);
         Collections.shuffle(list);
@@ -111,10 +114,23 @@ public class BasicMeleeMonster extends MeleeEntityZombie {
 
     }
 
+
     @Override
     public String getSuffix() {
-        // TODO Auto-generated method stub
-        return null;
+        String[] adjectives = new String[]{""};
+        switch (name) {
+            case "Naga":
+                adjectives = new String[]{"Shaman", "Mage"};
+                break;
+            case "Troll":
+                adjectives = new String[]{"Warrior", "Rebel"};
+                break;
+            case "Tripoli":
+            	adjectives = new String[]{"Soldier", "Commander"};
+            	break;
+        }
+        List<String> list = Arrays.asList(adjectives);
+        Collections.shuffle(list);
+        return list.get(0);
     }
-
 }

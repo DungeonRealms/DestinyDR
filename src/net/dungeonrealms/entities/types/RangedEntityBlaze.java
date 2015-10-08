@@ -24,7 +24,7 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 	protected String mobHead;
 	protected EnumEntityType entityType;
 
-	protected RangedEntityBlaze(World world, String mobName, String mobHead, int tier, EnumEntityType entityType, boolean setArmor) {
+	public RangedEntityBlaze(World world, String mobName, String mobHead, int tier, EnumEntityType entityType, boolean setArmor) {
 		this(world);
 		this.name = mobName;
 		this.mobHead = mobHead;
@@ -64,11 +64,9 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 		}
 		return o;
 	}
-
 	protected String getCustomEntityName() {
 		return this.name;
 	}
-
 	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
 		ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 		SkullMeta meta = (SkullMeta) head.getItemMeta();
@@ -76,7 +74,10 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 		head.setItemMeta(meta);
 		return CraftItemStack.asNMSCopy(head);
 	}
-
+	/**
+	 * set monster armor tier.
+	 * @param tier
+	 */
 	private void setArmor(int tier) {
 		ItemStack[] armor = getTierArmor(tier);
 		// weapon, boots, legs, chest, helmet/head
@@ -106,6 +107,12 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 
 	public abstract String getSuffix();
 
+	/**
+	 * get monster tier Armor as ItemsStack array
+	 * 
+	 * @param tier
+	 * @return
+	 */
 	private ItemStack[] getTierArmor(int tier) {
 		if (tier == 1) {
 			return new ItemStack[] { new ItemStack(Material.LEATHER_BOOTS, 1),

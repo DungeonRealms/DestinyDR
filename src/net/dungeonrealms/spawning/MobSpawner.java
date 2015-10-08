@@ -65,6 +65,10 @@ public class MobSpawner {
         return !(players == null || players.size() <= 0);
     }
 
+    
+    /**
+     * Does 1 rotation of spawning for this mob spawner.
+     */
     public void spawnIn() {
         for (int i = 0; i < spawnedMonsters.size(); i++) {
             if (!spawnedMonsters.get(i).isAlive())
@@ -133,10 +137,10 @@ public class MobSpawner {
                     entity = new BasicMeleeMonster(world, "Naga", "Das_Doktor", tier);
                     break;
                 case "wither":
-                    entity = new EntityWither(world, "Wither", "Steve", tier);
+                    entity = new EntityWitherSkeleton(world, "Wither", "Steve", tier);
                     break;
                 case "tripoli":
-                    entity = new BasicMeleeMonster(world, "Tripoli Soldier", "Xmattpt", tier);
+                    entity = new BasicMeleeMonster(world, "Tripoli", "Xmattpt", tier);
                     break;
                 case "blaze":
                     entity = new BasicEntityBlaze(world, "Blaze", "Steve", tier);
@@ -155,7 +159,7 @@ public class MobSpawner {
     }
 
     /**
-     *
+     * Kill all spawnedMonsters for this Mob Spawner
      */
     public void kill() {
         for (Entity spawnedMonster : spawnedMonsters) {

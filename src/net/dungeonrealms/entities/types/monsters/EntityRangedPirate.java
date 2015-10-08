@@ -7,6 +7,11 @@ import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.*;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
 
@@ -88,15 +93,21 @@ public class EntityRangedPirate extends RangedEntitySkeleton {
         return "mob.zombie.death";
     }
 
+
     @Override
     public String getPrefix() {
-        // TODO Auto-generated method stub
-        return null;
+        String[] adjectives = new String[]{""};
+        List<String> list = Arrays.asList(adjectives);
+        Collections.shuffle(list);
+        return list.get(0);
     }
+
 
     @Override
     public String getSuffix() {
-        // TODO Auto-generated method stub
-        return null;
+        String[] adjectives = new String[]{""};
+        List<String> list = Arrays.asList(adjectives);
+        Collections.shuffle(list);
+        return list.get(0);
     }
 }
