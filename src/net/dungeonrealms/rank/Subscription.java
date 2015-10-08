@@ -6,8 +6,11 @@ import net.dungeonrealms.mechanics.SoundAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
+import net.minecraft.server.v1_8_R3.IChatBaseComponent;
+import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -101,13 +104,19 @@ public class Subscription {
             long currentTime = System.currentTimeMillis() / 1000l;
             long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId())));
             int hoursLeft = (int) ((endTime - currentTime) / 1000l);
+
+            IChatBaseComponent comp = null;
+
             if (hoursLeft > 10) {
-                player.sendMessage(ChatColor.YELLOW + "Current Subscription Length " + ChatColor.AQUA.toString() + ChatColor.BOLD + hoursLeft + ChatColor.YELLOW + " hours.");
+                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.YELLOW.toString() + ChatColor.BOLD + "SUB" + ChatColor.WHITE + "] " + ChatColor.RED + "Click " + ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE" + ChatColor.RED + ". To view your current subscription plan!");
             } else if (hoursLeft <= 9 && hoursLeft >= 3) {
-                player.sendMessage(ChatColor.YELLOW + "Your subscription will end soon! " + ChatColor.AQUA.toString() + ChatColor.BOLD + hoursLeft + ChatColor.YELLOW + " hours.");
+                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.YELLOW.toString() + ChatColor.BOLD + "SUB" + ChatColor.WHITE + "] " + ChatColor.RED + "Your subscription will end in " + ChatColor.AQUA + hoursLeft + ChatColor.RED + " hours. :-(");
             } else if (hoursLeft <= 0) {
-                player.sendMessage(ChatColor.RED + "Your subscriber package has run out!");
+                comp = IChatBaseComponent.ChatSerializer.a("{\"text\":\"§f[§e§lSUB§f] §cYour subscription has ended! Click \",\"extra\":[{\"text\":\"§b§l§nHERE\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"§eOpen Informative GUI.\"},\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/list\"}}]}");
             }
+
+            PacketPlayOutChat packet = new PacketPlayOutChat(comp, (byte) 1);
+            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
         }, 20 * 5);
     }
 

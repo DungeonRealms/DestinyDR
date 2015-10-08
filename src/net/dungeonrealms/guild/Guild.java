@@ -25,13 +25,66 @@ public class Guild {
         return instance;
     }
 
+    /**
+     * Removes a member from a Guild.
+     *
+     * @param uuid
+     * @param guildName
+     * @since 1.0
+     */
+    public void removeMember(UUID uuid, String guildName) {
+        if (isMember(guildName, uuid)) {
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.members", uuid.toString(), true);
+        }
+    }
+
+    /**
+     * Remove an officer of a guild.
+     *
+     * @param uuid
+     * @param guildName
+     * @since 1.0
+     */
+    public void removeOfficer(UUID uuid, String guildName) {
+        if (isOfficer(guildName, uuid)) {
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.officers", uuid.toString(), true);
+        }
+    }
+
+    /**
+     * Adds a member to a Guild.
+     *
+     * @param uuid
+     * @param guildName
+     * @since 1.0
+     */
     public void addMember(UUID uuid, String guildName) {
         if (!isMember(guildName, uuid)) {
             DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "info.members", uuid.toString(), true);
         }
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Adds the player to the Officer position in the Guild.
+     *
+     * @param uuid
+     * @param guildName
+     */
+    public void addOfficer(UUID uuid, String guildName) {
+        if (!isMember(guildName, uuid) && !isOfficer(guildName, uuid)) {
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "info.officers", uuid.toString(), true);
+        }
+    }
+
+    /**
+     * Checks if player is a member of said guild.
+     *
+     * @param guildName
+     * @param uuid
+     * @return
+     * @since 1.0
+     */
+    @SuppressWarnings({"unchecked", "negrotasticness"})
     public boolean isMember(String guildName, UUID uuid) {
         if (isInGuild(uuid)) {
             return ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, guildName)).contains(uuid);
@@ -39,7 +92,15 @@ public class Guild {
         return false;
     }
 
-    @SuppressWarnings("unchecked")
+    /**
+     * Checks if player is an Officer of said Guild.
+     *
+     * @param guildName
+     * @param uuid
+     * @return
+     * @since 1.0
+     */
+    @SuppressWarnings({"unchecked", "negrotasticness"})
     public boolean isOfficer(String guildName, UUID uuid) {
         if (isInGuild(uuid)) {
             return ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, guildName)).contains(uuid);
@@ -47,6 +108,12 @@ public class Guild {
         return false;
     }
 
+    /**
+     * Checks if player is in a guild.
+     *
+     * @param uuid
+     * @return
+     */
     public boolean isInGuild(UUID uuid) {
         return DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid) != null;
     }

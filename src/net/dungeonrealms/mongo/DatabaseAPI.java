@@ -184,12 +184,11 @@ public class DatabaseAPI {
      */
     public void requestPlayer(UUID uuid) {
         Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first((document, throwable) -> {
-            if (document == null) {
-                addNewPlayer(uuid);
-            } else {
+            if (document != null) {
                 PLAYERS.put(uuid, document);
                 if (REQUEST_NEW_PLAYER_DOCUMENT.contains(uuid)) {
                     REQUEST_NEW_PLAYER_DOCUMENT.remove(uuid);
+                    return;
                 }
 
                 /**
@@ -201,6 +200,8 @@ public class DatabaseAPI {
                 Subscription.getInstance().doAdd(uuid);
                 Rank.getInstance().doGet(uuid);
                 Guild.getInstance().doGet(uuid);
+            } else {
+                addNewPlayer(uuid);
             }
         });
     }

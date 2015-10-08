@@ -29,8 +29,14 @@ public class CommandParty implements CommandExecutor {
                 case "invite":
                     if (Party.getInstance().isOwnerOfParty(player)) {
                         if (Bukkit.getPlayer(args[1]).equals(player)) {
-                            player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.RED + "You can't invite yourself to your own party..?");
-                            return true;
+                            Party.RawParty p = Party.getInstance().getPlayerParty(Bukkit.getPlayer(args[1]));
+                            if (!p.getInviting().contains(player)) {
+                                p.invitePlayer(player);
+                                player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.RED + "You can't invite yourself to your own party..?");
+                                return true;
+                            } else {
+                                player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.RED + "That player has already been invited!?");
+                            }
                         }
                         Party.getInstance().invitePlayer(Bukkit.getPlayer(args[1]), Party.getInstance().getPlayerParty(player));
                     } else {
@@ -87,7 +93,7 @@ public class CommandParty implements CommandExecutor {
                     player.sendMessage("ERROR DEFAULT CALLED()..");
             }
         } else
-            s.sendMessage(ChatColor.RED + "/party <create, invite, kick, disband>");
+            s.sendMessage(ChatColor.RED + "/party (create, invite, kick, disband)");
         return false;
     }
 
