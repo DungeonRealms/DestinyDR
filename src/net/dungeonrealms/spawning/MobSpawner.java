@@ -25,13 +25,13 @@ import java.util.Random;
  */
 public class MobSpawner {
     public Location loc;
-    public String[] spawnType;
+    public String spawnType;
     public EntityArmorStand armorstand;
     public int tier;
     public ArrayList<Entity> spawnedMonsters = new ArrayList<>();
     public boolean isSpawning;
 
-    public MobSpawner(Location location, String[] type, int tier) {
+    public MobSpawner(Location location, String type, int tier) {
         this.loc = location;
         this.spawnType = type;
         this.tier = tier;
@@ -39,12 +39,8 @@ public class MobSpawner {
         World world = ((CraftWorld) location.getWorld()).getHandle();
         armorstand = new EntityArmorStand(world);
         armorstand.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
-        String temp = "";
-        for (String aType : type) {
-            temp += aType + ",";
-        }
         armorstand.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
-        armorstand.getBukkitEntity().setMetadata("monsters", new FixedMetadataValue(DungeonRealms.getInstance(), temp));
+        armorstand.getBukkitEntity().setMetadata("monsters", new FixedMetadataValue(DungeonRealms.getInstance(), type));
         armorstand.setInvisible(true);
         armorstand.setPosition(loc.getX(), loc.getY(), loc.getZ());
         world.addEntity(armorstand, SpawnReason.CUSTOM);
@@ -54,7 +50,7 @@ public class MobSpawner {
     public MobSpawner(EntityArmorStand stand) {
         this.loc = new Location(Bukkit.getWorlds().get(0), stand.locX, stand.locY, stand.locZ);
         String monsters = stand.getBukkitEntity().getMetadata("monsters").get(0).asString();
-        this.spawnType = monsters.split(",");
+        this.spawnType = monsters;
         this.tier = stand.getBukkitEntity().getMetadata("tier").get(0).asInt();
         isSpawning = false;
         armorstand = stand;
@@ -102,7 +98,7 @@ public class MobSpawner {
         }
         for (int i = 0; i < 4 - spawnedMonsters.size(); i++) {
             Entity entity;
-            String mob = spawnType[new Random().nextInt(spawnType.length)];
+            String mob = spawnType;
             Utils.log.info(mob);
             World world = armorstand.getWorld();
             EnumEntityType type = EnumEntityType.HOSTILE_MOB;
@@ -135,7 +131,7 @@ public class MobSpawner {
                     entity = new EntityGolem(world, tier, type);
                     break;
                 case "naga":
-                    entity = new BasicMeleeMonster(world, EnumMonster.Naga, tier);
+                    entity = new BasicMageMonster(world, EnumMonster.Naga, tier);
                     break;
                 case "wither":
                 	//TODO Wither.
