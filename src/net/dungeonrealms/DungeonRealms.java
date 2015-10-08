@@ -55,7 +55,6 @@ public class DungeonRealms extends JavaPlugin {
         Database.getInstance().initConnection();
         DatabaseAPI.getInstance().startInitialization();
         PluginManager pm = Bukkit.getPluginManager();
-        BankMechanics.init();
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
         pm.registerEvents(new MainListener(), this);
         pm.registerEvents(new DamageListener(), this);
@@ -80,6 +79,7 @@ public class DungeonRealms extends JavaPlugin {
         DonationEffects.getInstance().startInitialization();
         HealthHandler.getInstance().startInitialization();
         KarmaHandler.getInstance().startInitialization();
+        BankMechanics.init();
 
         Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
         Entities.getInstance().startInitialization();
