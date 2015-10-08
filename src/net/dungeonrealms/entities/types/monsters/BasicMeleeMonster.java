@@ -1,19 +1,21 @@
 package net.dungeonrealms.entities.types.monsters;
 
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
+import org.bukkit.ChatColor;
+import org.bukkit.inventory.ItemStack;
+
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.types.MeleeEntityZombie;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.enums.EnumMonster;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
-import org.bukkit.ChatColor;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 /**
  * Created by Chase on Oct 2, 2015
@@ -26,13 +28,15 @@ public class BasicMeleeMonster extends MeleeEntityZombie {
      * @param mobHead
      * @param tier
      */
-    public BasicMeleeMonster(World world, String mobName, String mobHead, int tier) {
-        super(world, mobName, mobHead, tier, EnumEntityType.HOSTILE_MOB, true);
+	public EnumMonster monsterType;
+	
+    public BasicMeleeMonster(World world, EnumMonster type, int tier) {
+        super(world, type, tier, EnumEntityType.HOSTILE_MOB, true);
         int level = Utils.getRandomFromTier(tier);
         MetadataUtils.registerEntityMetadata(this, entityType, tier, level);
         EntityStats.setMonsterStats(this, level, tier);
         this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
-				+ ChatColor.RESET + getPrefix() + " " + mobName + " " + getSuffix());
+				+ ChatColor.RESET + type.getPrefix() + " " + type.name + " " + type.getSuffix());
     }
 
     /**
@@ -91,46 +95,4 @@ public class BasicMeleeMonster extends MeleeEntityZombie {
 
     }
 
-    @Override
-    public String getPrefix() {
-        String[] adjectives = new String[]{""};
-        switch (name) {
-            case "Naga":
-                adjectives = new String[]{"Weak"};
-                break;
-            case "Troll":
-                adjectives = new String[]{"Strong", "Smelly"};
-                break;
-            case "Goblin":
-            	adjectives = new String[]{"Short", "Ugly", "Smelly"};
-            	break;
-            case "Tripoli":
-            	adjectives = new String[]{""};
-            	break;
-        }
-        List<String> list = Arrays.asList(adjectives);
-        Collections.shuffle(list);
-        return list.get(0);
-
-    }
-
-
-    @Override
-    public String getSuffix() {
-        String[] adjectives = new String[]{""};
-        switch (name) {
-            case "Naga":
-                adjectives = new String[]{"Shaman", "Mage"};
-                break;
-            case "Troll":
-                adjectives = new String[]{"Warrior", "Rebel"};
-                break;
-            case "Tripoli":
-            	adjectives = new String[]{"Soldier", "Commander"};
-            	break;
-        }
-        List<String> list = Arrays.asList(adjectives);
-        Collections.shuffle(list);
-        return list.get(0);
-    }
 }

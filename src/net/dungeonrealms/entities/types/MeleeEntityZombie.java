@@ -1,11 +1,8 @@
 package net.dungeonrealms.entities.types;
 
-import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.enums.EnumEntityType;
-import net.dungeonrealms.items.ItemGenerator;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.*;
+import java.lang.reflect.Field;
+import java.util.Random;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -13,8 +10,25 @@ import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.lang.reflect.Field;
-import java.util.Random;
+import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.enums.EnumMonster;
+import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.Utils;
+import net.minecraft.server.v1_8_R3.EntityHuman;
+import net.minecraft.server.v1_8_R3.EntityZombie;
+import net.minecraft.server.v1_8_R3.Item;
+import net.minecraft.server.v1_8_R3.PathfinderGoalFloat;
+import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
+import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
+import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
+import net.minecraft.server.v1_8_R3.PathfinderGoalMoveTowardsRestriction;
+import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
+import net.minecraft.server.v1_8_R3.PathfinderGoalRandomLookaround;
+import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
+import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Xwaffle on 8/29/2015.
@@ -25,8 +39,9 @@ public abstract class MeleeEntityZombie extends EntityZombie {
     protected String name;
     protected String mobHead;
     protected EnumEntityType entityType;
+    protected EnumMonster monsterType;
 
-    protected MeleeEntityZombie(World world, String mobName, String mobHead, int tier, EnumEntityType entityType, boolean setArmor) {
+    protected MeleeEntityZombie(World world, EnumMonster monster, int tier, EnumEntityType entityType, boolean setArmor) {
         this(world);
         try {
             Field bField = PathfinderGoalSelector.class.getDeclaredField("b");
@@ -48,9 +63,9 @@ public abstract class MeleeEntityZombie extends EntityZombie {
         this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
         this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true));
         this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
-
-        this.name = mobName;
-        this.mobHead = mobHead;
+        monsterType = monster;
+        this.name = monster.name;
+        this.mobHead = monster.mobHead;
         this.entityType = entityType;
         if (setArmor)
             setArmor(tier);
@@ -60,7 +75,7 @@ public abstract class MeleeEntityZombie extends EntityZombie {
         EntityStats.setMonsterStats(this, level, tier);
         setStats();
         this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
-				+ ChatColor.RESET + getPrefix() + " " + mobName + " " + getSuffix());
+				+ ChatColor.RESET + monster.getPrefix() + " " + name + " " + monster.getSuffix());
     }
 
     @Override
@@ -128,10 +143,6 @@ public abstract class MeleeEntityZombie extends EntityZombie {
 		}
 		return new ItemStack(Material.WOOD_SWORD, 1);*/
     }
-
-    public abstract String getPrefix();
-
-    public abstract String getSuffix();
 
     private ItemStack[] getTierArmor(int tier) {
         if (tier == 1) {

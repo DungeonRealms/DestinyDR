@@ -4,11 +4,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftSkeleton;
-
 import net.dungeonrealms.entities.types.MeleeEntityZombie;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.enums.EnumMonster;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Item;
@@ -25,8 +24,8 @@ public class EntityWitherSkeleton extends MeleeEntityZombie {
      * @param mobHead
      * @param tier
      */
-    public EntityWitherSkeleton(World world, String mobName, String mobHead, int tier) {
-        super(world, mobName, mobHead, tier, EnumEntityType.HOSTILE_MOB, true);
+    public EntityWitherSkeleton(World world, EnumMonster mon, int tier) {
+        super(world, mon, tier, EnumEntityType.HOSTILE_MOB, true);
         int level = Utils.getRandomFromTier(tier);
         MetadataUtils.registerEntityMetadata(this, entityType, tier, level);
         EntityStats.setMonsterStats(this, level, tier);
@@ -51,22 +50,5 @@ public class EntityWitherSkeleton extends MeleeEntityZombie {
 
     }
 
-
-    @Override
-    public String getPrefix() {
-        String[] adjectives = new String[]{""};
-        List<String> list = Arrays.asList(adjectives);
-        Collections.shuffle(list);
-        return list.get(0);
-    }
-
-
-    @Override
-    public String getSuffix() {
-        String[] adjectives = new String[]{""};
-        List<String> list = Arrays.asList(adjectives);
-        Collections.shuffle(list);
-        return list.get(0);
-    }
 
 }

@@ -1,11 +1,7 @@
 package net.dungeonrealms.entities.types;
 
-import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.enums.EnumEntityType;
-import net.dungeonrealms.items.ItemGenerator;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.*;
+import java.lang.reflect.Field;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -13,7 +9,25 @@ import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.lang.reflect.Field;
+import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.enums.EnumMonster;
+import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.Utils;
+import net.minecraft.server.v1_8_R3.EntityHuman;
+import net.minecraft.server.v1_8_R3.EntityLiving;
+import net.minecraft.server.v1_8_R3.EntitySkeleton;
+import net.minecraft.server.v1_8_R3.Item;
+import net.minecraft.server.v1_8_R3.PathfinderGoalArrowAttack;
+import net.minecraft.server.v1_8_R3.PathfinderGoalFloat;
+import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
+import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
+import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
+import net.minecraft.server.v1_8_R3.PathfinderGoalRandomLookaround;
+import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
+import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Sep 19, 2015
@@ -22,11 +36,12 @@ public abstract class RangedEntitySkeleton extends EntitySkeleton {
     private String name;
     private String mobHead;
     protected EnumEntityType entityType;
-
+    protected EnumMonster monsterType;
+    
     /**
      * @param world
      */
-    protected RangedEntitySkeleton(World world, String mobName, String mobHead, int tier, EnumEntityType entityType) {
+    protected RangedEntitySkeleton(World world, EnumMonster monster, int tier, EnumEntityType entityType) {
         super(world);
         try {
             Field bField = PathfinderGoalSelector.class.getDeclaredField("b");
@@ -48,9 +63,9 @@ public abstract class RangedEntitySkeleton extends EntitySkeleton {
         this.goalSelector.a(6, new PathfinderGoalRandomLookaround(this));
         this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
         this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
-
-        this.name = mobName;
-        this.mobHead = mobHead;
+        monsterType = monster;
+        this.name = monster.name;
+        this.mobHead = monster.mobHead;
         this.entityType = entityType;
         setArmor(tier);
         this.getBukkitEntity().setCustomNameVisible(true);
@@ -59,13 +74,10 @@ public abstract class RangedEntitySkeleton extends EntitySkeleton {
         EntityStats.setMonsterStats(this, level, tier);
         setStats();
         this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
-				+ ChatColor.RESET + getPrefix() + " " + mobName + " " + getSuffix());
+				+ ChatColor.RESET + monster.getPrefix() + " " + monster.name + " " + monster.getSuffix());
 
     }
 
-    public abstract String getPrefix();
-
-    public abstract String getSuffix();
 
     @Override
     protected abstract Item getLoot();

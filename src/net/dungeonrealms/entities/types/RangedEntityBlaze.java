@@ -1,19 +1,21 @@
 package net.dungeonrealms.entities.types;
 
-import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.enums.EnumEntityType;
-import net.dungeonrealms.items.ItemGenerator;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.Item;
-import net.minecraft.server.v1_8_R3.World;
+import java.lang.reflect.Field;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import java.lang.reflect.Field;
+import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.enums.EnumMonster;
+import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.Utils;
+import net.minecraft.server.v1_8_R3.Item;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Oct 4, 2015
@@ -23,11 +25,12 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 	protected String name;
 	protected String mobHead;
 	protected EnumEntityType entityType;
-
-	public RangedEntityBlaze(World world, String mobName, String mobHead, int tier, EnumEntityType entityType, boolean setArmor) {
+	protected EnumMonster monsterType;
+	public RangedEntityBlaze(World world, EnumMonster monster, int tier, EnumEntityType entityType, boolean setArmor) {
 		this(world);
-		this.name = mobName;
-		this.mobHead = mobHead;
+		monsterType = monster;
+		this.name = monster.name;
+		this.mobHead = monster.mobHead;
 		this.entityType = entityType;
 		if (setArmor)
 			setArmor(tier);
@@ -37,7 +40,7 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 		EntityStats.setMonsterStats(this, level, tier);
 		setStats();
 		this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET
-		        + getPrefix() + mobName + getSuffix());
+		        + monster.getPrefix() + name + monster.getSuffix());
 	}
 
 	@Override
@@ -103,9 +106,6 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 		 */
 	}
 
-	public abstract String getPrefix();
-
-	public abstract String getSuffix();
 
 	/**
 	 * get monster tier Armor as ItemsStack array

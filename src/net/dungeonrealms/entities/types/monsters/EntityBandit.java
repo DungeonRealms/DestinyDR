@@ -4,6 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.types.MeleeEntityZombie;
 import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.enums.EnumMonster;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
@@ -29,7 +30,7 @@ public class EntityBandit extends MeleeEntityZombie {
      * @param entityType
      */
     public EntityBandit(World world, int tier, EnumEntityType entityType) {
-        super(world, "Bandit", getRandomHead(), tier, entityType, true);
+        super(world, EnumMonster.Bandit, tier, entityType, true);
         checkPoison();
     }
 
@@ -40,17 +41,8 @@ public class EntityBandit extends MeleeEntityZombie {
         if (Utils.randInt(1, 6) == 4) {
             this.getBukkitEntity().setMetadata("special",
                     new FixedMetadataValue(DungeonRealms.getInstance(), "poison"));
-            this.setCustomName(ChatColor.GREEN.toString() + ChatColor.UNDERLINE.toString() + getPrefix() + "Poisonous Bandit");
+            this.setCustomName(ChatColor.GREEN.toString() + ChatColor.UNDERLINE.toString() + monsterType.getPrefix() + "Poisonous Bandit");
         }
-    }
-
-    @Override
-    public String getPrefix() {
-        String[] adjectives = new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy",
-                "Majestic", "Intrigued", "Dignified", "Couragous", "Timid", "Gloomy", "Noble", "Naive", "Black"};
-        List<String> list = Arrays.asList(adjectives);
-        Collections.shuffle(list);
-        return list.get(0) + " ";
     }
 
     /**
@@ -84,12 +76,4 @@ public class EntityBandit extends MeleeEntityZombie {
         return "game.player.hurt";
     }
 
-
-    @Override
-    public String getSuffix() {
-        String[] adjectives = new String[]{""};
-        List<String> list = Arrays.asList(adjectives);
-        Collections.shuffle(list);
-        return list.get(0);
-    }
 }

@@ -1,20 +1,27 @@
 package net.dungeonrealms.entities.types.monsters;
 
-import net.dungeonrealms.banks.BankMechanics;
-import net.dungeonrealms.entities.types.RangedEntitySkeleton;
-import net.dungeonrealms.enums.EnumEntityType;
-import net.dungeonrealms.items.Item.ItemTier;
-import net.dungeonrealms.items.Item.ItemType;
-import net.dungeonrealms.items.ItemGenerator;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.minecraft.server.v1_8_R3.*;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import net.dungeonrealms.banks.BankMechanics;
+import net.dungeonrealms.entities.types.RangedEntitySkeleton;
+import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.enums.EnumMonster;
+import net.dungeonrealms.items.Item.ItemTier;
+import net.dungeonrealms.items.Item.ItemType;
+import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.mastery.MetadataUtils;
+import net.minecraft.server.v1_8_R3.EntityLiving;
+import net.minecraft.server.v1_8_R3.EntityWitherSkull;
+import net.minecraft.server.v1_8_R3.Item;
+import net.minecraft.server.v1_8_R3.MathHelper;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Oct 2, 2015
@@ -30,8 +37,8 @@ public class BasicMageMonster extends RangedEntitySkeleton {
 
     private int tier;
 
-    public BasicMageMonster(World world, String mobName, String mobHead, int tier) {
-        super(world, mobName, mobHead, tier, EnumEntityType.HOSTILE_MOB);
+    public BasicMageMonster(World world, EnumMonster mons, int tier) {
+        super(world, mons, tier, EnumEntityType.HOSTILE_MOB);
         this.tier = tier;
         this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().getDefinedStack(ItemType.STAFF, ItemTier.getById(tier), ItemGenerator.getRandomItemModifier())));
     }
@@ -75,19 +82,4 @@ public class BasicMageMonster extends RangedEntitySkeleton {
         this.world.addEntity(entityWitherSkull);
     }
 
-    @Override
-    public String getPrefix() {
-        String[] adjectives = new String[]{""};
-        List<String> list = Arrays.asList(adjectives);
-        Collections.shuffle(list);
-        return list.get(0) + "";
-    }
-
-    @Override
-    public String getSuffix() {
-        String[] adjectives = new String[]{""};
-        List<String> list = Arrays.asList(adjectives);
-        Collections.shuffle(list);
-        return list.get(0);
-    }
 }

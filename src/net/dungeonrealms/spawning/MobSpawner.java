@@ -4,6 +4,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.types.monsters.*;
 import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.enums.EnumMonster;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
@@ -119,31 +120,32 @@ public class MobSpawner {
                     entity = new EntityFireImp(world, tier, type);
                     break;
                 case "troll":
-                    entity = new BasicMeleeMonster(world, "Troll", "Steve", tier);
+                    entity = new BasicMeleeMonster(world, EnumMonster.Troll, tier);
                     break;
                 case "goblin":
-                    entity = new BasicMeleeMonster(world, "Goblin", "Shrek", tier);
+                    entity = new BasicMeleeMonster(world, EnumMonster.Goblin, tier);
                     break;
                 case "mage":
-                    entity = new BasicMageMonster(world, "Mage", "Steve", tier);
+                    entity = new BasicMageMonster(world, EnumMonster.Mage, tier);
                     break;
                 case "spider":
-                    entity = new EntitySpider(world, "Spider", tier);
+                    entity = new EntitySpider(world, EnumMonster.Spider, tier);
                     break;
                 case "golem":
                     entity = new EntityGolem(world, tier, type);
                     break;
                 case "naga":
-                    entity = new BasicMeleeMonster(world, "Naga", "Das_Doktor", tier);
+                    entity = new BasicMeleeMonster(world, EnumMonster.Naga, tier);
                     break;
                 case "wither":
-                    entity = new EntityWitherSkeleton(world, "Wither", "Steve", tier);
+                	//TODO Wither.
+                    entity = new EntityWitherSkeleton(world, null, tier);
                     break;
                 case "tripoli":
-                    entity = new BasicMeleeMonster(world, "Tripoli", "Xmattpt", tier);
+                    entity = new BasicMeleeMonster(world, EnumMonster.Tripoli, tier);
                     break;
                 case "blaze":
-                    entity = new BasicEntityBlaze(world, "Blaze", "Steve", tier);
+                    entity = new BasicEntityBlaze(world, EnumMonster.Blaze, tier);
                     break;
                 default:
                     entity = new EntityBandit(world, tier, type);
