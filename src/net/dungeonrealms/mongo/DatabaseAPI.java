@@ -1,6 +1,9 @@
 package net.dungeonrealms.mongo;
 
+import com.mongodb.Block;
+import com.mongodb.async.SingleResultCallback;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.mastery.Utils;
@@ -11,6 +14,7 @@ import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -169,6 +173,13 @@ public class DatabaseAPI {
                 return ((Document) GUILDS.get(guildName).get("logs")).get("playerInvites", ArrayList.class);
             case BANK_CLICK:
                 return ((Document) GUILDS.get(guildName).get("logs")).get("bankClicks", ArrayList.class);
+            /**
+             * Levels
+             */
+            case LEVEL:
+                return ((Document) GUILDS.get(guildName).get("info")).get("netLevel", Integer.class);
+            case EXPERIENCE:
+                return ((Document) GUILDS.get(guildName).get("info")).get("experience", Double.class);
             default:
         }
         return null;

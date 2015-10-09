@@ -18,4 +18,7 @@ public enum EnumGuildData {
     PLAYER_INVITES,
     BANK_CLICK,
 
+    LEVEL,
+    EXPERIENCE,
+
 }

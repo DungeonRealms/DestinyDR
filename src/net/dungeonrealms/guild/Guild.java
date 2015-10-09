@@ -158,6 +158,25 @@ public class Guild {
     }
 
     /**
+     * Adds experience to a Guild also watches for the global guild level cap.
+     *
+     * @param guildName
+     * @param experienceToAdd
+     * @since 1.0
+     */
+    public void addGuildExperience(String guildName, double experienceToAdd) {
+        int level = (int) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, guildName);
+        //Guild level CAP 50.
+        if (level > 50) return;
+        double experience = (double) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, guildName);
+        if ((experience + experienceToAdd) > (level * 1500)) {
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.netLevel", 1, true);
+        } else {
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.experience", experienceToAdd, true);
+        }
+    }
+
+    /**
      * Creates a guild also checks to make sure it doesn't
      * exist.
      *
@@ -181,7 +200,10 @@ public class Guild {
                                     .append("owner", owner.toString())
                                     .append("officers", new ArrayList<String>())
                                     .append("members", new ArrayList<String>())
-                                    .append("unixCreation", System.currentTimeMillis() / 1000l))
+                                    .append("unixCreation", System.currentTimeMillis() / 1000l)
+                                    .append("netLevel", 1)
+                                    .append("experience", 0)
+                    )
                             .append("logs",
                                     new Document("playerLogin", new ArrayList<String>())
                                             .append("playerInvites", new ArrayList<String>())

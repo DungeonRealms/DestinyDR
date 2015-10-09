@@ -1,10 +1,17 @@
 package net.dungeonrealms.inventory;
 
+import com.mongodb.Block;
+import com.mongodb.async.SingleResultCallback;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.model.Sorts;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumGuildData;
 import net.dungeonrealms.rank.Subscription;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -22,6 +29,40 @@ import java.util.*;
  */
 public class Menu {
 
+    public static void openGuildRankingBoard(Player player) {
+
+        Inventory inv = Bukkit.createInventory(null, 18, "Top Guilds");
+
+        inv.addItem(editItem("Mapparere", ChatColor.GREEN + "Top Ranked Guilds", new String[]{
+                ChatColor.GRAY + "Filter:" + ChatColor.AQUA + " Level"
+        }));
+
+        Block<Document> printDocumentBlock = document -> {
+            Object info = document.get("info");
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () ->
+            {
+                Date creationDate = new Date(Integer.valueOf(String.valueOf(((Document) info).get("unixCreation"))) * 1000);
+                SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
+                String date = sdf.format(creationDate);
+
+                inv.addItem(editItem(new ItemStack(Material.DIAMOND), ChatColor.GREEN + String.valueOf(((Document) info).get("name")), new String[]{
+                        ChatColor.GRAY + "ClanTag: " + ChatColor.translateAlternateColorCodes('&', String.valueOf(((Document) info).get("clanTag"))),
+                        ChatColor.GRAY + "Level: " + ChatColor.AQUA + String.valueOf(((Document) info).get("netLevel")),
+                        ChatColor.GRAY + "Officers: " + ChatColor.AQUA + ((ArrayList<String>) ((Document) info).get("officers")).size(),
+                        ChatColor.GRAY + "Members: " + ChatColor.AQUA + ((ArrayList<String>) ((Document) info).get("members")).size(),
+                        ChatColor.GRAY + "Created: " + ChatColor.AQUA + date,
+                }));
+
+            }, 0l);
+        };
+        SingleResultCallback<Void> callbackWhenFinished = (result, t) -> {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.openInventory(inv), 1l);
+        };
+
+        Database.guilds.find(Filters.exists("info.netLevel")).sort(Sorts.descending("info.netLevel")).limit(16).forEach(printDocumentBlock, callbackWhenFinished);
+    }
+
     public static void openPlayerGuildLog(Player player) {
         UUID uuid = player.getUniqueId();
 
@@ -29,6 +70,8 @@ public class Menu {
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumGuildData.NAME, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
         String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
         Long origin = (Long) DatabaseAPI.getInstance().getData(EnumGuildData.CREATION_UNIX_DATA, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
+        int netLevel = (int) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
+        double experience = Double.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumGuildData.EXPERIENCE, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid))));
 
         Date creationDate = new Date(origin * 1000);
         SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
@@ -43,6 +86,8 @@ public class Menu {
         inv.setItem(4, editItem(new ItemStack(Material.BOOK_AND_QUILL), ChatColor.GREEN + guildName + "'s Logs", new String[]{
                 ChatColor.GRAY + "Guild Master: " + ChatColor.AQUA + Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName(),
                 ChatColor.GRAY + "Created: " + ChatColor.AQUA + date,
+                ChatColor.GRAY + "Guild Level: " + ChatColor.AQUA + netLevel,
+                ChatColor.GRAY + "Guild Experience: " + ChatColor.AQUA + experience,
         }));
         inv.setItem(9, editItem("Olaf_C", ChatColor.GREEN + "Player Logins", new String[]{}));
         inv.setItem(18, editItem("Shrek", ChatColor.GREEN + "Guild Invitations", new String[]{}));
@@ -58,7 +103,6 @@ public class Menu {
             }));
             plN++;
         }
-
         player.openInventory(inv);
 
     }
@@ -71,6 +115,7 @@ public class Menu {
         String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
         List<String> officers = (List<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
         List<String> members = (List<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
+        Integer netLevel = (Integer) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
 
         Inventory inv = Bukkit.createInventory(null, 54, "Guild - " + ChatColor.translateAlternateColorCodes('&', clanTag));
 
@@ -81,6 +126,7 @@ public class Menu {
         inv.setItem(4, editItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Guild Name" + ChatColor.GRAY + ": " + ChatColor.RESET + guildName, new String[]{
                 ChatColor.GRAY + "ClanTag: " + ChatColor.translateAlternateColorCodes('&', clanTag),
                 ChatColor.GRAY + "Guild Master: " + ChatColor.AQUA + Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName(),
+                ChatColor.GRAY + "Level: " + ChatColor.AQUA + netLevel
         }));
 
         inv.setItem(8, editItem(new ItemStack(Material.DIAMOND_SWORD), ChatColor.RED + "Guild Wars", new String[]{

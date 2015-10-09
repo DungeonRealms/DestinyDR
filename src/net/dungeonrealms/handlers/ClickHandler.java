@@ -29,6 +29,9 @@ public class ClickHandler {
                 case 0:
                     Menu.openPlayerGuildLog((Player) event.getWhoClicked());
                     break;
+                case 17:
+                    Menu.openGuildRankingBoard((Player) event.getWhoClicked());
+                    break;
             }
         } else if (name.endsWith("- (Logs)")) {
             event.setCancelled(true);
@@ -38,6 +41,8 @@ public class ClickHandler {
                     Menu.openPlayerGuildInventory((Player) event.getWhoClicked());
                     break;
             }
+        } else if (name.equals("Top Guilds")) {
+            event.setCancelled(true);
         }
     }
 }
