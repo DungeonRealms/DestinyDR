@@ -1,9 +1,6 @@
 package net.dungeonrealms.mongo;
 
-import com.mongodb.Block;
-import com.mongodb.async.SingleResultCallback;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Sorts;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.mastery.Utils;
@@ -14,7 +11,6 @@ import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -271,7 +267,11 @@ public class DatabaseAPI {
                                 .append("alignment", "lawful")
                                 .append("guild", "")
                                 .append("attributes",
-                                        new Document("strength", 1).append("dexterity", 1).append("intellect", 1).append("vitality", 1))
+                                        new Document("bufferPoints", 6)
+                                                .append("strength", 1)
+                                                .append("dexterity", 1)
+                                                .append("intellect", 1)
+                                                .append("vitality", 1))
                                 .append("collectibles",
                                         new Document("achievements", new ArrayList<String>())))
                         .append("rank",
