@@ -170,7 +170,6 @@ public class HealthHandler {
      */
     private void regenerateHealth() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            UUID uuid = player.getUniqueId();
             if (getPlayerHPLive(player) <= 0 && player.getHealth() <= 0) {
                 continue;
             }
@@ -240,6 +239,7 @@ public class HealthHandler {
                     player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                     player.setHealth(0);
                     KarmaHandler.handlePlayerPsuedoDeath(player, damager);
+                    CombatLog.removeFromCombat(player);
                     Bukkit.broadcastMessage(player.getName() + " has died.");
                     return;
                 }

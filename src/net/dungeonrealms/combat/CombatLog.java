@@ -5,8 +5,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
-import java.util.HashMap;
 import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Nick on 8/29/2015.
@@ -23,7 +23,7 @@ public class CombatLog {
 
     }
 
-    public static HashMap<Player, Integer> COMBAT = new HashMap<>();
+    public static ConcurrentHashMap<Player, Integer> COMBAT = new ConcurrentHashMap<>();
 
     public static boolean isInCombat(Player player) {
         return COMBAT.containsKey(player);
@@ -42,7 +42,7 @@ public class CombatLog {
         }
     }
 
-    private static void removeFromCombat(Player player) {
+    public static void removeFromCombat(Player player) {
         if (isInCombat(player)) {
             COMBAT.remove(player);
             player.sendMessage(ChatColor.GREEN + "You are no longer in combat!");
@@ -54,8 +54,9 @@ public class CombatLog {
             for (Map.Entry<Player, Integer> e : COMBAT.entrySet()) {
                 if (e.getValue() == 0) {
                     removeFromCombat(e.getKey());
+                } else {
+                    COMBAT.put(e.getKey(), (e.getValue() - 1));
                 }
-                COMBAT.put(e.getKey(), (e.getValue() - 1));
             }
         }, 0, 20l);
     }
