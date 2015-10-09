@@ -167,9 +167,9 @@ public class Guild {
     public void addGuildExperience(String guildName, double experienceToAdd) {
         int level = (int) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, guildName);
         //Guild level CAP 50.
-        if (level > 50) return;
+        if (level >= 50) return;
         double experience = (double) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, guildName);
-        if ((experience + experienceToAdd) > (level * 1500)) {
+        if (((level * experience) + experienceToAdd) > (level * 1500)) {
             DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.netLevel", 1, true);
         } else {
             DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.experience", experienceToAdd, true);
