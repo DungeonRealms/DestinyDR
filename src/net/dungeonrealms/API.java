@@ -121,10 +121,9 @@ public class API {
      * @since 1.0
      */
     public static void logoutAllPlayers() {
-        for (int i = 0; i < Bukkit.getOnlinePlayers().size(); i++) {
-            Player p = (Player) Bukkit.getOnlinePlayers().toArray()[i];
-            handleLogout(p.getUniqueId());
-            p.kickPlayer("Server Restarting!");
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            handleLogout(player.getUniqueId());
+            player.kickPlayer("Server Restarting!");
         }
     }
 

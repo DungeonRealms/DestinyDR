@@ -52,7 +52,7 @@ public class CombatLog {
     public void startInitialization() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for (Map.Entry<Player, Integer> e : COMBAT.entrySet()) {
-                if (e.getValue() == 0) {
+                if (e.getValue() <= 0) {
                     removeFromCombat(e.getKey());
                 } else {
                     COMBAT.put(e.getKey(), (e.getValue() - 1));

@@ -8,10 +8,8 @@ import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
 import net.dungeonrealms.entities.utils.EntityAPI;
-import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.rank.Subscription;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -66,7 +64,6 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
-        Subscription.getInstance().handleJoin(event);
         if (WebAPI.ANNOUNCEMENTS != null && WebAPI.ANNOUNCEMENTS.size() > 0) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 for (Map.Entry<String, Integer> e : WebAPI.ANNOUNCEMENTS.entrySet()) {
@@ -82,7 +79,6 @@ public class MainListener implements Listener {
         //I guess this really does work..?
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             API.handleLogin(player.getUniqueId());
-            Guild.getInstance().handleLogin(player);
         }, 20L);
     }
 
