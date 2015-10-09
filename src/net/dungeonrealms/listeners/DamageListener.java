@@ -451,7 +451,7 @@ public class DamageListener implements Listener {
         }
         if (event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.DROWNING
                 || event.getCause() == DamageCause.FALL || event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.FIRE
-                || event.getCause() == DamageCause.ENTITY_EXPLOSION || event.getCause() == DamageCause.BLOCK_EXPLOSION) {
+                || event.getCause() == DamageCause.ENTITY_EXPLOSION || event.getCause() == DamageCause.BLOCK_EXPLOSION || event.getCause() == DamageCause.FIRE_TICK) {
             event.setCancelled(true);
             event.setDamage(0);
             event.getEntity().setFireTicks(0);
@@ -512,10 +512,11 @@ public class DamageListener implements Listener {
             }
         }
         event.getDrops().clear();
-        player.setHealth(3);
+        player.setHealth(20);
         for (PotionEffect potionEffect : player.getActivePotionEffects()) {
             player.removePotionEffect(potionEffect.getType());
         }
+        HealthHandler.setPlayerHPLive(player, HealthHandler.getPlayerMaxHPLive(player));
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 10));
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 10));
         player.teleport(Teleportation.Cyrennica);
