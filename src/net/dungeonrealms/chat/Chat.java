@@ -1,5 +1,6 @@
 package net.dungeonrealms.chat;
 
+import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumGuildData;
@@ -41,7 +42,7 @@ public class Chat {
             prefix.append(ChatColor.translateAlternateColorCodes('&', "[" + r.getPrefix() + ChatColor.RESET + "]"));
         }
 
-        if (!DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid).equals("")) {
+        if (Guild.getInstance().isInGuild(uuid)) {
             String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
             prefix.append(ChatColor.translateAlternateColorCodes('&', " (" + clanTag + ChatColor.RESET + ")"));
         }
