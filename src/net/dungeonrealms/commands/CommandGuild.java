@@ -1,8 +1,7 @@
 package net.dungeonrealms.commands;
 
+import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.inventory.Menu;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -22,7 +21,7 @@ public class CommandGuild implements CommandExecutor {
 
         Player player = (Player) s;
 
-        if (DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).equals("")) {
+        if (!Guild.getInstance().isInGuild(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "You are not in a guild, or we're having trouble finding it.");
             return true;
         }

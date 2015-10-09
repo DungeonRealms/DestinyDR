@@ -128,7 +128,7 @@ public class Guild {
      * @return
      */
     public boolean isInGuild(UUID uuid) {
-        return DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid) != null;
+        return !DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid).equals("");
     }
 
     /**
