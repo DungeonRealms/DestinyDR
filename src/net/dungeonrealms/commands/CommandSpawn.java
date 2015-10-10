@@ -1,5 +1,6 @@
 package net.dungeonrealms.commands;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.types.monsters.*;
 import net.dungeonrealms.entities.utils.BuffUtils;
 import net.dungeonrealms.entities.utils.EntityAPI;
@@ -135,6 +136,10 @@ public class CommandSpawn implements CommandExecutor {
                     if (args.length == 3)
                         tier = Integer.parseInt(args[2]);
                     MobSpawner spawner = new MobSpawner(player.getLocation(), monster, tier);
+    				String text = (player.getLocation().getX() + "," + player.getLocation().getY() + ","
+    				        + player.getLocation().getZ() + "=" + args[1] + ":" + tier);
+    				SpawningMechanics.spawnerConfig.add(text);
+    				DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.spawnerConfig);
                     SpawningMechanics.add(spawner);
                     break;
             }

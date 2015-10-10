@@ -4,8 +4,12 @@
 package net.dungeonrealms.commands;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.spawning.SpawningMechanics;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -47,40 +51,25 @@ public class CommandSet implements CommandExecutor {
 				break;
 			case "spawner":
 				if (args.length < 3) {
-					player.sendMessage("/set spawner monster,monster tier (* on monster for elite chance)");
-					player.sendMessage("/set spawner goblin,troll*,bandit 2");
+					player.sendMessage("/set spawner monster tier (* on monster for elite chance)");
+					player.sendMessage("/set spawner goblin 2");
 					return false;
 				}
 				int tier = Integer.parseInt(args[2]);
-				File file = new File(DungeonRealms.getInstance().getDataFolder() + "\\global_spawns.yml");
-				try {
-					if (!file.exists())
-						file.createNewFile();
-					BufferedWriter writer = new BufferedWriter(new FileWriter(file, true));
-					writer.newLine();
-					writer.write(player.getLocation().getX() + "," + player.getLocation().getY() + ","
-					        + player.getLocation().getZ() + "=" + args[1] + ":" + tier);
-					writer.close();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+				String text = (player.getLocation().getX() + "," + player.getLocation().getY() + ","
+				        + player.getLocation().getZ() + "=" + args[1] + ":" + tier);
+				SpawningMechanics.spawnerConfig.add(text);
+				DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.spawnerConfig);
 				break;
 			case "loot":
 				if (args.length == 2) {
 					int lootTier = Integer.parseInt(args[1]);
-					File lootFile = new File(DungeonRealms.getInstance().getDataFolder() + "\\global_loot.yml");
-					try {
-						if (!lootFile.exists())
-							lootFile.createNewFile();
-						BufferedWriter writer = new BufferedWriter(new FileWriter(lootFile, true));
-						writer.newLine();
-						writer.write(player.getLocation().getX() + "," + player.getLocation().getY() + ","
-						        + player.getLocation().getZ() + ":" + lootTier);
-						writer.close();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
-
+						String data = player.getLocation().getX() + "," + player.getLocation().getY() + ","
+					        + player.getLocation().getZ() + ":" + lootTier;
+						LootManager.spawnerConfig.add(data);
+					Utils.log.info(LootManager.spawnerConfig.get(LootManager.spawnerConfig.size() - 1));
+					Utils.log.info(LootManager.spawnerConfig.size()+ " size");
+					DungeonRealms.getInstance().getConfig().set("loot", LootManager.spawnerConfig);
 				}
 				break;
 			}

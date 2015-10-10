@@ -26,7 +26,7 @@ import net.dungeonrealms.spawning.LootSpawner;
 public class LootManager {
 
 	public static ArrayList<LootSpawner> spawners = new ArrayList<>();
-
+	public static ArrayList<String> spawnerConfig = new ArrayList<>();
 	public static ArrayList<ItemStack> tier1Loot = new ArrayList<>();
 	public static ArrayList<ItemStack> tier2Loot = new ArrayList<>();
 	public static ArrayList<ItemStack> tier3Loot = new ArrayList<>();
@@ -122,29 +122,20 @@ public class LootManager {
 	 */
 	public static void loadLootSpawners() {
 		loadLootItems();
-		File lootFile = new File(DungeonRealms.getInstance().getDataFolder() + "\\global_loot.yml");
-		try {
-			if (!lootFile.exists())
-				lootFile.createNewFile();
-			BufferedReader reader = new BufferedReader(new FileReader(lootFile));
-			while (reader.ready()) {
-				String line = reader.readLine();
-				int tier = Integer.parseInt(line.split(":")[1]);
-				double x, y, z = 0.0;
-				String[] location = line.split(":")[0].split(",");
-				x = Double.parseDouble(location[0]);
-				y = Double.parseDouble(location[1]);
-				z = Double.parseDouble(location[2]);
-				World world = Bukkit.getWorlds().get(0);
-				Location loc = new Location(world, x, y, z);
-				Block chest = world.getBlockAt(loc);
-				chest.setType(Material.CHEST);
-				LootSpawner lootSpawner = new LootSpawner(loc, tier, chest);
-				spawners.add(lootSpawner);
-			}
-			reader.close();
-		} catch (IOException e) {
-			e.printStackTrace();
+		spawnerConfig = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("loot");
+		for (String line : spawnerConfig) {
+			int tier = Integer.parseInt(line.split(":")[1]);
+			double x, y, z = 0.0;
+			String[] location = line.split(":")[0].split(",");
+			x = Double.parseDouble(location[0]);
+			y = Double.parseDouble(location[1]);
+			z = Double.parseDouble(location[2]);
+			World world = Bukkit.getWorlds().get(0);
+			Location loc = new Location(world, x, y, z);
+			Block chest = world.getBlockAt(loc);
+			chest.setType(Material.CHEST);
+			LootSpawner lootSpawner = new LootSpawner(loc, tier, chest);
+			spawners.add(lootSpawner);
 		}
 
 	}

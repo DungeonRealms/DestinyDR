@@ -48,16 +48,6 @@ public class MobSpawner {
 		armorstand.setPosition(loc.getX(), loc.getY(), loc.getZ());
 	}
 
-	public MobSpawner(EntityArmorStand stand) {
-		this.loc = new Location(Bukkit.getWorlds().get(0), stand.locX, stand.locY, stand.locZ);
-		String monsters = stand.getBukkitEntity().getMetadata("monsters").get(0).asString();
-		this.spawnType = monsters;
-		this.tier = stand.getBukkitEntity().getMetadata("tier").get(0).asInt();
-		isSpawning = false;
-		armorstand = stand;
-		armorstand.setInvisible(true);
-	}
-
 	public boolean playersAround() {
 		List<Player> players = API.getNearbyPlayers(loc, 20);
 		return !(players == null || players.size() <= 0);
