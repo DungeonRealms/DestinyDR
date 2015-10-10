@@ -1,6 +1,7 @@
 package net.dungeonrealms.items;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
@@ -62,24 +63,23 @@ public class DamageAPI {
             if (nmsTag == null) {
                 damage += 0;
             } else {
-                if (nmsTag.getInt("damage") != 0) {
-                    damage += nmsTag.getInt("damage");
+                if (nmsTag.getDouble("damage") != 0) {
+                    damage += nmsTag.getDouble("damage");
                 }
             }
         }
-        ItemStack ourItem = entityEquipment.getItemInHand();
-        int weaponTier = new Attribute(ourItem).getItemTier().getTierId();
+        int weaponTier = tag.getInt("itemTier");
         int damageRandomizer = ItemGenerator.getRandomDamageVariable(weaponTier);
         damage = (double) Utils.randInt((int) Math.round(tag.getDouble("damage") - (tag.getDouble("damage") / damageRandomizer)), (int) Math.round(tag.getDouble("damage") + (tag.getDouble("damage") / (damageRandomizer - 1))));
         boolean isHitCrit = false;
         if (receiver instanceof Player) {
-            if (tag.getInt("vsPlayers") != 0) {
-                damage += ((tag.getInt("vsPlayers") / 100) * damage);
+            if (tag.getDouble("vsPlayers") != 0) {
+                damage += ((tag.getDouble("vsPlayers") / 100) * damage);
             }
         } else {
             if (receiver.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-                if (tag.getInt("vsMonsters") != 0) {
-                    damage += ((tag.getInt("vsMonsters") / 100) * damage);
+                if (tag.getDouble("vsMonsters") != 0) {
+                    damage += ((tag.getDouble("vsMonsters") / 100) * damage);
                 }
             }
         }
@@ -96,12 +96,12 @@ public class DamageAPI {
             damage += tag.getInt("accuracy");
         }
 
-        if (tag.getInt("strength") != 0) {
-            damage += (damage * (tag.getInt("strength") * 0.023D) / 100D);
+        if (tag.getDouble("strength") != 0) {
+            damage += (damage * (tag.getDouble("strength") * 0.023D) / 100D);
         }
 
-        if (tag.getInt("vitality") != 0) {
-            damage += (damage * (tag.getInt("vitality") * 0.023D) / 100D);
+        if (tag.getDouble("vitality") != 0) {
+            damage += (damage * (tag.getDouble("vitality") * 0.023D) / 100D);
         }
 
         LivingEntity leReceiver = (LivingEntity) receiver;
@@ -198,8 +198,10 @@ public class DamageAPI {
             }
         }
 
-        if (tag.getInt("lifesteal") != 0) {
-            //TODO: LIFESTEAL WHEN WE HAVE OUR CUSTOM HP SHIT DONE
+        if (tag.getDouble("lifesteal") != 0 && attacker instanceof Player) {
+            double lifeToHeal = ((tag.getDouble("lifesteal") / 100) * damage);
+            HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal);
+            attacker.sendMessage("LIFESTOLE FOR " + (int) lifeToHeal);
         }
 
         if (tag.getInt("blind") != 0) {
@@ -307,8 +309,8 @@ public class DamageAPI {
             if (nmsTag == null) {
                 damage += 0;
             } else {
-                if (nmsTag.getInt("damage") != 0) {
-                    damage += nmsTag.getInt("damage");
+                if (nmsTag.getDouble("damage") != 0) {
+                    damage += nmsTag.getDouble("damage");
                 }
             }
         }
@@ -317,13 +319,13 @@ public class DamageAPI {
                 (int) Math.round(projectile.getMetadata("damage").get(0).asDouble() + projectile.getMetadata("damage").get(0).asDouble() / (damageRandomizer - 1)));
         boolean isHitCrit = false;
         if (receiver instanceof Player) {
-            if (projectile.getMetadata("vsPlayers").get(0).asInt() != 0) {
-                damage += ((projectile.getMetadata("vsPlayers").get(0).asInt() / 100) * damage);
+            if (projectile.getMetadata("vsPlayers").get(0).asDouble() != 0) {
+                damage += ((projectile.getMetadata("vsPlayers").get(0).asDouble() / 100) * damage);
             }
         } else {
             if (receiver.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-                if (projectile.getMetadata("vsMonsters").get(0).asInt() != 0) {
-                    damage += ((projectile.getMetadata("vsMonsters").get(0).asInt() / 100) * damage);
+                if (projectile.getMetadata("vsMonsters").get(0).asDouble() != 0) {
+                    damage += ((projectile.getMetadata("vsMonsters").get(0).asDouble() / 100) * damage);
                 }
             }
         }
@@ -340,12 +342,12 @@ public class DamageAPI {
             damage += projectile.getMetadata("accuracy").get(0).asInt();
         }
 
-        if (projectile.getMetadata("dexterity").get(0).asInt() != 0) {
-            damage += (damage * (projectile.getMetadata("dexterity").get(0).asInt() * 0.023D) / 100D);
+        if (projectile.getMetadata("dexterity").get(0).asDouble() != 0) {
+            damage += (damage * (projectile.getMetadata("dexterity").get(0).asDouble() * 0.023D) / 100D);
         }
 
-        if (projectile.getMetadata("intellect").get(0).asInt() != 0) {
-            damage += (damage * (projectile.getMetadata("intellect").get(0).asInt() * 0.02D) / 100D);
+        if (projectile.getMetadata("intellect").get(0).asDouble() != 0) {
+            damage += (damage * (projectile.getMetadata("intellect").get(0).asDouble() * 0.02D) / 100D);
         }
 
         LivingEntity leReceiver = (LivingEntity) receiver;
@@ -442,8 +444,10 @@ public class DamageAPI {
             }
         }
 
-        if (projectile.getMetadata("lifesteal").get(0).asInt() != 0) {
-            //TODO: LIFESTEAL WHEN WE HAVE OUR CUSTOM HP SHIT DONE
+        if (projectile.getMetadata("lifesteal").get(0).asDouble() != 0 && attacker instanceof Player) {
+            double lifeToHeal = ((projectile.getMetadata("lifesteal").get(0).asDouble() / 100) * damage);
+            HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal);
+            attacker.sendMessage("LIFESTOLE FOR " + (int) lifeToHeal);
         }
 
         if (projectile.getMetadata("blind").get(0).asInt() != 0) {

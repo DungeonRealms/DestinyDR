@@ -22,7 +22,7 @@ public class ItemGenerator {
      * @param type
      * @param tier
      * @param modifier
-     * @return
+     * @return ItemStack
      * @since 1.0
      */
     public ItemStack getDefinedStack(Item.ItemType type, Item.ItemTier tier, Item.ItemModifier modifier) {
@@ -32,7 +32,7 @@ public class ItemGenerator {
     /**
      * allows, new ItemGenerator().next() -> ItemStack.
      *
-     * @return
+     * @return getWeapon
      * @since 1.0
      */
     public ItemStack next() {
@@ -51,7 +51,7 @@ public class ItemGenerator {
      * @param type
      * @param tier
      * @param modifier
-     * @return
+     * @return ItemStack
      * @since 1.0
      */
     private ItemStack getWeapon(Item.ItemType type, Item.ItemTier tier, Item.ItemModifier modifier) {
@@ -101,7 +101,7 @@ public class ItemGenerator {
     /**
      * Gets a random ItemType
      *
-     * @return
+     * @return Item.ItemType
      * @since 1.0
      */
     private Item.ItemType getRandomItemType() {
@@ -111,7 +111,7 @@ public class ItemGenerator {
     /**
      * Gets a radnom ItemTier
      *
-     * @return
+     * @return Item.ItemTier
      * @since 1.0
      */
     private Item.ItemTier getRandomItemTier() {
@@ -121,7 +121,7 @@ public class ItemGenerator {
     /**
      * Gets a random ItemModifier
      *
-     * @return
+     * @return Item.ItemModifier
      * @since 1.0
      */
     public static Item.ItemModifier getRandomItemModifier() {
@@ -132,7 +132,7 @@ public class ItemGenerator {
      * Returns a list of itemAttributes based on the param.
      *
      * @param amountOfAttributes
-     * @return
+     * @return ArrayList
      * @since 1.0
      */
     private ArrayList<Item.AttributeType> getRandomAttributes(int amountOfAttributes) {
@@ -156,6 +156,13 @@ public class ItemGenerator {
         return attributeList;
     }
 
+    /**
+     * Returns Max/Min damage variable on weapons
+     *
+     * @param itemTier
+     * @return int
+     * @since 1.0
+     */
     public static int getRandomDamageVariable(int itemTier) {
         switch (itemTier) {
             case 1:
@@ -173,6 +180,17 @@ public class ItemGenerator {
         }
     }
 
+    /**
+     * Returns Max/Min lore for a weapon
+     * based on the Attribute Type
+     * includes chat colouring
+     *
+     * @param aType
+     * @param i
+     * @param tierID
+     * @return String
+     * @since 1.0
+     */
     public static String setCorrectItemLore(Item.AttributeType aType, int i, int tierID) {
         switch (aType) {
             case DAMAGE:
@@ -204,7 +222,7 @@ public class ItemGenerator {
      *
      * @param type
      * @param tier
-     * @return
+     * @return ItemStack
      * @since 1.0
      */
     private ItemStack getBaseItem(Item.ItemType type, Item.ItemTier tier) {

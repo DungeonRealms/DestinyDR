@@ -214,6 +214,35 @@ public class HealthHandler {
         }
     }
 
+    public void healPlayerByAmount(Player player, int amount) {
+        double currentHP = getPlayerHPLive(player);
+        double maxHP = getPlayerMaxHPLive(player);
+        if (currentHP + 1 > maxHP) {
+            if (player.getHealth() != 20) {
+                player.setHealth(20);
+            }
+        }
+
+        if ((currentHP + (double) amount) >= maxHP) {
+            player.setHealth(20);
+            setPlayerHPLive(player, (int) maxHP);
+        } else if (player.getHealth() <= 19 && ((currentHP + (double) amount) < maxHP)) {
+            setPlayerHPLive(player, (int) (getPlayerHPLive(player) + (double) amount));
+            double playerHPPercent = (getPlayerHPLive(player) + (double) amount) / maxHP;
+            double newPlayerHP = playerHPPercent * 20;
+            if (newPlayerHP >= 19.50D) {
+                if (playerHPPercent >= 1.0D) {
+                    newPlayerHP = 20;
+                } else {
+                    newPlayerHP = 19;
+                }
+            }
+            if (newPlayerHP < 1) {
+                newPlayerHP = 1;
+            }
+            player.setHealth((int) newPlayerHP);
+        }
+    }
     /**
      * Called from damage event,
      * used to update the players
@@ -397,4 +426,5 @@ public class HealthHandler {
             return calculateHealthRegenFromItems(player);
         }
     }
+
 }

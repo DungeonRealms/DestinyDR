@@ -206,6 +206,7 @@ public class DamageListener implements Listener {
             return;
         if (!(event.getEntity() instanceof Player)) return;
         double finalDamage = 0;
+        Player player = (Player) event.getEntity();
         if (event.getDamager() instanceof Monster) {
             Monster attacker = (Monster) event.getDamager();
             EntityEquipment attackerEquipment = attacker.getEquipment();
@@ -222,20 +223,31 @@ public class DamageListener implements Listener {
             //Check if it's a {WEAPON} the mob is hitting with. Once of our custom ones!
             if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);
+            if (CombatLog.isInCombat(player)) {
+                CombatLog.updateCombat(player);
+            } else {
+                CombatLog.addToCombat(player);
+            }
         } else if (event.getDamager().getType() == EntityType.ARROW) {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof Monster)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
+            if (CombatLog.isInCombat(player)) {
+                CombatLog.updateCombat(player);
+            } else {
+                CombatLog.addToCombat(player);
+            }
         } else if (event.getDamager().getType() == EntityType.WITHER_SKULL) {
             WitherSkull staffProjectile = (WitherSkull) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof Monster)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
+            if (CombatLog.isInCombat(player)) {
+                CombatLog.updateCombat(player);
+            } else {
+                CombatLog.addToCombat(player);
+            }
         }
-        if (CombatLog.isInCombat((Player) event.getEntity())) {
-            CombatLog.updateCombat((Player) event.getEntity());
-        } else {
-            CombatLog.addToCombat((Player) event.getEntity());
-        }
+        player.sendMessage("HIT BY MOB");
         event.setDamage(finalDamage);
     }
 
