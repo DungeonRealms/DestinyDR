@@ -29,6 +29,19 @@ import java.util.*;
  */
 public class Menu {
 
+    public static void openGuildManagement(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 45, "Guild Management");
+        UUID uuid = player.getUniqueId();
+
+        String owner = (String) DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
+        String guildName = (String) DatabaseAPI.getInstance().getData(EnumGuildData.NAME, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
+        String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, guildName);
+        List<String> officers = (List<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, guildName);
+        List<String> members = (List<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, guildName);
+
+        player.openInventory(inv);
+    }
+
     public static void openGuildRankingBoard(Player player) {
 
         Inventory inv = Bukkit.createInventory(null, 18, "Top Guilds");
@@ -42,7 +55,7 @@ public class Menu {
 
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () ->
             {
-                Date creationDate = new Date(Integer.valueOf(String.valueOf(((Document) info).get("unixCreation"))) * 1000);
+                Date creationDate = new Date(Long.valueOf(String.valueOf(((Document) info).get("unixCreation"))) * 1000);
                 SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
                 String date = sdf.format(creationDate);
 
@@ -69,9 +82,9 @@ public class Menu {
         String owner = (String) DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumGuildData.NAME, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
         String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-        Long origin = (Long) DatabaseAPI.getInstance().getData(EnumGuildData.CREATION_UNIX_DATA, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-        int netLevel = (int) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-        double experience = Double.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumGuildData.EXPERIENCE, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid))));
+        Long origin = (Long) DatabaseAPI.getInstance().getData(EnumGuildData.CREATION_UNIX_DATA, guildName);
+        int netLevel = (int) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, guildName);
+        double experience = Double.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumGuildData.EXPERIENCE, guildName)));
 
         Date creationDate = new Date(origin * 1000);
         SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
@@ -103,6 +116,30 @@ public class Menu {
             }));
             plN++;
         }
+
+        int giN = 19;
+        for (String log : logs) {
+            if (giN > 26) break;
+            Date loginDate = new Date(Long.valueOf(log.split(",")[1]) * 1000);
+            String loginTime = sdf.format(loginDate);
+            inv.setItem(giN, editItem(log.split(",")[0], ChatColor.GREEN + log.split(",")[0], new String[]{
+                    ChatColor.GREEN + loginTime
+            }));
+            giN++;
+        }
+
+        int gveI = 28;
+        for (String log : logs) {
+            if (gveI > 35) break;
+            Date loginDate = new Date(Long.valueOf(log.split(",")[1]) * 1000);
+            String loginTime = sdf.format(loginDate);
+            inv.setItem(gveI, editItem(log.split(",")[0], ChatColor.GREEN + log.split(",")[0], new String[]{
+                    ChatColor.GREEN + loginTime
+            }));
+            gveI++;
+        }
+
+
         player.openInventory(inv);
 
     }
@@ -112,15 +149,19 @@ public class Menu {
 
         String owner = (String) DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumGuildData.NAME, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-        String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-        List<String> officers = (List<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-        List<String> members = (List<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-        Integer netLevel = (Integer) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
+        String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, guildName);
+        List<String> officers = (List<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, guildName);
+        List<String> members = (List<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, guildName);
+        Integer netLevel = (Integer) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, guildName);
 
         Inventory inv = Bukkit.createInventory(null, 54, "Guild - " + ChatColor.translateAlternateColorCodes('&', clanTag));
 
         inv.setItem(0, editItem("PC", ChatColor.GREEN + "Guild Logs", new String[]{
                 ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click" + ChatColor.GRAY + " to view Guild Logs!",
+        }));
+
+        inv.setItem(1, editItem("MHF_WSkeleton ", ChatColor.GREEN + "Guild Mechanics", new String[]{
+                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click" + ChatColor.GRAY + " for guild mechanics."
         }));
 
         inv.setItem(4, editItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Guild Name" + ChatColor.GRAY + ": " + ChatColor.RESET + guildName, new String[]{

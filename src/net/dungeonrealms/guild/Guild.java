@@ -6,7 +6,6 @@ import net.dungeonrealms.mongo.*;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -99,7 +98,7 @@ public class Guild {
      */
     @SuppressWarnings({"unchecked", "negrotasticness"})
     public boolean isMember(String guildName, UUID uuid) {
-        if (isInGuild(uuid)) {
+        if (isGuildNull(uuid)) {
             return ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, guildName)).contains(uuid);
         }
         return false;
@@ -115,7 +114,7 @@ public class Guild {
      */
     @SuppressWarnings({"unchecked", "negrotasticness"})
     public boolean isOfficer(String guildName, UUID uuid) {
-        if (isInGuild(uuid)) {
+        if (isGuildNull(uuid)) {
             return ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, guildName)).contains(uuid);
         }
         return false;
@@ -127,8 +126,8 @@ public class Guild {
      * @param uuid
      * @return
      */
-    public boolean isInGuild(UUID uuid) {
-        return !DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid).equals("");
+    public boolean isGuildNull(UUID uuid) {
+        return String.valueOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid)).equals("");
     }
 
     /**
@@ -147,10 +146,6 @@ public class Guild {
                 Object info = guild.get("info");
                 String guildName = ((Document) info).getString("name");
                 DatabaseAPI.GUILDS.put(guildName, guild);
-                Bukkit.getOnlinePlayers().stream().filter(p -> DatabaseAPI.getInstance().getData(EnumData.GUILD, p.getUniqueId()).equals(guildName)).forEach(p -> {
-                    p.sendMessage(ChatColor.WHITE + "[" + ChatColor.BLUE.toString() + ChatColor.BOLD + "GUILD" + ChatColor.WHITE + "] " + ChatColor.GREEN + p.getName() + ChatColor.YELLOW + " has joined your server!");
-                    p.playSound(p.getLocation(), Sound.NOTE_PLING, 1f, 63f);
-                });
             } else {
                 Utils.log.warning("[GUILD] [ASYNC] Unable to retrieve Guild=(" + rawGuildName + ")");
             }
@@ -168,7 +163,7 @@ public class Guild {
         int level = (int) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, guildName);
         //Guild level CAP 50.
         if (level >= 50) return;
-        double experience = (double) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, guildName);
+        double experience = (double) DatabaseAPI.getInstance().getData(EnumGuildData.EXPERIENCE, guildName);
         if (((level * experience) + experienceToAdd) > (level * 1500)) {
             DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.netLevel", 1, true);
         } else {
