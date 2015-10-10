@@ -10,7 +10,7 @@ public class Item {
 
     public enum ItemType {
         SWORD(0, "Sword"),
-        POLE_ARM(1, "Pole Arm"),
+        POLE_ARM(1, "PoleArm"),
         AXE(2, "Axe"),
         STAFF(3, "Staff"),
         BOW(4, "Bow");
@@ -44,9 +44,9 @@ public class Item {
     public enum ItemTier {
         TIER_1(0, 1, new Integer[]{1, 10}, 2),
         TIER_2(1, 2, new Integer[]{10, 20}, 3),
-        TIER_3(2, 3, new Integer[]{20, 30}, 5),
-        TIER_4(3, 4, new Integer[]{30, 40}, 7),
-        TIER_5(4, 5, new Integer[]{40, 50}, 9),;
+        TIER_3(2, 3, new Integer[]{20, 30}, 4),
+        TIER_4(3, 4, new Integer[]{30, 40}, 5),
+        TIER_5(4, 5, new Integer[]{40, 50}, 6),;
 
         private int id;
         private int tierId;
@@ -84,6 +84,32 @@ public class Item {
             }
             return null;
         }
+
+        public static ItemTier getByTier(int tier) {
+            for (ItemTier it : values()) {
+                if (it.getTierId() == tier) {
+                    return it;
+                }
+            }
+            return null;
+        }
+
+        public ChatColor getChatColorOfTier(ItemTier itemTier) {
+            switch (itemTier) {
+                case TIER_1:
+                    return ChatColor.WHITE;
+                case TIER_2:
+                    return ChatColor.GREEN;
+                case TIER_3:
+                    return ChatColor.AQUA;
+                case TIER_4:
+                    return ChatColor.LIGHT_PURPLE;
+                case TIER_5:
+                    return ChatColor.YELLOW;
+                default:
+                    return ChatColor.WHITE;
+            }
+        }
     }
 
     public enum ItemModifier {
@@ -118,26 +144,42 @@ public class Item {
             }
             return null;
         }
+
+        public ChatColor getChatColorOfModifier(ItemModifier itemModifier) {
+            switch (itemModifier) {
+                case COMMON:
+                    return ChatColor.GRAY;
+                case UNCOMMON:
+                    return ChatColor.GREEN;
+                case RARE:
+                    return ChatColor.AQUA;
+                case UNIQUE:
+                    return ChatColor.YELLOW;
+                case LEGENDARY:
+                    return ChatColor.DARK_PURPLE;
+                default:
+                    return ChatColor.GRAY;
+            }
+        }
     }
 
     public enum AttributeType {
         DAMAGE(0, "Damage", "damage"),
         PURE_DAMAGE(1, "Pure Damage", "pureDamage"),
-        CRITICAL_HIT(2, "Critical Hit", "criticalHit"),
+        CRITICAL_HIT(2, "Critical Hit", "criticalHit"), //Percentage
         ARMOR_PENETRATION(3, "ArmorPenetration", "armorPenetration"),
-        VS_MONSTERS(4, "VS Monsters", "vsMonsters"),
-        VS_PLAYER(5, "VS Players", "vsPlayers"),
-        BLIND(6, "Blind", "blind"),
-        KNOCK_BACK(7, "KnockBack", "knockback"),
-        LIFE_STEAL(8, "LifeSteal", "lifesteal"),
-        VITALITY(9, "Vitality", "vitality"),
-        DEXTERITY(10, "Dexterity", "dexterity"),
-        ICE_DAMAGE(11, "IceDamage", "iceDamage"),
-        FIRE_DAMAGE(12, "FireDamage", "fireDamage"),
-        POISON_DAMAGE(13, "PoisonDamage", "poisonDamage"),
-        ACCURACY(14, "Accuracy", "accuracy"),
-        STRENGTH(15, "Strength", "strength"),
-        INTELLECT(16, "Intellect", "intellect");
+        VS_MONSTERS(4, "VS Monsters", "vsMonsters"), //Percentage
+        VS_PLAYER(5, "VS Players", "vsPlayers"), //Percentage
+        BLIND(6, "Blind", "blind"), //Percentage
+        LIFE_STEAL(7, "LifeSteal", "lifesteal"), //Percentage
+        VITALITY(8, "Vitality", "vitality"),
+        DEXTERITY(9, "Dexterity", "dexterity"),
+        ICE_DAMAGE(10, "IceDamage", "iceDamage"),
+        FIRE_DAMAGE(11, "FireDamage", "fireDamage"),
+        POISON_DAMAGE(12, "PoisonDamage", "poisonDamage"),
+        ACCURACY(13, "Accuracy", "accuracy"),
+        STRENGTH(14, "Strength", "strength"),
+        INTELLECT(15, "Intellect", "intellect");
 
         private int id;
         private String name;

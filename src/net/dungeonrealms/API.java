@@ -5,10 +5,10 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
-import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.guild.Guild;
-import net.dungeonrealms.handlers.KarmaHandler;
+import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -121,10 +121,9 @@ public class API {
      * @since 1.0
      */
     public static void logoutAllPlayers() {
-        for (int i = 0; i < Bukkit.getOnlinePlayers().size(); i++) {
-            Player p = (Player) Bukkit.getOnlinePlayers().toArray()[i];
-            handleLogout(p.getUniqueId());
-            p.kickPlayer("Server Restarting!");
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            handleLogout(player.getUniqueId());
+            player.kickPlayer("Server Restarting!");
         }
     }
 

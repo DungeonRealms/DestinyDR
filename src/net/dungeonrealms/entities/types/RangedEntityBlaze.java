@@ -1,13 +1,5 @@
 package net.dungeonrealms.entities.types;
 
-import java.lang.reflect.Field;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
-
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.enums.EnumMonster;
@@ -16,6 +8,13 @@ import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
+
+import java.lang.reflect.Field;
 
 /**
  * Created by Chase on Oct 4, 2015
@@ -93,7 +92,7 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 	}
 
 	private ItemStack getTierWeapon(int tier) {
-		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.STAFF, net.dungeonrealms.items.Item.ItemTier.getById(tier));
+		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.STAFF, net.dungeonrealms.items.Item.ItemTier.getByTier(tier));
 		// TODO: MAKE THIS TAKE A TIER AND BASE IT ON THAT. DO THE SAME WITH
 		// ARMOR DON'T JUST CREATE NEW SHITTY BUKKIT ONES.
 		/*

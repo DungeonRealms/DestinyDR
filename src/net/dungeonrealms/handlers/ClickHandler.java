@@ -1,5 +1,7 @@
 package net.dungeonrealms.handlers;
 
+import net.dungeonrealms.inventory.Menu;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 
 /**
@@ -22,7 +24,30 @@ public class ClickHandler {
         if (slot == -999) return;
         if (name.startsWith("Guild - ")) {
             event.setCancelled(true);
-            //if (slot > 54) return;
+            if (slot > 54) return;
+            switch (slot) {
+                case 0:
+                    Menu.openPlayerGuildLog((Player) event.getWhoClicked());
+                    break;
+                case 1:
+                    Menu.openGuildManagement((Player) event.getWhoClicked());
+                    break;
+                case 17:
+                    Menu.openGuildRankingBoard((Player) event.getWhoClicked());
+                    break;
+            }
+        } else if (name.endsWith("- (Logs)")) {
+            event.setCancelled(true);
+            if (slot > 36) return;
+            switch (slot) {
+                case 0:
+                    Menu.openPlayerGuildInventory((Player) event.getWhoClicked());
+                    break;
+            }
+        } else if (name.equals("Top Guilds")) {
+            event.setCancelled(true);
+        } else if (name.equals("Guild Management")) {
+            event.setCancelled(true);
         }
     }
 }

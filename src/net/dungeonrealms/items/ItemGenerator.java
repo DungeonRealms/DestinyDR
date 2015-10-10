@@ -59,9 +59,8 @@ public class ItemGenerator {
         ArrayList<Item.AttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(tier.getAttributeRange()));
         ItemMeta meta = item.getItemMeta();
         List<String> list = new NameGenerator().next(type);
-        meta.setDisplayName(ChatColor.GRAY + list.get(0) + " " + list.get(1) + " " + list.get(2));
+        meta.setDisplayName(tier.getChatColorOfTier(tier) + list.get(0) + " " + list.get(1) + " " + list.get(2));
         List<String> itemLore = new ArrayList<>();
-        itemLore.add(ChatColor.WHITE + "One handed          " + type.getName());
 
         HashMap<Item.AttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
 
@@ -71,13 +70,13 @@ public class ItemGenerator {
             if (aType == Item.AttributeType.DAMAGE) {
                 int damageRandomizer = getRandomDamageVariable(tier.getTierId());
                 itemLore.add(ChatColor.GREEN + "+ " + ChatColor.RED + Math.round((i - (i / damageRandomizer))) + ChatColor.WHITE + " - " + ChatColor.RED + Math.round((i + (i / damageRandomizer))) + ChatColor.WHITE + " " + aType.getName());
+            } else if (aType == Item.AttributeType.VS_MONSTERS || aType == Item.AttributeType.VS_PLAYER || aType == Item.AttributeType.LIFE_STEAL || aType == Item.AttributeType.CRITICAL_HIT || aType == Item.AttributeType.BLIND) {
+                itemLore.add(ChatColor.GREEN + "+ " + ChatColor.WHITE + i + "% " + aType.getName());
             } else {
                 itemLore.add(ChatColor.GREEN + "+ " + ChatColor.WHITE + i + " " + aType.getName());
             }
         });
-        itemLore.add(ChatColor.GRAY + "Requires Level: " + ChatColor.GOLD + String.valueOf(tier.getRangeValues()[0]));
-        itemLore.add(ChatColor.GRAY + "Item Tier: " + ChatColor.GOLD + tier.getTierId());
-        itemLore.add(ChatColor.GRAY + "Item Rarity: " + modifier.getName());
+        itemLore.add(modifier.getChatColorOfModifier(modifier).toString() + modifier.getName());
         meta.setLore(itemLore);
         item.setItemMeta(meta);
 

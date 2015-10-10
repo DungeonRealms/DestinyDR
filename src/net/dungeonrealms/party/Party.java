@@ -29,7 +29,7 @@ public class Party {
     ArrayList<RawParty> PARTIES = new ArrayList<>();
 
     public void startInitialization() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), this::updateParties, 0, 10L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), this::updateParties, 0, 5L);
     }
 
     public void updateParties() {

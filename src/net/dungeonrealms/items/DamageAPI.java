@@ -74,12 +74,12 @@ public class DamageAPI {
         boolean isHitCrit = false;
         if (receiver instanceof Player) {
             if (tag.getInt("vsPlayers") != 0) {
-                damage += tag.getInt("vsPlayers");
+                damage += ((tag.getInt("vsPlayers") / 100) * damage);
             }
         } else {
             if (receiver.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                 if (tag.getInt("vsMonsters") != 0) {
-                    damage += tag.getInt("vsMonsters");
+                    damage += ((tag.getInt("vsMonsters") / 100) * damage);
                 }
             }
         }
@@ -318,12 +318,12 @@ public class DamageAPI {
         boolean isHitCrit = false;
         if (receiver instanceof Player) {
             if (projectile.getMetadata("vsPlayers").get(0).asInt() != 0) {
-                damage += projectile.getMetadata("vsPlayers").get(0).asInt();
+                damage += ((projectile.getMetadata("vsPlayers").get(0).asInt() / 100) * damage);
             }
         } else {
             if (receiver.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                 if (projectile.getMetadata("vsMonsters").get(0).asInt() != 0) {
-                    damage += projectile.getMetadata("vsMonsters").get(0).asInt();
+                    damage += ((projectile.getMetadata("vsMonsters").get(0).asInt() / 100) * damage);
                 }
             }
         }

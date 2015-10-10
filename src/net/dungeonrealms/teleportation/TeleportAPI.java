@@ -136,7 +136,7 @@ public class TeleportAPI {
         if (DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid) != null) {
             return DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid).toString();
         } else {
-            return "cyrennica";
+            return "Cyrennica";
         }
     }
 
@@ -148,7 +148,7 @@ public class TeleportAPI {
      * @since 1.0
      */
     public static Location getLocationFromString(String location) {
-        switch (location) {
+        switch (location.toLowerCase()) {
             case "starter": {
                 return Teleportation.Tutorial;
             }
@@ -174,7 +174,7 @@ public class TeleportAPI {
                 return Teleportation.Crestguard_Keep;
             }
             default: {
-                return Teleportation.Cyrennica;
+                return null;
             }
         }
     }

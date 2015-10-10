@@ -26,3 +26,5 @@ commands:
         description: The main set command.
     list:
         description: Shows amount of players currently online.
+    essentials:
+        description: Used to set essential player information (Hearthstone Location etc).

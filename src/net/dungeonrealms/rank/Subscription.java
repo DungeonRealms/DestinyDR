@@ -6,11 +6,9 @@ import net.dungeonrealms.mechanics.SoundAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
-import net.minecraft.server.v1_8_R3.IChatBaseComponent;
-import net.minecraft.server.v1_8_R3.PacketPlayOutChat;
+import net.md_5.bungee.api.chat.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerJoinEvent;
 
@@ -105,18 +103,25 @@ public class Subscription {
             long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId())));
             int hoursLeft = (int) ((endTime - currentTime) / 1000l);
 
-            IChatBaseComponent comp = null;
-
             if (hoursLeft > 10) {
-                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.YELLOW.toString() + ChatColor.BOLD + "SUB" + ChatColor.WHITE + "] " + ChatColor.RED + "Click " + ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE" + ChatColor.RED + ". To view your current subscription plan!");
+                TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
+                bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "profile"));
+                bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to view Profile!").create()));
+                TextComponent test = new TextComponent(ChatColor.WHITE + "[" + ChatColor.YELLOW + ChatColor.BOLD + "SUB" + ChatColor.RESET + ChatColor.WHITE + "] " + ChatColor.RED + "Your subscription is active!! Click ");
+                test.addExtra(bungeeMessage);
+                test.addExtra(ChatColor.RED + " for more information!");
+                player.spigot().sendMessage(test);
             } else if (hoursLeft <= 9 && hoursLeft >= 3) {
                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.YELLOW.toString() + ChatColor.BOLD + "SUB" + ChatColor.WHITE + "] " + ChatColor.RED + "Your subscription will end in " + ChatColor.AQUA + hoursLeft + ChatColor.RED + " hours. :-(");
             } else if (hoursLeft <= 0) {
-                comp = IChatBaseComponent.ChatSerializer.a("{\"text\":\"§f[§e§lSUB§f] §cYour subscription has ended! Click \",\"extra\":[{\"text\":\"§b§l§nHERE\",\"hoverEvent\":{\"action\":\"show_text\",\"value\":\"§eOpen Informative GUI.\"},\"clickEvent\":{\"action\":\"run_command\",\"value\":\"/list\"}}]}");
+                TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
+                bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://dungeonrealms.net/shop"));
+                bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Dungeon Realms Store!").create()));
+                TextComponent test = new TextComponent(ChatColor.WHITE + "[" + ChatColor.YELLOW + ChatColor.BOLD + "SUB" + ChatColor.RESET + ChatColor.WHITE + "] " + ChatColor.RED + "Your subscription has ended! Click ");
+                test.addExtra(bungeeMessage);
+                test.addExtra(ChatColor.RED + " to learn more!");
+                player.spigot().sendMessage(test);
             }
-
-            PacketPlayOutChat packet = new PacketPlayOutChat(comp, (byte) 1);
-            ((CraftPlayer) player).getHandle().playerConnection.sendPacket(packet);
         }, 20 * 5);
     }
 

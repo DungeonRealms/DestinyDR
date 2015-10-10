@@ -1,4 +1,4 @@
-package net.dungeonrealms.energy;
+package net.dungeonrealms.handlers;
 
 import net.dungeonrealms.DungeonRealms;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;

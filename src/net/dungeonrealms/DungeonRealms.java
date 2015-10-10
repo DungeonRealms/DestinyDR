@@ -4,7 +4,7 @@ import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.commands.*;
 import net.dungeonrealms.donate.DonationEffects;
-import net.dungeonrealms.energy.EnergyHandler;
+import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.handlers.HealthHandler;
@@ -53,6 +53,7 @@ public class DungeonRealms extends JavaPlugin {
     public void onEnable() {
         long START_TIME = System.currentTimeMillis() / 1000L;
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
+        saveDefaultConfig();
         Database.getInstance().initConnection();
         DatabaseAPI.getInstance().startInitialization();
         PluginManager pm = Bukkit.getPluginManager();
@@ -97,6 +98,7 @@ public class DungeonRealms extends JavaPlugin {
         getCommand("profile").setExecutor(new CommandProfile());
         getCommand("rank").setExecutor(new CommandRank());
         getCommand("guild").setExecutor(new CommandGuild());
+        getCommand("essentials").setExecutor(new CommandEss());
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         FTPUtils.startInitialization();
 
@@ -107,10 +109,10 @@ public class DungeonRealms extends JavaPlugin {
         SpawningMechanics.loadSpawners();
         LootManager.loadLootSpawners();
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
-
     }
 
     public void onDisable() {
+        saveConfig();
         ShopMechanics.deleteAllShops();
         API.logoutAllPlayers();
         SpawningMechanics.killAll();

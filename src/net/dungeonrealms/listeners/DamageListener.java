@@ -4,10 +4,10 @@ import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
-import net.dungeonrealms.energy.EnergyHandler;
 import net.dungeonrealms.entities.utils.EntityAPI;
-import net.dungeonrealms.handlers.KarmaHandler;
+import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.Item;
@@ -451,7 +451,7 @@ public class DamageListener implements Listener {
         }
         if (event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.DROWNING
                 || event.getCause() == DamageCause.FALL || event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.FIRE
-                || event.getCause() == DamageCause.ENTITY_EXPLOSION || event.getCause() == DamageCause.BLOCK_EXPLOSION) {
+                || event.getCause() == DamageCause.ENTITY_EXPLOSION || event.getCause() == DamageCause.BLOCK_EXPLOSION || event.getCause() == DamageCause.FIRE_TICK) {
             event.setCancelled(true);
             event.setDamage(0);
             event.getEntity().setFireTicks(0);
@@ -512,10 +512,11 @@ public class DamageListener implements Listener {
             }
         }
         event.getDrops().clear();
-        player.setHealth(3);
+        player.setHealth(20);
         for (PotionEffect potionEffect : player.getActivePotionEffects()) {
             player.removePotionEffect(potionEffect.getType());
         }
+        HealthHandler.setPlayerHPLive(player, HealthHandler.getPlayerMaxHPLive(player));
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 10));
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 10));
         player.teleport(Teleportation.Cyrennica);
@@ -586,5 +587,21 @@ public class DamageListener implements Listener {
         }
         event.setCancelled(false);
         event.setRadius(0);
+    }
+
+    /**
+     * Fired when monster is killed. Checks if the monster is elite.
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
+    public void onEliteDeath(EntityDeathEvent event){
+        if (event.getEntity() instanceof Player) return;
+        if (!(event.getEntity() instanceof Monster)) return;
+        if (!(event.getEntity().hasMetadata("elite"))) return;
+        if (event.getEntity().hasMetadata("elite")){
+            //Monster is Elite.
+        }
     }
 }

@@ -6,7 +6,7 @@ import net.dungeonrealms.mongo.*;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Sound;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -23,6 +23,18 @@ public class Guild {
             instance = new Guild();
         }
         return instance;
+    }
+
+    /**
+     * Handles GUild Logs.
+     *
+     * @param player
+     * @since 1.0
+     */
+    public void handleLogin(Player player) {
+        if (DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).equals("")) return;
+        String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
+        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "logs.playerLogin", player.getName() + "," + (System.currentTimeMillis() / 1000l), true);
     }
 
     /**
@@ -86,7 +98,7 @@ public class Guild {
      */
     @SuppressWarnings({"unchecked", "negrotasticness"})
     public boolean isMember(String guildName, UUID uuid) {
-        if (isInGuild(uuid)) {
+        if (isGuildNull(uuid)) {
             return ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, guildName)).contains(uuid);
         }
         return false;
@@ -102,7 +114,7 @@ public class Guild {
      */
     @SuppressWarnings({"unchecked", "negrotasticness"})
     public boolean isOfficer(String guildName, UUID uuid) {
-        if (isInGuild(uuid)) {
+        if (isGuildNull(uuid)) {
             return ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, guildName)).contains(uuid);
         }
         return false;
@@ -114,8 +126,8 @@ public class Guild {
      * @param uuid
      * @return
      */
-    public boolean isInGuild(UUID uuid) {
-        return DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid) != null;
+    public boolean isGuildNull(UUID uuid) {
+        return String.valueOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid)).equals("");
     }
 
     /**
@@ -134,14 +146,29 @@ public class Guild {
                 Object info = guild.get("info");
                 String guildName = ((Document) info).getString("name");
                 DatabaseAPI.GUILDS.put(guildName, guild);
-                Bukkit.getOnlinePlayers().stream().filter(p -> DatabaseAPI.getInstance().getData(EnumData.GUILD, p.getUniqueId()).equals(guildName)).forEach(p -> {
-                    p.sendMessage(ChatColor.WHITE + "[" + ChatColor.BLUE.toString() + ChatColor.BOLD + "GUILD" + ChatColor.WHITE + "] " + ChatColor.GREEN + p.getName() + ChatColor.YELLOW + " has joined your server!");
-                    p.playSound(p.getLocation(), Sound.NOTE_PLING, 1f, 63f);
-                });
             } else {
                 Utils.log.warning("[GUILD] [ASYNC] Unable to retrieve Guild=(" + rawGuildName + ")");
             }
         });
+    }
+
+    /**
+     * Adds experience to a Guild also watches for the global guild level cap.
+     *
+     * @param guildName
+     * @param experienceToAdd
+     * @since 1.0
+     */
+    public void addGuildExperience(String guildName, double experienceToAdd) {
+        int level = (int) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, guildName);
+        //Guild level CAP 50.
+        if (level >= 50) return;
+        double experience = (double) DatabaseAPI.getInstance().getData(EnumGuildData.EXPERIENCE, guildName);
+        if (((level * experience) + experienceToAdd) > (level * 1500)) {
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.netLevel", 1, true);
+        } else {
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.experience", experienceToAdd, true);
+        }
     }
 
     /**
@@ -167,10 +194,19 @@ public class Guild {
                                     .append("clanTag", clanTag)
                                     .append("owner", owner.toString())
                                     .append("officers", new ArrayList<String>())
-                                    .append("members", new ArrayList<String>()))
-                            .append("unixCreation", System.currentTimeMillis() / 1000l)
+                                    .append("members", new ArrayList<String>())
+                                    .append("unixCreation", System.currentTimeMillis() / 1000l)
+                                    .append("netLevel", 1)
+                                    .append("experience", 0)
+                    )
+                            .append("logs",
+                                    new Document("playerLogin", new ArrayList<String>())
+                                            .append("playerInvites", new ArrayList<String>())
+                                            .append("bankClicks", new ArrayList<String>())
+                            )
                     , (aVoid, throwable1) -> {
                         DatabaseAPI.getInstance().requestGuild(name);
+                        DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, "info.guild", name, true);
                     });
         });
 

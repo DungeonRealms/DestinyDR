@@ -47,12 +47,10 @@ public class CommandSpawn implements CommandExecutor {
                     break;
                 case "buff":
                     BuffUtils.spawnBuff(player.getUniqueId());
-                    Utils.log.info("Spawned Buff");
                     break;
                 case "pet": {
                     if (!EntityAPI.hasPetOut(player.getUniqueId())) {
                         PetUtils.spawnPet(player.getUniqueId(), 9);
-                        Utils.log.info("Spawned Pet");
                     } else {
                         player.sendMessage("You already have a pet summoned");
                     }
@@ -69,7 +67,6 @@ public class CommandSpawn implements CommandExecutor {
                             player.sendMessage("Your pet has returned home as you have summoned your mount");
                         }
                         MountUtils.spawnMount(player.getUniqueId(), 5);
-                        Utils.log.info("Spawned Mount");
                     } else {
                         player.sendMessage("You already have a mount summoned");
                     }
@@ -78,12 +75,13 @@ public class CommandSpawn implements CommandExecutor {
                 case "monster": {
                     if (args.length >= 2) {
                         int tier = 1;
+                        if (args.length == 3) {
+                            tier = Integer.parseInt(args[2]);
+                        }
                         boolean elite = false;
-                        if (args.length == 3){
-                        	if(args[2].equalsIgnoreCase("*"))
-                        		elite = true;
-                        	else
-                        		tier = Integer.parseInt(args[2]);
+                        if (args.length == 4) {
+                            if (args[3].equalsIgnoreCase("*"))
+                                elite = true;
                         }
                         EnumEntityType type = EnumEntityType.HOSTILE_MOB;
                         Entity entity;

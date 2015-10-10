@@ -86,6 +86,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("isPlaying", Boolean.class);
             case LEVEL:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("netLevel", Integer.class);
+            case EXPERIENCE:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("experience", Double.class);
             case GEMS:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("gems", Integer.class);
             case HEARTHSTONE:
@@ -118,6 +120,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("attributes.intellect", Integer.class);
             case VITALITY:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("attributes.vitality", Integer.class);
+            case BUFFER_POINTS:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("attributes.bufferPoints", Integer.class);
             /*
             Player Storage
              */
@@ -160,6 +164,22 @@ public class DatabaseAPI {
                 return ((Document) GUILDS.get(guildName).get("info")).get("unixCreation", Long.class);
             case INVITATIONS:
                 return ((Document) GUILDS.get(guildName).get("info")).get("invitations", Long.class);
+            /*
+            Guild Logs
+             */
+            case PLAYER_LOGINS:
+                return ((Document) GUILDS.get(guildName).get("logs")).get("playerLogin", ArrayList.class);
+            case PLAYER_INVITES:
+                return ((Document) GUILDS.get(guildName).get("logs")).get("playerInvites", ArrayList.class);
+            case BANK_CLICK:
+                return ((Document) GUILDS.get(guildName).get("logs")).get("bankClicks", ArrayList.class);
+            /**
+             * Levels
+             */
+            case LEVEL:
+                return ((Document) GUILDS.get(guildName).get("info")).get("netLevel", Integer.class);
+            case EXPERIENCE:
+                return ((Document) GUILDS.get(guildName).get("info")).get("experience", Double.class);
             default:
         }
         return null;
@@ -216,15 +236,13 @@ public class DatabaseAPI {
     public void requestGuild(String guildName) {
         Database.guilds.find(Filters.eq("info.name", guildName)).first((document, throwable) -> {
             if (document != null) {
-                if (GUILDS.containsKey(guildName)) {
-                    GUILDS.put(guildName, document);
-                    Utils.log.info("[GUILD] [ASYNC] UPDATED Guild=(" + guildName + ") WITH NEW INFORMATION!");
+                GUILDS.put(guildName, document);
+                if (REQUEST_NEW_GUILD_DOCUMENT.contains(guildName)) {
+                    REQUEST_NEW_GUILD_DOCUMENT.remove(guildName);
+                    Utils.log.info("[GUILD] [ASYNC] UPDATED Guild=(" + guildName + ")");
                 } else {
-                    GUILDS.put(guildName, document);
-                    Utils.log.info("[GUILD] [ASYNC] Successfully fetched Guild=(" + guildName + ")");
+                    Utils.log.warning("[GUILD] [ASYNC] FAILED TO RETRIEVE=(" + guildName + ")");
                 }
-            } else {
-                Utils.log.warning("[GUILD] [ASYNC] FAILED TO RETRIEVE=(" + guildName + ")");
             }
         });
     }
@@ -235,6 +253,7 @@ public class DatabaseAPI {
      * @param uuid
      * @since 1.0
      */
+
     private void addNewPlayer(UUID uuid) {
         Document newPlayerDocument =
                 new Document("info",
@@ -245,14 +264,18 @@ public class DatabaseAPI {
                                 .append("firstLogin", System.currentTimeMillis() / 1000L)
                                 .append("lastLogin", 0l)
                                 .append("netLevel", 1)
-                                .append("experience", 0f)
-                                .append("hearthstone", "cyrennica")
+                                .append("experience", 0d)
+                                .append("hearthstone", "Cyrennica")
                                 .append("isPlaying", true)
                                 .append("friends", new ArrayList<>())
                                 .append("alignment", "lawful")
                                 .append("guild", "")
                                 .append("attributes",
-                                        new Document("strength", 1).append("dexterity", 1).append("intellect", 1).append("vitality", 1))
+                                        new Document("bufferPoints", 6)
+                                                .append("strength", 1)
+                                                .append("dexterity", 1)
+                                                .append("intellect", 1)
+                                                .append("vitality", 1))
                                 .append("collectibles",
                                         new Document("achievements", new ArrayList<String>())))
                         .append("rank",

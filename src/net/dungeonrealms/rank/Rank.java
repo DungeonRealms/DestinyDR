@@ -61,7 +61,8 @@ public class Rank {
      * @since 1.0
      */
     public RankBlob getRank(UUID uuid) {
-        return PLAYER_RANKS.get(uuid);
+        String rank = (String) DatabaseAPI.getInstance().getData(EnumData.RANK, uuid);
+        return RAW_RANKS.get(rank);
     }
 
     /**

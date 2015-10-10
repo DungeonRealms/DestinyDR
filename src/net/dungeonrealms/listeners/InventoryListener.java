@@ -33,7 +33,7 @@ import net.dungeonrealms.banks.Storage;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
 import net.dungeonrealms.handlers.ClickHandler;
-import net.dungeonrealms.items.Item;
+import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.LootManager;
@@ -455,7 +455,7 @@ public class InventoryListener implements Listener {
             net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getPlayer().getInventory().getItem(slot));
             if (nms.hasTag()) {
                 if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon")) {
-                    ItemTier tier = Item.ItemTier.getById(nms.getTag().getInt("itemTier"));
+                    ItemTier tier = new Attribute(event.getPlayer().getInventory().getItem(slot)).getItemTier();
                     int minLevel = tier.getRangeValues()[0];
                     Player p = event.getPlayer();
                     int pLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, p.getUniqueId());
