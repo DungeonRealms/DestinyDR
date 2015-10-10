@@ -166,12 +166,12 @@ public class Item {
     public enum AttributeType {
         DAMAGE(0, "Damage", "damage"),
         PURE_DAMAGE(1, "Pure Damage", "pureDamage"),
-        CRITICAL_HIT(2, "Critical Hit", "criticalHit"),
+        CRITICAL_HIT(2, "Critical Hit", "criticalHit"), //Percentage
         ARMOR_PENETRATION(3, "ArmorPenetration", "armorPenetration"),
-        VS_MONSTERS(4, "VS Monsters", "vsMonsters"),
-        VS_PLAYER(5, "VS Players", "vsPlayers"),
-        BLIND(6, "Blind", "blind"),
-        LIFE_STEAL(7, "LifeSteal", "lifesteal"),
+        VS_MONSTERS(4, "VS Monsters", "vsMonsters"), //Percentage
+        VS_PLAYER(5, "VS Players", "vsPlayers"), //Percentage
+        BLIND(6, "Blind", "blind"), //Percentage
+        LIFE_STEAL(7, "LifeSteal", "lifesteal"), //Percentage
         VITALITY(8, "Vitality", "vitality"),
         DEXTERITY(9, "Dexterity", "dexterity"),
         ICE_DAMAGE(10, "IceDamage", "iceDamage"),

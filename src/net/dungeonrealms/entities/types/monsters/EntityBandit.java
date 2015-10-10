@@ -12,10 +12,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 /**
  * Created by Chase on Sep 21, 2015
  */
@@ -39,8 +35,7 @@ public class EntityBandit extends MeleeEntityZombie {
      */
     private void checkPoison() {
         if (Utils.randInt(1, 6) == 4) {
-            this.getBukkitEntity().setMetadata("special",
-                    new FixedMetadataValue(DungeonRealms.getInstance(), "poison"));
+            this.getBukkitEntity().setMetadata("special", new FixedMetadataValue(DungeonRealms.getInstance(), "poison"));
             this.setCustomName(ChatColor.GREEN.toString() + ChatColor.UNDERLINE.toString() + monsterType.getPrefix() + "Poisonous Bandit");
         }
     }

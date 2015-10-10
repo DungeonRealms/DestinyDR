@@ -68,11 +68,13 @@ public class ItemGenerator {
             if (aType == Item.AttributeType.DAMAGE) {
                 int damageRandomizer = getRandomDamageVariable(tier.getTierId());
                 itemLore.add(ChatColor.GREEN + "+ " + ChatColor.RED + Math.round((i - (i / damageRandomizer))) + ChatColor.WHITE + " - " + ChatColor.RED + Math.round((i + (i / damageRandomizer))) + ChatColor.WHITE + " " + aType.getName());
+            } else if (aType == Item.AttributeType.VS_MONSTERS || aType == Item.AttributeType.VS_PLAYER || aType == Item.AttributeType.LIFE_STEAL || aType == Item.AttributeType.CRITICAL_HIT || aType == Item.AttributeType.BLIND) {
+                itemLore.add(ChatColor.GREEN + "+ " + ChatColor.WHITE + i + "% " + aType.getName());
             } else {
                 itemLore.add(ChatColor.GREEN + "+ " + ChatColor.WHITE + i + " " + aType.getName());
             }
         });
-        itemLore.add(modifier.getChatColorOfModifier(modifier).toString() + ChatColor.ITALIC + modifier.getName());
+        itemLore.add(modifier.getChatColorOfModifier(modifier).toString() + modifier.getName());
         meta.setLore(itemLore);
         item.setItemMeta(meta);
 

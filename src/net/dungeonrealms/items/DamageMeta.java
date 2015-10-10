@@ -62,9 +62,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(1, 3);
                             case VS_MONSTERS:
-                                return random(1, 4);
+                                return random(1, 7);
                             case VS_PLAYER:
-                                return random(1, 3);
+                                return random(1, 7);
                             case STRENGTH:
                                 return random(1, 3);
                             case INTELLECT:
@@ -132,9 +132,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(2, 3);
                             case VS_MONSTERS:
-                                return random(2, 12);
+                                return random(1, 7);
                             case VS_PLAYER:
-                                return random(2, 3);
+                                return random(1, 7);
                             case STRENGTH:
                                 return random(2, 6);
                             case INTELLECT:
@@ -167,9 +167,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(3, 7);
                             case VS_MONSTERS:
-                                return random(5, 14);
+                                return random(1, 7);
                             case VS_PLAYER:
-                                return random(5, 8);
+                                return random(1, 7);
                             case STRENGTH:
                                 return random(3, 7);
                             case INTELLECT:
@@ -202,9 +202,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(7, 10);
                             case VS_MONSTERS:
-                                return random(5, 21);
+                                return random(1, 7);
                             case VS_PLAYER:
-                                return random(5, 26);
+                                return random(1, 7);
                             case STRENGTH:
                                 return random(4, 10);
                             case INTELLECT:
@@ -241,9 +241,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(7, 10);
                             case VS_MONSTERS:
-                                return random(8, 12);
+                                return random(6, 11);
                             case VS_PLAYER:
-                                return random(4, 9);
+                                return random(6, 11);
                             case STRENGTH:
                                 return random(7, 10);
                             case INTELLECT:
@@ -276,9 +276,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(9, 16);
                             case VS_MONSTERS:
-                                return random(10, 18);
+                                return random(6, 11);
                             case VS_PLAYER:
-                                return random(5, 10);
+                                return random(6, 11);
                             case STRENGTH:
                                 return random(7, 10);
                             case INTELLECT:
@@ -311,9 +311,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(10, 16);
                             case VS_MONSTERS:
-                                return random(15, 22);
+                                return random(6, 11);
                             case VS_PLAYER:
-                                return random(6, 10);
+                                return random(6, 11);
                             case STRENGTH:
                                 return random(7, 13);
                             case INTELLECT:
@@ -346,9 +346,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(18, 22);
                             case VS_MONSTERS:
-                                return random(18, 22);
+                                return random(6, 11);
                             case VS_PLAYER:
-                                return random(8, 10);
+                                return random(6, 11);
                             case STRENGTH:
                                 return random(9, 13);
                             case INTELLECT:
@@ -381,9 +381,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(18, 25);
                             case VS_MONSTERS:
-                                return random(18, 25);
+                                return random(6, 11);
                             case VS_PLAYER:
-                                return random(8, 13);
+                                return random(6, 11);
                             case STRENGTH:
                                 return random(10, 13);
                             case INTELLECT:
@@ -420,9 +420,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(18, 27);
                             case VS_MONSTERS:
-                                return random(18, 27);
+                                return random(8, 14);
                             case VS_PLAYER:
-                                return random(15, 25);
+                                return random(8, 14);
                             case STRENGTH:
                                 return random(14, 18);
                             case INTELLECT:
@@ -455,9 +455,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(20, 30);
                             case VS_MONSTERS:
-                                return random(25, 27);
+                                return random(8, 14);
                             case VS_PLAYER:
-                                return random(25, 30);
+                                return random(8, 14);
                             case STRENGTH:
                                 return random(15, 19);
                             case INTELLECT:
@@ -490,9 +490,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(20, 30);
                             case VS_MONSTERS:
-                                return random(25, 30);
+                                return random(8, 14);
                             case VS_PLAYER:
-                                return random(25, 30);
+                                return random(8, 14);
                             case STRENGTH:
                                 return random(15, 20);
                             case INTELLECT:
@@ -525,9 +525,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(20, 30);
                             case VS_MONSTERS:
-                                return random(25, 30);
+                                return random(8, 14);
                             case VS_PLAYER:
-                                return random(25, 30);
+                                return random(8, 14);
                             case STRENGTH:
                                 return random(15, 23);
                             case INTELLECT:
@@ -560,9 +560,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(22, 30);
                             case VS_MONSTERS:
-                                return random(25, 32);
+                                return random(8, 14);
                             case VS_PLAYER:
-                                return random(25, 32);
+                                return random(8, 14);
                             case STRENGTH:
                                 return random(15, 25);
                             case INTELLECT:
@@ -599,9 +599,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(24, 30);
                             case VS_MONSTERS:
-                                return random(27, 32);
+                                return random(11, 17);
                             case VS_PLAYER:
-                                return random(27, 32);
+                                return random(11, 17);
                             case STRENGTH:
                                 return random(17, 25);
                             case INTELLECT:
@@ -634,9 +634,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(26, 30);
                             case VS_MONSTERS:
-                                return random(27, 32);
+                                return random(11, 17);
                             case VS_PLAYER:
-                                return random(27, 32);
+                                return random(11, 17);
                             case STRENGTH:
                                 return random(19, 25);
                             case INTELLECT:
@@ -669,9 +669,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(26, 33);
                             case VS_MONSTERS:
-                                return random(27, 34);
+                                return random(11, 17);
                             case VS_PLAYER:
-                                return random(27, 32);
+                                return random(11, 17);
                             case STRENGTH:
                                 return random(21, 25);
                             case INTELLECT:
@@ -704,9 +704,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(27, 33);
                             case VS_MONSTERS:
-                                return random(30, 34);
+                                return random(11, 17);
                             case VS_PLAYER:
-                                return random(30, 34);
+                                return random(11, 17);
                             case STRENGTH:
                                 return random(24, 27);
                             case INTELLECT:
@@ -739,9 +739,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(27, 34);
                             case VS_MONSTERS:
-                                return random(30, 35);
+                                return random(11, 17);
                             case VS_PLAYER:
-                                return random(30, 35);
+                                return random(11, 17);
                             case STRENGTH:
                                 return random(24, 28);
                             case INTELLECT:
@@ -778,9 +778,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(27, 35);
                             case VS_MONSTERS:
-                                return random(30, 37);
+                                return random(14, 20);
                             case VS_PLAYER:
-                                return random(30, 37);
+                                return random(14, 20);
                             case STRENGTH:
                                 return random(25, 28);
                             case INTELLECT:
@@ -813,9 +813,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(27, 36);
                             case VS_MONSTERS:
-                                return random(31, 37);
+                                return random(14, 20);
                             case VS_PLAYER:
-                                return random(31, 37);
+                                return random(14, 20);
                             case STRENGTH:
                                 return random(25, 30);
                             case INTELLECT:
@@ -848,9 +848,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(29, 39);
                             case VS_MONSTERS:
-                                return random(31, 37);
+                                return random(14, 20);
                             case VS_PLAYER:
-                                return random(31, 37);
+                                return random(14, 20);
                             case STRENGTH:
                                 return random(25, 31);
                             case INTELLECT:
@@ -883,9 +883,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(27, 40);
                             case VS_MONSTERS:
-                                return random(31, 42);
+                                return random(14, 20);
                             case VS_PLAYER:
-                                return random(31, 42);
+                                return random(14, 20);
                             case STRENGTH:
                                 return random(25, 31);
                             case INTELLECT:
@@ -918,9 +918,9 @@ public class DamageMeta {
                             case VITALITY:
                                 return random(30, 40);
                             case VS_MONSTERS:
-                                return random(34, 44);
+                                return random(14, 20);
                             case VS_PLAYER:
-                                return random(34, 44);
+                                return random(14, 20);
                             case STRENGTH:
                                 return random(27, 31);
                             case INTELLECT:
