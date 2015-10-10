@@ -112,7 +112,7 @@ public class ArmorGenerator {
      * @return
      * @since 1.0
      */
-    private Armor.ArmorTier getRandomItemTier() {
+    public static Armor.ArmorTier getRandomItemTier() {
         return Armor.ArmorTier.getById(new Random().nextInt(Armor.ArmorTier.values().length));
     }
 
@@ -122,7 +122,7 @@ public class ArmorGenerator {
      * @return
      * @since 1.0
      */
-    private Armor.ArmorModifier getRandomItemModifier() {
+    public static Armor.ArmorModifier getRandomItemModifier() {
         return Armor.ArmorModifier.getById(new Random().nextInt(Armor.ArmorModifier.values().length));
     }
 

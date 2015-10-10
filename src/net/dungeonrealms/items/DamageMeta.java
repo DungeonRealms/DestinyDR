@@ -40,11 +40,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(1, 6);
                             case ARMOR_PENETRATION:
-                                return random(1, 6);
+                                return random(1, 3);
                             case BLIND:
                                 return random(1, 6);
                             case CRITICAL_HIT:
-                                return random(1, 6);
+                                return random(1, 3);
                             case DAMAGE:
                                 return random(2, 7);
                             case DEXTERITY:
@@ -56,7 +56,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(1, 6);
                             case LIFE_STEAL:
-                                return random(1, 3);
+                                return random(1, 2);
                             case PURE_DAMAGE:
                                 return random(1, 3);
                             case VITALITY:
@@ -75,11 +75,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(1, 9);
                             case ARMOR_PENETRATION:
-                                return random(1, 9);
+                                return random(1, 3);
                             case BLIND:
                                 return random(1, 9);
                             case CRITICAL_HIT:
-                                return random(1, 9);
+                                return random(1, 3);
                             case DAMAGE:
                                 return random(4, 9);
                             case DEXTERITY:
@@ -91,7 +91,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(1, 9);
                             case LIFE_STEAL:
-                                return random(1, 4);
+                                return random(1, 2);
                             case PURE_DAMAGE:
                                 return random(2, 5);
                             case VITALITY:
@@ -110,11 +110,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(2, 5);
                             case ARMOR_PENETRATION:
-                                return random(2, 6);
+                                return random(1, 3);
                             case BLIND:
                                 return random(2, 3);
                             case CRITICAL_HIT:
-                                return random(2, 5);
+                                return random(1, 3);
                             case DAMAGE:
                                 return random(6, 12);
                             case DEXTERITY:
@@ -126,7 +126,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(2, 6);
                             case LIFE_STEAL:
-                                return random(2, 7);
+                                return random(1, 2);
                             case PURE_DAMAGE:
                                 return random(2, 6);
                             case VITALITY:
@@ -145,11 +145,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(5, 12);
                             case ARMOR_PENETRATION:
-                                return random(5, 12);
+                                return random(2, 3);
                             case BLIND:
                                 return random(5, 12);
                             case CRITICAL_HIT:
-                                return random(5, 15);
+                                return random(1, 3);
                             case DAMAGE:
                                 return random(9, 15);
                             case DEXTERITY:
@@ -161,7 +161,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(5, 13);
                             case LIFE_STEAL:
-                                return random(2, 4);
+                                return random(1, 2);
                             case PURE_DAMAGE:
                                 return random(5, 12);
                             case VITALITY:
@@ -180,11 +180,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(5, 21);
                             case ARMOR_PENETRATION:
-                                return random(5, 21);
+                                return random(2, 3);
                             case BLIND:
                                 return random(5, 21);
                             case CRITICAL_HIT:
-                                return random(5, 24);
+                                return random(2, 3);
                             case DAMAGE:
                                 return random(10, 18);
                             case DEXTERITY:
@@ -196,7 +196,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(5, 26);
                             case LIFE_STEAL:
-                                return random(3, 6);
+                                return random(1, 2);
                             case PURE_DAMAGE:
                                 return random(5, 26);
                             case VITALITY:
@@ -219,11 +219,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(2, 5);
                             case ARMOR_PENETRATION:
-                                return random(2, 7);
+                                return random(3, 5);
                             case BLIND:
                                 return random(2, 4);
                             case CRITICAL_HIT:
-                                return random(4, 7);
+                                return random(3, 5);
                             case DAMAGE:
                                 return random(15, 23);
                             case DEXTERITY:
@@ -235,7 +235,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(7, 10);
                             case LIFE_STEAL:
-                                return random(2, 10);
+                                return random(2, 3);
                             case PURE_DAMAGE:
                                 return random(3, 7);
                             case VITALITY:
@@ -254,11 +254,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(9, 15);
                             case ARMOR_PENETRATION:
-                                return random(8, 13);
+                                return random(3, 5);
                             case BLIND:
                                 return random(4, 7);
                             case CRITICAL_HIT:
-                                return random(7, 10);
+                                return random(3, 5);
                             case DAMAGE:
                                 return random(20, 35);
                             case DEXTERITY:
@@ -270,7 +270,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(9, 19);
                             case LIFE_STEAL:
-                                return random(4, 10);
+                                return random(2, 3);
                             case PURE_DAMAGE:
                                 return random(5, 7);
                             case VITALITY:
@@ -289,11 +289,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(13, 19);
                             case ARMOR_PENETRATION:
-                                return random(13, 19);
+                                return random(3, 5);
                             case BLIND:
                                 return random(5, 9);
                             case CRITICAL_HIT:
-                                return random(9, 14);
+                                return random(3, 5);
                             case DAMAGE:
                                 return random(25, 45);
                             case DEXTERITY:
@@ -305,7 +305,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(11, 19);
                             case LIFE_STEAL:
-                                return random(6, 10);
+                                return random(2, 3);
                             case PURE_DAMAGE:
                                 return random(5, 9);
                             case VITALITY:
@@ -324,11 +324,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(15, 19);
                             case ARMOR_PENETRATION:
-                                return random(15, 19);
+                                return random(3, 5);
                             case BLIND:
                                 return random(7, 10);
                             case CRITICAL_HIT:
-                                return random(11, 16);
+                                return random(3, 5);
                             case DAMAGE:
                                 return random(40, 60);
                             case DEXTERITY:
@@ -340,7 +340,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(14, 19);
                             case LIFE_STEAL:
-                                return random(6, 13);
+                                return random(2, 3);
                             case PURE_DAMAGE:
                                 return random(6, 10);
                             case VITALITY:
@@ -359,11 +359,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(17, 21);
                             case ARMOR_PENETRATION:
-                                return random(17, 21);
+                                return random(4, 5);
                             case BLIND:
                                 return random(9, 14);
                             case CRITICAL_HIT:
-                                return random(12, 16);
+                                return random(3, 5);
                             case DAMAGE:
                                 return random(50, 70);
                             case DEXTERITY:
@@ -375,7 +375,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(14, 24);
                             case LIFE_STEAL:
-                                return random(6, 15);
+                                return random(2, 3);
                             case PURE_DAMAGE:
                                 return random(6, 13);
                             case VITALITY:
@@ -398,11 +398,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(15, 24);
                             case ARMOR_PENETRATION:
-                                return random(15, 24);
+                                return random(5, 8);
                             case BLIND:
                                 return random(7, 10);
                             case CRITICAL_HIT:
-                                return random(11, 20);
+                                return random(5, 8);
                             case DAMAGE:
                                 return random(80, 100);
                             case DEXTERITY:
@@ -414,7 +414,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(17, 21);
                             case LIFE_STEAL:
-                                return random(9, 16);
+                                return random(3, 5);
                             case PURE_DAMAGE:
                                 return random(8, 15);
                             case VITALITY:
@@ -433,11 +433,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(18, 27);
                             case ARMOR_PENETRATION:
-                                return random(18, 28);
+                                return random(5, 8);
                             case BLIND:
                                 return random(7, 10);
                             case CRITICAL_HIT:
-                                return random(16, 25);
+                                return random(5, 8);
                             case DAMAGE:
                                 return random(100, 130);
                             case DEXTERITY:
@@ -449,7 +449,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(24, 31);
                             case LIFE_STEAL:
-                                return random(10, 16);
+                                return random(3, 5);
                             case PURE_DAMAGE:
                                 return random(13, 18);
                             case VITALITY:
@@ -468,11 +468,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(24, 27);
                             case ARMOR_PENETRATION:
-                                return random(24, 28);
+                                return random(5, 8);
                             case BLIND:
                                 return random(8, 10);
                             case CRITICAL_HIT:
-                                return random(16, 25);
+                                return random(5, 8);
                             case DAMAGE:
                                 return random(120, 150);
                             case DEXTERITY:
@@ -484,7 +484,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(26, 31);
                             case LIFE_STEAL:
-                                return random(12, 16);
+                                return random(3, 5);
                             case PURE_DAMAGE:
                                 return random(15, 18);
                             case VITALITY:
@@ -503,11 +503,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(24, 27);
                             case ARMOR_PENETRATION:
-                                return random(24, 28);
+                                return random(5, 8);
                             case BLIND:
                                 return random(8, 10);
                             case CRITICAL_HIT:
-                                return random(16, 25);
+                                return random(5, 8);
                             case DAMAGE:
                                 return random(140, 165);
                             case DEXTERITY:
@@ -519,7 +519,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(26, 31);
                             case LIFE_STEAL:
-                                return random(12, 16);
+                                return random(3, 5);
                             case PURE_DAMAGE:
                                 return random(15, 18);
                             case VITALITY:
@@ -538,11 +538,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(26, 30);
                             case ARMOR_PENETRATION:
-                                return random(26, 30);
+                                return random(5, 8);
                             case BLIND:
                                 return random(8, 10);
                             case CRITICAL_HIT:
-                                return random(16, 25);
+                                return random(5, 8);
                             case DAMAGE:
                                 return random(170, 200);
                             case DEXTERITY:
@@ -554,7 +554,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(26, 34);
                             case LIFE_STEAL:
-                                return random(14, 17);
+                                return random(3, 5);
                             case PURE_DAMAGE:
                                 return random(15, 22);
                             case VITALITY:
@@ -577,11 +577,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(26, 30);
                             case ARMOR_PENETRATION:
-                                return random(26, 30);
+                                return random(8, 12);
                             case BLIND:
                                 return random(8, 10);
                             case CRITICAL_HIT:
-                                return random(16, 25);
+                                return random(8, 12);
                             case DAMAGE:
                                 return random(180, 200);
                             case DEXTERITY:
@@ -593,7 +593,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(28, 34);
                             case LIFE_STEAL:
-                                return random(15, 18);
+                                return random(5, 7);
                             case PURE_DAMAGE:
                                 return random(17, 24);
                             case VITALITY:
@@ -612,11 +612,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(26, 32);
                             case ARMOR_PENETRATION:
-                                return random(26, 32);
+                                return random(8, 12);
                             case BLIND:
                                 return random(8, 14);
                             case CRITICAL_HIT:
-                                return random(16, 25);
+                                return random(8, 12);
                             case DAMAGE:
                                 return random(195, 205);
                             case DEXTERITY:
@@ -628,7 +628,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(30, 34);
                             case LIFE_STEAL:
-                                return random(15, 19);
+                                return random(5, 7);
                             case PURE_DAMAGE:
                                 return random(17, 25);
                             case VITALITY:
@@ -647,11 +647,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(26, 32);
                             case ARMOR_PENETRATION:
-                                return random(26, 34);
+                                return random(8, 12);
                             case BLIND:
                                 return random(8, 14);
                             case CRITICAL_HIT:
-                                return random(18, 25);
+                                return random(8, 12);
                             case DAMAGE:
                                 return random(205, 225);
                             case DEXTERITY:
@@ -663,7 +663,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(31, 34);
                             case LIFE_STEAL:
-                                return random(15, 19);
+                                return random(5, 7);
                             case PURE_DAMAGE:
                                 return random(18, 25);
                             case VITALITY:
@@ -682,11 +682,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(26, 34);
                             case ARMOR_PENETRATION:
-                                return random(26, 35);
+                                return random(8, 12);
                             case BLIND:
                                 return random(8, 16);
                             case CRITICAL_HIT:
-                                return random(18, 25);
+                                return random(8, 12);
                             case DAMAGE:
                                 return random(230, 260);
                             case DEXTERITY:
@@ -698,7 +698,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(31, 37);
                             case LIFE_STEAL:
-                                return random(16, 19);
+                                return random(5, 7);
                             case PURE_DAMAGE:
                                 return random(20, 25);
                             case VITALITY:
@@ -717,11 +717,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(26, 35);
                             case ARMOR_PENETRATION:
-                                return random(26, 35);
+                                return random(8, 12);
                             case BLIND:
                                 return random(8, 16);
                             case CRITICAL_HIT:
-                                return random(18, 25);
+                                return random(8, 12);
                             case DAMAGE:
                                 return random(255, 275);
                             case DEXTERITY:
@@ -733,7 +733,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(31, 38);
                             case LIFE_STEAL:
-                                return random(16, 20);
+                                return random(5, 7);
                             case PURE_DAMAGE:
                                 return random(20, 25);
                             case VITALITY:
@@ -756,11 +756,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(26, 34);
                             case ARMOR_PENETRATION:
-                                return random(26, 35);
+                                return random(12, 15);
                             case BLIND:
                                 return random(8, 16);
                             case CRITICAL_HIT:
-                                return random(18, 25);
+                                return random(12, 15);
                             case DAMAGE:
                                 return random(250, 280);
                             case DEXTERITY:
@@ -772,7 +772,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(31, 39);
                             case LIFE_STEAL:
-                                return random(16, 20);
+                                return random(7, 10);
                             case PURE_DAMAGE:
                                 return random(20, 28);
                             case VITALITY:
@@ -791,11 +791,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(26, 35);
                             case ARMOR_PENETRATION:
-                                return random(26, 35);
+                                return random(12, 15);
                             case BLIND:
                                 return random(8, 16);
                             case CRITICAL_HIT:
-                                return random(18, 25);
+                                return random(12, 15);
                             case DAMAGE:
                                 return random(270, 305);
                             case DEXTERITY:
@@ -807,7 +807,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(32, 39);
                             case LIFE_STEAL:
-                                return random(16, 20);
+                                return random(7, 10);
                             case PURE_DAMAGE:
                                 return random(24, 28);
                             case VITALITY:
@@ -826,11 +826,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(27, 37);
                             case ARMOR_PENETRATION:
-                                return random(28, 37);
+                                return random(12, 15);
                             case BLIND:
                                 return random(9, 20);
                             case CRITICAL_HIT:
-                                return random(19, 26);
+                                return random(12, 15);
                             case DAMAGE:
                                 return random(290, 315);
                             case DEXTERITY:
@@ -842,7 +842,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(35, 41);
                             case LIFE_STEAL:
-                                return random(17, 22);
+                                return random(7, 10);
                             case PURE_DAMAGE:
                                 return random(25, 34);
                             case VITALITY:
@@ -861,11 +861,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(26, 40);
                             case ARMOR_PENETRATION:
-                                return random(26, 40);
+                                return random(13, 15);
                             case BLIND:
                                 return random(8, 18);
                             case CRITICAL_HIT:
-                                return random(18, 27);
+                                return random(12, 15);
                             case DAMAGE:
                                 return random(300, 325);
                             case DEXTERITY:
@@ -877,7 +877,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(33, 45);
                             case LIFE_STEAL:
-                                return random(17, 22);
+                                return random(8, 10);
                             case PURE_DAMAGE:
                                 return random(23, 31);
                             case VITALITY:
@@ -896,11 +896,11 @@ public class DamageMeta {
                             case ACCURACY:
                                 return random(30, 40);
                             case ARMOR_PENETRATION:
-                                return random(30, 40);
+                                return random(13, 15);
                             case BLIND:
                                 return random(10, 20);
                             case CRITICAL_HIT:
-                                return random(18, 30);
+                                return random(13, 15);
                             case DAMAGE:
                                 return random(330, 350);
                             case DEXTERITY:
@@ -912,7 +912,7 @@ public class DamageMeta {
                             case POISON_DAMAGE:
                                 return random(36, 45);
                             case LIFE_STEAL:
-                                return random(18, 23);
+                                return random(8, 10);
                             case PURE_DAMAGE:
                                 return random(25, 32);
                             case VITALITY:
