@@ -25,7 +25,7 @@ public class Attribute {
 
     public Item.ItemTier getItemTier() {
         NBTTagCompound tag = nmsStack.getTag();
-        return Item.ItemTier.getById(tag.getInt("itemTier"));
+        return Item.ItemTier.getByTier(tag.getInt("itemTier"));
     }
 
     public Item.ItemModifier getItemModifier() {

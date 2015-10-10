@@ -9,11 +9,6 @@ import net.dungeonrealms.items.Item.ItemType;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.*;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.bukkit.Color;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -39,7 +34,7 @@ public class EntityFireImp extends RangedEntitySkeleton {
     public EntityFireImp(World world, int tier, EnumEntityType entityType) {
         super(world, EnumMonster.FireImp, tier, entityType);
         this.tier = tier;
-        this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().getDefinedStack(ItemType.STAFF, ItemTier.getById(tier), ItemGenerator.getRandomItemModifier())));
+        this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().getDefinedStack(ItemType.STAFF, ItemTier.getByTier(tier), ItemGenerator.getRandomItemModifier())));
     }
 
     @Override

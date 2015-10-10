@@ -1,13 +1,5 @@
 package net.dungeonrealms.entities.types.monsters;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Projectile;
-import org.bukkit.inventory.ItemStack;
-
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.types.RangedEntitySkeleton;
 import net.dungeonrealms.enums.EnumEntityType;
@@ -16,12 +8,10 @@ import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.items.Item.ItemType;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
-import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.EntityWitherSkull;
-import net.minecraft.server.v1_8_R3.Item;
-import net.minecraft.server.v1_8_R3.MathHelper;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_8_R3.*;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Projectile;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by Chase on Oct 2, 2015
@@ -40,7 +30,7 @@ public class BasicMageMonster extends RangedEntitySkeleton {
     public BasicMageMonster(World world, EnumMonster mons, int tier) {
         super(world, mons, tier, EnumEntityType.HOSTILE_MOB);
         this.tier = tier;
-        this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().getDefinedStack(ItemType.STAFF, ItemTier.getById(tier), ItemGenerator.getRandomItemModifier())));
+        this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().getDefinedStack(ItemType.STAFF, ItemTier.getByTier(tier), ItemGenerator.getRandomItemModifier())));
     }
 
     public BasicMageMonster(World world) {

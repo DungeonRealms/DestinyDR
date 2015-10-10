@@ -55,8 +55,6 @@ public class DamageMeta {
                                 return random(1, 6);
                             case POISON_DAMAGE:
                                 return random(1, 6);
-                            case KNOCK_BACK:
-                                return random(1, 6);
                             case LIFE_STEAL:
                                 return random(1, 3);
                             case PURE_DAMAGE:
@@ -92,8 +90,6 @@ public class DamageMeta {
                                 return random(1, 9);
                             case POISON_DAMAGE:
                                 return random(1, 9);
-                            case KNOCK_BACK:
-                                return random(1, 8);
                             case LIFE_STEAL:
                                 return random(1, 4);
                             case PURE_DAMAGE:
@@ -129,8 +125,6 @@ public class DamageMeta {
                                 return random(2, 6);
                             case POISON_DAMAGE:
                                 return random(2, 6);
-                            case KNOCK_BACK:
-                                return random(2, 5);
                             case LIFE_STEAL:
                                 return random(2, 7);
                             case PURE_DAMAGE:
@@ -166,8 +160,6 @@ public class DamageMeta {
                                 return random(5, 13);
                             case POISON_DAMAGE:
                                 return random(5, 13);
-                            case KNOCK_BACK:
-                                return random(5, 12);
                             case LIFE_STEAL:
                                 return random(2, 4);
                             case PURE_DAMAGE:
@@ -203,8 +195,6 @@ public class DamageMeta {
                                 return random(5, 26);
                             case POISON_DAMAGE:
                                 return random(5, 26);
-                            case KNOCK_BACK:
-                                return random(5, 22);
                             case LIFE_STEAL:
                                 return random(3, 6);
                             case PURE_DAMAGE:
@@ -244,8 +234,6 @@ public class DamageMeta {
                                 return random(7, 10);
                             case POISON_DAMAGE:
                                 return random(7, 10);
-                            case KNOCK_BACK:
-                                return random(2, 5);
                             case LIFE_STEAL:
                                 return random(2, 10);
                             case PURE_DAMAGE:
@@ -281,8 +269,6 @@ public class DamageMeta {
                                 return random(9, 19);
                             case POISON_DAMAGE:
                                 return random(9, 19);
-                            case KNOCK_BACK:
-                                return random(2, 5);
                             case LIFE_STEAL:
                                 return random(4, 10);
                             case PURE_DAMAGE:
@@ -318,8 +304,6 @@ public class DamageMeta {
                                 return random(11, 19);
                             case POISON_DAMAGE:
                                 return random(11, 19);
-                            case KNOCK_BACK:
-                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(6, 10);
                             case PURE_DAMAGE:
@@ -355,8 +339,6 @@ public class DamageMeta {
                                 return random(14, 19);
                             case POISON_DAMAGE:
                                 return random(14, 19);
-                            case KNOCK_BACK:
-                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(6, 13);
                             case PURE_DAMAGE:
@@ -392,8 +374,6 @@ public class DamageMeta {
                                 return random(14, 24);
                             case POISON_DAMAGE:
                                 return random(14, 24);
-                            case KNOCK_BACK:
-                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(6, 15);
                             case PURE_DAMAGE:
@@ -433,8 +413,6 @@ public class DamageMeta {
                                 return random(17, 21);
                             case POISON_DAMAGE:
                                 return random(17, 21);
-                            case KNOCK_BACK:
-                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(9, 16);
                             case PURE_DAMAGE:
@@ -470,8 +448,6 @@ public class DamageMeta {
                                 return random(24, 31);
                             case POISON_DAMAGE:
                                 return random(24, 31);
-                            case KNOCK_BACK:
-                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(10, 16);
                             case PURE_DAMAGE:
@@ -507,8 +483,6 @@ public class DamageMeta {
                                 return random(26, 31);
                             case POISON_DAMAGE:
                                 return random(26, 31);
-                            case KNOCK_BACK:
-                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(12, 16);
                             case PURE_DAMAGE:
@@ -544,8 +518,6 @@ public class DamageMeta {
                                 return random(26, 31);
                             case POISON_DAMAGE:
                                 return random(26, 31);
-                            case KNOCK_BACK:
-                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(12, 16);
                             case PURE_DAMAGE:
@@ -581,8 +553,6 @@ public class DamageMeta {
                                 return random(26, 34);
                             case POISON_DAMAGE:
                                 return random(26, 34);
-                            case KNOCK_BACK:
-                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(14, 17);
                             case PURE_DAMAGE:
@@ -622,8 +592,6 @@ public class DamageMeta {
                                 return random(28, 34);
                             case POISON_DAMAGE:
                                 return random(28, 34);
-                            case KNOCK_BACK:
-                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(15, 18);
                             case PURE_DAMAGE:
@@ -659,8 +627,6 @@ public class DamageMeta {
                                 return random(30, 34);
                             case POISON_DAMAGE:
                                 return random(30, 34);
-                            case KNOCK_BACK:
-                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(15, 19);
                             case PURE_DAMAGE:
@@ -696,8 +662,6 @@ public class DamageMeta {
                                 return random(31, 34);
                             case POISON_DAMAGE:
                                 return random(31, 34);
-                            case KNOCK_BACK:
-                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(15, 19);
                             case PURE_DAMAGE:
@@ -733,8 +697,6 @@ public class DamageMeta {
                                 return random(31, 37);
                             case POISON_DAMAGE:
                                 return random(31, 37);
-                            case KNOCK_BACK:
-                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(16, 19);
                             case PURE_DAMAGE:
@@ -770,8 +732,6 @@ public class DamageMeta {
                                 return random(31, 38);
                             case POISON_DAMAGE:
                                 return random(31, 38);
-                            case KNOCK_BACK:
-                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(16, 20);
                             case PURE_DAMAGE:
@@ -811,8 +771,6 @@ public class DamageMeta {
                                 return random(31, 39);
                             case POISON_DAMAGE:
                                 return random(31, 39);
-                            case KNOCK_BACK:
-                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(16, 20);
                             case PURE_DAMAGE:
@@ -848,8 +806,6 @@ public class DamageMeta {
                                 return random(32, 39);
                             case POISON_DAMAGE:
                                 return random(32, 39);
-                            case KNOCK_BACK:
-                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(16, 20);
                             case PURE_DAMAGE:
@@ -885,8 +841,6 @@ public class DamageMeta {
                                 return random(35, 41);
                             case POISON_DAMAGE:
                                 return random(35, 41);
-                            case KNOCK_BACK:
-                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(17, 22);
                             case PURE_DAMAGE:
@@ -922,8 +876,6 @@ public class DamageMeta {
                                 return random(33, 45);
                             case POISON_DAMAGE:
                                 return random(33, 45);
-                            case KNOCK_BACK:
-                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(17, 22);
                             case PURE_DAMAGE:
@@ -959,8 +911,6 @@ public class DamageMeta {
                                 return random(36, 45);
                             case POISON_DAMAGE:
                                 return random(36, 45);
-                            case KNOCK_BACK:
-                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(18, 23);
                             case PURE_DAMAGE:

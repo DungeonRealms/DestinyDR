@@ -86,6 +86,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("isPlaying", Boolean.class);
             case LEVEL:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("netLevel", Integer.class);
+            case EXPERIENCE:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("experience", Double.class);
             case GEMS:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("gems", Integer.class);
             case HEARTHSTONE:
@@ -118,6 +120,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("attributes.intellect", Integer.class);
             case VITALITY:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("attributes.vitality", Integer.class);
+            case BUFFER_POINTS:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("attributes.bufferPoints", Integer.class);
             /*
             Player Storage
              */
@@ -260,7 +264,7 @@ public class DatabaseAPI {
                                 .append("firstLogin", System.currentTimeMillis() / 1000L)
                                 .append("lastLogin", 0l)
                                 .append("netLevel", 1)
-                                .append("experience", 0f)
+                                .append("experience", 0d)
                                 .append("hearthstone", "Cyrennica")
                                 .append("isPlaying", true)
                                 .append("friends", new ArrayList<>())

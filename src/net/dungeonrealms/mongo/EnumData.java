@@ -15,6 +15,7 @@ public enum EnumData {
     ECASH,
     FRIENDS,
     ALIGNMENT,
+    EXPERIENCE,
 
     RANK,
     RANK_EXISTENCE,
@@ -38,6 +39,8 @@ public enum EnumData {
     //Adds Energy Regeneration, elemental damage, critical hit chance and staff damamge.
     INTELLECT,
     //Adds Health, hp regen, elemental resistance, and sword damage.
-    VITALITY,;
+    VITALITY,
+
+    BUFFER_POINTS,;
 
 }
