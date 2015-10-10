@@ -22,7 +22,44 @@ public class ClickHandler {
         String name = event.getInventory().getName();
         int slot = event.getRawSlot();
         if (slot == -999) return;
-        if (name.startsWith("Guild - ")) {
+        if (name.endsWith(" - (Bank Logs)")) {
+            event.setCancelled(true);
+            if (slot == 0) {
+                Menu.openPlayerGuildLog((Player) event.getWhoClicked());
+            }
+        } else if (name.endsWith("- (Invite Logs)")) {
+            event.setCancelled(true);
+            if (slot == 0) {
+                Menu.openPlayerGuildLog((Player) event.getWhoClicked());
+            }
+        } else if (name.endsWith(" - (Login Logs)")) {
+            event.setCancelled(true);
+            if (slot == 0) {
+                Menu.openPlayerGuildLog((Player) event.getWhoClicked());
+            }
+        } else if (name.endsWith("- (Logs)")) {
+            event.setCancelled(true);
+            if (slot > 18) return;
+            switch (slot) {
+                case 0:
+                    Menu.openPlayerGuildInventory((Player) event.getWhoClicked());
+                    break;
+                case 12:
+                    Menu.openPlayerGuildLogLogins((Player) event.getWhoClicked());
+                    break;
+                case 13:
+                    Menu.openPlayerGuildLogInvitations((Player) event.getWhoClicked());
+                    break;
+                case 14:
+                    Menu.openPlayerGuildLogBankClicks((Player) event.getWhoClicked());
+                    break;
+
+            }
+        } else if (name.equals("Top Guilds")) {
+            event.setCancelled(true);
+        } else if (name.equals("Guild Management")) {
+            event.setCancelled(true);
+        } else if (name.startsWith("Guild - ")) {
             event.setCancelled(true);
             if (slot > 54) return;
             switch (slot) {
@@ -36,18 +73,6 @@ public class ClickHandler {
                     Menu.openGuildRankingBoard((Player) event.getWhoClicked());
                     break;
             }
-        } else if (name.endsWith("- (Logs)")) {
-            event.setCancelled(true);
-            if (slot > 36) return;
-            switch (slot) {
-                case 0:
-                    Menu.openPlayerGuildInventory((Player) event.getWhoClicked());
-                    break;
-            }
-        } else if (name.equals("Top Guilds")) {
-            event.setCancelled(true);
-        } else if (name.equals("Guild Management")) {
-            event.setCancelled(true);
         }
     }
 }

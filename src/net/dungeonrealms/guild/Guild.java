@@ -26,7 +26,18 @@ public class Guild {
     }
 
     /**
-     * Handles GUild Logs.
+     * Notes:
+     * Max Guild Level: 50
+     * People in Guild: 5 per Level.
+     *
+     * After Guild level 50 you start v1,v2,v3,v4,v5
+     * 10 invites per v.
+     * So when you're level 50 v5 max cap 300 people.
+     *
+     */
+
+    /**
+     * Handles Guild Logs.
      *
      * @param player
      * @since 1.0
