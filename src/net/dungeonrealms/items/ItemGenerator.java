@@ -133,8 +133,6 @@ public class ItemGenerator {
      * @return
      * @since 1.0
      */
-    private Item.AttributeType[] elementalDamages = new Item.AttributeType[3];
-
     private ArrayList<Item.AttributeType> getRandomAttributes(int amountOfAttributes) {
         ArrayList<Item.AttributeType> attributeList = new ArrayList<>();
         //We always want to add Damage to the Item. Since AttributeModifiers are removed. Completely.

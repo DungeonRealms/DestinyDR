@@ -11,11 +11,9 @@ import net.dungeonrealms.items.armor.Armor;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.Color;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.LeatherArmorMeta;
 
 /**
  * Created by Chase on Sep 21, 2015
@@ -44,16 +42,6 @@ public class EntityFireImp extends RangedEntitySkeleton {
         ItemStack leggings = new ItemStack(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.LEGGINGS, Armor.ArmorTier.getByTier(tier), ArmorGenerator.getRandomItemModifier()));
         ItemStack chestplate = new ItemStack(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.CHESTPLATE, Armor.ArmorTier.getByTier(tier), ArmorGenerator.getRandomItemModifier()));
         ItemStack boots = new ItemStack(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.BOOTS, Armor.ArmorTier.getByTier(tier), ArmorGenerator.getRandomItemModifier()));
-        LeatherArmorMeta lam = (LeatherArmorMeta) leggings.getItemMeta();
-        lam.setColor(Color.RED);
-        leggings.setItemMeta(lam);
-        chestplate.setItemMeta(lam);
-        boots.setItemMeta(lam);
-        LeatherArmorMeta lch = (LeatherArmorMeta) chestplate.getItemMeta();
-        lch.setColor(Color.fromRGB(176, 23, 23));
-        chestplate.setItemMeta(lch);
-        // weapon, boots, legs, chest, helmet/head
-        // this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
         this.setEquipment(1, CraftItemStack.asNMSCopy(boots));
         this.setEquipment(2, CraftItemStack.asNMSCopy(leggings));
         this.setEquipment(3, CraftItemStack.asNMSCopy(chestplate));
