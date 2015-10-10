@@ -42,6 +42,133 @@ public class Menu {
         player.openInventory(inv);
     }
 
+    public static void openPlayerGuildLogBankClicks(Player player) {
+        UUID uuid = player.getUniqueId();
+
+        String guildName = (String) DatabaseAPI.getInstance().getData(EnumGuildData.NAME, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
+        List<String> bankClicks = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.BANK_CLICK, guildName);
+        String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
+
+        Inventory inv = Bukkit.createInventory(null, 36, "Guild - " + ChatColor.translateAlternateColorCodes('&', clanTag) + ChatColor.RESET + " - (Bank Logs)");
+
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
+
+        //TODO: Finish this once Vault is created!
+        /**
+         * int plN = 1;
+         for (String log : bankClicks) {
+         if (plN > 34) break;
+
+         String invitee = log.split(",")[0];
+         Date loginDate = new Date(Long.valueOf(log.split(",")[1]) * 1000);
+         String officer = log.split(",")[2];
+
+         String loginTime = sdf.format(loginDate);
+         inv.setItem(plN, editItem(invitee, ChatColor.GREEN + officer + " invited " + invitee, new String[]{
+         ChatColor.GREEN + loginTime
+         }));
+         plN++;
+
+         }
+         */
+
+        player.openInventory(inv);
+    }
+
+    public static void openPlayerGuildLogInvitations(Player player) {
+        UUID uuid = player.getUniqueId();
+
+        String guildName = (String) DatabaseAPI.getInstance().getData(EnumGuildData.NAME, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
+        List<String> playerInvites = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.PLAYER_INVITES, guildName);
+        String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
+
+        Inventory inv = Bukkit.createInventory(null, 36, "Guild - " + ChatColor.translateAlternateColorCodes('&', clanTag) + ChatColor.RESET + " - (Invite Logs)");
+
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
+
+        int plN = 1;
+        for (String log : playerInvites) {
+            if (plN > 34) break;
+
+            String invitee = log.split(",")[0];
+            Date loginDate = new Date(Long.valueOf(log.split(",")[1]) * 1000);
+            String officer = log.split(",")[2];
+
+            String loginTime = sdf.format(loginDate);
+            inv.setItem(plN, editItem(invitee, ChatColor.GREEN + officer + " invited " + invitee, new String[]{
+                    ChatColor.GREEN + loginTime
+            }));
+            plN++;
+
+        }
+
+        player.openInventory(inv);
+    }
+
+    public static void openPlayerGuildLogLogins(Player player) {
+        UUID uuid = player.getUniqueId();
+
+        String guildName = (String) DatabaseAPI.getInstance().getData(EnumGuildData.NAME, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
+        List<String> loginLogs = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.PLAYER_LOGINS, guildName);
+        String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
+
+        Inventory inv = Bukkit.createInventory(null, 36, "Guild - " + ChatColor.translateAlternateColorCodes('&', clanTag) + ChatColor.RESET + " - (Login Logs)");
+
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
+
+        int plN = 1;
+        for (String log : loginLogs) {
+            if (plN > 34) break;
+            Date loginDate = new Date(Long.valueOf(log.split(",")[1]) * 1000);
+            String loginTime = sdf.format(loginDate);
+            inv.setItem(plN, editItem(log.split(",")[0], ChatColor.GREEN + log.split(",")[0], new String[]{
+                    ChatColor.GREEN + loginTime
+            }));
+            plN++;
+
+        }
+
+        player.openInventory(inv);
+    }
+
+    public static void openPlayerGuildLog(Player player) {
+        UUID uuid = player.getUniqueId();
+
+        String owner = (String) DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
+        String guildName = (String) DatabaseAPI.getInstance().getData(EnumGuildData.NAME, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
+        String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
+        Long origin = (Long) DatabaseAPI.getInstance().getData(EnumGuildData.CREATION_UNIX_DATA, guildName);
+        int netLevel = (int) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, guildName);
+        double experience = Double.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumGuildData.EXPERIENCE, guildName)));
+
+        Date creationDate = new Date(origin * 1000);
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
+        String date = sdf.format(creationDate);
+
+        Inventory inv = Bukkit.createInventory(null, 18, "Guild - " + ChatColor.translateAlternateColorCodes('&', clanTag) + ChatColor.RESET + " - (Logs)");
+
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+
+        inv.setItem(4, editItem(new ItemStack(Material.BOOK_AND_QUILL), ChatColor.GREEN + guildName + "'s Logs", new String[]{
+                ChatColor.GRAY + "Guild Master: " + ChatColor.AQUA + Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName(),
+                ChatColor.GRAY + "Created: " + ChatColor.AQUA + date,
+                ChatColor.GRAY + "Guild Level: " + ChatColor.AQUA + netLevel,
+                ChatColor.GRAY + "Guild Experience: " + ChatColor.AQUA + experience,
+        }));
+        inv.setItem(12, editItem("Olaf_C", ChatColor.GREEN + "Player Logins", new String[]{}));
+        inv.setItem(13, editItem("Shrek", ChatColor.GREEN + "Guild Invitations", new String[]{}));
+        inv.setItem(14, editItem("Laserpanda", ChatColor.GREEN + "Guild Vault Entries", new String[]{}));
+
+        player.openInventory(inv);
+
+    }
+
     public static void openGuildRankingBoard(Player player) {
 
         Inventory inv = Bukkit.createInventory(null, 18, "Top Guilds");
@@ -74,74 +201,6 @@ public class Menu {
         };
 
         Database.guilds.find(Filters.exists("info.netLevel")).sort(Sorts.descending("info.netLevel")).limit(16).forEach(printDocumentBlock, callbackWhenFinished);
-    }
-
-    public static void openPlayerGuildLog(Player player) {
-        UUID uuid = player.getUniqueId();
-
-        String owner = (String) DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-        String guildName = (String) DatabaseAPI.getInstance().getData(EnumGuildData.NAME, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-        String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-        Long origin = (Long) DatabaseAPI.getInstance().getData(EnumGuildData.CREATION_UNIX_DATA, guildName);
-        int netLevel = (int) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, guildName);
-        double experience = Double.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumGuildData.EXPERIENCE, guildName)));
-
-        Date creationDate = new Date(origin * 1000);
-        SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
-        String date = sdf.format(creationDate);
-
-        List<String> logs = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.PLAYER_LOGINS, guildName);
-
-        Inventory inv = Bukkit.createInventory(null, 36, "Guild - " + ChatColor.translateAlternateColorCodes('&', clanTag) + ChatColor.RESET + " - (Logs)");
-
-        inv.setItem(0, editItem("Sloggy_Whopper ", ChatColor.GREEN + "Back", new String[]{}));
-
-        inv.setItem(4, editItem(new ItemStack(Material.BOOK_AND_QUILL), ChatColor.GREEN + guildName + "'s Logs", new String[]{
-                ChatColor.GRAY + "Guild Master: " + ChatColor.AQUA + Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName(),
-                ChatColor.GRAY + "Created: " + ChatColor.AQUA + date,
-                ChatColor.GRAY + "Guild Level: " + ChatColor.AQUA + netLevel,
-                ChatColor.GRAY + "Guild Experience: " + ChatColor.AQUA + experience,
-        }));
-        inv.setItem(9, editItem("Olaf_C", ChatColor.GREEN + "Player Logins", new String[]{}));
-        inv.setItem(18, editItem("Shrek", ChatColor.GREEN + "Guild Invitations", new String[]{}));
-        inv.setItem(27, editItem("Laserpanda", ChatColor.GREEN + "Guild Vault Entries", new String[]{}));
-
-        int plN = 10;
-        for (String log : logs) {
-            if (plN > 17) break;
-            Date loginDate = new Date(Long.valueOf(log.split(",")[1]) * 1000);
-            String loginTime = sdf.format(loginDate);
-            inv.setItem(plN, editItem(log.split(",")[0], ChatColor.GREEN + log.split(",")[0], new String[]{
-                    ChatColor.GREEN + loginTime
-            }));
-            plN++;
-        }
-
-        int giN = 19;
-        for (String log : logs) {
-            if (giN > 26) break;
-            Date loginDate = new Date(Long.valueOf(log.split(",")[1]) * 1000);
-            String loginTime = sdf.format(loginDate);
-            inv.setItem(giN, editItem(log.split(",")[0], ChatColor.GREEN + log.split(",")[0], new String[]{
-                    ChatColor.GREEN + loginTime
-            }));
-            giN++;
-        }
-
-        int gveI = 28;
-        for (String log : logs) {
-            if (gveI > 35) break;
-            Date loginDate = new Date(Long.valueOf(log.split(",")[1]) * 1000);
-            String loginTime = sdf.format(loginDate);
-            inv.setItem(gveI, editItem(log.split(",")[0], ChatColor.GREEN + log.split(",")[0], new String[]{
-                    ChatColor.GREEN + loginTime
-            }));
-            gveI++;
-        }
-
-
-        player.openInventory(inv);
-
     }
 
     public static void openPlayerGuildInventory(Player player) {

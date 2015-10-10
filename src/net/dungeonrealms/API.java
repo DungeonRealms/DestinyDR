@@ -155,8 +155,12 @@ public class API {
         EnergyHandler.getInstance().handleLoginEvents(player);
         HealthHandler.getInstance().handleLoginEvents(player);
         KarmaHandler.getInstance().handleLoginEvents(player);
+
+        //Essentials
         Subscription.getInstance().doAdd(uuid);
         Rank.getInstance().doGet(uuid);
+        //Guilds
         Guild.getInstance().doGet(uuid);
+        Guild.getInstance().handleLogin(player);
     }
 }
