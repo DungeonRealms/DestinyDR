@@ -167,16 +167,16 @@ public class Item {
         DAMAGE(0, "Damage", "damage"),
         PURE_DAMAGE(1, "Pure Damage", "pureDamage"),
         CRITICAL_HIT(2, "Critical Hit", "criticalHit"), //Percentage
-        ARMOR_PENETRATION(3, "ArmorPenetration", "armorPenetration"),
+        ARMOR_PENETRATION(3, "Armor Pen", "armorPenetration"),
         VS_MONSTERS(4, "VS Monsters", "vsMonsters"), //Percentage
         VS_PLAYER(5, "VS Players", "vsPlayers"), //Percentage
         BLIND(6, "Blind", "blind"), //Percentage
-        LIFE_STEAL(7, "LifeSteal", "lifesteal"), //Percentage
+        LIFE_STEAL(7, "Life Steal", "lifesteal"), //Percentage
         VITALITY(8, "Vitality", "vitality"),
         DEXTERITY(9, "Dexterity", "dexterity"),
-        ICE_DAMAGE(10, "IceDamage", "iceDamage"),
-        FIRE_DAMAGE(11, "FireDamage", "fireDamage"),
-        POISON_DAMAGE(12, "PoisonDamage", "poisonDamage"),
+        ICE_DAMAGE(10, "Ice Damage", "iceDamage"),
+        FIRE_DAMAGE(11, "Fire Damage", "fireDamage"),
+        POISON_DAMAGE(12, "Poison Damage", "poisonDamage"),
         ACCURACY(13, "Accuracy", "accuracy"),
         STRENGTH(14, "Strength", "strength"),
         INTELLECT(15, "Intellect", "intellect");

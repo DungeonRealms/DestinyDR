@@ -65,14 +65,17 @@ public class ItemGenerator {
         attributeTypes.stream().filter(aType -> aType != null).forEach(aType -> {
             int i = new DamageMeta().nextWeapon(tier, modifier, aType);
             attributeTypeIntegerHashMap.put(aType, i);
-            if (aType == Item.AttributeType.DAMAGE) {
+            itemLore.add(setCorrectItemLore(aType, i, tier.getTierId()));
+            /*if (aType == Item.AttributeType.DAMAGE) {
                 int damageRandomizer = getRandomDamageVariable(tier.getTierId());
                 itemLore.add(ChatColor.GREEN + "+ " + ChatColor.RED + Math.round((i - (i / damageRandomizer))) + ChatColor.WHITE + " - " + ChatColor.RED + Math.round((i + (i / damageRandomizer))) + ChatColor.WHITE + " " + aType.getName());
             } else if (aType == Item.AttributeType.VS_MONSTERS || aType == Item.AttributeType.VS_PLAYER || aType == Item.AttributeType.LIFE_STEAL || aType == Item.AttributeType.CRITICAL_HIT || aType == Item.AttributeType.BLIND) {
                 itemLore.add(ChatColor.GREEN + "+ " + ChatColor.WHITE + i + "% " + aType.getName());
+            } else if (aType == Item.AttributeType.FIRE_DAMAGE || aType == Item.AttributeType.ICE_DAMAGE || aType == Item.AttributeType.POISON_DAMAGE) {
+                itemLore.add(ChatColor.GREEN + "+ " + ChatColor.WHITE + i + " " + aType.getName());
             } else {
                 itemLore.add(ChatColor.GREEN + "+ " + ChatColor.WHITE + i + " " + aType.getName());
-            }
+            }*/
         });
         itemLore.add(modifier.getChatColorOfModifier(modifier).toString() + modifier.getName());
         meta.setLore(itemLore);
@@ -169,6 +172,32 @@ public class ItemGenerator {
                 return 14;
             default:
                 return 8;
+        }
+    }
+
+    public static String setCorrectItemLore(Item.AttributeType aType, int i, int tierID) {
+        switch (aType) {
+            case DAMAGE:
+                int damageRandomizer = getRandomDamageVariable(tierID);
+                return ChatColor.GREEN + "+ " + ChatColor.RED + Math.round((i - (i / damageRandomizer))) + ChatColor.WHITE + " - " + ChatColor.RED + Math.round((i + (i / damageRandomizer))) + ChatColor.WHITE + " " + aType.getName();
+            case VS_MONSTERS:
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+            case VS_PLAYER:
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+            case BLIND:
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+            case CRITICAL_HIT:
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+            case LIFE_STEAL:
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+            case FIRE_DAMAGE:
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + " " + ChatColor.DARK_RED + aType.getName();
+            case ICE_DAMAGE:
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + " " + ChatColor.BLUE + aType.getName();
+            case POISON_DAMAGE:
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + " " + ChatColor.DARK_GREEN + aType.getName();
+            default:
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + " " + ChatColor.WHITE + aType.getName();
         }
     }
 
