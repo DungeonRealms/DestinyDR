@@ -21,7 +21,7 @@ public class CommandGuild implements CommandExecutor {
 
         Player player = (Player) s;
 
-        if (!Guild.getInstance().isInGuild(player.getUniqueId())) {
+        if (Guild.getInstance().isGuildNull(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "You are not in a guild, or we're having trouble finding it.");
             return true;
         }

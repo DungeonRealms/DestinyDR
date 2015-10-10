@@ -52,6 +52,7 @@ public class DungeonRealms extends JavaPlugin {
     public void onEnable() {
         long START_TIME = System.currentTimeMillis() / 1000L;
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
+        saveDefaultConfig();
         Database.getInstance().initConnection();
         DatabaseAPI.getInstance().startInitialization();
         PluginManager pm = Bukkit.getPluginManager();
@@ -106,10 +107,10 @@ public class DungeonRealms extends JavaPlugin {
         itemRegistry.register("minecraft:bow", itemBow);
         SpawningMechanics.loadSpawners();
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
-
     }
 
     public void onDisable() {
+        saveConfig();
         ShopMechanics.deleteAllShops();
         API.logoutAllPlayers();
         SpawningMechanics.killAll();
