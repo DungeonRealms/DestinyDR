@@ -66,16 +66,6 @@ public class ItemGenerator {
             int i = new DamageMeta().nextWeapon(tier, modifier, aType);
             attributeTypeIntegerHashMap.put(aType, i);
             itemLore.add(setCorrectItemLore(aType, i, tier.getTierId()));
-            /*if (aType == Item.AttributeType.DAMAGE) {
-                int damageRandomizer = getRandomDamageVariable(tier.getTierId());
-                itemLore.add(ChatColor.GREEN + "+ " + ChatColor.RED + Math.round((i - (i / damageRandomizer))) + ChatColor.WHITE + " - " + ChatColor.RED + Math.round((i + (i / damageRandomizer))) + ChatColor.WHITE + " " + aType.getName());
-            } else if (aType == Item.AttributeType.VS_MONSTERS || aType == Item.AttributeType.VS_PLAYER || aType == Item.AttributeType.LIFE_STEAL || aType == Item.AttributeType.CRITICAL_HIT || aType == Item.AttributeType.BLIND) {
-                itemLore.add(ChatColor.GREEN + "+ " + ChatColor.WHITE + i + "% " + aType.getName());
-            } else if (aType == Item.AttributeType.FIRE_DAMAGE || aType == Item.AttributeType.ICE_DAMAGE || aType == Item.AttributeType.POISON_DAMAGE) {
-                itemLore.add(ChatColor.GREEN + "+ " + ChatColor.WHITE + i + " " + aType.getName());
-            } else {
-                itemLore.add(ChatColor.GREEN + "+ " + ChatColor.WHITE + i + " " + aType.getName());
-            }*/
         });
         itemLore.add(modifier.getChatColorOfModifier(modifier).toString() + modifier.getName());
         meta.setLore(itemLore);
@@ -143,6 +133,8 @@ public class ItemGenerator {
      * @return
      * @since 1.0
      */
+    private Item.AttributeType[] elementalDamages = new Item.AttributeType[3];
+
     private ArrayList<Item.AttributeType> getRandomAttributes(int amountOfAttributes) {
         ArrayList<Item.AttributeType> attributeList = new ArrayList<>();
         //We always want to add Damage to the Item. Since AttributeModifiers are removed. Completely.
@@ -150,7 +142,13 @@ public class ItemGenerator {
         for (int i = 0; i < amountOfAttributes; i++) {
             int random = new Random().nextInt(Item.AttributeType.values().length);
             if (!attributeList.contains(Item.AttributeType.getById(random))) {
-                attributeList.add(Item.AttributeType.getById(random));
+                if (Item.AttributeType.getById(random) == Item.AttributeType.FIRE_DAMAGE || Item.AttributeType.getById(random) == Item.AttributeType.ICE_DAMAGE || Item.AttributeType.getById(random) == Item.AttributeType.POISON_DAMAGE) {
+                    if (!attributeList.contains(Item.AttributeType.FIRE_DAMAGE) && !attributeList.contains(Item.AttributeType.ICE_DAMAGE) && !attributeList.contains(Item.AttributeType.POISON_DAMAGE)) {
+                        attributeList.add(Item.AttributeType.getById(random));
+                    }
+                } else {
+                    attributeList.add(Item.AttributeType.getById(random));
+                }
             } else {
                 i--;
             }

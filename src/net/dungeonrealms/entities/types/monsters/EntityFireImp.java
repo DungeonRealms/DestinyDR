@@ -7,10 +7,11 @@ import net.dungeonrealms.enums.EnumMonster;
 import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.items.Item.ItemType;
 import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.items.armor.Armor;
+import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Color;
-import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
@@ -39,18 +40,18 @@ public class EntityFireImp extends RangedEntitySkeleton {
 
     @Override
     public void setArmor(int tier) {
-        ItemStack leggings = new ItemStack(Material.LEATHER_LEGGINGS, 1);
-        ItemStack chestplate = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-        ItemStack boots = new ItemStack(Material.LEATHER_BOOTS, 1);
+        //TODO: ALL MOBS SET ARMOR LIKE THIS SO ITS OURS.
+        ItemStack leggings = new ItemStack(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.LEGGINGS, Armor.ArmorTier.getByTier(tier), ArmorGenerator.getRandomItemModifier()));
+        ItemStack chestplate = new ItemStack(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.CHESTPLATE, Armor.ArmorTier.getByTier(tier), ArmorGenerator.getRandomItemModifier()));
+        ItemStack boots = new ItemStack(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.BOOTS, Armor.ArmorTier.getByTier(tier), ArmorGenerator.getRandomItemModifier()));
         LeatherArmorMeta lam = (LeatherArmorMeta) leggings.getItemMeta();
         lam.setColor(Color.RED);
         leggings.setItemMeta(lam);
         chestplate.setItemMeta(lam);
         boots.setItemMeta(lam);
-        ItemStack lchest = new ItemStack(Material.LEATHER_CHESTPLATE, 1);
-        LeatherArmorMeta lch = (LeatherArmorMeta) lchest.getItemMeta();
+        LeatherArmorMeta lch = (LeatherArmorMeta) chestplate.getItemMeta();
         lch.setColor(Color.fromRGB(176, 23, 23));
-        lchest.setItemMeta(lch);
+        chestplate.setItemMeta(lch);
         // weapon, boots, legs, chest, helmet/head
         // this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
         this.setEquipment(1, CraftItemStack.asNMSCopy(boots));

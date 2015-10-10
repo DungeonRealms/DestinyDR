@@ -82,6 +82,15 @@ public class Armor {
             }
             return null;
         }
+
+        public static ArmorTier getByTier(int tier) {
+            for (ArmorTier at : values()) {
+                if (at.getTierId() == tier) {
+                    return at;
+                }
+            }
+            return null;
+        }
     }
 
     public enum ArmorModifier {
