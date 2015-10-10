@@ -38,7 +38,9 @@ public class ItemGenerator {
     public ItemStack next() {
         return getWeapon(getRandomItemType(), getRandomItemTier(), getRandomItemModifier());
     }
-
+    public ItemStack next(Item.ItemTier tier) {
+        return getWeapon(getRandomItemType(), tier, getRandomItemModifier());
+    }
     public ItemStack next(Item.ItemType type, Item.ItemTier tier) {
         return getWeapon(type, tier, getRandomItemModifier());
     }

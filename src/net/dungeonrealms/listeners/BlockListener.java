@@ -1,11 +1,7 @@
 package net.dungeonrealms.listeners;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.shops.Shop;
-import net.dungeonrealms.shops.ShopMechanics;
-import net.dungeonrealms.spawning.MobSpawner;
-import net.dungeonrealms.spawning.SpawningMechanics;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.ArrayList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -21,7 +17,15 @@ import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.LootManager;
+import net.dungeonrealms.shops.Shop;
+import net.dungeonrealms.shops.ShopMechanics;
+import net.dungeonrealms.spawning.LootSpawner;
+import net.dungeonrealms.spawning.MobSpawner;
+import net.dungeonrealms.spawning.SpawningMechanics;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -96,6 +100,30 @@ public class BlockListener implements Listener {
             return;
         if (block.getType() != Material.CHEST)
             return;
+        
+        for(LootSpawner loot : LootManager.spawners){
+        	if(loot.location.getBlockX() == block.getX() && loot.location.getBlockY() == block.getY() && loot.location.getBlockZ() == block.getLocation().getZ()){
+               Action actionType = e.getAction();
+               switch (actionType) {
+                 case RIGHT_CLICK_BLOCK:
+                	e.setCancelled(true);
+                	e.getPlayer().openInventory(loot.inv);
+                	break;
+                 case LEFT_CLICK_BLOCK:
+                	 e.setCancelled(true);
+                	 for(ItemStack stack : loot.inv.getContents()){
+                		 if(stack == null)
+                			 continue;
+                		 loot.inv.remove(stack);
+                		 if(stack.getType() != Material.AIR)
+                		 e.getPlayer().getWorld().dropItemNaturally(loot.location, stack);
+                	 }
+                	 loot.update();
+                	 break;
+               }
+        	}
+        }
+        
         Shop shop = ShopMechanics.getShop(block);
         if (shop == null)
             return;

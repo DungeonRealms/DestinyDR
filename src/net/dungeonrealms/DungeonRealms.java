@@ -15,6 +15,7 @@ import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.listeners.*;
 import net.dungeonrealms.mastery.FTPUtils;
 import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -104,6 +105,7 @@ public class DungeonRealms extends JavaPlugin {
         ItemRegistry itemRegistry = new ItemRegistry();
         itemRegistry.register("minecraft:bow", itemBow);
         SpawningMechanics.loadSpawners();
+        LootManager.loadLootSpawners();
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
 
     }

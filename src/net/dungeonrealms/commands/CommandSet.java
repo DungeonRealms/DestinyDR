@@ -65,6 +65,24 @@ public class CommandSet implements CommandExecutor {
 					e.printStackTrace();
 				}
 				break;
+			case "loot":
+				if (args.length == 2) {
+					int lootTier = Integer.parseInt(args[1]);
+					File lootFile = new File(DungeonRealms.getInstance().getDataFolder() + "\\global_loot.yml");
+					try {
+						if (!lootFile.exists())
+							lootFile.createNewFile();
+						BufferedWriter writer = new BufferedWriter(new FileWriter(lootFile, true));
+						writer.newLine();
+						writer.write(player.getLocation().getX() + "," + player.getLocation().getY() + ","
+						        + player.getLocation().getZ() + ":" + lootTier);
+						writer.close();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+
+				}
+				break;
 			}
 		}
 		return true;

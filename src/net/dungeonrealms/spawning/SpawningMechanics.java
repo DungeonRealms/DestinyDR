@@ -13,7 +13,7 @@ public class SpawningMechanics {
 
     public static void updateSpawners() {
         if (spawners.size() > 0)
-            spawners.stream().filter(MobSpawner::playersAround).forEach(net.dungeonrealms.spawning.MobSpawner::spawnIn);
+            spawners.stream().forEach(net.dungeonrealms.spawning.MobSpawner::spawnIn);
     }
 
     public static ArrayList<MobSpawner> getSpawners() {
