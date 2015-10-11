@@ -247,7 +247,6 @@ public class DamageListener implements Listener {
                 CombatLog.addToCombat(player);
             }
         }
-        player.sendMessage("HIT BY MOB");
         event.setDamage(finalDamage);
     }
 
@@ -352,15 +351,19 @@ public class DamageListener implements Listener {
                 if (((Player) defender).isBlocking() && ((Player) defender).getItemInHand() != null && ((Player) defender).getItemInHand().getType() != Material.AIR) {
                     if (new Random().nextInt(100) <= 80) {
                         double blockDamage = event.getDamage() / 2;
-                        HealthHandler.handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (blockDamage - armourReducedDamage));
+                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (blockDamage - armourReducedDamage));
                         event.setDamage(0);
                         return;
                     }
                 } else {
-                    HealthHandler.handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (event.getDamage() - armourReducedDamage));
+                    HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (event.getDamage() - armourReducedDamage));
                     event.setDamage(0);
                     return;
                 }
+            } else if (defender instanceof Monster) {
+                HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) event.getEntity(), (event.getDamage() - armourReducedDamage));
+                event.setDamage(0);
+                return;
             }
             event.setDamage(event.getDamage() - armourReducedDamage);
         }
@@ -528,7 +531,7 @@ public class DamageListener implements Listener {
         for (PotionEffect potionEffect : player.getActivePotionEffects()) {
             player.removePotionEffect(potionEffect.getType());
         }
-        HealthHandler.setPlayerHPLive(player, HealthHandler.getPlayerMaxHPLive(player));
+        HealthHandler.getInstance().setPlayerHPLive(player, HealthHandler.getInstance().getPlayerMaxHPLive(player));
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 10));
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 10));
         player.teleport(Teleportation.Cyrennica);

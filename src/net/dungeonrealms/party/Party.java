@@ -42,16 +42,16 @@ public class Party {
 
             for (Player player : rp.members) {
                 Score score = objective.getScore(player.getName());
-                score.setScore(HealthHandler.getPlayerHPLive(player));
+                score.setScore(HealthHandler.getInstance().getPlayerHPLive(player));
             }
 
             if (rp.getOwner() != null) {
                 Score score = objective.getScore(rp.getOwner().getName());
-                score.setScore(HealthHandler.getPlayerHPLive(rp.getOwner()));
+                score.setScore(HealthHandler.getInstance().getPlayerHPLive(rp.getOwner()));
             } else {
                 rp.setOwner(rp.members.get(new Random().nextInt(rp.members.size())));
                 Score score = objective.getScore(rp.getOwner().getName());
-                score.setScore(HealthHandler.getPlayerHPLive(rp.getOwner()));
+                score.setScore(HealthHandler.getInstance().getPlayerHPLive(rp.getOwner()));
             }
 
             for (Player members : rp.getMembers()) {

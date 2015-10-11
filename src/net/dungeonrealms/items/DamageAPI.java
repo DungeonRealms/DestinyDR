@@ -6,6 +6,7 @@ import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.*;
@@ -198,10 +199,15 @@ public class DamageAPI {
             }
         }
 
-        if (tag.getDouble("lifesteal") != 0 && attacker instanceof Player) {
+        if (tag.getDouble("lifesteal") != 0) {
             double lifeToHeal = ((tag.getDouble("lifesteal") / 100) * damage);
-            HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal);
-            attacker.sendMessage("LIFESTOLE FOR " + (int) lifeToHeal);
+            if (attacker instanceof Player) {
+                HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal);
+                attacker.sendMessage("LIFESTOLE FOR " + (int) lifeToHeal);
+            } else if (attacker instanceof Monster) {
+                HealthHandler.getInstance().healMonsterByAmount(attacker, (int) lifeToHeal);
+                Bukkit.broadcastMessage("MONSTER LIFESTOLE FOR " + (int) lifeToHeal);
+            }
         }
 
         if (tag.getInt("blind") != 0) {
@@ -444,10 +450,15 @@ public class DamageAPI {
             }
         }
 
-        if (projectile.getMetadata("lifesteal").get(0).asDouble() != 0 && attacker instanceof Player) {
+        if (projectile.getMetadata("lifesteal").get(0).asDouble() != 0) {
             double lifeToHeal = ((projectile.getMetadata("lifesteal").get(0).asDouble() / 100) * damage);
-            HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal);
-            attacker.sendMessage("LIFESTOLE FOR " + (int) lifeToHeal);
+            if (attacker instanceof Player) {
+                HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal);
+                attacker.sendMessage("LIFESTOLE FOR " + (int) lifeToHeal);
+            } else if (attacker instanceof Monster) {
+                HealthHandler.getInstance().healMonsterByAmount(attacker, (int) lifeToHeal);
+                Bukkit.broadcastMessage("MONSTER LIFESTOLE FOR " + (int) lifeToHeal);
+            }
         }
 
         if (projectile.getMetadata("blind").get(0).asInt() != 0) {
@@ -692,7 +703,7 @@ public class DamageAPI {
     }
 
     public static void fireStaffProjectile(Player player, ItemStack itemStack, NBTTagCompound tag) {
-        int weaponTier = new Attribute(itemStack).getItemTier().getTierId();
+        int weaponTier = tag.getInt("itemTier");
         Projectile projectile = player.launchProjectile(WitherSkull.class);
         switch (weaponTier) {
             case 1:

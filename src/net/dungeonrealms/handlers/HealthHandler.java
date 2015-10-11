@@ -9,6 +9,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -88,11 +89,26 @@ public class HealthHandler {
      * @return int
      * @since 1.0
      */
-    public static int getPlayerHPLive(Player player) {
+    public int getPlayerHPLive(Player player) {
         if (player.hasMetadata("currentHP")) {
             return player.getMetadata("currentHP").get(0).asInt();
         } else {
             return 50; //This shouldn't happen but safety return. Probably kick them or something if their data cannot be loaded.
+        }
+    }
+
+    /**
+     * Returns the monsters current HP
+     *
+     * @param entity
+     * @return int
+     * @since 1.0
+     */
+    public int getMonsterHPLive(LivingEntity entity) {
+        if (entity.hasMetadata("currentHP")) {
+            return entity.getMetadata("currentHP").get(0).asInt();
+        } else {
+            return 100;
         }
     }
 
@@ -104,7 +120,7 @@ public class HealthHandler {
      * @param hp
      * @since 1.0
      */
-    public static void setPlayerOverheadHP(UUID uuid, int hp) {
+    public void setPlayerOverheadHP(UUID uuid, int hp) {
         //Check their Max HP from wherever we decide to store it, get it as a percentage.
         //Update BarAPI thing with it.
     }
@@ -117,8 +133,20 @@ public class HealthHandler {
      * @param hp
      * @since 1.0
      */
-    public static void setPlayerHPLive(Player player, int hp) {
+    public void setPlayerHPLive(Player player, int hp) {
         player.setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), hp));
+    }
+
+    /**
+     * Sets the monsters HP metadata
+     * to the given value.
+     *
+     * @param entity
+     * @param hp
+     * @since 1.0
+     */
+    public void setMonsterHPLive(LivingEntity entity, int hp) {
+        entity.setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), hp));
     }
 
     /**
@@ -131,8 +159,26 @@ public class HealthHandler {
      * @return int
      * @since 1.0
      */
-    public static int getPlayerMaxHPOnLogin(UUID uuid) {
-        return calculateMaxHPFromItems(Bukkit.getPlayer(uuid)); //This shouldn't happen but safety return. Probably kick them or something if their data cannot be loaded.
+    public int getPlayerMaxHPOnLogin(UUID uuid) {
+        return calculateMaxHPFromItems(Bukkit.getPlayer(uuid));
+    }
+
+    /**
+     * Returns the entities max HP
+     * Called on login (calculates it from items
+     * in their inventory)
+     * Pretty expensive check.
+     *
+     * @param entity
+     * @return int
+     * @since 1.0
+     */
+    public int getMonsterMaxHPOnSpawn(LivingEntity entity) {
+        if (entity.hasMetadata("maxHP")) {
+            return (entity.getMetadata("maxHP").get(0).asInt() + calculateMaxHPFromItems(entity));
+        } else {
+            return 100 + calculateMaxHPFromItems(entity);
+        }
     }
 
     /**
@@ -142,11 +188,26 @@ public class HealthHandler {
      * @return int
      * @since 1.0
      */
-    public static int getPlayerMaxHPLive(Player player) {
+    public int getPlayerMaxHPLive(Player player) {
         if (player.hasMetadata("maxHP")) {
             return player.getMetadata("maxHP").get(0).asInt();
         } else {
             return calculateMaxHPFromItems(player);
+        }
+    }
+
+    /**
+     * Returns the monsters current MaximumHP
+     *
+     * @param entity
+     * @return int
+     * @since 1.0
+     */
+    public int getMonsterMaxHPLive(LivingEntity entity) {
+        if (entity.hasMetadata("maxHP")) {
+            return entity.getMetadata("maxHP").get(0).asInt();
+        } else {
+            return 100;
         }
     }
 
@@ -158,7 +219,7 @@ public class HealthHandler {
      * @param maxHP
      * @since 1.0
      */
-    public static void setPlayerMaxHPLive(Player player, int maxHP) {
+    public void setPlayerMaxHPLive(Player player, int maxHP) {
         player.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHP));
     }
 
@@ -214,6 +275,16 @@ public class HealthHandler {
         }
     }
 
+    /**
+     * Heals a player by the
+     * specified amount. Used
+     * currently for lifesteal on
+     * weapons/armor.
+     *
+     * @param player
+     * @param amount
+     * @since 1.0
+     */
     public void healPlayerByAmount(Player player, int amount) {
         double currentHP = getPlayerHPLive(player);
         double maxHP = getPlayerMaxHPLive(player);
@@ -243,6 +314,47 @@ public class HealthHandler {
             player.setHealth((int) newPlayerHP);
         }
     }
+
+    /**
+     * Heals a monster by the
+     * specified amount. Used
+     * currently for lifesteal on
+     * weapons/armor.
+     *
+     * @param entity
+     * @param amount
+     * @since 1.0
+     */
+    public void healMonsterByAmount(LivingEntity entity, int amount) {
+        double currentHP = getMonsterHPLive(entity);
+        double maxHP = getMonsterMaxHPLive(entity);
+        if (currentHP + 1 > maxHP) {
+            if (entity.getHealth() != 20) {
+                entity.setHealth(20);
+            }
+        }
+
+        if ((currentHP + (double) amount) >= maxHP) {
+            entity.setHealth(20);
+            setMonsterHPLive(entity, (int) maxHP);
+        } else if (entity.getHealth() <= 19 && ((currentHP + (double) amount) < maxHP)) {
+            setMonsterHPLive(entity, (int) (getMonsterHPLive(entity) + (double) amount));
+            double monsterHPPercent = (getMonsterHPLive(entity) + (double) amount) / maxHP;
+            double newMonsterHP = monsterHPPercent * 20;
+            if (newMonsterHP >= 19.50D) {
+                if (monsterHPPercent >= 1.0D) {
+                    newMonsterHP = 20;
+                } else {
+                    newMonsterHP = 19;
+                }
+            }
+            if (newMonsterHP < 1) {
+                newMonsterHP = 1;
+            }
+            entity.setHealth((int) newMonsterHP);
+        }
+    }
+
     /**
      * Called from damage event,
      * used to update the players
@@ -250,10 +362,11 @@ public class HealthHandler {
      * necessary
      *
      * @param player
+     * @param damager
      * @param damage
      * @since 1.0
      */
-    public static void handlePlayerBeingDamaged(Player player, Entity damager, double damage) {
+    public void handlePlayerBeingDamaged(Player player, Entity damager, double damage) {
         double maxHP = getPlayerMaxHPLive(player);
         double currentHP = getPlayerHPLive(player);
         double newHP = currentHP - damage;
@@ -295,15 +408,48 @@ public class HealthHandler {
     }
 
     /**
-     * Calculates the players MaximumHP
+     * Called from damage event,
+     * used to update the monsters
+     * health and kill etc if
+     * necessary
+     *
+     * @param entity
+     * @param damage
+     * @since 1.0
+     */
+    public void handleMonsterBeingDamaged(LivingEntity entity, double damage) {
+        double maxHP = getMonsterMaxHPLive(entity);
+        double currentHP = getMonsterHPLive(entity);
+        double newHP = currentHP - damage;
+
+        if (newHP <= 0) {
+            entity.setHealth(0);
+            return;
+        }
+
+        setMonsterHPLive(entity, (int) newHP);
+        double monsterHPPercent = (newHP / maxHP);
+        double newMonsterHPToDisplay = monsterHPPercent * 20.0D;
+        int convHPToDisplay = (int) newMonsterHPToDisplay;
+        if (convHPToDisplay <= 0) {
+            convHPToDisplay = 1;
+        }
+        if (convHPToDisplay > 20) {
+            convHPToDisplay = 20;
+        }
+        entity.setHealth(convHPToDisplay);
+    }
+
+    /**
+     * Calculates the entities MaximumHP
      * from their armor and weapon
      *
-     * @param player
+     * @param entity
      * @return int
      * @since 1.0
      */
-    public static int calculateMaxHPFromItems(Player player) {
-        ItemStack[] playerArmor = player.getInventory().getArmorContents();
+    public int calculateMaxHPFromItems(LivingEntity entity) {
+        ItemStack[] playerArmor = entity.getEquipment().getArmorContents();
         double totalHP = 0;
         for (ItemStack itemStack : playerArmor) {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
@@ -312,8 +458,8 @@ public class HealthHandler {
             totalHP += getHealthValueOfItem(itemStack);
         }
 
-        if (player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR) {
-            totalHP += getHealthValueOfItem(player.getItemInHand());
+        if (entity.getEquipment().getItemInHand() != null && entity.getEquipment().getItemInHand().getType() != Material.AIR) {
+            totalHP += getHealthValueOfItem(entity.getEquipment().getItemInHand());
         }
 
         totalHP += 50;
@@ -329,7 +475,7 @@ public class HealthHandler {
      * @return int
      * @since 1.0
      */
-    private static int getHealthValueOfItem(ItemStack itemStack) {
+    private int getHealthValueOfItem(ItemStack itemStack) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
         int healthValue = 0;
         if (nmsItem == null || nmsItem.getTag() == null) {
@@ -355,7 +501,7 @@ public class HealthHandler {
      * @return int
      * @since 1.0
      */
-    private static int calculateHealthRegenFromItems(Player player) {
+    private int calculateHealthRegenFromItems(Player player) {
         ItemStack[] playerArmor = player.getInventory().getArmorContents();
         double totalHPRegen = 0;
         for (ItemStack itemStack : playerArmor) {
@@ -382,7 +528,7 @@ public class HealthHandler {
      * @return int
      * @since 1.0
      */
-    private static int getHealthRegenValueOfItem(ItemStack itemStack) {
+    private int getHealthRegenValueOfItem(ItemStack itemStack) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
         int healthRegen = 0;
         if (nmsItem == null || nmsItem.getTag() == null) {
@@ -408,7 +554,7 @@ public class HealthHandler {
      * @param regenAmount
      * @since 1.0
      */
-    public static void setPlayerHPRegenLive(Player player, int regenAmount) {
+    public void setPlayerHPRegenLive(Player player, int regenAmount) {
         player.setMetadata("regenHP", new FixedMetadataValue(DungeonRealms.getInstance(), regenAmount));
     }
 
@@ -419,12 +565,11 @@ public class HealthHandler {
      * @return int
      * @since 1.0
      */
-    public static int getPlayerHPRegenLive(Player player) {
+    public int getPlayerHPRegenLive(Player player) {
         if (player.hasMetadata("regenHP")) {
             return player.getMetadata("regenHP").get(0).asInt();
         } else {
             return calculateHealthRegenFromItems(player);
         }
     }
-
 }
