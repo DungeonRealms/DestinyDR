@@ -130,8 +130,8 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
-        if ((!(event.getDamager() instanceof Player)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
-            return;
+        if ((!(event.getDamager() instanceof Player)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL))) return;
+        if (!(event.getEntity() instanceof Monster) && !(event.getEntity() instanceof Player)) return;
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
         if (event.getDamager() instanceof Player) {
@@ -389,7 +389,7 @@ public class DamageListener implements Listener {
         if (nmsItem == null || nmsItem.getTag() == null) return;
         //Get the NBT of the item the player is holding.
         if (!(shooter instanceof Player)) return;
-        int weaponTier = new Attribute(entityEquipment.getItemInHand()).getItemTier().getTierId();
+        int weaponTier = nmsItem.getTag().getInt("itemTier");
         Player player = (Player) shooter;
         player.updateInventory();
         if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player.getUniqueId()) <= 0) {
