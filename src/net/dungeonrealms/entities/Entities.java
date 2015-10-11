@@ -10,16 +10,17 @@ import net.dungeonrealms.entities.types.mounts.Horse;
 import net.dungeonrealms.entities.types.pets.*;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.mastery.NMSUtils;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.LivingEntity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Kieran on 9/18/2015.
@@ -30,7 +31,7 @@ public class Entities {
     public static HashMap<UUID, Entity> PLAYER_PETS = new HashMap<>();
     public static HashMap<UUID, Entity> PLAYER_MOUNTS = new HashMap<>();
     public static ConcurrentHashMap<LivingEntity, Integer> MONSTER_LAST_ATTACK = new ConcurrentHashMap<>();
-    public static List<LivingEntity> MONSTERS_LEASHED = new ArrayList<>();
+    public static List<LivingEntity> MONSTERS_LEASHED = new CopyOnWriteArrayList<>();
 
     public static Entities getInstance() {
         if (instance == null) {
@@ -66,12 +67,16 @@ public class Entities {
         nmsUtils.registerEntity("PetSnowman", 97, EntitySnowman.class, Snowman.class);
         nmsUtils.registerEntity("MountEnderDragon", 63, EntityEnderDragon.class, EnderDragon.class);
 
-        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::checkForLeashedMobs, 10, 20L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::checkForLeashedMobs, 10, 20L);
     }
 
     private void checkForLeashedMobs() {
         if (!MONSTERS_LEASHED.isEmpty()) {
             for (LivingEntity entity : MONSTERS_LEASHED) {
+                if (entity == null) {
+                    Utils.log.warning("[ENTITIES] [ASYNC] Mob is somehow leashed but null, safety removing!");
+                    continue;
+                }
                 if (MONSTER_LAST_ATTACK.containsKey(entity)) {
                     if (MONSTER_LAST_ATTACK.get(entity) <= 0) {
                         MONSTERS_LEASHED.remove(entity);
