@@ -3,14 +3,13 @@ package net.dungeonrealms.handlers;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
+import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumOperators;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -405,6 +404,36 @@ public class HealthHandler {
             convHPToDisplay = 20;
         }
         player.setHealth(convHPToDisplay);
+        LivingEntity leAttacker = null;
+        if (damager instanceof Player) {
+            return;
+        }
+        if (damager instanceof Monster) {
+            leAttacker = (LivingEntity) damager;
+        } else {
+            switch (damager.getType()) {
+                case ARROW:
+                    if (((Arrow) damager).getShooter() instanceof LivingEntity) {
+                        leAttacker = (LivingEntity) ((Arrow) damager).getShooter();
+                    }
+                    break;
+                case WITHER_SKULL:
+                    if (((WitherSkull) damager).getShooter() instanceof LivingEntity) {
+                        leAttacker = (LivingEntity) ((WitherSkull) damager).getShooter();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+        if (leAttacker == null) {
+            return;
+        } else {
+            Entities.getInstance().MONSTER_LAST_ATTACK.put(leAttacker, 10);
+            if (!Entities.getInstance().MONSTERS_LEASHED.contains(leAttacker)) {
+                Entities.getInstance().MONSTERS_LEASHED.add(leAttacker);
+            }
+        }
     }
 
     /**
@@ -438,6 +467,9 @@ public class HealthHandler {
             convHPToDisplay = 20;
         }
         entity.setHealth(convHPToDisplay);
+        if (!Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
+            Entities.getInstance().MONSTERS_LEASHED.add(entity);
+        }
     }
 
     /**
