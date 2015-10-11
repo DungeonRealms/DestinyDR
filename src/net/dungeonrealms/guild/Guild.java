@@ -42,7 +42,7 @@ public class Guild {
      * @param player
      * @since 1.0
      */
-    public void handleLogin(Player player) {
+    public void doLogin(Player player) {
         if (DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).equals("")) return;
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
         DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "logs.playerLogin", player.getName() + "," + (System.currentTimeMillis() / 1000l), true);
@@ -170,6 +170,7 @@ public class Guild {
      * @param experienceToAdd
      * @since 1.0
      */
+    //TODO: Redo this!
     public void addGuildExperience(String guildName, double experienceToAdd) {
         int level = (int) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, guildName);
         //Guild level CAP 50.
@@ -209,6 +210,7 @@ public class Guild {
                                     .append("unixCreation", System.currentTimeMillis() / 1000l)
                                     .append("netLevel", 1)
                                     .append("experience", 0)
+                                    .append("invitations", new ArrayList<String>())
                     )
                             .append("logs",
                                     new Document("playerLogin", new ArrayList<String>())

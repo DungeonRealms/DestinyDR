@@ -28,6 +28,9 @@ public enum EnumData {
 
     GUILD,
 
+    GUILD_INVITES,
+    FRIEND_REQUSTS,
+
 
     /*
     Player Attributes

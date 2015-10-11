@@ -6,11 +6,13 @@ import net.dungeonrealms.mechanics.SoundAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
-import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.event.player.PlayerJoinEvent;
 
 import java.util.ArrayList;
 import java.util.TimeZone;
@@ -92,12 +94,11 @@ public class Subscription {
      * Takes PlayerJoinEvent from MainListener
      * and does shit.
      *
-     * @param event
+     * @param player
      * @since 1.0
      */
-    public void handleJoin(PlayerJoinEvent event) {
+    public void handleJoin(Player player) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            Player player = event.getPlayer();
             if (player == null) return;
             long currentTime = System.currentTimeMillis() / 1000l;
             long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId())));

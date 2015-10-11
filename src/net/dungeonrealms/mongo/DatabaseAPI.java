@@ -98,6 +98,10 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("friends", ArrayList.class);
             case GUILD:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("guild", String.class);
+            case GUILD_INVITES:
+                return ((Document) PLAYERS.get(uuid).get("notices")).get("guildInvites", ArrayList.class);
+            case FRIEND_REQUSTS:
+                return ((Document) PLAYERS.get(uuid).get("notices")).get("friendRequest", ArrayList.class);
             case ALIGNMENT:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("alignment", String.class);
             /*
@@ -163,7 +167,7 @@ public class DatabaseAPI {
             case CREATION_UNIX_DATA:
                 return ((Document) GUILDS.get(guildName).get("info")).get("unixCreation", Long.class);
             case INVITATIONS:
-                return ((Document) GUILDS.get(guildName).get("info")).get("invitations", Long.class);
+                return ((Document) GUILDS.get(guildName).get("info")).get("invitations", ArrayList.class);
             /*
             Guild Logs
              */
@@ -216,7 +220,7 @@ public class DatabaseAPI {
                  * THIS IS THE MOTHERPOINT OF THE ENTIRE
                  * PLUGIN.
                  */
-                //TODO: Make sure this isn't called regularly!!!
+                //TODO: Make sure this isn't called regularly!!! Remember the return above.
                 Subscription.getInstance().doAdd(uuid);
                 Rank.getInstance().doGet(uuid);
                 Guild.getInstance().doGet(uuid);
@@ -239,7 +243,7 @@ public class DatabaseAPI {
                 GUILDS.put(guildName, document);
                 if (REQUEST_NEW_GUILD_DOCUMENT.contains(guildName)) {
                     REQUEST_NEW_GUILD_DOCUMENT.remove(guildName);
-                    Utils.log.info("[GUILD] [ASYNC] UPDATED Guild=(" + guildName + ")");
+                    Utils.log.info("[GUILD] [ASYNC] Called update for Guild=(" + guildName + ")");
                 } else {
                     Utils.log.warning("[GUILD] [ASYNC] FAILED TO RETRIEVE=(" + guildName + ")");
                 }
@@ -278,6 +282,9 @@ public class DatabaseAPI {
                                                 .append("vitality", 1))
                                 .append("collectibles",
                                         new Document("achievements", new ArrayList<String>())))
+                        .append("notices",
+                                new Document("guildInvites", new ArrayList<String>())
+                                        .append("friendRequest", new ArrayList<String>()))
                         .append("rank",
                                 new Document("lastPurchase", 0l)
                                         .append("purchaseHistory", new ArrayList<String>())

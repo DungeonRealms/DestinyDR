@@ -3,7 +3,6 @@ package net.dungeonrealms.commands;
 import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.guild.Guild;
-import net.dungeonrealms.inventory.Menu;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.FTPUtils;
@@ -31,9 +30,6 @@ public class CommandAdd implements CommandExecutor {
         Player player = (Player) s;
         if (args.length > 0) {
             switch (args[0]) {
-                case "purchasehistory":
-                    Menu.openPlayerPurchaseHistory(player);
-                    break;
                 case "guild":
                     Guild.getInstance().createGuild(args[1], args[2], player.getUniqueId());
                     break;

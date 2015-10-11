@@ -1,5 +1,8 @@
 package net.dungeonrealms;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
@@ -14,6 +17,7 @@ import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.notice.Notice;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.teleportation.TeleportAPI;
@@ -24,7 +28,17 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
 import java.util.List;
 import java.util.UUID;
@@ -34,6 +48,84 @@ import java.util.stream.Collectors;
  * Created by Nick on 9/17/2015.
  */
 public class API {
+
+    /**
+     * Will return the players
+     * IP,Country,Zipcode,region,region_name,City,time_zone, and geo cordinates in the world.
+     *
+     * @param uuid
+     * @return
+     * @since 1.0
+     */
+    public static JsonObject getPlayerCredentials(UUID uuid) {
+        URL url = null;
+        try {
+            url = new URL("http://freegeoip.net/json/");
+            HttpURLConnection request = (HttpURLConnection) url.openConnection();
+            request.connect();
+
+            JsonParser jp = new JsonParser();
+            JsonElement root = jp.parse(new InputStreamReader((InputStream) request.getContent()));
+            return root.getAsJsonObject();
+        } catch (MalformedURLException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Gets players UUID from Name. ASYNC.
+     *
+     * @param name
+     * @return
+     */
+    public static UUID getUUIDFromName(String name) {
+        try {
+            URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + name + "?at=" + System.currentTimeMillis() / 1000l);
+
+            Reader in = new InputStreamReader(url.openStream());
+            Object json = JSONValue.parse(in);
+
+            JSONObject array = (JSONObject) json;
+
+            String rawInput = (String) array.get("id");
+            StringBuilder input = new StringBuilder(rawInput);
+
+            input.insert(8, "-");
+            input.insert(13, "-");
+            input.insert(18, "-");
+            input.insert(23, "-");
+
+            return UUID.fromString(input.toString());
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Gets players name from UUID. ASYNC.
+     *
+     * @param UUID
+     * @return
+     */
+    public static String getNameFromUUID(String UUID) {
+        try {
+            URL url = new URL("https://api.mojang.com/user/profiles/" + UUID.replaceAll("-", "") + "/names");
+
+            Reader in = new InputStreamReader(url.openStream());
+            Object json = JSONValue.parse(in);
+
+            JSONArray array = (JSONArray) json;
+
+            return array.get(array.size() - 1).toString().split("\"")[3];
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+        return null;
+    }
 
     /**
      * Gets the WorldGuard plugin.
@@ -158,9 +250,13 @@ public class API {
 
         //Essentials
         Subscription.getInstance().doAdd(uuid);
+        Subscription.getInstance().handleJoin(player);
         Rank.getInstance().doGet(uuid);
         //Guilds
         Guild.getInstance().doGet(uuid);
-        Guild.getInstance().handleLogin(player);
+        Guild.getInstance().doLogin(player);
+
+        //Notices
+        Notice.getInstance().doLogin(player);
     }
 }
