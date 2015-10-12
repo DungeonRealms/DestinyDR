@@ -4,8 +4,12 @@
       <root url="jar://$PROJECT_DIR$/lib/worldguard-6.1.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/BountifulAPI.jar!/" />
       <root url="jar://$PROJECT_DIR$/lib/worldedit-bukkit-6.1.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/BungeeCord.jar!/" />
     </CLASSES>
     <JAVADOC />
+    <NATIVE>
+      <root url="jar://$PROJECT_DIR$/lib/BungeeCord.jar!/" />
+    </NATIVE>
     <SOURCES />
   </library>
 </component>

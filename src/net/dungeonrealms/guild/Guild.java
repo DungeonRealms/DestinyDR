@@ -16,6 +16,7 @@ import java.util.UUID;
 /**
  * Created by Nick on 9/29/2015.
  */
+@SuppressWarnings("unchecked")
 public class Guild {
 
     static Guild instance = null;
@@ -57,23 +58,39 @@ public class Guild {
         if (API.isOnline(uuid)) {
             if (Guild.getInstance().isInvited(guildName, uuid)) {
                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, "notices.guildInvites", guildName, true);
-                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "invitations", player.getUniqueId().toString(), true);
+                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "invitations", uuid.toString(), true);
                 player.sendMessage(ChatColor.GREEN + "You have successfully remove a pending invitation from " + playerName);
             } else {
+                //Something wrong here.
                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "info.guild", "", true);
                 if (Guild.getInstance().isMember(guildName, uuid)) {
-                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.members", player.getUniqueId().toString(), true);
+                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.members", uuid.toString(), true);
                     player.sendMessage(ChatColor.GREEN + "You have successfully remove member " + playerName);
                 } else if (Guild.getInstance().isOfficer(guildName, uuid)) {
-                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.officers", player.getUniqueId().toString(), true);
+                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.officers", uuid.toString(), true);
                     player.sendMessage(ChatColor.GREEN + "You have successfully remove officer " + playerName);
                 }
             }
         } else {
-            //TODO: Relook at this entire method.
-            //If the player they're wanting to remove isn't online.. Ohh shit..
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, "notices.guildInvites", guildName, false);
-            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "invitations", player.getUniqueId().toString(), true);
+            Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first((document, throwable) -> {
+                if (document == null) {
+                    player.sendMessage(ChatColor.RED + "Unable to find " + ChatColor.GREEN + playerName + ChatColor.RED + " in guild! If this is an error please report this to an administrator immediately!");
+                    return;
+                }
+                Object info = document.get("notices");
+                ArrayList<String> invitations = (ArrayList<String>) ((Document) info).get("guildInvites");
+
+                for (String s : invitations) {
+                    if (s.startsWith(guildName)) {
+                        invitations.remove(s);
+                        break;
+                    }
+                }
+                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.invitations", uuid.toString(), true);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "guildInvites", invitations, false);
+                player.sendMessage(ChatColor.GREEN + "You have successfully removed " + playerName);
+            });
+
         }
     }
 
@@ -98,13 +115,27 @@ public class Guild {
                     player.sendMessage(ChatColor.GREEN + "Player has been invited to a guild!");
                 }
             } else {
-                player.sendMessage(ChatColor.RED + "That player is inside of a Guild!");
+                player.sendMessage(ChatColor.RED + "That player is already ranked " + ChatColor.AQUA + getGuildName(player));
                 player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 1f, 63f);
             }
         } else {
-            player.sendMessage(ChatColor.RED + "That player isn't on your server!");
+            player.sendMessage(ChatColor.RED + "You cannot invite a player that isn't on your shard!");
             player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 1f, 63f);
         }
+    }
+
+    /**
+     * Gets the players GuildName.
+     *
+     * @param player
+     * @return
+     * @since 1.0
+     */
+    public String getGuildName(Player player) {
+        if (!isGuildNull(player.getUniqueId())) {
+            return (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
+        }
+        return "NULL";
     }
 
     /**
@@ -118,10 +149,7 @@ public class Guild {
      */
     public boolean isInvited(String guildName, UUID uuid) {
         ArrayList<String> activeInvitations = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.INVITATIONS, guildName);
-        if (activeInvitations.contains(uuid.toString())) {
-            return true;
-        }
-        return false;
+        return activeInvitations.contains(uuid.toString());
     }
 
     /**

@@ -165,7 +165,7 @@ public class DatabaseAPI {
             case MEMBERS:
                 return ((Document) GUILDS.get(guildName).get("info")).get("members", ArrayList.class);
             case CREATION_UNIX_DATA:
-                return ((Document) GUILDS.get(guildName).get("info")).get("unixCreation", Long.class);
+                return ((Document) GUILDS.get(guildName).get("info")).get("unixCreation");
             case INVITATIONS:
                 return ((Document) GUILDS.get(guildName).get("info")).get("invitations", ArrayList.class);
             /*

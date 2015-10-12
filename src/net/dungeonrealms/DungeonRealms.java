@@ -19,6 +19,7 @@ import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.network.NetworkAPI;
 import net.dungeonrealms.party.Party;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
@@ -56,6 +57,7 @@ public class DungeonRealms extends JavaPlugin {
         saveDefaultConfig();
         Database.getInstance().initConnection();
         DatabaseAPI.getInstance().startInitialization();
+        NetworkAPI.getInstance().startInitialization();
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
         pm.registerEvents(new MainListener(), this);
