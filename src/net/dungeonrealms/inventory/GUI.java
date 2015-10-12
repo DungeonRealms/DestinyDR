@@ -69,7 +69,7 @@ public class GUI implements Listener {
             int slot = event.getRawSlot();
             if (slot >= 0 && slot < size && optionNames[slot] != null) {
                 Plugin plugin = this.plugin;
-                OptionClickEvent e = new OptionClickEvent((Player) event.getWhoClicked(), slot, optionNames[slot]);
+                OptionClickEvent e = new OptionClickEvent((Player) event.getWhoClicked(), slot, optionNames[slot], event.getInventory());
                 handler.onOptionClick(e);
                 if (e.willClose()) {
                     final Player p = (Player) event.getWhoClicked();
@@ -92,13 +92,15 @@ public class GUI implements Listener {
         private String name;
         private boolean close;
         private boolean destroy;
-
-        public OptionClickEvent(Player player, int position, String name) {
+        private Inventory inv;
+        
+        public OptionClickEvent(Player player, int position, String name, Inventory inventory) {
             this.player = player;
             this.position = position;
             this.name = name;
             this.close = true;
             this.destroy = false;
+            this.inv = inventory;
         }
 
         public Player getPlayer() {
@@ -128,6 +130,13 @@ public class GUI implements Listener {
         public void setWillDestroy(boolean destroy) {
             this.destroy = destroy;
         }
+
+		/**
+		 * @return inv of clicked event
+		 */
+		public Inventory getInventory() {
+			return inv;
+		}
     }
 
     private ItemStack setItemNameAndLore(ItemStack item, String name, String[] lore) {

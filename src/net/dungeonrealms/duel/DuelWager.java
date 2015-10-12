@@ -260,4 +260,15 @@ public class DuelWager {
         }
     }
 
+    /**
+     * @param slot 
+     * Check if slot is specified slot
+     */
+    public boolean isLeftSlot(int slot) {
+        int[] left = new int[]{1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21};
+        for (int aLeft : left)
+            if (aLeft == slot)
+                return true;
+        return false;
+    }
 }
