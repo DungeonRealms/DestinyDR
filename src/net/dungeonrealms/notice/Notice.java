@@ -10,6 +10,7 @@ import java.util.ArrayList;
 /**
  * Created by Nick on 10/11/2015.
  */
+@SuppressWarnings("unchecked")
 public class Notice {
 
     static Notice instance = null;

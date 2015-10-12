@@ -49,6 +49,23 @@ public class Guild {
     }
 
     /**
+     * Checks to see if the player has any outstanding notices
+     * to join the guild defined.
+     *
+     * @param guildName
+     * @param uuid
+     * @return
+     * @since 1.0
+     */
+    public boolean isAlreadyInvited(String guildName, UUID uuid) {
+        ArrayList<String> activeInvitations = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.INVITATIONS, guildName);
+        if (activeInvitations.contains(uuid.toString())) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
      * Removes a member from a Guild.
      *
      * @param uuid
@@ -109,7 +126,7 @@ public class Guild {
      */
     @SuppressWarnings({"unchecked", "negrotasticness"})
     public boolean isMember(String guildName, UUID uuid) {
-        if (isGuildNull(uuid)) {
+        if (!isGuildNull(uuid)) {
             return ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, guildName)).contains(uuid);
         }
         return false;
@@ -125,7 +142,7 @@ public class Guild {
      */
     @SuppressWarnings({"unchecked", "negrotasticness"})
     public boolean isOfficer(String guildName, UUID uuid) {
-        if (isGuildNull(uuid)) {
+        if (!isGuildNull(uuid)) {
             return ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, guildName)).contains(uuid);
         }
         return false;

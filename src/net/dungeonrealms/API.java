@@ -13,6 +13,7 @@ import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -100,7 +101,7 @@ public class API {
 
             return UUID.fromString(input.toString());
         } catch (Exception ex) {
-            ex.printStackTrace();
+            Utils.log.warning("[API] [getUUIDFromName] an invalid name has been inputted!");
         }
         return null;
     }
@@ -122,7 +123,7 @@ public class API {
 
             return array.get(array.size() - 1).toString().split("\"")[3];
         } catch (Exception ex) {
-            ex.printStackTrace();
+            Utils.log.warning("[API] [getNameFromUUID] Unable to find name with UUID.");
         }
         return null;
     }
@@ -258,5 +259,16 @@ public class API {
 
         //Notices
         Notice.getInstance().doLogin(player);
+    }
+
+    /**
+     * Returns if a player is online. (LOCAL SERVER)
+     *
+     * @param uuid
+     * @return
+     * @since 1.0
+     */
+    public static boolean isOnline(UUID uuid) {
+        return Bukkit.getPlayer(uuid) != null;
     }
 }
