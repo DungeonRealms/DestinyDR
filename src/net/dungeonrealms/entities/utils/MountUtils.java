@@ -88,7 +88,7 @@ public class MountUtils {
                 player.sendMessage("Mount Spawned!");
                 EntityAPI.addPlayerMountList(player.getUniqueId(), mountHorse);
                 player.closeInventory();
-                DonationEffects.entityParticleEffects.put(mountHorse, ParticleAPI.ParticleEffect.CLOUD);
+                DonationEffects.ENTITY_PARTICLE_EFFECTS.put(mountHorse, ParticleAPI.ParticleEffect.CLOUD);
                 break;
             }
             case 6: {

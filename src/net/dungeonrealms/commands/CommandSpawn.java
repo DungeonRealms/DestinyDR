@@ -138,8 +138,8 @@ public class CommandSpawn implements CommandExecutor {
                     MobSpawner spawner = new MobSpawner(player.getLocation(), monster, tier);
     				String text = (player.getLocation().getX() + "," + player.getLocation().getY() + ","
     				        + player.getLocation().getZ() + "=" + args[1] + ":" + tier);
-    				SpawningMechanics.spawnerConfig.add(text);
-    				DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.spawnerConfig);
+    				SpawningMechanics.SPANWER_CONFIG.add(text);
+    				DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPANWER_CONFIG);
                     SpawningMechanics.add(spawner);
                     break;
             }

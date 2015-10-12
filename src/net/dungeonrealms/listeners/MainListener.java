@@ -280,7 +280,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        if (!(DonationEffects.playerGoldBlockTrail.contains(event.getPlayer()))) return;
+        if (!(DonationEffects.PLAYER_GOLD_BLOCK_TRAILS.contains(event.getPlayer()))) return;
         if (!(player.getWorld().getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName()))) return;
         if (player.getLocation().getBlock().getType() != Material.AIR) return;
         Material material = player.getLocation().subtract(0, 1, 0).getBlock().getType();
@@ -288,7 +288,7 @@ public class MainListener implements Listener {
                 || material == Material.LOG || material == Material.LEAVES || material == Material.SMOOTH_BRICK || material == Material.BEDROCK || material == Material.GLASS
                 || material == Material.SANDSTONE || material == Material.SAND || material == Material.BOOKSHELF || material == Material.MOSSY_COBBLESTONE || material == Material.OBSIDIAN
                 || material == Material.SNOW_BLOCK || material == Material.ICE || material == Material.CLAY || material == Material.STAINED_CLAY || material == Material.WOOL) {
-            DonationEffects.playerGoldBlockTrailLocation.put(player.getLocation().subtract(0, 1, 0).getBlock().getLocation(), material);
+            DonationEffects.PLAYER_GOLD_BLOCK_TRAIL_INFO.put(player.getLocation().subtract(0, 1, 0).getBlock().getLocation(), material);
             player.getLocation().subtract(0, 1, 0).getBlock().setType(Material.GOLD_BLOCK);
             player.getLocation().subtract(0, 1, 0).getBlock().setMetadata("time", new FixedMetadataValue(DungeonRealms.getInstance(), 10));
         }

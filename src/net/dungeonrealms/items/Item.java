@@ -177,7 +177,7 @@ public class Item {
         ICE_DAMAGE(10, "Ice Damage", "iceDamage"),
         FIRE_DAMAGE(11, "Fire Damage", "fireDamage"),
         POISON_DAMAGE(12, "Poison Damage", "poisonDamage"),
-        ACCURACY(13, "Accuracy", "accuracy"),
+        ACCURACY(13, "Accuracy", "accuracy"), //Percentage
         STRENGTH(14, "Strength", "strength"),
         INTELLECT(15, "Intellect", "intellect");
 

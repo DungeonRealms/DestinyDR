@@ -9,17 +9,11 @@ import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.spawning.SpawningMechanics;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 
 /**
  * Created by Chase on Sep 22, 2015
@@ -58,8 +52,8 @@ public class CommandSet implements CommandExecutor {
 				int tier = Integer.parseInt(args[2]);
 				String text = (player.getLocation().getX() + "," + player.getLocation().getY() + ","
 				        + player.getLocation().getZ() + "=" + args[1] + ":" + tier);
-				SpawningMechanics.spawnerConfig.add(text);
-				DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.spawnerConfig);
+				SpawningMechanics.SPANWER_CONFIG.add(text);
+				DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPANWER_CONFIG);
 				break;
 			case "loot":
 				if (args.length == 2) {

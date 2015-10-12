@@ -61,10 +61,10 @@ public class CommandAdd implements CommandExecutor {
                     break;
                 case "trail":
                     if (args[1] != null)
-                        DonationEffects.playerParticleEffects.put(player, ParticleAPI.ParticleEffect.getById(Integer.valueOf(args[1])));
+                        DonationEffects.PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getById(Integer.valueOf(args[1])));
                     break;
                 case "gold":
-                    DonationEffects.playerGoldBlockTrail.add(player);
+                    DonationEffects.PLAYER_GOLD_BLOCK_TRAILS.add(player);
                     break;
 
             }

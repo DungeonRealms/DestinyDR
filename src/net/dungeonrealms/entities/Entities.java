@@ -11,10 +11,12 @@ import net.dungeonrealms.entities.types.pets.*;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.mastery.NMSUtils;
 import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.teleportation.Teleportation;
+import net.dungeonrealms.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.entity.EntityTargetEvent;
 
 import java.util.HashMap;
 import java.util.List;
@@ -81,14 +83,16 @@ public class Entities {
                     if (MONSTER_LAST_ATTACK.get(entity) <= 0) {
                         MONSTERS_LEASHED.remove(entity);
                         MONSTER_LAST_ATTACK.remove(entity);
-                        //TODO: SET ENTITY ON A PATH BACK TO ITS SPAWN LOCATION
-                        entity.teleport(Teleportation.Cyrennica);
+                        tryToReturnMobToBase(((CraftEntity) entity).getHandle());
                         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
                             if (HealthHandler.getInstance().getMonsterHPLive(entity) < HealthHandler.getInstance().getMonsterMaxHPLive(entity) && !MONSTERS_LEASHED.contains(entity) && !MONSTER_LAST_ATTACK.containsKey(entity)) {
                                 HealthHandler.getInstance().healMonsterByAmount(entity, (HealthHandler.getInstance().getMonsterMaxHPLive(entity) / 10));
                             }
                         }, 0L, 20L);
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 220L);
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                            Bukkit.getScheduler().cancelTask(taskID);
+                            ((EntityInsentient) ((CraftEntity) entity).getHandle()).setGoalTarget(null, EntityTargetEvent.TargetReason.CUSTOM, true);
+                        }, 220L);
                     } else {
                         MONSTER_LAST_ATTACK.put(entity, (MONSTER_LAST_ATTACK.get(entity) - 1));
                     }
@@ -97,5 +101,19 @@ public class Entities {
                 }
             }
         }
+    }
+
+    private void tryToReturnMobToBase(Entity entity) {
+        SpawningMechanics.SPAWNERS.stream().filter(mobSpawner -> mobSpawner.getSpawnedMonsters().contains(entity)).forEach(mobSpawner -> {
+            EntityInsentient entityInsentient = (EntityInsentient) entity;
+            entityInsentient.setGoalTarget(mobSpawner.armorstand, EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);
+            PathEntity path = entityInsentient.getNavigation().a(mobSpawner.armorstand.locX, mobSpawner.armorstand.locY, mobSpawner.armorstand.locZ);
+            entityInsentient.getNavigation().a(path, 2);
+            double distance = mobSpawner.armorstand.getBukkitEntity().getLocation().distance(entity.getBukkitEntity().getLocation());
+            if (distance > 24 && !entity.dead) {
+                entity.getBukkitEntity().teleport(mobSpawner.armorstand.getBukkitEntity().getLocation());
+                entityInsentient.setGoalTarget(mobSpawner.armorstand, EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);
+            }
+        });
     }
 }

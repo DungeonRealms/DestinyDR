@@ -5,7 +5,6 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.types.monsters.*;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.enums.EnumMonster;
-import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.World;
@@ -16,9 +15,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Chase on Sep 25, 2015
@@ -28,7 +27,7 @@ public class MobSpawner {
 	public String spawnType;
 	public EntityArmorStand armorstand;
 	public int tier;
-	public ArrayList<Entity> spawnedMonsters = new ArrayList<>();
+	public List<Entity> SPAWNED_MONSTERS = new CopyOnWriteArrayList<>();
 	public boolean isSpawning;
 
 	public MobSpawner(Location location, String type, int tier) {
@@ -38,8 +37,7 @@ public class MobSpawner {
 		isSpawning = false;
 		World world = ((CraftWorld) location.getWorld()).getHandle();
 		armorstand = new EntityArmorStand(world);
-		armorstand.getBukkitEntity().setMetadata("type",
-		        new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
+		armorstand.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
 		armorstand.getBukkitEntity().setMetadata("tier", new FixedMetadataValue(DungeonRealms.getInstance(), tier));
 		armorstand.getBukkitEntity().setMetadata("monsters", new FixedMetadataValue(DungeonRealms.getInstance(), type));
 		armorstand.setInvisible(true);
@@ -53,25 +51,29 @@ public class MobSpawner {
 		return !(players == null || players.size() <= 0);
 	}
 
+	public List getSpawnedMonsters() {
+		return this.SPAWNED_MONSTERS;
+	}
+
 	/**
 	 * Does 1 rotation of spawning for this mob spawner.
 	 */
 	public void spawnIn() {
-		for (int i = 0; i < spawnedMonsters.size(); i++) {
-			if (!spawnedMonsters.get(i).isAlive())
-				spawnedMonsters.remove(i);
-			if (spawnedMonsters.get(i).getBukkitEntity().getLocation().distance(loc) >= 30)
-				spawnedMonsters.get(i).setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
+		for (int i = 0; i < SPAWNED_MONSTERS.size(); i++) {
+			if (!SPAWNED_MONSTERS.get(i).isAlive())
+				SPAWNED_MONSTERS.remove(i);
+			if (SPAWNED_MONSTERS.get(i).getBukkitEntity().getLocation().distance(loc) >= 30)
+				SPAWNED_MONSTERS.get(i).setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
 		}
 		if (isSpawning) {
 			if (!playersAround()) {
-				if (spawnedMonsters.size() > 0)
-					for (Entity ent : spawnedMonsters) {
+				if (SPAWNED_MONSTERS.size() > 0)
+					for (Entity ent : SPAWNED_MONSTERS) {
 						ent.die();
 						ent.dead = true;
 						ent.getBukkitEntity().remove();
 						armorstand.getWorld().kill(ent);
-						spawnedMonsters.remove(ent);
+						SPAWNED_MONSTERS.remove(ent);
 					}
 				isSpawning = false;
 				return;
@@ -84,18 +86,17 @@ public class MobSpawner {
 			}
 		}
 		// Max spawn ammount
-		if (spawnedMonsters.size() > 4) {
+		if (SPAWNED_MONSTERS.size() > 4) {
 			Bukkit.broadcastMessage("max spawn reached for spawner");
 			return;
 		}
-		for (int i = 0; i < 4 - spawnedMonsters.size(); i++) {
+		for (int i = 0; i < 4 - SPAWNED_MONSTERS.size(); i++) {
 			Location location = new Location(Bukkit.getWorlds().get(0), loc.getX() + new Random().nextInt(3),
 			        loc.getY(), loc.getZ() + new Random().nextInt(3));
 			if (!location.getChunk().isLoaded())
 				return;
 			Entity entity;
 			String mob = spawnType;
-			Utils.log.info(mob);
 			World world = armorstand.getWorld();
 			EnumEntityType type = EnumEntityType.HOSTILE_MOB;
 			switch (mob) {
@@ -145,7 +146,7 @@ public class MobSpawner {
 			entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 			world.addEntity(entity, SpawnReason.CUSTOM);
 			entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-			spawnedMonsters.add(entity);
+			SPAWNED_MONSTERS.add(entity);
 		}
 
 	}
@@ -154,7 +155,7 @@ public class MobSpawner {
 	 * Kill all spawnedMonsters for this Mob Spawner
 	 */
 	public void kill() {
-		for (Entity spawnedMonster : spawnedMonsters) {
+		for (Entity spawnedMonster : SPAWNED_MONSTERS) {
 			spawnedMonster.getBukkitEntity().remove();
 			armorstand.getWorld().kill(spawnedMonster);
 			armorstand.getWorld().kill(armorstand);

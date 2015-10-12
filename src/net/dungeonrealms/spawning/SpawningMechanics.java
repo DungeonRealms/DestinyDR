@@ -1,48 +1,47 @@
 package net.dungeonrealms.spawning;
 
-import java.util.ArrayList;
-
+import net.dungeonrealms.DungeonRealms;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-import net.dungeonrealms.DungeonRealms;
+import java.util.ArrayList;
 
 /**
  * Created by Chase on Sep 28, 2015
  */
 public class SpawningMechanics {
-    private static ArrayList<MobSpawner> spawners = new ArrayList<>();
-    public static ArrayList<String> spawnerConfig = new ArrayList<>();
+    public static ArrayList<MobSpawner> SPAWNERS = new ArrayList<>();
+    public static ArrayList<String> SPANWER_CONFIG = new ArrayList<>();
 
     public static void updateSpawners() {
-        if (spawners.size() > 0)
-            spawners.stream().forEach(net.dungeonrealms.spawning.MobSpawner::spawnIn);
+        if (SPAWNERS.size() > 0)
+            SPAWNERS.stream().forEach(net.dungeonrealms.spawning.MobSpawner::spawnIn);
     }
 
     public static ArrayList<MobSpawner> getSpawners() {
-        return spawners;
+        return SPAWNERS;
     }
 
     public static void add(MobSpawner spawner) {
-        spawners.add(spawner);
+        SPAWNERS.add(spawner);
     }
 
     public static void killAll() {
-        spawners.forEach(net.dungeonrealms.spawning.MobSpawner::kill);
+        SPAWNERS.forEach(net.dungeonrealms.spawning.MobSpawner::kill);
     }
 
     public static void loadSpawners() {
-    	spawnerConfig = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("spawners");
-    	for(String line : spawnerConfig){
+        SPANWER_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("spawners");
+    	for(String line : SPANWER_CONFIG){
     		String[] coords = line.split("=")[0].split(",");
-    		double x,y,z = 0;
+    		double x,y,z;
     		x = Double.parseDouble(coords[0]);
     		y = Double.parseDouble(coords[1]);
     		z = Double.parseDouble(coords[2]);
     		int tier = Integer.parseInt(line.split(":")[1]);
     		String monster = line.split("=")[1].split(":")[0];
     		MobSpawner spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier);
-    		spawners.add(spawner);
+            SPAWNERS.add(spawner);
     	}
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), SpawningMechanics::updateSpawners, 0, 10 * 20L);
     }
@@ -51,13 +50,13 @@ public class SpawningMechanics {
      * @param i
      */
     public static void remove(int i) {
-        spawners.remove(i);
+        SPAWNERS.remove(i);
     }
 
     /**
      * @param mobSpawner
      */
     public static void remove(MobSpawner mobSpawner) {
-        spawners.remove(mobSpawner);
+        SPAWNERS.remove(mobSpawner);
     }
 }
