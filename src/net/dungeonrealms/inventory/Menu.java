@@ -29,6 +29,12 @@ import java.util.*;
 @SuppressWarnings({"unchecked", "chasesTouch"})
 public class Menu {
 
+    public static void openGuildIconMenu(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 45, "Guild Management");
+        UUID uuid = player.getUniqueId();
+        String guildName = (String) DatabaseAPI.getInstance().getData(EnumGuildData.NAME, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
+    }
+
     public static void openGuildManagement(Player player) {
         Inventory inv = Bukkit.createInventory(null, 45, "Guild Management");
         UUID uuid = player.getUniqueId();

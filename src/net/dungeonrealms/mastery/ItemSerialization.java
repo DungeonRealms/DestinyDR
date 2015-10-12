@@ -7,18 +7,74 @@ import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.util.io.BukkitObjectInputStream;
+import org.bukkit.util.io.BukkitObjectOutputStream;
 import org.yaml.snakeyaml.external.biz.base64Coder.Base64Coder;
 
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+
 /**
- * Created by Xwaffle on 9/24/2015.
+ * Created by Nick on 9/24/2015.
  */
 public class ItemSerialization {
+
+    /**
+     * Get an itemStack from the base64String
+     *
+     * @param base42String
+     * @return
+     * @since 1.0
+     */
+    public static ItemStack itemStackFromBase64(String base42String) {
+        try {
+            ByteArrayInputStream inputStream = new ByteArrayInputStream(Base64Coder.decodeLines(base42String));
+            BukkitObjectInputStream dataInput = new BukkitObjectInputStream(inputStream);
+            ItemStack items = (ItemStack) dataInput.readObject();
+
+            dataInput.close();
+            return items;
+        } catch (ClassNotFoundException e) {
+            try {
+                throw new IOException("Unable to decode class type.", e);
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Convert one (1) item to base64 serialized String.
+     *
+     * @param item
+     * @return
+     * @throws IllegalStateException
+     * @since 1.0
+     */
+    public static String itemStackToBase64(ItemStack item) throws IllegalStateException {
+        try {
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            BukkitObjectOutputStream dataOutput = new BukkitObjectOutputStream(outputStream);
+
+            dataOutput.writeObject(item);
+
+            dataOutput.close();
+            return Base64Coder.encodeLines(outputStream.toByteArray());
+        } catch (Exception e) {
+            throw new IllegalStateException("Unable to save item stacks.", e);
+        }
+    }
 
     /**
      * Converts an Inventory to a string
      *
      * @param i
      * @return String
+     * @since 1.0
      */
 
     public static String toString(Inventory i) {
@@ -40,6 +96,7 @@ public class ItemSerialization {
      *
      * @param s
      * @return Inventory
+     * @since 1.0
      */
     public static Inventory fromString(String s) {
         YamlConfiguration configuration = new YamlConfiguration();

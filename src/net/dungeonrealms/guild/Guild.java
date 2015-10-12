@@ -1,11 +1,13 @@
 package net.dungeonrealms.guild;
 
 import com.mongodb.client.model.Filters;
+import net.dungeonrealms.API;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.*;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -48,6 +50,63 @@ public class Guild {
         DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "logs.playerLogin", player.getName() + "," + (System.currentTimeMillis() / 1000l), true);
     }
 
+    public void removePlayer(Player player, String playerName) {
+        if (player.getName().equalsIgnoreCase(playerName)) return;
+        UUID uuid = API.getUUIDFromName(playerName);
+        String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
+        if (API.isOnline(uuid)) {
+            if (Guild.getInstance().isInvited(guildName, uuid)) {
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, "notices.guildInvites", guildName, true);
+                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "invitations", player.getUniqueId().toString(), true);
+                player.sendMessage(ChatColor.GREEN + "You have successfully remove a pending invitation from " + playerName);
+            } else {
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "info.guild", "", true);
+                if (Guild.getInstance().isMember(guildName, uuid)) {
+                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.members", player.getUniqueId().toString(), true);
+                    player.sendMessage(ChatColor.GREEN + "You have successfully remove member " + playerName);
+                } else if (Guild.getInstance().isOfficer(guildName, uuid)) {
+                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.officers", player.getUniqueId().toString(), true);
+                    player.sendMessage(ChatColor.GREEN + "You have successfully remove officer " + playerName);
+                }
+            }
+        } else {
+            //TODO: Relook at this entire method.
+            //If the player they're wanting to remove isn't online.. Ohh shit..
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, "notices.guildInvites", guildName, false);
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "invitations", player.getUniqueId().toString(), true);
+        }
+    }
+
+    /**
+     * This will send the player an invitation.
+     *
+     * @param player
+     * @param playerName
+     * @return
+     */
+    public void invitePlayer(Player player, String playerName) {
+        if (player.getName().equalsIgnoreCase(playerName)) return;
+        UUID uuid = API.getUUIDFromName(playerName);
+        if (API.isOnline(uuid)) {
+            if (Guild.getInstance().isGuildNull(uuid)) {
+                String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
+                if (Guild.getInstance().isInvited(guildName, player.getUniqueId())) {
+                    player.sendMessage(ChatColor.RED + "That player is already invited to your guild!");
+                } else {
+                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, "notices.guildInvites", guildName + "," + (System.currentTimeMillis() / 1000l), true);
+                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "invitations", player.getUniqueId().toString(), true);
+                    player.sendMessage(ChatColor.GREEN + "Player has been invited to a guild!");
+                }
+            } else {
+                player.sendMessage(ChatColor.RED + "That player is inside of a Guild!");
+                player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 1f, 63f);
+            }
+        } else {
+            player.sendMessage(ChatColor.RED + "That player isn't on your server!");
+            player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 1f, 63f);
+        }
+    }
+
     /**
      * Checks to see if the player has any outstanding notices
      * to join the guild defined.
@@ -57,7 +116,7 @@ public class Guild {
      * @return
      * @since 1.0
      */
-    public boolean isAlreadyInvited(String guildName, UUID uuid) {
+    public boolean isInvited(String guildName, UUID uuid) {
         ArrayList<String> activeInvitations = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.INVITATIONS, guildName);
         if (activeInvitations.contains(uuid.toString())) {
             return true;
@@ -221,6 +280,7 @@ public class Guild {
                             new Document("name", name.toUpperCase())
                                     .append("motd", "")
                                     .append("clanTag", clanTag)
+                                    .append("icon", "DIRT")
                                     .append("owner", owner.toString())
                                     .append("officers", new ArrayList<String>())
                                     .append("members", new ArrayList<String>())
