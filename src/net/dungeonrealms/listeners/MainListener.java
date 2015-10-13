@@ -224,6 +224,9 @@ public class MainListener implements Listener {
 								event.willDestroy();
 								Trade trade = new Trade(theevent.getPlayer(), playerClicked);
 								Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () ->trade.launchTradeWindow(),10l);
+							}else if(item.getType() == Material.PAPER){
+								theevent.getPlayer().closeInventory();
+								theevent.getPlayer().chat("/tell " + playerClicked.getName() + " ");
 							}
 						}
 					}

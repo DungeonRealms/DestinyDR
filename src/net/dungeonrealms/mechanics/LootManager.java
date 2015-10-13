@@ -1,9 +1,5 @@
 package net.dungeonrealms.mechanics;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -37,7 +33,12 @@ public class LootManager {
 	 * Manually load of all items to an ArrayList.
 	 */
 	private static void loadLootItems() {
-		ItemStack money = BankMechanics.gem.clone();
+		ItemStack moneyT1 = BankMechanics.gem.clone();
+		ItemStack moneyT2 = BankMechanics.gem.clone();
+		ItemStack moneyT3 = BankMechanics.gem.clone();
+		ItemStack moneyT4 = BankMechanics.gem.clone();
+		ItemStack moneyT5 = BankMechanics.gem.clone();
+
 		ItemStack weapon = null;
 
 		// Tier 1 Loot
@@ -45,40 +46,40 @@ public class LootManager {
 			weapon = new ItemGenerator().next(ItemTier.TIER_1);
 			tier1Loot.add(weapon);
 		}
-		money.setAmount(10);
-		tier1Loot.add(money);
+		moneyT1.setAmount(10);
+		tier1Loot.add(moneyT1);
 
 		// Tier 2 Loot
 		for (int i = 0; i < 10; i++) {
 			weapon = new ItemGenerator().next(ItemTier.TIER_2);
 			tier2Loot.add(weapon);
 		}
-		money.setAmount(20);
-		tier2Loot.add(money);
+		moneyT2.setAmount(20);
+		tier2Loot.add(moneyT2);
 
 		// Tier 3 Loot
 		for (int i = 0; i < 10; i++) {
 			weapon = new ItemGenerator().next(ItemTier.TIER_3);
 			tier3Loot.add(weapon);
 		}
-		money.setAmount(30);
-		tier3Loot.add(money);
+		moneyT3.setAmount(30);
+		tier3Loot.add(moneyT3);
 
 		// Tier 4 Loot
 		for (int i = 0; i < 10; i++) {
 			weapon = new ItemGenerator().next(ItemTier.TIER_4);
 			tier4Loot.add(weapon);
 		}
-		money.setAmount(40);
-		tier4Loot.add(money);
+		moneyT4.setAmount(40);
+		tier4Loot.add(moneyT4);
 
 		// Tier 5 Loot
 		for (int i = 0; i < 10; i++) {
 			weapon = new ItemGenerator().next(ItemTier.TIER_5);
 			tier5Loot.add(weapon);
 		}
-		money.setAmount(50);
-		tier5Loot.add(money);
+		moneyT5.setAmount(50);
+		tier5Loot.add(moneyT5);
 	}
 
 	/**

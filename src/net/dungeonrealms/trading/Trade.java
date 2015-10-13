@@ -27,6 +27,13 @@ public class Trade {
 	public static class TradeManager {
 		public static ArrayList<Trade> trades = new ArrayList<>();
 
+		/**
+		 * returns an instance of the trade object for the specified players
+		 * uuid
+		 * 
+		 * @param uuid
+		 * @return
+		 */
 		public static Trade getTrade(UUID uuid) {
 			for (int i = 0; i < trades.size(); i++) {
 				UUID uuid1 = trades.get(i).p1.getUniqueId();
@@ -39,17 +46,39 @@ public class Trade {
 	}
 
 	public Player p1;
+	/**
+	 * Player 1's Personal Inventory before and after the trade.
+	 */
+	Inventory p1Before;
+	Inventory p1After;
 	public Player p2;
+	/**
+	 * Player 2's Personal Inventory Before and after the trade.
+	 */
+	Inventory p2Before;
+	Inventory p2After;
+	/**
+	 * Shared Inventory of players.
+	 */
 	public Inventory inv;
 	public boolean completed = false;
 
 	public Trade(Player p1, Player p2) {
 		this.p1 = p1;
 		this.p2 = p2;
+		p1Before = p1.getInventory();
+		p2Before = p1.getInventory();
 		inv = Bukkit.createInventory(null, 36, p1.getName() + "  Trade " + p2.getName());
 		TradeManager.trades.add(this);
 	}
 
+	/**
+	 * checks if the UUID is the same as the UUID of the player who is on the
+	 * left side.
+	 * 
+	 * @param id
+	 * @return
+	 */
 	public boolean isLeft(UUID id) {
 		return (id == p1.getUniqueId());
 	}
@@ -67,7 +96,7 @@ public class Trade {
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setString("state", "notready");
 		nms.setTag(nbt);
-		nms.c(ChatColor.YELLOW + "READY");
+		nms.c(ChatColor.YELLOW + "Ready Up");
 		inv.setItem(0, CraftItemStack.asBukkitCopy(nms));
 		inv.setItem(8, CraftItemStack.asBukkitCopy(nms));
 		inv.setItem(4, separator);
@@ -90,6 +119,10 @@ public class Trade {
 		p2.closeInventory();
 	}
 
+	/**
+	 * Gives both players their items back that were in the trade window when
+	 * the inventory was closed.
+	 */
 	public void giveItemsBack() {
 		InventoryView inv = p1.getOpenInventory();
 		int[] left = new int[] { 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21, 30, 28, 29 };
@@ -113,6 +146,8 @@ public class Trade {
 	// RIGHT ITEMS 23,24,25,26 , 5,6,7, 14,15,16,17
 
 	/**
+	 * Checks if specified slot is owned the the player on the left side.
+	 * 
 	 * @param slot
 	 * @return
 	 */
@@ -125,6 +160,8 @@ public class Trade {
 	}
 
 	/**
+	 * Checks if the slot clicked is a no no zone.
+	 * 
 	 * @param slot
 	 * @return
 	 */
@@ -138,7 +175,7 @@ public class Trade {
 	}
 
 	/**
-	 * 
+	 * Finalizes the Trade between both players.
 	 */
 	public void accept() {
 		InventoryView inv = p1.getOpenInventory();
@@ -157,10 +194,35 @@ public class Trade {
 				p1.getInventory().addItem(current);
 			}
 		}
+		p1After = p1.getInventory();
+		p2After = p2.getInventory();
+
+		checkForDupes();
+
 		p2.closeInventory();
 		p1.closeInventory();
+
 		p1.sendMessage(ChatColor.GREEN.toString() + " Trade Completed!");
 		p2.sendMessage(ChatColor.GREEN.toString() + " Trade Completed!");
+	}
+
+	/**
+	 * Checks players for duplicated items from a trade.
+	 */
+	private void checkForDupes() {
+		for (ItemStack stack : p1After.getContents()) {
+			if (p1Before.contains(stack)) {
+				for (ItemStack oldStack : p1Before.getContents()) {
+					if (oldStack == stack) {
+						break;
+					}
+				}
+			}
+
+		}
+		for (int i = 0; i < p2After.getSize(); i++) {
+
+		}
 	}
 
 }
