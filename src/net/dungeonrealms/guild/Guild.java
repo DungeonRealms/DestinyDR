@@ -51,6 +51,13 @@ public class Guild {
         DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "logs.playerLogin", player.getName() + "," + (System.currentTimeMillis() / 1000l), true);
     }
 
+    /**
+     * Remove a player from a Guild.
+     *
+     * @param player     That's in the guild, owner, officer or member.
+     * @param playerName That needs to be removed!
+     * @since 1.0
+     */
     public void removePlayer(Player player, String playerName) {
         if (player.getName().equalsIgnoreCase(playerName)) return;
         UUID uuid = API.getUUIDFromName(playerName);
@@ -277,14 +284,48 @@ public class Guild {
     //TODO: Redo this!
     public void addGuildExperience(String guildName, double experienceToAdd) {
         int level = (int) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, guildName);
-        //Guild level CAP 50.
-        if (level >= 50) return;
         double experience = (double) DatabaseAPI.getInstance().getData(EnumGuildData.EXPERIENCE, guildName);
-        if (((level * experience) + experienceToAdd) > (level * 1500)) {
-            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.netLevel", 1, true);
+        if (level <= 50) {
+            if ((level * (experience + experienceToAdd)) > (level * 1500 + (factorial(Math.round(level % 8))))) {
+                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.netLevel", 1, false);
+                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, "info.experience", 0, true);
+            } else {
+                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.experience", experienceToAdd, true);
+            }
         } else {
-            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.experience", experienceToAdd, true);
+            /*
+            Here starts Guilds that are at level 50. The V's.
+            51 = v1, 52 = v2, etc..
+             */
+            switch (level) {
+                case 51:
+                    break;
+                case 52:
+                    break;
+                case 53:
+                    break;
+                case 54:
+                    break;
+                case 55:
+                    break;
+            }
         }
+    }
+
+    /**
+     * Get the factorial of a number.
+     *
+     * @param n
+     * @return
+     * @since 1.0
+     */
+    public int factorial(int n) {
+        int output;
+        if (n == 1) {
+            return 1;
+        }
+        output = factorial(n - 1) * n;
+        return output;
     }
 
     /**
@@ -310,6 +351,7 @@ public class Guild {
                                     .append("clanTag", clanTag)
                                     .append("icon", "DIRT")
                                     .append("owner", owner.toString())
+                                    .append("coOwner", "")
                                     .append("officers", new ArrayList<String>())
                                     .append("members", new ArrayList<String>())
                                     .append("unixCreation", System.currentTimeMillis() / 1000l)

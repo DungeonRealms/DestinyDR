@@ -18,6 +18,7 @@ import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.network.NetworkAPI;
+import net.dungeonrealms.notice.Notice;
 import net.dungeonrealms.party.Party;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
@@ -77,6 +78,7 @@ public class DungeonRealms extends JavaPlugin {
         EnchantmentAPI.getInstance().startInitialization();
         Subscription.getInstance().startInitialization();
         Rank.getInstance().startInitialization();
+        Notice.getInstance().startInitialization();
         DonationEffects.getInstance().startInitialization();
         HealthHandler.getInstance().startInitialization();
         KarmaHandler.getInstance().startInitialization();
