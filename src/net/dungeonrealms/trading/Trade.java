@@ -13,6 +13,7 @@ import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -21,7 +22,7 @@ import java.util.UUID;
 public class Trade {
 
 	public static class TradeManager {
-		public static ArrayList<Trade> trades = new ArrayList<>();  //This could probably be initialized as a List rather than Array to save Mem.
+		public static List<Trade> trades = new ArrayList<>();  //This could probably be initialized as a List rather than Array to save Mem.
 
 		/**
 		 * returns an instance of the trade object for the specified players

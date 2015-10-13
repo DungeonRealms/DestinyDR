@@ -193,15 +193,11 @@ public class MainListener implements Listener {
 						            if (DuelMechanics.isDueling(p2.getUniqueId())) {
 						            	return;
 						            } else {
-						                if (DuelMechanics.isOnCooldown(p1.getUniqueId())) {
-						                    p1.sendMessage(ChatColor.RED + "You must wait to send another Duel Request");
-						                    return;
-						                }
 						                if (DuelMechanics.isPendingDuel(p1.getUniqueId())) {
 						                    if (DuelMechanics.isPendingDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
-						                        DuelMechanics.launchWager(p1, p2);
+												Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () ->DuelMechanics.launchWager(p1, p2),10l);
 						                        // Remove from pending
-						                        DuelMechanics.cancelRequestedDuel(p1.getUniqueId());
+//						                        DuelMechanics.cancelRequestedDuel(p1.getUniqueId());
 						                    } else {
 						                        if (!DuelMechanics.isOnCooldown(p1.getUniqueId())) {
 						                            DuelMechanics.cancelRequestedDuel(p1.getUniqueId());
@@ -212,8 +208,13 @@ public class MainListener implements Listener {
 
 						                    }
 						                } else {
-						                    if (DuelMechanics.isPendingDuel(p2.getUniqueId()))
+						                    if (DuelMechanics.isOnCooldown(p1.getUniqueId())) {
+							                    p1.sendMessage(ChatColor.RED + "You must wait to send another Duel Request");
+							                    return;
+							                }
+						                    if (DuelMechanics.isPendingDuel(p2.getUniqueId())){
 						                        DuelMechanics.cancelRequestedDuel(p2.getUniqueId());
+						                    }
 						                    DuelMechanics.sendDuelRequest(p1.getUniqueId(), p2.getUniqueId());
 						                }
 						            }

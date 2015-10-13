@@ -142,8 +142,6 @@ public class DuelWager {
         }
         DuelMechanics.DUELS.remove(p1.getUniqueId());
         DuelMechanics.DUELS.remove(p2.getUniqueId());
-        DuelMechanics.PENDING_DUELS.remove(p1.getUniqueId());
-        DuelMechanics.PENDING_DUELS.remove(p2.getUniqueId());
         DuelMechanics.WAGERS.remove(this);
 
     }

@@ -1,8 +1,10 @@
 package net.dungeonrealms.duel;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mechanics.ItemManager;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -12,19 +14,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.ItemManager;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
  * Created by Chase on Sep 20, 2015
  */
 public class DuelMechanics {
-    public static HashMap<UUID, UUID> PENDING_DUELS = new HashMap<>();
+    
+    public static List<UUID> PENDING_DUEL_SENDER = new ArrayList<>();
+    public static List<UUID> PENDING_DUEL_WAITING = new ArrayList<>();
+
     public static HashMap<UUID, UUID> DUELS = new HashMap<>();
     private static List<UUID> cooldown = new ArrayList<>();
-    public static ArrayList<DuelWager> WAGERS = new ArrayList<>(); //This could probably be initialized as a List rather than Array to save Mem.
+    public static List<DuelWager> WAGERS = new ArrayList<>(); //This could probably be initialized as a List rather than Array to save Mem.
 
     // ALL PLAYERS IN A DUEL
 
@@ -33,14 +38,15 @@ public class DuelMechanics {
      * @param p2
      */
     public static void sendDuelRequest(UUID p1, UUID p2) {
-        PENDING_DUELS.put(p1, p2);
-        PENDING_DUELS.put(p2, p1);
+    	PENDING_DUEL_SENDER.add(p1);
+    	PENDING_DUEL_WAITING.add( p2);
+    	int id = PENDING_DUEL_SENDER.size() -1;
         cooldown.add(p1);
         // REMOVE REQUEST AFTER 5 SECONDS
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            PENDING_DUELS.remove(p1);
-            PENDING_DUELS.remove(p2);
-        }, 5 * 20L);
+        	PENDING_DUEL_SENDER.remove(id);
+            PENDING_DUEL_WAITING.remove(id);
+        }, 10 * 20L);
         // REMOVE PLAYER FROM COOLDOWN AFTER 10 SECONDS
         Bukkit.getServer().getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> cooldown.remove(p1), 10 * 20L);
         Player player1 = Bukkit.getPlayer(p1);
@@ -52,7 +58,7 @@ public class DuelMechanics {
     }
 
     public static boolean isPendingDuel(UUID p) {
-        return PENDING_DUELS.containsKey(p);
+        return PENDING_DUEL_WAITING.contains(p);
     }
 
     public static boolean isDueling(UUID p) {
@@ -60,15 +66,35 @@ public class DuelMechanics {
     }
 
     public static void cancelRequestedDuel(UUID p) {
-        if (PENDING_DUELS.containsKey(p)) {
-            UUID uuid1 = PENDING_DUELS.get(p);
-            UUID uuid2 = PENDING_DUELS.get(uuid1);
-            PENDING_DUELS.remove(uuid1);
-            PENDING_DUELS.remove(uuid2);
+    	int id = getPendingDuelID(p);
+        if (id < -1) {
+        	return;
         }
+            PENDING_DUEL_SENDER.remove(id);
+            PENDING_DUEL_WAITING.remove(id);
     }
 
     /**
+	 * @param p
+	 * @return
+	 */
+	private static int getPendingDuelID(UUID p) {
+		int id = 0;
+		for(UUID uuid : PENDING_DUEL_SENDER){
+			if(uuid == p)
+				return id;
+			id++;
+		}
+		id = 0;
+		for(UUID uuid : PENDING_DUEL_WAITING){
+			if(uuid == p)
+				return id;
+			id++;
+		}
+		return -1;
+	}
+
+	/**
      * @param p1
      * @param p2
      * 
@@ -81,7 +107,18 @@ public class DuelMechanics {
     }
 
     public static boolean isPendingDuelPartner(UUID p1, UUID p2) {
-        return PENDING_DUELS.get(p1) == p2;
+    	int id = getPendingDuelID(p1);
+        if (id < -1) {
+        	return false;
+        }
+        if(PENDING_DUEL_SENDER.contains(p1)){
+        	if(PENDING_DUEL_WAITING.get(id) == p2)
+        		return true;
+        }else{
+        	if(PENDING_DUEL_SENDER.get(id) == p2)
+        		return true;
+        }
+        return false;
     }
 
     /**

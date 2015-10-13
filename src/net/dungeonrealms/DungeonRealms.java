@@ -96,7 +96,6 @@ public class DungeonRealms extends JavaPlugin {
         getCommand("party").setExecutor(new CommandParty());
         getCommand("set").setExecutor(new CommandSet());
         getCommand("list").setExecutor(new CommandList());
-        getCommand("profile").setExecutor(new CommandProfile());
         getCommand("rank").setExecutor(new CommandRank());
         getCommand("guild").setExecutor(new CommandGuild());
         getCommand("essentials").setExecutor(new CommandEss());

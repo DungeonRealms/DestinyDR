@@ -10,8 +10,6 @@ commands:
         description: does guild things.
     rank:
         description: Ranks and things for admins.
-    profile:
-        description: Opens the players profile.
     spawn:
         description: Handles manual spawning.
     add:
