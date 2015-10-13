@@ -1,23 +1,19 @@
 package net.dungeonrealms.trading;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.UUID;
-
+import net.dungeonrealms.mechanics.ItemManager;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.ItemManager;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by Chase on Oct 10, 2015
@@ -25,7 +21,7 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
 public class Trade {
 
 	public static class TradeManager {
-		public static ArrayList<Trade> trades = new ArrayList<>();
+		public static ArrayList<Trade> trades = new ArrayList<>();  //This could probably be initialized as a List rather than Array to save Mem.
 
 		public static Trade getTrade(UUID uuid) {
 			for (int i = 0; i < trades.size(); i++) {

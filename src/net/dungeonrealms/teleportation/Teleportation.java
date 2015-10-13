@@ -36,7 +36,7 @@ public class Teleportation {
 
     public static Location Harrison_Field;
     public static Location Dark_Oak_Tavern;
-    private static Location Deadpeaks_Mountain_Camp;
+    public static Location Deadpeaks_Mountain_Camp;
     public static Location Trollsbane_tavern;
     public static Location Tripoli;
     public static Location Gloomy_Hollows;

@@ -110,7 +110,7 @@ public class Entities {
             PathEntity path = entityInsentient.getNavigation().a(mobSpawner.armorstand.locX, mobSpawner.armorstand.locY, mobSpawner.armorstand.locZ);
             entityInsentient.getNavigation().a(path, 2);
             double distance = mobSpawner.armorstand.getBukkitEntity().getLocation().distance(entity.getBukkitEntity().getLocation());
-            if (distance > 24 && !entity.dead) {
+            if (distance > 30 && !entity.dead) {
                 entity.getBukkitEntity().teleport(mobSpawner.armorstand.getBukkitEntity().getLocation());
                 entityInsentient.setGoalTarget(mobSpawner.armorstand, EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);
             }
