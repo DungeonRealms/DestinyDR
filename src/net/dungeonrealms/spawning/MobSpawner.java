@@ -7,6 +7,7 @@ import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.enums.EnumMonster;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -44,6 +45,10 @@ public class MobSpawner {
 		armorstand.setPosition(loc.getX(), loc.getY(), loc.getZ());
 		world.addEntity(armorstand, SpawnReason.CUSTOM);
 		armorstand.setPosition(loc.getX(), loc.getY(), loc.getZ());
+		NBTTagCompound compoundTag = new NBTTagCompound();
+		armorstand.c(compoundTag);
+		compoundTag.setBoolean("Marker", true);
+		armorstand.f(compoundTag);
 	}
 
 	public boolean playersAround() {
