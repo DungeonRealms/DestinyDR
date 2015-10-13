@@ -46,8 +46,6 @@ public class AntiCheat {
      * @since 1.0
      */
     public boolean isProxying(UUID uuid, InetAddress ip) {
-        //If UUID is f8740cbf-e6c7-43ef-830a-ac3923936b3c return true.
-
         Future<Boolean> isProxy = AsyncUtils.pool.submit(() -> {
             Utils.log.info("[ANTI-PROXY] [ASYNC] Checking player " + uuid.toString() + " w/ ip " + ip.toString().replace("/", ""));
             try {

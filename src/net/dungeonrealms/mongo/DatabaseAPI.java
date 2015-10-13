@@ -160,14 +160,18 @@ public class DatabaseAPI {
                 return ((Document) GUILDS.get(guildName).get("info")).get("clanTag", String.class);
             case OWNER:
                 return ((Document) GUILDS.get(guildName).get("info")).get("owner", String.class);
+            case CO_OWNER:
+                return ((Document) GUILDS.get(guildName).get("info")).get("coOwner", String.class);
             case OFFICERS:
                 return ((Document) GUILDS.get(guildName).get("info")).get("officers", ArrayList.class);
             case MEMBERS:
                 return ((Document) GUILDS.get(guildName).get("info")).get("members", ArrayList.class);
             case CREATION_UNIX_DATA:
-                return ((Document) GUILDS.get(guildName).get("info")).get("unixCreation");
+                return ((Document) GUILDS.get(guildName).get("info")).get("unixCreation", long.class);
             case INVITATIONS:
                 return ((Document) GUILDS.get(guildName).get("info")).get("invitations", ArrayList.class);
+            case ICON:
+                return ((Document) GUILDS.get(guildName).get("info")).get("icon", String.class);
             /*
             Guild Logs
              */

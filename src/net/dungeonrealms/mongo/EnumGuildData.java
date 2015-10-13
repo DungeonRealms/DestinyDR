@@ -8,7 +8,10 @@ public enum EnumGuildData {
     NAME,
     MOTD,
     CLAN_TAG,
+
     OWNER,
+    CO_OWNER,
+
     OFFICERS,
     MEMBERS,
     CREATION_UNIX_DATA,
@@ -17,6 +20,8 @@ public enum EnumGuildData {
     PLAYER_LOGINS,
     PLAYER_INVITES,
     BANK_CLICK,
+
+    ICON,
 
     LEVEL,
     EXPERIENCE,

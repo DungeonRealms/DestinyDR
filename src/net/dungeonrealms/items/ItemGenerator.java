@@ -66,6 +66,21 @@ public class ItemGenerator {
 
         attributeTypes.stream().filter(aType -> aType != null).forEach(aType -> {
             int i = new DamageMeta().nextWeapon(tier, modifier, aType);
+            if (aType == Item.AttributeType.DAMAGE) {
+                switch (type) {
+                    case AXE:
+                        i *= 1.25;
+                        break;
+                    case BOW:
+                        i *= 2;
+                        break;
+                    case STAFF:
+                        i *= 0.8;
+                        break;
+                    default:
+                        break;
+                }
+            }
             attributeTypeIntegerHashMap.put(aType, i);
             itemLore.add(setCorrectItemLore(aType, i, tier.getTierId()));
         });

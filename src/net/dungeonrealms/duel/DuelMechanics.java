@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -22,8 +23,8 @@ import java.util.UUID;
 public class DuelMechanics {
     public static HashMap<UUID, UUID> PENDING_DUELS = new HashMap<>();
     public static HashMap<UUID, UUID> DUELS = new HashMap<>();
-    private static ArrayList<UUID> cooldown = new ArrayList<>();
-    public static ArrayList<DuelWager> WAGERS = new ArrayList<>();
+    private static List<UUID> cooldown = new ArrayList<>();
+    public static ArrayList<DuelWager> WAGERS = new ArrayList<>(); //This could probably be initialized as a List rather than Array to save Mem.
 
     // ALL PLAYERS IN A DUEL
 

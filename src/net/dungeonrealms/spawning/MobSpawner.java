@@ -7,6 +7,7 @@ import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.enums.EnumMonster;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -44,11 +45,15 @@ public class MobSpawner {
 		armorstand.setPosition(loc.getX(), loc.getY(), loc.getZ());
 		world.addEntity(armorstand, SpawnReason.CUSTOM);
 		armorstand.setPosition(loc.getX(), loc.getY(), loc.getZ());
+		NBTTagCompound compoundTag = new NBTTagCompound();
+		armorstand.c(compoundTag);
+		compoundTag.setBoolean("Marker", true);
+		armorstand.f(compoundTag);
 	}
 
 	public boolean playersAround() {
-		List<Player> players = API.getNearbyPlayers(loc, 20);
-		return !(players == null || players.size() <= 0);
+		List<Player> players = API.getNearbyPlayers(loc, 40);
+		return !(players == null || players.isEmpty());
 	}
 
 	public List getSpawnedMonsters() {
@@ -59,21 +64,26 @@ public class MobSpawner {
 	 * Does 1 rotation of spawning for this mob spawner.
 	 */
 	public void spawnIn() {
-		for (int i = 0; i < SPAWNED_MONSTERS.size(); i++) {
-			if (!SPAWNED_MONSTERS.get(i).isAlive())
-				SPAWNED_MONSTERS.remove(i);
-			if (SPAWNED_MONSTERS.get(i).getBukkitEntity().getLocation().distance(loc) >= 30)
-				SPAWNED_MONSTERS.get(i).setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
+		if (!SPAWNED_MONSTERS.isEmpty()) {
+			for (Entity monster : SPAWNED_MONSTERS) {
+				if (monster.isAlive()) {
+					if (monster.getBukkitEntity().getLocation().distance(loc) > 32) {
+						monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
+					}
+				} else {
+					SPAWNED_MONSTERS.remove(monster);
+				}
+			}
 		}
 		if (isSpawning) {
 			if (!playersAround()) {
-				if (SPAWNED_MONSTERS.size() > 0)
-					for (Entity ent : SPAWNED_MONSTERS) {
-						ent.die();
-						ent.dead = true;
-						ent.getBukkitEntity().remove();
-						armorstand.getWorld().kill(ent);
-						SPAWNED_MONSTERS.remove(ent);
+				if (!SPAWNED_MONSTERS.isEmpty())
+					for (Entity monster : SPAWNED_MONSTERS) {
+						monster.die();
+						monster.dead = true;
+						monster.getBukkitEntity().remove();
+						armorstand.getWorld().kill(monster);
+						SPAWNED_MONSTERS.remove(monster);
 					}
 				isSpawning = false;
 				return;
@@ -85,16 +95,8 @@ public class MobSpawner {
 				isSpawning = true;
 			}
 		}
-		// Max spawn ammount
-		if (SPAWNED_MONSTERS.size() > 4) {
-			Bukkit.broadcastMessage("max spawn reached for spawner");
-			return;
-		}
 		for (int i = 0; i < 4 - SPAWNED_MONSTERS.size(); i++) {
-			Location location = new Location(Bukkit.getWorlds().get(0), loc.getX() + new Random().nextInt(3),
-			        loc.getY(), loc.getZ() + new Random().nextInt(3));
-			if (!location.getChunk().isLoaded())
-				return;
+			Location location = new Location(Bukkit.getWorlds().get(0), loc.getX() + new Random().nextInt(3), loc.getY(), loc.getZ() + new Random().nextInt(3));
 			Entity entity;
 			String mob = spawnType;
 			World world = armorstand.getWorld();

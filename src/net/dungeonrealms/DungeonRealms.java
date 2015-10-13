@@ -9,8 +9,6 @@ import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
-import net.dungeonrealms.items.DRBow;
-import net.dungeonrealms.items.ItemRegistry;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
 import net.dungeonrealms.listeners.*;
 import net.dungeonrealms.mastery.FTPUtils;
@@ -20,13 +18,13 @@ import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.network.NetworkAPI;
+import net.dungeonrealms.notice.Notice;
 import net.dungeonrealms.party.Party;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
-import net.minecraft.server.v1_8_R3.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -80,6 +78,7 @@ public class DungeonRealms extends JavaPlugin {
         EnchantmentAPI.getInstance().startInitialization();
         Subscription.getInstance().startInitialization();
         Rank.getInstance().startInitialization();
+        Notice.getInstance().startInitialization();
         DonationEffects.getInstance().startInitialization();
         HealthHandler.getInstance().startInitialization();
         KarmaHandler.getInstance().startInitialization();
@@ -104,10 +103,6 @@ public class DungeonRealms extends JavaPlugin {
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         FTPUtils.startInitialization();
 
-        //Custom Register
-        Item itemBow = new DRBow();
-        ItemRegistry itemRegistry = new ItemRegistry();
-        itemRegistry.register("minecraft:bow", itemBow);
         SpawningMechanics.loadSpawners();
         LootManager.loadLootSpawners();
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
