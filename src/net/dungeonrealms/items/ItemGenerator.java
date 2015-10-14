@@ -1,8 +1,12 @@
 package net.dungeonrealms.items;
 
 import net.dungeonrealms.anticheat.AntiCheat;
+import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.NBTTagInt;
+import net.minecraft.server.v1_8_R3.NBTTagList;
+import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -88,6 +92,8 @@ public class ItemGenerator {
         meta.setLore(itemLore);
         item.setItemMeta(meta);
 
+        RepairAPI.setCustomItemDurability(item, 1500);
+
         //Time for some NMS on the item, (Backend attributes for reading).
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
@@ -95,7 +101,7 @@ public class ItemGenerator {
 
         //Settings NBT for the Attribute Class. () -> itemType, itemTier, itemModifier
         tag.set("itemType", new NBTTagInt(type.getId()));
-        tag.set("itemTier", new NBTTagInt(tier.getId()));
+        tag.set("itemTier", new NBTTagInt(tier.getTierId()));
         tag.set("itemModifier", new NBTTagInt(modifier.getId()));
 
         /*
@@ -218,7 +224,7 @@ public class ItemGenerator {
             case BLIND:
                 return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
             case CRITICAL_HIT:
-                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.YELLOW + aType.getName();
             case LIFE_STEAL:
                 return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
             case FIRE_DAMAGE:
@@ -227,6 +233,8 @@ public class ItemGenerator {
                 return ChatColor.GREEN + "+ " + ChatColor.RED + i + " " + ChatColor.BLUE + aType.getName();
             case POISON_DAMAGE:
                 return ChatColor.GREEN + "+ " + ChatColor.RED + i + " " + ChatColor.DARK_GREEN + aType.getName();
+            case ACCURACY:
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
             default:
                 return ChatColor.GREEN + "+ " + ChatColor.RED + i + " " + ChatColor.WHITE + aType.getName();
         }
@@ -295,8 +303,7 @@ public class ItemGenerator {
                         return new ItemStack(Material.GOLD_HOE);
                 }
             case BOW:
-                net.minecraft.server.v1_8_R3.ItemStack test = new net.minecraft.server.v1_8_R3.ItemStack(Items.BOW);
-                return (CraftItemStack.asBukkitCopy(test));
+                return new ItemStack(Material.BOW);
             default:
                 Utils.log.warning("ItemGenerator couldn't find getBaseItem().. " + type.getName());
         }

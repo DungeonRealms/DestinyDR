@@ -2,6 +2,7 @@ package net.dungeonrealms.items.armor;
 
 import net.dungeonrealms.items.DamageMeta;
 import net.dungeonrealms.items.NameGenerator;
+import net.dungeonrealms.items.repairing.RepairAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagInt;
 import net.minecraft.server.v1_8_R3.NBTTagList;
@@ -62,14 +63,13 @@ public class ArmorGenerator {
         attributeTypes.stream().filter(aType -> aType != null).forEach(aType -> {
             int i = new DamageMeta().nextArmor(tier, modifier, aType);
             attributeTypeIntegerHashMap.put(aType, i);
-            itemLore.add(ChatColor.GREEN + "+" + ChatColor.WHITE + i + " " + aType.getName());
+            itemLore.add(ChatColor.GREEN + "+ " + ChatColor.RED + i + " " + ChatColor.WHITE + aType.getName());
         });
-        itemLore.add(ChatColor.GRAY + "Requires Level: " + ChatColor.GOLD + String.valueOf(tier.getRangeValues()[0]));
-        itemLore.add(ChatColor.GRAY + "Armor Level: " + ChatColor.GOLD + 738);
-        itemLore.add(ChatColor.GRAY + "Armor Tier: " + ChatColor.GOLD + tier.getTierId());
-        itemLore.add(ChatColor.GRAY + "Armor Rarity: " + modifier.getName());
+        itemLore.add(modifier.getChatColorOfModifier(modifier).toString() + modifier.getName());
         meta.setLore(itemLore);
         item.setItemMeta(meta);
+
+        RepairAPI.setCustomItemDurability(item, 1500);
 
         //Time for some NMS on the item, (Backend attributes for reading).
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
@@ -92,6 +92,7 @@ public class ArmorGenerator {
         }
 
         nmsStack.setTag(tag);
+
 
         return CraftItemStack.asBukkitCopy(nmsStack);
     }

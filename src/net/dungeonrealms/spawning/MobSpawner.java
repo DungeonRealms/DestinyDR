@@ -7,11 +7,11 @@ import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.enums.EnumMonster;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -45,10 +45,9 @@ public class MobSpawner {
 		armorstand.setPosition(loc.getX(), loc.getY(), loc.getZ());
 		world.addEntity(armorstand, SpawnReason.CUSTOM);
 		armorstand.setPosition(loc.getX(), loc.getY(), loc.getZ());
-		NBTTagCompound compoundTag = new NBTTagCompound();
-		armorstand.c(compoundTag);
-		compoundTag.setBoolean("Marker", true);
-		armorstand.f(compoundTag);
+		ArmorStand armorStandBase = (ArmorStand) armorstand.getBukkitEntity();
+		armorStandBase.setMarker(true);
+		armorstand.setSmall(true);
 	}
 
 	public boolean playersAround() {

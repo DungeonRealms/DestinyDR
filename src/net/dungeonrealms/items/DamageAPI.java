@@ -1,16 +1,16 @@
 package net.dungeonrealms.items;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
-import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.Bukkit;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.*;
-import org.bukkit.entity.Entity;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -38,6 +38,9 @@ public class DamageAPI {
      */
     public static double calculateWeaponDamage(LivingEntity attacker, Entity receiver, NBTTagCompound tag) {
         EntityEquipment entityEquipment = attacker.getEquipment();
+        if (attacker instanceof Player) {
+            RepairAPI.subtractCustomDurability((Player) attacker, attacker.getEquipment().getItemInHand(), 1);
+        }
         ItemStack[] attackerArmor = entityEquipment.getArmorContents();
         NBTTagCompound nmsTags[] = new NBTTagCompound[4];
         double damage = 0;
@@ -204,10 +207,8 @@ public class DamageAPI {
             double lifeToHeal = ((tag.getDouble("lifesteal") / 100) * damage);
             if (attacker instanceof Player) {
                 HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal);
-                attacker.sendMessage("LIFESTOLE FOR " + (int) lifeToHeal);
             } else if (attacker instanceof Monster) {
                 HealthHandler.getInstance().healMonsterByAmount(attacker, (int) lifeToHeal);
-                Bukkit.broadcastMessage("MONSTER LIFESTOLE FOR " + (int) lifeToHeal);
             }
         }
 
@@ -455,10 +456,8 @@ public class DamageAPI {
             double lifeToHeal = ((projectile.getMetadata("lifesteal").get(0).asDouble() / 100) * damage);
             if (attacker instanceof Player) {
                 HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal);
-                attacker.sendMessage("LIFESTOLE FOR " + (int) lifeToHeal);
             } else if (attacker instanceof Monster) {
                 HealthHandler.getInstance().healMonsterByAmount(attacker, (int) lifeToHeal);
-                Bukkit.broadcastMessage("MONSTER LIFESTOLE FOR " + (int) lifeToHeal);
             }
         }
 
@@ -546,21 +545,33 @@ public class DamageAPI {
         if (defenderArmor[3].getType() != null && defenderArmor[3].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(defenderArmor[3]).getTag() != null) {
                 nmsTags[0] = CraftItemStack.asNMSCopy(defenderArmor[3]).getTag();
+                if (leDefender instanceof Player) {
+                    RepairAPI.subtractCustomDurability((Player) leDefender, defenderArmor[3], 1);
+                }
             }
         }
         if (defenderArmor[2].getType() != null && defenderArmor[2].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(defenderArmor[2]).getTag() != null) {
                 nmsTags[1] = CraftItemStack.asNMSCopy(defenderArmor[2]).getTag();
+                if (leDefender instanceof Player) {
+                    RepairAPI.subtractCustomDurability((Player) leDefender, defenderArmor[2], 1);
+                }
             }
         }
         if (defenderArmor[1].getType() != null && defenderArmor[1].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(defenderArmor[1]).getTag() != null) {
                 nmsTags[2] = CraftItemStack.asNMSCopy(defenderArmor[1]).getTag();
+                if (leDefender instanceof Player) {
+                    RepairAPI.subtractCustomDurability((Player) leDefender, defenderArmor[1], 1);
+                }
             }
         }
         if (defenderArmor[0] != null && defenderArmor[0].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(defenderArmor[0]).getTag() != null) {
                 nmsTags[3] = CraftItemStack.asNMSCopy(defenderArmor[0]).getTag();
+                if (leDefender instanceof Player) {
+                    RepairAPI.subtractCustomDurability((Player) leDefender, defenderArmor[0], 1);
+                }
             }
         }
         for (int i = 0; i < nmsTags.length; i++) {
@@ -577,7 +588,7 @@ public class DamageAPI {
                         if (attacker instanceof Player) {
                             net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
                             NBTTagCompound tag = nmsItem.getTag();
-                            if (tag.getInt("block") != 0) {
+                            if (tag.getInt("accuracy") != 0) {
                                 blockChance -= tag.getInt("accuracy");
                                 if (blockChance < 0) {
                                     blockChance = 0;
@@ -728,6 +739,8 @@ public class DamageAPI {
     }
 
     public static void fireStaffProjectile(Player player, ItemStack itemStack, NBTTagCompound tag) {
+        RepairAPI.subtractCustomDurability(player, itemStack, 1);
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(itemStack));
         int weaponTier = tag.getInt("itemTier");
         Projectile projectile = player.launchProjectile(WitherSkull.class);
         switch (weaponTier) {

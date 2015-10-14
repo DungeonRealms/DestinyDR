@@ -136,7 +136,7 @@ public class KarmaHandler {
      * @return String
      * @since 1.0
      */
-    public static String getPlayerRawAlignment(Player player) {
+    public String getPlayerRawAlignment(Player player) {
         if (playerAlignments.containsKey(player)) {
             return playerAlignments.get(player).name;
         }
@@ -153,7 +153,7 @@ public class KarmaHandler {
      * @param alignmentRawName
      * @since 1.0
      */
-    public static void setPlayerAlignment(Player player, String alignmentRawName) {
+    public void setPlayerAlignment(Player player, String alignmentRawName) {
         EnumPlayerAlignments alignment = EnumPlayerAlignments.getByName(alignmentRawName);
         String playerAlignment = getPlayerRawAlignment(player);
         if (alignment != null) {
@@ -218,14 +218,14 @@ public class KarmaHandler {
 
     /**
      * Handles when the player "dies" in combat
-     * Checks to see if they should change alignment
+     * Checks to see if their killer should change alignment
      * and changes it if they should.
      *
      * @param player
      * @param killer
      * @since 1.0
      */
-    public static void handlePlayerPsuedoDeath(Player player, Entity killer) {
+    public void handlePlayerPsuedoDeath(Player player, Entity killer) {
         LivingEntity leKiller = null;
         switch (killer.getType()) {
             case ARROW:
@@ -266,7 +266,7 @@ public class KarmaHandler {
      * @param player
      * @since 1.0
      */
-    public static void handleAlignmentChanges(Player player) {
+    public void handleAlignmentChanges(Player player) {
         String alignmentPlayer = getPlayerRawAlignment(player);
         if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.LAWFUL.name)) {
             setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL.name);

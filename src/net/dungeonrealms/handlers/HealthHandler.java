@@ -379,7 +379,7 @@ public class HealthHandler {
                 if (player.getMetadata("last_death_time").get(0).asLong() > 100) {
                     player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                     player.setHealth(0);
-                    KarmaHandler.handlePlayerPsuedoDeath(player, damager);
+                    KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, damager);
                     CombatLog.removeFromCombat(player);
                     Bukkit.broadcastMessage(player.getName() + " has died.");
                     return;
@@ -387,7 +387,7 @@ public class HealthHandler {
             } else {
                 player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                 player.setHealth(0);
-                KarmaHandler.handlePlayerPsuedoDeath(player, damager);
+                KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, damager);
                 Bukkit.broadcastMessage(player.getName() + " has died.");
                 return;
             }

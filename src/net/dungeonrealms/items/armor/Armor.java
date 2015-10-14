@@ -124,6 +124,23 @@ public class Armor {
             }
             return null;
         }
+
+        public ChatColor getChatColorOfModifier(ArmorModifier armorModifier) {
+            switch (armorModifier) {
+                case COMMON:
+                    return ChatColor.GRAY;
+                case UNCOMMON:
+                    return ChatColor.GREEN;
+                case RARE:
+                    return ChatColor.AQUA;
+                case UNIQUE:
+                    return ChatColor.YELLOW;
+                case LEGENDARY:
+                    return ChatColor.DARK_PURPLE;
+                default:
+                    return ChatColor.GRAY;
+            }
+        }
     }
 
     public enum ArmorAttributeType {

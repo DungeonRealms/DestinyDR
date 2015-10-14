@@ -11,6 +11,7 @@ import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.Item;
+import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
@@ -142,6 +143,7 @@ public class DamageListener implements Listener {
             if (nmsItem == null || nmsItem.getTag() == null) return;
             //Get the NBT of the item the player is holding.
             NBTTagCompound tag = nmsItem.getTag();
+            ((Player) event.getDamager()).getItemInHand().setDurability((short) - 1);
             //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
             if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
             if (attacker.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(attacker.getUniqueId()) <= 0) {
@@ -160,17 +162,16 @@ public class DamageListener implements Listener {
                 CombatLog.addToCombat(attacker);
             }
             if (event.getEntity() instanceof Player) {
-                KarmaHandler.handleAlignmentChanges(attacker);
+                KarmaHandler.getInstance().handleAlignmentChanges(attacker);
             }
             EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getItemInHand()));
-            attacker.getItemInHand().setDurability(((short) -1));
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);
         } else if (event.getDamager().getType() == EntityType.ARROW) {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof Player)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((Player) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
             if (event.getEntity() instanceof Player) {
-                KarmaHandler.handleAlignmentChanges((Player) attackingArrow.getShooter());
+                KarmaHandler.getInstance().handleAlignmentChanges((Player) attackingArrow.getShooter());
             }
             if (CombatLog.isInCombat(((Player) attackingArrow.getShooter()))) {
                 CombatLog.updateCombat(((Player) attackingArrow.getShooter()));
@@ -182,7 +183,7 @@ public class DamageListener implements Listener {
             if (!(staffProjectile.getShooter() instanceof Player)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((Player) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
             if (event.getEntity() instanceof Player) {
-                KarmaHandler.handleAlignmentChanges((Player) staffProjectile.getShooter());
+                KarmaHandler.getInstance().handleAlignmentChanges((Player) staffProjectile.getShooter());
             }
             if (CombatLog.isInCombat(((Player) staffProjectile.getShooter()))) {
                 CombatLog.updateCombat(((Player) staffProjectile.getShooter()));
@@ -267,10 +268,6 @@ public class DamageListener implements Listener {
         EntityEquipment defenderEquipment = defender.getEquipment();
         if (defenderEquipment.getArmorContents() == null) return;
         ItemStack[] defenderArmor = defenderEquipment.getArmorContents();
-        defenderArmor[0].setDurability((short) -1);
-        defenderArmor[1].setDurability((short) -1);
-        defenderArmor[2].setDurability((short) -1);
-        defenderArmor[3].setDurability((short) -1);
         if (event.getDamager() instanceof LivingEntity) {
             LivingEntity attacker = (LivingEntity) event.getDamager();
             armourReducedDamage = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor);
@@ -383,10 +380,10 @@ public class DamageListener implements Listener {
         LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
         EntityEquipment entityEquipment = shooter.getEquipment();
         if (entityEquipment.getItemInHand() == null) return;
-        entityEquipment.getItemInHand().setDurability((short) -1);
         //Check if the item has NBT, all our custom weapons will have NBT.
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(entityEquipment.getItemInHand()));
         if (nmsItem == null || nmsItem.getTag() == null) return;
+        entityEquipment.getItemInHand().setDurability((short) - 1);
         //Get the NBT of the item the player is holding.
         if (!(shooter instanceof Player)) return;
         int weaponTier = nmsItem.getTag().getInt("itemTier");
@@ -422,7 +419,6 @@ public class DamageListener implements Listener {
         if (event.getEntity() instanceof Player) return;
         if (event.getDamager() instanceof Player) {
             Player player = (Player) event.getDamager();
-            player.getItemInHand().setDurability((short) -1);
         }
         String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
         switch (metaValue) {
@@ -487,7 +483,8 @@ public class DamageListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         event.setDeathMessage("");
         Player player = event.getEntity();
-        ItemStack itemToSave = null;
+        ItemStack armorToSave[] = new ItemStack[5];
+        boolean savedArmorContents = false;
         if (EntityAPI.hasPetOut(player.getUniqueId())) {
             net.minecraft.server.v1_8_R3.Entity pet = EntityAPI.getPlayerPet(player.getUniqueId());
             if (!pet.getBukkitEntity().isDead()) { //Safety check
@@ -504,16 +501,54 @@ public class DamageListener implements Listener {
             EntityAPI.getPlayerMount(player.getUniqueId());
             player.sendMessage("For it's own safety, your mount has returned to the stable.");
         }
-        if (player.getInventory().getItem(0) != null && player.getInventory().getItem(0).getType() != Material.AIR) {
-            if (KarmaHandler.getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.LAWFUL.name()) ||
-                    KarmaHandler.getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.NEUTRAL.name())) {
-                itemToSave = player.getInventory().getItem(0);
+        if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.LAWFUL.name())) {
+            if (player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR) {
+                armorToSave[4] =  player.getItemInHand();
             }
+            armorToSave[0] = player.getEquipment().getBoots();
+            armorToSave[1] = player.getEquipment().getLeggings();
+            armorToSave[2] = player.getEquipment().getChestplate();
+            armorToSave[3] = player.getEquipment().getHelmet();
+
+            for (ItemStack itemStack : armorToSave) {
+                if (itemStack != null && itemStack.getType() != Material.AIR) {
+                    if (!savedArmorContents) {
+                        savedArmorContents = true;
+                    }
+                }
+            }
+        } else if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.NEUTRAL.name())) {
+            if (new Random().nextInt(99) <= 50) {
+                if (player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR) {
+                    armorToSave[4] =  player.getItemInHand();
+                }
+            }
+            if (new Random().nextInt(99) <= 25) {
+                armorToSave[0] = player.getEquipment().getBoots();
+            }
+            if (new Random().nextInt(99) <= 25) {
+                armorToSave[1] = player.getEquipment().getLeggings();
+            }
+            if (new Random().nextInt(99) <= 25) {
+                armorToSave[2] = player.getEquipment().getChestplate();
+            }
+            if (new Random().nextInt(99) <= 25) {
+                armorToSave[3] = player.getEquipment().getHelmet();
+            }
+            for (ItemStack itemStack : armorToSave) {
+                if (itemStack != null && itemStack.getType() != Material.AIR) {
+                    if (!savedArmorContents) {
+                        savedArmorContents = true;
+                    }
+                }
+            }
+        } else if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.CHAOTIC.name())) {
+            //Add something here later for Chaotic deaths?
         }
         event.setDroppedExp(0);
         for (ItemStack itemStack : event.getDrops()) {
-            if (itemStack != null) {
-                if (itemStack.equals(itemToSave)) {
+            if (itemStack != null && itemStack.getType() != Material.AIR) {
+                if (itemStack.equals(armorToSave[0]) || itemStack.equals(armorToSave[1]) || itemStack.equals(armorToSave[2]) || itemStack.equals(armorToSave[3]) || itemStack.equals(armorToSave[4])) {
                     break;
                 }
                 net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
@@ -539,11 +574,18 @@ public class DamageListener implements Listener {
         player.setMaximumNoDamageTicks(50);
         player.setNoDamageTicks(50);
         player.setFallDistance(0);
-        final ItemStack finalItemToSave = itemToSave;
+        final boolean finalSavedArmorContents = savedArmorContents;
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             PlayerManager.checkInventory(player.getUniqueId());
-            if (finalItemToSave != null) {
-                player.getInventory().addItem(finalItemToSave);
+            if (finalSavedArmorContents) {
+                for (ItemStack itemStack : armorToSave) {
+                    if (itemStack != null && itemStack.getType() != Material.AIR) {
+                        if (RepairAPI.getCustomDurability(itemStack) - 450 > 0.1D) {
+                            RepairAPI.subtractCustomDurability(player, itemStack, 450);
+                        }
+                        player.getInventory().addItem(itemStack);
+                    }
+                }
             }
         }, 20L);
     }
@@ -592,7 +634,6 @@ public class DamageListener implements Listener {
             return;
         }
         DamageAPI.fireStaffProjectile(event.getPlayer(), event.getPlayer().getItemInHand(), nmsItem.getTag());
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(event.getPlayer().getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(event.getPlayer().getItemInHand()));
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)

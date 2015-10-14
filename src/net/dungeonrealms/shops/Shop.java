@@ -35,7 +35,7 @@ public class Shop {
 
         loc.add(.5, 1.5, .5);
         hologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), loc);
-        hologram.appendTextLine(ChatColor.BOLD.toString() + ChatColor.RED.toString() + shopName);
+        hologram.appendTextLine(ChatColor.RED.toString() + ChatColor.BOLD + shopName);
         hologram.getVisibilityManager().setVisibleByDefault(true);
     }
     
@@ -45,9 +45,9 @@ public class Shop {
     public void toggleHologram() {
         hologram.clearLines();
         if (isopen)
-            hologram.appendTextLine(ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + shopName);
+            hologram.appendTextLine(ChatColor.GREEN.toString() + ChatColor.BOLD + shopName);
         else
-            hologram.appendTextLine(ChatColor.BOLD.toString() + ChatColor.RED.toString() + shopName);
+            hologram.appendTextLine(ChatColor.RED.toString() + ChatColor.BOLD +  shopName);
     }
 
     /**
