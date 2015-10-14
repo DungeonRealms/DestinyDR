@@ -4,9 +4,11 @@ import com.mongodb.client.model.Filters;
 import net.dungeonrealms.API;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.*;
+import net.dungeonrealms.network.NetworkAPI;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
@@ -46,9 +48,10 @@ public class Guild {
      * @since 1.0
      */
     public void doLogin(Player player) {
-        if (DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).equals("")) return;
+        if (isGuildNull(player.getUniqueId())) return;
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
         DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "logs.playerLogin", player.getName() + "," + (System.currentTimeMillis() / 1000l), true);
+        NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + player.getName() + ChatColor.GREEN + " is now online!");
     }
 
     /**
@@ -61,6 +64,7 @@ public class Guild {
     public void removePlayer(Player player, String playerName) {
         if (player.getName().equalsIgnoreCase(playerName)) return;
         UUID uuid = API.getUUIDFromName(playerName);
+        assert uuid != null;
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
         if (API.isOnline(uuid)) {
             if (Guild.getInstance().isInvited(guildName, uuid)) {
@@ -73,9 +77,11 @@ public class Guild {
                 if (Guild.getInstance().isMember(guildName, uuid)) {
                     DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.members", uuid.toString(), true);
                     player.sendMessage(ChatColor.GREEN + "You have successfully remove member " + playerName);
+                    NetworkAPI.getInstance().sendAllGuildMessage(guildName, player.getName() + " has removed Member " + playerName + "!");
                 } else if (Guild.getInstance().isOfficer(guildName, uuid)) {
                     DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.officers", uuid.toString(), true);
                     player.sendMessage(ChatColor.GREEN + "You have successfully remove officer " + playerName);
+                    NetworkAPI.getInstance().sendAllGuildMessage(guildName, player.getName() + " has removed Officer " + playerName + "!");
                 }
             }
         } else {
@@ -120,6 +126,7 @@ public class Guild {
                     DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, "notices.guildInvites", guildName + "," + (System.currentTimeMillis() / 1000l), true);
                     DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "invitations", player.getUniqueId().toString(), true);
                     player.sendMessage(ChatColor.GREEN + "Player has been invited to a guild!");
+                    NetworkAPI.getInstance().sendAllGuildMessage(guildName, player.getName() + " has invited " + playerName + " to your guild!");
                 }
             } else {
                 player.sendMessage(ChatColor.RED + "That player is already ranked " + ChatColor.AQUA + getGuildName(player));
@@ -146,6 +153,17 @@ public class Guild {
     }
 
     /**
+     * Sets the guild icon (Material)
+     *
+     * @param guildName
+     * @param material
+     * @since 1.0
+     */
+    public void setGuildIcon(String guildName, Material material) {
+        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, "info.icon", material.toString(), true);
+    }
+
+    /**
      * Checks to see if the player has any outstanding notices
      * to join the guild defined.
      *
@@ -157,6 +175,47 @@ public class Guild {
     public boolean isInvited(String guildName, UUID uuid) {
         ArrayList<String> activeInvitations = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.INVITATIONS, guildName);
         return activeInvitations.contains(uuid.toString());
+    }
+
+    /**
+     * Is OWNER?
+     *
+     * @param uuid
+     * @param guildName
+     * @return
+     * @since 1.0
+     */
+    public boolean isOwner(UUID uuid, String guildName) {
+        if (!isGuildNull(uuid)) {
+            return DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, guildName).equals(uuid.toString());
+        }
+        return false;
+    }
+
+    /**
+     * Is CO OWNER?
+     *
+     * @param uuid
+     * @param guildName
+     * @return
+     * @since 1.0
+     */
+    public boolean isCoOwner(UUID uuid, String guildName) {
+        if (!isGuildNull(uuid)) {
+            return DatabaseAPI.getInstance().getData(EnumGuildData.CO_OWNER, guildName).equals(uuid.toString());
+        }
+        return false;
+    }
+
+    /**
+     * Sets the guild CoOwner.
+     *
+     * @param uuid
+     * @param guildName
+     * @since 1.0
+     */
+    public void setCoOwner(UUID uuid, String guildName) {
+        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, "info.coOwner", uuid.toString(), true);
     }
 
     /**
@@ -289,6 +348,7 @@ public class Guild {
             if ((level * (experience + experienceToAdd)) > (level * 1500 + (factorial(Math.round(level % 8))))) {
                 DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.netLevel", 1, false);
                 DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, "info.experience", 0, true);
+                NetworkAPI.getInstance().sendAllGuildMessage(guildName, "Has leveled to " + level);
             } else {
                 DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.experience", experienceToAdd, true);
             }

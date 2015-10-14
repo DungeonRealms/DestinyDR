@@ -268,7 +268,9 @@ public class Menu {
                 SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
                 String date = sdf.format(creationDate);
 
-                inv.addItem(editItem(new ItemStack(Material.DIAMOND), ChatColor.GREEN + String.valueOf(((Document) info).get("name")), new String[]{
+                Material m = Material.valueOf(((String) ((Document) info).get("icon")));
+
+                inv.addItem(editItem(new ItemStack(m), ChatColor.GREEN + String.valueOf(((Document) info).get("name")), new String[]{
                         ChatColor.GRAY + "ClanTag: " + ChatColor.translateAlternateColorCodes('&', String.valueOf(((Document) info).get("clanTag"))),
                         ChatColor.GRAY + "Level: " + ChatColor.AQUA + String.valueOf(((Document) info).get("netLevel")),
                         ChatColor.GRAY + "Officers: " + ChatColor.AQUA + ((ArrayList<String>) ((Document) info).get("officers")).size(),

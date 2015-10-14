@@ -5,6 +5,10 @@ import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.inventory.Menu;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.network.NetworkAPI;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -30,34 +34,71 @@ public class ClickHandler {
         int slot = event.getRawSlot();
         if (slot == -999) return;
         if (name.equals("Guild Management")) {
+            String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
             event.setCancelled(true);
             switch (slot) {
                 case 0:
                     Menu.openPlayerGuildInventory(player);
                     break;
                 case 10:
-                    AnvilGUIInterface invitePlayerGUI = AnvilApi.createNewGUI(player, anvilClick -> {
-                        switch (anvilClick.getSlot()) {
-                            case OUTPUT:
-                                anvilClick.setWillClose(true);
-                                anvilClick.setWillDestroy(true);
-                                Guild.getInstance().invitePlayer(player, anvilClick.getName());
-                                break;
-                        }
-                    });
-                    invitePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
-                    invitePlayerGUI.open();
+                    if (Guild.getInstance().isOfficer(guildName, player.getUniqueId()) || Guild.getInstance().isOwner(player.getUniqueId(), guildName) || Guild.getInstance().isCoOwner(player.getUniqueId(), guildName)) {
+                        AnvilGUIInterface invitePlayerGUI = AnvilApi.createNewGUI(player, anvilClick -> {
+                            switch (anvilClick.getSlot()) {
+                                case OUTPUT:
+                                    anvilClick.setWillClose(true);
+                                    anvilClick.setWillDestroy(true);
+                                    Guild.getInstance().invitePlayer(player, anvilClick.getName());
+                                    break;
+                            }
+                        });
+                        invitePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
+                        invitePlayerGUI.open();
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You do not have the required permissions to invite a player!");
+                    }
                     break;
                 case 11:
-                    AnvilGUIInterface removePlayerGUI = AnvilApi.createNewGUI(player, anvilClick -> {
-                        switch (anvilClick.getSlot()) {
-                            case OUTPUT:
-                                Guild.getInstance().removePlayer(player, anvilClick.getName());
-                                break;
-                        }
-                    });
-                    removePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
-                    removePlayerGUI.open();
+                    if (Guild.getInstance().isOfficer(guildName, player.getUniqueId()) || Guild.getInstance().isOwner(player.getUniqueId(), guildName) || Guild.getInstance().isCoOwner(player.getUniqueId(), guildName)) {
+                        AnvilGUIInterface removePlayerGUI = AnvilApi.createNewGUI(player, anvilClick -> {
+                            switch (anvilClick.getSlot()) {
+                                case OUTPUT:
+                                    anvilClick.setWillClose(true);
+                                    anvilClick.setWillDestroy(true);
+                                    Guild.getInstance().removePlayer(player, anvilClick.getName());
+                                    break;
+                            }
+                        });
+                        removePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
+                        removePlayerGUI.open();
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You do not have the required permissions to remove a player!");
+                    }
+                    break;
+                case 36:
+                    if (Guild.getInstance().isOwner(player.getUniqueId(), guildName) || Guild.getInstance().isCoOwner(player.getUniqueId(), guildName)) {
+                        AnvilGUIInterface pickIconGUI = AnvilApi.createNewGUI(player, anvilClick -> {
+                            switch (anvilClick.getSlot()) {
+                                case OUTPUT:
+                                    anvilClick.setWillClose(true);
+                                    anvilClick.setWillDestroy(true);
+                                    if (Material.getMaterial(anvilClick.getName().toUpperCase()) == null) {
+                                        player.sendMessage(ChatColor.RED + "The material you specified is invalid! Examples: DIRT, DIAMOND_SWORD, DIAMOND_PICKAXE, DIRT");
+                                    } else {
+                                        Guild.getInstance().setGuildIcon(guildName, Material.getMaterial(anvilClick.getName().toUpperCase()));
+                                        NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.GREEN + "Icon has been set to " + anvilClick.getName());
+                                    }
+                            }
+                        });
+                        pickIconGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.DIAMOND), "Type material here..", new String[]{
+                                ChatColor.GRAY + "",
+                                ChatColor.GRAY + "How to use:",
+                                ChatColor.GRAY + "dirt -> dirt block",
+                                ChatColor.GRAY + "diamond_axe -> diamond axe",
+                        }));
+                        pickIconGUI.open();
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You do not have the required permissions to set the Guild Icon!");
+                    }
                     break;
             }
         }
