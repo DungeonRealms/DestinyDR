@@ -20,6 +20,14 @@ import org.bukkit.inventory.meta.Repairable;
  */
 public class RepairAPI {
 
+    /**
+     * Returns the repair cost
+     * of a specified itemstack
+     *
+     * @param itemStack
+     * @return int
+     * @since 1.0
+     */
     public int getItemRepairCost(ItemStack itemStack) {
         double totalRepairCost = 0;
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
@@ -92,6 +100,14 @@ public class RepairAPI {
         return (int) Math.round(totalRepairCost);
     }
 
+    /**
+     * Returns the base durability
+     * of a specified itemstack
+     *
+     * @param itemStack
+     * @return double
+     * @since 1.0
+     */
     public static double getItemDurabilityValue(ItemStack itemStack) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
@@ -107,6 +123,14 @@ public class RepairAPI {
         return 0;
     }
 
+    /**
+     * Returns the durability percentage
+     * of a specified itemstack
+     *
+     * @param itemStack
+     * @return double
+     * @since 1.0
+     */
     public static double getDurabilityValueAsPercent(ItemStack itemStack, double durability) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
@@ -120,6 +144,15 @@ public class RepairAPI {
         return (double) Math.round(percentDurability);
     }
 
+    /**
+     * Returns the current durability
+     * of a specified itemstack or
+     * sets it if it does not have one
+     *
+     * @param itemStack
+     * @return double
+     * @since 1.0
+     */
     public static double getCustomDurability(ItemStack itemStack) {
         try {
             net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
@@ -171,6 +204,15 @@ public class RepairAPI {
         }
     }
 
+    /**
+     * Checks if the itemstack
+     * is an armor scrap
+     * (Used to repair armor)
+     *
+     * @param itemStack
+     * @return boolean
+     * @since 1.0
+     */
     public static boolean isItemArmorScrap(ItemStack itemStack) {
         if (!(itemStack.getType() == Material.LEATHER || itemStack.getType() == Material.IRON_FENCE || itemStack.getType() == Material.INK_SACK))
             return false;
@@ -183,6 +225,16 @@ public class RepairAPI {
         return tag != null && tag.getString("type").equalsIgnoreCase("scrap");
     }
 
+    /**
+     * Sets the custom durability
+     * of a specified itemstack
+     * and updates its enchantment
+     * if applicable
+     *
+     * @param itemStack
+     * @param durability
+     * @since 1.0
+     */
     public static void setCustomItemDurability(ItemStack itemStack, double durability) {
         try {
             Repairable repairable = (Repairable) itemStack.getItemMeta();
@@ -199,6 +251,14 @@ public class RepairAPI {
         }
     }
 
+    /**
+     * Sets the custom durability
+     * bar of a specified itemstack
+     *
+     * @param itemStack
+     * @param percent
+     * @since 1.0
+     */
     public static void setPercentageDurabilityBar(ItemStack itemStack, double percent) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
@@ -211,6 +271,18 @@ public class RepairAPI {
         itemStack.setDurability((short) newDurability);
     }
 
+    /**
+     * Subtracts durability from
+     * a specified itemstack and
+     * informs the player if it
+     * drops below certain values
+     * also handles breaking of item
+     *
+     * @param player
+     * @param itemStack
+     * @param amountToSubtract
+     * @since 1.0
+     */
     public static void subtractCustomDurability(Player player, ItemStack itemStack, double amountToSubtract) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();

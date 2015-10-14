@@ -34,7 +34,7 @@ import net.dungeonrealms.inventory.GUI;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.trading.Trade;
+import net.dungeonrealms.handlers.TradeHandler;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -223,7 +223,7 @@ public class MainListener implements Listener {
 								event.setWillClose(true);
 								event.setWillDestroy(true);
 								event.willDestroy();
-								Trade trade = new Trade(theevent.getPlayer(), playerClicked);
+								TradeHandler trade = new TradeHandler(theevent.getPlayer(), playerClicked);
 								Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () ->trade.launchTradeWindow(),10l);
 							}else if(item.getType() == Material.PAPER){
 								theevent.getPlayer().closeInventory();

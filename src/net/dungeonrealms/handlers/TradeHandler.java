@@ -1,4 +1,4 @@
-package net.dungeonrealms.trading;
+package net.dungeonrealms.handlers;
 
 import net.dungeonrealms.mechanics.ItemManager;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -19,24 +19,25 @@ import java.util.UUID;
 /**
  * Created by Chase on Oct 10, 2015
  */
-public class Trade {
+public class TradeHandler {
 
 	public static class TradeManager {
-		public static List<Trade> trades = new ArrayList<>();  //This could probably be initialized as a List rather than Array to save Mem.
+		public static List<TradeHandler> trades = new ArrayList<>();
 
 		/**
 		 * returns an instance of the trade object for the specified players
 		 * uuid
 		 * 
 		 * @param uuid
-		 * @return
+		 * @return TradeHandler
+		 * @since 1.0
 		 */
-		public static Trade getTrade(UUID uuid) {
-			for (int i = 0; i < trades.size(); i++) {
-				UUID uuid1 = trades.get(i).p1.getUniqueId();
-				UUID uuid2 = trades.get(i).p2.getUniqueId();
+		public static TradeHandler getTrade(UUID uuid) {
+			for (TradeHandler trade : trades) {
+				UUID uuid1 = trade.p1.getUniqueId();
+				UUID uuid2 = trade.p2.getUniqueId();
 				if (uuid == uuid1 || uuid == uuid2)
-					return trades.get(i);
+					return trade;
 			}
 			return null;
 		}
@@ -45,27 +46,30 @@ public class Trade {
 	public Player p1;
 	/**
 	 * Player 1's Personal Inventory before and after the trade.
+	 * @since 1.0
 	 */
 	Inventory p1Before;
 	Inventory p1After;
 	public Player p2;
 	/**
 	 * Player 2's Personal Inventory Before and after the trade.
+	 * @since 1.0
 	 */
 	Inventory p2Before;
 	Inventory p2After;
 	/**
 	 * Shared Inventory of players.
+	 * @since 1.0
 	 */
 	public Inventory inv;
 	public boolean completed = false;
 
-	public Trade(Player p1, Player p2) {
+	public TradeHandler(Player p1, Player p2) {
 		this.p1 = p1;
 		this.p2 = p2;
 		p1Before = p1.getInventory();
-		p2Before = p1.getInventory();
-		inv = Bukkit.createInventory(null, 36, p1.getName() + "  Trade " + p2.getName());
+		p2Before = p2.getInventory();
+		inv = Bukkit.createInventory(null, 36, "Trade Window"); //Having two 16 char names and " Trade " would sometimes cause this to be too long and break the inv opening.
 		TradeManager.trades.add(this);
 	}
 
@@ -74,7 +78,8 @@ public class Trade {
 	 * left side.
 	 * 
 	 * @param id
-	 * @return
+	 * @return boolean
+	 * @since 1.0
 	 */
 	public boolean isLeft(UUID id) {
 		return (id == p1.getUniqueId());
@@ -82,10 +87,11 @@ public class Trade {
 
 	/**
 	 * Opens the trade window for both players.
+	 * @since 1.0
 	 */
 	public void launchTradeWindow() {
 		p1.closeInventory();
-		inv = Bukkit.createInventory(null, 36, p1.getName() + "  Trade with " + p2.getName());
+		inv = Bukkit.createInventory(null, 36, "Trade Window");
 		ItemStack separator = ItemManager.createItem(Material.BONE, " ", null);
 		ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "Ready", null,
 		        DyeColor.GRAY.getDyeData());
@@ -107,6 +113,7 @@ public class Trade {
 
 	/**
 	 * Closes inv for both players and deletes Trade.
+	 * @since 1.0
 	 */
 	public void handleClose() {
 		if (!completed)
@@ -119,6 +126,7 @@ public class Trade {
 	/**
 	 * Gives both players their items back that were in the trade window when
 	 * the inventory was closed.
+	 * @since 1.0
 	 */
 	public void giveItemsBack() {
 		InventoryView inv = p1.getOpenInventory();
@@ -146,7 +154,8 @@ public class Trade {
 	 * Checks if specified slot is owned the the player on the left side.
 	 * 
 	 * @param slot
-	 * @return
+	 * @return boolean
+	 * @since 1.0
 	 */
 	public boolean isLeftSlot(int slot) {
 		int[] left = new int[] { 0, 1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21, 30, 28, 29 };
@@ -160,7 +169,8 @@ public class Trade {
 	 * Checks if the slot clicked is a no no zone.
 	 * 
 	 * @param slot
-	 * @return
+	 * @return boolean
+	 * @since 1.0
 	 */
 	public boolean isSeperator(int slot) {
 		int[] num = new int[] { 4, 13, 22, 27, 31 };
@@ -173,6 +183,7 @@ public class Trade {
 
 	/**
 	 * Finalizes the Trade between both players.
+	 * @since 1.0
 	 */
 	public void accept() {
 		InventoryView inv = p1.getOpenInventory();
@@ -205,6 +216,7 @@ public class Trade {
 
 	/**
 	 * Checks players for duplicated items from a trade.
+	 * @since 1.0
 	 */
 	private void checkForDupes() {
 		for (ItemStack stack : p1After.getContents()) {

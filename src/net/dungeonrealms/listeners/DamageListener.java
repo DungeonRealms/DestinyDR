@@ -143,7 +143,6 @@ public class DamageListener implements Listener {
             if (nmsItem == null || nmsItem.getTag() == null) return;
             //Get the NBT of the item the player is holding.
             NBTTagCompound tag = nmsItem.getTag();
-            ((Player) event.getDamager()).getItemInHand().setDurability((short) - 1);
             //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
             if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
             if (attacker.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(attacker.getUniqueId()) <= 0) {
@@ -383,7 +382,6 @@ public class DamageListener implements Listener {
         //Check if the item has NBT, all our custom weapons will have NBT.
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(entityEquipment.getItemInHand()));
         if (nmsItem == null || nmsItem.getTag() == null) return;
-        entityEquipment.getItemInHand().setDurability((short) - 1);
         //Get the NBT of the item the player is holding.
         if (!(shooter instanceof Player)) return;
         int weaponTier = nmsItem.getTag().getInt("itemTier");

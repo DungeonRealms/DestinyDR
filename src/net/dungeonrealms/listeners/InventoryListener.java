@@ -35,7 +35,6 @@ import net.dungeonrealms.duel.DuelWager;
 import net.dungeonrealms.handlers.ClickHandler;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.Item.ItemTier;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -43,8 +42,8 @@ import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.spawning.LootSpawner;
-import net.dungeonrealms.trading.Trade;
-import net.dungeonrealms.trading.Trade.TradeManager;
+import net.dungeonrealms.handlers.TradeHandler;
+import net.dungeonrealms.handlers.TradeHandler.TradeManager;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
@@ -509,7 +508,7 @@ public class InventoryListener implements Listener {
 			}
 		} else if (event.getInventory().getTitle().contains("Trade")) {
 			Player p = (Player) event.getPlayer();
-			Trade t = TradeManager.getTrade(p.getUniqueId());
+			TradeHandler t = TradeManager.getTrade(p.getUniqueId());
 			if (t != null) {
 				t.handleClose();
 			}
@@ -528,7 +527,7 @@ public class InventoryListener implements Listener {
 				event.setCancelled(true);
 				return;
 			}
-			Trade trade = TradeManager.getTrade(event.getWhoClicked().getUniqueId());
+			TradeHandler trade = TradeManager.getTrade(event.getWhoClicked().getUniqueId());
 			int slot = event.getRawSlot();
 			if(slot >= 36)
 				return;
