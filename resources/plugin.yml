@@ -6,6 +6,9 @@ website: http://www.dungeonrealms.net
 depend: [BountifulAPI, WorldGuard]
 description: The new dungeonrealms!
 commands:
+    mail:
+        description: Does mail things
+        aliases: [mailbox, ups, fedex]
     guild:
         description: does guild things.
     rank:

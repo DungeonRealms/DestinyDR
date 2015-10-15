@@ -2,6 +2,7 @@ package net.dungeonrealms.notice;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mail.Mail;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import org.bukkit.Bukkit;
@@ -74,6 +75,7 @@ public class Notice {
 
         ArrayList<String> friendRequests = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUSTS, player.getUniqueId());
         ArrayList<String> guildInvitations = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.GUILD_INVITES, player.getUniqueId());
+        ArrayList<String> mailbox = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MAILBOX, player.getUniqueId());
 
         if (guildInvitations.size() > 0) {
             for (String s : guildInvitations) {
@@ -83,6 +85,13 @@ public class Notice {
 
                 long hoursLeft = (((System.currentTimeMillis() / 1000l) / inviteSent) / 60) / 60;
                 player.sendMessage(ChatColor.YELLOW + "You have been invited to " + ChatColor.GREEN + guildName + ChatColor.YELLOW + " you have " + hoursLeft + " hours to accept!");
+            }
+        }
+
+        if (mailbox.size() > 0) {
+            for (String s : mailbox) {
+                String fromName = s.split(",")[0];
+                Mail.getInstance().sendMailMessage(player, ChatColor.GREEN + "You have unread mail from " + ChatColor.AQUA + fromName + ChatColor.GREEN + "! Get to a mailbox!");
             }
         }
     }

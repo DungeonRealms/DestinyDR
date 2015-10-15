@@ -31,6 +31,8 @@ public enum EnumData {
     GUILD_INVITES,
     FRIEND_REQUSTS,
 
+    MAILBOX,
+
 
     /*
     Player Attributes

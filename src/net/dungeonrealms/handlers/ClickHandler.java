@@ -28,11 +28,23 @@ public class ClickHandler {
         return instance;
     }
 
-    public void doGuildClick(InventoryClickEvent event) {
+    public void doClick(InventoryClickEvent event) {
         String name = event.getInventory().getName();
         Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
         if (slot == -999) return;
+
+        /*
+        Mail Below
+         */
+        if (name.equals("Mailbox")) {
+            event.setCancelled(true);
+        }
+
+        /*
+        Guilds Below
+         */
+
         if (name.equals("Guild Management")) {
             String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
             event.setCancelled(true);
@@ -83,7 +95,7 @@ public class ClickHandler {
                                 Guild.getInstance().promotePlayer(player, anvilClick.getName());
                         }
                     });
-                    promotePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short)3), "Type name here..", new String[]{}));
+                    promotePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
                     promotePlayerGUI.open();
                     break;
                 case 14:
@@ -95,7 +107,7 @@ public class ClickHandler {
                                 Guild.getInstance().demotePlayer(player, anvilClick.getName());
                         }
                     });
-                    demotePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short)3), "Type name here..", new String[]{}));
+                    demotePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
                     demotePlayerGUI.open();
                     break;
                 case 36:

@@ -6,6 +6,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -28,6 +29,36 @@ import java.util.*;
  */
 @SuppressWarnings({"unchecked", "chasesTouch"})
 public class Menu {
+
+    public static void openMailInventory(Player player) {
+        UUID uuid = player.getUniqueId();
+        ArrayList<String> mail = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MAILBOX, uuid);
+
+        if (mail.size() <= 0) {
+            Inventory noMailInv = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no mail! :-(");
+            player.openInventory(noMailInv);
+            return;
+
+        }
+
+        Inventory inv = Bukkit.createInventory(null, 45, "Mailbox");
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
+
+        for (String s : mail) {
+            String from = s.split(",")[0];
+            long unix = Long.valueOf(s.split(",")[1]);
+            String serializedItem = s.split(",")[2];
+            Date sentDate = new Date(unix * 1000);
+            String loginTime = sdf.format(sentDate);
+            inv.addItem(editItem(ItemSerialization.itemStackFromBase64(serializedItem), "", new String[]{
+                    ChatColor.GRAY + "From: " + ChatColor.AQUA + from,
+                    ChatColor.GRAY + "Sent: " + ChatColor.AQUA + sentDate,
+            }));
+        }
+
+        player.openInventory(inv);
+
+    }
 
     public static void openGuildManagement(Player player) {
         Inventory inv = Bukkit.createInventory(null, 45, "Guild Management");

@@ -112,6 +112,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("notices")).get("guildInvites", ArrayList.class);
             case FRIEND_REQUSTS:
                 return ((Document) PLAYERS.get(uuid).get("notices")).get("friendRequest", ArrayList.class);
+            case MAILBOX:
+                return ((Document) PLAYERS.get(uuid).get("notices")).get("mailbox", ArrayList.class);
             case ALIGNMENT:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("alignment", String.class);
             /*
@@ -293,27 +295,25 @@ public class DatabaseAPI {
                                                 .append("strength", 1)
                                                 .append("dexterity", 1)
                                                 .append("intellect", 1)
-                                                .append("vitality", 1))
-                                .append("collectibles",
-                                        new Document("achievements", new ArrayList<String>())
-                                                .append("mounts", new ArrayList<String>())
-                                                .append("pets", new ArrayList<String>())
-                                                .append("particles", new ArrayList<String>()))
-                                .append("notices",
-                                        new Document("guildInvites", new ArrayList<String>())
-                                                .append("friendRequest", new ArrayList<String>())
-                                                .append("mailbox", new ArrayList<String>())
-                                )
-                                .append("rank",
-                                        new Document("lastPurchase", 0l)
-                                                .append("purchaseHistory", new ArrayList<String>())
-                                                .append("rank", "DEFAULT"))
-                                .append("inventory",
-                                        new Document("collection_bin", "")
-                                                .append("mule", "")
-                                                .append("storage", "")
-                                                .append("player", "")
-                                ));
+                                                .append("vitality", 1)))
+                        .append("collectibles",
+                                new Document("achievements", new ArrayList<String>())
+                                        .append("mounts", new ArrayList<String>())
+                                        .append("pets", new ArrayList<String>())
+                                        .append("particles", new ArrayList<String>()))
+                        .append("notices",
+                                new Document("guildInvites", new ArrayList<String>())
+                                        .append("friendRequest", new ArrayList<String>())
+                                        .append("mailbox", new ArrayList<String>()))
+                        .append("rank",
+                                new Document("lastPurchase", 0l)
+                                        .append("purchaseHistory", new ArrayList<String>())
+                                        .append("rank", "DEFAULT"))
+                        .append("inventory",
+                                new Document("collection_bin", "")
+                                        .append("mule", "")
+                                        .append("storage", "")
+                                        .append("player", ""));
         Database.collection.insertOne(newPlayerDocument, (aVoid, throwable) -> {
             REQUEST_NEW_PLAYER_DOCUMENT.add(uuid);
             Utils.log.info("Requesting new data for : " + uuid);
