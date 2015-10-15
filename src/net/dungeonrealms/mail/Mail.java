@@ -35,7 +35,7 @@ public class Mail {
     public void sendMail(Player player, String to, ItemStack itemStack) {
 
         if (to.equals("ALL") && player.getName().equals("xFinityPro")) {
-            //TODO: Send item to every player that's EVER JOINED DUNGEONREALMS!
+            //TODO: Send item to every player that HAS EVER JOINED DUNGEONREALMS!
             return;
         }
 
@@ -55,7 +55,6 @@ public class Mail {
             sendMailMessage(Bukkit.getPlayer(toUUID), ChatColor.GREEN + "You have received mail from " + ChatColor.AQUA + player.getName());
         } else {
             DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, "notices.mailbox", mailIdentification, false);
-            NetworkAPI.getInstance().sendPlayerMessage(toPlayer, "YOU GOT MAIL!");
             NetworkAPI.getInstance().sendNetworkMessage("mail", "update", toPlayer);
         }
 

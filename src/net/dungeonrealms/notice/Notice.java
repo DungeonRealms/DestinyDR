@@ -30,8 +30,6 @@ public class Notice {
 
     private volatile HashMap<UUID, Integer> REFRESH = new HashMap<>();
 
-    private int MAX_THRESH_HOLD = 5;
-
     public void startInitialization() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             REFRESH.entrySet().stream().filter(entry -> entry.getValue() >= 1).forEach(entry -> {
@@ -50,6 +48,7 @@ public class Notice {
      * @since 1.0
      */
     public boolean refreshData(UUID uuid) {
+        int MAX_THRESH_HOLD = 5;
         if (REFRESH.get(uuid) >= MAX_THRESH_HOLD) {
             if (API.isOnline(uuid)) {
                 Bukkit.getPlayer(uuid).sendMessage(ChatColor.RED + "You are requesting data from US MegaServer #1 at a rate which has been blocked!");

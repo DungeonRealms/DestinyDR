@@ -261,7 +261,7 @@ public class DatabaseAPI {
                     REQUEST_NEW_GUILD_DOCUMENT.remove(guildName);
                     Utils.log.info("[GUILD] [ASYNC] Called update for Guild=(" + guildName + ")");
                 } else {
-                    Utils.log.warning("[GUILD] [ASYNC] FAILED TO RETRIEVE=(" + guildName + ")");
+                    Utils.log.warning("[GUILD] [ASYNC] Grabbed new cache of Guild=(" + guildName + ")");
                 }
             }
         });

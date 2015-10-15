@@ -54,7 +54,7 @@ public class NetworkAPI implements PluginMessageListener {
              */
             case "mail":
                 if (in.readUTF().equals("update")) {
-                    Bukkit.getOnlinePlayers().stream().filter(p -> p != null && p.getName().equals(in.readUTF())).forEach(p -> {
+                    Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> {
                         DatabaseAPI.getInstance().requestPlayer(p.getUniqueId());
                         Mail.getInstance().sendMailMessage(p, ChatColor.GREEN + "You got mail!");
                     });
@@ -67,7 +67,7 @@ public class NetworkAPI implements PluginMessageListener {
              */
             case "player":
                 if (in.readUTF().equals("update")) {
-                    Bukkit.getOnlinePlayers().stream().filter(p -> p != null && p.getName().equals(in.readUTF())).forEach(p -> {
+                    Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> {
                         DatabaseAPI.getInstance().requestPlayer(p.getUniqueId());
                     });
                 }

@@ -270,7 +270,7 @@ public class Guild {
      * @since 1.0
      */
     public boolean isOwner(UUID uuid, String guildName) {
-        return !isGuildNull(uuid) && DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, guildName).equals(uuid.toString());
+        return !isGuildNull(uuid) && uuid.equals(UUID.fromString(String.valueOf(DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, guildName))));
     }
 
     /**
@@ -282,7 +282,7 @@ public class Guild {
      * @since 1.0
      */
     public boolean isCoOwner(UUID uuid, String guildName) {
-        return !isGuildNull(uuid) && !DatabaseAPI.getInstance().getData(EnumGuildData.CO_OWNER, guildName).equals("") && DatabaseAPI.getInstance().getData(EnumGuildData.CO_OWNER, guildName).equals(uuid.toString());
+        return !isGuildNull(uuid) && !DatabaseAPI.getInstance().getData(EnumGuildData.CO_OWNER, guildName).equals("") && uuid.equals(UUID.fromString(String.valueOf(DatabaseAPI.getInstance().getData(EnumGuildData.CO_OWNER, guildName))));
     }
 
     /**
@@ -496,13 +496,11 @@ public class Guild {
                                     .append("unixCreation", System.currentTimeMillis() / 1000l)
                                     .append("netLevel", 1)
                                     .append("experience", 0)
-                                    .append("invitations", new ArrayList<String>())
-                    )
+                                    .append("invitations", new ArrayList<String>()))
                             .append("logs",
                                     new Document("playerLogin", new ArrayList<String>())
                                             .append("playerInvites", new ArrayList<String>())
-                                            .append("bankClicks", new ArrayList<String>())
-                            )
+                                            .append("bankClicks", new ArrayList<String>()))
                     , (aVoid, throwable1) -> {
                         DatabaseAPI.getInstance().requestGuild(name);
                         DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, "info.guild", name, true);
