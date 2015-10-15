@@ -53,6 +53,16 @@ public class DatabaseAPI {
                 });
     }
 
+    /**
+     * Updates specified Guild
+     *
+     * @param guildName  Name of the Guild.
+     * @param EO         Type of Operation
+     * @param variable   Variable to change i.e (info.icon)
+     * @param object     New Data
+     * @param requestNew Pull new guild once injected?
+     * @since 1.0
+     */
     public void updateGuild(String guildName, EnumOperators EO, String variable, Object object, boolean requestNew) {
         Database.guilds.updateOne(Filters.eq("info.name", guildName.toUpperCase()), new Document(EO.getUO(), new Document(variable, object)),
                 (result, exception) -> {
@@ -167,7 +177,7 @@ public class DatabaseAPI {
             case MEMBERS:
                 return ((Document) GUILDS.get(guildName).get("info")).get("members", ArrayList.class);
             case CREATION_UNIX_DATA:
-                return ((Document) GUILDS.get(guildName).get("info")).get("unixCreation", long.class);
+                return ((Document) GUILDS.get(guildName).get("info")).get("unixCreation");
             case INVITATIONS:
                 return ((Document) GUILDS.get(guildName).get("info")).get("invitations", ArrayList.class);
             case ICON:
@@ -285,20 +295,25 @@ public class DatabaseAPI {
                                                 .append("intellect", 1)
                                                 .append("vitality", 1))
                                 .append("collectibles",
-                                        new Document("achievements", new ArrayList<String>())))
-                        .append("notices",
-                                new Document("guildInvites", new ArrayList<String>())
-                                        .append("friendRequest", new ArrayList<String>()))
-                        .append("rank",
-                                new Document("lastPurchase", 0l)
-                                        .append("purchaseHistory", new ArrayList<String>())
-                                        .append("rank", "DEFAULT"))
-                        .append("inventory",
-                                new Document("collection_bin", "")
-                                        .append("mule", "")
-                                        .append("storage", "")
-                                        .append("player", "")
-                        );
+                                        new Document("achievements", new ArrayList<String>())
+                                                .append("mounts", new ArrayList<String>())
+                                                .append("pets", new ArrayList<String>())
+                                                .append("particles", new ArrayList<String>()))
+                                .append("notices",
+                                        new Document("guildInvites", new ArrayList<String>())
+                                                .append("friendRequest", new ArrayList<String>())
+                                                .append("mailbox", new ArrayList<String>())
+                                )
+                                .append("rank",
+                                        new Document("lastPurchase", 0l)
+                                                .append("purchaseHistory", new ArrayList<String>())
+                                                .append("rank", "DEFAULT"))
+                                .append("inventory",
+                                        new Document("collection_bin", "")
+                                                .append("mule", "")
+                                                .append("storage", "")
+                                                .append("player", "")
+                                ));
         Database.collection.insertOne(newPlayerDocument, (aVoid, throwable) -> {
             REQUEST_NEW_PLAYER_DOCUMENT.add(uuid);
             Utils.log.info("Requesting new data for : " + uuid);

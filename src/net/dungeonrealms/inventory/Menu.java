@@ -62,13 +62,13 @@ public class Menu {
         inv.setItem(13, editItem("TeaZ", ChatColor.GREEN + "Promote a player", new String[]{
                 ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to promote a player!",
                 "",
-                ChatColor.RED + "You must be ranked " + ChatColor.GREEN + "Officer" + ChatColor.RED + "!",
+                ChatColor.RED + "You must be ranked " + ChatColor.GREEN + "Owner/CoOwner" + ChatColor.RED + "!",
         }));
 
         inv.setItem(14, editItem("Arcaniax", ChatColor.GREEN + "Demote a player", new String[]{
-                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to Demote a player!",
+                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to demote a player!",
                 "",
-                ChatColor.RED + "You must be ranked " + ChatColor.GREEN + "Officer" + ChatColor.RED + "!",
+                ChatColor.RED + "You must be ranked " + ChatColor.GREEN + "Owner/CoOwner" + ChatColor.RED + "!",
         }));
 
         inv.setItem(36, editItem(new ItemStack(Material.WOOL, 1, (short) 5), ChatColor.GREEN + "Pick a Guild Icon!", new String[]{

@@ -1,6 +1,7 @@
 package net.dungeonrealms.network;
 
 import com.google.common.collect.Iterables;
+import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.dungeonrealms.API;
@@ -38,21 +39,63 @@ public class NetworkAPI implements PluginMessageListener {
         Utils.log.info("[NetworkAPI] Finished Registering Outbound/Inbound BungeeCord channels ... OKAY!");
     }
 
+    //TODO: Make a network message to update guilds across entire network if an even should occur.
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
         if (!channel.equalsIgnoreCase("BungeeCord")) return;
-        switch (channel) {
-            case "":
+        ByteArrayDataInput in = ByteStreams.newDataInput(message);
+        String subChannel = in.readUTF();
+        switch (subChannel) {
+             /*
+            To call this;
+            NetworkAPI.getInstance().sendNetworkMessage("mail", "update", "xFinityPro");
+            This will broadcast through-out the entire network that `xfinitypro` has mail and UPDATE MAILBOX!
+             */
+            case "mail":
+                if (in.readUTF().equals("update")) {
+                    Bukkit.getOnlinePlayers().stream().filter(p -> p != null && p.getName().equals(in.readUTF())).forEach(p -> {
+                        DatabaseAPI.getInstance().requestPlayer(p.getUniqueId());
+                    });
+                }
+                break;
+            /*
+            To call this;
+            NetworkAPI.getInstance().sendNetworkMessage("player", "update", "xFinityPro");
+            This will broadcast through-out the entire network that `xfinitypro` needs to request NEW DATA!
+             */
+            case "player":
+                if (in.readUTF().equals("update")) {
+                    Bukkit.getOnlinePlayers().stream().filter(p -> p != null && p.getName().equals(in.readUTF())).forEach(p -> {
+                        DatabaseAPI.getInstance().requestPlayer(p.getUniqueId());
+                    });
+                }
                 break;
             default:
         }
     }
 
     /**
+     * @param channel  Type of custom Channel (actually sub)
+     * @param message  Message to send.
+     * @param contents Contents of the internal guts.
+     * @since 1.0
+     */
+    public void sendNetworkMessage(String channel, String message, String contents) {
+        if (Bukkit.getOnlinePlayers().size() <= 0) return;
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF(channel);
+        out.writeUTF(message);
+        out.writeUTF(contents);
+        Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
+        assert player != null : "sendNetworkMessage failed at 300 levels.";
+        player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
+    }
+
+    /**
      * Send a player a message through the Bungee channel.
      *
-     * @param playerName
-     * @param message
+     * @param playerName Player to send message to.
+     * @param message    Message to send to the player specified above.
      * @apiNote Make sure to use ChatColor net.md_5.bungee.api.ChatColor!
      * @since 1.0
      */
@@ -71,8 +114,8 @@ public class NetworkAPI implements PluginMessageListener {
      * Sends a players in a guild a message.
      * ATM: only works per-shard.
      *
-     * @param guildName
-     * @param message
+     * @param guildName Name of the guild.
+     * @param message   Message to send to members of the guild.
      * @since 1.0
      */
     public void sendAllGuildMessage(String guildName, String message) {
