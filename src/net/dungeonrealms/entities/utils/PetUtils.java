@@ -1,5 +1,6 @@
 package net.dungeonrealms.entities.utils;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.types.pets.*;
@@ -116,7 +117,11 @@ public class PetUtils {
     public static void spawnPet(UUID uuid, String petType) {
         Player player = Bukkit.getPlayer(uuid);
         World world = ((CraftWorld) player.getWorld()).getHandle();
-        EnumPets enumPets = EnumPets.getByName(petType);
+        EnumPets enumPets = EnumPets.getByName(petType.toUpperCase());
+        if (!API.isStringPet(petType)) {
+            player.sendMessage("Uh oh... Something went wrong with your pet! Please inform a staff member!");
+            return;
+        }
         switch (enumPets) {
             //TODO: Add check for Achievements to see if Player has pet and can use it.
             case CAVE_SPIDER: {

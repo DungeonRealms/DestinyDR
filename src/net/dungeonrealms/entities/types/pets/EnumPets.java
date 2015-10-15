@@ -48,7 +48,7 @@ public enum EnumPets {
 
     public static EnumPets getByName(String rawName) {
         for (EnumPets ep : values()) {
-            if (ep.getRawName().equalsIgnoreCase(rawName)) {
+            if (ep.name.equalsIgnoreCase(rawName)) {
                 return ep;
             }
         }

@@ -163,45 +163,32 @@ public class ItemGenerator {
         for (int i = 0; i < amountOfAttributes; i++) {
             int random = new Random().nextInt(Item.AttributeType.values().length);
             //TODO: CHECK THIS WORKS
-            if (!attributeList.contains(Item.AttributeType.getById(random))) {
-                if (Item.AttributeType.getById(random) == Item.AttributeType.FIRE_DAMAGE || Item.AttributeType.getById(random) == Item.AttributeType.ICE_DAMAGE || Item.AttributeType.getById(random) == Item.AttributeType.POISON_DAMAGE) {
-                    if (!attributeList.contains(Item.AttributeType.FIRE_DAMAGE) && !attributeList.contains(Item.AttributeType.ICE_DAMAGE) && !attributeList.contains(Item.AttributeType.POISON_DAMAGE)) {
-                        attributeList.add(Item.AttributeType.getById(random));
-                    } else {
-                        i--;
-                    }
-                } else if (Item.AttributeType.getById(random) == Item.AttributeType.VS_PLAYER || Item.AttributeType.getById(random) == Item.AttributeType.VS_MONSTERS) {
-                    if (!attributeList.contains(Item.AttributeType.VS_MONSTERS) && attributeList.contains(Item.AttributeType.VS_PLAYER)) {
-                        attributeList.add(Item.AttributeType.getById(random));
-                    } else {
-                        i--;
-                    }
-                } else if (Item.AttributeType.getById(random) == Item.AttributeType.VITALITY || Item.AttributeType.getById(random) == Item.AttributeType.DEXTERITY || Item.AttributeType.getById(random) == Item.AttributeType.INTELLECT || Item.AttributeType.getById(random) == Item.AttributeType.STRENGTH) {
-                    if (!attributeList.contains(Item.AttributeType.VITALITY) && !attributeList.contains(Item.AttributeType.DEXTERITY) && !attributeList.contains(Item.AttributeType.INTELLECT)  && !attributeList.contains(Item.AttributeType.STRENGTH)) {
-                        attributeList.add(Item.AttributeType.getById(random));
-                    } else {
-                        i--;
-                    }
-                } else if (Item.AttributeType.getById(random) == Item.AttributeType.PURE_DAMAGE || Item.AttributeType.getById(random) == Item.AttributeType.ARMOR_PENETRATION) {
-                    if (itemType == Item.ItemType.AXE) {
-                        attributeList.add(Item.AttributeType.getById(random));
-                    } else {
-                        i--;
-                    }
-                } else if (Item.AttributeType.getById(random) == Item.AttributeType.ACCURACY) {
-                    if (itemType == Item.ItemType.SWORD) {
-                        attributeList.add(Item.AttributeType.getById(random));
-                    } else {
-                        i--;
-                    }
-                } else {
-                    attributeList.add(Item.AttributeType.getById(random));
-                }
+            if ((!attributeList.contains(Item.AttributeType.getById(random))) && canAddAttribute(Item.AttributeType.getById(random), itemType, attributeList)) {
+                attributeList.add(Item.AttributeType.getById(random));
             } else {
                 i--;
             }
         }
         return attributeList;
+    }
+
+    private static boolean canAddAttribute(Item.AttributeType attributeType, Item.ItemType itemType, ArrayList<Item.AttributeType> attributeList) {
+        if (attributeType == Item.AttributeType.FIRE_DAMAGE || attributeType == Item.AttributeType.ICE_DAMAGE || attributeType == Item.AttributeType.POISON_DAMAGE) {
+            return !attributeList.contains(Item.AttributeType.FIRE_DAMAGE) && !attributeList.contains(Item.AttributeType.ICE_DAMAGE) && !attributeList.contains(Item.AttributeType.POISON_DAMAGE);
+        }
+        if (attributeType == Item.AttributeType.VS_PLAYER || attributeType == Item.AttributeType.VS_MONSTERS) {
+            return !attributeList.contains(Item.AttributeType.VS_MONSTERS) && attributeList.contains(Item.AttributeType.VS_PLAYER);
+        }
+        if (attributeType == Item.AttributeType.VITALITY || attributeType == Item.AttributeType.DEXTERITY || attributeType == Item.AttributeType.INTELLECT || attributeType == Item.AttributeType.STRENGTH) {
+            return !attributeList.contains(Item.AttributeType.VITALITY) && !attributeList.contains(Item.AttributeType.DEXTERITY) && !attributeList.contains(Item.AttributeType.INTELLECT) && !attributeList.contains(Item.AttributeType.STRENGTH);
+        }
+        if (attributeType == Item.AttributeType.PURE_DAMAGE || attributeType == Item.AttributeType.ARMOR_PENETRATION) {
+            return itemType == Item.ItemType.AXE;
+        }
+        if (attributeType == Item.AttributeType.ACCURACY) {
+            return itemType == Item.ItemType.SWORD;
+        }
+        return true;
     }
 
     /**

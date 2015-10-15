@@ -384,7 +384,7 @@ public class Menu {
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
 
         for (String petType : playerPets) {
-            inv.addItem(editItem(new ItemStack(Material.MONSTER_EGG, 1, (short) EnumPets.getByName(petType).getEggShortData()), ChatColor.GREEN + petType.toUpperCase(), new String[]{
+            inv.addItem(editItem(new ItemStack(Material.MONSTER_EGG, 1, (short) EnumPets.getByName(petType).getEggShortData()), petType.toUpperCase(), new String[]{
             }));
         }
 
