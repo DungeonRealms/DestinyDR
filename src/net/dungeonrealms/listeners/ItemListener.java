@@ -3,11 +3,13 @@ package net.dungeonrealms.listeners;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.inventory.GUI;
+import net.dungeonrealms.inventory.Menu;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -96,8 +98,8 @@ public class ItemListener implements Listener {
         GUI profileMain = new GUI("Profile", 27, guievent ->{
         	int slot = guievent.getPosition();
         	ItemStack stack = guievent.getInventory().getItem(slot);
-        	switch(stack.getType()){
-        	case QUARTZ:
+        	switch(slot){
+                case 22:
         	       if (!(CombatLog.isInCombat(event.getPlayer()))) {
         	            if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
         	                player.sendMessage("You cannot restart a teleport during a cast!");
@@ -114,7 +116,13 @@ public class ItemListener implements Listener {
         	            player.sendMessage(
         	                    ChatColor.GREEN.toString() + ChatColor.BOLD + "TELEPORT " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player.getUniqueId()) + "s" + ChatColor.RED + ")");
         	        }
-        	}
+                    break;
+                case 8:
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Menu.openPlayerPetMenu(player), 20L);
+                    break;
+                default:
+                    break;
+            }
         }, DungeonRealms.getInstance())
                 .setOption(4, Utils.getPlayerHead(player), ChatColor.GREEN + player.getName() + "'s Profile", new String[]{
                         ChatColor.DARK_GRAY + "Player Profile"

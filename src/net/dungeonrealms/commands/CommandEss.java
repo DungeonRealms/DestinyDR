@@ -2,6 +2,7 @@ package net.dungeonrealms.commands;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import org.bukkit.Bukkit;
@@ -10,6 +11,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Kieran on 10/9/2015.
@@ -55,7 +59,12 @@ public class CommandEss implements CommandExecutor {
                             commandSender.sendMessage("This pet is not a real pet!");
                             return false;
                         }
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.pets", petType, true);
+                        List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, player.getUniqueId());
+                        if (playerPets.contains(petType.toUpperCase())) {
+                            commandSender.sendMessage("The player already has this pet!");
+                            return false;
+                        }
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.pets", petType.toUpperCase(), true);
                         player.sendMessage("You have recieved the " + petType + " pet!");
                         break;
                     } else {

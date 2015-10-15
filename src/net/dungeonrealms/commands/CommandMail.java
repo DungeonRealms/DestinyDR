@@ -31,7 +31,6 @@ public class CommandMail implements CommandExecutor {
 
         Menu.openMailInventory(player);
 
-
         return true;
 
     }
