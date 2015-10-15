@@ -89,10 +89,7 @@ public class Notice {
         }
 
         if (mailbox.size() > 0) {
-            for (String s : mailbox) {
-                String fromName = s.split(",")[0];
-                Mail.getInstance().sendMailMessage(player, ChatColor.GREEN + "You have unread mail from " + ChatColor.AQUA + fromName + ChatColor.GREEN + "! Get to a mailbox!");
-            }
+            Mail.getInstance().sendMailMessage(player, ChatColor.GREEN + "You have " + ChatColor.AQUA + mailbox.size() + ChatColor.GREEN + " new mail!");
         }
     }
 
