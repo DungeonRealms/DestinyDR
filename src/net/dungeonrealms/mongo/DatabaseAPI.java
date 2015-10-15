@@ -147,6 +147,15 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("inventory")).get("storage", String.class);
             case INVENTORY:
                 return ((Document) PLAYERS.get(uuid).get("inventory")).get("player", String.class);
+            /*
+            Player Collectibles
+             */
+            case MOUNTS:
+                return ((Document) PLAYERS.get(uuid).get("collectibles")).get("mounts", ArrayList.class);
+            case PETS:
+                return ((Document) PLAYERS.get(uuid).get("collectibles")).get("pets", ArrayList.class);
+            case PARTICLES:
+                return ((Document) PLAYERS.get(uuid).get("collectibles")).get("particles", ArrayList.class);
             default:
         }
         return null;
@@ -191,7 +200,7 @@ public class DatabaseAPI {
                 return ((Document) GUILDS.get(guildName).get("logs")).get("playerInvites", ArrayList.class);
             case BANK_CLICK:
                 return ((Document) GUILDS.get(guildName).get("logs")).get("bankClicks", ArrayList.class);
-            /**
+            /*
              * Levels
              */
             case LEVEL:

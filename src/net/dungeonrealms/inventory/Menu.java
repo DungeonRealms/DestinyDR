@@ -337,6 +337,27 @@ public class Menu {
 
     }
 
+    public static void openPlayerPetMenu(Player player) {
+        //TODO: CHECK
+        UUID uuid = player.getUniqueId();
+
+        List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid);
+
+        Inventory inv = Bukkit.createInventory(null, 18, player.getName() + "'s Pets");
+
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+
+
+        int plN = 1;
+        for (String petType : playerPets) {
+            inv.setItem(plN, editItem("Proxying", ChatColor.GREEN + petType.toUpperCase(), new String[]{
+            }));
+            plN++;
+        }
+
+        player.openInventory(inv);
+    }
+
     public static ItemStack editItem(String playerName, String name, String[] lore) {
         ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
         SkullMeta meta = (SkullMeta) item.getItemMeta();

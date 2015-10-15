@@ -1,6 +1,5 @@
 package net.dungeonrealms.items;
 
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.items.repairing.RepairAPI;
@@ -13,7 +12,6 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -209,48 +207,6 @@ public class DamageAPI {
                 HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal);
             } else if (attacker instanceof Monster) {
                 HealthHandler.getInstance().healMonsterByAmount(attacker, (int) lifeToHeal);
-            }
-        }
-
-        if (tag.getInt("blind") != 0) {
-            boolean canTargetBeBlinded = false;
-            if (new Random().nextInt(99) < tag.getInt("blind")) {
-                if (!leReceiver.hasPotionEffect(PotionEffectType.BLINDNESS)) {
-                    canTargetBeBlinded = true;
-                } else if (leReceiver.hasMetadata("blind")) {
-                    long last_blind = leReceiver.getMetadata("blind").get(0).asLong();
-                    if ((System.currentTimeMillis() - last_blind) <= (10 * 1000)) {
-                        // Less than 10 seconds, do nothing.
-                        canTargetBeBlinded = false;
-                    }
-                }
-
-                if (canTargetBeBlinded) {
-                    try {
-                        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SMALL_SMOKE, receiver.getLocation(),
-                                new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                    switch (weaponTier) {
-                        case 1:
-                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 30, 1));
-                            break;
-                        case 2:
-                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1));
-                            break;
-                        case 3:
-                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 1));
-                            break;
-                        case 4:
-                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
-                            break;
-                        case 5:
-                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
-                            break;
-                    }
-                    leReceiver.setMetadata("blind", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-                }
             }
         }
 
@@ -458,48 +414,6 @@ public class DamageAPI {
                 HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal);
             } else if (attacker instanceof Monster) {
                 HealthHandler.getInstance().healMonsterByAmount(attacker, (int) lifeToHeal);
-            }
-        }
-
-        if (projectile.getMetadata("blind").get(0).asInt() != 0) {
-            boolean canTargetBeBlinded = false;
-            if (new Random().nextInt(99) < projectile.getMetadata("blind").get(0).asInt()) {
-                if (!leReceiver.hasPotionEffect(PotionEffectType.BLINDNESS)) {
-                    canTargetBeBlinded = true;
-                } else if (leReceiver.hasMetadata("blind")) {
-                    long last_blind = leReceiver.getMetadata("blind").get(0).asLong();
-                    if ((System.currentTimeMillis() - last_blind) <= (10 * 1000)) {
-                        // Less than 10 seconds, do nothing.
-                        canTargetBeBlinded = false;
-                    }
-                }
-
-                if (canTargetBeBlinded) {
-                    try {
-                        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SMALL_SMOKE, receiver.getLocation(),
-                                new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-                    } catch (Exception ex) {
-                        ex.printStackTrace();
-                    }
-                    switch (projectile.getMetadata("itemTier").get(0).asInt()) {
-                        case 1:
-                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 30, 1));
-                            break;
-                        case 2:
-                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 40, 1));
-                            break;
-                        case 3:
-                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 50, 1));
-                            break;
-                        case 4:
-                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
-                            break;
-                        case 5:
-                            leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 1));
-                            break;
-                    }
-                    leReceiver.setMetadata("blind", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-                }
             }
         }
 

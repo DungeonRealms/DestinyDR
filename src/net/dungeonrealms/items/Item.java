@@ -170,16 +170,15 @@ public class Item {
         ARMOR_PENETRATION(3, "Armor Pen", "armorPenetration"),
         VS_MONSTERS(4, "VS Monsters", "vsMonsters"), //Percentage
         VS_PLAYER(5, "VS Players", "vsPlayers"), //Percentage
-        BLIND(6, "Blind", "blind"), //Percentage
-        LIFE_STEAL(7, "Life Steal", "lifesteal"), //Percentage
-        VITALITY(8, "Vitality", "vitality"),
-        DEXTERITY(9, "Dexterity", "dexterity"),
-        ICE_DAMAGE(10, "Ice Damage", "iceDamage"),
-        FIRE_DAMAGE(11, "Fire Damage", "fireDamage"),
-        POISON_DAMAGE(12, "Poison Damage", "poisonDamage"),
-        ACCURACY(13, "Accuracy", "accuracy"), //Percentage
-        STRENGTH(14, "Strength", "strength"),
-        INTELLECT(15, "Intellect", "intellect");
+        LIFE_STEAL(6, "Life Steal", "lifesteal"), //Percentage
+        VITALITY(7, "Vitality", "vitality"),
+        DEXTERITY(8, "Dexterity", "dexterity"),
+        ICE_DAMAGE(9, "Ice Damage", "iceDamage"),
+        FIRE_DAMAGE(10, "Fire Damage", "fireDamage"),
+        POISON_DAMAGE(11, "Poison Damage", "poisonDamage"),
+        ACCURACY(12, "Accuracy", "accuracy"), //Percentage
+        STRENGTH(13, "Strength", "strength"),
+        INTELLECT(14, "Intellect", "intellect");
 
         private int id;
         private String name;
