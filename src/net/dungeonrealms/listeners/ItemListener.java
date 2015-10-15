@@ -101,24 +101,22 @@ public class ItemListener implements Listener {
         	switch(slot){
                 case 22:
         	       if (!(CombatLog.isInCombat(event.getPlayer()))) {
-        	            if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
-        	                player.sendMessage("You cannot restart a teleport during a cast!");
-        	                return;
-        	            }
-        	                if (TeleportAPI.canUseHearthstone(player.getUniqueId())) {
-        	                    net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(stack);
-        	                    Teleportation.teleportPlayer(event.getPlayer().getUniqueId(), Teleportation.EnumTeleportType.HEARTHSTONE, nmsItem.getTag());
-        	                } else {
-        	                    player.sendMessage(
-        	                            ChatColor.GREEN.toString() + ChatColor.BOLD + "HEARTHSTONE " + ChatColor.RED + "[Usage Exhausted] " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s" + ChatColor.RED + ")");
-        	                }
-        	        } else {
-        	            player.sendMessage(
-        	                    ChatColor.GREEN.toString() + ChatColor.BOLD + "TELEPORT " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player.getUniqueId()) + "s" + ChatColor.RED + ")");
-        	        }
+                       if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
+                           player.sendMessage("You cannot restart a teleport during a cast!");
+                           return;
+                       }
+                       if (TeleportAPI.canUseHearthstone(player.getUniqueId())) {
+                           net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(stack);
+                           Teleportation.teleportPlayer(event.getPlayer().getUniqueId(), Teleportation.EnumTeleportType.HEARTHSTONE, nmsItem.getTag());
+                       } else {
+                           player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "HEARTHSTONE " + ChatColor.RED + "[Usage Exhausted] " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s" + ChatColor.RED + ")");
+                       }
+                   } else {
+                       player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "TELEPORT " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player.getUniqueId()) + "s" + ChatColor.RED + ")");
+                   }
                     break;
                 case 8:
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Menu.openPlayerPetMenu(player), 20L);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Menu.openPlayerPetMenu(player), 5L);
                     break;
                 default:
                     break;

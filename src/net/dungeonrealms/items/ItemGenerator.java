@@ -153,6 +153,7 @@ public class ItemGenerator {
      * Returns a list of itemAttributes based on the param.
      *
      * @param amountOfAttributes
+     * @param itemType
      * @return ArrayList
      * @since 1.0
      */
@@ -162,7 +163,6 @@ public class ItemGenerator {
         attributeList.add(Item.AttributeType.DAMAGE);
         for (int i = 0; i < amountOfAttributes; i++) {
             int random = new Random().nextInt(Item.AttributeType.values().length);
-            //TODO: CHECK THIS WORKS
             if ((!attributeList.contains(Item.AttributeType.getById(random))) && canAddAttribute(Item.AttributeType.getById(random), itemType, attributeList)) {
                 attributeList.add(Item.AttributeType.getById(random));
             } else {
@@ -177,7 +177,7 @@ public class ItemGenerator {
             return !attributeList.contains(Item.AttributeType.FIRE_DAMAGE) && !attributeList.contains(Item.AttributeType.ICE_DAMAGE) && !attributeList.contains(Item.AttributeType.POISON_DAMAGE);
         }
         if (attributeType == Item.AttributeType.VS_PLAYER || attributeType == Item.AttributeType.VS_MONSTERS) {
-            return !attributeList.contains(Item.AttributeType.VS_MONSTERS) && attributeList.contains(Item.AttributeType.VS_PLAYER);
+            return !attributeList.contains(Item.AttributeType.VS_MONSTERS) && !attributeList.contains(Item.AttributeType.VS_PLAYER);
         }
         if (attributeType == Item.AttributeType.VITALITY || attributeType == Item.AttributeType.DEXTERITY || attributeType == Item.AttributeType.INTELLECT || attributeType == Item.AttributeType.STRENGTH) {
             return !attributeList.contains(Item.AttributeType.VITALITY) && !attributeList.contains(Item.AttributeType.DEXTERITY) && !attributeList.contains(Item.AttributeType.INTELLECT) && !attributeList.contains(Item.AttributeType.STRENGTH);

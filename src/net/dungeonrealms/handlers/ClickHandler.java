@@ -51,8 +51,9 @@ public class ClickHandler {
             event.setCancelled(true);
             if (event.getCurrentItem().getType() == Material.BARRIER) {
                 player.closeInventory();
+                return;
             }
-            if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR) {
+            if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR && event.getCurrentItem().getType() != Material.BARRIER) {
                 if (EntityAPI.hasPetOut(player.getUniqueId())) {
                     Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
                     if (entity.isAlive()) {
