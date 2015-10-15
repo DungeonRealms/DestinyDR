@@ -34,6 +34,9 @@ public enum EnumData {
     MOUNTS,
     PETS,
     PARTICLES,
+    
+
+    MAILBOX,
 
 
     /*

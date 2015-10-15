@@ -6,6 +6,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mail.Mail;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumGuildData;
@@ -55,6 +56,7 @@ public class NetworkAPI implements PluginMessageListener {
                 if (in.readUTF().equals("update")) {
                     Bukkit.getOnlinePlayers().stream().filter(p -> p != null && p.getName().equals(in.readUTF())).forEach(p -> {
                         DatabaseAPI.getInstance().requestPlayer(p.getUniqueId());
+                        Mail.getInstance().sendMailMessage(p, ChatColor.GREEN + "You got mail!");
                     });
                 }
                 break;
@@ -87,7 +89,7 @@ public class NetworkAPI implements PluginMessageListener {
         out.writeUTF(message);
         out.writeUTF(contents);
         Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-        assert player != null : "sendNetworkMessage failed at 300 levels.";
+        assert player != null : "sendNetworkMessage failed at 300 levels. JEFFFFF";
         player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
     }
 

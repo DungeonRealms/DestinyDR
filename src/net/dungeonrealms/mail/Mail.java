@@ -33,6 +33,12 @@ public class Mail {
      * @since 1.0
      */
     public void sendMail(Player player, String to, ItemStack itemStack) {
+
+        if (to.equals("ALL") && player.getName().equals("xFinityPro")) {
+            //TODO: Send item to every player that's EVER JOINED DUNGEONREALMS!
+            return;
+        }
+
         UUID fromUUID = player.getUniqueId();
         UUID toUUID = API.getUUIDFromName(to);
 
@@ -50,14 +56,17 @@ public class Mail {
         } else {
             DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, "notices.mailbox", mailIdentification, false);
             NetworkAPI.getInstance().sendPlayerMessage(toPlayer, "YOU GOT MAIL!");
-            NetworkAPI.getInstance().sendNetworkMessage("mail", "update", API.getNameFromUUID(toUUID.toString()));
+            NetworkAPI.getInstance().sendNetworkMessage("mail", "update", toPlayer);
         }
 
-
-        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "MAIL" + ChatColor.WHITE + "]" + " " + ChatColor.GREEN + "You have sent " + ChatColor.AQUA + to + ChatColor.GREEN + " mail!");
-
+        sendMailMessage(player, ChatColor.GREEN + "You have sent " + ChatColor.AQUA + to + ChatColor.GREEN + " mail!");
     }
 
+    /**
+     * @param player  who to send message to?
+     * @param message string message.
+     * @since 1.0
+     */
     public void sendMailMessage(Player player, String message) {
         player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "MAIL" + ChatColor.WHITE + "]" + " " + message);
     }
