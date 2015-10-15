@@ -63,6 +63,7 @@ public class NetworkAPI implements PluginMessageListener {
         out.writeUTF(playerName);
         out.writeUTF(message);
         Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
+        assert player != null : "sendPlayerMessage() NetworkAPI.java unable to find Iterables.first(Player)";
         player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
     }
 

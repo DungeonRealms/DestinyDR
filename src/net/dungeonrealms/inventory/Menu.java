@@ -29,12 +29,6 @@ import java.util.*;
 @SuppressWarnings({"unchecked", "chasesTouch"})
 public class Menu {
 
-    public static void openGuildIconMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 45, "Guild Management");
-        UUID uuid = player.getUniqueId();
-        String guildName = (String) DatabaseAPI.getInstance().getData(EnumGuildData.NAME, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-    }
-
     public static void openGuildManagement(Player player) {
         Inventory inv = Bukkit.createInventory(null, 45, "Guild Management");
         UUID uuid = player.getUniqueId();
@@ -61,6 +55,18 @@ public class Menu {
 
         inv.setItem(11, editItem("rarest_of_pepes", ChatColor.GREEN + "Remove a player", new String[]{
                 ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to remove a player!",
+                "",
+                ChatColor.RED + "You must be ranked " + ChatColor.GREEN + "Officer" + ChatColor.RED + "!",
+        }));
+
+        inv.setItem(13, editItem("TeaZ", ChatColor.GREEN + "Promote a player", new String[]{
+                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to promote a player!",
+                "",
+                ChatColor.RED + "You must be ranked " + ChatColor.GREEN + "Officer" + ChatColor.RED + "!",
+        }));
+
+        inv.setItem(14, editItem("Arcaniax", ChatColor.GREEN + "Demote a player", new String[]{
+                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to Demote a player!",
                 "",
                 ChatColor.RED + "You must be ranked " + ChatColor.GREEN + "Officer" + ChatColor.RED + "!",
         }));
