@@ -3,7 +3,7 @@ package net.dungeonrealms.entities.types.pets;
 /**
  * Created by Kieran on 10/15/2015.
  */
-public enum EnumPets {
+public enum En*umPets {
     WOLF(0, "WOLF", 95),
     ENDERMITE(1, "ENDERMITE", 67),
     SILVERFISH(2, "SILVERFISH", 60),
