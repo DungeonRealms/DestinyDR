@@ -60,7 +60,7 @@ public class ItemGenerator {
      */
     private ItemStack getWeapon(Item.ItemType type, Item.ItemTier tier, Item.ItemModifier modifier) {
         ItemStack item = getBaseItem(type, tier);
-        ArrayList<Item.AttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(tier.getAttributeRange()));
+        ArrayList<Item.AttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(tier.getAttributeRange()), type);
         ItemMeta meta = item.getItemMeta();
         List<String> list = new NameGenerator().next(type);
         meta.setDisplayName(tier.getChatColorOfTier(tier) + list.get(0) + " " + list.get(1) + " " + list.get(2));
@@ -156,16 +156,43 @@ public class ItemGenerator {
      * @return ArrayList
      * @since 1.0
      */
-    private ArrayList<Item.AttributeType> getRandomAttributes(int amountOfAttributes) {
+    private ArrayList<Item.AttributeType> getRandomAttributes(int amountOfAttributes, Item.ItemType itemType) {
         ArrayList<Item.AttributeType> attributeList = new ArrayList<>();
         //We always want to add Damage to the Item. Since AttributeModifiers are removed. Completely.
         attributeList.add(Item.AttributeType.DAMAGE);
         for (int i = 0; i < amountOfAttributes; i++) {
             int random = new Random().nextInt(Item.AttributeType.values().length);
+            //TODO: CHECK THIS WORKS
             if (!attributeList.contains(Item.AttributeType.getById(random))) {
                 if (Item.AttributeType.getById(random) == Item.AttributeType.FIRE_DAMAGE || Item.AttributeType.getById(random) == Item.AttributeType.ICE_DAMAGE || Item.AttributeType.getById(random) == Item.AttributeType.POISON_DAMAGE) {
                     if (!attributeList.contains(Item.AttributeType.FIRE_DAMAGE) && !attributeList.contains(Item.AttributeType.ICE_DAMAGE) && !attributeList.contains(Item.AttributeType.POISON_DAMAGE)) {
                         attributeList.add(Item.AttributeType.getById(random));
+                    } else {
+                        i--;
+                    }
+                } else if (Item.AttributeType.getById(random) == Item.AttributeType.VS_PLAYER || Item.AttributeType.getById(random) == Item.AttributeType.VS_MONSTERS) {
+                    if (!attributeList.contains(Item.AttributeType.VS_MONSTERS) && attributeList.contains(Item.AttributeType.VS_PLAYER)) {
+                        attributeList.add(Item.AttributeType.getById(random));
+                    } else {
+                        i--;
+                    }
+                } else if (Item.AttributeType.getById(random) == Item.AttributeType.VITALITY || Item.AttributeType.getById(random) == Item.AttributeType.DEXTERITY || Item.AttributeType.getById(random) == Item.AttributeType.INTELLECT || Item.AttributeType.getById(random) == Item.AttributeType.STRENGTH) {
+                    if (!attributeList.contains(Item.AttributeType.VITALITY) && !attributeList.contains(Item.AttributeType.DEXTERITY) && !attributeList.contains(Item.AttributeType.INTELLECT)  && !attributeList.contains(Item.AttributeType.STRENGTH)) {
+                        attributeList.add(Item.AttributeType.getById(random));
+                    } else {
+                        i--;
+                    }
+                } else if (Item.AttributeType.getById(random) == Item.AttributeType.PURE_DAMAGE || Item.AttributeType.getById(random) == Item.AttributeType.ARMOR_PENETRATION) {
+                    if (itemType == Item.ItemType.AXE) {
+                        attributeList.add(Item.AttributeType.getById(random));
+                    } else {
+                        i--;
+                    }
+                } else if (Item.AttributeType.getById(random) == Item.AttributeType.ACCURACY) {
+                    if (itemType == Item.ItemType.SWORD) {
+                        attributeList.add(Item.AttributeType.getById(random));
+                    } else {
+                        i--;
                     }
                 } else {
                     attributeList.add(Item.AttributeType.getById(random));
@@ -220,8 +247,6 @@ public class ItemGenerator {
             case VS_MONSTERS:
                 return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
             case VS_PLAYER:
-                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
-            case BLIND:
                 return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
             case CRITICAL_HIT:
                 return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.YELLOW + aType.getName();

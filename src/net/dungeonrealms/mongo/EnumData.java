@@ -31,6 +31,11 @@ public enum EnumData {
     GUILD_INVITES,
     FRIEND_REQUSTS,
 
+    MOUNTS,
+    PETS,
+    PARTICLES,
+
+
     MAILBOX,
 
 

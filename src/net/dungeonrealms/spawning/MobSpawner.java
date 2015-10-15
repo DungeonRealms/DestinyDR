@@ -12,12 +12,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.List;
 import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -51,26 +53,10 @@ public class MobSpawner {
     }
 
     /**
-     * Chase.. don't do this..
-     * Instead do
-     *
-     *             spawner location
-     * Chunk c = location.getChunk();
-     * if(c.isLoaded)
-     */
-    public boolean playersAround() {
-        List<Player> players = API.getNearbyPlayers(loc, 40);
-        return !(players == null || players.isEmpty());
-    }
-
-    public List getSpawnedMonsters() {
-        return this.SPAWNED_MONSTERS;
-    }
-
-    /**
      * Does 1 rotation of spawning for this mob spawner.
      */
     public void spawnIn() {
+        Location location = new Location(Bukkit.getWorlds().get(0), loc.getX() + new Random().nextInt(3), loc.getY(), loc.getZ() + new Random().nextInt(3));
         if (!SPAWNED_MONSTERS.isEmpty()) {
             for (Entity monster : SPAWNED_MONSTERS) {
                 if (monster.isAlive()) {
@@ -83,7 +69,7 @@ public class MobSpawner {
             }
         }
         if (isSpawning) {
-            if (!playersAround()) {
+            if (!location.getChunk().isLoaded()) {
                 if (!SPAWNED_MONSTERS.isEmpty())
                     for (Entity monster : SPAWNED_MONSTERS) {
                         monster.die();
@@ -96,14 +82,11 @@ public class MobSpawner {
                 return;
             }
         } else {
-            if (!playersAround()) {
-                return;
-            } else {
-                isSpawning = true;
-            }
+            if(location.getChunk().isLoaded())
+            	isSpawning = true;
         }
         for (int i = 0; i < 4 - SPAWNED_MONSTERS.size(); i++) {
-            Location location = new Location(Bukkit.getWorlds().get(0), loc.getX() + new Random().nextInt(3), loc.getY(), loc.getZ() + new Random().nextInt(3));
+             location = new Location(Bukkit.getWorlds().get(0), loc.getX() + new Random().nextInt(3), loc.getY(), loc.getZ() + new Random().nextInt(3));
             Entity entity;
             String mob = spawnType;
             World world = armorstand.getWorld();
@@ -172,4 +155,11 @@ public class MobSpawner {
             SpawningMechanics.remove(this);
         }
     }
+
+	/**
+	 * @return
+	 */
+	public List<Entity> getSpawnedMonsters() {
+		return SPAWNED_MONSTERS;
+	}
 }

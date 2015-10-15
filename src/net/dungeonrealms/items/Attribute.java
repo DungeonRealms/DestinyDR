@@ -38,6 +38,11 @@ public class Attribute {
         return Armor.EquipmentType.getById(tag.getInt("equipmentType"));
     }
 
+    public Armor.ArmorTier getArmorTier() {
+        NBTTagCompound tag = nmsStack.getTag();
+        return Armor.ArmorTier.getById(tag.getInt("armorTier"));
+    }
+
     public ItemStack getItem() {
         return item;
     }

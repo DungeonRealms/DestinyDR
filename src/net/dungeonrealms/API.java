@@ -8,6 +8,7 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
+import net.dungeonrealms.entities.types.pets.EnumPets;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
@@ -270,5 +271,9 @@ public class API {
      */
     public static boolean isOnline(UUID uuid) {
         return Bukkit.getPlayer(uuid) != null;
+    }
+
+    public static boolean isStringPet(String petType) {
+        return EnumPets.getByName(petType.toUpperCase()) != null;
     }
 }

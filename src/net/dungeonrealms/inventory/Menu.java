@@ -6,6 +6,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.types.pets.EnumPets;
 import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -366,6 +367,28 @@ public class Menu {
 
         player.openInventory(inv);
 
+    }
+
+    public static void openPlayerPetMenu(Player player) {
+        UUID uuid = player.getUniqueId();
+
+        List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid);
+
+        if (playerPets.size() <= 0) {
+            Inventory noPets = Bukkit.createInventory(null, 0, ChatColor.RED + "You currently have no Pets!");
+            player.openInventory(noPets);
+            return;
+        }
+
+        Inventory inv = Bukkit.createInventory(null, 9, "Pet Selection");
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+
+        for (String petType : playerPets) {
+            inv.addItem(editItem(new ItemStack(Material.MONSTER_EGG, 1, (short) EnumPets.getByName(petType).getEggShortData()), ChatColor.GREEN + petType.toUpperCase(), new String[]{
+            }));
+        }
+
+        player.openInventory(inv);
     }
 
     public static ItemStack editItem(String playerName, String name, String[] lore) {

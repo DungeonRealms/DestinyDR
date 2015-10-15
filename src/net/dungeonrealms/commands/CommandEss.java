@@ -1,6 +1,8 @@
 package net.dungeonrealms.commands;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import org.bukkit.Bukkit;
@@ -9,6 +11,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Kieran on 10/9/2015.
@@ -40,6 +45,30 @@ public class CommandEss implements CommandExecutor {
                         break;
                     } else {
                         commandSender.sendMessage("Wrong arguments. (E.g. /Essentials hearthstone Proxying Cyrennica)");
+                        return false;
+                    }
+                case "pet":
+                    if (args.length == 3) {
+                        Player player = Bukkit.getPlayer(args[1]);
+                        if (player == null) {
+                            commandSender.sendMessage("This player is not online!");
+                            return false;
+                        }
+                        String petType = args[2];
+                        if (!API.isStringPet(petType)) {
+                            commandSender.sendMessage("This pet is not a real pet!");
+                            return false;
+                        }
+                        List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, player.getUniqueId());
+                        if (playerPets.contains(petType.toUpperCase())) {
+                            commandSender.sendMessage("The player already has this pet!");
+                            return false;
+                        }
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.pets", petType.toUpperCase(), true);
+                        player.sendMessage("You have recieved the " + petType + " pet!");
+                        break;
+                    } else {
+                        commandSender.sendMessage("Wrong arguments. (E.g. /Essentials pet Proxying snowman)");
                         return false;
                     }
                 default:

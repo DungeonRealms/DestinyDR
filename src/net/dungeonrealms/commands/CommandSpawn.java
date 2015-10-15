@@ -6,7 +6,6 @@ import net.dungeonrealms.entities.utils.BuffUtils;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.entities.utils.MountUtils;
-import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.enums.EnumMonster;
 import net.dungeonrealms.mastery.NBTUtils;
@@ -49,14 +48,6 @@ public class CommandSpawn implements CommandExecutor {
                 case "buff":
                     BuffUtils.spawnBuff(player.getUniqueId());
                     break;
-                case "pet": {
-                    if (!EntityAPI.hasPetOut(player.getUniqueId())) {
-                        PetUtils.spawnPet(player.getUniqueId(), 9);
-                    } else {
-                        player.sendMessage("You already have a pet summoned");
-                    }
-                    break;
-                }
                 case "mount": {
                     if (!EntityAPI.hasMountOut(player.getUniqueId())) {
                         if (EntityAPI.hasPetOut(player.getUniqueId())) {

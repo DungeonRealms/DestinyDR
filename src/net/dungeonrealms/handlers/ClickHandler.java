@@ -3,11 +3,14 @@ package net.dungeonrealms.handlers;
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+import net.dungeonrealms.entities.utils.EntityAPI;
+import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.inventory.Menu;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.network.NetworkAPI;
+import net.minecraft.server.v1_8_R3.Entity;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -42,9 +45,28 @@ public class ClickHandler {
         }
 
         /*
+        Pets Below
+         */
+        if (name.equalsIgnoreCase("Pet Selection")) {
+            event.setCancelled(true);
+            if (event.getCurrentItem().getType() == Material.BARRIER) {
+                player.closeInventory();
+            }
+            if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR) {
+                if (EntityAPI.hasPetOut(player.getUniqueId())) {
+                    Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
+                    if (entity.isAlive()) {
+                        entity.getBukkitEntity().remove();
+                    }
+                    EntityAPI.removePlayerPetList(player.getUniqueId());
+                }
+                PetUtils.spawnPet(player.getUniqueId(), event.getCurrentItem().getItemMeta().getDisplayName());
+            }
+        }
+
+        /*
         Guilds Below
          */
-
         if (name.equals("Guild Management")) {
             String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
             event.setCancelled(true);
