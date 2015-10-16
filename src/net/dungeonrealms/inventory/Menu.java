@@ -415,7 +415,7 @@ public class Menu {
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
 
         for (String mountType : playerMounts) {
-            ItemStack itemStack = EnumMounts.getByName(mountType).getSelectionMaterial();
+            ItemStack itemStack = EnumMounts.getByName(mountType).getSelectionItem();
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("mountType", new NBTTagString(mountType));

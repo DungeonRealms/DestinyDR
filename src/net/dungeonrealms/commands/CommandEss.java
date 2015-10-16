@@ -92,7 +92,7 @@ public class CommandEss implements CommandExecutor {
                         player.sendMessage("You have recieved the " + mountType + " mount!");
                         break;
                     } else {
-                        commandSender.sendMessage("Wrong arguments. (E.g. /Essentials pet Proxying skeletonhorse)");
+                        commandSender.sendMessage("Wrong arguments. (E.g. /Essentials mount Proxying skeletonhorse)");
                         return false;
                     }
                 default:
