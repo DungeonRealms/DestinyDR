@@ -46,6 +46,10 @@ public class ClickHandler {
          */
         if (name.equals("Mailbox")) {
             event.setCancelled(true);
+            if (event.getCurrentItem() != null) {
+                ItemStack clickedItem = event.getCurrentItem();
+                MailHandler.getInstance().giveItemToPlayer(clickedItem, player);
+            }
             return;
         }
 

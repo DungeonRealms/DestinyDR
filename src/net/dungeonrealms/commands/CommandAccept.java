@@ -47,8 +47,8 @@ public class CommandAccept implements CommandExecutor {
 
                     String guildName = invitation.split(",")[0];
 
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.guild", guildName, true);
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, "notices.guildInvites", guildName + "," + invitation.split(",")[1], true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.guild", guildName, true);
 
 
                     DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "invitations", player.getUniqueId().toString(), true);

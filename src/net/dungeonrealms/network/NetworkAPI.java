@@ -133,7 +133,6 @@ public class NetworkAPI implements PluginMessageListener {
         members.stream().filter(s -> s != null && !s.equals("") && API.isOnline(UUID.fromString(s))).forEach(s -> {
             Bukkit.getPlayer(UUID.fromString(s)).sendMessage("[" + ChatColor.GREEN.toString() + ChatColor.BOLD + guildName + ChatColor.RESET + "]" + " " + message);
         });
-
     }
 
 }
