@@ -3,11 +3,13 @@ package net.dungeonrealms.handlers;
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.entities.utils.MountUtils;
 import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.inventory.Menu;
+import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.network.NetworkAPI;
@@ -62,6 +64,9 @@ public class ClickHandler {
                     if (entity.isAlive()) {
                         entity.getBukkitEntity().remove();
                     }
+                    if (DonationEffects.ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                        DonationEffects.ENTITY_PARTICLE_EFFECTS.remove(entity);
+                    }
                     EntityAPI.removePlayerPetList(player.getUniqueId());
                 }
                 net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
@@ -89,12 +94,18 @@ public class ClickHandler {
                     if (entity.isAlive()) {
                         entity.getBukkitEntity().remove();
                     }
+                    if (DonationEffects.ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                        DonationEffects.ENTITY_PARTICLE_EFFECTS.remove(entity);
+                    }
                     EntityAPI.removePlayerMountList(player.getUniqueId());
                 }
                 if (EntityAPI.hasPetOut(player.getUniqueId())) {
                     Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
                     if (entity.isAlive()) {
                         entity.getBukkitEntity().remove();
+                    }
+                    if (DonationEffects.ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                        DonationEffects.ENTITY_PARTICLE_EFFECTS.remove(entity);
                     }
                     EntityAPI.removePlayerPetList(player.getUniqueId());
                     player.sendMessage("Your pet has returned home as you have summoned your mount");
@@ -108,6 +119,25 @@ public class ClickHandler {
                 MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"));
             }
             return;
+        }
+
+        /*
+        Particle Trails Below
+         */
+        if (name.equalsIgnoreCase("Particle Trail Selection")) {
+            event.setCancelled(true);
+            if (event.getCurrentItem().getType() == Material.BARRIER) {
+                player.closeInventory();
+                return;
+            }
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+            if (nmsStack.getTag() == null || nmsStack.getTag().getString("trailType") == null) {
+                player.sendMessage("Uh oh... Something went wrong with your trail! Please inform a staff member! [NBTTag]");
+                player.closeInventory();
+                return;
+            }
+            DonationEffects.PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("trailType")));
+            player.sendMessage("You have enabled the " + nmsStack.getTag().getString("trailType") + " particle trail!");
         }
 
         /*

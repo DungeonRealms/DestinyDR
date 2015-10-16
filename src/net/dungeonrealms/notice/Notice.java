@@ -2,7 +2,7 @@ package net.dungeonrealms.notice;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mail.Mail;
+import net.dungeonrealms.handlers.MailHandler;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import org.bukkit.Bukkit;
@@ -88,7 +88,7 @@ public class Notice {
         }
 
         if (mailbox.size() > 0) {
-            Mail.getInstance().sendMailMessage(player, ChatColor.GREEN + "You have " + ChatColor.AQUA + mailbox.size() + ChatColor.GREEN + " new mail!");
+            MailHandler.getInstance().sendMailMessage(player, ChatColor.GREEN + "You have " + ChatColor.AQUA + mailbox.size() + ChatColor.GREEN + " new mail!");
         }
     }
 

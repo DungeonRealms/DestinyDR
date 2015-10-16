@@ -9,6 +9,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.entities.types.pets.EnumPets;
 import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -428,6 +429,33 @@ public class Menu {
         player.openInventory(inv);
     }
 
+    public static void openPlayerParticleMenu(Player player) {
+        UUID uuid = player.getUniqueId();
+
+        List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, uuid);
+
+        if (playerTrails.size() <= 0) {
+            Inventory noTrails = Bukkit.createInventory(null, 0, ChatColor.RED + "You currently have no Particle Trails!");
+            player.openInventory(noTrails);
+            return;
+        }
+
+        Inventory inv = Bukkit.createInventory(null, 18, "Particle Trail Selection");
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+
+        for (String trailType : playerTrails) {
+            ItemStack itemStack = ParticleAPI.ParticleEffect.getByName(trailType).getSelectionItem();
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+            tag.set("trailType", new NBTTagString(trailType));
+            nmsStack.setTag(tag);
+            inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStack), ChatColor.GREEN + trailType.toUpperCase(), new String[]{
+            }));
+        }
+
+        player.openInventory(inv);
+    }
+
     public static ItemStack editItem(String playerName, String name, String[] lore) {
         ItemStack item = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
         SkullMeta meta = (SkullMeta) item.getItemMeta();
@@ -444,6 +472,7 @@ public class Menu {
         meta.setDisplayName(name);
         meta.setLore(Arrays.asList(lore));
         item.setItemMeta(meta);
+        item.setAmount(1);
         return item;
     }
 

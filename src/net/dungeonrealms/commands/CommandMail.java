@@ -1,7 +1,7 @@
 package net.dungeonrealms.commands;
 
 import net.dungeonrealms.inventory.Menu;
-import net.dungeonrealms.mail.Mail;
+import net.dungeonrealms.handlers.MailHandler;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -23,7 +23,7 @@ public class CommandMail implements CommandExecutor {
             if (args[0].equals("send")) {
                 assert args[1] != null : "args[1] is null!?";
                 assert player.getItemInHand() != null && player.getItemInHand().getType() != null && player.getItemInHand().getType() != Material.AIR : "Somethings wrong!";
-                Mail.getInstance().sendMail(player, args[1], player.getItemInHand());
+                MailHandler.getInstance().sendMail(player, args[1], player.getItemInHand());
 
             }
             return true;

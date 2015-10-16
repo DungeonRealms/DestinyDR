@@ -117,6 +117,9 @@ public class ItemListener implements Listener {
                        player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "TELEPORT " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player) + "s" + ChatColor.RED + ")");
                        break;
                    }
+                case 6:
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Menu.openPlayerParticleMenu(player), 5L);
+                    break;
                 case 7:
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Menu.openPlayerMountMenu(player), 5L);
                     break;
@@ -138,14 +141,21 @@ public class ItemListener implements Listener {
                 ChatColor.GRAY + "skills!",
                 "",
                 ChatColor.YELLOW + "Click to view Player Attributes!"
+        }).setOption(6, new ItemStack(Material.EYE_OF_ENDER), ChatColor.GREEN + "Trails", new String[]{
+                ChatColor.DARK_GRAY + "Player Trails",
+                "",
+                ChatColor.GRAY + "Want to be the envy of your friends?",
+                ChatColor.GRAY + "Get yourself a Particle Trail!",
+                "",
+                ChatColor.YELLOW + "Click to view Player Trails!"
         }).setOption(7, new ItemStack(Material.SADDLE), ChatColor.GREEN + "Mounts", new String[]{
-                        ChatColor.DARK_GRAY + "Player Mounts",
-                        "",
-                        ChatColor.GRAY + "Want to travel in style?",
-                        ChatColor.GRAY + "Mounts are the solution!",
-                        "",
-                        ChatColor.YELLOW + "Click to view Player Mounts!"
-                }).setOption(8, new ItemStack(Material.NAME_TAG), ChatColor.GREEN + "Pets", new String[]{
+                ChatColor.DARK_GRAY + "Player Mounts",
+                "",
+                ChatColor.GRAY + "Want to travel in style?",
+                ChatColor.GRAY + "Mounts are the solution!",
+                "",
+                ChatColor.YELLOW + "Click to view Player Mounts!"
+        }).setOption(8, new ItemStack(Material.NAME_TAG), ChatColor.GREEN + "Pets", new String[]{
                 ChatColor.DARK_GRAY + "Player Pets",
                 "",
                 ChatColor.GRAY + "Want a friendly companion",

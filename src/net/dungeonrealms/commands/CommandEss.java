@@ -80,7 +80,7 @@ public class CommandEss implements CommandExecutor {
                         }
                         String mountType = args[2];
                         if (!API.isStringMount(mountType)) {
-                            commandSender.sendMessage("This pet is not a real mount!");
+                            commandSender.sendMessage("This mount is not a real mount!");
                             return false;
                         }
                         List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
@@ -93,6 +93,30 @@ public class CommandEss implements CommandExecutor {
                         break;
                     } else {
                         commandSender.sendMessage("Wrong arguments. (E.g. /Essentials mount Proxying skeletonhorse)");
+                        return false;
+                    }
+                case "trail":
+                    if (args.length == 3) {
+                        Player player = Bukkit.getPlayer(args[1]);
+                        if (player == null) {
+                            commandSender.sendMessage("This player is not online!");
+                            return false;
+                        }
+                        String trailType = args[2];
+                        if (!API.isStringTrail(trailType)) {
+                            commandSender.sendMessage("This is not a real trail!");
+                            return false;
+                        }
+                        List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, player.getUniqueId());
+                        if (playerTrails.contains(trailType.toUpperCase())) {
+                            commandSender.sendMessage("The player already has this trail!");
+                            return false;
+                        }
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.particles", trailType.toUpperCase(), true);
+                        player.sendMessage("You have recieved the " + trailType + " particle trail!");
+                        break;
+                    } else {
+                        commandSender.sendMessage("Wrong arguments. (E.g. /Essentials trail Proxying flame)");
                         return false;
                     }
                 default:
