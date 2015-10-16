@@ -1,11 +1,9 @@
 package net.dungeonrealms.entities.utils;
 
 import net.dungeonrealms.API;
-import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.entities.types.mounts.Horse;
 import net.dungeonrealms.enums.EnumEntityType;
-import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -93,7 +91,6 @@ public class MountUtils {
                 player.sendMessage("Mount Spawned!");
                 EntityAPI.addPlayerMountList(player.getUniqueId(), mountHorse);
                 player.closeInventory();
-                DonationEffects.ENTITY_PARTICLE_EFFECTS.put(mountHorse, ParticleAPI.ParticleEffect.CLOUD);
                 break;
             }
             case ZOMBIE_HORSE: {

@@ -3,6 +3,7 @@ package net.dungeonrealms.handlers;
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.entities.utils.MountUtils;
 import net.dungeonrealms.entities.utils.PetUtils;
@@ -61,6 +62,9 @@ public class ClickHandler {
                     if (entity.isAlive()) {
                         entity.getBukkitEntity().remove();
                     }
+                    if (DonationEffects.ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                        DonationEffects.ENTITY_PARTICLE_EFFECTS.remove(entity);
+                    }
                     EntityAPI.removePlayerPetList(player.getUniqueId());
                 }
                 net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
@@ -88,12 +92,18 @@ public class ClickHandler {
                     if (entity.isAlive()) {
                         entity.getBukkitEntity().remove();
                     }
+                    if (DonationEffects.ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                        DonationEffects.ENTITY_PARTICLE_EFFECTS.remove(entity);
+                    }
                     EntityAPI.removePlayerMountList(player.getUniqueId());
                 }
                 if (EntityAPI.hasPetOut(player.getUniqueId())) {
                     Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
                     if (entity.isAlive()) {
                         entity.getBukkitEntity().remove();
+                    }
+                    if (DonationEffects.ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                        DonationEffects.ENTITY_PARTICLE_EFFECTS.remove(entity);
                     }
                     EntityAPI.removePlayerPetList(player.getUniqueId());
                     player.sendMessage("Your pet has returned home as you have summoned your mount");

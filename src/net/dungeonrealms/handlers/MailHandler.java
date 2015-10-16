@@ -1,4 +1,4 @@
-package net.dungeonrealms.mail;
+package net.dungeonrealms.handlers;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.mastery.ItemSerialization;
@@ -15,13 +15,13 @@ import java.util.UUID;
 /**
  * Created by Nick on 10/14/2015.
  */
-public class Mail {
+public class MailHandler {
 
-    static Mail instance = null;
+    static MailHandler instance = null;
 
-    public static Mail getInstance() {
+    public static MailHandler getInstance() {
         if (instance == null) {
-            instance = new Mail();
+            instance = new MailHandler();
         }
         return instance;
     }

@@ -443,6 +443,7 @@ public class Menu {
         meta.setDisplayName(name);
         meta.setLore(Arrays.asList(lore));
         item.setItemMeta(meta);
+        item.setAmount(1);
         return item;
     }
 
