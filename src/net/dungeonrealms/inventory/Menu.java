@@ -134,7 +134,8 @@ public class Menu {
 
         for (String s : members) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                inv.addItem(editItem(API.getNameFromUUID(s), ChatColor.GREEN + "Member " + API.getNameFromUUID(s), new String[]{}));
+                String name = API.getNameFromUUID(s);
+                inv.addItem(editItem(name, ChatColor.GREEN + "Member " + name, new String[]{}));
             }, 0l);
         }
 
@@ -267,7 +268,7 @@ public class Menu {
         String owner = (String) DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumGuildData.NAME, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
         String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-        long origin = (long) DatabaseAPI.getInstance().getData(EnumGuildData.CREATION_UNIX_DATA, guildName);
+        long origin = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumGuildData.CREATION_UNIX_DATA, guildName)));
         int netLevel = (int) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, guildName);
         double experience = Double.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumGuildData.EXPERIENCE, guildName)));
 
