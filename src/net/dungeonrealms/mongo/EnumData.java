@@ -25,6 +25,7 @@ public enum EnumData {
     INVENTORY_MULE,
     INVENTORY_STORAGE,
     INVENTORY,
+    INVENTORY_LEVEL,
 
     GUILD,
 

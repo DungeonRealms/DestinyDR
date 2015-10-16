@@ -3,15 +3,25 @@ package net.dungeonrealms.listeners;
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
+import net.dungeonrealms.combat.CombatLog;
+import net.dungeonrealms.inventory.GUI;
+import net.dungeonrealms.inventory.Menu;
 import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.notice.Notice;
+import net.dungeonrealms.teleportation.TeleportAPI;
+import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
@@ -218,6 +228,34 @@ public class BankListener implements Listener {
                             // Open Storage
                             player.openInventory(storage.inv);
                         } else if (e.isRightClick()) {
+            				int num = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId()) * 100;
+            				//TODO PRICE OF UPGRADE ^ 
+            				
+                            GUI profileMain = new GUI("Upgrade your bank storage?", 9, guievent ->{
+                            	int slot = guievent.getPosition();
+                            	if(slot ==3){
+                            		if(BankMechanics.takeGemsFromInventory(num, player)){
+                            			int invlvl = (int)DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId()) + 1;
+                            			DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "inventory.level", invlvl,
+                        				        true);
+                            			player.sendMessage(ChatColor.GREEN.toString() + "Storage updated!");
+                            			player.closeInventory();
+                            			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->BankMechanics.getStorage(player.getUniqueId()).update(), 20l);
+                            		}else{
+                            			player.closeInventory();
+                            			player.sendMessage(ChatColor.RED.toString() + "Not enough Gems in your inventory!");
+                            		}
+                            	}else{
+                            		
+                            	}
+                            }, DungeonRealms.getInstance()).setOption(3, new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), ChatColor.GREEN.toString() +"Accept", new String[]{
+                                    ChatColor.GRAY + "Upgrade your bank storage for " + ChatColor.RED.toString() + num +" gems"
+                            }).setOption(5, new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()), ChatColor.RED.toString() + "Deny", new String[]{
+                                    ChatColor.GRAY + "Cancel the upgrade"
+                            });
+
+                            profileMain.open(player);
+
                             // Upgrade Storage
                         }
                     }
