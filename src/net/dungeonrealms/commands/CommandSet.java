@@ -7,6 +7,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import org.bukkit.command.Command;
@@ -37,10 +38,10 @@ public class CommandSet implements CommandExecutor {
 				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.gems", gems, true);
 				s.sendMessage("Gems set to " + gems);
 				break;
-			case "inv":
-				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "inventory.player", "",
-				        true);
-				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "inventory.storage", "",
+			case "invlevel":
+				int invlvl = Integer.parseInt(args[1]);
+				Utils.log.info(invlvl + " level");
+				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "inventory.level", invlvl,
 				        true);
 				break;
 			case "spawner":

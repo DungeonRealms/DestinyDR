@@ -4,6 +4,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.minecraft.server.v1_8_R3.ItemStack;
+import net.minecraft.server.v1_8_R3.Material;
+
 import java.util.UUID;
 
 /**
@@ -25,7 +31,12 @@ public class Storage {
      */
     public Storage(UUID uuid, Inventory inventory) {
         ownerUUID = uuid;
-        this.inv = inventory;
+        this.inv = getNewStorage();
+        for(org.bukkit.inventory.ItemStack stack : inventory.getContents()){
+        	if(stack != null && stack.getType() != org.bukkit.Material.AIR)
+        	if(inv.firstEmpty() >= 0)
+        		inv.addItem(stack);
+        	}
     }
 
     /**
@@ -42,8 +53,16 @@ public class Storage {
      * @return
      */
     private int getStorageSize(Player p) {
-        if (p.getName().equalsIgnoreCase("Xwaffle"))
-            return 18;
-        return 9;
+    	int lvl = (Integer) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, p.getUniqueId());
+        return 9 * lvl;
     }
+
+	/**
+	 * Used to update inventory size when upgraded.
+	 */
+	public void update() {
+		Inventory inventory = getNewStorage();
+		inventory.setContents(inv.getContents());
+		this.inv = inventory;
+	}
 }

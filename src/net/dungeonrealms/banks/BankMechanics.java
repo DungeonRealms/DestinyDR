@@ -1,18 +1,20 @@
 package net.dungeonrealms.banks;
 
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumOperators;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
  * Created by Chase on Sep 18, 2015
@@ -36,6 +38,42 @@ public class BankMechanics {
         loadCurrency();
     }
 
+    /**
+     * 
+     * Checks player inventory for gems, and takes them from their inventory.
+     * Return false if player doesn't have amount specified.
+     * 
+     * @param ammount
+     * @param p
+     * @return boolean
+     */
+    public static boolean takeGemsFromInventory(int amount, Player p){
+    	int cost = 0;
+    	for(ItemStack stack : p.getInventory().getContents()){
+    		if(stack != null && stack.getType() != Material.AIR)
+    		if(stack.getType() == Material.EMERALD){
+    			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+    			if(nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")){
+    				p.getInventory().remove(stack);
+    				cost += stack.getAmount();
+    				if(cost >= amount){
+    					int leftover = cost - amount;
+    					ItemStack gems = stack.clone();
+    					gems.setAmount(leftover);
+    					p.getInventory().addItem(gems);
+    					return true;
+    				}else{
+    					ItemStack gems = BankMechanics.gem.clone();
+    					gems.setAmount(cost);
+    					p.getInventory().addItem(gems);
+    				}
+    			}
+    		}
+    	}
+		return false;
+    }
+    
+    
     /**
      * Pre loads an itemstack version of our currency
      * @return

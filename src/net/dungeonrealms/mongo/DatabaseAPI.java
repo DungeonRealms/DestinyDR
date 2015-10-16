@@ -141,6 +141,8 @@ public class DatabaseAPI {
             /*
             Player Storage
              */
+            case INVENTORY_LEVEL:    
+                return ((Document) PLAYERS.get(uuid).get("inventory")).get("level", Integer.class);
             case INVENTORY_COLLECTION_BIN:
                 return ((Document) PLAYERS.get(uuid).get("inventory")).get("collection_bin", String.class);
             case INVENTORY_MULE:
@@ -322,6 +324,7 @@ public class DatabaseAPI {
                                 new Document("collection_bin", "")
                                         .append("mule", "")
                                         .append("storage", "")
+                                        .append("level", 1)
                                         .append("player", ""));
         Database.collection.insertOne(newPlayerDocument, (aVoid, throwable) -> {
             REQUEST_NEW_PLAYER_DOCUMENT.add(uuid);
