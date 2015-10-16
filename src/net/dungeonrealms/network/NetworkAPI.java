@@ -7,7 +7,7 @@ import com.google.common.io.ByteStreams;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.guild.Guild;
-import net.dungeonrealms.mail.Mail;
+import net.dungeonrealms.handlers.MailHandler;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumGuildData;
@@ -52,7 +52,7 @@ public class NetworkAPI implements PluginMessageListener {
                 if (in.readUTF().equals("update")) {
                     Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> {
                         DatabaseAPI.getInstance().requestPlayer(p.getUniqueId());
-                        Mail.getInstance().sendMailMessage(p, ChatColor.GREEN + "You got mail!");
+                        MailHandler.getInstance().sendMailMessage(p, ChatColor.GREEN + "You got mail!");
                     });
                 }
                 break;
