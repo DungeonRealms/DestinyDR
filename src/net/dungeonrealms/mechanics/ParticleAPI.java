@@ -7,6 +7,7 @@ import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
@@ -19,35 +20,37 @@ import java.util.UUID;
 public class ParticleAPI {
 
     public enum ParticleEffect {
-        FIREWORKS_SPARK(0, "fireworks", EnumParticle.FIREWORKS_SPARK),
-        BUBBLE(1, "bubble", EnumParticle.WATER_BUBBLE),
-        TOWN_AURA(2, "townaura", EnumParticle.TOWN_AURA),
-        CRIT(3, "critical", EnumParticle.CRIT),
-        MAGIC_CRIT(4, "magiccrit", EnumParticle.CRIT_MAGIC),
-        WITCH_MAGIC(5, "witchmagic", EnumParticle.SPELL_WITCH),
-        NOTE(6, "note", EnumParticle.NOTE),
-        PORTAL(7, "portal", EnumParticle.PORTAL),
-        ENCHANTMENT_TABLE(8, "enchantment", EnumParticle.ENCHANTMENT_TABLE),
-        FLAME(9, "flame", EnumParticle.FLAME),
-        LAVA(10, "lava", EnumParticle.LAVA),
-        SPLASH(11, "splash", EnumParticle.WATER_SPLASH),
-        LARGE_SMOKE(12, "largesmoke", EnumParticle.SMOKE_LARGE),
-        RED_DUST(13, "reddust", EnumParticle.REDSTONE),
-        SNOWBALL_POOF(14, "snowball", EnumParticle.SNOWBALL),
-        SMALL_SMOKE(15, "smallsmoke", EnumParticle.SMOKE_NORMAL),
-        CLOUD(16, "cloud", EnumParticle.CLOUD),
-        HAPPY_VILLAGER(17, "villagerhappy", EnumParticle.VILLAGER_HAPPY),
-        SPELL(18, "spell", EnumParticle.SPELL),
-        SNOW_SHOVEL(19, "snowshovel", EnumParticle.SNOW_SHOVEL);
+        FIREWORKS_SPARK(0, "FIREWORKS", EnumParticle.FIREWORKS_SPARK, new org.bukkit.inventory.ItemStack(Material.FIREWORK)),
+        BUBBLE(1, "BUBBLE", EnumParticle.WATER_BUBBLE, new org.bukkit.inventory.ItemStack(Material.AIR)),
+        TOWN_AURA(2, "TOWNAURA", EnumParticle.TOWN_AURA, new org.bukkit.inventory.ItemStack(Material.FIREWORK)),
+        CRIT(3, "CRITICAL", EnumParticle.CRIT, new org.bukkit.inventory.ItemStack(Material.GOLD_SWORD)),
+        MAGIC_CRIT(4, "MAGICCRIT", EnumParticle.CRIT_MAGIC, new org.bukkit.inventory.ItemStack(Material.GOLD_HOE)),
+        WITCH_MAGIC(5, "WITCHMAGIC", EnumParticle.SPELL_WITCH, new org.bukkit.inventory.ItemStack(Material.CAULDRON_ITEM)),
+        NOTE(6, "NOTE", EnumParticle.NOTE, new org.bukkit.inventory.ItemStack(Material.NOTE_BLOCK)),
+        PORTAL(7, "PORTAL", EnumParticle.PORTAL, new org.bukkit.inventory.ItemStack(Material.PORTAL)),
+        ENCHANTMENT_TABLE(8, "ENCHANTMENT", EnumParticle.ENCHANTMENT_TABLE, new org.bukkit.inventory.ItemStack(Material.ENCHANTMENT_TABLE)),
+        FLAME(9, "FLAME", EnumParticle.FLAME, new org.bukkit.inventory.ItemStack(Material.FIREBALL)),
+        LAVA(10, "LAVA", EnumParticle.LAVA, new org.bukkit.inventory.ItemStack(Material.LAVA_BUCKET)),
+        SPLASH(11, "SPLASH", EnumParticle.WATER_SPLASH, new org.bukkit.inventory.ItemStack(Material.WATER_BUCKET)),
+        LARGE_SMOKE(12, "LARGESMOKE", EnumParticle.SMOKE_LARGE, new org.bukkit.inventory.ItemStack(Material.AIR)),
+        RED_DUST(13, "REDDUST", EnumParticle.REDSTONE, new org.bukkit.inventory.ItemStack(Material.REDSTONE)),
+        SNOWBALL_POOF(14, "SNOWBALL", EnumParticle.SNOWBALL, new org.bukkit.inventory.ItemStack(Material.SNOW_BLOCK)),
+        SMALL_SMOKE(15, "SMALLSMOKE", EnumParticle.SMOKE_NORMAL, new org.bukkit.inventory.ItemStack(Material.INK_SACK)),
+        CLOUD(16, "CLOUD", EnumParticle.CLOUD, new org.bukkit.inventory.ItemStack(Material.BEACON)),
+        HAPPY_VILLAGER(17, "HAPPYVILLAGER", EnumParticle.VILLAGER_HAPPY, new org.bukkit.inventory.ItemStack(Material.FIREWORK)),
+        SPELL(18, "SPELL", EnumParticle.SPELL, new org.bukkit.inventory.ItemStack(Material.BLAZE_POWDER)),
+        SNOW_SHOVEL(19, "SNOWSHOVEL", EnumParticle.SNOW_SHOVEL, new org.bukkit.inventory.ItemStack(Material.SNOW_BALL));
 
         private int id;
         private String rawName;
         private EnumParticle particle;
+        private org.bukkit.inventory.ItemStack selectionItem;
 
-        ParticleEffect(int id, String rawName, EnumParticle particle) {
+        ParticleEffect(int id, String rawName, EnumParticle particle,  org.bukkit.inventory.ItemStack selectionItem) {
             this.id = id;
             this.rawName = rawName;
             this.particle = particle;
+            this.selectionItem = selectionItem;
         }
 
         public static ParticleEffect getById(int id) {
@@ -70,6 +73,10 @@ public class ParticleAPI {
 
         public EnumParticle getParticle() {
             return particle;
+        }
+
+        public org.bukkit.inventory.ItemStack getSelectionItem() {
+            return selectionItem;
         }
     }
 

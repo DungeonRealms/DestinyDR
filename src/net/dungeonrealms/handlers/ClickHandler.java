@@ -9,6 +9,7 @@ import net.dungeonrealms.entities.utils.MountUtils;
 import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.inventory.Menu;
+import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.network.NetworkAPI;
@@ -116,6 +117,25 @@ public class ClickHandler {
                 }
                 MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"));
             }
+        }
+
+        /*
+        Particle Trails Below
+         */
+        if (name.equalsIgnoreCase("Particle Trail Selection")) {
+            event.setCancelled(true);
+            if (event.getCurrentItem().getType() == Material.BARRIER) {
+                player.closeInventory();
+                return;
+            }
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+            if (nmsStack.getTag() == null || nmsStack.getTag().getString("trailType") == null) {
+                player.sendMessage("Uh oh... Something went wrong with your trail! Please inform a staff member! [NBTTag]");
+                player.closeInventory();
+                return;
+            }
+            DonationEffects.PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("trailType")));
+            player.sendMessage("You have enabled the " + nmsStack.getTag().getString("trailType") + " particle trail!");
         }
 
         /*

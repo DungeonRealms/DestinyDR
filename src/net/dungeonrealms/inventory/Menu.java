@@ -9,6 +9,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.entities.types.pets.EnumPets;
 import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -421,6 +422,33 @@ public class Menu {
             tag.set("mountType", new NBTTagString(mountType));
             nmsStack.setTag(tag);
             inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStack), ChatColor.GREEN + mountType.toUpperCase(), new String[]{
+            }));
+        }
+
+        player.openInventory(inv);
+    }
+
+    public static void openPlayerParticleMenu(Player player) {
+        UUID uuid = player.getUniqueId();
+
+        List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, uuid);
+
+        if (playerTrails.size() <= 0) {
+            Inventory noTrails = Bukkit.createInventory(null, 0, ChatColor.RED + "You currently have no Particle Trails!");
+            player.openInventory(noTrails);
+            return;
+        }
+
+        Inventory inv = Bukkit.createInventory(null, 18, "Particle Trail Selection");
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+
+        for (String trailType : playerTrails) {
+            ItemStack itemStack = ParticleAPI.ParticleEffect.getByName(trailType).getSelectionItem();
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+            tag.set("trailType", new NBTTagString(trailType));
+            nmsStack.setTag(tag);
+            inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStack), ChatColor.GREEN + trailType.toUpperCase(), new String[]{
             }));
         }
 

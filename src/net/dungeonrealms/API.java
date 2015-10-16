@@ -16,6 +16,7 @@ import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -280,5 +281,9 @@ public class API {
 
     public static boolean isStringMount(String mountType) {
         return EnumMounts.getByName(mountType.toUpperCase()) != null;
+    }
+
+    public static boolean isStringTrail(String trailType) {
+        return ParticleAPI.ParticleEffect.getByName(trailType.toUpperCase()) != null;
     }
 }
