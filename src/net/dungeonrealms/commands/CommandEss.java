@@ -71,6 +71,30 @@ public class CommandEss implements CommandExecutor {
                         commandSender.sendMessage("Wrong arguments. (E.g. /Essentials pet Proxying snowman)");
                         return false;
                     }
+                case "mount":
+                    if (args.length == 3) {
+                        Player player = Bukkit.getPlayer(args[1]);
+                        if (player == null) {
+                            commandSender.sendMessage("This player is not online!");
+                            return false;
+                        }
+                        String mountType = args[2];
+                        if (!API.isStringMount(mountType)) {
+                            commandSender.sendMessage("This pet is not a real mount!");
+                            return false;
+                        }
+                        List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
+                        if (playerMounts.contains(mountType.toUpperCase())) {
+                            commandSender.sendMessage("The player already has this mount!");
+                            return false;
+                        }
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.mounts", mountType.toUpperCase(), true);
+                        player.sendMessage("You have recieved the " + mountType + " mount!");
+                        break;
+                    } else {
+                        commandSender.sendMessage("Wrong arguments. (E.g. /Essentials pet Proxying skeletonhorse)");
+                        return false;
+                    }
                 default:
                     break;
             }

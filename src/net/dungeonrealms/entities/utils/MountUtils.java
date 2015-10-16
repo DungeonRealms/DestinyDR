@@ -1,7 +1,8 @@
 package net.dungeonrealms.entities.utils;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.donate.DonationEffects;
-import net.dungeonrealms.entities.types.mounts.EnderDragon;
+import net.dungeonrealms.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.entities.types.mounts.Horse;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.mechanics.ParticleAPI;
@@ -22,12 +23,16 @@ import java.util.UUID;
  */
 public class MountUtils {
 
-    public static void spawnMount(UUID uuid, int rawSlot) {
+    public static void spawnMount(UUID uuid, String mountType) {
         Player player = Bukkit.getPlayer(uuid);
         World world = ((CraftWorld) player.getWorld()).getHandle();
-        switch (rawSlot) {
-            //TODO: Add check for Achievements to see if Player has mount and can use it.
-            case 2: {
+        EnumMounts enumMounts = EnumMounts.getByName(mountType.toUpperCase());
+        if (!API.isStringMount(mountType)) {
+            player.sendMessage("Uh oh... Something went wrong with your mount! Please inform a staff member! [PetType]");
+            return;
+        }
+        switch (enumMounts) {
+            case TIER1_HORSE: {
                 Horse mountHorse = new Horse(world, 0, 0.20D, player.getUniqueId(), EnumEntityType.MOUNT);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -43,7 +48,7 @@ public class MountUtils {
                 player.closeInventory();
                 break;
             }
-            case 3: {
+            case GOLD_HORSE: {
                 Horse mountHorse = new Horse(world, 0, 0.25D, player.getUniqueId(), EnumEntityType.MOUNT);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -59,7 +64,7 @@ public class MountUtils {
                 player.closeInventory();
                 break;
             }
-            case 4: {
+            case DIAMOND_HORSE: {
                 Horse mountHorse = new Horse(world, 0, 0.3D, player.getUniqueId(), EnumEntityType.MOUNT);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -75,7 +80,7 @@ public class MountUtils {
                 player.closeInventory();
                 break;
             }
-            case 5: {
+            case SKELETON_HORSE: {
                 Horse mountHorse = new Horse(world, 4, 0.3D, player.getUniqueId(), EnumEntityType.MOUNT);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -91,7 +96,7 @@ public class MountUtils {
                 DonationEffects.ENTITY_PARTICLE_EFFECTS.put(mountHorse, ParticleAPI.ParticleEffect.CLOUD);
                 break;
             }
-            case 6: {
+            case ZOMBIE_HORSE: {
                 Horse mountHorse = new Horse(world, 3, 0.3D, player.getUniqueId(), EnumEntityType.MOUNT);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -106,7 +111,7 @@ public class MountUtils {
                 player.closeInventory();
                 break;
             }
-            case 7: {
+            /*case 7: {
                 EnderDragon mountEnderDragon = new EnderDragon(world, player.getUniqueId(), EnumEntityType.MOUNT);
                 mountEnderDragon.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(mountEnderDragon, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -117,7 +122,7 @@ public class MountUtils {
                 EntityAPI.addPlayerMountList(player.getUniqueId(), mountEnderDragon);
                 player.closeInventory();
                 break;
-            }
+            }*/
         }
     }
 }

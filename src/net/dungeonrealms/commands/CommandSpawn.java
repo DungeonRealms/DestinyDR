@@ -3,9 +3,7 @@ package net.dungeonrealms.commands;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.types.monsters.*;
 import net.dungeonrealms.entities.utils.BuffUtils;
-import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.entities.utils.MountUtils;
 import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.enums.EnumMonster;
 import net.dungeonrealms.mastery.NBTUtils;
@@ -48,22 +46,6 @@ public class CommandSpawn implements CommandExecutor {
                 case "buff":
                     BuffUtils.spawnBuff(player.getUniqueId());
                     break;
-                case "mount": {
-                    if (!EntityAPI.hasMountOut(player.getUniqueId())) {
-                        if (EntityAPI.hasPetOut(player.getUniqueId())) {
-                            Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
-                            if (entity.isAlive()) {
-                                entity.getBukkitEntity().remove();
-                            }
-                            EntityAPI.removePlayerPetList(player.getUniqueId());
-                            player.sendMessage("Your pet has returned home as you have summoned your mount");
-                        }
-                        MountUtils.spawnMount(player.getUniqueId(), 5);
-                    } else {
-                        player.sendMessage("You already have a mount summoned");
-                    }
-                    break;
-                }
                 case "monster": {
                     if (args.length >= 2) {
                         int tier = 1;

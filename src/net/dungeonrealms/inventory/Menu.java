@@ -6,16 +6,20 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.entities.types.pets.EnumPets;
 import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumGuildData;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -380,11 +384,43 @@ public class Menu {
             return;
         }
 
-        Inventory inv = Bukkit.createInventory(null, 9, "Pet Selection");
+        Inventory inv = Bukkit.createInventory(null, 18, "Pet Selection");
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
 
         for (String petType : playerPets) {
-            inv.addItem(editItem(new ItemStack(Material.MONSTER_EGG, 1, (short) EnumPets.getByName(petType).getEggShortData()), petType.toUpperCase(), new String[]{
+            ItemStack itemStack = new ItemStack(Material.MONSTER_EGG, 1, (short) EnumPets.getByName(petType).getEggShortData());
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+            tag.set("petType", new NBTTagString(petType));
+            nmsStack.setTag(tag);
+            inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStack), ChatColor.GREEN + petType.toUpperCase(), new String[]{
+            }));
+        }
+
+        player.openInventory(inv);
+    }
+
+    public static void openPlayerMountMenu(Player player) {
+        UUID uuid = player.getUniqueId();
+
+        List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, uuid);
+
+        if (playerMounts.size() <= 0) {
+            Inventory noMounts = Bukkit.createInventory(null, 0, ChatColor.RED + "You currently have no Mounts!");
+            player.openInventory(noMounts);
+            return;
+        }
+
+        Inventory inv = Bukkit.createInventory(null, 18, "Mount Selection");
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+
+        for (String mountType : playerMounts) {
+            ItemStack itemStack = EnumMounts.getByName(mountType).getSelectionMaterial();
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+            tag.set("mountType", new NBTTagString(mountType));
+            nmsStack.setTag(tag);
+            inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStack), ChatColor.GREEN + mountType.toUpperCase(), new String[]{
             }));
         }
 

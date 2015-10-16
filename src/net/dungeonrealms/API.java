@@ -8,6 +8,7 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
+import net.dungeonrealms.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.entities.types.pets.EnumPets;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.handlers.EnergyHandler;
@@ -275,5 +276,9 @@ public class API {
 
     public static boolean isStringPet(String petType) {
         return EnumPets.getByName(petType.toUpperCase()) != null;
+    }
+
+    public static boolean isStringMount(String mountType) {
+        return EnumMounts.getByName(mountType.toUpperCase()) != null;
     }
 }

@@ -4,6 +4,7 @@ import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.entities.utils.EntityAPI;
+import net.dungeonrealms.entities.utils.MountUtils;
 import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.inventory.Menu;
@@ -13,6 +14,7 @@ import net.dungeonrealms.network.NetworkAPI;
 import net.minecraft.server.v1_8_R3.Entity;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -61,7 +63,48 @@ public class ClickHandler {
                     }
                     EntityAPI.removePlayerPetList(player.getUniqueId());
                 }
-                PetUtils.spawnPet(player.getUniqueId(), event.getCurrentItem().getItemMeta().getDisplayName());
+                net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                if (nmsStack.getTag() == null || nmsStack.getTag().getString("petType") == null) {
+                    player.sendMessage("Uh oh... Something went wrong with your pet! Please inform a staff member! [NBTTag]");
+                    player.closeInventory();
+                    return;
+                }
+                PetUtils.spawnPet(player.getUniqueId(), nmsStack.getTag().getString("petType"));
+            }
+        }
+
+        /*
+        Mounts Below
+         */
+        if (name.equalsIgnoreCase("Mount Selection")) {
+            event.setCancelled(true);
+            if (event.getCurrentItem().getType() == Material.BARRIER) {
+                player.closeInventory();
+                return;
+            }
+            if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR && event.getCurrentItem().getType() != Material.BARRIER) {
+                if (EntityAPI.hasMountOut(player.getUniqueId())) {
+                    Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
+                    if (entity.isAlive()) {
+                        entity.getBukkitEntity().remove();
+                    }
+                    EntityAPI.removePlayerMountList(player.getUniqueId());
+                }
+                if (EntityAPI.hasPetOut(player.getUniqueId())) {
+                    Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
+                    if (entity.isAlive()) {
+                        entity.getBukkitEntity().remove();
+                    }
+                    EntityAPI.removePlayerPetList(player.getUniqueId());
+                    player.sendMessage("Your pet has returned home as you have summoned your mount");
+                }
+                net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                if (nmsStack.getTag() == null || nmsStack.getTag().getString("mountType") == null) {
+                    player.sendMessage("Uh oh... Something went wrong with your mount! Please inform a staff member! [NBTTag]");
+                    player.closeInventory();
+                    return;
+                }
+                MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"));
             }
         }
 
