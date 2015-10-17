@@ -152,6 +152,36 @@ public class CommandEss implements CommandExecutor {
                         commandSender.sendMessage("Wrong arguments. (E.g. /Essentials mobtrail Proxying flame)");
                         return false;
                     }
+                case "ecash":
+                    if (args.length == 4) {
+                        int amount = Math.abs(Integer.parseInt(args[3]));
+                        Player player = Bukkit.getPlayer(args[2]);
+                        if (player == null) {
+                            commandSender.sendMessage("This player is not online!");
+                            return false;
+                        }
+                        int previousAmount = (int) DatabaseAPI.getInstance().getData(EnumData.ECASH, player.getUniqueId());
+                        switch (args[1]) {
+                            case "add":
+                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, "info.ecash", amount, true);
+                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + " You have received " + amount + " E-Cash! Your new balance is " + (previousAmount + amount) + "!");
+                                break;
+                            case "take":
+                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, "info.ecash", (amount * -1), true);
+                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + amount + " E-Cash has been taken from you! Your new balance is " + (previousAmount - amount) + "!");
+                                break;
+                            case "set":
+                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.ecash", amount, true);
+                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + " Your E-Cash balance has been set to " + amount + "!");
+                                break;
+                            default:
+                                commandSender.sendMessage("Wrong arguments. (E.g. /Essentials ecash add Proxying 100)");
+                                break;
+                        }
+                    } else {
+                        commandSender.sendMessage("Wrong arguments. (E.g. /Essentials ecash add Proxying 100)");
+                        return false;
+                    }
                 default:
                     break;
             }
