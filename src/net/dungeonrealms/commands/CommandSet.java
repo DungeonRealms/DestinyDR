@@ -3,18 +3,20 @@
  */
 package net.dungeonrealms.commands;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.LootManager;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.mongo.EnumOperators;
-import net.dungeonrealms.spawning.SpawningMechanics;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.LootManager;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.spawning.MobSpawner;
+import net.dungeonrealms.spawning.SpawningMechanics;
 
 /**
  * Created by Chase on Sep 22, 2015
@@ -65,6 +67,14 @@ public class CommandSet implements CommandExecutor {
 					Utils.log.info(LootManager.spawnerConfig.get(LootManager.spawnerConfig.size() - 1));
 					Utils.log.info(LootManager.spawnerConfig.size()+ " size");
 					DungeonRealms.getInstance().getConfig().set("loot", LootManager.spawnerConfig);
+				}
+				break;
+			case "kill":
+				for(Entity ent : player.getWorld().getLivingEntities()){
+					ent.remove();
+				}
+				for(MobSpawner spawner : SpawningMechanics.getSpawners()){
+					spawner.kill();
 				}
 				break;
 			}

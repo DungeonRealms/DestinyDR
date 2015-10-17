@@ -1,11 +1,39 @@
 package net.dungeonrealms;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.rmi.activation.UnknownObjectException;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.plugin.Plugin;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
+
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
 import net.dungeonrealms.entities.types.mounts.EnumMounts;
@@ -25,28 +53,6 @@ import net.dungeonrealms.notice.Notice;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.teleportation.TeleportAPI;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.plugin.Plugin;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.rmi.activation.UnknownObjectException;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -285,5 +291,38 @@ public class API {
 
     public static boolean isStringTrail(String trailType) {
         return ParticleAPI.ParticleEffect.getByName(trailType.toUpperCase()) != null;
+    }
+
+	/**
+	 * @param location
+	 * @param i
+	 * @return
+	 */
+    public static Collection<Entity> getNearbyMonsters(Location location, int radius) {
+    	List<Entity> list = location.getWorld().getEntities();
+    	return list.stream().filter(mons ->mons.getLocation().distance(location) < radius && mons.hasMetadata("type") && mons.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")).collect(Collectors.toList());
+//    	ArrayList<Entity> nearby = new ArrayList<Entity>(list);
+//    	for(Entity mons : nearby.iterator()){
+//    		Utils.log.info("1");
+//    		Entity mons = nearby.iterator().next();
+//    		if(mons.hasMetadata("type")){
+//        		Utils.log.info("2");
+//    			if(mons.getMetadata("type").size() > 0){
+//    	    		Utils.log.info("3");
+//    				if(!mons.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")){
+//    		    		Utils.log.info("4");
+//    					nearby.remove(mons);
+//    				}
+//    			}else{
+//    	    		Utils.log.info("5");
+//    				nearby.remove(mons);
+//    			}
+//    		}else {
+//        		Utils.log.info("6");
+//    			nearby.remove(mons);
+//    		}
+//
+//    	}
+//    	    return nearby;
     }
 }

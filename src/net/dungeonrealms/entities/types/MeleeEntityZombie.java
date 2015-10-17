@@ -43,6 +43,7 @@ public abstract class MeleeEntityZombie extends EntityZombie {
             exc.printStackTrace();
         }
         this.goalSelector.a(0, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.0D, false));
+        this.goalSelector.a(6, new PathfinderGoalRandomStroll(this, 1.0D));
         this.goalSelector.a(1, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
         this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
         this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true));

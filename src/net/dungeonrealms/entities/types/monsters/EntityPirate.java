@@ -26,7 +26,7 @@ public class EntityPirate extends MeleeEntityZombie {
     /**
      * @return
      */
-    private static String getRandomHead() {
+    public static String getRandomHead() {
         String[] list = new String[]{"samsamsam1234"};
         return list[Utils.randInt(0, list.length - 1)];
     }

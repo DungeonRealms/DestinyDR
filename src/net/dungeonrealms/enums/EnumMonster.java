@@ -11,7 +11,7 @@ public enum EnumMonster {
 
     Troll("Troll", "Steve", new String[]{"Strong", "Smelly"}, new String[]{"Warrior", "Rebel"}),
     Goblin("Goblin", "Shrek", new String[]{"Short", "Ugly", "Smelly"}, new String[]{""}),
-    Bandit("Bandit", "Random", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Majestic", "Intrigued", "Dignified", "Couragous", "Timid", "Gloomy", "Noble", "Naive", "Black"}, new String[]{""}),
+    Bandit("Bandit", "Steve", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Majestic", "Intrigued", "Dignified", "Couragous", "Timid", "Gloomy", "Noble", "Naive", "Black"}, new String[]{""}),
     Pirate("Pirate", "samsamsam1234", new String[]{""}, new String[]{""}),
     RangedPirate("Ranged Pirate", "samsamsam1234", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Majestic", "Intrigued", "Dignified", "Couragous", "Timid", "Gloomy", "Noble", "Naive", "Black"}, new String[]{""}),
     Naga("Naga", "Das_Doktor", new String[]{"Weak"}, new String[]{"Shaman", "Mage"}),
@@ -20,8 +20,9 @@ public enum EnumMonster {
     Spider("Spider", "Steve", new String[]{"Scary", "Spookey", "Hairy"}, new String[]{""}),
     FireImp("Fire Imp", "Devil", new String[]{""}, new String[]{""}),
     Blaze("Blaze", "Blaze", new String[]{""}, new String[]{""}),
-    Mage("Mage", "Mage", new String[]{""}, new String[]{""});
-
+    Mage("Mage", "Mage", new String[]{""}, new String[]{""}),
+    Skeleton("Skeleton", "Steve", new String[]{"Scary", "Spookey", "Spookey Scary"}, new String[]{"Archer", "Ranger"});
+	
     public String name;
     public String mobHead;
     public String[] prefix;

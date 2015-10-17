@@ -55,6 +55,7 @@ public class Entities {
         nmsUtils.registerEntity("BasicMage", 54, EntityZombie.class, BasicMageMonster.class);
         nmsUtils.registerEntity("DRWither", 51, EntitySkeleton.class, EntityWitherSkeleton.class);
         nmsUtils.registerEntity("DRBlaze", 61, EntityBlaze.class, RangedEntityBlaze.class);
+        nmsUtils.registerEntity("DRSkeleton", 51, EntitySkeleton.class, BasicEntitySkeleton.class);
 
         nmsUtils.registerEntity("PetCaveSpider", 59, EntityCaveSpider.class, CaveSpider.class);
         nmsUtils.registerEntity("PetBabyZombie", 54, EntityZombie.class, BabyZombie.class);
@@ -104,7 +105,7 @@ public class Entities {
     }
 
     private void tryToReturnMobToBase(Entity entity) {
-        SpawningMechanics.SPAWNERS.stream().filter(mobSpawner -> mobSpawner.getSpawnedMonsters().contains(entity)).forEach(mobSpawner -> {
+        SpawningMechanics.getSpawners().stream().filter(mobSpawner -> mobSpawner.getSpawnedMonsters().contains(entity)).forEach(mobSpawner -> {
             EntityInsentient entityInsentient = (EntityInsentient) entity;
             entityInsentient.setGoalTarget(mobSpawner.armorstand, EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);
             PathEntity path = entityInsentient.getNavigation().a(mobSpawner.armorstand.locX, mobSpawner.armorstand.locY, mobSpawner.armorstand.locZ);
