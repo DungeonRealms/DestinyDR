@@ -215,28 +215,37 @@ public class ClickHandler {
                     }
                     break;
                 case 13:
-                    AnvilGUIInterface promotePlayerGUI = AnvilApi.createNewGUI(player, anvilClick -> {
-                        switch (anvilClick.getSlot()) {
-                            case OUTPUT:
-                                anvilClick.setWillClose(true);
-                                anvilClick.setWillDestroy(true);
-                                Guild.getInstance().promotePlayer(player, anvilClick.getName());
-                        }
-                    });
-                    promotePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
-                    promotePlayerGUI.open();
+                    if (Guild.getInstance().isOwner(player.getUniqueId(), guildName) || Guild.getInstance().isCoOwner(player.getUniqueId(), guildName)) {
+                        AnvilGUIInterface promotePlayerGUI = AnvilApi.createNewGUI(player, anvilClick -> {
+                            switch (anvilClick.getSlot()) {
+                                case OUTPUT:
+                                    anvilClick.setWillClose(true);
+                                    anvilClick.setWillDestroy(true);
+                                    Guild.getInstance().promotePlayer(player, anvilClick.getName());
+                            }
+                        });
+                        promotePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
+                        promotePlayerGUI.open();
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You do not have the required permissions to promote a player!");
+                    }
                     break;
                 case 14:
-                    AnvilGUIInterface demotePlayerGUI = AnvilApi.createNewGUI(player, anvilClick -> {
-                        switch (anvilClick.getSlot()) {
-                            case OUTPUT:
-                                anvilClick.setWillClose(true);
-                                anvilClick.setWillDestroy(true);
-                                Guild.getInstance().demotePlayer(player, anvilClick.getName());
-                        }
-                    });
-                    demotePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
-                    demotePlayerGUI.open();
+                    if (Guild.getInstance().isOwner(player.getUniqueId(), guildName) || Guild.getInstance().isCoOwner(player.getUniqueId(), guildName)) {
+
+                        AnvilGUIInterface demotePlayerGUI = AnvilApi.createNewGUI(player, anvilClick -> {
+                            switch (anvilClick.getSlot()) {
+                                case OUTPUT:
+                                    anvilClick.setWillClose(true);
+                                    anvilClick.setWillDestroy(true);
+                                    Guild.getInstance().demotePlayer(player, anvilClick.getName());
+                            }
+                        });
+                        demotePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
+                        demotePlayerGUI.open();
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You do not have the required permissions to demote a player!");
+                    }
                     break;
                 case 36:
                     if (Guild.getInstance().isOwner(player.getUniqueId(), guildName) || Guild.getInstance().isCoOwner(player.getUniqueId(), guildName)) {

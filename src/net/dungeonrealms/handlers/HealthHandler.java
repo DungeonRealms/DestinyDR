@@ -417,6 +417,11 @@ public class HealthHandler {
                         leAttacker = (LivingEntity) ((Arrow) damager).getShooter();
                     }
                     break;
+                case SNOWBALL:
+                    if (((Snowball) damager).getShooter() instanceof LivingEntity) {
+                        leAttacker = (LivingEntity) ((Snowball) damager).getShooter();
+                    }
+                    break;
                 case WITHER_SKULL:
                     if (((WitherSkull) damager).getShooter() instanceof LivingEntity) {
                         leAttacker = (LivingEntity) ((WitherSkull) damager).getShooter();

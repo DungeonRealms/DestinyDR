@@ -16,6 +16,7 @@ import java.util.UUID;
 /**
  * Created by Nick on 8/29/2015.
  */
+@Deprecated
 public class DatabaseAPI {
 
     private static DatabaseAPI instance = null;
@@ -141,7 +142,7 @@ public class DatabaseAPI {
             /*
             Player Storage
              */
-            case INVENTORY_LEVEL:    
+            case INVENTORY_LEVEL:
                 return ((Document) PLAYERS.get(uuid).get("inventory")).get("level", Integer.class);
             case INVENTORY_COLLECTION_BIN:
                 return ((Document) PLAYERS.get(uuid).get("inventory")).get("collection_bin", String.class);

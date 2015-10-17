@@ -4,6 +4,8 @@ import com.mongodb.async.client.MongoClient;
 import com.mongodb.async.client.MongoClients;
 import com.mongodb.async.client.MongoCollection;
 import com.mongodb.async.client.MongoDatabase;
+import net.dungeonrealms.core.Callback;
+import net.dungeonrealms.core.CoreAPI;
 import net.dungeonrealms.mastery.Utils;
 import org.bson.Document;
 
@@ -23,6 +25,8 @@ public class Database {
 
     public static MongoClient mongoClient = null;
     private static MongoDatabase database = null;
+
+    public static MongoCollection<Document> servers = null;
     public static MongoCollection<Document> collection = null;
     public static MongoCollection<Document> ranks = null;
     public static MongoCollection<Document> guilds = null;
@@ -35,6 +39,7 @@ public class Database {
         collection = database.getCollection("player_data");
         guilds = database.getCollection("guilds");
         ranks = database.getCollection("ranks");
+        servers = database.getCollection("servers");
         Utils.log.info("DungeonRealms [MONGODB] has connected successfully!");
     }
 

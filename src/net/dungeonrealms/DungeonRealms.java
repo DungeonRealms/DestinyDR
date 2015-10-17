@@ -18,6 +18,7 @@ import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.network.NetworkAPI;
+import net.dungeonrealms.network.NetworkServer;
 import net.dungeonrealms.notice.Notice;
 import net.dungeonrealms.party.Party;
 import net.dungeonrealms.rank.Rank;
@@ -83,6 +84,8 @@ public class DungeonRealms extends JavaPlugin {
         HealthHandler.getInstance().startInitialization();
         KarmaHandler.getInstance().startInitialization();
         BankMechanics.getInstance().startInitialization();
+
+        NetworkServer.getInstance().startInitialization();
 
         Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
         Entities.getInstance().startInitialization();
