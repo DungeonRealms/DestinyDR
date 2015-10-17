@@ -88,6 +88,9 @@ public class CommandSpawn implements CommandExecutor {
                             case "golem":
                                 entity = new EntityGolem(world, tier, type);
                                 break;
+                            case "skeleton":
+                            	entity = new BasicEntitySkeleton(world,tier);
+                            	break;
                             default:
                                 entity = new EntityBandit(world, tier, type);
                                 break;

@@ -45,9 +45,9 @@ public abstract class RangedEntitySkeleton extends EntitySkeleton {
 
         this.goalSelector.a(1, new PathfinderGoalFloat(this));
         this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
-        this.goalSelector.a(5, new PathfinderGoalRandomStroll(this, 1.0D));
-        this.goalSelector.a(6, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-        this.goalSelector.a(6, new PathfinderGoalRandomLookaround(this));
+        this.goalSelector.a(6, new PathfinderGoalRandomStroll(this, 1.0D));
+        this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+        this.goalSelector.a(7, new PathfinderGoalRandomLookaround(this));
         this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
         this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
         monsterType = monster;

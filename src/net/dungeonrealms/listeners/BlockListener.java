@@ -1,12 +1,14 @@
 package net.dungeonrealms.listeners;
 
 import java.util.ArrayList;
+import java.util.Collection;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -17,8 +19,8 @@ import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
@@ -103,6 +105,8 @@ public class BlockListener implements Listener {
         
         for(LootSpawner loot : LootManager.spawners){
         	if(loot.location.getBlockX() == block.getX() && loot.location.getBlockY() == block.getY() && loot.location.getBlockZ() == block.getLocation().getZ()){
+        		Collection<Entity> list = API.getNearbyMonsters(loot.location,10);
+        		if(list.isEmpty()){
                Action actionType = e.getAction();
                switch (actionType) {
                  case RIGHT_CLICK_BLOCK:
@@ -120,6 +124,10 @@ public class BlockListener implements Listener {
                 	 }
                 	 loot.update();
                 	 break;
+               		}
+               }else{
+            	   e.getPlayer().sendMessage(ChatColor.RED.toString() + "You can't open this while monsters are around!");
+            	   e.setCancelled(true);
                }
         	}
         }

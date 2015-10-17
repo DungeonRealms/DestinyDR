@@ -30,6 +30,10 @@ public class EntityFireImp extends RangedEntitySkeleton {
 
     private int tier;
 
+    public EntityFireImp(World world){
+    	super(world);
+    }
+    
     public EntityFireImp(World world, int tier, EnumEntityType entityType) {
         super(world, EnumMonster.FireImp, tier, entityType);
         this.tier = tier;

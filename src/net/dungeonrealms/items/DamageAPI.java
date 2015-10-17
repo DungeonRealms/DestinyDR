@@ -287,7 +287,7 @@ public class DamageAPI {
                 damage += ((projectile.getMetadata("vsPlayers").get(0).asDouble() / 100) * damage);
             }
         } else {
-            if (receiver.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+            if (receiver.hasMetadata("type") && receiver.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                 if (projectile.getMetadata("vsMonsters").get(0).asDouble() != 0) {
                     damage += ((projectile.getMetadata("vsMonsters").get(0).asDouble() / 100) * damage);
                 }
