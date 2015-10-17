@@ -6,6 +6,8 @@ website: http://www.dungeonrealms.net
 depend: [BountifulAPI, WorldGuard]
 description: The new dungeonrealms!
 commands:
+    accept:
+       description: Accept Guild invitations or party invitations.
     mail:
         description: Does mail things
         aliases: [mailbox, ups, fedex]

@@ -46,6 +46,11 @@ public class ClickHandler {
          */
         if (name.equals("Mailbox")) {
             event.setCancelled(true);
+            if (event.getCurrentItem() != null) {
+                ItemStack clickedItem = event.getCurrentItem();
+                MailHandler.getInstance().giveItemToPlayer(clickedItem, player);
+            }
+            return;
         }
 
         /*
@@ -117,6 +122,7 @@ public class ClickHandler {
                 }
                 MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"));
             }
+            return;
         }
 
         /*
@@ -259,6 +265,7 @@ public class ClickHandler {
                     }
                     break;
             }
+            return;
         }
         if (name.endsWith("- Officers")) {
             event.setCancelled(true);

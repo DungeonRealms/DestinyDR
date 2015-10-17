@@ -6,6 +6,7 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.handlers.MailHandler;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -47,11 +48,6 @@ public class NetworkAPI implements PluginMessageListener {
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
         String subChannel = in.readUTF();
         switch (subChannel) {
-             /*
-            To call this;
-            NetworkAPI.getInstance().sendNetworkMessage("mail", "update", "xFinityPro");
-            This will broadcast through-out the entire network that `xfinitypro` has mail and UPDATE MAILBOX!
-             */
             case "mail":
                 if (in.readUTF().equals("update")) {
                     Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> {
@@ -60,16 +56,23 @@ public class NetworkAPI implements PluginMessageListener {
                     });
                 }
                 break;
-            /*
-            To call this;
-            NetworkAPI.getInstance().sendNetworkMessage("player", "update", "xFinityPro");
-            This will broadcast through-out the entire network that `xfinitypro` needs to request NEW DATA!
-             */
             case "player":
                 if (in.readUTF().equals("update")) {
                     Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> {
                         DatabaseAPI.getInstance().requestPlayer(p.getUniqueId());
                     });
+                }
+                break;
+            case "guild":
+                if (in.readUTF().equals("update")) {
+                    String guildName = in.readUTF();
+                    long howMany = Bukkit.getOnlinePlayers().stream().filter(p -> Guild.getInstance().getGuildName(p).equals(guildName)).count();
+                    if (howMany >= 0) {
+                        DatabaseAPI.getInstance().requestGuild(guildName);
+                    }
+                } else if (in.readUTF().equals("message")) {
+                    String guildName = in.readUTF();
+                    sendAllGuildMessage(guildName, in.readUTF());
                 }
                 break;
             default:
@@ -130,7 +133,6 @@ public class NetworkAPI implements PluginMessageListener {
         members.stream().filter(s -> s != null && !s.equals("") && API.isOnline(UUID.fromString(s))).forEach(s -> {
             Bukkit.getPlayer(UUID.fromString(s)).sendMessage("[" + ChatColor.GREEN.toString() + ChatColor.BOLD + guildName + ChatColor.RESET + "]" + " " + message);
         });
-
     }
 
 }

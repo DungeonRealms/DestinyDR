@@ -8,7 +8,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.entities.types.pets.EnumPets;
-import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.handlers.MailHandler;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -41,7 +41,7 @@ public class Menu {
         ArrayList<String> mail = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MAILBOX, uuid);
 
         if (mail.size() <= 0) {
-            Inventory noMailInv = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no mail! :-(");
+            Inventory noMailInv = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no mail!");
             player.openInventory(noMailInv);
             return;
 
@@ -50,16 +50,24 @@ public class Menu {
         Inventory inv = Bukkit.createInventory(null, 45, "Mailbox");
         SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
 
+        int slot = 9;
         for (String s : mail) {
             String from = s.split(",")[0];
             long unix = Long.valueOf(s.split(",")[1]);
             String serializedItem = s.split(",")[2];
             Date sentDate = new Date(unix * 1000);
             String loginTime = sdf.format(sentDate);
-            inv.addItem(editItem(ItemSerialization.itemStackFromBase64(serializedItem), "", new String[]{
+
+            ItemStack mailTemplateItem = MailHandler.getInstance().setItemAsMail(editItem(new ItemStack(Material.PAPER), ChatColor.GREEN + "Mail Item", new String[]{
                     ChatColor.GRAY + "From: " + ChatColor.AQUA + from,
                     ChatColor.GRAY + "Sent: " + ChatColor.AQUA + sentDate,
-            }));
+                    "",
+                    ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to open!"
+            }), s);
+
+            inv.setItem(slot, mailTemplateItem);
+            if (slot >= 44) break;
+            slot++;
         }
 
         player.openInventory(inv);
@@ -135,7 +143,8 @@ public class Menu {
 
         for (String s : members) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                inv.addItem(editItem(API.getNameFromUUID(s), ChatColor.GREEN + "Member " + API.getNameFromUUID(s), new String[]{}));
+                String name = API.getNameFromUUID(s);
+                inv.addItem(editItem(name, ChatColor.GREEN + "Member " + name, new String[]{}));
             }, 0l);
         }
 
@@ -268,7 +277,7 @@ public class Menu {
         String owner = (String) DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumGuildData.NAME, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
         String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-        long origin = (long) DatabaseAPI.getInstance().getData(EnumGuildData.CREATION_UNIX_DATA, guildName);
+        long origin = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumGuildData.CREATION_UNIX_DATA, guildName)));
         int netLevel = (int) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, guildName);
         double experience = Double.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumGuildData.EXPERIENCE, guildName)));
 

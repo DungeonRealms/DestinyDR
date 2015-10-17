@@ -54,40 +54,43 @@ public class Guild {
         NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + player.getName() + ChatColor.GREEN + " is now online!");
     }
 
+    /**
+     * Demotes a player from a guild.
+     *
+     * @param player     Executing the demotion.
+     * @param playerName being demoted.
+     * @since 1.0
+     */
     public void demotePlayer(Player player, String playerName) {
         if (player.getName().equalsIgnoreCase(playerName)) return;
         UUID uuid = API.getUUIDFromName(playerName);
         assert uuid != null;
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
 
-        if (!isOwner(player.getUniqueId(), guildName) || !isCoOwner(player.getUniqueId(), guildName)) {
-            player.sendMessage(ChatColor.RED + "You cannot demote players, you aren't an Owner/CoOwner!");
+        if (!isOwner(player.getUniqueId(), guildName)) {
+            player.sendMessage(ChatColor.RED + "You cannot demote players, you aren't an Owner");
+            if (!isCoOwner(player.getUniqueId(), guildName)) {
+                player.sendMessage(ChatColor.RED + "You cannot demote players, you aren't an CoOwner");
+                return;
+            }
             return;
         }
+
 
         if (isOfficer(guildName, uuid)) {
             DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.officers", uuid.toString(), false);
             DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "info.members", uuid.toString(), true);
             NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + API.getNameFromUUID(uuid.toString()) + " " + ChatColor.GREEN + "has been demoted to member!");
-            return;
-        }
-
-        if (isMember(guildName, uuid)) {
+        } else if (isMember(guildName, uuid)) {
             DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.members", uuid.toString(), true);
             NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + API.getNameFromUUID(uuid.toString()) + " " + ChatColor.GREEN + "has been removed by demotion!");
             player.sendMessage(ChatColor.RED + "As future reference use the 'Remove Player' option in the Guild Management GUI to remove players!");
-            return;
-        }
-
-        if (isInvited(guildName, uuid)) {
+        } else if (isInvited(guildName, uuid)) {
             DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.invitations", uuid.toString(), true);
             NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + API.getNameFromUUID(uuid.toString()) + " " + ChatColor.GREEN + "'s invitation has been revoked!");
             player.sendMessage(ChatColor.RED + "As future reference use the 'Remove Player' option in the Guild Management GUI to remove players!");
-            return;
-        }
-
-        if (isGuildNull(uuid)) {
-            player.sendMessage(ChatColor.RED + "You cannot demote a player that isn't in the guild..");
+        } else {
+            player.sendMessage(ChatColor.RED + "Unable to find player (" + playerName + ")! In your guild..");
         }
 
     }
@@ -105,8 +108,12 @@ public class Guild {
         assert uuid != null;
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
 
-        if (!isOwner(player.getUniqueId(), guildName) || !isCoOwner(player.getUniqueId(), guildName)) {
-            player.sendMessage(ChatColor.RED + "You cannot promote players, you aren't an Owner/CoOwner!");
+        if (!isOwner(player.getUniqueId(), guildName)) {
+            player.sendMessage(ChatColor.RED + "You cannot promote players, you aren't an Owner");
+            if (!isCoOwner(player.getUniqueId(), guildName)) {
+                player.sendMessage(ChatColor.RED + "You cannot promote players, you aren't an CoOwner");
+                return;
+            }
             return;
         }
 
@@ -117,23 +124,14 @@ public class Guild {
             } else {
                 player.sendMessage(ChatColor.RED + "You already have someone as an CoOwner!");
             }
-            return;
-        }
-
-        if (isMember(guildName, uuid)) {
+        } else if (isMember(guildName, uuid)) {
             DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.members", uuid.toString(), false);
             DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "info.officers", uuid.toString(), true);
             NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + API.getNameFromUUID(uuid.toString()) + " " + ChatColor.GREEN + "has been promoted to an Officer!");
-            return;
-        }
-
-        if (isInvited(guildName, uuid)) {
+        } else if (isInvited(guildName, uuid)) {
             player.sendMessage(ChatColor.RED + "You cannot promote a player that hasn't accepted the Guild Invitation Yet!");
-            return;
-        }
-
-        if (isGuildNull(uuid)) {
-            player.sendMessage(ChatColor.RED + "You cannot promote a player that isn't in the guild..");
+        } else {
+            player.sendMessage(ChatColor.RED + "Unable to find player (" + playerName + ")! In your guild..");
         }
 
     }
@@ -208,7 +206,7 @@ public class Guild {
                     player.sendMessage(ChatColor.RED + "That player is already invited to your guild!");
                 } else {
                     DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, "notices.guildInvites", guildName + "," + (System.currentTimeMillis() / 1000l), true);
-                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "invitations", player.getUniqueId().toString(), true);
+                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "invitations", uuid.toString(), true);
                     player.sendMessage(ChatColor.GREEN + "Player has been invited to a guild!");
                     NetworkAPI.getInstance().sendAllGuildMessage(guildName, player.getName() + " has invited " + playerName + " to your guild!");
                 }
@@ -270,7 +268,7 @@ public class Guild {
      * @since 1.0
      */
     public boolean isOwner(UUID uuid, String guildName) {
-        return !isGuildNull(uuid) && uuid.equals(UUID.fromString(String.valueOf(DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, guildName))));
+        return uuid.equals(UUID.fromString(String.valueOf(DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, guildName))));
     }
 
     /**
@@ -282,7 +280,7 @@ public class Guild {
      * @since 1.0
      */
     public boolean isCoOwner(UUID uuid, String guildName) {
-        return !isGuildNull(uuid) && !DatabaseAPI.getInstance().getData(EnumGuildData.CO_OWNER, guildName).equals("") && uuid.equals(UUID.fromString(String.valueOf(DatabaseAPI.getInstance().getData(EnumGuildData.CO_OWNER, guildName))));
+        return !DatabaseAPI.getInstance().getData(EnumGuildData.CO_OWNER, guildName).equals("") && uuid.equals(UUID.fromString(String.valueOf(DatabaseAPI.getInstance().getData(EnumGuildData.CO_OWNER, guildName))));
     }
 
     /**
@@ -357,10 +355,7 @@ public class Guild {
      */
     @SuppressWarnings({"unchecked", "negrotasticness"})
     public boolean isMember(String guildName, UUID uuid) {
-        if (!isGuildNull(uuid)) {
-            return ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, guildName)).contains(uuid);
-        }
-        return false;
+        return ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, guildName)).contains(uuid);
     }
 
     /**
@@ -373,10 +368,7 @@ public class Guild {
      */
     @SuppressWarnings({"unchecked", "negrotasticness"})
     public boolean isOfficer(String guildName, UUID uuid) {
-        if (!isGuildNull(uuid)) {
-            return ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, guildName)).contains(uuid);
-        }
-        return false;
+        return ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, guildName)).contains(uuid);
     }
 
     /**
