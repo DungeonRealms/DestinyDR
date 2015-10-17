@@ -4,6 +4,8 @@ import com.mongodb.async.client.MongoClient;
 import com.mongodb.async.client.MongoClients;
 import com.mongodb.async.client.MongoCollection;
 import com.mongodb.async.client.MongoDatabase;
+import net.dungeonrealms.core.Callback;
+import net.dungeonrealms.core.CoreAPI;
 import net.dungeonrealms.mastery.Utils;
 import org.bson.Document;
 
