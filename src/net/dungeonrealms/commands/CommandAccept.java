@@ -32,7 +32,7 @@ public class CommandAccept implements CommandExecutor {
                         player.sendMessage(ChatColor.RED + "You must leave your current guild to accept invitations to others!");
                         return true;
                     }
-                    String guildAccepting = args[1];
+                    String guildAccepting = args[1].toUpperCase();
                     List<String> guildInvitations = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.GUILD_INVITES, player.getUniqueId());
                     if (guildInvitations.size() <= 0) {
                         player.sendMessage(ChatColor.RED + "You have no pending invitations!");
@@ -57,6 +57,7 @@ public class CommandAccept implements CommandExecutor {
 
                     NetworkAPI.getInstance().sendNetworkMessage("guild", "update", guildName);
                     NetworkAPI.getInstance().sendNetworkMessage("guild", "message", player.getName() + " has joined the Guild!");
+                    player.sendMessage(ChatColor.GREEN + "Congratulations! You have successfully joined " + ChatColor.AQUA + guildName);
 
 
                     break;
