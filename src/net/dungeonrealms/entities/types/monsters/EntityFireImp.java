@@ -70,11 +70,9 @@ public class EntityFireImp extends RangedEntitySkeleton {
     public void a(EntityLiving entity, float f) {
         double d0 = entity.locX - this.locX;
         float f1 = MathHelper.c(f) * 0.5F;
-        double d1 = entity.getBoundingBox().b + (double) (entity.length / 2.0F)
-                - (this.locY + (double) (this.length / 2.0F));
+        double d1 = entity.getBoundingBox().b + (double) (entity.length / 2.0F) - (this.locY + (double) (this.length / 2.0F));
         double d2 = entity.locZ - this.locZ;
-        EntityWitherSkull entityWitherSkull = new EntityWitherSkull(this.world, this,
-                d0 + this.random.nextGaussian() * (double) f1, d1, d2 + this.random.nextGaussian() * (double) f1);
+        EntityWitherSkull entityWitherSkull = new EntityWitherSkull(this.world, this, d0 + this.random.nextGaussian() * (double) f1, d1, d2 + this.random.nextGaussian() * (double) f1);
         entityWitherSkull.locY = this.locY + (double) (this.length / 2.0F) + 0.5D;
         Projectile projectileWitherSkull = (Projectile) entityWitherSkull.getBukkitEntity();
         projectileWitherSkull.setVelocity(projectileWitherSkull.getVelocity().multiply(1.35));

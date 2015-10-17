@@ -656,7 +656,7 @@ public class DamageAPI {
         RepairAPI.subtractCustomDurability(player, itemStack, 1);
         EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(itemStack));
         int weaponTier = tag.getInt("itemTier");
-        Projectile projectile = player.launchProjectile(WitherSkull.class);
+        Projectile projectile = player.launchProjectile(Snowball.class);
         switch (weaponTier) {
             case 1:
                 projectile.setVelocity(projectile.getVelocity().multiply(1.05));

@@ -1,43 +1,6 @@
 package net.dungeonrealms.listeners;
 
-import java.util.ArrayList;
-import java.util.Random;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.WitherSkull;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.ExplosionPrimeEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
-
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
@@ -50,13 +13,31 @@ import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.spawning.MobSpawner;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.*;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -152,7 +133,7 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
-        if ((!(event.getDamager() instanceof Player)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL))) return;
+        if ((!(event.getDamager() instanceof Player)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL))) return;
         if (!(event.getEntity() instanceof Monster) && !(event.getEntity() instanceof Player)) return;
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
@@ -198,8 +179,8 @@ public class DamageListener implements Listener {
             } else {
                 CombatLog.addToCombat(((Player) attackingArrow.getShooter()));
             }
-        } else if (event.getDamager().getType() == EntityType.WITHER_SKULL) {
-            WitherSkull staffProjectile = (WitherSkull) event.getDamager();
+        } else if (event.getDamager().getType() == EntityType.SNOWBALL) {
+            Snowball staffProjectile = (Snowball) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof Player)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((Player) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
             if (event.getEntity() instanceof Player) {
@@ -280,7 +261,7 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = false)
     public void onArmorReduceBaseDamage(EntityDamageByEntityEvent event) {
-        if ((!(event.getDamager() instanceof LivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
+        if ((!(event.getDamager() instanceof LivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
             return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
         double armourReducedDamage = 0;
@@ -323,11 +304,17 @@ public class DamageListener implements Listener {
             if (attackingArrow.getShooter() instanceof Monster) {
                 armourReducedDamage = DamageAPI.calculateArmorReduction(attackingArrow, defender, defenderArmor);
             }
-        } else if (event.getDamager().getType() == EntityType.WITHER_SKULL) {
-            WitherSkull staffProjectile = (WitherSkull) event.getDamager();
+        } else if (event.getDamager().getType() == EntityType.SNOWBALL) {
+            Snowball staffProjectile = (Snowball) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof LivingEntity)) return;
             if (staffProjectile.getShooter() instanceof Monster) {
                 armourReducedDamage = DamageAPI.calculateArmorReduction(staffProjectile, defender, defenderArmor);
+            }
+        } else if (event.getDamager().getType() == EntityType.WITHER_SKULL) {
+            WitherSkull witherSkull =  (WitherSkull) event.getDamager();
+            if (!(witherSkull.getShooter() instanceof LivingEntity)) return;
+            if (witherSkull.getShooter() instanceof Monster) {
+                armourReducedDamage = DamageAPI.calculateArmorReduction(witherSkull, defender, defenderArmor);
             }
         }
         if (armourReducedDamage == -1) {
@@ -395,8 +382,7 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onLivingEntityFireProjectile(ProjectileLaunchEvent event) {
-        if (!(event.getEntity().getShooter() instanceof Player) && ((event.getEntityType() != EntityType.ARROW) && (event.getEntityType() != EntityType.WITHER_SKULL)))
-            return;
+        if ((!(event.getEntity().getShooter() instanceof Player)) && ((event.getEntityType() != EntityType.ARROW) && (event.getEntityType() != EntityType.SNOWBALL))) return;
         LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
         EntityEquipment entityEquipment = shooter.getEquipment();
         if (entityEquipment.getItemInHand() == null) return;

@@ -1,7 +1,18 @@
 package net.dungeonrealms.listeners;
 
-import java.util.Map;
-
+import com.connorlinfoot.bountifulapi.BountifulAPI;
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.chat.Chat;
+import net.dungeonrealms.donate.DonationEffects;
+import net.dungeonrealms.duel.DuelMechanics;
+import net.dungeonrealms.duel.DuelWager;
+import net.dungeonrealms.entities.utils.EntityAPI;
+import net.dungeonrealms.handlers.TradeHandler;
+import net.dungeonrealms.inventory.GUI;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.WebAPI;
+import net.dungeonrealms.mongo.DatabaseAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -11,30 +22,12 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerMoveEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import com.connorlinfoot.bountifulapi.BountifulAPI;
-
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.chat.Chat;
-import net.dungeonrealms.donate.DonationEffects;
-import net.dungeonrealms.duel.DuelMechanics;
-import net.dungeonrealms.duel.DuelWager;
-import net.dungeonrealms.entities.utils.EntityAPI;
-import net.dungeonrealms.inventory.GUI;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.WebAPI;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.handlers.TradeHandler;
+import java.util.Map;
 
 /**
  * Created by Nick on 9/17/2015.

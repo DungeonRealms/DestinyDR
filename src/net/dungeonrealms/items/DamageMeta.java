@@ -46,27 +46,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(2, 7);
                             case DEXTERITY:
-                                return random(1, 6);
+                                return random(1, 15);
                             case FIRE_DAMAGE:
-                                return random(1, 6);
+                                return random(1, 3);
                             case ICE_DAMAGE:
-                                return random(1, 6);
+                                return random(1, 3);
                             case POISON_DAMAGE:
-                                return random(1, 6);
+                                return random(1, 3);
                             case LIFE_STEAL:
                                 return random(1, 2);
                             case PURE_DAMAGE:
                                 return random(1, 3);
                             case VITALITY:
-                                return random(1, 3);
+                                return random(1, 15);
                             case VS_MONSTERS:
                                 return random(1, 7);
                             case VS_PLAYER:
                                 return random(1, 7);
                             case STRENGTH:
-                                return random(1, 3);
+                                return random(1, 15);
                             case INTELLECT:
-                                return random(1, 6);
+                                return random(1, 15);
                         }
                     case UNCOMMON:
                         switch (type) {
@@ -79,27 +79,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(4, 9);
                             case DEXTERITY:
-                                return random(2, 8);
+                                return random(1, 15);
                             case FIRE_DAMAGE:
-                                return random(1, 9);
+                                return random(1, 4);
                             case ICE_DAMAGE:
-                                return random(1, 9);
+                                return random(1, 4);
                             case POISON_DAMAGE:
-                                return random(1, 9);
+                                return random(1, 4);
                             case LIFE_STEAL:
                                 return random(1, 2);
                             case PURE_DAMAGE:
                                 return random(2, 5);
                             case VITALITY:
-                                return random(1, 3);
+                                return random(1, 15);
                             case VS_MONSTERS:
                                 return random(1, 7);
                             case VS_PLAYER:
                                 return random(1, 8);
                             case STRENGTH:
-                                return random(1, 3);
+                                return random(1, 15);
                             case INTELLECT:
-                                return random(1, 3);
+                                return random(1, 15);
                         }
                     case RARE:
                         switch (type) {
@@ -112,27 +112,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(6, 12);
                             case DEXTERITY:
-                                return random(2, 4);
+                                return random(1, 15);
                             case FIRE_DAMAGE:
-                                return random(2, 3);
+                                return random(1, 5);
                             case ICE_DAMAGE:
-                                return random(2, 6);
+                                return random(1, 5);
                             case POISON_DAMAGE:
-                                return random(2, 6);
+                                return random(1, 5);
                             case LIFE_STEAL:
                                 return random(1, 2);
                             case PURE_DAMAGE:
                                 return random(2, 6);
                             case VITALITY:
-                                return random(2, 3);
+                                return random(1, 15);
                             case VS_MONSTERS:
                                 return random(1, 7);
                             case VS_PLAYER:
                                 return random(1, 7);
                             case STRENGTH:
-                                return random(2, 6);
+                                return random(1, 15);
                             case INTELLECT:
-                                return random(2, 6);
+                                return random(1, 15);
                         }
                     case UNIQUE:
                         switch (type) {
@@ -145,27 +145,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(20, 35);
                             case DEXTERITY:
-                                return random(3, 7);
+                                return random(1, 15);
                             case FIRE_DAMAGE:
-                                return random(5, 13);
+                                return random(2, 5);
                             case ICE_DAMAGE:
-                                return random(5, 13);
+                                return random(2, 5);
                             case POISON_DAMAGE:
-                                return random(5, 13);
+                                return random(2, 5);
                             case LIFE_STEAL:
                                 return random(1, 2);
                             case PURE_DAMAGE:
                                 return random(5, 12);
                             case VITALITY:
-                                return random(3, 7);
+                                return random(1, 15);
                             case VS_MONSTERS:
                                 return random(1, 7);
                             case VS_PLAYER:
                                 return random(1, 7);
                             case STRENGTH:
-                                return random(3, 7);
+                                return random(1, 15);
                             case INTELLECT:
-                                return random(3, 7);
+                                return random(1, 15);
                         }
                     case LEGENDARY:
                         switch (type) {
@@ -178,27 +178,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(20, 35);
                             case DEXTERITY:
-                                return random(4, 10);
+                                return random(1, 15);
                             case FIRE_DAMAGE:
-                                return random(5, 25);
+                                return random(3, 5);
                             case ICE_DAMAGE:
-                                return random(5, 26);
+                                return random(3, 5);
                             case POISON_DAMAGE:
-                                return random(5, 26);
+                                return random(3, 5);
                             case LIFE_STEAL:
                                 return random(1, 2);
                             case PURE_DAMAGE:
                                 return random(5, 26);
                             case VITALITY:
-                                return random(7, 10);
+                                return random(1, 15);
                             case VS_MONSTERS:
                                 return random(1, 7);
                             case VS_PLAYER:
                                 return random(1, 7);
                             case STRENGTH:
-                                return random(4, 10);
+                                return random(1, 15);
                             case INTELLECT:
-                                return random(4, 10);
+                                return random(1, 15);
                         }
                 }
                 break;
@@ -215,27 +215,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(20, 35);
                             case DEXTERITY:
-                                return random(7, 10);
+                                return random(1, 35);
                             case FIRE_DAMAGE:
-                                return random(7, 14);
+                                return random(5, 7);
                             case ICE_DAMAGE:
-                                return random(7, 10);
+                                return random(5, 7);
                             case POISON_DAMAGE:
-                                return random(7, 10);
+                                return random(5, 7);
                             case LIFE_STEAL:
                                 return random(2, 3);
                             case PURE_DAMAGE:
                                 return random(3, 7);
                             case VITALITY:
-                                return random(7, 10);
+                                return random(1, 35);
                             case VS_MONSTERS:
                                 return random(6, 11);
                             case VS_PLAYER:
                                 return random(6, 11);
                             case STRENGTH:
-                                return random(7, 10);
+                                return random(1, 35);
                             case INTELLECT:
-                                return random(7, 10);
+                                return random(1, 35);
                         }
                     case UNCOMMON:
                         switch (type) {
@@ -248,27 +248,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(20, 35);
                             case DEXTERITY:
-                                return random(10, 12);
+                                return random(1, 35);
                             case FIRE_DAMAGE:
-                                return random(9, 19);
+                                return random(6, 7);
                             case ICE_DAMAGE:
-                                return random(9, 19);
+                                return random(6, 7);
                             case POISON_DAMAGE:
-                                return random(9, 19);
+                                return random(6, 7);
                             case LIFE_STEAL:
                                 return random(2, 3);
                             case PURE_DAMAGE:
                                 return random(5, 7);
                             case VITALITY:
-                                return random(9, 16);
+                                return random(1, 35);
                             case VS_MONSTERS:
                                 return random(6, 11);
                             case VS_PLAYER:
                                 return random(6, 11);
                             case STRENGTH:
-                                return random(7, 10);
+                                return random(1, 35);
                             case INTELLECT:
-                                return random(7, 10);
+                                return random(1, 35);
                         }
                     case RARE:
                         switch (type) {
@@ -281,27 +281,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(25, 45);
                             case DEXTERITY:
-                                return random(10, 16);
+                                return random(1, 35);
                             case FIRE_DAMAGE:
-                                return random(11, 19);
+                                return random(6, 8);
                             case ICE_DAMAGE:
-                                return random(11, 19);
+                                return random(6, 8);
                             case POISON_DAMAGE:
-                                return random(11, 19);
+                                return random(6, 8);
                             case LIFE_STEAL:
                                 return random(2, 3);
                             case PURE_DAMAGE:
                                 return random(5, 9);
                             case VITALITY:
-                                return random(10, 16);
+                                return random(1, 35);
                             case VS_MONSTERS:
                                 return random(6, 11);
                             case VS_PLAYER:
                                 return random(6, 11);
                             case STRENGTH:
-                                return random(7, 13);
+                                return random(1, 35);
                             case INTELLECT:
-                                return random(7, 13);
+                                return random(1, 35);
                         }
                     case UNIQUE:
                         switch (type) {
@@ -314,27 +314,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(100, 120);
                             case DEXTERITY:
-                                return random(14, 22);
+                                return random(1, 35);
                             case FIRE_DAMAGE:
-                                return random(14, 19);
+                                return random(6, 9);
                             case ICE_DAMAGE:
-                                return random(14, 19);
+                                return random(6, 9);
                             case POISON_DAMAGE:
-                                return random(14, 19);
+                                return random(6, 9);
                             case LIFE_STEAL:
                                 return random(2, 3);
                             case PURE_DAMAGE:
                                 return random(6, 10);
                             case VITALITY:
-                                return random(18, 22);
+                                return random(1, 35);
                             case VS_MONSTERS:
                                 return random(6, 11);
                             case VS_PLAYER:
                                 return random(6, 11);
                             case STRENGTH:
-                                return random(9, 13);
+                                return random(1, 35);
                             case INTELLECT:
-                                return random(9, 13);
+                                return random(1, 35);
                         }
                     case LEGENDARY:
                         switch (type) {
@@ -347,27 +347,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(120, 150);
                             case DEXTERITY:
-                                return random(13, 20);
+                                return random(1, 35);
                             case FIRE_DAMAGE:
-                                return random(14, 24);
+                                return random(6, 9);
                             case ICE_DAMAGE:
-                                return random(14, 24);
+                                return random(6, 9);
                             case POISON_DAMAGE:
-                                return random(14, 24);
+                                return random(6, 9);
                             case LIFE_STEAL:
                                 return random(2, 3);
                             case PURE_DAMAGE:
                                 return random(6, 13);
                             case VITALITY:
-                                return random(18, 25);
+                                return random(1, 35);
                             case VS_MONSTERS:
                                 return random(6, 11);
                             case VS_PLAYER:
                                 return random(6, 11);
                             case STRENGTH:
-                                return random(10, 13);
+                                return random(1, 35);
                             case INTELLECT:
-                                return random(10, 13);
+                                return random(1, 35);
                         }
                 }
                 break;
@@ -384,27 +384,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(100, 120);
                             case DEXTERITY:
-                                return random(12, 20);
+                                return random(1, 75);
                             case FIRE_DAMAGE:
-                                return random(17, 21);
+                                return random(10, 13);
                             case ICE_DAMAGE:
-                                return random(17, 21);
+                                return random(10, 13);
                             case POISON_DAMAGE:
-                                return random(17, 21);
+                                return random(10, 13);
                             case LIFE_STEAL:
                                 return random(3, 5);
                             case PURE_DAMAGE:
                                 return random(8, 15);
                             case VITALITY:
-                                return random(18, 27);
+                                return random(1, 75);
                             case VS_MONSTERS:
                                 return random(8, 14);
                             case VS_PLAYER:
                                 return random(8, 14);
                             case STRENGTH:
-                                return random(14, 18);
+                                return random(1, 75);
                             case INTELLECT:
-                                return random(14, 18);
+                                return random(1, 75);
                         }
                     case UNCOMMON:
                         switch (type) {
@@ -417,27 +417,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(100, 130);
                             case DEXTERITY:
-                                return random(10, 20);
+                                return random(1, 75);
                             case FIRE_DAMAGE:
-                                return random(24, 31);
+                                return random(10, 14);
                             case ICE_DAMAGE:
-                                return random(24, 31);
+                                return random(10, 14);
                             case POISON_DAMAGE:
-                                return random(24, 31);
+                                return random(10, 14);
                             case LIFE_STEAL:
                                 return random(3, 5);
                             case PURE_DAMAGE:
                                 return random(13, 18);
                             case VITALITY:
-                                return random(20, 30);
+                                return random(1, 75);
                             case VS_MONSTERS:
                                 return random(8, 14);
                             case VS_PLAYER:
                                 return random(8, 14);
                             case STRENGTH:
-                                return random(15, 19);
+                                return random(1, 75);
                             case INTELLECT:
-                                return random(15, 19);
+                                return random(1, 75);
                         }
                     case RARE:
                         switch (type) {
@@ -450,27 +450,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(120, 150);
                             case DEXTERITY:
-                                return random(10, 25);
+                                return random(1, 75);
                             case FIRE_DAMAGE:
-                                return random(26, 31);
+                                return random(10, 15);
                             case ICE_DAMAGE:
-                                return random(26, 31);
+                                return random(10, 15);
                             case POISON_DAMAGE:
-                                return random(26, 31);
+                                return random(10, 15);
                             case LIFE_STEAL:
                                 return random(3, 5);
                             case PURE_DAMAGE:
                                 return random(15, 18);
                             case VITALITY:
-                                return random(20, 30);
+                                return random(1, 75);
                             case VS_MONSTERS:
                                 return random(8, 14);
                             case VS_PLAYER:
                                 return random(8, 14);
                             case STRENGTH:
-                                return random(15, 20);
+                                return random(1, 75);
                             case INTELLECT:
-                                return random(15, 20);
+                                return random(1, 75);
                         }
                     case UNIQUE:
                         switch (type) {
@@ -483,27 +483,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(170, 190);
                             case DEXTERITY:
-                                return random(10, 25);
+                                return random(1, 75);
                             case FIRE_DAMAGE:
-                                return random(26, 31);
+                                return random(10, 16);
                             case ICE_DAMAGE:
-                                return random(26, 31);
+                                return random(10, 16);
                             case POISON_DAMAGE:
-                                return random(26, 31);
+                                return random(10, 16);
                             case LIFE_STEAL:
                                 return random(3, 5);
                             case PURE_DAMAGE:
                                 return random(15, 18);
                             case VITALITY:
-                                return random(20, 30);
+                                return random(1, 75);
                             case VS_MONSTERS:
                                 return random(8, 14);
                             case VS_PLAYER:
                                 return random(8, 14);
                             case STRENGTH:
-                                return random(15, 23);
+                                return random(1, 75);
                             case INTELLECT:
-                                return random(15, 23);
+                                return random(1, 75);
                         }
                     case LEGENDARY:
                         switch (type) {
@@ -516,27 +516,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(195, 205);
                             case DEXTERITY:
-                                return random(15, 25);
+                                return random(1, 75);
                             case FIRE_DAMAGE:
-                                return random(26, 34);
+                                return random(10, 17);
                             case ICE_DAMAGE:
-                                return random(26, 34);
+                                return random(10, 17);
                             case POISON_DAMAGE:
-                                return random(26, 34);
+                                return random(10, 17);
                             case LIFE_STEAL:
                                 return random(3, 5);
                             case PURE_DAMAGE:
                                 return random(15, 22);
                             case VITALITY:
-                                return random(22, 30);
+                                return random(1, 75);
                             case VS_MONSTERS:
                                 return random(8, 14);
                             case VS_PLAYER:
                                 return random(8, 14);
                             case STRENGTH:
-                                return random(15, 25);
+                                return random(1, 75);
                             case INTELLECT:
-                                return random(15, 25);
+                                return random(1, 75);
                         }
                 }
                 break;
@@ -553,27 +553,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(170, 190);
                             case DEXTERITY:
-                                return random(24, 30);
+                                return random(1, 155);
                             case FIRE_DAMAGE:
-                                return random(28, 34);
+                                return random(19, 24);
                             case ICE_DAMAGE:
-                                return random(28, 34);
+                                return random(19, 24);
                             case POISON_DAMAGE:
-                                return random(28, 34);
+                                return random(19, 24);
                             case LIFE_STEAL:
                                 return random(5, 7);
                             case PURE_DAMAGE:
                                 return random(17, 24);
                             case VITALITY:
-                                return random(24, 30);
+                                return random(1, 155);
                             case VS_MONSTERS:
                                 return random(11, 17);
                             case VS_PLAYER:
                                 return random(11, 17);
                             case STRENGTH:
-                                return random(17, 25);
+                                return random(1, 155);
                             case INTELLECT:
-                                return random(17, 25);
+                                return random(1, 155);
                         }
                     case UNCOMMON:
                         switch (type) {
@@ -586,27 +586,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(195, 205);
                             case DEXTERITY:
-                                return random(26, 30);
+                                return random(1, 155);
                             case FIRE_DAMAGE:
-                                return random(30, 34);
+                                return random(20, 25);
                             case ICE_DAMAGE:
-                                return random(30, 34);
+                                return random(20, 25);
                             case POISON_DAMAGE:
-                                return random(30, 34);
+                                return random(20, 25);
                             case LIFE_STEAL:
                                 return random(5, 7);
                             case PURE_DAMAGE:
                                 return random(17, 25);
                             case VITALITY:
-                                return random(26, 30);
+                                return random(1, 155);
                             case VS_MONSTERS:
                                 return random(11, 17);
                             case VS_PLAYER:
                                 return random(11, 17);
                             case STRENGTH:
-                                return random(19, 25);
+                                return random(1, 155);
                             case INTELLECT:
-                                return random(19, 25);
+                                return random(1, 155);
                         }
                     case RARE:
                         switch (type) {
@@ -619,27 +619,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(205, 225);
                             case DEXTERITY:
-                                return random(26, 33);
+                                return random(1, 155);
                             case FIRE_DAMAGE:
-                                return random(31, 34);
+                                return random(21, 26);
                             case ICE_DAMAGE:
-                                return random(31, 34);
+                                return random(21, 26);
                             case POISON_DAMAGE:
-                                return random(31, 34);
+                                return random(21, 26);
                             case LIFE_STEAL:
                                 return random(5, 7);
                             case PURE_DAMAGE:
                                 return random(18, 25);
                             case VITALITY:
-                                return random(26, 33);
+                                return random(1, 155);
                             case VS_MONSTERS:
                                 return random(11, 17);
                             case VS_PLAYER:
                                 return random(11, 17);
                             case STRENGTH:
-                                return random(21, 25);
+                                return random(1, 155);
                             case INTELLECT:
-                                return random(21, 25);
+                                return random(1, 155);
                         }
                     case UNIQUE:
                         switch (type) {
@@ -652,27 +652,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(250, 270);
                             case DEXTERITY:
-                                return random(27, 33);
+                                return random(1, 155);
                             case FIRE_DAMAGE:
-                                return random(32, 37);
+                                return random(22, 27);
                             case ICE_DAMAGE:
-                                return random(31, 37);
+                                return random(21, 27);
                             case POISON_DAMAGE:
-                                return random(31, 37);
+                                return random(21, 27);
                             case LIFE_STEAL:
                                 return random(5, 7);
                             case PURE_DAMAGE:
                                 return random(20, 25);
                             case VITALITY:
-                                return random(27, 33);
+                                return random(1, 155);
                             case VS_MONSTERS:
                                 return random(11, 17);
                             case VS_PLAYER:
                                 return random(11, 17);
                             case STRENGTH:
-                                return random(24, 27);
+                                return random(1, 155);
                             case INTELLECT:
-                                return random(24, 27);
+                                return random(1, 155);
                         }
                     case LEGENDARY:
                         switch (type) {
@@ -685,27 +685,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(270, 275);
                             case DEXTERITY:
-                                return random(27, 34);
+                                return random(1, 155);
                             case FIRE_DAMAGE:
-                                return random(32, 38);
+                                return random(21, 28);
                             case ICE_DAMAGE:
-                                return random(31, 38);
+                                return random(21, 28);
                             case POISON_DAMAGE:
-                                return random(31, 38);
+                                return random(21, 28);
                             case LIFE_STEAL:
                                 return random(5, 7);
                             case PURE_DAMAGE:
                                 return random(20, 25);
                             case VITALITY:
-                                return random(27, 34);
+                                return random(1, 155);
                             case VS_MONSTERS:
                                 return random(11, 17);
                             case VS_PLAYER:
                                 return random(11, 17);
                             case STRENGTH:
-                                return random(24, 28);
+                                return random(1, 155);
                             case INTELLECT:
-                                return random(24, 28);
+                                return random(1, 155);
                         }
                 }
                 break;
@@ -722,27 +722,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(270, 290);
                             case DEXTERITY:
-                                return random(27, 35);
+                                return random(1, 315);
                             case FIRE_DAMAGE:
-                                return random(32, 39);
+                                return random(36, 38);
                             case ICE_DAMAGE:
-                                return random(31, 39);
+                                return random(36, 48);
                             case POISON_DAMAGE:
-                                return random(31, 39);
+                                return random(36, 48);
                             case LIFE_STEAL:
                                 return random(7, 10);
                             case PURE_DAMAGE:
                                 return random(20, 28);
                             case VITALITY:
-                                return random(27, 35);
+                                return random(1, 315);
                             case VS_MONSTERS:
                                 return random(14, 20);
                             case VS_PLAYER:
                                 return random(14, 20);
                             case STRENGTH:
-                                return random(25, 28);
+                                return random(1, 315);
                             case INTELLECT:
-                                return random(25, 28);
+                                return random(1, 315);
                         }
                     case UNCOMMON:
                         switch (type) {
@@ -755,27 +755,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(270, 290);
                             case DEXTERITY:
-                                return random(27, 36);
+                                return random(1, 315);
                             case FIRE_DAMAGE:
-                                return random(33, 39);
+                                return random(38, 49);
                             case ICE_DAMAGE:
-                                return random(32, 39);
+                                return random(38, 49);
                             case POISON_DAMAGE:
-                                return random(32, 39);
+                                return random(38, 49);
                             case LIFE_STEAL:
                                 return random(7, 10);
                             case PURE_DAMAGE:
                                 return random(24, 28);
                             case VITALITY:
-                                return random(27, 36);
+                                return random(1, 315);
                             case VS_MONSTERS:
                                 return random(14, 20);
                             case VS_PLAYER:
                                 return random(14, 20);
                             case STRENGTH:
-                                return random(25, 30);
+                                return random(1, 315);
                             case INTELLECT:
-                                return random(25, 30);
+                                return random(1, 315);
                         }
                     case RARE:
                         switch (type) {
@@ -788,27 +788,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(290, 315);
                             case DEXTERITY:
-                                return random(29, 39);
+                                return random(1, 315);
                             case FIRE_DAMAGE:
-                                return random(35, 41);
+                                return random(40, 51);
                             case ICE_DAMAGE:
-                                return random(35, 41);
+                                return random(40, 51);
                             case POISON_DAMAGE:
-                                return random(35, 41);
+                                return random(40, 51);
                             case LIFE_STEAL:
                                 return random(7, 10);
                             case PURE_DAMAGE:
                                 return random(25, 34);
                             case VITALITY:
-                                return random(29, 39);
+                                return random(1, 315);
                             case VS_MONSTERS:
                                 return random(14, 20);
                             case VS_PLAYER:
                                 return random(14, 20);
                             case STRENGTH:
-                                return random(25, 31);
+                                return random(1, 315);
                             case INTELLECT:
-                                return random(25, 31);
+                                return random(1, 315);
                         }
                     case UNIQUE:
                         switch (type) {
@@ -821,27 +821,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(315, 325);
                             case DEXTERITY:
-                                return random(27, 40);
+                                return random(1, 315);
                             case FIRE_DAMAGE:
-                                return random(33, 45);
+                                return random(43, 55);
                             case ICE_DAMAGE:
-                                return random(33, 45);
+                                return random(43, 55);
                             case POISON_DAMAGE:
-                                return random(33, 45);
+                                return random(43, 55);
                             case LIFE_STEAL:
                                 return random(8, 10);
                             case PURE_DAMAGE:
                                 return random(23, 31);
                             case VITALITY:
-                                return random(27, 40);
+                                return random(1, 315);
                             case VS_MONSTERS:
                                 return random(14, 20);
                             case VS_PLAYER:
                                 return random(14, 20);
                             case STRENGTH:
-                                return random(25, 31);
+                                return random(1, 315);
                             case INTELLECT:
-                                return random(25, 31);
+                                return random(1, 315);
                         }
                     case LEGENDARY:
                         switch (type) {
@@ -854,27 +854,27 @@ public class DamageMeta {
                             case DAMAGE:
                                 return random(325, 350);
                             case DEXTERITY:
-                                return random(30, 40);
+                                return random(1, 315);
                             case FIRE_DAMAGE:
-                                return random(36, 45);
+                                return random(46, 55);
                             case ICE_DAMAGE:
-                                return random(36, 45);
+                                return random(46, 55);
                             case POISON_DAMAGE:
-                                return random(36, 45);
+                                return random(46, 55);
                             case LIFE_STEAL:
                                 return random(8, 10);
                             case PURE_DAMAGE:
                                 return random(25, 32);
                             case VITALITY:
-                                return random(30, 40);
+                                return random(1, 315);
                             case VS_MONSTERS:
                                 return random(14, 20);
                             case VS_PLAYER:
                                 return random(14, 20);
                             case STRENGTH:
-                                return random(27, 31);
+                                return random(1, 315);
                             case INTELLECT:
-                                return random(27, 31);
+                                return random(1, 315);
                         }
                 }
                 break;

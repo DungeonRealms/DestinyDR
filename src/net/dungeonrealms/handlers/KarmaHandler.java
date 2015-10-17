@@ -233,6 +233,11 @@ public class KarmaHandler {
                 if (!(attackingArrow.getShooter() instanceof LivingEntity)) break;
                 leKiller = (LivingEntity) attackingArrow.getShooter();
                 break;
+            case SNOWBALL:
+                Snowball snowball = (Snowball) killer;
+                if (!(snowball.getShooter() instanceof LivingEntity)) break;
+                leKiller = (LivingEntity) snowball.getShooter();
+                break;
             case WITHER_SKULL:
                 WitherSkull witherSkull = (WitherSkull) killer;
                 if (!(witherSkull.getShooter() instanceof LivingEntity)) break;
