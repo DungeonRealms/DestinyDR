@@ -51,7 +51,7 @@ public class MainListener implements Listener {
     /**
      * This event is used for the Database.
      *
-     * @param event
+     * @param event the event.
      * @since 1.0
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)

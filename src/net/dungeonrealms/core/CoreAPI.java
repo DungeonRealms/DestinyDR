@@ -54,7 +54,6 @@ public class CoreAPI {
             }
         });
     }
-
     /**
      * Checks if a player has a ban.
      *
@@ -83,6 +82,10 @@ public class CoreAPI {
         }
     }
 
+    /**
+     * BanReason
+     * @since 1.0
+     */
     public enum BanReason {
         OTHER(-1, "Other"),
         DUPLICATIONS(1, "Duplications"),
