@@ -160,6 +160,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("collectibles")).get("pets", ArrayList.class);
             case PARTICLES:
                 return ((Document) PLAYERS.get(uuid).get("collectibles")).get("particles", ArrayList.class);
+            case MOB_PARTICLES:
+                return ((Document) PLAYERS.get(uuid).get("collectibles")).get("mob_particles", ArrayList.class);
             default:
         }
         return null;
@@ -312,6 +314,7 @@ public class DatabaseAPI {
                                         .append("mounts", new ArrayList<String>())
                                         .append("pets", new ArrayList<String>())
                                         .append("particles", new ArrayList<String>()))
+                                        .append("mob_particles", new ArrayList<String>())
                         .append("notices",
                                 new Document("guildInvites", new ArrayList<String>())
                                         .append("friendRequest", new ArrayList<String>())

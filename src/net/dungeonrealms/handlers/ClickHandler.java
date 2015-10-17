@@ -122,20 +122,46 @@ public class ClickHandler {
         /*
         Particle Trails Below
          */
-        if (name.equalsIgnoreCase("Particle Trail Selection")) {
+        if (name.equalsIgnoreCase("Player Trail Selection")) {
             event.setCancelled(true);
             if (event.getCurrentItem().getType() == Material.BARRIER) {
                 player.closeInventory();
                 return;
             }
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-            if (nmsStack.getTag() == null || nmsStack.getTag().getString("trailType") == null) {
-                player.sendMessage("Uh oh... Something went wrong with your trail! Please inform a staff member! [NBTTag]");
+            if (nmsStack.getTag() == null || nmsStack.getTag().getString("playerTrailType") == null) {
+                player.sendMessage("Uh oh... Something went wrong with your Player trail! Please inform a staff member! [NBTTag]");
                 player.closeInventory();
                 return;
             }
-            DonationEffects.PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("trailType")));
-            player.sendMessage("You have enabled the " + nmsStack.getTag().getString("trailType") + " particle trail!");
+            DonationEffects.PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")));
+            player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + " You have enabled the " + nmsStack.getTag().getString("playerTrailType") + " Player trail!");
+        }
+
+                /*
+        Particle Trails Below
+         */
+        if (name.equalsIgnoreCase("Mob Trail Selection")) {
+            event.setCancelled(true);
+            if (event.getCurrentItem().getType() == Material.BARRIER) {
+                player.closeInventory();
+                return;
+            }
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+            if (nmsStack.getTag() == null || nmsStack.getTag().getString("mobTrailType") == null) {
+                player.sendMessage("Uh oh... Something went wrong with your Mob trail! Please inform a staff member! [NBTTag]");
+                player.closeInventory();
+                return;
+            }
+            if (EntityAPI.hasMountOut(player.getUniqueId())) {
+                Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
+                DonationEffects.ENTITY_PARTICLE_EFFECTS.put(entity, ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("mobTrailType")));
+            }
+            if (EntityAPI.hasPetOut(player.getUniqueId())) {
+                Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
+                DonationEffects.ENTITY_PARTICLE_EFFECTS.put(entity, ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("mobTrailType")));
+            }
+            player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + " You have enabled the " + nmsStack.getTag().getString("mobTrailType") + " Mob trail!");
         }
 
         /*

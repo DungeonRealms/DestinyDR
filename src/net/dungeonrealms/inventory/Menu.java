@@ -433,20 +433,47 @@ public class Menu {
 
         List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, uuid);
 
-        if (playerTrails.size() <= 0) {
-            Inventory noTrails = Bukkit.createInventory(null, 0, ChatColor.RED + "You currently have no Particle Trails!");
+        if (playerTrails == null || playerTrails.size() <= 0) {
+            Inventory noTrails = Bukkit.createInventory(null, 0, ChatColor.RED + "You currently have no Player Trails!");
             player.openInventory(noTrails);
             return;
         }
 
-        Inventory inv = Bukkit.createInventory(null, 18, "Particle Trail Selection");
+        Inventory inv = Bukkit.createInventory(null, 18, "Player Trail Selection");
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
 
         for (String trailType : playerTrails) {
             ItemStack itemStack = ParticleAPI.ParticleEffect.getByName(trailType).getSelectionItem();
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("trailType", new NBTTagString(trailType));
+            tag.set("playerTrailType", new NBTTagString(trailType));
+            nmsStack.setTag(tag);
+            inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStack), ChatColor.GREEN + trailType.toUpperCase(), new String[]{
+            }));
+        }
+
+        player.openInventory(inv);
+    }
+
+    public static void openMobParticleMenu(Player player) {
+        UUID uuid = player.getUniqueId();
+
+        List<String> mobTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOB_PARTICLES, uuid);
+
+        if (mobTrails == null || mobTrails.size() <= 0) {
+            Inventory noParticles = Bukkit.createInventory(null, 0, ChatColor.RED + "You currently have no Mob Trails!");
+            player.openInventory(noParticles);
+            return;
+        }
+
+        Inventory inv = Bukkit.createInventory(null, 18, "Mob Trail Selection");
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+
+        for (String trailType : mobTrails) {
+            ItemStack itemStack = ParticleAPI.ParticleEffect.getByName(trailType).getSelectionItem();
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+            tag.set("mobTrailType", new NBTTagString(trailType));
             nmsStack.setTag(tag);
             inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStack), ChatColor.GREEN + trailType.toUpperCase(), new String[]{
             }));
@@ -466,13 +493,12 @@ public class Menu {
     }
 
     public static ItemStack editItem(ItemStack itemStack, String name, String[] lore) {
-        ItemStack item = itemStack;
-        ItemMeta meta = item.getItemMeta();
+        ItemMeta meta = itemStack.getItemMeta();
         meta.setDisplayName(name);
         meta.setLore(Arrays.asList(lore));
-        item.setItemMeta(meta);
-        item.setAmount(1);
-        return item;
+        itemStack.setItemMeta(meta);
+        itemStack.setAmount(1);
+        return itemStack;
     }
 
 }

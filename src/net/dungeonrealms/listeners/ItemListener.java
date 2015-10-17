@@ -117,6 +117,9 @@ public class ItemListener implements Listener {
                        player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "TELEPORT " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player) + "s" + ChatColor.RED + ")");
                        break;
                    }
+                case 5:
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Menu.openMobParticleMenu(player), 5L);
+                    break;
                 case 6:
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Menu.openPlayerParticleMenu(player), 5L);
                     break;
@@ -141,7 +144,14 @@ public class ItemListener implements Listener {
                 ChatColor.GRAY + "skills!",
                 "",
                 ChatColor.YELLOW + "Click to view Player Attributes!"
-        }).setOption(6, new ItemStack(Material.EYE_OF_ENDER), ChatColor.GREEN + "Trails", new String[]{
+        }).setOption(5, new ItemStack(Material.SKULL_ITEM), ChatColor.GREEN + "Mob Trails", new String[]{
+                ChatColor.DARK_GRAY + "Mob Trails",
+                "",
+                ChatColor.GRAY + "Want your companion to look awesome?",
+                ChatColor.GRAY + "Get yourself some Mob Trails!",
+                "",
+                ChatColor.YELLOW + "Click to view Mob Trails!"
+        }).setOption(6, new ItemStack(Material.EYE_OF_ENDER), ChatColor.GREEN + "Player Trails", new String[]{
                 ChatColor.DARK_GRAY + "Player Trails",
                 "",
                 ChatColor.GRAY + "Want to be the envy of your friends?",
