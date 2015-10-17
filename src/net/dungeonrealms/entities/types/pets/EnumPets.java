@@ -4,6 +4,16 @@ package net.dungeonrealms.entities.types.pets;
  * Created by Kieran on 10/15/2015.
  */
 public enum EnumPets {
+    //Snowman - Christmas
+    //Killer Rabbit - Easter
+    //Green Baby Sheep - St.Patrick's
+    //Primed Creeper - 4th of July
+    //Cave Spider - Halloween
+    //Blue Baby Sheep - St.Andrew's
+    //Magma Cube - Guy Fawkes/Bonfire Night
+    //Pink Baby Sheep - Cancer Awareness (Maybe different for Breast/Lung etc based on the ribbons)
+    //Pig (In Love) - Valentines Day
+    //Adult Chicken - Thanksgiving
     WOLF(0, "WOLF", 95),
     ENDERMITE(1, "ENDERMITE", 67),
     SILVERFISH(2, "SILVERFISH", 60),
