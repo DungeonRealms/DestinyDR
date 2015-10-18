@@ -314,8 +314,8 @@ public class DatabaseAPI {
                                 new Document("achievements", new ArrayList<String>())
                                         .append("mounts", new ArrayList<String>())
                                         .append("pets", new ArrayList<String>())
-                                        .append("particles", new ArrayList<String>()))
-                                        .append("mob_particles", new ArrayList<String>())
+                                        .append("particles", new ArrayList<String>())
+                                        .append("mob_particles", new ArrayList<String>()))
                         .append("notices",
                                 new Document("guildInvites", new ArrayList<String>())
                                         .append("friendRequest", new ArrayList<String>())
