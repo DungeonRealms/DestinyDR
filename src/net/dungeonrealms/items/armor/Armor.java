@@ -40,11 +40,11 @@ public class Armor {
     }
 
     public enum ArmorTier {
-        TIER_1(0, 1, new Integer[]{1, 10}, 3),
-        TIER_2(1, 2, new Integer[]{10, 20}, 4),
-        TIER_3(2, 3, new Integer[]{20, 30}, 6),
-        TIER_4(3, 4, new Integer[]{30, 40}, 8),
-        TIER_5(4, 5, new Integer[]{40, 50}, 13),;
+        TIER_1(0, 1, new Integer[]{1, 10}, 2),
+        TIER_2(1, 2, new Integer[]{10, 20}, 3),
+        TIER_3(2, 3, new Integer[]{20, 30}, 4),
+        TIER_4(3, 4, new Integer[]{30, 40}, 5),
+        TIER_5(4, 5, new Integer[]{40, 50}, 6),;
 
         private int id;
         private int tierId;
@@ -90,6 +90,23 @@ public class Armor {
                 }
             }
             return null;
+        }
+
+        public ChatColor getChatColorOfTier(ArmorTier itemTier) {
+            switch (itemTier) {
+                case TIER_1:
+                    return ChatColor.WHITE;
+                case TIER_2:
+                    return ChatColor.GREEN;
+                case TIER_3:
+                    return ChatColor.AQUA;
+                case TIER_4:
+                    return ChatColor.LIGHT_PURPLE;
+                case TIER_5:
+                    return ChatColor.YELLOW;
+                default:
+                    return ChatColor.WHITE;
+            }
         }
     }
 
@@ -144,19 +161,19 @@ public class Armor {
     }
 
     public enum ArmorAttributeType {
-        ARMOR(0, "Armor", "armor"),
+        ARMOR(0, "Armor", "armor"), //Percentage
         HEALTH_POINTS(1, "Health Points", "healthPoints"),
         HEALTH_REGEN(2, "Health Regen", "healthRegen"),
-        ENERGY_REGEN(3, "Energy Regen", "energyRegen"),
+        ENERGY_REGEN(3, "Energy Regen", "energyRegen"), //Percentage
         INTELLECT(4, "Intellect", "intellect"),
         FIRE_RESISTANCE(5, "Fire Resistance", "fireResistance"),
-        BLOCK(6, "Block", "block"),
-        LUCK(7, "Luck", "luck"),
-        THORNS(8, "Thorns", "thorns"),
+        BLOCK(6, "Block", "block"), //Percentage
+        LUCK(7, "Luck", "luck"), //Percentage
+        THORNS(8, "Thorns", "thorns"), //Percentage
         STRENGTH(9, "Strength", "strength"),
         VITALITY(10, "Vitality", "vitality"),
-        DODGE(11, "Dodge", "dodge"),
-        DAMAGE(12, "Damage", "damage"),
+        DODGE(11, "Dodge", "dodge"), //Percentage
+        DAMAGE(12, "Damage", "damage"), //Percentage
         DEXTERITY(13, "Dexterity", "dexterity");
 
         private int id;

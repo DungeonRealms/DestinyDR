@@ -172,6 +172,17 @@ public class ItemGenerator {
         return attributeList;
     }
 
+
+    /**
+     * Returns if the attribute selected
+     * can be applied to the weapon
+     *
+     * @param attributeType
+     * @param attributeList
+     * @param itemType
+     * @return boolean
+     * @since 1.0
+     */
     private static boolean canAddAttribute(Item.AttributeType attributeType, Item.ItemType itemType, ArrayList<Item.AttributeType> attributeList) {
         if (attributeType == Item.AttributeType.FIRE_DAMAGE || attributeType == Item.AttributeType.ICE_DAMAGE || attributeType == Item.AttributeType.POISON_DAMAGE) {
             return !attributeList.contains(Item.AttributeType.FIRE_DAMAGE) && !attributeList.contains(Item.AttributeType.ICE_DAMAGE) && !attributeList.contains(Item.AttributeType.POISON_DAMAGE);

@@ -55,7 +55,7 @@ public class ArmorGenerator {
         ArrayList<Armor.ArmorAttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(tier.getAttributeRange()));
         ItemMeta meta = item.getItemMeta();
         List<String> list = new NameGenerator().next(type);
-        meta.setDisplayName(list.get(0) + " " + list.get(1) + " " + list.get(2));
+        meta.setDisplayName(tier.getChatColorOfTier(tier) + list.get(0) + " " + list.get(1) + " " + list.get(2));
         List<String> itemLore = new ArrayList<>();
 
         HashMap<Armor.ArmorAttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
@@ -63,7 +63,7 @@ public class ArmorGenerator {
         attributeTypes.stream().filter(aType -> aType != null).forEach(aType -> {
             int i = new DamageMeta().nextArmor(tier, modifier, aType);
             attributeTypeIntegerHashMap.put(aType, i);
-            itemLore.add(ChatColor.GREEN + "+ " + ChatColor.RED + i + " " + ChatColor.WHITE + aType.getName());
+            itemLore.add(setCorrectArmorLore(aType, i));
         });
         itemLore.add(modifier.getChatColorOfModifier(modifier).toString() + modifier.getName());
         meta.setLore(itemLore);
@@ -131,21 +131,73 @@ public class ArmorGenerator {
      * Returns a list of itemAttributes based on the param.
      *
      * @param amountOfAttributes
-     * @return
+     * @return ArrayList
      * @since 1.0
      */
     private ArrayList<Armor.ArmorAttributeType> getRandomAttributes(int amountOfAttributes) {
         ArrayList<Armor.ArmorAttributeType> attributeList = new ArrayList<>();
         //We always want to add Damage to the Item. Since AttributeModifiers are removed. Completely.
+        if (new Random().nextBoolean()) {
+            attributeList.add(Armor.ArmorAttributeType.ARMOR);
+        } else {
+            attributeList.add(Armor.ArmorAttributeType.DAMAGE);
+        }
         for (int i = 0; i < amountOfAttributes; i++) {
             int random = new Random().nextInt(Armor.ArmorAttributeType.values().length);
-            if (!attributeList.contains(Armor.ArmorAttributeType.getById(random))) {
+            if (!attributeList.contains(Armor.ArmorAttributeType.getById(random)) && canAddAttribute(Armor.ArmorAttributeType.getById(random), attributeList)) {
                 attributeList.add(Armor.ArmorAttributeType.getById(random));
             } else {
                 i--;
             }
         }
         return attributeList;
+    }
+
+    /**
+     * Returns if the attribute selected
+     * can be applied to the armor piece
+     *
+     * @param attributeType
+     * @param attributeList
+     * @return boolean
+     * @since 1.0
+     */
+    private static boolean canAddAttribute(Armor.ArmorAttributeType attributeType, ArrayList<Armor.ArmorAttributeType> attributeList) {
+        if (attributeType == Armor.ArmorAttributeType.VITALITY || attributeType == Armor.ArmorAttributeType.DEXTERITY || attributeType == Armor.ArmorAttributeType.INTELLECT || attributeType == Armor.ArmorAttributeType.STRENGTH) {
+            return !attributeList.contains(Armor.ArmorAttributeType.VITALITY) && !attributeList.contains(Armor.ArmorAttributeType.DEXTERITY) && !attributeList.contains(Armor.ArmorAttributeType.INTELLECT) && !attributeList.contains(Armor.ArmorAttributeType.STRENGTH);
+        }
+        return true;
+    }
+
+    /**
+     * Returns Max/Min lore for an armor piece
+     * based on the Attribute Type
+     * includes chat colouring
+     *
+     * @param aType
+     * @param i
+     * @return String
+     * @since 1.0
+     */
+    public static String setCorrectArmorLore(Armor.ArmorAttributeType aType, int i) {
+        switch (aType) {
+            case DAMAGE:
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+            case ENERGY_REGEN:
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+            case ARMOR:
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+            case BLOCK:
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.YELLOW + aType.getName();
+            case LUCK:
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.GREEN + aType.getName();
+            case THORNS:
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.GRAY + aType.getName();
+            case DODGE:
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.BLUE + aType.getName();
+            default:
+                return ChatColor.GREEN + "+ " + ChatColor.RED + i + " " + ChatColor.WHITE + aType.getName();
+        }
     }
 
     /**

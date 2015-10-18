@@ -62,15 +62,6 @@ public class DamageAPI {
                 nmsTags[3] = CraftItemStack.asNMSCopy(attackerArmor[0]).getTag();
             }
         }
-        for (NBTTagCompound nmsTag : nmsTags) {
-            if (nmsTag == null) {
-                damage += 0;
-            } else {
-                if (nmsTag.getDouble("damage") != 0) {
-                    damage += nmsTag.getDouble("damage");
-                }
-            }
-        }
         int weaponTier = tag.getInt("itemTier");
         int damageRandomizer = ItemGenerator.getRandomDamageVariable(weaponTier);
         damage = (double) Utils.randInt((int) Math.round(tag.getDouble("damage") - (tag.getDouble("damage") / damageRandomizer)), (int) Math.round(tag.getDouble("damage") + (tag.getDouble("damage") / (damageRandomizer - 1))));
@@ -228,6 +219,15 @@ public class DamageAPI {
                 case 2:
                     damage *= 1.5;
                     break;
+            }
+        }
+        for (NBTTagCompound nmsTag : nmsTags) {
+            if (nmsTag == null) {
+                damage += 0;
+            } else {
+                if (nmsTag.getDouble("damage") != 0) {
+                    damage += (damage * (nmsTag.getDouble("damage") / 100));
+                }
             }
         }
         if (isHitCrit) {
@@ -492,7 +492,6 @@ public class DamageAPI {
             if (nmsTags[i] == null) {
                 damageToBlock[i] += 0;
             } else {
-                damageToBlock[i] = nmsTags[i].getInt("armor");
                 if (attacker.getType() != EntityType.ARROW) {
                     if (nmsTags[i].getInt("block") != 0) {
                         int blockChance = nmsTags[0].getInt("block");
@@ -568,6 +567,32 @@ public class DamageAPI {
                 if (nmsTags[i].getInt("strength") != 0) {
                     damageToBlock[i] += (nmsTags[i].getInt("strength") * 0.023D) / 100D;
                 }
+                if (nmsTags[i].getInt("thorns") != 0) {
+                    int damageFromThorns = 0;
+                    switch (nmsTags[i].getInt("armorTier")) {
+                        case 1:
+                            damageFromThorns += 2 + nmsTags[i].getInt("thorns");
+                            break;
+                        case 2:
+                            damageFromThorns += 10 + nmsTags[i].getInt("thorns");
+                            break;
+                        case 3:
+                            damageFromThorns += 25 + nmsTags[i].getInt("thorns");
+                            break;
+                        case 4:
+                            damageFromThorns += 30 + nmsTags[i].getInt("thorns");
+                            break;
+                        case 5:
+                            damageFromThorns += 60 + nmsTags[i].getInt("thorns");
+                            break;
+                    }
+                    if (attacker instanceof Player) {
+                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, damageFromThorns);
+                    }
+                    if (attacker instanceof Monster) {
+                        HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) attacker, damageFromThorns);
+                    }
+                }
                 if (nmsTags[i].getInt("fireResistance") != 0) {
                     if (leDefender.getFireTicks() > 0) {
                         try {
@@ -580,6 +605,7 @@ public class DamageAPI {
                         damageToBlock[i] += nmsTags[i].getInt("fireResistance");
                     }
                 }
+                damageToBlock[i] += (damageToBlock[i] * (nmsTags[i].getInt("armor") / 100));
             }
         }
         if (damageToBlock[0] == -1 || damageToBlock[1] == -1 || damageToBlock[2] == -1 || damageToBlock[3] == -1) {

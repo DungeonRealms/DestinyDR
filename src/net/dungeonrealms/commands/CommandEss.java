@@ -24,7 +24,7 @@ public class CommandEss implements CommandExecutor {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
         if (!commandSender.isOp() && !(commandSender instanceof ConsoleCommandSender)) {
-            commandSender.sendMessage("You are not OP/Console!");
+            commandSender.sendMessage(ChatColor.RED + "You are not OP/Console!");
             return false;
         }
         if (args.length > 0) {
@@ -33,123 +33,123 @@ public class CommandEss implements CommandExecutor {
                     if (args.length == 3) {
                         Player player = Bukkit.getPlayer(args[1]);
                         if (player == null) {
-                            commandSender.sendMessage("This player is not online!");
+                            commandSender.sendMessage(ChatColor.RED + "This player is not online!");
                             return false;
                         }
                         String locationName = args[2];
                         if (TeleportAPI.getLocationFromString(locationName) == null) {
-                            commandSender.sendMessage("This location is not correct!");
+                            commandSender.sendMessage(ChatColor.RED + "This location is not correct!");
                             return false;
                         }
                         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.hearthstone", locationName, true);
-                        player.sendMessage("Your HearthStone location has been set to " + locationName.toUpperCase() + "!");
+                        player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Your HearthStone location has been set to " + ChatColor.AQUA + locationName.toUpperCase() + ChatColor.YELLOW + "!");
                         break;
                     } else {
-                        commandSender.sendMessage("Wrong arguments. (E.g. /Essentials hearthstone Proxying Cyrennica)");
+                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials hearthstone Proxying Cyrennica)");
                         return false;
                     }
                 case "pet":
                     if (args.length == 3) {
                         Player player = Bukkit.getPlayer(args[1]);
                         if (player == null) {
-                            commandSender.sendMessage("This player is not online!");
+                            commandSender.sendMessage(ChatColor.RED + "This player is not online!");
                             return false;
                         }
                         String petType = args[2];
                         if (!API.isStringPet(petType)) {
-                            commandSender.sendMessage("This pet is not a real pet!");
+                            commandSender.sendMessage(ChatColor.RED + "This pet is not a real pet!");
                             return false;
                         }
                         List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, player.getUniqueId());
                         if (!playerPets.isEmpty()) {
                             if (playerPets.contains(petType.toUpperCase())) {
-                                commandSender.sendMessage("The player already has this pet!");
+                                commandSender.sendMessage(ChatColor.RED + "The player already has this pet!");
                                 return false;
                             }
                         }
                         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.pets", petType.toUpperCase(), true);
-                        player.sendMessage("You have received the " + petType + " pet!");
+                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + petType.toUpperCase() + " pet!");
                         break;
                     } else {
-                        commandSender.sendMessage("Wrong arguments. (E.g. /Essentials pet Proxying snowman)");
+                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials pet Proxying snowman)");
                         return false;
                     }
                 case "mount":
                     if (args.length == 3) {
                         Player player = Bukkit.getPlayer(args[1]);
                         if (player == null) {
-                            commandSender.sendMessage("This player is not online!");
+                            commandSender.sendMessage(ChatColor.RED + "This player is not online!");
                             return false;
                         }
                         String mountType = args[2];
                         if (!API.isStringMount(mountType)) {
-                            commandSender.sendMessage("This mount is not a real mount!");
+                            commandSender.sendMessage(ChatColor.RED + "This mount is not a real mount!");
                             return false;
                         }
                         List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
                         if (!playerMounts.isEmpty()) {
                             if (playerMounts.contains(mountType.toUpperCase())) {
-                                commandSender.sendMessage("The player already has this mount!");
+                                commandSender.sendMessage(ChatColor.RED + "The player already has this mount!");
                                 return false;
                             }
                         }
                         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.mounts", mountType.toUpperCase(), true);
-                        player.sendMessage("You have received the " + mountType + " mount!");
+                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + mountType.toUpperCase() + " mount!");
                         break;
                     } else {
-                        commandSender.sendMessage("Wrong arguments. (E.g. /Essentials mount Proxying skeletonhorse)");
+                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials mount Proxying skeletonhorse)");
                         return false;
                     }
                 case "playertrail":
                     if (args.length == 3) {
                         Player player = Bukkit.getPlayer(args[1]);
                         if (player == null) {
-                            commandSender.sendMessage("This player is not online!");
+                            commandSender.sendMessage(ChatColor.RED + "This player is not online!");
                             return false;
                         }
                         String trailType = args[2];
                         if (!API.isStringTrail(trailType)) {
-                            commandSender.sendMessage("This is not a real trail!");
+                            commandSender.sendMessage(ChatColor.RED + "This is not a real trail!");
                             return false;
                         }
                         List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, player.getUniqueId());
                         if (!playerTrails.isEmpty()) {
                             if (playerTrails.contains(trailType.toUpperCase())) {
-                                commandSender.sendMessage("The player already has this trail!");
+                                commandSender.sendMessage(ChatColor.RED + "The player already has this trail!");
                                 return false;
                             }
                         }
                         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.particles", trailType.toUpperCase(), true);
-                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + " You have received the " + trailType + " Player particle trail!");
+                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + trailType.toUpperCase() + " player trail!");
                         break;
                     } else {
-                        commandSender.sendMessage("Wrong arguments. (E.g. /Essentials playertrail Proxying flame)");
+                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials playertrail Proxying flame)");
                         return false;
                     }
                 case "mobtrail":
                     if (args.length == 3) {
                         Player player = Bukkit.getPlayer(args[1]);
                         if (player == null) {
-                            commandSender.sendMessage("This player is not online!");
+                            commandSender.sendMessage(ChatColor.RED + "This player is not online!");
                             return false;
                         }
                         String trailType = args[2];
                         if (!API.isStringTrail(trailType)) {
-                            commandSender.sendMessage("This is not a real trail!");
+                            commandSender.sendMessage(ChatColor.RED + "This is not a real trail!");
                             return false;
                         }
                         List<String> mobTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOB_PARTICLES, player.getUniqueId());
                         if (!mobTrails.isEmpty()) {
                             if (mobTrails.contains(trailType.toUpperCase())) {
-                                commandSender.sendMessage("The player already has this trail!");
+                                commandSender.sendMessage(ChatColor.RED + "The player already has this trail!");
                                 return false;
                             }
                         }
                         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.mob_particles", trailType.toUpperCase(), true);
-                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + " You have received the " + trailType + " Mob particle trail!");
+                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + trailType.toUpperCase() + " mob trail!");
                         break;
                     } else {
-                        commandSender.sendMessage("Wrong arguments. (E.g. /Essentials mobtrail Proxying flame)");
+                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials mobtrail Proxying flame)");
                         return false;
                     }
                 case "ecash":
@@ -157,29 +157,29 @@ public class CommandEss implements CommandExecutor {
                         int amount = Math.abs(Integer.parseInt(args[3]));
                         Player player = Bukkit.getPlayer(args[2]);
                         if (player == null) {
-                            commandSender.sendMessage("This player is not online!");
+                            commandSender.sendMessage(ChatColor.RED + "This player is not online!");
                             return false;
                         }
                         int previousAmount = (int) DatabaseAPI.getInstance().getData(EnumData.ECASH, player.getUniqueId());
                         switch (args[1]) {
                             case "add":
                                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, "info.ecash", amount, true);
-                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + " You have received " + amount + " E-Cash! Your new balance is " + (previousAmount + amount) + "!");
+                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received " + ChatColor.YELLOW + amount + " E-Cash! Your new balance is " + ChatColor.YELLOW + (previousAmount + amount) + ChatColor.AQUA + "!");
                                 break;
                             case "take":
                                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, "info.ecash", (amount * -1), true);
-                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + amount + " E-Cash has been taken from you! Your new balance is " + (previousAmount - amount) + "!");
+                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.YELLOW + amount + ChatColor.AQUA + " E-Cash has been taken from you! Your new balance is " + ChatColor.YELLOW + (previousAmount - amount) + ChatColor.AQUA + "!");
                                 break;
                             case "set":
                                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.ecash", amount, true);
-                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + " Your E-Cash balance has been set to " + amount + "!");
+                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " Your E-Cash balance has been set to " + ChatColor.YELLOW + amount + ChatColor.AQUA + "!");
                                 break;
                             default:
-                                commandSender.sendMessage("Wrong arguments. (E.g. /Essentials ecash add Proxying 100)");
+                                commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials ecash add Proxying 100)");
                                 break;
                         }
                     } else {
-                        commandSender.sendMessage("Wrong arguments. (E.g. /Essentials ecash add Proxying 100)");
+                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials ecash add Proxying 100)");
                         return false;
                     }
                 default:

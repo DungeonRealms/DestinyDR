@@ -3,20 +3,19 @@
  */
 package net.dungeonrealms.commands;
 
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumOperators;
-import net.dungeonrealms.spawning.MobSpawner;
-import net.dungeonrealms.spawning.SpawningMechanics;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
+
+import static net.dungeonrealms.spawning.SpawningMechanics.SPANWER_CONFIG;
+import static net.dungeonrealms.spawning.SpawningMechanics.getSpawners;
 
 /**
  * Created by Chase on Sep 22, 2015
@@ -55,8 +54,8 @@ public class CommandSet implements CommandExecutor {
 				int tier = Integer.parseInt(args[2]);
 				String text = (player.getLocation().getX() + "," + player.getLocation().getY() + ","
 				        + player.getLocation().getZ() + "=" + args[1] + ":" + tier);
-				SpawningMechanics.SPANWER_CONFIG.add(text);
-				DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPANWER_CONFIG);
+				SPANWER_CONFIG.add(text);
+				DungeonRealms.getInstance().getConfig().set("spawners", SPANWER_CONFIG);
 				break;
 			case "loot":
 				if (args.length == 2) {
@@ -70,12 +69,8 @@ public class CommandSet implements CommandExecutor {
 				}
 				break;
 			case "kill":
-				for(Entity ent : player.getWorld().getLivingEntities()){
-					ent.remove();
-				}
-				for(MobSpawner spawner : SpawningMechanics.getSpawners()){
-					spawner.kill();
-				}
+				player.getWorld().getLivingEntities().forEach(org.bukkit.entity.Entity::remove);
+				getSpawners().forEach(net.dungeonrealms.spawning.MobSpawner::kill);
 				break;
 			}
 		}
