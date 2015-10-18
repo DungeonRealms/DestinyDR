@@ -45,8 +45,9 @@ public class SpawningMechanics {
     		y = Double.parseDouble(coords[1]);
     		z = Double.parseDouble(coords[2]);
     		int tier = Integer.parseInt(line.split(":")[1]);
+    		int spawnAmount = Integer.parseInt(line.split(";")[1]);
     		String monster = line.split("=")[1].split(":")[0];
-    		MobSpawner spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier);
+    		MobSpawner spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount);
             ALLSPAWNERS.add(spawner);
     	}
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), SpawningMechanics::initSpawners, 0, 4 * 20L);

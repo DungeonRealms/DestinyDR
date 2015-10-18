@@ -43,7 +43,10 @@ public class MobSpawner {
     public int tier;
     public List<Entity> SPAWNED_MONSTERS = new CopyOnWriteArrayList<>();
     public boolean isElite = false;
-    public MobSpawner(Location location, String type, int tier) {
+    public int spawnAmount;
+    
+    public MobSpawner(Location location, String type, int tier, int spawnAmount) {
+    	this.spawnAmount = spawnAmount;
         this.loc = location;
         this.spawnType = type;
         if(type.contains("*"))
@@ -96,7 +99,7 @@ public class MobSpawner {
                     }
                 }
             }
-            if(SPAWNED_MONSTERS.size() < 4) {
+            if(SPAWNED_MONSTERS.size() < spawnAmount * 2) {
                 Location location = new Location(Bukkit.getWorlds().get(0), loc.getBlockX() + new Random().nextInt(10), loc.getBlockY(), loc.getBlockZ() + new Random().nextInt(10));
                 int attempts = 0;
                 while(location.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ()).getType() != Material.AIR){
