@@ -8,6 +8,7 @@ import net.dungeonrealms.mechanics.SoundAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -284,6 +285,8 @@ public class RepairAPI {
      * @since 1.0
      */
     public static void subtractCustomDurability(Player player, ItemStack itemStack, double amountToSubtract) {
+        if (player.isOp()) return;
+        if (player.getGameMode() == GameMode.CREATIVE) return;
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return;

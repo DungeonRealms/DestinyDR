@@ -4,6 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -234,6 +235,7 @@ public class EnergyHandler {
     public static void removeEnergyFromPlayerAndUpdate(UUID uuid, float amountToRemove) {
         Player player = Bukkit.getPlayer(uuid);
         if (player.isOp()) return;
+        if (player.getGameMode() == GameMode.CREATIVE) return;
         if (player.hasMetadata("last_energy_remove")) {
             if ((System.currentTimeMillis() - player.getMetadata("last_energy_remove").get(0).asLong()) < 100) {
                 return;
