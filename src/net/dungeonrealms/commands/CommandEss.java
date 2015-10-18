@@ -164,11 +164,11 @@ public class CommandEss implements CommandExecutor {
                         switch (args[1]) {
                             case "add":
                                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, "info.ecash", amount, true);
-                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received " + ChatColor.YELLOW + amount + " E-Cash! Your new balance is " + ChatColor.YELLOW + (previousAmount + amount) + ChatColor.AQUA + "!");
+                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received " + ChatColor.YELLOW + amount + ChatColor.AQUA + " E-Cash! Your new balance is " + ChatColor.YELLOW + (previousAmount + amount) + ChatColor.AQUA + "!");
                                 break;
                             case "take":
                                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, "info.ecash", (amount * -1), true);
-                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.YELLOW + amount + ChatColor.AQUA + " E-Cash has been taken from you! Your new balance is " + ChatColor.YELLOW + (previousAmount - amount) + ChatColor.AQUA + "!");
+                                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "] " + ChatColor.YELLOW + amount + ChatColor.AQUA + " E-Cash has been taken from you! Your new balance is " + ChatColor.YELLOW + (previousAmount - amount) + ChatColor.AQUA + "!");
                                 break;
                             case "set":
                                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.ecash", amount, true);

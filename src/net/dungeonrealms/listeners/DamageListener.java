@@ -283,12 +283,12 @@ public class DamageListener implements Listener {
                                     if (!(entityNear instanceof Player)) {
                                         break;
                                     } else {
-                                        ((LivingEntity) entityNear).damage((event.getDamage()), attacker);
+                                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entityNear, event.getDamager(), (event.getDamage() - armourReducedDamage));
                                         Vector unitVector = entityNear.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
                                         entityNear.setVelocity(unitVector.multiply(0.15D));
                                     }
                                 } else {
-                                    ((LivingEntity) entityNear).damage((event.getDamage()), attacker);
+                                    HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entityNear, (event.getDamage() - armourReducedDamage));
                                     Vector unitVector = entityNear.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
                                     entityNear.setVelocity(unitVector.multiply(0.15D));
                                 }
