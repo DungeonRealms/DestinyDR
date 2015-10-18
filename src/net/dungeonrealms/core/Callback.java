@@ -12,5 +12,4 @@ public abstract class Callback<T> {
     }
 
     public abstract void callback(Throwable failCause, T result);
-
 }

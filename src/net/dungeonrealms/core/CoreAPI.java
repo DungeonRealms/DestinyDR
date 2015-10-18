@@ -3,8 +3,8 @@ package net.dungeonrealms.core;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import net.dungeonrealms.core.reply.BanReply;
 import net.dungeonrealms.mastery.AsyncUtils;
-import net.dungeonrealms.mastery.Utils;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,6 +12,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 /**
  * Created by Nick on 10/17/2015.
@@ -30,17 +32,28 @@ public class CoreAPI {
     }
 
     public void test() {
-        findBan("Proxying", new Callback<BanResult>(BanResult.class) {
-            @Override
-            public void callback(Throwable failCause, BanResult result) {
-                if (result == BanResult.YES) {
-                    Utils.log.warning("[BAN] [ASYNC] " + "Proxying " + "tried to log in.. but was DENIED. BECAUSE HE IS BANNED!");
-                }
+    }
+
+    /**
+     * Will return the tax for mailing.
+     *
+     * @param callback The integer
+     * @since 1.0
+     */
+    public void findMailTax(Callback<Integer> callback) {
+        AsyncUtils.pool.submit(() -> {
+            try {
+                URL url = new URL("https://cherryio.com/api/l.php?type=tax");
+                BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+                String line = in.readLine();
+                int rbt = Integer.valueOf(line);
+                callback.callback(null, rbt);
+            } catch (IOException e) {
+                callback.callback(e, 1);
+                e.printStackTrace();
             }
         });
     }
-
-
     /**
      * Checks if a player has a ban.
      *
@@ -48,23 +61,64 @@ public class CoreAPI {
      * @param callback   The callback of BanResult.
      * @since 1.0
      */
-    public void findBan(String playerName, Callback<BanResult> callback) {
-        AsyncUtils.pool.submit(() -> {
+    public void findBan(String playerName, Callback<BanReply> callback) {
+        Future<?> result = AsyncUtils.pool.submit(() -> {
             try {
-                URL url = new URL("https://cherryio.com/api/l.php?isBanned=" + playerName);
+                URL url = new URL("https://cherryio.com/api/l.php?type=ban&player=" + playerName);
                 BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
                 String line = in.readLine();
-                int rbt = Integer.valueOf(line);
-
-                callback.callback(null, BanResult.getByInt(rbt));
+                return line;
             } catch (IOException e) {
-                callback.callback(null, null);
                 e.printStackTrace();
             }
+            return 0;
         });
+
+        try {
+            String line = (String) result.get();
+            callback.callback(null, new BanReply(BanResult.getByInt(Integer.valueOf(line.split(",")[0])), BanReason.getByInt(Integer.valueOf(line.split(",")[1]))));
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
     }
 
-    enum BanResult {
+    /**
+     * BanReason
+     * @since 1.0
+     */
+    public enum BanReason {
+        OTHER(-1, "Other"),
+        DUPLICATIONS(1, "Duplications"),
+        HACKING(0, "Hacking"),
+        MIS_CONDUCT(3, "Misconduct");
+
+        private int id;
+        private String reason;
+
+        BanReason(int id, String reason) {
+            this.id = id;
+            this.reason = reason;
+        }
+
+        public static BanReason getByInt(int id) {
+            for (BanReason br : values()) {
+                if (br.getId() == id) {
+                    return br;
+                }
+            }
+            return BanReason.OTHER;
+        }
+
+        public int getId() {
+            return id;
+        }
+
+        public String getName() {
+            return reason;
+        }
+    }
+
+    public enum BanResult {
         YES(1),
         NO(0),
         TEMP_BANNED(3);
