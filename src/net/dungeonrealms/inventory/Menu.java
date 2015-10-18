@@ -389,7 +389,7 @@ public class Menu {
         List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid);
 
         if (playerPets.size() <= 0) {
-            Inventory noPets = Bukkit.createInventory(null, 0, ChatColor.RED + "You currently have no Pets!");
+            Inventory noPets = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Pets!");
             player.openInventory(noPets);
             return;
         }
@@ -416,7 +416,7 @@ public class Menu {
         List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, uuid);
 
         if (playerMounts.size() <= 0) {
-            Inventory noMounts = Bukkit.createInventory(null, 0, ChatColor.RED + "You currently have no Mounts!");
+            Inventory noMounts = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mounts!");
             player.openInventory(noMounts);
             return;
         }
@@ -443,7 +443,7 @@ public class Menu {
         List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, uuid);
 
         if (playerTrails == null || playerTrails.size() <= 0) {
-            Inventory noTrails = Bukkit.createInventory(null, 0, ChatColor.RED + "You currently have no Player Trails!");
+            Inventory noTrails = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Player Trails!");
             player.openInventory(noTrails);
             return;
         }
@@ -470,7 +470,7 @@ public class Menu {
         List<String> mobTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOB_PARTICLES, uuid);
 
         if (mobTrails == null || mobTrails.size() <= 0) {
-            Inventory noParticles = Bukkit.createInventory(null, 0, ChatColor.RED + "You currently have no Mob Trails!");
+            Inventory noParticles = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mob Trails!");
             player.openInventory(noParticles);
             return;
         }

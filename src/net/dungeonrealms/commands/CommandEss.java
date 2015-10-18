@@ -68,7 +68,7 @@ public class CommandEss implements CommandExecutor {
                             }
                         }
                         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.pets", petType.toUpperCase(), true);
-                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + petType.toUpperCase() + " pet!");
+                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + petType.toUpperCase() + ChatColor.AQUA + " pet!");
                         break;
                     } else {
                         commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials pet Proxying snowman)");
@@ -94,7 +94,7 @@ public class CommandEss implements CommandExecutor {
                             }
                         }
                         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.mounts", mountType.toUpperCase(), true);
-                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + mountType.toUpperCase() + " mount!");
+                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + mountType.toUpperCase() + ChatColor.AQUA + " mount!");
                         break;
                     } else {
                         commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials mount Proxying skeletonhorse)");
@@ -120,7 +120,7 @@ public class CommandEss implements CommandExecutor {
                             }
                         }
                         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.particles", trailType.toUpperCase(), true);
-                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + trailType.toUpperCase() + " player trail!");
+                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + trailType.toUpperCase() + ChatColor.AQUA + " player trail!");
                         break;
                     } else {
                         commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials playertrail Proxying flame)");
@@ -146,7 +146,7 @@ public class CommandEss implements CommandExecutor {
                             }
                         }
                         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.mob_particles", trailType.toUpperCase(), true);
-                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + trailType.toUpperCase() + " mob trail!");
+                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + trailType.toUpperCase() +  ChatColor.AQUA + " mob trail!");
                         break;
                     } else {
                         commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials mobtrail Proxying flame)");
