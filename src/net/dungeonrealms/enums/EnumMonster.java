@@ -21,7 +21,10 @@ public enum EnumMonster {
     FireImp("Fire Imp", "Devil", new String[]{""}, new String[]{""}),
     Blaze("Blaze", "Blaze", new String[]{""}, new String[]{""}),
     Mage("Mage", "Mage", new String[]{""}, new String[]{""}),
-    Skeleton("Skeleton", "Steve", new String[]{"Scary", "Spookey", "Spookey Scary"}, new String[]{"Archer", "Ranger"});
+    Skeleton("Skeleton", "Steve", new String[]{"Scary", "Spookey", "Spookey Scary"}, new String[]{"Archer", "Ranger"}),
+    MagmaCube("Magma Cube", "Steve", new String[]{"Weak"}, new String[]{""}),
+	Wither("Chaos Skeleton", "Wither", new String[]{""}, new String[]{""}),
+	Daemon("Daemon", "Steve",new String[]{""}, new String[]{""});
 	
     public String name;
     public String mobHead;

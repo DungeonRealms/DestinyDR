@@ -1,5 +1,8 @@
 package net.dungeonrealms.entities.types.monsters;
 
+import org.bukkit.entity.Projectile;
+import org.bukkit.inventory.ItemStack;
+
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.types.RangedEntitySkeleton;
 import net.dungeonrealms.entities.utils.EntityStats;
@@ -7,14 +10,12 @@ import net.dungeonrealms.enums.EnumEntityType;
 import net.dungeonrealms.enums.EnumMonster;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.*;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import org.bukkit.entity.Projectile;
-import org.bukkit.inventory.ItemStack;
+import net.minecraft.server.v1_8_R3.EntityArrow;
+import net.minecraft.server.v1_8_R3.EntityLiving;
+import net.minecraft.server.v1_8_R3.Item;
+import net.minecraft.server.v1_8_R3.Items;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Sep 19, 2015

@@ -1,24 +1,8 @@
 package net.dungeonrealms.listeners;
 
-import com.minebone.anvilapi.core.AnvilApi;
-import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
-import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+import java.util.ArrayList;
+import java.util.UUID;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.banks.BankMechanics;
-import net.dungeonrealms.banks.Storage;
-import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.inventory.GUI;
-import net.dungeonrealms.inventory.Menu;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.ItemManager;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.mongo.EnumOperators;
-import net.dungeonrealms.notice.Notice;
-import net.dungeonrealms.teleportation.TeleportAPI;
-import net.dungeonrealms.teleportation.Teleportation;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -38,8 +22,19 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.UUID;
+import com.minebone.anvilapi.core.AnvilApi;
+import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
+import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.banks.BankMechanics;
+import net.dungeonrealms.banks.Storage;
+import net.dungeonrealms.inventory.GUI;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
  * Created by Chase, by fixed by Proxying and under inspection of xFinityPro.

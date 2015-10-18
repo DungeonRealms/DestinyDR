@@ -15,6 +15,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.types.monsters.BasicEntityBlaze;
+import net.dungeonrealms.entities.types.monsters.BasicEntityMagma;
+import net.dungeonrealms.entities.types.monsters.BasicEntityPigman;
 import net.dungeonrealms.entities.types.monsters.BasicEntitySkeleton;
 import net.dungeonrealms.entities.types.monsters.BasicMageMonster;
 import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
@@ -114,7 +116,10 @@ public class MobSpawner {
                String mob = spawnType;
                World world = armorstand.getWorld();
                EnumEntityType type = EnumEntityType.HOSTILE_MOB;
-               if(!mob.contains("*")){
+               if(mob.contains("*")){
+            	   mob = mob.replace("*", "");
+            	   isElite = true;
+               }
                switch (mob) {
                    case "bandit":
                        entity = new EntityBandit(world, tier, type);
@@ -146,10 +151,6 @@ public class MobSpawner {
                    case "naga":
                        entity = new BasicMageMonster(world, EnumMonster.Naga, tier);
                        break;
-                   case "wither":
-                       // TODO Wither.
-                       entity = new EntityWitherSkeleton(world, null, tier);
-                       break;
                    case "tripoli":
                        entity = new BasicMeleeMonster(world, EnumMonster.Tripoli, tier);
                        break;
@@ -159,60 +160,22 @@ public class MobSpawner {
                    case "skeleton":
                 	   entity = new BasicEntitySkeleton(world, tier);
                 	   break;
+                   case "skeleton2":
+                	   entity = new EntityWitherSkeleton(world, EnumMonster.Wither, tier);
+                	   break;
+                   case "magmacube":
+                   		entity = new BasicEntityMagma(world, tier);
+                   		break;
+                   case "daemon":
+                	   entity = new BasicEntityPigman(world, EnumMonster.Daemon, tier);
+                	   break;
                    default:
                 	   Utils.log.info(mob + " is not created yet.");
-                       entity = new EntityBandit(world, tier, type);
+                	   return;
                }
-               }else{
-            	   //Elite Mob
-            	   mob = mob.replace("*", "");
-            	   
-                   switch (mob) {
-                   case "bandit":
-                       entity = new EntityBandit(world, tier, type);
-                       break;
-                   case "rangedpirate":
-                       entity = new EntityRangedPirate(world, type, tier);
-                       break;
-                   case "pirate":
-                       entity = new EntityPirate(world, type, tier);
-                       break;
-                   case "imp":
-                       entity = new EntityFireImp(world, tier, type);
-                       break;
-                   case "troll":
-                       entity = new BasicMeleeMonster(world, EnumMonster.Troll, tier);
-                       break;
-                   case "goblin":
-                       entity = new BasicMeleeMonster(world, EnumMonster.Goblin, tier);
-                       break;
-                   case "mage":
-                       entity = new BasicMageMonster(world, EnumMonster.Mage, tier);
-                       break;
-                   case "spider":
-                       entity = new EntitySpider(world, EnumMonster.Spider, tier);
-                       break;
-                   case "golem":
-                       entity = new EntityGolem(world, tier, type);
-                       break;
-                   case "naga":
-                       entity = new BasicMageMonster(world, EnumMonster.Naga, tier);
-                       break;
-                   case "wither":
-                       // TODO Wither.
-                       entity = new EntityWitherSkeleton(world, null, tier);
-                       break;
-                   case "tripoli":
-                       entity = new BasicMeleeMonster(world, EnumMonster.Tripoli, tier);
-                       break;
-                   case "blaze":
-                       entity = new BasicEntityBlaze(world, EnumMonster.Blaze, tier);
-                       break;
-                   default:
-                       entity = new EntityBandit(world, tier, type);
-               }
-                   int lvl = Utils.getRandomFromTier(tier);
-                   EntityStats.setMonsterElite(entity, lvl, tier);
+               if(isElite){
+            	   int lvl = Utils.getRandomFromTier(tier);
+            	   EntityStats.setMonsterElite(entity, lvl, tier);
                }
                entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                world.addEntity(entity, SpawnReason.CUSTOM);

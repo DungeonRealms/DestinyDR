@@ -1,12 +1,12 @@
 package net.dungeonrealms.spawning;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mastery.Utils;
+import java.util.ArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 
-import java.util.ArrayList;
+import net.dungeonrealms.DungeonRealms;
 
 /**
  * Created by Chase on Sep 28, 2015
@@ -29,14 +29,18 @@ public class SpawningMechanics {
     }
 
     public static void killAll() {
-        ALLSPAWNERS.forEach(spawner ->{
+        for(MobSpawner spawner : ALLSPAWNERS){
         	spawner.kill();
         	spawner.armorstand.getBukkitEntity().remove();
         	spawner.armorstand.getWorld().removeEntity(spawner.armorstand);
-        });
+        }
     }
 
     public static void loadSpawners() {
+    	
+    	for(Entity ent : Bukkit.getWorlds().get(0).getEntities()){
+    		ent.remove();
+    	}
         SPANWER_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("spawners");
     	for(String line : SPANWER_CONFIG){
     		String[] coords = line.split("=")[0].split(",");
@@ -44,7 +48,9 @@ public class SpawningMechanics {
     		x = Double.parseDouble(coords[0]);
     		y = Double.parseDouble(coords[1]);
     		z = Double.parseDouble(coords[2]);
-    		int tier = Integer.parseInt(line.split(":")[1]);
+    		String tierString = line.substring(line.indexOf(":"), line.indexOf(";"));
+    		tierString = tierString.substring(1);
+    		int tier = Integer.parseInt(tierString);
     		int spawnAmount = Integer.parseInt(line.split(";")[1]);
     		String monster = line.split("=")[1].split(":")[0];
     		MobSpawner spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount);

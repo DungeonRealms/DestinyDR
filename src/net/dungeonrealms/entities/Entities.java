@@ -56,7 +56,9 @@ public class Entities {
         nmsUtils.registerEntity("DRWither", 51, EntitySkeleton.class, EntityWitherSkeleton.class);
         nmsUtils.registerEntity("DRBlaze", 61, EntityBlaze.class, RangedEntityBlaze.class);
         nmsUtils.registerEntity("DRSkeleton", 51, EntitySkeleton.class, BasicEntitySkeleton.class);
-
+        nmsUtils.registerEntity("DRMagma", 62, EntityMagmaCube.class, BasicEntityMagma.class);
+        nmsUtils.registerEntity("DRPigman", 57, EntityPigZombie.class, BasicEntityPigman.class);
+        
         nmsUtils.registerEntity("PetCaveSpider", 59, EntityCaveSpider.class, CaveSpider.class);
         nmsUtils.registerEntity("PetBabyZombie", 54, EntityZombie.class, BabyZombie.class);
         nmsUtils.registerEntity("PetBabyZombiePig", 57, EntityPigZombie.class, BabyZombiePig.class);

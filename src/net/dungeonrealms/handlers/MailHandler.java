@@ -1,13 +1,7 @@
 package net.dungeonrealms.handlers;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.inventory.Menu;
-import net.dungeonrealms.mastery.ItemSerialization;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumOperators;
-import net.dungeonrealms.network.NetworkAPI;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.NBTTagString;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -15,7 +9,13 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.UUID;
+import net.dungeonrealms.API;
+import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.network.NetworkAPI;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.NBTTagString;
 
 /**
  * Created by Nick on 10/14/2015.

@@ -208,7 +208,6 @@ public class DuelWager {
      * @return
      */
     private boolean isTier(ItemStack itemStack) {
-
         return false;
     }
 

@@ -1,9 +1,8 @@
 package net.dungeonrealms.entities.utils;
 
-import net.dungeonrealms.entities.types.EnderCrystal;
-import net.dungeonrealms.enums.EnumEntityType;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.minecraft.server.v1_8_R3.World;
+import java.util.Random;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
@@ -11,8 +10,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.Random;
-import java.util.UUID;
+import net.dungeonrealms.entities.types.EnderCrystal;
+import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.mastery.MetadataUtils;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Kieran on 9/18/2015.

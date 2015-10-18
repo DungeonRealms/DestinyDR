@@ -1,13 +1,13 @@
 package net.dungeonrealms.mongo;
 
+import org.bson.Document;
+
 import com.mongodb.async.client.MongoClient;
 import com.mongodb.async.client.MongoClients;
 import com.mongodb.async.client.MongoCollection;
 import com.mongodb.async.client.MongoDatabase;
-import net.dungeonrealms.core.Callback;
-import net.dungeonrealms.core.CoreAPI;
+
 import net.dungeonrealms.mastery.Utils;
-import org.bson.Document;
 
 /**
  * Created by Nick on 8/29/2015.

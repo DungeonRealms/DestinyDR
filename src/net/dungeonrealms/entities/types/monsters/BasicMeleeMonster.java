@@ -1,9 +1,5 @@
 package net.dungeonrealms.entities.types.monsters;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 

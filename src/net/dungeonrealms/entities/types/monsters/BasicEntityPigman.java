@@ -12,25 +12,32 @@ import net.dungeonrealms.enums.EnumMonster;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.EntitySkeleton;
+import net.minecraft.server.v1_8_R3.EntityPigZombie;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
 
 /**
- * Created by Chase on Oct 3, 2015
+ * Created by Chase on Oct 18, 2015
  */
-public class EntityWitherSkeleton extends EntitySkeleton {
+public class BasicEntityPigman extends EntityPigZombie {
 
+	/**
+	 * @param name
+	 */
+	public BasicEntityPigman(World name) {
+		super(name);
+	}
+	
 	public EnumMonster enumMonster;
 
-	public EntityWitherSkeleton(World world) {
-		super(world);
-	}
-
-	public EntityWitherSkeleton(World world, EnumMonster mon, int tier) {
+	/**
+	 * @param world
+	 * @param daemon
+	 * @param tier
+	 */
+	public BasicEntityPigman(World world, EnumMonster mon, int tier) {
 		super(world);
 		enumMonster = mon;
-		this.setSkeletonType(1);
 
 		setArmor(tier);
 		this.getBukkitEntity().setCustomNameVisible(true);
@@ -39,6 +46,7 @@ public class EntityWitherSkeleton extends EntitySkeleton {
 		EntityStats.setMonsterRandomStats(this, level, tier);
 		this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET
 		        + enumMonster.getPrefix() + " " + enumMonster.name + " " + enumMonster.getSuffix());
+
 	}
 
 	@Override
@@ -101,5 +109,20 @@ public class EntityWitherSkeleton extends EntitySkeleton {
 			        new ItemStack(Material.GOLD_CHESTPLATE, 1), new ItemStack(Material.GOLD_HELMET, 1) };
 		}
 		return null;
+	}
+
+	@Override
+	protected String z() {
+		return "";
+	}
+
+	@Override
+	protected String bo() {
+		return "game.player.hurt";
+	}
+
+	@Override
+	protected String bp() {
+		return "mob.ghast.scream";
 	}
 }
