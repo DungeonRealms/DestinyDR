@@ -11,7 +11,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.potion.PotionEffectType;
 
 import net.dungeonrealms.entities.types.EnderCrystal;
-import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.World;
 

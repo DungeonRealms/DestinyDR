@@ -1,6 +1,6 @@
 package net.dungeonrealms.entities.types.pets;
 
-import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.EntityEndermite;
 import net.minecraft.server.v1_8_R3.World;

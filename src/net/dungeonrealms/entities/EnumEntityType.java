@@ -1,4 +1,4 @@
-package net.dungeonrealms.enums;
+package net.dungeonrealms.entities;
 
 /**
  * Created by Kieran on 9/18/2015.

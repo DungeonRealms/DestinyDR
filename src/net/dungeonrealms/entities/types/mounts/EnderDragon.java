@@ -1,6 +1,6 @@
 package net.dungeonrealms.entities.types.mounts;
 
-import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.EntityEnderDragon;
 import net.minecraft.server.v1_8_R3.World;
