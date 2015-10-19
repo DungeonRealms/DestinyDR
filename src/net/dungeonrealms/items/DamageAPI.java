@@ -535,12 +535,16 @@ public class DamageAPI {
                             dodgeChance += (dodgeChance * (nmsTags[i].getInt("dexterity") * 0.017));
                         }
                         if (attacker instanceof Player) {
-                            net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
-                            NBTTagCompound tag = nmsItem.getTag();
-                            if (tag.getInt("accuracy") != 0) {
-                                dodgeChance -= tag.getInt("accuracy");
-                                if (dodgeChance < 0) {
-                                    dodgeChance = 0;
+                            if (((Player) attacker).getItemInHand() != null && ((Player) attacker).getItemInHand().getType() != Material.AIR) {
+                                net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
+                                NBTTagCompound tag = nmsItem.getTag();
+                                if (tag != null) {
+                                    if (tag.getInt("accuracy") != 0) {
+                                        dodgeChance -= tag.getInt("accuracy");
+                                        if (dodgeChance < 0) {
+                                            dodgeChance = 0;
+                                        }
+                                    }
                                 }
                             }
                         }

@@ -1,12 +1,10 @@
 package net.dungeonrealms.spawning;
 
-import java.util.ArrayList;
-
+import net.dungeonrealms.DungeonRealms;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Entity;
 
-import net.dungeonrealms.DungeonRealms;
+import java.util.ArrayList;
 
 /**
  * Created by Chase on Sep 28, 2015
@@ -17,7 +15,7 @@ public class SpawningMechanics {
 
     
     public static void initSpawners(){
-     		ALLSPAWNERS.forEach(spawner -> Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> spawner.init(), 20l));
+     		ALLSPAWNERS.forEach(spawner -> Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), spawner::init, 20l));
     }
     
     public static ArrayList<MobSpawner> getSpawners() {
@@ -37,10 +35,7 @@ public class SpawningMechanics {
     }
 
     public static void loadSpawners() {
-    	
-    	for(Entity ent : Bukkit.getWorlds().get(0).getEntities()){
-    		ent.remove();
-    	}
+        Bukkit.getWorlds().get(0).getEntities().forEach(org.bukkit.entity.Entity::remove);
         SPANWER_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("spawners");
     	for(String line : SPANWER_CONFIG){
     		String[] coords = line.split("=")[0].split(",");

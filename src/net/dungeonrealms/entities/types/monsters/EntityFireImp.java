@@ -2,8 +2,7 @@ package net.dungeonrealms.entities.types.monsters;
 
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.types.RangedEntitySkeleton;
-import net.dungeonrealms.enums.EnumEntityType;
-import net.dungeonrealms.enums.EnumMonster;
+import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.items.Item.ItemType;
 import net.dungeonrealms.items.ItemGenerator;

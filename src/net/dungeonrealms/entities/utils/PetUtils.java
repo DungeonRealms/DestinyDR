@@ -4,7 +4,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.types.pets.*;
-import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.entities.EnumEntityType;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;

@@ -15,6 +15,7 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.BasicEntitySkeleton;
 import net.dungeonrealms.entities.types.monsters.BasicMageMonster;
 import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
@@ -24,11 +25,10 @@ import net.dungeonrealms.entities.types.monsters.EntityGolem;
 import net.dungeonrealms.entities.types.monsters.EntityPirate;
 import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
 import net.dungeonrealms.entities.types.monsters.EntitySpider;
+import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.boss.Mayel;
 import net.dungeonrealms.entities.utils.BuffUtils;
 import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.enums.EnumEntityType;
-import net.dungeonrealms.enums.EnumMonster;
 import net.dungeonrealms.mastery.NBTUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.spawning.MobSpawner;
@@ -141,7 +141,7 @@ public class CommandSpawn implements CommandExecutor {
                 	}
                 	if(entity == null)
                 		return false;
-                    Location location = new Location(world.getWorld(), player.getLocation().getX() + new Random().nextInt(3), player.getLocation().getY(), player.getLocation().getZ() + new Random().nextInt(3));
+                    Location location = new Location(world.getWorld(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
                     entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                     world.addEntity(entity, SpawnReason.CUSTOM);
                     entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);

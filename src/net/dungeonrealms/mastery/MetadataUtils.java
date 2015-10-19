@@ -1,7 +1,7 @@
 package net.dungeonrealms.mastery;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.enums.EnumEntityType;
+import net.dungeonrealms.entities.EnumEntityType;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.entity.Projectile;
