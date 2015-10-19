@@ -6,8 +6,10 @@ import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumOperators;
+import net.minecraft.server.v1_8_R3.DamageSource;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
@@ -378,7 +380,7 @@ public class HealthHandler {
             if (player.hasMetadata("last_death_time")) {
                 if (player.getMetadata("last_death_time").get(0).asLong() > 100) {
                     player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-                    player.setHealth(0);
+                    player.damage(25);
                     KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, damager);
                     CombatLog.removeFromCombat(player);
                     Bukkit.broadcastMessage(player.getName() + " has died.");
@@ -386,7 +388,7 @@ public class HealthHandler {
                 }
             } else {
                 player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-                player.setHealth(0);
+                player.damage(25);
                 KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, damager);
                 Bukkit.broadcastMessage(player.getName() + " has died.");
                 return;
@@ -455,7 +457,13 @@ public class HealthHandler {
         double newHP = currentHP - damage;
 
         if (newHP <= 0) {
-            entity.setHealth(0);
+            setMonsterHPLive(entity, 0);
+            net.minecraft.server.v1_8_R3.Entity entity1 = ((CraftEntity)entity).getHandle();
+            entity1.damageEntity(DamageSource.GENERIC, 20F);
+            if (!entity1.dead) {
+                entity1.dead = true;
+            }
+            //TODO: Handle Drop code in here.
             return;
         }
 

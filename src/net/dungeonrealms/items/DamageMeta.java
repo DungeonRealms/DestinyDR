@@ -25,7 +25,7 @@ public class DamageMeta {
                     case COMMON:
                         switch (type) {
                             case ARMOR:
-                                return random(1, 1);
+                                return random(1, 2);
                             case HEALTH_POINTS:
                                 return random(10, 90);
                             case HEALTH_REGEN:
@@ -1685,6 +1685,6 @@ public class DamageMeta {
 
 
     private int random(int min, int max) {
-        return new Random().nextInt(max - min) + min;
+        return new Random().nextInt(max - min + 1) + min;
     }
 }

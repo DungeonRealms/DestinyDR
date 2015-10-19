@@ -6,6 +6,7 @@ import net.minecraft.server.v1_8_R3.EnumParticle;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
@@ -35,11 +36,11 @@ public class ParticleAPI {
         LARGE_SMOKE(12, "LARGESMOKE", EnumParticle.SMOKE_LARGE, new org.bukkit.inventory.ItemStack(Material.AIR)),
         RED_DUST(13, "REDDUST", EnumParticle.REDSTONE, new org.bukkit.inventory.ItemStack(Material.REDSTONE)),
         SNOWBALL_POOF(14, "SNOWBALL", EnumParticle.SNOWBALL, new org.bukkit.inventory.ItemStack(Material.SNOW_BLOCK)),
-        SMALL_SMOKE(15, "SMALLSMOKE", EnumParticle.SMOKE_NORMAL, new org.bukkit.inventory.ItemStack(Material.INK_SACK)),
+        SMALL_SMOKE(15, "SMOKEY", EnumParticle.SMOKE_NORMAL, new org.bukkit.inventory.ItemStack(Material.INK_SACK)),
         CLOUD(16, "CLOUD", EnumParticle.CLOUD, new org.bukkit.inventory.ItemStack(Material.BEACON)),
-        HAPPY_VILLAGER(17, "HAPPYVILLAGER", EnumParticle.VILLAGER_HAPPY, new org.bukkit.inventory.ItemStack(Material.FIREWORK)),
+        HAPPY_VILLAGER(17, "POISON", EnumParticle.VILLAGER_HAPPY, new org.bukkit.inventory.ItemStack(Material.FIREWORK)),
         SPELL(18, "SPELL", EnumParticle.SPELL, new org.bukkit.inventory.ItemStack(Material.BLAZE_POWDER)),
-        SNOW_SHOVEL(19, "SNOWSHOVEL", EnumParticle.SNOW_SHOVEL, new org.bukkit.inventory.ItemStack(Material.SNOW_BALL));
+        SNOW_SHOVEL(19, "SNOWING", EnumParticle.SNOW_SHOVEL, new org.bukkit.inventory.ItemStack(Material.SNOW_BALL));
 
         private int id;
         private String rawName;
@@ -77,6 +78,16 @@ public class ParticleAPI {
 
         public org.bukkit.inventory.ItemStack getSelectionItem() {
             return selectionItem;
+        }
+
+        public static ChatColor getChatColorByName(String rawName) {
+            switch (getByName(rawName)) {
+                case FLAME:
+                    return ChatColor.RED;
+                case HAPPY_VILLAGER:
+                    return ChatColor.DARK_GREEN;
+            }
+            return ChatColor.WHITE;
         }
     }
 

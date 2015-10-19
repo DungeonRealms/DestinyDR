@@ -95,7 +95,11 @@ public class ClickHandler {
                     player.closeInventory();
                     return;
                 }
-                PetUtils.spawnPet(player.getUniqueId(), nmsStack.getTag().getString("petType"));
+                String particleType = "";
+                if (nmsStack.getTag().getString("particleType") != null) {
+                    particleType = nmsStack.getTag().getString("particleType");
+                }
+                PetUtils.spawnPet(player.getUniqueId(), nmsStack.getTag().getString("petType"), particleType);
             }
         }
 

@@ -398,13 +398,27 @@ public class Menu {
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
         inv.setItem(26, editItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Dismiss Pet", new String[]{}));
 
-        for (String petType : playerPets) {
+        for (String pet : playerPets) {
+            String petType;
+            String particleType = "";
+            String petName = "";
+            if (pet.contains("-")) {
+                petType = pet.split("-")[0];
+                particleType = pet.split("-")[1];
+                petName = ParticleAPI.ParticleEffect.getChatColorByName(particleType) + particleType + " " + ChatColor.GREEN + petType.toUpperCase();
+            } else {
+                petType = pet;
+                petName = ChatColor.GREEN + petType.toUpperCase();
+            }
             ItemStack itemStack = new ItemStack(Material.MONSTER_EGG, 1, (short) EnumPets.getByName(petType).getEggShortData());
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("petType", new NBTTagString(petType));
+            if (!particleType.equalsIgnoreCase("")) {
+                tag.set("particleType", new NBTTagString(particleType));
+            }
             nmsStack.setTag(tag);
-            inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStack), ChatColor.GREEN + petType.toUpperCase(), new String[]{
+            inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStack), petName, new String[]{
             }));
         }
 

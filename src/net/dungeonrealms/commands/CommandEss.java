@@ -56,11 +56,23 @@ public class CommandEss implements CommandExecutor {
                             return false;
                         }
                         String petType = args[2];
-                        if (!API.isStringPet(petType)) {
+                        List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, player.getUniqueId());
+                        String petName;
+                        String particleType = "";
+                        if (!petType.contains("-")) {
+                            petName = petType;
+                        } else {
+                            petName = petType.split("-")[0];
+                            particleType = petType.split("-")[1];
+                        }
+                        if (!API.isStringPet(petName)) {
                             commandSender.sendMessage(ChatColor.RED + "This pet is not a real pet!");
                             return false;
                         }
-                        List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, player.getUniqueId());
+                        if (!API.isStringTrail(particleType)) {
+                            commandSender.sendMessage(ChatColor.RED + "This pet cannot have that trail!");
+                            return false;
+                        }
                         if (!playerPets.isEmpty()) {
                             if (playerPets.contains(petType.toUpperCase())) {
                                 commandSender.sendMessage(ChatColor.RED + "The player already has this pet!");

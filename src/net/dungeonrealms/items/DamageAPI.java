@@ -591,10 +591,10 @@ public class DamageAPI {
                             break;
                     }
                     if (attacker instanceof Player) {
-                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, damageFromThorns);
+                        //HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, damageFromThorns);
                     }
                     if (attacker instanceof Monster) {
-                        HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) attacker, damageFromThorns);
+                       //HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) attacker, damageFromThorns);
                     }
                 }
                 if (nmsTags[i].getInt("fireResistance") != 0) {

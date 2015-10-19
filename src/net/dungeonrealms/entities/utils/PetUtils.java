@@ -2,11 +2,14 @@ package net.dungeonrealms.entities.utils;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.entities.Entities;
-import net.dungeonrealms.entities.types.pets.*;
 import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.pets.*;
+import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
@@ -114,10 +117,14 @@ public class PetUtils {
         }
     }
 
-    public static void spawnPet(UUID uuid, String petType) {
+    public static void spawnPet(UUID uuid, String petType, String particleType) {
         Player player = Bukkit.getPlayer(uuid);
         World world = ((CraftWorld) player.getWorld()).getHandle();
         EnumPets enumPets = EnumPets.getByName(petType.toUpperCase());
+        ParticleAPI.ParticleEffect particleEffect = null;
+        if (!particleType.equalsIgnoreCase("")) {
+            particleEffect = ParticleAPI.ParticleEffect.getByName(particleType);
+        }
         if (!API.isStringPet(petType)) {
             player.sendMessage("Uh oh... Something went wrong with your pet! Please inform a staff member! [PetType]");
             return;
@@ -125,14 +132,27 @@ public class PetUtils {
         switch (enumPets) {
             //TODO: Add check for Achievements to see if Player has pet and can use it.
             case CAVE_SPIDER: {
-                CaveSpider petCaveSpider = new CaveSpider(world, player.getName() + "'s Pet", player.getUniqueId(), EnumEntityType.PET);
+                String customPetName = "Spider";
+                CaveSpider petCaveSpider = new CaveSpider(world, customPetName, player.getUniqueId(), EnumEntityType.PET);
                 petCaveSpider.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petCaveSpider, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petCaveSpider.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 player.playSound(player.getLocation(), Sound.SPIDER_IDLE, 1F, 1F);
-                player.sendMessage("Cave Spider Pet Spawned!");
                 makePet(petCaveSpider, player.getUniqueId());
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petCaveSpider);
+                if (particleEffect != null) {
+                    switch (particleEffect) {
+                        case FLAME:
+                            customPetName = ChatColor.RED + "Flaming Spider";
+                            DonationEffects.ENTITY_PARTICLE_EFFECTS.put(petCaveSpider, ParticleAPI.ParticleEffect.FLAME);
+                            break;
+                        case HAPPY_VILLAGER:
+                            customPetName = ChatColor.DARK_GREEN + "Poisonous Spider";
+                            DonationEffects.ENTITY_PARTICLE_EFFECTS.put(petCaveSpider, ParticleAPI.ParticleEffect.HAPPY_VILLAGER);
+                            break;
+                    }
+                }
+                petCaveSpider.setCustomName(customPetName);
                 player.closeInventory();
                 break;
             }
@@ -142,7 +162,6 @@ public class PetUtils {
                 world.addEntity(petBabyZombie, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petBabyZombie.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 player.playSound(player.getLocation(), Sound.ZOMBIE_IDLE, 1F, 1F);
-                player.sendMessage("Zombie pet Spawned!");
                 makePet(petBabyZombie, player.getUniqueId());
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petBabyZombie);
                 player.closeInventory();
@@ -156,7 +175,6 @@ public class PetUtils {
                 petBabyZombiePig.setBaby(true);
                 petBabyZombiePig.angerLevel = 0;
                 player.playSound(player.getLocation(), Sound.ZOMBIE_PIG_IDLE, 1F, 1F);
-                player.sendMessage("Zombie Pigman pet Spawned!");
                 makePet(petBabyZombiePig, player.getUniqueId());
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petBabyZombiePig);
                 player.closeInventory();
@@ -172,7 +190,6 @@ public class PetUtils {
                 petWolf.ageLocked = true;
                 petWolf.setAge(0);
                 player.playSound(player.getLocation(), Sound.WOLF_BARK, 1F, 1F);
-                player.sendMessage("Wolf pet Spawned!");
                 makePet(petWolf, player.getUniqueId());
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petWolf);
                 player.closeInventory();
@@ -186,7 +203,6 @@ public class PetUtils {
                 petChicken.setAge(0);
                 petChicken.ageLocked = true;
                 player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1F, 1F);
-                player.sendMessage("Chicken pet Spawned!");
                 makePet(petChicken, player.getUniqueId());
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petChicken);
                 player.closeInventory();
@@ -201,7 +217,6 @@ public class PetUtils {
                 petOcelot.ageLocked = true;
                 petOcelot.setTamed(true);
                 player.playSound(player.getLocation(), Sound.CAT_MEOW, 1F, 1F);
-                player.sendMessage("Ocelot pet Spawned!");
                 makePet(petOcelot, player.getUniqueId());
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petOcelot);
                 player.closeInventory();
@@ -215,7 +230,6 @@ public class PetUtils {
                 petRabbit.setAge(0);
                 petRabbit.ageLocked = true;
                 player.playSound(player.getLocation(), Sound.DIG_GRASS, 1F, 1F);
-                player.sendMessage("Rabbit pet Spawned!");
                 makePet(petRabbit, player.getUniqueId());
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petRabbit);
                 player.closeInventory();
@@ -227,7 +241,6 @@ public class PetUtils {
                 world.addEntity(petSilverfish, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petSilverfish.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 1F, 1F);
-                player.sendMessage("Silverfish pet Spawned!");
                 makePet(petSilverfish, player.getUniqueId());
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petSilverfish);
                 player.closeInventory();
@@ -239,7 +252,6 @@ public class PetUtils {
                 world.addEntity(petEndermite, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petEndermite.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 player.playSound(player.getLocation(), Sound.ENDERMAN_IDLE, 1F, 1F);
-                player.sendMessage("Endermite pet Spawned!");
                 makePet(petEndermite, player.getUniqueId());
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petEndermite);
                 player.closeInventory();
@@ -251,7 +263,6 @@ public class PetUtils {
                 world.addEntity(petSnowman, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petSnowman.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 player.playSound(player.getLocation(), Sound.STEP_SNOW, 1F, 1F);
-                player.sendMessage("Snowman pet Spawned!");
                 makePet(petSnowman, player.getUniqueId());
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petSnowman);
                 player.closeInventory();
