@@ -1,7 +1,6 @@
 package net.dungeonrealms.entities.types.monsters.boss;
 
 import java.lang.reflect.Field;
-import java.util.Random;
 
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -12,7 +11,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -20,8 +18,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.monsters.EntityPirate;
-import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
@@ -43,20 +39,13 @@ import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
 import net.minecraft.server.v1_8_R3.World;
 
 /**
- * Created by Chase on Oct 18, 2015
+ * Created by Chase on Oct 19, 2015
  */
-public class Mayel extends EntitySkeleton implements Boss {
-
-	/**
-	 * @param world
-	 */
-	public Mayel(World world) {
-		super(world);
-	}
+public class Pyromancer extends EntitySkeleton implements Boss {
 
 	public Location loc;
 
-	public Mayel(World world, Location loc) {
+	public Pyromancer(World world, Location loc) {
 		super(world);
 		this.loc = loc;
 		try {
@@ -88,10 +77,10 @@ public class Mayel extends EntitySkeleton implements Boss {
 		this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), 1));
 		EntityStats.setBossRandomStats(this, level, 1);
 		this.getBukkitEntity()
-		        .setCustomName(ChatColor.GOLD.toString() + ChatColor.UNDERLINE.toString() + "Mayel The Cruel");
+		        .setCustomName(ChatColor.YELLOW.toString() + ChatColor.UNDERLINE.toString() + "Mad Bandit Pyromancer");
 		for (Player p : API.getNearbyPlayers(loc, 50)) {
 			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": "
-			        + " How dare you challenge ME, the leader of the Cyrene Bandits! To me, my brethern, let us crush these incolents");
+			        + " WAHAHAHA! EXPLOSIONS! BOOM, BOOM, BOOM! I'm gonna blow you all up!");
 		}
 	}
 
@@ -112,7 +101,7 @@ public class Mayel extends EntitySkeleton implements Boss {
 	 */
 	private ItemStack getWeapon() {
 		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.BOW,
-		        net.dungeonrealms.items.Item.ItemTier.getByTier(2));
+		        net.dungeonrealms.items.Item.ItemTier.getByTier(1));
 	}
 
 	/**
@@ -121,6 +110,7 @@ public class Mayel extends EntitySkeleton implements Boss {
 	@Override
 	public void a(EntityLiving entityliving, float f) {
 		EntityArrow entityarrow = new EntityArrow(this.world, this, entityliving, 1.6F, (float) (14 - 2 * 4));
+		entityarrow.setOnFire(10);
 		entityarrow.b((double) (f * 2.0F) + this.random.nextGaussian() * 0.25D + (double) ((float) 2 * 0.11F));
 		Projectile arrowProjectile = (Projectile) entityarrow.getBukkitEntity();
 		net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
@@ -140,27 +130,19 @@ public class Mayel extends EntitySkeleton implements Boss {
 	}
 
 	private ItemStack[] getArmor() {
-		return new ArmorGenerator().nextTier(2);
+		return new ArmorGenerator().nextTier(1);
 	}
 
 	@Override
 	public void onBossDeath() {
-		Utils.log.info("MAYEL HAS DIED");
+
 	}
 
 	@Override
 	public void onBossHit(LivingEntity en) {
-		for (int i = 0; i < 2; i++) {
-			EntityPirate pirate = new EntityPirate(this.getWorld(), EnumMonster.MayelPirate, 1);
-			pirate.setLocation(locX + 1, locY, locZ + 1, 1, 1);
-            Location location = new Location(world.getWorld(), this.getBukkitEntity().getLocation().getX() + new Random().nextInt(3), this.getBukkitEntity().getLocation().getY(), this.getBukkitEntity().getLocation().getZ() + new Random().nextInt(3));
-            pirate.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-            world.addEntity(pirate, SpawnReason.CUSTOM);
-            pirate.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-		}
-		for (Player p : API.getNearbyPlayers(loc, 50)) {
-			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + " Come to my call, brothers!");
-		}
-
+		// TODO Auto-generated method stub
+		
 	}
+
+
 }

@@ -26,6 +26,7 @@ import net.dungeonrealms.entities.types.monsters.EntityPirate;
 import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
 import net.dungeonrealms.entities.types.monsters.EntitySpider;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.types.monsters.boss.Burick;
 import net.dungeonrealms.entities.types.monsters.boss.Mayel;
 import net.dungeonrealms.entities.utils.BuffUtils;
 import net.dungeonrealms.entities.utils.EntityStats;
@@ -135,6 +136,9 @@ public class CommandSpawn implements CommandExecutor {
                 	switch(bossName){
                 		case "mayel" :
                 			entity = new Mayel(world, player.getLocation());
+                			break;
+                		case "burick":
+                			entity = new Burick(world, player.getLocation());
                 			break;
                 		default: 
                 			entity = null;
