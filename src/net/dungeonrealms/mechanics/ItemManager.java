@@ -23,7 +23,7 @@ public class ItemManager {
      *
      * @param name
      * @param lore
-     * @return
+     * @return ItemStack
      * @since 1.0
      */
     public static ItemStack createHearthStone(String name, String[] lore) {
@@ -41,10 +41,10 @@ public class ItemManager {
     }
 
     /**
-     * creates a random Teleport book
+     * Creates a random Teleport book
      *
      * @param name
-     * @return
+     * @return ItemStack
      * @since 1.0
      */
     public static ItemStack createRandomTeleportBook(String name) {
@@ -63,10 +63,60 @@ public class ItemManager {
     }
 
     /**
+     * Creates a scrap piece based on
+     * given tier
+     *
+     * @param tier
+     * @return ItemStack
+     * @since 1.0
+     */
+    public static ItemStack createArmorScrap(int tier) {
+        ItemStack rawStack = null;
+        String name = "";
+        switch (tier) {
+            case 1:
+                rawStack = new ItemStack(Material.LEATHER);
+                name = ChatColor.BOLD + "Leather";
+                break;
+            case 2:
+                rawStack = new ItemStack(Material.IRON_FENCE);
+                name = ChatColor.GREEN.toString() + ChatColor.BOLD + "Chain";
+                break;
+            case 3:
+                rawStack = new ItemStack(Material.IRON_INGOT);
+                name = ChatColor.AQUA.toString() + ChatColor.BOLD + "Iron";
+                break;
+            case 4:
+                rawStack = new ItemStack(Material.DIAMOND);
+                name = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Diamond";
+                break;
+            case 5:
+                rawStack = new ItemStack(Material.GOLD_INGOT);
+                name = ChatColor.YELLOW.toString() + ChatColor.BOLD + "Gold";
+                break;
+            default:
+                break;
+        }
+        if (rawStack != null) {
+            ItemMeta meta = rawStack.getItemMeta();
+            meta.setDisplayName(name + " Scrap");
+            meta.setLore(Collections.singletonList(ChatColor.GRAY + "Repairs 3% durability on " + name + ChatColor.GRAY + " items."));
+            rawStack.setItemMeta(meta);
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+            tag.set("type", new NBTTagString("scrap"));
+            tag.setInt("itemTier", tier);
+            nmsStack.setTag(tag);
+            return CraftItemStack.asBukkitCopy(nmsStack);
+        }
+        return null;
+    }
+
+    /**
      * @param m
      * @param name
      * @param lore
-     * @return
+     * @return ItemStack
      */
     public static ItemStack createItem(Material m, String name, String[] lore) {
         ItemStack is = new ItemStack(m, 1);
@@ -78,6 +128,12 @@ public class ItemManager {
         return is;
     }
 
+    /**
+     * @param m
+     * @param name
+     * @param lore
+     * @return ItemStack
+     */
     public static ItemStack createItemWithData(Material m, String name, String[] lore, short i) {
         ItemStack is = new ItemStack(m, 1, i);
         ItemMeta meta = is.getItemMeta();
@@ -94,7 +150,7 @@ public class ItemManager {
      * @param player
      * @param displayName
      * @param lore
-     * @return
+     * @return ItemStack
      * @since 1.0
      */
     public static ItemStack getPlayerProfile(Player player, String displayName, String[] lore) {

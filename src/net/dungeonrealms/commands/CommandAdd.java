@@ -6,6 +6,7 @@ import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.FTPUtils;
+import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
@@ -58,6 +59,11 @@ public class CommandAdd implements CommandExecutor {
                     Banktag.set("type", new NBTTagString("bank"));
                     nmsBank.setTag(Banktag);
                     player.getInventory().addItem(CraftItemStack.asBukkitCopy(nmsBank));
+                    player.getInventory().addItem(ItemManager.createArmorScrap(1));
+                    player.getInventory().addItem(ItemManager.createArmorScrap(2));
+                    player.getInventory().addItem(ItemManager.createArmorScrap(3));
+                    player.getInventory().addItem(ItemManager.createArmorScrap(4));
+                    player.getInventory().addItem(ItemManager.createArmorScrap(5));
                     break;
                 case "trail":
                     if (args[1] != null)
