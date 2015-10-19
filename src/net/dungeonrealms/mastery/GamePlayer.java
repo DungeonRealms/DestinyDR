@@ -112,5 +112,4 @@ public class GamePlayer<T extends HumanEntity> {
         return output;
     }
 
-
 }
