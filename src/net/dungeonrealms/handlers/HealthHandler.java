@@ -431,9 +431,7 @@ public class HealthHandler {
                     break;
             }
         }
-        if (leAttacker == null) {
-            return;
-        } else {
+        if (!(leAttacker == null) && !(leAttacker instanceof Player)) {
             Entities.getInstance().MONSTER_LAST_ATTACK.put(leAttacker, 10);
             if (!Entities.getInstance().MONSTERS_LEASHED.contains(leAttacker)) {
                 Entities.getInstance().MONSTERS_LEASHED.add(leAttacker);
