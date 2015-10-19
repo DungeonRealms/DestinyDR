@@ -7,7 +7,6 @@ import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.banks.BankMechanics;
-import net.dungeonrealms.mastery.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -19,6 +18,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 /**
@@ -89,27 +89,26 @@ public class ShopMechanics {
      * @param block
      */
     public static Shop getShop(Block block) {
-        for (int i = 0; i < shops.values().size(); i++) {
-            Shop current = (Shop) shops.values().toArray()[i];
-            if (current.block.getX() == block.getX() && current.block.getY() == block.getY() && current.getBlock().getZ() == block.getZ()) {
-                return current;
+        for (Shop shop : shops.values()) {
+            if (shop.getBlock().getLocation() == block.getLocation()) {
+                return shop;
             }
         }
         return null;
     }
 
     /**
-     * Very Dangerous Method..
+     * A less dangerous method now
      *
      * @since 1.0
      */
     public static void deleteAllShops() {
-            while (shops.size() > 0) {
-                shops.get(0).deleteShop();
-                shops.remove(0);
-                Utils.log.info("A Shop deleted");
+        if (!shops.isEmpty()) {
+            for (Map.Entry<UUID, Shop> shopEntry : shops.entrySet()) {
+                shopEntry.getValue().deleteShop();
+                shops.remove(shopEntry.getKey());
             }
-
+        }
     }
 
     /**

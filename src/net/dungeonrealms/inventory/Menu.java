@@ -394,8 +394,9 @@ public class Menu {
             return;
         }
 
-        Inventory inv = Bukkit.createInventory(null, 18, "Pet Selection");
+        Inventory inv = Bukkit.createInventory(null, 27, "Pet Selection");
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+        inv.setItem(26, editItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Dismiss Pet", new String[]{}));
 
         for (String petType : playerPets) {
             ItemStack itemStack = new ItemStack(Material.MONSTER_EGG, 1, (short) EnumPets.getByName(petType).getEggShortData());
@@ -421,8 +422,9 @@ public class Menu {
             return;
         }
 
-        Inventory inv = Bukkit.createInventory(null, 18, "Mount Selection");
+        Inventory inv = Bukkit.createInventory(null, 27, "Mount Selection");
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+        inv.setItem(26, editItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Dismiss Mount", new String[]{}));
 
         for (String mountType : playerMounts) {
             ItemStack itemStack = EnumMounts.getByName(mountType).getSelectionItem();
@@ -448,8 +450,9 @@ public class Menu {
             return;
         }
 
-        Inventory inv = Bukkit.createInventory(null, 18, "Player Trail Selection");
+        Inventory inv = Bukkit.createInventory(null, 27, "Player Trail Selection");
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+        inv.setItem(26, editItem(new ItemStack(Material.ARMOR_STAND), ChatColor.GREEN + "Turn off Trail", new String[]{}));
 
         for (String trailType : playerTrails) {
             ItemStack itemStack = ParticleAPI.ParticleEffect.getByName(trailType).getSelectionItem();
@@ -475,8 +478,9 @@ public class Menu {
             return;
         }
 
-        Inventory inv = Bukkit.createInventory(null, 18, "Mob Trail Selection");
+        Inventory inv = Bukkit.createInventory(null, 27, "Mob Trail Selection");
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+        inv.setItem(26, editItem(new ItemStack(Material.ARMOR_STAND), ChatColor.GREEN + "Turn off Trail", new String[]{}));
 
         for (String trailType : mobTrails) {
             ItemStack itemStack = ParticleAPI.ParticleEffect.getByName(trailType).getSelectionItem();
