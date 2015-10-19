@@ -54,6 +54,7 @@ public class CoreAPI {
             }
         });
     }
+
     /**
      * Checks if a player has a ban.
      *
@@ -66,82 +67,22 @@ public class CoreAPI {
             try {
                 URL url = new URL("https://cherryio.com/api/l.php?type=ban&player=" + playerName);
                 BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-                String line = in.readLine();
-                return line;
+                return in.readLine();
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            return 0;
+            return "0,0";
         });
 
         try {
             String line = (String) result.get();
-            callback.callback(null, new BanReply(BanResult.getByInt(Integer.valueOf(line.split(",")[0])), BanReason.getByInt(Integer.valueOf(line.split(",")[1]))));
+            callback.callback(null, new BanReply(BanReply.BanResult.getByInt(Integer.valueOf(line.split(",")[0])), BanReply.BanReason.getByInt(Integer.valueOf(line.split(",")[1]))));
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }
     }
 
-    /**
-     * BanReason
-     * @since 1.0
-     */
-    public enum BanReason {
-        OTHER(-1, "Other"),
-        DUPLICATIONS(1, "Duplications"),
-        HACKING(0, "Hacking"),
-        MIS_CONDUCT(3, "Misconduct");
 
-        private int id;
-        private String reason;
-
-        BanReason(int id, String reason) {
-            this.id = id;
-            this.reason = reason;
-        }
-
-        public static BanReason getByInt(int id) {
-            for (BanReason br : values()) {
-                if (br.getId() == id) {
-                    return br;
-                }
-            }
-            return BanReason.OTHER;
-        }
-
-        public int getId() {
-            return id;
-        }
-
-        public String getName() {
-            return reason;
-        }
-    }
-
-    public enum BanResult {
-        YES(1),
-        NO(0),
-        TEMP_BANNED(3);
-
-        private int id;
-
-        BanResult(int id) {
-            this.id = id;
-        }
-
-        public static BanResult getByInt(int id) {
-            for (BanResult br : values()) {
-                if (br.getId() == id) {
-                    return br;
-                }
-            }
-            return BanResult.NO;
-        }
-
-        public int getId() {
-            return id;
-        }
-    }
 
     /**
      * Will get a players guild Async.

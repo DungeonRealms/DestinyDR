@@ -1,6 +1,8 @@
 package net.dungeonrealms.guild;
 
+import com.mongodb.async.SingleResultCallback;
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.DeleteResult;
 import net.dungeonrealms.API;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.*;
@@ -13,6 +15,7 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -52,6 +55,46 @@ public class Guild {
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
         DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "logs.playerLogin", player.getName() + "," + (System.currentTimeMillis() / 1000l), true);
         NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + player.getName() + ChatColor.GREEN + " is now online!");
+    }
+
+    /**
+     * @param player    The player wanting to remove the Guild.
+     * @param guildName Name of the guild.
+     * @since 1.0
+     */
+    public void disbandGuild(Player player, String guildName) {
+        if (!isOwner(player.getUniqueId(), guildName)) {
+            player.sendMessage(ChatColor.RED + "You cannot disband the Guild! You aren't the Owner!");
+            NetworkAPI.getInstance().sendNetworkMessage("guild", "message", player.getName() + " tried to disband the guild but was denied because they aren't of the rank [OWNER]!");
+            return;
+        }
+
+        String OWNER = (String) DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, guildName);
+        String CO_OWNER = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CO_OWNER, guildName);
+        List<String> OFFICERS = (List<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, guildName);
+        List<String> MEMBERS = (List<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, guildName);
+
+        List<String> ENTIRE_GUILD = new ArrayList<>();
+        ENTIRE_GUILD.add(OWNER);
+        ENTIRE_GUILD.add(CO_OWNER);
+        ENTIRE_GUILD.addAll(OFFICERS);
+        ENTIRE_GUILD.addAll(MEMBERS);
+
+        NetworkAPI.getInstance().sendNetworkMessage("guild", "message", "Preparing to purge guild!");
+
+        ENTIRE_GUILD.stream().filter(s -> !s.equals("")).forEach(s1 -> {
+            DatabaseAPI.getInstance().update(UUID.fromString(s1), EnumOperators.$SET, "info.guild", "", true);
+            NetworkAPI.getInstance().sendNetworkMessage("player", "update", API.getNameFromUUID(s1));
+        });
+
+
+        Database.guilds.deleteOne(Filters.eq("info.guild", guildName), new SingleResultCallback<DeleteResult>() {
+            @Override
+            public void onResult(DeleteResult deleteResult, Throwable throwable) {
+                Utils.log.info("[GUILD] [ASYNC] PURGED Guild=" + guildName + " ACKNOWLEDGED=" + deleteResult.wasAcknowledged());
+            }
+        });
+
     }
 
     /**

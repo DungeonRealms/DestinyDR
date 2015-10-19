@@ -16,7 +16,6 @@ import java.util.UUID;
 /**
  * Created by Nick on 8/29/2015.
  */
-@Deprecated
 public class DatabaseAPI {
 
     private static DatabaseAPI instance = null;

@@ -1,8 +1,14 @@
 package net.dungeonrealms.listeners;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mechanics.LootManager;
+import net.dungeonrealms.shops.Shop;
+import net.dungeonrealms.shops.ShopMechanics;
+import net.dungeonrealms.spawning.LootSpawner;
+import net.dungeonrealms.spawning.MobSpawner;
+import net.dungeonrealms.spawning.SpawningMechanics;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -19,15 +25,8 @@ import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mechanics.LootManager;
-import net.dungeonrealms.shops.Shop;
-import net.dungeonrealms.shops.ShopMechanics;
-import net.dungeonrealms.spawning.LootSpawner;
-import net.dungeonrealms.spawning.MobSpawner;
-import net.dungeonrealms.spawning.SpawningMechanics;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -43,14 +42,11 @@ public class BlockListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockPlace(BlockPlaceEvent event) {
-        if (event.getItemInHand() == null)
-            return;
+        if (event.getItemInHand() == null) return;
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemInHand());
-        if (nmsItem == null)
-            return;
+        if (nmsItem == null) return;
         NBTTagCompound tag = nmsItem.getTag();
-        if (tag == null || !tag.getString("type").equalsIgnoreCase("important"))
-            return;
+        if (tag == null || !tag.getString("type").equalsIgnoreCase("important")) return;
         event.setCancelled(true);
     }
 
@@ -63,8 +59,7 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void blockBreak(BlockBreakEvent e) {
         Block block = e.getBlock();
-        if (block == null)
-            return;
+        if (block == null) return;
         if (block.getType() == Material.CHEST) {
             Shop shop = ShopMechanics.getShop(block);
             if (shop == null) {
@@ -98,40 +93,37 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerRightClickChest(PlayerInteractEvent e) {
         Block block = e.getClickedBlock();
-        if (block == null)
-            return;
-        if (block.getType() != Material.CHEST)
-            return;
-        
-        for(LootSpawner loot : LootManager.spawners){
-        	if(loot.location.getBlockX() == block.getX() && loot.location.getBlockY() == block.getY() && loot.location.getBlockZ() == block.getLocation().getZ()){
-        		Collection<Entity> list = API.getNearbyMonsters(loot.location,10);
-        		if(list.isEmpty()){
-               Action actionType = e.getAction();
-               switch (actionType) {
-                 case RIGHT_CLICK_BLOCK:
-                	e.setCancelled(true);
-                	e.getPlayer().openInventory(loot.inv);
-                	break;
-                 case LEFT_CLICK_BLOCK:
-                	 e.setCancelled(true);
-                	 for(ItemStack stack : loot.inv.getContents()){
-                		 if(stack == null)
-                			 continue;
-                		 loot.inv.remove(stack);
-                		 if(stack.getType() != Material.AIR)
-                		 e.getPlayer().getWorld().dropItemNaturally(loot.location, stack);
-                	 }
-                	 loot.update();
-                	 break;
-               		}
-               }else{
-            	   e.getPlayer().sendMessage(ChatColor.RED.toString() + "You can't open this while monsters are around!");
-            	   e.setCancelled(true);
-               }
-        	}
+        if (block == null) return;
+        if (block.getType() != Material.CHEST) return;
+        for (LootSpawner loot : LootManager.spawners) {
+            if (loot.location.getBlockX() == block.getX() && loot.location.getBlockY() == block.getY() && loot.location.getBlockZ() == block.getLocation().getZ()) {
+                Collection<Entity> list = API.getNearbyMonsters(loot.location, 10);
+                if (list.isEmpty()) {
+                    Action actionType = e.getAction();
+                    switch (actionType) {
+                        case RIGHT_CLICK_BLOCK:
+                            e.setCancelled(true);
+                            e.getPlayer().openInventory(loot.inv);
+                            break;
+                        case LEFT_CLICK_BLOCK:
+                            e.setCancelled(true);
+                            for (ItemStack stack : loot.inv.getContents()) {
+                                if (stack == null)
+                                    continue;
+                                loot.inv.remove(stack);
+                                if (stack.getType() != Material.AIR)
+                                    e.getPlayer().getWorld().dropItemNaturally(loot.location, stack);
+                            }
+                            loot.update();
+                            break;
+                    }
+                } else {
+                    e.getPlayer().sendMessage(ChatColor.RED.toString() + "You can't open this while monsters are around!");
+                    e.setCancelled(true);
+                }
+            }
         }
-        
+
         Shop shop = ShopMechanics.getShop(block);
         if (shop == null)
             return;
@@ -164,25 +156,20 @@ public class BlockListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onBlockDamaged(PlayerInteractEvent event) {
-        if (event.getItem() == null)
-            return;
+        if (event.getItem() == null) return;
         if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
-            if (event.getClickedBlock() == null || event.getClickedBlock().getType() == Material.AIR)
-                return;
+            if (event.getClickedBlock() == null || event.getClickedBlock().getType() == Material.AIR) return;
             net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItem());
-            if (nmsItem == null)
-                return;
+            if (nmsItem == null) return;
             NBTTagCompound tag = nmsItem.getTag();
-            if (tag == null || !tag.getString("type").equalsIgnoreCase("important"))
-                return;
+            if (tag == null || !tag.getString("type").equalsIgnoreCase("important")) return;
             event.setCancelled(true);
             if (event.getPlayer().isSneaking()) {
                 ItemStack item = event.getPlayer().getItemInHand();
                 net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
                 if (nms.getTag().hasKey("usage") && nms.getTag().getString("usage").equalsIgnoreCase("profile")) {
                     if (ShopMechanics.shops.get(event.getPlayer().getUniqueId()) != null) {
-                        event.getPlayer()
-                                .sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "You already have an active shop");
+                        event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "You already have an active shop");
                         return;
                     }
                     ShopMechanics.setupShop(event.getClickedBlock(), event.getPlayer().getUniqueId());

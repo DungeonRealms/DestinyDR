@@ -36,19 +36,28 @@ import java.util.*;
 @SuppressWarnings({"unchecked", "chasesTouch"})
 public class Menu {
 
+    public static void sendMailInventory(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 45, "Send Mail");
+
+        inv.setItem(0, editItem(new ItemStack(Material.BOOK_AND_QUILL), ChatColor.GREEN + "", new String[]{
+
+        }));
+
+    }
+
     public static void openMailInventory(Player player) {
         UUID uuid = player.getUniqueId();
         ArrayList<String> mail = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MAILBOX, uuid);
 
-        if (mail.size() <= 0) {
-            Inventory noMailInv = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no mail!");
-            player.openInventory(noMailInv);
-            return;
-
-        }
-
         Inventory inv = Bukkit.createInventory(null, 45, "Mailbox");
         SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
+
+        inv.setItem(0, editItem(new ItemStack(Material.BOOK_AND_QUILL), ChatColor.GREEN + "Send Mail", new String[]{
+                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to send mail!"
+        }));
+        inv.setItem(8, editItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Tax", new String[]{
+                ChatColor.GRAY + "Tax: " + ChatColor.AQUA + "1 GEM"
+        }));
 
         int slot = 9;
         for (String s : mail) {
@@ -84,36 +93,36 @@ public class Menu {
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
 
 
-        inv.setItem(8, editItem(new ItemStack(Material.BEDROCK), ChatColor.RED + "Delete Guild " + ChatColor.RED.toString() + ChatColor.BOLD + "WARNING", new String[]{
+        inv.setItem(8, editItem(new ItemStack(Material.BEDROCK), ChatColor.RED + "Delete Guild", new String[]{
                 ChatColor.RED + "This action CANNOT be undone!",
-                ChatColor.RED + "Guild deletion isn't automatic! Clicking",
-                ChatColor.RED + "this item will send a request to be evaluated!",
                 "",
-                ChatColor.RED + "You must be ranked " + ChatColor.GREEN + "Guild Owner",
+                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to purge guild!",
+                "",
+                ChatColor.RED + "You must be rank " + ChatColor.GREEN + "Owner" + ChatColor.RED + "!",
         }));
 
         inv.setItem(10, editItem("Nemanja011sl", ChatColor.GREEN + "Invite a player", new String[]{
                 ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to add a player!",
                 "",
-                ChatColor.RED + "You must be ranked " + ChatColor.GREEN + "Officer" + ChatColor.RED + "!",
+                ChatColor.RED + "You must be rank " + ChatColor.GREEN + "Officer" + ChatColor.RED + "!",
         }));
 
         inv.setItem(11, editItem("rarest_of_pepes", ChatColor.GREEN + "Remove a player", new String[]{
                 ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to remove a player!",
                 "",
-                ChatColor.RED + "You must be ranked " + ChatColor.GREEN + "Officer" + ChatColor.RED + "!",
+                ChatColor.RED + "You must be rank " + ChatColor.GREEN + "Officer" + ChatColor.RED + "!",
         }));
 
         inv.setItem(13, editItem("TeaZ", ChatColor.GREEN + "Promote a player", new String[]{
                 ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to promote a player!",
                 "",
-                ChatColor.RED + "You must be ranked " + ChatColor.GREEN + "Owner/CoOwner" + ChatColor.RED + "!",
+                ChatColor.RED + "You must be ranked >=" + ChatColor.GREEN + "CoOwner" + ChatColor.RED + "!",
         }));
 
         inv.setItem(14, editItem("Arcaniax", ChatColor.GREEN + "Demote a player", new String[]{
                 ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to demote a player!",
                 "",
-                ChatColor.RED + "You must be ranked " + ChatColor.GREEN + "Owner/CoOwner" + ChatColor.RED + "!",
+                ChatColor.RED + "You must be ranked >=" + ChatColor.GREEN + "CoOwner" + ChatColor.RED + "!",
         }));
 
         inv.setItem(36, editItem(new ItemStack(Material.WOOL, 1, (short) 5), ChatColor.GREEN + "Pick a Guild Icon!", new String[]{

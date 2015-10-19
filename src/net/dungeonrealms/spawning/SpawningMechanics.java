@@ -10,6 +10,7 @@ import java.util.ArrayList;
  * Created by Chase on Sep 28, 2015
  */
 public class SpawningMechanics {
+
     private static ArrayList<MobSpawner> ALLSPAWNERS = new ArrayList<>();
     public static ArrayList<String> SPANWER_CONFIG = new ArrayList<>();
 
@@ -48,8 +49,7 @@ public class SpawningMechanics {
     		int tier = Integer.parseInt(tierString);
     		int spawnAmount = Integer.parseInt(line.split(";")[1]);
     		String monster = line.split("=")[1].split(":")[0];
-    		MobSpawner spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount);
-            ALLSPAWNERS.add(spawner);
+            ALLSPAWNERS.add(new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount));
     	}
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), SpawningMechanics::initSpawners, 0, 4 * 20L);
     }

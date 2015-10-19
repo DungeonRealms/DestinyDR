@@ -1,23 +1,8 @@
 package net.dungeonrealms;
 
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.commands.CommandAccept;
-import net.dungeonrealms.commands.CommandAdd;
-import net.dungeonrealms.commands.CommandAnalyze;
-import net.dungeonrealms.commands.CommandEss;
-import net.dungeonrealms.commands.CommandGuild;
-import net.dungeonrealms.commands.CommandLag;
-import net.dungeonrealms.commands.CommandList;
-import net.dungeonrealms.commands.CommandMail;
-import net.dungeonrealms.commands.CommandParty;
-import net.dungeonrealms.commands.CommandRank;
-import net.dungeonrealms.commands.CommandSet;
-import net.dungeonrealms.commands.CommandSpawn;
+import net.dungeonrealms.commands.*;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.PetUtils;
@@ -25,16 +10,9 @@ import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
-import net.dungeonrealms.listeners.AntiCheatListener;
-import net.dungeonrealms.listeners.BankListener;
-import net.dungeonrealms.listeners.BlockListener;
-import net.dungeonrealms.listeners.BossListener;
-import net.dungeonrealms.listeners.DamageListener;
-import net.dungeonrealms.listeners.EnergyListener;
-import net.dungeonrealms.listeners.InventoryListener;
-import net.dungeonrealms.listeners.ItemListener;
-import net.dungeonrealms.listeners.MainListener;
+import net.dungeonrealms.listeners.*;
 import net.dungeonrealms.mastery.FTPUtils;
+import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mechanics.WebAPI;
@@ -49,6 +27,10 @@ import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /*          Copyright (C) CherryIO, LLC - All Rights Reserved
  * Unauthorized copying and or modifying of this file, via any medium is
@@ -131,6 +113,10 @@ public class DungeonRealms extends JavaPlugin {
 //        SpawningMechanics.loadSpawners();
         LootManager.loadLootSpawners();
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
+
+        GamePlayer<?> gPlayer = new GamePlayer<Player>();
+
+
     }
 
     public void onDisable() {

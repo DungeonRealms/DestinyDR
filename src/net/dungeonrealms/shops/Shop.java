@@ -18,6 +18,7 @@ import java.util.UUID;
  * Created by Chase on Sep 23, 2015
  */
 public class Shop {
+
     private UUID owner;
     private String shopName;
     public boolean isopen;
@@ -38,7 +39,7 @@ public class Shop {
         hologram.appendTextLine(ChatColor.RED.toString() + ChatColor.BOLD + shopName);
         hologram.getVisibilityManager().setVisibleByDefault(true);
     }
-    
+
     /*
      * toggles hologram name green and red for on and off.
      */
@@ -47,7 +48,7 @@ public class Shop {
         if (isopen)
             hologram.appendTextLine(ChatColor.GREEN.toString() + ChatColor.BOLD + shopName);
         else
-            hologram.appendTextLine(ChatColor.RED.toString() + ChatColor.BOLD +  shopName);
+            hologram.appendTextLine(ChatColor.RED.toString() + ChatColor.BOLD + shopName);
     }
 
     /**
@@ -65,8 +66,7 @@ public class Shop {
      * @since 1.0
      */
     private Inventory createNewInv() {
-        Inventory inv = Bukkit.createInventory(null, getSize(owner),
-                shopName + " - @" + Bukkit.getPlayer(owner).getName());
+        Inventory inv = Bukkit.createInventory(null, getSize(owner), shopName + " - @" + Bukkit.getPlayer(owner).getName());
         ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.GRAY.getDyeData());
         ItemMeta meta = button.getItemMeta();
         meta.setDisplayName(ChatColor.YELLOW.toString() + "Open Shop");

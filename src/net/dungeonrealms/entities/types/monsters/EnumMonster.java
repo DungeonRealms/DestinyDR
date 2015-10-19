@@ -24,9 +24,9 @@ public enum EnumMonster {
     Mage("Mage", "Mage", new String[]{""}, new String[]{""}),
     Skeleton("Skeleton", "Steve", new String[]{"Scary", "Spooky", "Spooky Scary"}, new String[]{"Archer", "Ranger"}),
     MagmaCube("Magma Cube", "Steve", new String[]{"Weak"}, new String[]{""}),
-	Wither("Chaos Skeleton", "Wither", new String[]{""}, new String[]{""}),
-	Daemon("Daemon", "Steve",new String[]{""}, new String[]{""});
-	
+    Wither("Chaos Skeleton", "Wither", new String[]{""}, new String[]{""}),
+    Daemon("Daemon", "Steve", new String[]{""}, new String[]{""});
+
     public String name;
     public String mobHead;
     public String[] prefix;
@@ -42,7 +42,7 @@ public enum EnumMonster {
     /**
      * Gets the Prefix
      *
-     * @return
+     * @return the prefix
      * @since 1.0
      */
     public String getPrefix() {
@@ -54,7 +54,7 @@ public enum EnumMonster {
     /**
      * Gets the suffix
      *
-     * @return
+     * @return the suffix
      * @since 1.0
      */
     public String getSuffix() {

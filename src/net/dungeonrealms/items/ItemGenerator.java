@@ -42,9 +42,23 @@ public class ItemGenerator {
     public ItemStack next() {
         return getWeapon(getRandomItemType(), getRandomItemTier(), getRandomItemModifier());
     }
+
+    /**
+     * allows, new ItemGenerator().next() -> ItemStack.
+     *
+     * @return getWeapon
+     * @since 1.0
+     */
     public ItemStack next(Item.ItemTier tier) {
         return getWeapon(getRandomItemType(), tier, getRandomItemModifier());
     }
+
+    /**
+     * allows, new ItemGenerator().next() -> ItemStack.
+     *
+     * @return getWeapon
+     * @since 1.0
+     */
     public ItemStack next(Item.ItemType type, Item.ItemTier tier) {
         return getWeapon(type, tier, getRandomItemModifier());
     }
