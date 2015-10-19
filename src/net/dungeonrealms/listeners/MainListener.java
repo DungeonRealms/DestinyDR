@@ -302,9 +302,9 @@ public class MainListener implements Listener {
         if (player.getLocation().getBlock().getType() != Material.AIR) return;
         Material material = player.getLocation().subtract(0, 1, 0).getBlock().getType();
         if (material == Material.DIRT || material == Material.GRASS || material == Material.STONE || material == Material.COBBLESTONE || material == Material.GRAVEL
-                || material == Material.LOG || material == Material.LEAVES || material == Material.SMOOTH_BRICK || material == Material.BEDROCK || material == Material.GLASS
+                || material == Material.LOG || material == Material.SMOOTH_BRICK || material == Material.BEDROCK || material == Material.GLASS
                 || material == Material.SANDSTONE || material == Material.SAND || material == Material.BOOKSHELF || material == Material.MOSSY_COBBLESTONE || material == Material.OBSIDIAN
-                || material == Material.SNOW_BLOCK || material == Material.ICE || material == Material.CLAY || material == Material.STAINED_CLAY || material == Material.WOOL) {
+                || material == Material.SNOW_BLOCK || material == Material.CLAY || material == Material.STAINED_CLAY || material == Material.WOOL) {
             DonationEffects.PLAYER_GOLD_BLOCK_TRAIL_INFO.put(player.getLocation().subtract(0, 1, 0).getBlock().getLocation(), material);
             player.getLocation().subtract(0, 1, 0).getBlock().setType(Material.GOLD_BLOCK);
             player.getLocation().subtract(0, 1, 0).getBlock().setMetadata("time", new FixedMetadataValue(DungeonRealms.getInstance(), 10));
