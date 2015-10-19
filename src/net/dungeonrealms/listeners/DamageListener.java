@@ -4,6 +4,7 @@ import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
+import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
@@ -20,6 +21,7 @@ import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -135,6 +137,8 @@ public class DamageListener implements Listener {
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
         if ((!(event.getDamager() instanceof Player)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL))) return;
         if (!(event.getEntity() instanceof Monster) && !(event.getEntity() instanceof Player)) return;
+        if (Entities.PLAYER_PETS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
+        if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
         if (event.getDamager() instanceof Player) {
@@ -264,6 +268,8 @@ public class DamageListener implements Listener {
         if ((!(event.getDamager() instanceof LivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
             return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
+        if (Entities.PLAYER_PETS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
+        if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         double armourReducedDamage = 0;
         LivingEntity defender = (LivingEntity) event.getEntity();
         EntityEquipment defenderEquipment = defender.getEquipment();
