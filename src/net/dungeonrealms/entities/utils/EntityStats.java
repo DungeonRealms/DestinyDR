@@ -111,4 +111,24 @@ public class EntityStats {
         entity.getBukkitEntity().setMetadata("spd", new FixedMetadataValue(DungeonRealms.getInstance(), stat.spd));
     }
 
+	/**
+	 * @param mayel
+	 * @param level
+	 * @param i
+	 */
+	public static void setBossRandomStats(Entity entity, int level, int tier) {
+    	Stats stat = Stats.getRandomStats(level, tier);
+    	stat.atk *= 10;
+    	stat.hp *= 10;
+    	stat.def *= 10;
+        stat.spd *= 10;
+        entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), stat.hp));
+        entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
+        HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) entity.getBukkitEntity()));
+        entity.getBukkitEntity().setMetadata("def", new FixedMetadataValue(DungeonRealms.getInstance(), stat.def));
+        entity.getBukkitEntity().setMetadata("attack", new FixedMetadataValue(DungeonRealms.getInstance(), stat.atk));
+        entity.getBukkitEntity().setMetadata("spd", new FixedMetadataValue(DungeonRealms.getInstance(), stat.spd));
+
+	}
+
 }

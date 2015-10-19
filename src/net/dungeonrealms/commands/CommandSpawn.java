@@ -1,17 +1,7 @@
 package net.dungeonrealms.commands;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.entities.types.monsters.*;
-import net.dungeonrealms.entities.utils.BuffUtils;
-import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.mastery.NBTUtils;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.spawning.MobSpawner;
-import net.dungeonrealms.spawning.SpawningMechanics;
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.World;
+import java.util.Random;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.command.Command;
@@ -24,7 +14,27 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Wolf;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 
-import java.util.Random;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.monsters.BasicEntitySkeleton;
+import net.dungeonrealms.entities.types.monsters.BasicMageMonster;
+import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
+import net.dungeonrealms.entities.types.monsters.EntityBandit;
+import net.dungeonrealms.entities.types.monsters.EntityFireImp;
+import net.dungeonrealms.entities.types.monsters.EntityGolem;
+import net.dungeonrealms.entities.types.monsters.EntityPirate;
+import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
+import net.dungeonrealms.entities.types.monsters.EntitySpider;
+import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.types.monsters.boss.Mayel;
+import net.dungeonrealms.entities.utils.BuffUtils;
+import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.mastery.NBTUtils;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.spawning.MobSpawner;
+import net.dungeonrealms.spawning.SpawningMechanics;
+import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -117,6 +127,24 @@ public class CommandSpawn implements CommandExecutor {
     				SpawningMechanics.SPANWER_CONFIG.add(text);
     				DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPANWER_CONFIG);
                     SpawningMechanics.add(spawner);
+                    break;
+                case "boss":
+                	String bossName = args[1];
+                	Entity entity;
+                    World world = ((CraftWorld) player.getWorld()).getHandle();
+                	switch(bossName){
+                		case "mayel" :
+                			entity = new Mayel(world, player.getLocation());
+                			break;
+                		default: 
+                			entity = null;
+                	}
+                	if(entity == null)
+                		return false;
+                    Location location = new Location(world.getWorld(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
+                    entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                    world.addEntity(entity, SpawnReason.CUSTOM);
+                    entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                     break;
             }
         }

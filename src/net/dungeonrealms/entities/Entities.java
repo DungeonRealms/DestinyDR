@@ -5,6 +5,7 @@ import net.dungeonrealms.entities.types.RangedEntityBlaze;
 import net.dungeonrealms.entities.types.monsters.*;
 import net.dungeonrealms.entities.types.monsters.EntityGolem;
 import net.dungeonrealms.entities.types.monsters.EntitySpider;
+import net.dungeonrealms.entities.types.monsters.boss.Mayel;
 import net.dungeonrealms.entities.types.mounts.EnderDragon;
 import net.dungeonrealms.entities.types.mounts.Horse;
 import net.dungeonrealms.entities.types.pets.*;
@@ -58,6 +59,8 @@ public class Entities {
         nmsUtils.registerEntity("DRSkeleton", 51, EntitySkeleton.class, BasicEntitySkeleton.class);
         nmsUtils.registerEntity("DRMagma", 62, EntityMagmaCube.class, BasicEntityMagma.class);
         nmsUtils.registerEntity("DRPigman", 57, EntityPigZombie.class, BasicEntityPigman.class);
+        
+        nmsUtils.registerEntity("Mayel", 51, EntitySkeleton.class, Mayel.class);
         
         nmsUtils.registerEntity("PetCaveSpider", 59, EntityCaveSpider.class, CaveSpider.class);
         nmsUtils.registerEntity("PetBabyZombie", 54, EntityZombie.class, BabyZombie.class);
