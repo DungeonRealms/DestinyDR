@@ -14,6 +14,7 @@ public enum EnumMonster {
     Bandit("Bandit", "Steve", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Majestic", "Intrigued", "Dignified", "Courageous", "Timid", "Gloomy", "Noble", "Naive", "Black"}, new String[]{""}),
     Pirate("Pirate", "samsamsam1234", new String[]{""}, new String[]{""}),
     RangedPirate("Ranged Pirate", "samsamsam1234", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Majestic", "Intrigued", "Dignified", "Courageous", "Timid", "Gloomy", "Noble", "Naive", "Black"}, new String[]{""}),
+    MayelPirate("Pirate", "samsamsam1234", new String[]{"Mayel"}, new String[]{""}),
     Naga("Naga", "Das_Doktor", new String[]{"Weak"}, new String[]{"Shaman", "Mage"}),
     Tripoli("Tripoli", "Xmattpt", new String[]{" "}, new String[]{"Soldier", "Commander"}),
     Golem("Golem", "Steve", new String[]{"Enchanted", "Ironclad", "Enchanted Ironclad", "Ice"}, new String[]{" "}),

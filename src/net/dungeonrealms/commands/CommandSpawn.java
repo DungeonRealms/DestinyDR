@@ -78,7 +78,7 @@ public class CommandSpawn implements CommandExecutor {
                                 entity = new EntityRangedPirate(world, type, tier);
                                 break;
                             case "pirate":
-                                entity = new EntityPirate(world, type, tier);
+                                entity = new EntityPirate(world, EnumMonster.Pirate, tier);
                                 break;
                             case "imp":
                                 entity = new EntityFireImp(world, tier, type);

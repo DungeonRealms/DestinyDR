@@ -15,10 +15,10 @@ import org.bukkit.inventory.ItemStack;
  */
 public class EntityPirate extends MeleeEntityZombie {
 
-    public EntityPirate(World world, EnumEntityType entityType, int tier) {
-        super(world, EnumMonster.Pirate, tier, entityType, true);
+    public EntityPirate(World world, EnumMonster enumMons, int tier) {
+        super(world, enumMons, tier, EnumEntityType.HOSTILE_MOB, true);
         int level = Utils.getRandomFromTier(tier);
-        MetadataUtils.registerEntityMetadata(this, entityType, tier, level);
+        MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, tier, level);
         //EntityStats.setMonsterRandomStats(this, level, tier);
     }
 

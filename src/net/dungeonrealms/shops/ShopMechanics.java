@@ -104,12 +104,10 @@ public class ShopMechanics {
      * @since 1.0
      */
     public static void deleteAllShops() {
-            while (shops.size() > 0) {
-                shops.get(0).deleteShop();
-                shops.remove(0);
-                Utils.log.info("A Shop deleted");
+            for(Shop shop : shops.values()){
+            	shop.deleteShop();
+            	shops.remove(shop);
             }
-
     }
 
     /**
