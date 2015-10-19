@@ -215,12 +215,8 @@ public class RepairAPI {
      * @since 1.0
      */
     public static boolean isItemArmorScrap(ItemStack itemStack) {
-        if (!(itemStack.getType() == Material.LEATHER || itemStack.getType() == Material.IRON_FENCE || itemStack.getType() == Material.INK_SACK))
+        if (!(itemStack.getType() == Material.LEATHER || itemStack.getType() == Material.IRON_FENCE || itemStack.getType() == Material.IRON_INGOT || itemStack.getType() == Material.DIAMOND || itemStack.getType() == Material.GOLD_INGOT))
             return false;
-        if (itemStack.getType() == Material.INK_SACK) {
-            if (itemStack.getDurability() != 7 && itemStack.getDurability() != 11 && itemStack.getDurability() != 12)
-                return false;
-        }
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
         return tag != null && tag.getString("type").equalsIgnoreCase("scrap");
