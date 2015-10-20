@@ -6,6 +6,8 @@ website: http://www.dungeonrealms.net
 depend: [BountifulAPI, WorldGuard]
 description: The new dungeonrealms!
 commands:
+    invoke:
+       description: Administrative Invoke Command!
     accept:
        description: Accept Guild invitations or party invitations.
     mail:

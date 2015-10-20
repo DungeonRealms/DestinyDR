@@ -3,8 +3,7 @@ package net.dungeonrealms.mechanics;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.Utils;
 import org.apache.commons.io.IOUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 
 import java.io.*;
@@ -31,6 +30,7 @@ public class DungeonManager {
     public ArrayList<DungeonObject> Dungeons = new ArrayList<>();
 
     public void startInitialization() {
+        Utils.log.info("[DUNGEONS] Loading Dungeon Mechanics ... STARTING");
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for (DungeonObject dungeonObject : Dungeons) {
                 int time = dungeonObject.getTime();
@@ -38,25 +38,26 @@ public class DungeonManager {
                     //45 minutes
                     case 2700:
                         //TODO: KILL DUNGEON AT THIS POINT.
-                        dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + "DUNGEON" + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance will now close! (45) minutes reached!"));
+                        dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance will now close! (45) minutes reached!"));
                         break;
                     //35 minutes
                     case 2100:
-                        dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + "DUNGEON" + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance has reached (35) minute marker!"));
+                        dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance has reached (35) minute marker!"));
                         break;
                     //15 minutes
                     case 900:
-                        dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + "DUNGEON" + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance has reached (15) minute marker!"));
+                        dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance has reached (15) minute marker!"));
                         break;
                 }
                 dungeonObject.modifyTime(1);
             }
         }, 0, 20l);
+        Utils.log.info("[DUNGEONS] Finished Loading Dungeon Mechanics ... OKAY");
     }
+
     /**
-     *
-     * @param type
-     * @param playerList
+     * @param type       DungeonType
+     * @param playerList List of players to enter!
      * @since 1.0
      */
     public void createNewInstance(DungeonType type, List<Player> playerList) {
@@ -73,12 +74,12 @@ public class DungeonManager {
      */
     public void unZip(ZipFile zipFile, DungeonObject dungeonObject) {
         Utils.log.info("[DUNGEON] Unzipping instance for " + dungeonObject.getWorldName());
-        new File(DungeonRealms.getInstance().getDataFolder().getParent() + dungeonObject.getWorldName()).mkdir();
+        new File(dungeonObject.getWorldName()).mkdir();
         try {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
-                File entryDestination = new File(DungeonRealms.getInstance().getDataFolder().getParent() + dungeonObject.getWorldName(), entry.getName());
+                File entryDestination = new File(dungeonObject.getWorldName(), entry.getName());
                 if (entry.isDirectory())
                     entryDestination.mkdirs();
                 else {
@@ -132,7 +133,7 @@ public class DungeonManager {
         }
 
         public void modifyTime(int second) {
-            time = second;
+            time += second;
         }
 
         public void load() {
@@ -141,7 +142,37 @@ public class DungeonManager {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+            loadInWorld(getWorldName(), getPlayerList(), getType());
         }
+    }
+
+    /**
+     * Loads the nonExistent world and teleports all players to the
+     * spawnLocation of that world.
+     *
+     * @param worldName  Name of the Dungeon world(DUNGEON_unixTime)
+     * @param playerList List of players going to Dungeon.
+     * @since 1.0
+     */
+    public void loadInWorld(String worldName, List<Player> playerList, DungeonType type) {
+        /*
+        Only creates a world if the contents of a world don't already exist.
+        This method loadInWorld() is called in the actual object load().
+         */
+        World w = Bukkit.getServer().createWorld(new WorldCreator(worldName));
+        w.setKeepSpawnInMemory(false);
+        w.setAutoSave(false);
+        w.setPVP(false);
+        w.setStorm(false);
+        w.setMonsterSpawnLimit(300);
+        Bukkit.getWorlds().add(w);
+
+        playerList.stream().forEach(player -> {
+            player.teleport(w.getSpawnLocation());
+            player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + type.getBossName() + ChatColor.WHITE + "] " + ChatColor.GREEN + "You have invoked a[n] Instance Dungeon. This Instance Dungeon is on " +
+                    "a timer of 45 minutes!");
+        });
+
     }
 
     /**
@@ -149,7 +180,7 @@ public class DungeonManager {
      *
      * @since 1.0
      */
-    enum DungeonType {
+    public enum DungeonType {
         BANDIT_TROVE("Mayel the Cruel", "/dungeons/banditTrove.zip"),
         VARENGLADE("Burick The Fanatic", "/dungeons/varenglade.zip"),
         THE_INFERNAL_ABYSS("The Infernal Abyss", "/dungeons/theInfernalAbyss.zip");

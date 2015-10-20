@@ -14,6 +14,7 @@ import net.dungeonrealms.listeners.*;
 import net.dungeonrealms.mastery.FTPUtils;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.DungeonManager;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.Database;
@@ -87,8 +88,8 @@ public class DungeonRealms extends JavaPlugin {
         HealthHandler.getInstance().startInitialization();
         KarmaHandler.getInstance().startInitialization();
         BankMechanics.getInstance().startInitialization();
-
         NetworkServer.getInstance().startInitialization();
+        DungeonManager.getInstance().startInitialization();
 
         Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
         Entities.getInstance().startInitialization();
@@ -107,6 +108,7 @@ public class DungeonRealms extends JavaPlugin {
         getCommand("essentials").setExecutor(new CommandEss());
         getCommand("mailbox").setExecutor(new CommandMail());
         getCommand("accept").setExecutor(new CommandAccept());
+        getCommand("invoke").setExecutor(new CommandInvoke());
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         FTPUtils.startInitialization();
 

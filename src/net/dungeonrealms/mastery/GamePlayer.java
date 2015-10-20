@@ -74,6 +74,15 @@ public class GamePlayer<T extends HumanEntity> {
     }
 
     /**
+     * Checks if the player is in a Dungeon
+     *
+     * @return Is player in Dungeon?
+     */
+    public boolean isInDungeon() {
+        return T.getWorld().getName().contains("DUNGEON");
+    }
+
+    /**
      * Gets the players current alignment.
      *
      * @return the alignment
