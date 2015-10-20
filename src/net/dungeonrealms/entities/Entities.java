@@ -27,7 +27,7 @@ import net.dungeonrealms.entities.types.monsters.EntitySpider;
 import net.dungeonrealms.entities.types.monsters.EntityWitherSkeleton;
 import net.dungeonrealms.entities.types.monsters.boss.Burick;
 import net.dungeonrealms.entities.types.monsters.boss.Mayel;
-import net.dungeonrealms.entities.types.monsters.boss.Pyromancer;
+import net.dungeonrealms.entities.types.monsters.boss.subboss.Pyromancer;
 import net.dungeonrealms.entities.types.mounts.EnderDragon;
 import net.dungeonrealms.entities.types.mounts.Horse;
 import net.dungeonrealms.entities.types.pets.BabyZombie;

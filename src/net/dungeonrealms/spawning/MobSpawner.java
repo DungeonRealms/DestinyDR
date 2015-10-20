@@ -5,6 +5,7 @@ import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
@@ -116,57 +117,58 @@ public class MobSpawner {
                String mob = spawnType;
                World world = armorstand.getWorld();
                EnumEntityType type = EnumEntityType.HOSTILE_MOB;
+               EnumMonster monsEnum = EnumMonster.getMonsterByString(mob);
                if(mob.contains("*")){
             	   mob = mob.replace("*", "");
             	   isElite = true;
                }
-               switch (mob) {
-                   case "bandit":
+               switch (monsEnum) {
+                   case Bandit:
                        entity = new EntityBandit(world, tier, type);
                        break;
-                   case "rangedpirate":
+                   case RangedPirate:
                        entity = new EntityRangedPirate(world, type, tier);
                        break;
-                   case "pirate":
+                   case Pirate:
                        entity = new EntityPirate(world, EnumMonster.Pirate, tier);
                        break;
-                   case "imp":
+                   case FireImp:
                        entity = new EntityFireImp(world, tier, type);
                        break;
-                   case "troll":
+                   case Troll:
                        entity = new BasicMeleeMonster(world, EnumMonster.Troll, tier);
                        break;
-                   case "goblin":
+                   case Goblin:
                        entity = new BasicMeleeMonster(world, EnumMonster.Goblin, tier);
                        break;
-                   case "mage":
+                   case Mage:
                        entity = new BasicMageMonster(world, EnumMonster.Mage, tier);
                        break;
-                   case "spider":
+                   case Spider:
                        entity = new EntitySpider(world, EnumMonster.Spider, tier);
                        break;
-                   case "golem":
+                   case Golem:
                        entity = new EntityGolem(world, tier, type);
                        break;
-                   case "naga":
+                   case Naga:
                        entity = new BasicMageMonster(world, EnumMonster.Naga, tier);
                        break;
-                   case "tripoli":
+                   case Tripoli:
                        entity = new BasicMeleeMonster(world, EnumMonster.Tripoli, tier);
                        break;
-                   case "blaze":
+                   case Blaze:
                        entity = new BasicEntityBlaze(world, EnumMonster.Blaze, tier);
                        break;
-                   case "skeleton":
+                   case Skeleton:
                 	   entity = new BasicEntitySkeleton(world, tier);
                 	   break;
-                   case "skeleton2":
+                   case Wither:
                 	   entity = new EntityWitherSkeleton(world, EnumMonster.Wither, tier);
                 	   break;
-                   case "magmacube":
+                   case MagmaCube:
                    		entity = new BasicEntityMagma(world, tier);
                    		break;
-                   case "daemon":
+                   case Daemon:
                 	   entity = new BasicEntityPigman(world, EnumMonster.Daemon, tier);
                 	   break;
                    default:

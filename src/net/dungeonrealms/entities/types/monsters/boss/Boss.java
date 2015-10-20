@@ -7,6 +7,8 @@ import org.bukkit.entity.LivingEntity;
  */
 public interface Boss {
 	
+	public EnumBoss getEnumBoss();
+	
 	public void onBossDeath();
 	
 	public void onBossHit(LivingEntity en);

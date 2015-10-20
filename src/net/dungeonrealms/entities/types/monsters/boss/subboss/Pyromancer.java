@@ -1,7 +1,8 @@
-package net.dungeonrealms.entities.types.monsters.boss;
+package net.dungeonrealms.entities.types.monsters.boss.subboss;
 
 import java.lang.reflect.Field;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,6 +19,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.monsters.boss.Boss;
+import net.dungeonrealms.entities.types.monsters.boss.EnumBoss;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
@@ -44,7 +47,8 @@ import net.minecraft.server.v1_8_R3.World;
 public class Pyromancer extends EntitySkeleton implements Boss {
 
 	public Location loc;
-
+	
+	
 	public Pyromancer(World world, Location loc) {
 		super(world);
 		this.loc = loc;
@@ -60,7 +64,6 @@ public class Pyromancer extends EntitySkeleton implements Boss {
 		} catch (Exception exc) {
 			exc.printStackTrace();
 		}
-
 		this.goalSelector.a(1, new PathfinderGoalFloat(this));
 		this.goalSelector.a(7, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
 		this.goalSelector.a(3, new PathfinderGoalRandomStroll(this, 1.0D));
@@ -70,17 +73,17 @@ public class Pyromancer extends EntitySkeleton implements Boss {
 		this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
 
 		this.setSkeletonType(1);
-		setArmor(1);
+		setArmor(getEnumBoss().tier);
 		this.getBukkitEntity().setCustomNameVisible(true);
-		int level = Utils.getRandomFromTier(1);
-		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, 1, level);
-		this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), 1));
-		EntityStats.setBossRandomStats(this, level, 1);
+		int level = Utils.getRandomFromTier(getEnumBoss().tier);
+		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
+		this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().tier));
+		EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
 		this.getBukkitEntity()
-		        .setCustomName(ChatColor.YELLOW.toString() + ChatColor.UNDERLINE.toString() + "Mad Bandit Pyromancer");
+		        .setCustomName(ChatColor.YELLOW.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
 		for (Player p : API.getNearbyPlayers(loc, 50)) {
 			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": "
-			        + " WAHAHAHA! EXPLOSIONS! BOOM, BOOM, BOOM! I'm gonna blow you all up!");
+			        + getEnumBoss().greeting);
 		}
 	}
 
@@ -135,13 +138,20 @@ public class Pyromancer extends EntitySkeleton implements Boss {
 
 	@Override
 	public void onBossDeath() {
-
+		for (Player p : API.getNearbyPlayers(loc, 50)) {
+			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": "
+			        + getEnumBoss());
+		}
 	}
 
 	@Override
 	public void onBossHit(LivingEntity en) {
-		// TODO Auto-generated method stub
 		
+	}
+
+	@Override
+	public EnumBoss getEnumBoss() {
+		return EnumBoss.Pyromancer;
 	}
 
 
