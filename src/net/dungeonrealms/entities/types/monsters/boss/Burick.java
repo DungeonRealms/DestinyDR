@@ -20,6 +20,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.items.Item.ItemTier;
@@ -72,10 +73,10 @@ public class Burick extends EntitySkeleton implements Boss {
 		int level = Utils.getRandomFromTier(getEnumBoss().tier);
 		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
 		this.getBukkitEntity().setMetadata("boss",
-		        new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().tier));
+		        new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
 		EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
 		this.getBukkitEntity()
-		        .setCustomName(ChatColor.YELLOW.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
+		        .setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
 		for (Player p : API.getNearbyPlayers(loc, 50)) {
 			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().greeting);
 		}
@@ -110,30 +111,12 @@ public class Burick extends EntitySkeleton implements Boss {
 	}
 
 	private ItemStack[] getArmor() {
-		return new ArmorGenerator().nextTier(3);
+		return new ArmorGenerator().nextTier(getEnumBoss().tier);
 	}
 
 	@Override
 	public void onBossDeath() {
-		Block b1 = this.getBukkitEntity().getWorld().getBlockAt((int) locX + 1, (int) locY, (int) locZ + 1);
-		b1.setType(Material.AIR);
-		Block b2 = this.getBukkitEntity().getWorld().getBlockAt((int) locX + 1, (int) locY, (int) locZ - 1);
-		b2.setType(Material.AIR);
-		Block b3 = this.getBukkitEntity().getWorld().getBlockAt((int) locX - 1, (int) locY, (int) locZ + 1);
-		b3.setType(Material.AIR);
-		Block b4 = this.getBukkitEntity().getWorld().getBlockAt((int) locX - 1, (int) locY, (int) locZ - 1);
-		b4.setType(Material.AIR);
-		Entity tnt = this.getBukkitEntity().getWorld().spawn(b1.getLocation(), TNTPrimed.class);
-		((TNTPrimed) tnt).setFuseTicks(40);
-		Entity tnt2 = this.getBukkitEntity().getWorld().spawn(b2.getLocation(), TNTPrimed.class);
-		((TNTPrimed) tnt2).setFuseTicks(40);
-		Entity tnt3 = this.getBukkitEntity().getWorld().spawn(b3.getLocation(), TNTPrimed.class);
-		((TNTPrimed) tnt3).setFuseTicks(40);
-		Entity tnt4 = this.getBukkitEntity().getWorld().spawn(b4.getLocation(), TNTPrimed.class);
-		((TNTPrimed) tnt4).setFuseTicks(40);
-		for (Player p : API.getNearbyPlayers(loc, 50)) {
-			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss());
-		}
+
 	}
 
 	public boolean hasFiredTenPercent = false;
@@ -146,9 +129,11 @@ public class Burick extends EntitySkeleton implements Boss {
 		Bukkit.broadcastMessage(hp + "current :" + health + " MAX : " + tenPercentHP + " 10%");
 		if (hp <= tenPercentHP && !hasFiredTenPercent) {
 			hasFiredTenPercent = true;
-			for (Player p : API.getNearbyPlayers(loc, 50)) {
+			for (Player p : API.getNearbyPlayers(en.getLocation(), 50)) {
 				p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": "
-				        + " I'm less than 10% of my health oh no");
+				        + " I'm less than 10% of my health oh no heal time");
+				en.setMetadata("currentHP",
+				        new FixedMetadataValue(DungeonRealms.getInstance(), en.getMetadata("maxHP").get(0).asInt()));
 			}
 		}
 	}

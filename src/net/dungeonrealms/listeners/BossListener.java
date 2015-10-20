@@ -8,6 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.types.monsters.boss.Boss;
 
 /**
@@ -18,6 +19,7 @@ public class BossListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onEntityDeath(EntityDeathEvent event) {
 		if (event.getEntity().hasMetadata("boss")) {
+			event.getEntity().removeMetadata("boss", DungeonRealms.getInstance());
 			Boss b = (Boss) ((CraftMonster) event.getEntity()).getHandle();
 			b.onBossDeath();
 		}

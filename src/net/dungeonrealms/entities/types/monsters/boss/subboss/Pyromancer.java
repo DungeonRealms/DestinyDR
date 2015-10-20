@@ -6,12 +6,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.entity.TNTPrimed;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -19,8 +22,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.entities.types.monsters.boss.Boss;
-import net.dungeonrealms.entities.types.monsters.boss.EnumBoss;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
@@ -47,8 +50,7 @@ import net.minecraft.server.v1_8_R3.World;
 public class Pyromancer extends EntitySkeleton implements Boss {
 
 	public Location loc;
-	
-	
+
 	public Pyromancer(World world, Location loc) {
 		super(world);
 		this.loc = loc;
@@ -77,13 +79,13 @@ public class Pyromancer extends EntitySkeleton implements Boss {
 		this.getBukkitEntity().setCustomNameVisible(true);
 		int level = Utils.getRandomFromTier(getEnumBoss().tier);
 		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
-		this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().tier));
+		this.getBukkitEntity().setMetadata("boss",
+		        new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
 		EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
 		this.getBukkitEntity()
 		        .setCustomName(ChatColor.YELLOW.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
 		for (Player p : API.getNearbyPlayers(loc, 50)) {
-			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": "
-			        + getEnumBoss().greeting);
+			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().greeting);
 		}
 	}
 
@@ -133,26 +135,40 @@ public class Pyromancer extends EntitySkeleton implements Boss {
 	}
 
 	private ItemStack[] getArmor() {
-		return new ArmorGenerator().nextTier(1);
+		return new ArmorGenerator().nextTier(getEnumBoss().tier);
 	}
 
 	@Override
 	public void onBossDeath() {
-		for (Player p : API.getNearbyPlayers(loc, 50)) {
-			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": "
-			        + getEnumBoss());
+		Block b1 = this.getBukkitEntity().getWorld().getBlockAt((int) locX + 1, (int) locY, (int) locZ + 1);
+		b1.setType(Material.AIR);
+		Block b2 = this.getBukkitEntity().getWorld().getBlockAt((int) locX + 1, (int) locY, (int) locZ - 1);
+		b2.setType(Material.AIR);
+		Block b3 = this.getBukkitEntity().getWorld().getBlockAt((int) locX - 1, (int) locY, (int) locZ + 1);
+		b3.setType(Material.AIR);
+		Block b4 = this.getBukkitEntity().getWorld().getBlockAt((int) locX - 1, (int) locY, (int) locZ - 1);
+		b4.setType(Material.AIR);
+		Entity tnt = this.getBukkitEntity().getWorld().spawn(b1.getLocation(), TNTPrimed.class);
+		((TNTPrimed) tnt).setFuseTicks(40);
+		Entity tnt2 = this.getBukkitEntity().getWorld().spawn(b2.getLocation(), TNTPrimed.class);
+		((TNTPrimed) tnt2).setFuseTicks(40);
+		Entity tnt3 = this.getBukkitEntity().getWorld().spawn(b3.getLocation(), TNTPrimed.class);
+		((TNTPrimed) tnt3).setFuseTicks(40);
+		Entity tnt4 = this.getBukkitEntity().getWorld().spawn(b4.getLocation(), TNTPrimed.class);
+		((TNTPrimed) tnt4).setFuseTicks(40);
+		for (Player p : API.getNearbyPlayers(this.getBukkitEntity().getLocation(), 50)) {
+			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().death);
 		}
 	}
 
 	@Override
 	public void onBossHit(LivingEntity en) {
-		
+
 	}
 
 	@Override
 	public EnumBoss getEnumBoss() {
 		return EnumBoss.Pyromancer;
 	}
-
 
 }

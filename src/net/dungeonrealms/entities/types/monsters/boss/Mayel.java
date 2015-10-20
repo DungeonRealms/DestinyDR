@@ -22,6 +22,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EntityPirate;
+import net.dungeonrealms.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.items.ItemGenerator;
@@ -86,13 +87,13 @@ public class Mayel extends EntitySkeleton implements Boss {
 		this.getBukkitEntity().setCustomNameVisible(true);
 		int level = Utils.getRandomFromTier(getEnumBoss().tier);
 		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
-		this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().tier));
+		this.getBukkitEntity().setMetadata("boss",
+		        new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
 		EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
 		this.getBukkitEntity()
-		        .setCustomName(ChatColor.YELLOW.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
+		        .setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
 		for (Player p : API.getNearbyPlayers(loc, 50)) {
-			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": "
-			        + getEnumBoss().greeting);
+			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().greeting);
 		}
 
 	}
@@ -142,27 +143,30 @@ public class Mayel extends EntitySkeleton implements Boss {
 	}
 
 	private ItemStack[] getArmor() {
-		return new ArmorGenerator().nextTier(2);
+		return new ArmorGenerator().nextTier(getEnumBoss().tier);
 	}
 
 	@Override
 	public void onBossDeath() {
-		for (Player p : API.getNearbyPlayers(loc, 50)) {
-			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": "
-			        + getEnumBoss());
-		}	}
+		for (Player p : API.getNearbyPlayers(this.getBukkitEntity().getLocation(), 50)) {
+			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().death);
+		}
+	}
 
 	@Override
 	public void onBossHit(LivingEntity en) {
 		for (int i = 0; i < 2; i++) {
 			EntityPirate pirate = new EntityPirate(this.getWorld(), EnumMonster.MayelPirate, 1);
 			pirate.setLocation(locX + 1, locY, locZ + 1, 1, 1);
-            Location location = new Location(world.getWorld(), this.getBukkitEntity().getLocation().getX() + new Random().nextInt(3), this.getBukkitEntity().getLocation().getY(), this.getBukkitEntity().getLocation().getZ() + new Random().nextInt(3));
-            pirate.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-            world.addEntity(pirate, SpawnReason.CUSTOM);
-            pirate.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+			Location location = new Location(world.getWorld(),
+			        this.getBukkitEntity().getLocation().getX() + new Random().nextInt(3),
+			        this.getBukkitEntity().getLocation().getY(),
+			        this.getBukkitEntity().getLocation().getZ() + new Random().nextInt(3));
+			pirate.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+			world.addEntity(pirate, SpawnReason.CUSTOM);
+			pirate.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 		}
-		for (Player p : API.getNearbyPlayers(loc, 50)) {
+		for (Player p : API.getNearbyPlayers(en.getLocation(), 50)) {
 			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + " Come to my call, brothers!");
 		}
 

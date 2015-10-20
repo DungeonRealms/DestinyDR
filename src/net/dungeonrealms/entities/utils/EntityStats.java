@@ -119,7 +119,7 @@ public class EntityStats {
 	public static void setBossRandomStats(Entity entity, int level, int tier) {
     	Stats stat = Stats.getRandomStats(level, tier);
     	stat.atk *= 10;
-    	stat.hp *= 10;
+    	stat.hp *= 50;
     	stat.def *= 10;
         stat.spd *= 10;
         entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), stat.hp));

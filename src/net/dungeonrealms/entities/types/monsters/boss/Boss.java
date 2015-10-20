@@ -2,6 +2,8 @@ package net.dungeonrealms.entities.types.monsters.boss;
 
 import org.bukkit.entity.LivingEntity;
 
+import net.dungeonrealms.entities.types.monsters.EnumBoss;
+
 /**
  * Created by Chase on Oct 18, 2015
  */
