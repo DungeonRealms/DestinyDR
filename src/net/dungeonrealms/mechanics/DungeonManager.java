@@ -67,11 +67,12 @@ public class DungeonManager {
      */
     public void unZip(ZipFile zipFile, DungeonObject dungeonObject) {
         Utils.log.info("[DUNGEON] Unzipping instance for " + dungeonObject.getWorldName());
+        new File(DungeonRealms.getInstance().getDataFolder().getParent() + dungeonObject.getWorldName()).mkdir();
         try {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
-                File entryDestination = new File(DungeonRealms.getInstance().getDataFolder().getParent(), entry.getName());
+                File entryDestination = new File(DungeonRealms.getInstance().getDataFolder().getParent() + dungeonObject.getWorldName(), entry.getName());
                 if (entry.isDirectory())
                     entryDestination.mkdirs();
                 else {
@@ -83,7 +84,6 @@ public class DungeonManager {
                     out.close();
                 }
             }
-            new File(dungeonObject.getType().getLocation().split(".zip")[0]).renameTo(new File(dungeonObject.getWorldName()));
         } catch (IOException e) {
             e.printStackTrace();
         } finally {

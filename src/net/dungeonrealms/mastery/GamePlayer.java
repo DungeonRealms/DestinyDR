@@ -152,10 +152,10 @@ public class GamePlayer<T extends HumanEntity> {
          * Will only happen if the players should level up!
          */
         if (futureExperience > (level * 1000) + factorial(Math.round(8 % level))) {
-            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.level", level + 1, true);
-            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.experience", experienceToAdd - experience, true);
+            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.level", level + 1, false);
+            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.experience", experienceToAdd - experience, false);
             Utils.log.info("[LEVEL] Leveling " + T.getName() + " to level " + getLevel() + 1 + " with new experience" + String.valueOf(experience - experience));
-            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, "info.attributes.bufferPoints", 6, true);
+            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, "info.attributes.bufferPoints", 6, false);
             T.sendMessage(ChatColor.GREEN + "You have reached level " + ChatColor.AQUA + level + 1 + ChatColor.GREEN + " and have gained 6 Attribute Points!");
         } else {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.experience", experienceToAdd, true);
