@@ -36,6 +36,11 @@ public class DungeonManager {
 
     public void startInitialization() {
         Utils.log.info("[DUNGEONS] Loading Dungeon Mechanics ... STARTING");
+        try {
+            FileUtils.forceMkdir(new File(DungeonRealms.getInstance().getDataFolder() + File.separator + "/dungeons/"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for (DungeonObject dungeonObject : Dungeons) {
                 int time = dungeonObject.getTime();

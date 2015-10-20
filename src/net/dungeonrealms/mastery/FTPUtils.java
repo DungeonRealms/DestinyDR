@@ -76,7 +76,11 @@ public class FTPUtils {
             Utils.log.info("[REALM] [ASYNC] Starting Compression for player realm " + uuid.toString());
             zipFolder(DungeonRealms.getInstance().getDataFolder() + "/realms/" + uuid.toString(), DungeonRealms.getInstance().getDataFolder() + "/realms/uploading/" + uuid.toString() + ".zip");
             Utils.log.info("[REALM] [ASYNC] Deleting local cache of unzipped realm " + uuid.toString());
-            deleteRecursive(new File(DungeonRealms.getInstance().getDataFolder() + "/realms/" + uuid.toString()));
+            try {
+                FileUtils.deleteDirectory(new File(DungeonRealms.getInstance().getDataFolder() + "/realms/" + uuid.toString()));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
             FTPClient ftpClient = new FTPClient();
             try {
                 ftpClient.connect(HOST);
@@ -97,29 +101,13 @@ public class FTPUtils {
                 e.printStackTrace();
             } finally {
                 Utils.log.info("[REALM] [ASYNC] Deleting local cache of realm " + uuid.toString());
-                deleteRecursive(new File(DungeonRealms.getInstance().getDataFolder() + "/realms/uploading/" + uuid.toString() + ".zip"));
-            }
-        });
-    }
-
-    /**
-     * Deletes file recursively.
-     *
-     * @param path
-     * @since 1.0
-     */
-    public boolean deleteRecursive(File path) {
-        if (path.exists()) {
-            File[] files = path.listFiles();
-            for (File file : files) {
-                if (file.isDirectory()) {
-                    deleteRecursive(file);
-                } else {
-                    file.delete();
+                try {
+                    FileUtils.deleteDirectory(new File(DungeonRealms.getInstance().getDataFolder() + "/realms/uploading/" + uuid.toString() + ".zip"));
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
-        }
-        return (path.delete());
+        });
     }
 
     /**
