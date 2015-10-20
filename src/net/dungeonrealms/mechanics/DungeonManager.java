@@ -2,9 +2,9 @@ package net.dungeonrealms.mechanics;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.Utils;
-import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.io.*;
@@ -37,6 +37,7 @@ public class DungeonManager {
                 switch (time) {
                     //45 minutes
                     case 2700:
+                        //TODO: KILL DUNGEON AT THIS POINT.
                         dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + "DUNGEON" + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance will now close! (45) minutes reached!"));
                         break;
                     //35 minutes
@@ -53,6 +54,12 @@ public class DungeonManager {
         }, 0, 20l);
     }
 
+    /**
+     *
+     * @param type
+     * @param playerList
+     * @since 1.0
+     */
     public void createNewInstance(DungeonType type, List<Player> playerList) {
         DungeonObject dungeonObject = new DungeonObject(type, 0, playerList, "DUNGEON_" + String.valueOf(System.currentTimeMillis() / 1000l));
         Dungeons.add(dungeonObject);
