@@ -13,5 +13,6 @@
     <orderEntry type="library" name="plugin dependencies" level="project" />
     <orderEntry type="library" name="commons-net-3.3" level="project" />
     <orderEntry type="library" name="AnvilApi" level="project" />
+    <orderEntry type="library" name="lib" level="project" />
   </component>
 </module>
