@@ -19,6 +19,15 @@ import java.util.zip.ZipOutputStream;
  */
 public class FTPUtils {
 
+    static FTPUtils instance = null;
+
+    public static FTPUtils getInstance() {
+        if (instance == null) {
+            instance = new FTPUtils();
+        }
+        return instance;
+    }
+
     public static volatile HashMap<UUID, FTPStatus> REALMS = new HashMap<>();
 
     enum FTPStatus {

@@ -3,6 +3,8 @@ package net.dungeonrealms.handlers;
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.entities.utils.MountUtils;
@@ -13,7 +15,10 @@ import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.network.NetworkAPI;
+import net.dungeonrealms.teleportation.TeleportAPI;
+import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.Entity;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -59,7 +64,7 @@ public class ClickHandler {
         if (name.equalsIgnoreCase("Pet Selection")) {
             event.setCancelled(true);
             if (event.getCurrentItem().getType() == Material.BARRIER) {
-                player.closeInventory();
+                Menu.openPlayerProfileMenu(player);
                 return;
             }
             if (event.getCurrentItem().getType() == Material.LEASH) {
@@ -109,7 +114,7 @@ public class ClickHandler {
         if (name.equalsIgnoreCase("Mount Selection")) {
             event.setCancelled(true);
             if (event.getCurrentItem().getType() == Material.BARRIER) {
-                player.closeInventory();
+                Menu.openPlayerProfileMenu(player);
                 return;
             }
             if (event.getCurrentItem().getType() == Material.LEASH) {
@@ -168,7 +173,7 @@ public class ClickHandler {
         if (name.equalsIgnoreCase("Player Trail Selection")) {
             event.setCancelled(true);
             if (event.getCurrentItem().getType() == Material.BARRIER) {
-                player.closeInventory();
+                Menu.openPlayerProfileMenu(player);
                 return;
             }
             if (event.getCurrentItem().getType() == Material.ARMOR_STAND) {
@@ -198,7 +203,7 @@ public class ClickHandler {
         if (name.equalsIgnoreCase("Mob Trail Selection")) {
             event.setCancelled(true);
             if (event.getCurrentItem().getType() == Material.BARRIER) {
-                player.closeInventory();
+                Menu.openPlayerProfileMenu(player);
                 return;
             }
             if (event.getCurrentItem().getType() == Material.ARMOR_STAND) {
@@ -243,6 +248,46 @@ public class ClickHandler {
                 }
             }
         }
+
+        /*
+        Profile Menu Below
+         */
+        if (name.equals("Profile")) {
+            event.setCancelled(true);
+            switch (slot) {
+                case 6:
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Menu.openPlayerParticleMenu(player), 5L);
+                    break;
+                case 7:
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Menu.openPlayerMountMenu(player), 5L);
+                    break;
+                case 8:
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Menu.openPlayerPetMenu(player), 5L);
+                    break;
+                case 22:
+                    if (!(CombatLog.isInCombat(player))) {
+                        if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
+                            player.sendMessage("You cannot restart a teleport during a cast!");
+                            return;
+                        }
+                        if (TeleportAPI.canUseHearthstone(player.getUniqueId())) {
+                            net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                            Teleportation.teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.HEARTHSTONE, nmsItem.getTag());
+                            break;
+                        } else {
+                            player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "HEARTHSTONE " + ChatColor.RED + "[Usage Exhausted] " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s" + ChatColor.RED + ")");
+                            break;
+                        }
+                    } else {
+                        player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "TELEPORT " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player) + "s" + ChatColor.RED + ")");
+                        break;
+                    }
+                default:
+                    break;
+            }
+            return;
+        }
+
 
         /*
         Guilds Below

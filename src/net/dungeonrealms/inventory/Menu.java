@@ -9,11 +9,13 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.entities.types.pets.EnumPets;
 import net.dungeonrealms.handlers.MailHandler;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumGuildData;
+import net.dungeonrealms.teleportation.TeleportAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bson.Document;
@@ -514,6 +516,80 @@ public class Menu {
             inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStack), ChatColor.GREEN + trailType.toUpperCase(), new String[]{
             }));
         }
+
+        player.openInventory(inv);
+    }
+
+    public static void openPlayerProfileMenu(Player player) {
+
+        Inventory inv = Bukkit.createInventory(null, 27, "Profile");
+        inv.setItem(0, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GREEN + "Attributes",  new String[]{
+                ChatColor.DARK_GRAY + "Player Attributes",
+                "",
+                ChatColor.GRAY + "As you play throughout Dungeon Realms,",
+                ChatColor.GRAY + "your player will acquire attribute points.",
+                ChatColor.GRAY + "With Attribute points you can improve",
+                ChatColor.GRAY + "several of many individual character",
+                ChatColor.GRAY + "skills!",
+                "",
+                ChatColor.YELLOW + "Click to view Player Attributes!"
+        }));
+        inv.setItem(4, editItem(Utils.getPlayerHead(player), ChatColor.GREEN + "Player Profile",  new String[]{
+        }));
+        inv.setItem(6, editItem(new ItemStack(Material.EYE_OF_ENDER), ChatColor.GREEN + "Player Trails",  new String[]{
+                ChatColor.DARK_GRAY + "Player Trails",
+                "",
+                ChatColor.GRAY + "Want to be the envy of your friends?",
+                ChatColor.GRAY + "Get yourself a Particle Trail!",
+                "",
+                ChatColor.YELLOW + "Click to view Player Trails!"
+        }));
+        inv.setItem(7, editItem(new ItemStack(Material.SADDLE), ChatColor.GREEN + "Player Mounts",  new String[]{
+                ChatColor.DARK_GRAY + "Player Mounts",
+                "",
+                ChatColor.GRAY + "Want to travel in style?",
+                ChatColor.GRAY + "Mounts are the solution!",
+                "",
+                ChatColor.YELLOW + "Click to view Player Mounts!"
+        }));
+        inv.setItem(8, editItem(new ItemStack(Material.NAME_TAG), ChatColor.GREEN + "Player Pets",  new String[]{
+                ChatColor.DARK_GRAY + "Player Pets",
+                "",
+                ChatColor.GRAY + "Want a friendly companion",
+                ChatColor.GRAY + "to bring along on your",
+                ChatColor.GRAY + "adventures? Pets are the",
+                ChatColor.GRAY + "solution!",
+                "",
+                ChatColor.YELLOW + "Click to view Player Pets!"
+        }));
+        inv.setItem(18, editItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Donations",  new String[]{
+                ChatColor.DARK_GRAY + "Micro Transactions",
+                "",
+                ChatColor.GRAY + "Want to access to more awesomeness?",
+                ChatColor.GRAY + "Consider donating to support Dungeon Realms",
+                ChatColor.GRAY + "in return you'll receive several in-game",
+                ChatColor.GRAY + "perks!",
+                "",
+                ChatColor.YELLOW + "Click to view Micro Transactions!"
+        }));
+        inv.setItem(22, editItem(new ItemStack(Material.QUARTZ), ChatColor.GREEN + "Hearthstone",  new String[]{
+                ChatColor.DARK_GRAY + "Player Hearthstone",
+                "",
+                ChatColor.GRAY + "Teleport home to your saved location of",
+                ChatColor.YELLOW + TeleportAPI.getLocationFromDatabase(player.getUniqueId()),
+                "",
+                ChatColor.YELLOW + "Click to use your Hearhtstone!"
+        }));
+        inv.setItem(26, editItem(new ItemStack(Material.REDSTONE_COMPARATOR), ChatColor.GREEN + "Settings & Preferences",  new String[]{
+                ChatColor.DARK_GRAY + "Settings & Preferences",
+                "",
+                ChatColor.GRAY + "Help us help you! By adjusting",
+                ChatColor.GRAY + "your player settings & preferences",
+                ChatColor.GRAY + "we can optimize your gaming experience",
+                ChatColor.GRAY + "on this RPG!",
+                "",
+                ChatColor.YELLOW + "Click to view Settings & Preferences!"
+        }));
 
         player.openInventory(inv);
     }

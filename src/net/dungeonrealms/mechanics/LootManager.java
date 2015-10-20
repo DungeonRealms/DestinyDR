@@ -13,6 +13,7 @@ import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -20,13 +21,13 @@ import java.util.Random;
  */
 public class LootManager {
 
-    public static ArrayList<LootSpawner> spawners = new ArrayList<>();
-    public static ArrayList<String> spawnerConfig = new ArrayList<>();
-    public static ArrayList<ItemStack> tier1Loot = new ArrayList<>();
-    public static ArrayList<ItemStack> tier2Loot = new ArrayList<>();
-    public static ArrayList<ItemStack> tier3Loot = new ArrayList<>();
-    public static ArrayList<ItemStack> tier4Loot = new ArrayList<>();
-    public static ArrayList<ItemStack> tier5Loot = new ArrayList<>();
+    public static List<LootSpawner> spawners = new ArrayList<>();
+    public static List<String> spawnerConfig = new ArrayList<>();
+    public static List<ItemStack> tier1Loot = new ArrayList<>();
+    public static List<ItemStack> tier2Loot = new ArrayList<>();
+    public static List<ItemStack> tier3Loot = new ArrayList<>();
+    public static List<ItemStack> tier4Loot = new ArrayList<>();
+    public static List<ItemStack> tier5Loot = new ArrayList<>();
 
     /**
      * Manually load of all items to an ArrayList.
@@ -120,10 +121,10 @@ public class LootManager {
      */
     public static void loadLootSpawners() {
         loadLootItems();
-        spawnerConfig = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("loot");
+        spawnerConfig = DungeonRealms.getInstance().getConfig().getStringList("loot");
         for (String line : spawnerConfig) {
             int tier = Integer.parseInt(line.split(":")[1]);
-            double x, y, z = 0.0;
+            double x, y, z;
             String[] location = line.split(":")[0].split(",");
             x = Double.parseDouble(location[0]);
             y = Double.parseDouble(location[1]);
