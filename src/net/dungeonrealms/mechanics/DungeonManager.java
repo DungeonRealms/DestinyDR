@@ -53,7 +53,6 @@ public class DungeonManager {
             }
         }, 0, 20l);
     }
-
     /**
      *
      * @param type

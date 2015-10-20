@@ -3,6 +3,7 @@ package net.dungeonrealms.entities.types.monsters.boss;
 import java.lang.reflect.Field;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -81,18 +82,19 @@ public class Mayel extends EntitySkeleton implements Boss {
 		this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
 
 		this.setSkeletonType(1);
-		setArmor(1);
+		setArmor(getEnumBoss().tier);
 		this.getBukkitEntity().setCustomNameVisible(true);
-		int level = Utils.getRandomFromTier(1);
-		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, 1, level);
-		this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), 1));
-		EntityStats.setBossRandomStats(this, level, 1);
+		int level = Utils.getRandomFromTier(getEnumBoss().tier);
+		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
+		this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().tier));
+		EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
 		this.getBukkitEntity()
-		        .setCustomName(ChatColor.GOLD.toString() + ChatColor.UNDERLINE.toString() + "Mayel The Cruel");
+		        .setCustomName(ChatColor.YELLOW.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
 		for (Player p : API.getNearbyPlayers(loc, 50)) {
 			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": "
-			        + " How dare you challenge ME, the leader of the Cyrene Bandits! To me, my brethern, let us crush these incolents");
+			        + getEnumBoss().greeting);
 		}
+
 	}
 
 	protected void setArmor(int tier) {
@@ -145,8 +147,10 @@ public class Mayel extends EntitySkeleton implements Boss {
 
 	@Override
 	public void onBossDeath() {
-		Utils.log.info("MAYEL HAS DIED");
-	}
+		for (Player p : API.getNearbyPlayers(loc, 50)) {
+			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": "
+			        + getEnumBoss());
+		}	}
 
 	@Override
 	public void onBossHit(LivingEntity en) {
@@ -162,5 +166,10 @@ public class Mayel extends EntitySkeleton implements Boss {
 			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + " Come to my call, brothers!");
 		}
 
+	}
+
+	@Override
+	public EnumBoss getEnumBoss() {
+		return EnumBoss.Mayel;
 	}
 }

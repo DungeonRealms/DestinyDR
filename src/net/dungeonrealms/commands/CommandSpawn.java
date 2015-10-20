@@ -28,6 +28,7 @@ import net.dungeonrealms.entities.types.monsters.EntitySpider;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.boss.Burick;
 import net.dungeonrealms.entities.types.monsters.boss.Mayel;
+import net.dungeonrealms.entities.types.monsters.boss.subboss.Pyromancer;
 import net.dungeonrealms.entities.utils.BuffUtils;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.mastery.NBTUtils;
@@ -131,7 +132,7 @@ public class CommandSpawn implements CommandExecutor {
                     break;
                 case "boss":
                 	String bossName = args[1];
-                	Entity entity;
+                	Entity entity = null;
                     World world = ((CraftWorld) player.getWorld()).getHandle();
                 	switch(bossName){
                 		case "mayel" :
@@ -139,6 +140,9 @@ public class CommandSpawn implements CommandExecutor {
                 			break;
                 		case "burick":
                 			entity = new Burick(world, player.getLocation());
+                			break;
+                		case "pyromancer":
+                			entity = new Pyromancer(world, player.getLocation());
                 			break;
                 		default: 
                 			entity = null;
