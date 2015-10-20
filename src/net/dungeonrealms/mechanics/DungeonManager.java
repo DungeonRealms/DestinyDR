@@ -1,9 +1,14 @@
 package net.dungeonrealms.mechanics;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.Utils;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
 import java.io.*;
@@ -34,11 +39,18 @@ public class DungeonManager {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for (DungeonObject dungeonObject : Dungeons) {
                 int time = dungeonObject.getTime();
+                if (dungeonObject.getPlayerList().size() <= 0 || Bukkit.getWorld(dungeonObject.worldName).getPlayers().size() <= 0) {
+                    removeInstance(dungeonObject);
+                    return;
+                }
                 switch (time) {
+                    //46 minutes
+                    case 2760:
+                        removeInstance(dungeonObject);
+                        break;
                     //45 minutes
                     case 2700:
-                        //TODO: KILL DUNGEON AT THIS POINT.
-                        dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance will now close! (45) minutes reached!"));
+                        dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance has reached it's max threshold, it will now terminate in (1) minute."));
                         break;
                     //35 minutes
                     case 2100:
@@ -53,6 +65,33 @@ public class DungeonManager {
             }
         }, 0, 20l);
         Utils.log.info("[DUNGEONS] Finished Loading Dungeon Mechanics ... OKAY");
+    }
+
+    /**
+     * Removes the instance dungeon from EVERYTHING.
+     *
+     * @param dungeonObject The dungeon object.
+     * @since 1.0
+     */
+    public void removeInstance(DungeonObject dungeonObject) {
+        dungeonObject.getPlayerList().stream().forEach(player -> {
+            GamePlayer gPlayer = new GamePlayer(player);
+            if (gPlayer.isInDungeon()) {
+                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance is will close!");
+                player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+            }
+        });
+        Bukkit.getWorlds().remove(Bukkit.getWorld(dungeonObject.getWorldName()));
+        Utils.log.info("[DUNGEONS] Removing world: " + dungeonObject.getWorldName() + " from worldList().");
+        Bukkit.unloadWorld(dungeonObject.getWorldName(), false);
+        Utils.log.info("[DUNGEONS] Unloading world: " + dungeonObject.getWorldName() + " in preparation for deletion!");
+        Dungeons.remove(dungeonObject);
+        try {
+            FileUtils.deleteDirectory(new File(dungeonObject.worldName));
+            Utils.log.info("[DUNGEONS] Deleted world: " + dungeonObject.getWorldName() + " final stage.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
