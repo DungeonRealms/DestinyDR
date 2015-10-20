@@ -9,7 +9,6 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -29,7 +28,7 @@ import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.EntityHuman;
-import net.minecraft.server.v1_8_R3.EntityZombie;
+import net.minecraft.server.v1_8_R3.EntitySkeleton;
 import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
 import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
@@ -42,7 +41,7 @@ import net.minecraft.server.v1_8_R3.World;
 /**
  * Created by Chase on Oct 19, 2015
  */
-public class Burick extends EntityZombie implements Boss {
+public class Burick extends EntitySkeleton implements Boss {
 
 	public Location loc;
 
@@ -67,26 +66,27 @@ public class Burick extends EntityZombie implements Boss {
 		this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
 		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true));
 		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
-
-		setArmor(3);
+		this.setSkeletonType(1);
+		setArmor(getEnumBoss().tier);
 		this.getBukkitEntity().setCustomNameVisible(true);
-		int level = Utils.getRandomFromTier(3);
-		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, 1, level);
-		this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), 1));
-		EntityStats.setBossRandomStats(this, level, 1);
+		int level = Utils.getRandomFromTier(getEnumBoss().tier);
+		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
+		this.getBukkitEntity().setMetadata("boss",
+		        new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().tier));
+		EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
 		this.getBukkitEntity()
-		        .setCustomName(ChatColor.GOLD.toString() + ChatColor.UNDERLINE.toString() + "Burick The Fanatic");
+		        .setCustomName(ChatColor.YELLOW.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
 		for (Player p : API.getNearbyPlayers(loc, 50)) {
-			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": "
-			        + "Ahahaha! You dare try to kill ME?! I am Burick, disciple of Goragath! None of you will leave this place alive!");
+			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().greeting);
 		}
+
 	}
 
 	protected void setArmor(int tier) {
 		ItemStack[] armor = getArmor();
 		// weapon, boots, legs, chest, helmet/head
 		ItemStack weapon = getWeapon();
-//		weapon.addEnchantment(Enchantment.DAMAGE_ALL, 1);
+		// weapon.addEnchantment(Enchantment.DAMAGE_ALL, 1);
 		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
 		this.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
 		this.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
@@ -132,7 +132,7 @@ public class Burick extends EntityZombie implements Boss {
 		Entity tnt4 = this.getBukkitEntity().getWorld().spawn(b4.getLocation(), TNTPrimed.class);
 		((TNTPrimed) tnt4).setFuseTicks(40);
 		for (Player p : API.getNearbyPlayers(loc, 50)) {
-			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + " death message");
+			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss());
 		}
 	}
 
@@ -147,9 +147,15 @@ public class Burick extends EntityZombie implements Boss {
 		if (hp <= tenPercentHP && !hasFiredTenPercent) {
 			hasFiredTenPercent = true;
 			for (Player p : API.getNearbyPlayers(loc, 50)) {
-				p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + " I'm less than 10% of my health oh no");
+				p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": "
+				        + " I'm less than 10% of my health oh no");
 			}
 		}
+	}
+
+	@Override
+	public EnumBoss getEnumBoss() {
+		return EnumBoss.Burick;
 	}
 
 }

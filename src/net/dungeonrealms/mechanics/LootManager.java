@@ -18,7 +18,6 @@ import java.util.Random;
 /**
  * Created by Chase on Oct 9, 2015
  */
-@Deprecated
 public class LootManager {
 
     public static ArrayList<LootSpawner> spawners = new ArrayList<>();
