@@ -10,9 +10,7 @@
     <orderEntry type="sourceFolder" forTests="false" />
     <orderEntry type="library" name="spigot-1.8.8-R0.1-SNAPSHOT-latest" level="project" />
     <orderEntry type="library" name="mongo" level="project" />
-    <orderEntry type="library" name="plugin dependencies" level="project" />
-    <orderEntry type="library" name="commons-net-3.3" level="project" />
-    <orderEntry type="library" name="AnvilApi" level="project" />
     <orderEntry type="library" name="lib" level="project" />
+    <orderEntry type="library" name="plugin dependencies" level="project" />
   </component>
 </module>
