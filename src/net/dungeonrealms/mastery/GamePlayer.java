@@ -1,10 +1,15 @@
 package net.dungeonrealms.mastery;
 
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * Created by Nick on 10/19/2015.
@@ -29,7 +34,7 @@ public class GamePlayer<T extends HumanEntity> {
             return Tier.TIER3;
         } else if (level >= 31 || level <= 40) {
             return Tier.TIER4;
-        } else if (level >= 41 || level <= 50) {
+        } else if (level >= 41 || level <= 64) {
             return Tier.TIER5;
         } else
             return Tier.TIER1;
@@ -69,6 +74,66 @@ public class GamePlayer<T extends HumanEntity> {
     }
 
     /**
+     * Gets the players current alignment.
+     *
+     * @return the alignment
+     * @since 1.0
+     */
+    public KarmaHandler.EnumPlayerAlignments getPlayerAlignment() {
+        return KarmaHandler.EnumPlayerAlignments.getByName(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, T.getUniqueId())));
+    }
+
+    /**
+     * Gets the players current health.
+     *
+     * @return int (health)
+     * @since 1.0
+     */
+    public int getPlayerCurrentHP() {
+        if (T.hasMetadata("currentHP")) {
+            return T.getMetadata("currentHP").get(0).asInt();
+        } else {
+            return 50;
+        }
+    }
+
+    /**
+     * Gets the players maximum health.
+     *
+     * @return int (maxhealth)
+     * @since 1.0
+     */
+    public int getPlayerMaxHP() {
+        if (T.hasMetadata("maxHP")) {
+            return T.getMetadata("maxHP").get(0).asInt();
+        } else {
+            return HealthHandler.getInstance().calculateMaxHPFromItems(T);
+        }
+    }
+
+    /**
+     * Sets the players MaximumHP
+     * to the given value.
+     *
+     * @param maxHP
+     * @since 1.0
+     */
+    public void setPlayerMaxHPLive(int maxHP) {
+        T.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHP));
+    }
+
+    /**
+     * Sets the players HP
+     * to the given value.
+     *
+     * @param hp
+     * @since 1.0
+     */
+    public void setPlayerHPLive(int hp) {
+        T.setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), hp));
+    }
+
+    /**
      * Add experience to the player
      *
      * @param experienceToAdd the amount of experience to add.
@@ -90,6 +155,8 @@ public class GamePlayer<T extends HumanEntity> {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.level", level + 1, true);
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.experience", experienceToAdd - experience, true);
             Utils.log.info("[LEVEL] Leveling " + T.getName() + " to level " + getLevel() + 1 + " with new experience" + String.valueOf(experience - experience));
+            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, "info.attributes.bufferPoints", 6, true);
+            T.sendMessage(ChatColor.GREEN + "You have reached level " + ChatColor.AQUA + level + 1 + ChatColor.GREEN + " and have gained 6 Attribute Points!");
         } else {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.experience", experienceToAdd, true);
         }
