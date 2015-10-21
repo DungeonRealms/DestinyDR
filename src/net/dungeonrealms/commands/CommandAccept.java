@@ -5,6 +5,8 @@ import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.network.NetworkAPI;
+import net.dungeonrealms.party.Party;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -62,6 +64,19 @@ public class CommandAccept implements CommandExecutor {
 
                     break;
                 case "party":
+                    if (!Party.getInstance().isInParty(player) && Party.getInstance().isInParty(Bukkit.getPlayer(args[1]))) {
+                        Party.RawParty party = Party.getInstance().getPlayerParty(Bukkit.getPlayer(args[1]));
+                        if (party.getInviting().contains(player)) {
+                            party.getMembers().add(player);
+                            party.getInviting().remove(player);
+                            player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.YELLOW + "You've join " + Bukkit.getPlayer(args[1]).getName() + "'s party!");
+                        } else {
+                            player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.RED + "That party doesn't have you in the request!");
+                        }
+                    } else {
+                        player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.RED + "You are not in a party!");
+                    }
+
                     break;
             }
         }

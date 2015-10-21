@@ -29,7 +29,7 @@ public class CommandParty implements CommandExecutor {
                 case "invite":
                     if (Party.getInstance().isOwnerOfParty(player)) {
                         if (Bukkit.getPlayer(args[1]).equals(player)) {
-                            Party.RawParty p = Party.getInstance().getPlayerParty(Bukkit.getPlayer(args[1]));
+                            Party.RawParty p = Party.getInstance().getPlayerParty(player);
                             if (!p.getInviting().contains(player)) {
                                 p.invitePlayer(player);
                                 player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.RED + "You can't invite yourself to your own party..?");
@@ -73,20 +73,6 @@ public class CommandParty implements CommandExecutor {
                         player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.RED + "Did you mean, '/party quit' ?");
                     } else {
                         player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.RED + "You're not in a party..?");
-                    }
-                    break;
-                case "accept":
-                    if (!Party.getInstance().isInParty(player) && Party.getInstance().isInParty(Bukkit.getPlayer(args[1]))) {
-                        Party.RawParty party = Party.getInstance().getPlayerParty(Bukkit.getPlayer(args[1]));
-                        if (party.getInviting().contains(player)) {
-                            party.getMembers().add(player);
-                            party.getInviting().remove(player);
-                            player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.YELLOW + "You've join " + Bukkit.getPlayer(args[1]).getName() + "'s party!");
-                        } else {
-                            player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.RED + "That party doesn't have you in the request!");
-                        }
-                    } else {
-                        player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.RED + "You are not in a party!");
                     }
                     break;
                 default:
