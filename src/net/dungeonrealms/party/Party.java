@@ -241,8 +241,9 @@ public class Party {
 
         public void invitePlayer(Player player) {
             if (!inviting.contains(player)) {
+                inviting.add(player);
                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.YELLOW + "You've been invited to " + owner.getName() + "'s Party!");
-                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.YELLOW + "Type /party accept " + owner.getName() + " to join!");
+                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.YELLOW + "Type /accept party " + owner.getName() + " to join!");
             } else {
                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.RED + "This player has already been invited!");
             }
