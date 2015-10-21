@@ -47,7 +47,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
-import java.text.ParseException;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -236,7 +235,7 @@ public class API {
      *
      * @since 1.0
      */
-    public static void handleLogin(UUID uuid) throws ParseException {
+    public static void handleLogin(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
