@@ -11,6 +11,7 @@ import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
 import net.dungeonrealms.listeners.*;
+import net.dungeonrealms.mastery.AsyncUtils;
 import net.dungeonrealms.mastery.FTPUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.DungeonManager;
@@ -80,9 +81,11 @@ public class DungeonRealms extends JavaPlugin {
         long START_TIME = System.currentTimeMillis() / 1000L;
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
         saveDefaultConfig();
-        Database.getInstance().initConnection();
+
+        Database.getInstance().startInitialization();
         DatabaseAPI.getInstance().startInitialization();
         NetworkAPI.getInstance().startInitialization();
+
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
         pm.registerEvents(new MainListener(), this);
@@ -148,6 +151,7 @@ public class DungeonRealms extends JavaPlugin {
         SpawningMechanics.killAll();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
         Database.mongoClient.close();
+        AsyncUtils.pool.shutdown();
     }
 
 }

@@ -68,6 +68,12 @@ public class PetUtils {
         }, 100L, 100L);
     }
 
+    /**
+     *
+     * @param e
+     * @param toFollow
+     * @since 1.0
+     */
     private static void makePet(EntityLiving e, UUID toFollow) {
         try {
             Object nms_entity = e;
@@ -117,6 +123,13 @@ public class PetUtils {
         }
     }
 
+    /**
+     *
+     * @param uuid
+     * @param petType
+     * @param particleType
+     * @since 1.0
+     */
     public static void spawnPet(UUID uuid, String petType, String particleType) {
         Player player = Bukkit.getPlayer(uuid);
         World world = ((CraftWorld) player.getWorld()).getHandle();

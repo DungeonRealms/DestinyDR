@@ -24,14 +24,13 @@ public class Database {
     }
 
     public static MongoClient mongoClient = null;
-    private static MongoDatabase database = null;
-
+    public static MongoDatabase database = null;
     public static MongoCollection<Document> servers = null;
     public static MongoCollection<Document> collection = null;
     public static MongoCollection<Document> ranks = null;
     public static MongoCollection<Document> guilds = null;
 
-    public void initConnection() {
+    public void startInitialization() {
         Utils.log.info("DungeonRealms Starting [MONGODB] Connection...");
         //mongoClient = MongoClients.create("mongodb://admin:admin123@ds051970.mongolab.com:51970/dungeonrealms");
         mongoClient = MongoClients.create("mongodb://druser:drpass@ds051970.mongolab.com:51970/dungeonrealms");

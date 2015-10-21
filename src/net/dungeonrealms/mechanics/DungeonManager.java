@@ -12,9 +12,9 @@ import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -32,7 +32,7 @@ public class DungeonManager {
         return instance;
     }
 
-    public ArrayList<DungeonObject> Dungeons = new ArrayList<>();
+    public CopyOnWriteArrayList<DungeonObject> Dungeons = new CopyOnWriteArrayList<>();
 
     public void startInitialization() {
         Utils.log.info("[DUNGEONS] Loading Dungeon Mechanics ... STARTING");

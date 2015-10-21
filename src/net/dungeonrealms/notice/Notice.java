@@ -82,7 +82,9 @@ public class Notice {
 
                 long inviteSent = Long.valueOf(s.split(",")[1]);
 
-                long hoursLeft = (((System.currentTimeMillis() / 1000l) / inviteSent) / 60) / 60;
+                long currentTime = System.currentTimeMillis() / 1000;
+                //TODO: Proxy fix this.
+                long hoursLeft = ((currentTime / inviteSent) / 60) / 60;
                 player.sendMessage(ChatColor.YELLOW + "You have been invited to " + ChatColor.GREEN + guildName + ChatColor.YELLOW + " you have " + hoursLeft + " hours to accept!");
             }
         }

@@ -474,14 +474,49 @@ public class Guild {
              */
             switch (level) {
                 case 51:
+                    if ((level * (experience + experienceToAdd)) > (level * 3500 + (factorial(Math.round(level % 6))))) {
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.netLevel", 1, false);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, "info.experience", 0, true);
+                        NetworkAPI.getInstance().sendAllGuildMessage(guildName, "Has leveled to V1");
+                    } else {
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.experience", experienceToAdd, true);
+                    }
                     break;
                 case 52:
+                    if ((level * (experience + experienceToAdd)) > (level * 4500 + (factorial(Math.round(level % 6))))) {
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.netLevel", 1, false);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, "info.experience", 0, true);
+                        NetworkAPI.getInstance().sendAllGuildMessage(guildName, "Has leveled to V2");
+                    } else {
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.experience", experienceToAdd, true);
+                    }
                     break;
                 case 53:
+                    if ((level * (experience + experienceToAdd)) > (level * 5500 + (factorial(Math.round(level % 5))))) {
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.netLevel", 1, false);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, "info.experience", 0, true);
+                        NetworkAPI.getInstance().sendAllGuildMessage(guildName, "Has leveled to V3");
+                    } else {
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.experience", experienceToAdd, true);
+                    }
                     break;
                 case 54:
+                    if ((level * (experience + experienceToAdd)) > (level * 6500 + (factorial(Math.round(level % 4))))) {
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.netLevel", 1, false);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, "info.experience", 0, true);
+                        NetworkAPI.getInstance().sendAllGuildMessage(guildName, "Has leveled to V4");
+                    } else {
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.experience", experienceToAdd, true);
+                    }
                     break;
                 case 55:
+                    if ((level * (experience + experienceToAdd)) > (level * 7500 + (factorial(Math.round(level % 3))))) {
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.netLevel", 1, false);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, "info.experience", 0, true);
+                        NetworkAPI.getInstance().sendAllGuildMessage(guildName, "Has leveled to V5");
+                    } else {
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.experience", experienceToAdd, true);
+                    }
                     break;
             }
         }
