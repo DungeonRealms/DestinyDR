@@ -1,5 +1,6 @@
 package net.dungeonrealms.handlers;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
@@ -411,7 +412,7 @@ public class HealthHandler {
         }
         player.setHealth(convHPToDisplay);
         LivingEntity leAttacker = null;
-        if (damager instanceof Player) {
+        if (API.isPlayer(damager)) {
             return;
         }
         if (damager instanceof Monster) {
@@ -437,7 +438,7 @@ public class HealthHandler {
                     break;
             }
         }
-        if (!(leAttacker == null) && !(leAttacker instanceof Player)) {
+        if (!(leAttacker == null) && !(API.isPlayer(leAttacker))) {
             Entities.getInstance().MONSTER_LAST_ATTACK.put(leAttacker, 10);
             if (!Entities.getInstance().MONSTERS_LEASHED.contains(leAttacker)) {
                 Entities.getInstance().MONSTERS_LEASHED.add(leAttacker);

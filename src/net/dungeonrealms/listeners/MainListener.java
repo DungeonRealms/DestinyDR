@@ -130,8 +130,7 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onMountDismount(VehicleExitEvent event) {
-        if (!(event.getExited() instanceof Player))
-            return;
+        if (!(API.isPlayer(event.getExited()))) return;
         if (EntityAPI.hasMountOut(event.getExited().getUniqueId())) {
             if (event.getVehicle().hasMetadata("type")) {
                 String metaValue = event.getVehicle().getMetadata("type").get(0).asString();
@@ -187,7 +186,7 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerShiftRightClickPlayer(PlayerInteractEntityEvent theevent) {
-        if (theevent.getRightClicked() instanceof Player) {
+        if (API.isPlayer(theevent.getRightClicked())) {
             if (theevent.getPlayer().isSneaking()) {
                 Player playerClicked = (Player) theevent.getRightClicked();
                 GUI gui = new GUI(playerClicked.getName(), 27, event -> {
@@ -264,7 +263,7 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void playerPunchPlayer(EntityDamageByEntityEvent event) {
-        if (!(event.getEntity() instanceof Player && event.getDamager() instanceof Player)) return;
+        if (!(API.isPlayer(event.getEntity()) && API.isPlayer(event.getDamager()))) return;
         Player p1 = (Player) event.getDamager();
         Player p2 = (Player) event.getEntity();
         if (API.isInSafeRegion(p1.getUniqueId()) && API.isInSafeRegion(p2.getUniqueId())) {

@@ -1,5 +1,6 @@
 package net.dungeonrealms.listeners;
 
+import net.dungeonrealms.API;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftMonster;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -27,7 +28,7 @@ public class BossListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onEntityDeath(org.bukkit.event.entity.EntityDamageByEntityEvent event) {
-		if (event.getDamager() instanceof Player) {
+		if (API.isPlayer(event.getDamager())) {
 			Player p = (Player) event.getDamager();
 			if (event.getEntity() instanceof LivingEntity) {
 				if (event.getEntity().hasMetadata("boss")) {

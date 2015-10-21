@@ -1,36 +1,11 @@
 package net.dungeonrealms;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.rmi.activation.UnknownObjectException;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.plugin.Plugin;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
-
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
 import net.dungeonrealms.entities.types.mounts.EnumMounts;
@@ -50,6 +25,29 @@ import net.dungeonrealms.notice.Notice;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.teleportation.TeleportAPI;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.plugin.Plugin;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.rmi.activation.UnknownObjectException;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -309,6 +307,10 @@ public class API {
      */
     public static boolean isStringTrail(String trailType) {
         return ParticleAPI.ParticleEffect.getByName(trailType.toUpperCase()) != null;
+    }
+
+    public static boolean isPlayer(Entity entity) {
+        return entity instanceof Player && !(entity.hasMetadata("NPC") || entity.hasMetadata("npc"));
     }
 
 	/**

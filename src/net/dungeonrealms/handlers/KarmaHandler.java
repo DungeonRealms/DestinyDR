@@ -1,5 +1,6 @@
 package net.dungeonrealms.handlers;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.mastery.Utils;
@@ -251,7 +252,7 @@ public class KarmaHandler {
                 break;
         }
         Player killerPlayer;
-        if (leKiller instanceof Player) {
+        if (API.isPlayer(leKiller)) {
             killerPlayer = (Player) leKiller;
             String alignmentPlayer = getPlayerRawAlignment(player);
             String alignmentKiller = getPlayerRawAlignment(killerPlayer);
