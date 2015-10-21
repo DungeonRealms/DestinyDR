@@ -7,16 +7,19 @@ import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * Created by Nick on 10/19/2015.
  */
-public class GamePlayer<T extends HumanEntity> {
+public class GamePlayer {
 
     private Player T;
+
+    public GamePlayer(Player player) {
+        T = player;
+    }
 
     /**
      * Get the players tier.

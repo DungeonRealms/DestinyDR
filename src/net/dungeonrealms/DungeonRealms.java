@@ -31,12 +31,36 @@ import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
-/*          Copyright (C) CherryIO, LLC - All Rights Reserved
+/* Copyright (C) 2015 CherryIO, LLC - All Rights Reserved http://cherryio.com
+
  * Unauthorized copying and or modifying of this file, via any medium is
  * STRICTLY prohibited Proprietary and confidential
- * Written by Nick Doran (xFinityPro) <nick@cherryio.com>, October 2015
- * Written by Kieran Quigley (Proxying) <Proxying@cherryio.com>, October 2015
- * Written by Chase BR (Xwaffle) <chase@cherryio.com>, October 2015
+ *
+ * THIS CODE AND INFORMATION ARE PROVIDED "AS IS" WITHOUT WARRANTY OF ANY
+ * KIND, EITHER EXPRESSED OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE
+ * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
+ * PARTICULAR PURPOSE.
+ *
+ * Written by Nick Doran (xFinityPro) <nick@cherryio.com>, October 2015 -
+ * Written by Kieran Quigley (Proxying) <Proxying@cherryio.com>, October 2015 -
+ * Written by Chase BR (Xwaffle) <chase@cherryio.com>, October 2015 -
+ *
+ *
+ * (a) Anyone who violates any of the exclusive rights of the copyright owners as
+ * provided by sections 106 through 122 or of the author as provided in section 106A(a),
+ * or who imports copies or phonorecords into the United States in violation of section 602,
+ * is an infringer of the copyright or right of the author, as the case may be. For purposes
+ * of this chapter (other than section 506), any reference to copyright shall be deemed to
+ * include the rights conferred by section 106A(a). As used in this subsection, the term “anyone”
+ * includes any State, any instrumentality of a State, and any officer or employee of a State or
+ * instrumentality of a State acting in his or her official capacity. Any State, and any such
+ * instrumentality, officer, or employee, shall be subject to the provisions of this title in
+ * the same manner and to the same extent as any nongovernmental entity.
+ *
+ * For more information regarding this legally bound copyright of individuals
+ * freedom development please reference United States Copyright Laws below.
+ *
+ * (http://www.copyright.gov/title17/92chap5.html)
  */
 public class DungeonRealms extends JavaPlugin {
 

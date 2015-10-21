@@ -1,5 +1,6 @@
 package net.dungeonrealms.items;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.items.repairing.RepairAPI;
@@ -36,7 +37,7 @@ public class DamageAPI {
      */
     public static double calculateWeaponDamage(LivingEntity attacker, Entity receiver, NBTTagCompound tag) {
         EntityEquipment entityEquipment = attacker.getEquipment();
-        if (attacker instanceof Player) {
+        if (API.isPlayer(attacker)) {
             RepairAPI.subtractCustomDurability((Player) attacker, attacker.getEquipment().getItemInHand(), 1);
         }
         ItemStack[] attackerArmor = entityEquipment.getArmorContents();
@@ -66,7 +67,7 @@ public class DamageAPI {
         int damageRandomizer = ItemGenerator.getRandomDamageVariable(weaponTier);
         damage = (double) Utils.randInt((int) Math.round(tag.getDouble("damage") - (tag.getDouble("damage") / damageRandomizer)), (int) Math.round(tag.getDouble("damage") + (tag.getDouble("damage") / (damageRandomizer - 1))));
         boolean isHitCrit = false;
-        if (receiver instanceof Player) {
+        if (API.isPlayer(receiver)) {
             if (tag.getDouble("vsPlayers") != 0) {
                 damage += ((tag.getDouble("vsPlayers") / 100) * damage);
             }
@@ -194,7 +195,7 @@ public class DamageAPI {
 
         if (tag.getDouble("lifesteal") != 0) {
             double lifeToHeal = ((tag.getDouble("lifesteal") / 100) * damage);
-            if (attacker instanceof Player) {
+            if (API.isPlayer(attacker)) {
                 HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal);
             } else if (attacker instanceof Monster) {
                 HealthHandler.getInstance().healMonsterByAmount(attacker, (int) lifeToHeal);
@@ -282,7 +283,7 @@ public class DamageAPI {
         damage = (double) Utils.randInt(((int) Math.round(projectile.getMetadata("damage").get(0).asDouble() - projectile.getMetadata("damage").get(0).asDouble() / damageRandomizer)),
                 (int) Math.round(projectile.getMetadata("damage").get(0).asDouble() + projectile.getMetadata("damage").get(0).asDouble() / (damageRandomizer - 1)));
         boolean isHitCrit = false;
-        if (receiver instanceof Player) {
+        if (API.isPlayer(receiver)) {
             if (projectile.getMetadata("vsPlayers").get(0).asDouble() != 0) {
                 damage += ((projectile.getMetadata("vsPlayers").get(0).asDouble() / 100) * damage);
             }
@@ -410,7 +411,7 @@ public class DamageAPI {
 
         if (projectile.getMetadata("lifesteal").get(0).asDouble() != 0) {
             double lifeToHeal = ((projectile.getMetadata("lifesteal").get(0).asDouble() / 100) * damage);
-            if (attacker instanceof Player) {
+            if (API.isPlayer(attacker)) {
                 HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal);
             } else if (attacker instanceof Monster) {
                 HealthHandler.getInstance().healMonsterByAmount(attacker, (int) lifeToHeal);
@@ -459,7 +460,7 @@ public class DamageAPI {
         if (defenderArmor[3].getType() != null && defenderArmor[3].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(defenderArmor[3]).getTag() != null) {
                 nmsTags[0] = CraftItemStack.asNMSCopy(defenderArmor[3]).getTag();
-                if (leDefender instanceof Player) {
+                if (API.isPlayer(leDefender)) {
                     RepairAPI.subtractCustomDurability((Player) leDefender, defenderArmor[3], 1);
                 }
             }
@@ -467,7 +468,7 @@ public class DamageAPI {
         if (defenderArmor[2].getType() != null && defenderArmor[2].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(defenderArmor[2]).getTag() != null) {
                 nmsTags[1] = CraftItemStack.asNMSCopy(defenderArmor[2]).getTag();
-                if (leDefender instanceof Player) {
+                if (API.isPlayer(leDefender)) {
                     RepairAPI.subtractCustomDurability((Player) leDefender, defenderArmor[2], 1);
                 }
             }
@@ -475,7 +476,7 @@ public class DamageAPI {
         if (defenderArmor[1].getType() != null && defenderArmor[1].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(defenderArmor[1]).getTag() != null) {
                 nmsTags[2] = CraftItemStack.asNMSCopy(defenderArmor[1]).getTag();
-                if (leDefender instanceof Player) {
+                if (API.isPlayer(leDefender)) {
                     RepairAPI.subtractCustomDurability((Player) leDefender, defenderArmor[1], 1);
                 }
             }
@@ -483,7 +484,7 @@ public class DamageAPI {
         if (defenderArmor[0] != null && defenderArmor[0].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(defenderArmor[0]).getTag() != null) {
                 nmsTags[3] = CraftItemStack.asNMSCopy(defenderArmor[0]).getTag();
-                if (leDefender instanceof Player) {
+                if (API.isPlayer(leDefender)) {
                     RepairAPI.subtractCustomDurability((Player) leDefender, defenderArmor[0], 1);
                 }
             }
@@ -498,7 +499,7 @@ public class DamageAPI {
                         if (nmsTags[i].getInt("strength") != 0) {
                             blockChance += (blockChance * (nmsTags[i].getInt("strength") * 0.017));
                         }
-                        if (attacker instanceof Player) {
+                        if (API.isPlayer(attacker)) {
                             net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
                             NBTTagCompound tag = nmsItem.getTag();
                             if (tag.getInt("accuracy") != 0) {
@@ -534,7 +535,7 @@ public class DamageAPI {
                         if (nmsTags[i].getInt("dexterity") != 0) {
                             dodgeChance += (dodgeChance * (nmsTags[i].getInt("dexterity") * 0.017));
                         }
-                        if (attacker instanceof Player) {
+                        if (API.isPlayer(attacker)) {
                             if (((Player) attacker).getItemInHand() != null && ((Player) attacker).getItemInHand().getType() != Material.AIR) {
                                 net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
                                 NBTTagCompound tag = nmsItem.getTag();
@@ -590,7 +591,7 @@ public class DamageAPI {
                             damageFromThorns += 60 + nmsTags[i].getInt("thorns");
                             break;
                     }
-                    if (attacker instanceof Player) {
+                    if (API.isPlayer(attacker)) {
                         //HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, damageFromThorns);
                     }
                     if (attacker instanceof Monster) {

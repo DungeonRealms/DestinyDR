@@ -1,5 +1,6 @@
 package net.dungeonrealms.listeners;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.minecraft.server.v1_8_R3.EntityExperienceOrb;
@@ -41,7 +42,7 @@ public class EnergyListener implements Listener {
     @EventHandler(priority = EventPriority.LOW)
     public void onPlayerStarveDamage(EntityDamageEvent event) {
         if (event.getCause() != EntityDamageEvent.DamageCause.STARVATION) return;
-        if (!(event.getEntity() instanceof Player)) return;
+        if (!(API.isPlayer(event.getEntity()))) return;
         event.setCancelled(true);
         event.setDamage(0);
         Player player = (Player) event.getEntity();
@@ -89,7 +90,7 @@ public class EnergyListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerFoodLevelChange(FoodLevelChangeEvent event) {
-        if (!(event.getEntity() instanceof Player)) return;
+        if (!(API.isPlayer(event.getEntity()))) return;
         Player player = (Player) event.getEntity();
         if (event.getFoodLevel() < player.getFoodLevel()) {
             if (new Random().nextInt(4) >= 1) {
