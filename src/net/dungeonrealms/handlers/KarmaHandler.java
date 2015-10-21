@@ -3,6 +3,7 @@ package net.dungeonrealms.handlers;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
+import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -34,14 +35,15 @@ public class KarmaHandler {
     public static ConcurrentHashMap<Player, Integer> playerAlignmentTime = new ConcurrentHashMap<>();
 
     public enum EnumPlayerAlignments {
-        LAWFUL(0, "lawful"),
-        NEUTRAL(1, "neutral"),
-        CHAOTIC(2, "chaotic");
+        LAWFUL(0, "lawful", ChatColor.WHITE),
+        NEUTRAL(1, "neutral", ChatColor.YELLOW),
+        CHAOTIC(2, "chaotic", ChatColor.RED);
 
         private int id;
         private String name;
+        private ChatColor alignmentColor;
 
-        EnumPlayerAlignments(int id, String name) {
+        EnumPlayerAlignments(int id, String name, ChatColor alignmentColor) {
             this.id = id;
             this.name = name;
         }
@@ -53,6 +55,10 @@ public class KarmaHandler {
                 }
             }
             return null;
+        }
+
+        public ChatColor getAlignmentColor() {
+            return alignmentColor;
         }
     }
 
@@ -168,6 +174,7 @@ public class KarmaHandler {
                                 ""
                         });
                     }
+                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, new GamePlayer(player).getLevel());
                     playerAlignments.put(player, alignment);
                     break;
                 case NEUTRAL:
@@ -179,6 +186,7 @@ public class KarmaHandler {
                                 ""
                         });
                     }
+                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.YELLOW, new GamePlayer(player).getLevel());
                     playerAlignmentTime.put(player, 120);
                     playerAlignments.put(player, alignment);
                     break;
@@ -191,6 +199,7 @@ public class KarmaHandler {
                                 ""
                         });
                     }
+                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.RED, new GamePlayer(player).getLevel());
                     playerAlignmentTime.put(player, 1200);
                     playerAlignments.put(player, alignment);
                     break;
@@ -210,11 +219,7 @@ public class KarmaHandler {
      * @since 1.0
      */
     public static String getAlignmentOnLogin(UUID uuid) {
-        if (DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid) != null && !String.valueOf(DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid)).equalsIgnoreCase("")) {
-            return String.valueOf(DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid));
-        } else {
-            return "lawful"; //Safety check, but should never return that
-        }
+        return String.valueOf(DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid));
     }
 
     /**
@@ -280,4 +285,5 @@ public class KarmaHandler {
             setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL.name);
         }
     }
+
 }

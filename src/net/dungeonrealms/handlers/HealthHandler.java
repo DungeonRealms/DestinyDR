@@ -5,10 +5,12 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.entities.Entities;
+import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -16,6 +18,7 @@ import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
+import org.inventivetalent.bossbar.BossBarAPI;
 
 import java.util.UUID;
 
@@ -77,9 +80,8 @@ public class HealthHandler {
      */
     private void updatePlayerHPBars() {
         for (Player player : Bukkit.getOnlinePlayers()) {
-            UUID uuid = player.getUniqueId();
             if (getPlayerHPLive(player) > 0) {
-                setPlayerOverheadHP(uuid, getPlayerHPLive(player));
+                setPlayerOverheadHP(player, getPlayerHPLive(player));
             }
         }
     }
@@ -118,13 +120,30 @@ public class HealthHandler {
      * Sets the players HP bar
      * Called in "updatePlayerHPBars"
      *
-     * @param uuid
+     * @param player
      * @param hp
      * @since 1.0
      */
-    public void setPlayerOverheadHP(UUID uuid, int hp) {
+    public void setPlayerOverheadHP(Player player, int hp) {
         //Check their Max HP from wherever we decide to store it, get it as a percentage.
         //Update BarAPI thing with it.
+        ScoreboardHandler.getInstance().updatePlayerHP(player, hp);
+        if (!API.isPlayer(player)) {
+            return;
+        }
+        double maxHP = getPlayerMaxHPLive(player);
+        double healthPercentage = ((double) hp / maxHP);
+        if (healthPercentage > 1.0) {
+            healthPercentage = 1.0;
+        }
+        GamePlayer gamePlayer = new GamePlayer(player);
+        int playerLevel =  gamePlayer.getLevel();
+        //TODO Current Exp / Exp to next level
+        String playerLevelInfo = ChatColor.AQUA.toString() + ChatColor.BOLD + "LVL " + ChatColor.AQUA + playerLevel;
+        String separator =  ChatColor.BLACK.toString() + ChatColor.BOLD + " - ";
+        String playerHPInfo = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "HP " + ChatColor.LIGHT_PURPLE + hp + ChatColor.BOLD + " / " + ChatColor.LIGHT_PURPLE + getPlayerMaxHPLive(player);
+
+        BossBarAPI.setMessage(player, playerLevelInfo + separator + playerHPInfo + separator, (float) (healthPercentage * 100F));
     }
 
     /**
@@ -497,9 +516,8 @@ public class HealthHandler {
      * @since 1.0
      */
     public int calculateMaxHPFromItems(LivingEntity entity) {
-        ItemStack[] playerArmor = entity.getEquipment().getArmorContents();
         double totalHP = 0;
-        for (ItemStack itemStack : playerArmor) {
+        for (ItemStack itemStack : entity.getEquipment().getArmorContents()) {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
                 continue;
             }
@@ -529,10 +547,10 @@ public class HealthHandler {
         if (nmsItem == null || nmsItem.getTag() == null) {
             return 0;
         }
-        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor") && nmsItem.getTag().getString("type").equalsIgnoreCase("weapon"))) {
+        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor") || nmsItem.getTag().getString("type").equalsIgnoreCase("weapon"))) {
             return 0;
         }
-        if (nmsItem.getTag().getInt("health") > 0) {
+        if (nmsItem.getTag().getInt("healthPoints") > 0) {
             healthValue += nmsItem.getTag().getInt("healthPoints");
         }
         if (nmsItem.getTag().getInt("vitality") > 0) {
@@ -582,11 +600,11 @@ public class HealthHandler {
         if (nmsItem == null || nmsItem.getTag() == null) {
             return 0;
         }
-        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor") && nmsItem.getTag().getString("type").equalsIgnoreCase("weapon"))) {
+        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor") || nmsItem.getTag().getString("type").equalsIgnoreCase("weapon"))) {
             return 0;
         }
         if (nmsItem.getTag().getInt("healthRegen") > 0) {
-            healthRegen += nmsItem.getTag().getInt("healthPoints");
+            healthRegen += nmsItem.getTag().getInt("healthRegen");
         }
         if (nmsItem.getTag().getInt("vitality") > 0) {
             healthRegen += healthRegen * ((nmsItem.getTag().getInt("vitality") * 0.3D) / 100.0D);

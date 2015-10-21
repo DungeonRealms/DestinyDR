@@ -14,6 +14,7 @@ import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
+import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
@@ -22,6 +23,7 @@ import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.notice.Notice;
+import net.dungeonrealms.party.Party;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.teleportation.TeleportAPI;
@@ -209,6 +211,8 @@ public class API {
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
         KarmaHandler.getInstance().handleLogoutEvents(player);
+        Party.getInstance().handleLogout(player);
+        ScoreboardHandler.getInstance().removePlayerScoreboard(player);
     }
 
 
@@ -263,6 +267,9 @@ public class API {
 
         //Notices
         Notice.getInstance().doLogin(player);
+
+        //Scoreboard Safety
+        ScoreboardHandler.getInstance().matchMainScoreboard(player);
     }
 
     /**
@@ -314,11 +321,16 @@ public class API {
     }
 
 	/**
+     * Returns a list of nearby monsters
+     * defined via their "type" metadata.
+     *
 	 * @param location
 	 * @param radius
 	 * @return List
+     *@since 1.0
 	 */
     public static List<Entity> getNearbyMonsters(Location location, int radius) {
         return location.getWorld().getEntities().stream().filter(mons -> mons.getLocation().distance(location) <= radius && mons.hasMetadata("type") && mons.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")).collect(Collectors.toList());
     }
+
 }

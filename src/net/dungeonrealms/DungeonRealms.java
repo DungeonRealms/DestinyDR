@@ -15,6 +15,7 @@ import net.dungeonrealms.mastery.FTPUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.DungeonManager;
 import net.dungeonrealms.mechanics.LootManager;
+import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -112,6 +113,7 @@ public class DungeonRealms extends JavaPlugin {
         BankMechanics.getInstance().startInitialization();
         NetworkServer.getInstance().startInitialization();
         DungeonManager.getInstance().startInitialization();
+        ScoreboardHandler.getInstance().startInitialization();
 
         Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
         Entities.getInstance().startInitialization();

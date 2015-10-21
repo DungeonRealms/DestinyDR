@@ -62,6 +62,9 @@ public class EnergyHandler {
      */
     public void handleLoginEvents(Player player) {
         if (player.getFoodLevel() <= 0) {
+            if (player.isOp() || player.getGameMode() == GameMode.CREATIVE) {
+                return;
+            }
             if (!(player.hasMetadata("starving"))) {
                 player.setMetadata("starving", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "**STARVING**"), 20L);

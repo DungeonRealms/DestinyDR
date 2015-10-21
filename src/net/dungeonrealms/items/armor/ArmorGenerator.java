@@ -54,8 +54,7 @@ public class ArmorGenerator {
 	 */
 	private ItemStack getArmor(Armor.EquipmentType type, Armor.ArmorTier tier, Armor.ArmorModifier modifier) {
 		ItemStack item = getBaseItem(type, tier);
-		ArrayList<Armor.ArmorAttributeType> attributeTypes = getRandomAttributes(
-		        new Random().nextInt(tier.getAttributeRange()));
+		ArrayList<Armor.ArmorAttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(tier.getAttributeRange()));
 		ItemMeta meta = item.getItemMeta();
 		List<String> list = new NameGenerator().next(type);
 		meta.setDisplayName(tier.getChatColorOfTier(tier) + list.get(0) + " " + list.get(1) + " " + list.get(2));

@@ -3,6 +3,7 @@ package net.dungeonrealms.mastery;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
+import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
@@ -169,6 +170,7 @@ public class GamePlayer {
             Utils.log.info("[LEVEL] Leveling " + T.getName() + " to level " + getLevel() + 1 + " with new experience" + String.valueOf(experience - experience));
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, "info.attributes.bufferPoints", 6, false);
             T.sendMessage(ChatColor.GREEN + "You have reached level " + ChatColor.AQUA + level + 1 + ChatColor.GREEN + " and have gained 6 Attribute Points!");
+            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(T, getPlayerAlignment().getAlignmentColor(), level + 1);
         } else {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.experience", experienceToAdd, true);
         }

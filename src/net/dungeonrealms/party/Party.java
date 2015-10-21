@@ -2,6 +2,7 @@ package net.dungeonrealms.party;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.handlers.ScoreboardHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -34,31 +35,40 @@ public class Party {
 
     public void updateParties() {
         for (RawParty rp : PARTIES) {
-            ScoreboardManager manager = Bukkit.getScoreboardManager();
-            Scoreboard board = manager.getNewScoreboard();
-            Objective objective = board.registerNewObjective("party", "scoreboard");
-            objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-            objective.setDisplayName(ChatColor.WHITE + "(" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + ")");
-
             for (Player player : rp.members) {
+                Objective objective = ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).getObjective(DisplaySlot.SIDEBAR);
+                if (objective == null) {
+                    objective = ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).registerNewObjective("party", "scoreboard");
+                    objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+                    objective.setDisplayName(ChatColor.WHITE + "(" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + ")");
+                }
+                ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).resetScores(player.getName());
                 Score score = objective.getScore(player.getName());
                 score.setScore(HealthHandler.getInstance().getPlayerHPLive(player));
             }
 
             if (rp.getOwner() != null) {
+                Objective objective = ScoreboardHandler.getInstance().getPlayerScoreboardObject(rp.getOwner()).getObjective(DisplaySlot.SIDEBAR);
+                if (objective == null) {
+                    objective = ScoreboardHandler.getInstance().getPlayerScoreboardObject(rp.getOwner()).registerNewObjective("party", "scoreboard");
+                    objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+                    objective.setDisplayName(ChatColor.WHITE + "(" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + ")");
+                }
+                ScoreboardHandler.getInstance().getPlayerScoreboardObject(rp.getOwner()).resetScores(rp.getOwner().getName());
                 Score score = objective.getScore(rp.getOwner().getName());
                 score.setScore(HealthHandler.getInstance().getPlayerHPLive(rp.getOwner()));
             } else {
                 rp.setOwner(rp.members.get(new Random().nextInt(rp.members.size())));
+                Objective objective = ScoreboardHandler.getInstance().getPlayerScoreboardObject(rp.getOwner()).getObjective(DisplaySlot.SIDEBAR);
+                if (objective == null) {
+                    objective = ScoreboardHandler.getInstance().getPlayerScoreboardObject(rp.getOwner()).registerNewObjective("party", "scoreboard");
+                    objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+                    objective.setDisplayName(ChatColor.WHITE + "(" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + ")");
+                }
+                ScoreboardHandler.getInstance().getPlayerScoreboardObject(rp.getOwner()).resetScores(rp.getOwner().getName());
                 Score score = objective.getScore(rp.getOwner().getName());
                 score.setScore(HealthHandler.getInstance().getPlayerHPLive(rp.getOwner()));
             }
-
-            for (Player members : rp.getMembers()) {
-                members.setScoreboard(board);
-            }
-            rp.owner.setScoreboard(board);
-
         }
     }
 
@@ -66,6 +76,7 @@ public class Party {
      * Creates a party.
      *
      * @param player
+     * @since 1.0
      */
     public void createParty(Player player) {
         if (!isInParty(player)) {
@@ -101,11 +112,14 @@ public class Party {
      */
     public void disbandParty(RawParty party) {
         for (Player members : party.getMembers()) {
-            members.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+            ScoreboardHandler.getInstance().getPlayerScoreboardObject(members).resetScores(members.getName());
+            ScoreboardHandler.getInstance().getPlayerScoreboardObject(members).resetScores(party.owner.getName());
+            members.setScoreboard(members.getScoreboard());
             members.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.RED + "The party has been disbanded!");
         }
         if (party.owner != null) {
-            party.owner.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+            ScoreboardHandler.getInstance().getPlayerScoreboardObject(party.owner).resetScores(party.owner.getName());
+            party.owner.setScoreboard(party.owner.getScoreboard());
             party.owner.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.RED + "Your party has been disbanded!");
         }
         PARTIES.remove(party);
@@ -120,7 +134,8 @@ public class Party {
      */
     public void kickPlayer(RawParty party, Player player) {
         party.getMembers().remove(player);
-        player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+        ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).resetScores(player.getName());
+        player.setScoreboard(player.getScoreboard());
         party.owner.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.RED + "You have been kicked from the party!");
     }
 
@@ -164,6 +179,20 @@ public class Party {
     }
 
     /**
+     * Handles players logging out
+     * removes them from a party
+     * if applicable
+     *
+     * @param player
+     * @since 1.0
+     */
+    public void handleLogout(Player player) {
+        if (isInParty(player)) {
+            quitParty(player);
+        }
+    }
+
+    /**
      * Quits a player out the party, if player is owner.
      * The party is disbanded!
      *
@@ -174,6 +203,8 @@ public class Party {
         RawParty party = getPlayerParty(player);
         if (party.members.contains(player)) {
             party.members.remove(player);
+            ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).resetScores(player.getName());
+            player.setScoreboard(player.getScoreboard());
             party.owner.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.RED + "You have left the party!");
         } else if (party.owner.equals(player)) {
             disbandParty(party);
