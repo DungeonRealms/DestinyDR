@@ -79,11 +79,7 @@ public class HealthHandler {
      * @since 1.0
      */
     private void updatePlayerHPBars() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            if (getPlayerHPLive(player) > 0) {
-                setPlayerOverheadHP(player, getPlayerHPLive(player));
-            }
-        }
+        Bukkit.getOnlinePlayers().stream().filter(player -> getPlayerHPLive(player) > 0).forEach(player -> setPlayerOverheadHP(player, getPlayerHPLive(player)));
     }
 
     /**
@@ -133,9 +129,10 @@ public class HealthHandler {
         }
         double maxHP = getPlayerMaxHPLive(player);
         double healthPercentage = ((double) hp / maxHP);
-        if (healthPercentage > 1.0) {
+        if (healthPercentage * 100.0F > 100.0F) {
             healthPercentage = 1.0;
         }
+        float healthToDisplay = (float) (healthPercentage * 100.F);
         GamePlayer gamePlayer = new GamePlayer(player);
         int playerLevel =  gamePlayer.getLevel();
         //TODO Current Exp / Exp to next level
@@ -143,7 +140,8 @@ public class HealthHandler {
         String separator =  ChatColor.BLACK.toString() + ChatColor.BOLD + " - ";
         String playerHPInfo = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "HP " + ChatColor.LIGHT_PURPLE + hp + ChatColor.BOLD + " / " + ChatColor.LIGHT_PURPLE + getPlayerMaxHPLive(player);
 
-        BossBarAPI.setMessage(player, playerLevelInfo + separator + playerHPInfo + separator, (float) (healthPercentage * 100F));
+        BossBarAPI.setMessage(player, playerLevelInfo + separator + playerHPInfo + separator, 100F);
+        BossBarAPI.setHealth(player, healthToDisplay);
     }
 
     /**
