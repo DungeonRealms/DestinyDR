@@ -20,8 +20,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.inventivetalent.bossbar.BossBarAPI;
 
-import java.util.UUID;
-
 /**
  * Created by Kieran on 10/3/2015.
  */
@@ -50,8 +48,8 @@ public class HealthHandler {
      * @since 1.0
      */
     public void handleLoginEvents(Player player) {
-        setPlayerMaxHPLive(player, getPlayerMaxHPOnLogin(player.getUniqueId()));
-        setPlayerHPLive(player, getPlayerMaxHPOnLogin(player.getUniqueId()));
+        setPlayerMaxHPLive(player, getPlayerMaxHPOnLogin(player));
+        setPlayerHPLive(player, getPlayerMaxHPOnLogin(player));
         setPlayerHPRegenLive(player, getPlayerHPRegenLive(player));
         player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
     }
@@ -174,12 +172,12 @@ public class HealthHandler {
      * in their inventory)
      * Pretty expensive check.
      *
-     * @param uuid
+     * @param player
      * @return int
      * @since 1.0
      */
-    public int getPlayerMaxHPOnLogin(UUID uuid) {
-        return calculateMaxHPFromItems(Bukkit.getPlayer(uuid));
+    public int getPlayerMaxHPOnLogin(Player player) {
+        return new GamePlayer(player).getPlayerMaxHP();
     }
 
     /**
@@ -514,19 +512,20 @@ public class HealthHandler {
      * @since 1.0
      */
     public int calculateMaxHPFromItems(LivingEntity entity) {
-        double totalHP = 0;
+        double totalHP = 50;
         for (ItemStack itemStack : entity.getEquipment().getArmorContents()) {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
                 continue;
             }
-            totalHP += getHealthValueOfItem(itemStack);
+            totalHP += getHealthValueOfArmor(itemStack);
         }
 
-        if (entity.getEquipment().getItemInHand() != null && entity.getEquipment().getItemInHand().getType() != Material.AIR) {
-            totalHP += getHealthValueOfItem(entity.getEquipment().getItemInHand());
+        for (ItemStack itemStack : entity.getEquipment().getArmorContents()) {
+            if (itemStack == null || itemStack.getType() == Material.AIR) {
+                continue;
+            }
+            totalHP = getVitalityValueOfArmor(itemStack, totalHP);
         }
-
-        totalHP += 50;
 
         return (int) totalHP;
     }
@@ -539,22 +538,33 @@ public class HealthHandler {
      * @return int
      * @since 1.0
      */
-    private int getHealthValueOfItem(ItemStack itemStack) {
+    private int getHealthValueOfArmor(ItemStack itemStack) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
         int healthValue = 0;
         if (nmsItem == null || nmsItem.getTag() == null) {
             return 0;
         }
-        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor") || nmsItem.getTag().getString("type").equalsIgnoreCase("weapon"))) {
+        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor"))) {
             return 0;
         }
         if (nmsItem.getTag().getInt("healthPoints") > 0) {
             healthValue += nmsItem.getTag().getInt("healthPoints");
         }
-        if (nmsItem.getTag().getInt("vitality") > 0) {
-            healthValue += healthValue * ((nmsItem.getTag().getInt("vitality") * 0.034D) / 100.0D);
-        }
         return healthValue;
+    }
+
+    private int getVitalityValueOfArmor(ItemStack itemStack, double hpTotal) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
+        if (nmsItem == null || nmsItem.getTag() == null) {
+            return 0;
+        }
+        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor"))) {
+            return 0;
+        }
+        if (nmsItem.getTag().getInt("vitality") > 0) {
+            hpTotal += hpTotal * ((nmsItem.getTag().getInt("vitality") * 0.034D) / 100.0D);
+        }
+        return (int) hpTotal;
     }
 
     /**
@@ -566,20 +576,20 @@ public class HealthHandler {
      * @since 1.0
      */
     private int calculateHealthRegenFromItems(Player player) {
-        ItemStack[] playerArmor = player.getInventory().getArmorContents();
-        double totalHPRegen = 0;
-        for (ItemStack itemStack : playerArmor) {
+        double totalHPRegen = 5;
+        for (ItemStack itemStack : player.getEquipment().getArmorContents()) {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
                 continue;
             }
-            totalHPRegen += getHealthRegenValueOfItem(itemStack);
+            totalHPRegen += getHealthRegenValueOfArmor(itemStack);
         }
 
-        if (player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR) {
-            totalHPRegen += getHealthRegenValueOfItem(player.getItemInHand());
+        for (ItemStack itemStack : player.getEquipment().getArmorContents()) {
+            if (itemStack == null || itemStack.getType() == Material.AIR) {
+                continue;
+            }
+            totalHPRegen = getHealthRegenVitalityFromArmor(itemStack, totalHPRegen);
         }
-
-        totalHPRegen += 5;
 
         return (int) totalHPRegen;
     }
@@ -592,22 +602,33 @@ public class HealthHandler {
      * @return int
      * @since 1.0
      */
-    private int getHealthRegenValueOfItem(ItemStack itemStack) {
+    private int getHealthRegenValueOfArmor(ItemStack itemStack) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
         int healthRegen = 0;
         if (nmsItem == null || nmsItem.getTag() == null) {
             return 0;
         }
-        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor") || nmsItem.getTag().getString("type").equalsIgnoreCase("weapon"))) {
+        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor"))) {
             return 0;
         }
         if (nmsItem.getTag().getInt("healthRegen") > 0) {
             healthRegen += nmsItem.getTag().getInt("healthRegen");
         }
-        if (nmsItem.getTag().getInt("vitality") > 0) {
-            healthRegen += healthRegen * ((nmsItem.getTag().getInt("vitality") * 0.3D) / 100.0D);
-        }
         return healthRegen;
+    }
+
+    private int getHealthRegenVitalityFromArmor(ItemStack itemStack, double totalRegen) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
+        if (nmsItem == null || nmsItem.getTag() == null) {
+            return 0;
+        }
+        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor"))) {
+            return 0;
+        }
+        if (nmsItem.getTag().getInt("vitality") > 0) {
+            totalRegen += totalRegen * ((nmsItem.getTag().getInt("vitality") * 0.3D) / 100.0D);
+        }
+        return (int) totalRegen;
     }
 
     /**

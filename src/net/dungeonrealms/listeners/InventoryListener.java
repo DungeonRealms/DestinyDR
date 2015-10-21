@@ -1,16 +1,30 @@
 package net.dungeonrealms.listeners;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import ca.thederpygolems.armorequip.ArmorEquipEvent;
+import com.minebone.anvilapi.core.AnvilApi;
+import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
+import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.banks.BankMechanics;
+import net.dungeonrealms.banks.Storage;
+import net.dungeonrealms.combat.CombatLog;
+import net.dungeonrealms.duel.DuelMechanics;
+import net.dungeonrealms.duel.DuelWager;
+import net.dungeonrealms.handlers.ClickHandler;
+import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.handlers.TradeHandler;
+import net.dungeonrealms.handlers.TradeHandler.TradeManager;
+import net.dungeonrealms.items.Attribute;
+import net.dungeonrealms.items.Item.ItemTier;
+import net.dungeonrealms.mechanics.ItemManager;
+import net.dungeonrealms.mechanics.LootManager;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.shops.Shop;
+import net.dungeonrealms.shops.ShopMechanics;
+import net.dungeonrealms.spawning.LootSpawner;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -24,27 +38,9 @@ import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.minebone.anvilapi.core.AnvilApi;
-import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
-import com.minebone.anvilapi.nms.anvil.AnvilSlot;
-
-import net.dungeonrealms.banks.BankMechanics;
-import net.dungeonrealms.banks.Storage;
-import net.dungeonrealms.duel.DuelMechanics;
-import net.dungeonrealms.duel.DuelWager;
-import net.dungeonrealms.handlers.ClickHandler;
-import net.dungeonrealms.items.Attribute;
-import net.dungeonrealms.items.Item.ItemTier;
-import net.dungeonrealms.mechanics.ItemManager;
-import net.dungeonrealms.mechanics.LootManager;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.shops.Shop;
-import net.dungeonrealms.shops.ShopMechanics;
-import net.dungeonrealms.spawning.LootSpawner;
-import net.dungeonrealms.handlers.TradeHandler;
-import net.dungeonrealms.handlers.TradeHandler.TradeManager;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -458,7 +454,7 @@ public class InventoryListener implements Listener {
 		int slot = event.getNewSlot();
 		if (event.getPlayer().getInventory().getItem(slot) != null) {
 			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack
-			        .asNMSCopy(event.getPlayer().getInventory().getItem(slot));
+					.asNMSCopy(event.getPlayer().getInventory().getItem(slot));
 			if (nms.hasTag()) {
 				if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon")) {
 					ItemTier tier = new Attribute(event.getPlayer().getInventory().getItem(slot)).getItemTier();
@@ -467,11 +463,24 @@ public class InventoryListener implements Listener {
 					int pLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, p.getUniqueId());
 					if (pLevel < minLevel) {
 						p.sendMessage(ChatColor.RED + "You must be level " + ChatColor.YELLOW.toString() + minLevel
-						        + ChatColor.RED.toString() + " to wield this weapon!");
+								+ ChatColor.RED.toString() + " to wield this weapon!");
 						event.setCancelled(true);
 					}
 				}
 			}
+		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void playerEquipArmor(ArmorEquipEvent event) {
+		if (CombatLog.isInCombat(event.getPlayer())) {
+			event.setCancelled(true);
+			event.getPlayer().sendMessage("You cannot switch armor while in combat!");
+		} else {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+				HealthHandler.getInstance().setPlayerMaxHPLive(event.getPlayer(), HealthHandler.getInstance().calculateMaxHPFromItems(event.getPlayer()));
+				HealthHandler.getInstance().setPlayerHPLive(event.getPlayer(), HealthHandler.getInstance().getPlayerMaxHPLive(event.getPlayer()));
+			}, 10L);
 		}
 	}
 

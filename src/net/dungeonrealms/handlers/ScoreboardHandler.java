@@ -45,7 +45,7 @@ public class ScoreboardHandler {
         if (!(PLAYER_SCOREBOARDS.containsKey(player.getUniqueId()))) {
             Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
-            Objective objective = scoreboard.registerNewObjective("playerHealth", "dummy");
+            Objective objective = scoreboard.registerNewObjective("playerScoreboard", "playerScoreboard");
             objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
             objective.setDisplayName(ChatColor.RED.toString() + "❤");
 
