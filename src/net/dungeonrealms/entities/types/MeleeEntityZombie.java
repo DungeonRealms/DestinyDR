@@ -2,18 +2,23 @@ package net.dungeonrealms.entities.types;
 
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.Monster;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.lang.reflect.Field;
 import java.util.Random;
@@ -22,12 +27,13 @@ import java.util.Random;
  * Created by Xwaffle on 8/29/2015.
  */
 
-public abstract class MeleeEntityZombie extends EntityZombie {
+public abstract class MeleeEntityZombie extends EntityZombie implements Monster{
 
     protected String name;
     protected String mobHead;
     protected EnumEntityType entityType;
     protected EnumMonster monsterType;
+    public int tier;
 
     protected MeleeEntityZombie(World world, EnumMonster monster, int tier, EnumEntityType entityType, boolean setArmor) {
         this(world);
@@ -43,6 +49,7 @@ public abstract class MeleeEntityZombie extends EntityZombie {
         } catch (Exception exc) {
             exc.printStackTrace();
         }
+        this.tier  = tier;
         this.goalSelector.a(0, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.0D, false));
         this.goalSelector.a(6, new PathfinderGoalRandomStroll(this, 1.0D));
         this.goalSelector.a(1, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
@@ -134,4 +141,85 @@ public abstract class MeleeEntityZombie extends EntityZombie {
     protected String bp() {
         return "mob.ghast.scream";
     }
+    
+	@Override
+	public void onMonsterAttack(Player p) {
+		if(this.getBukkitEntity().hasMetadata("special")){
+				switch(this.getBukkitEntity().getMetadata("special").get(0).asString()){
+				case "poison":
+	            	switch (this.tier) {
+	            	case 1:
+	            		p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
+	            		break;
+	            	case 2:
+	            		p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 0));
+	            		break;
+	            	case 3:
+	            		p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 0));
+	            		break;
+	            	case 4:
+	            		p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 1));
+	            		break;
+	            	case 5:
+	            		p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 1));
+	            		break;
+	            	default :
+            		p.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 0));
+	            	}
+            	case "ice" :
+            	      try {
+                          ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SNOWBALL_POOF, p.getLocation(),
+                                  new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+                      } catch (Exception ex) {
+                          ex.printStackTrace();
+                      }
+                      switch (tier) {
+                          case 1:
+                              p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 0));
+                              break;
+                          case 2:
+                              p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 0));
+                              break;
+                          case 3:
+                              p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 0));
+                              break;
+                          case 4:
+                        	  p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
+                              break;
+                          case 5:
+                              p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 1));
+                              break;
+                      }
+            	case "fire":
+            	      try {
+                          ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, p.getLocation(),
+                                  new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+                      } catch (Exception ex) {
+                          ex.printStackTrace();
+                      }
+                      switch (tier) {
+                          case 1:
+                              p.setFireTicks(15);
+                              break;
+                          case 2:
+                              p.setFireTicks(25);
+                              break;
+                          case 3:
+                              p.setFireTicks(30);
+                              break;
+                          case 4:
+                              p.setFireTicks(35);
+                              break;
+                          case 5:
+                              p.setFireTicks(40);
+                              break;
+                      }
+				}
+			}
+	}
+	
+	@Override
+	public void onMonsterDeath() {
+		
+	}
 }

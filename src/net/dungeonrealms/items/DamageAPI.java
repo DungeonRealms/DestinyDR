@@ -1,5 +1,24 @@
 package net.dungeonrealms.items;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftMonster;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Monster;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
+import org.bukkit.entity.Snowball;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
 import net.dungeonrealms.API;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
@@ -7,18 +26,8 @@ import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
+import net.minecraft.server.v1_8_R3.EntityMonster;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.*;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
 /**
  * Created by Kieran on 9/21/2015.
@@ -71,6 +80,15 @@ public class DamageAPI {
             if (tag.getDouble("vsPlayers") != 0) {
                 damage += ((tag.getDouble("vsPlayers") / 100) * damage);
             }
+            if(attacker.hasMetadata("type")){
+			if(attacker.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")){
+				EntityMonster nms = ((CraftMonster)attacker).getHandle();
+				if(nms instanceof net.dungeonrealms.entities.Monster){
+					net.dungeonrealms.entities.Monster mons = (net.dungeonrealms.entities.Monster)nms;
+					mons.onMonsterAttack((Player) receiver);
+				}
+			}
+            }
         } else {
             if (receiver.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                 if (tag.getDouble("vsMonsters") != 0) {
@@ -101,83 +119,14 @@ public class DamageAPI {
 
         LivingEntity leReceiver = (LivingEntity) receiver;
         if (tag.getInt("fireDamage") != 0) {
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, receiver.getLocation(),
-                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            switch (weaponTier) {
-                case 1:
-                    leReceiver.setFireTicks(15);
-                    break;
-                case 2:
-                    leReceiver.setFireTicks(25);
-                    break;
-                case 3:
-                    leReceiver.setFireTicks(30);
-                    break;
-                case 4:
-                    leReceiver.setFireTicks(35);
-                    break;
-                case 5:
-                    leReceiver.setFireTicks(40);
-                    break;
-            }
             damage += tag.getInt("fireDamage");
         }
 
         if (tag.getInt("iceDamage") != 0) {
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SNOWBALL_POOF, receiver.getLocation(),
-                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            switch (weaponTier) {
-                case 1:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 0));
-                    break;
-                case 2:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 0));
-                    break;
-                case 3:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 0));
-                    break;
-                case 4:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
-                    break;
-                case 5:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 1));
-                    break;
-            }
             damage += tag.getInt("iceDamage");
         }
 
         if (tag.getInt("poisonDamage") != 0) {
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, receiver.getLocation(),
-                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            switch (weaponTier) {
-                case 1:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
-                    break;
-                case 2:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 0));
-                    break;
-                case 3:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 0));
-                    break;
-                case 4:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 1));
-                    break;
-                case 5:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 1));
-                    break;
-            }
             damage += tag.getInt("poisonDamage");
         }
 
