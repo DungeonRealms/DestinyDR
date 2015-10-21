@@ -145,9 +145,9 @@ public class EnchantmentAPI {
      * @since 1.0
      */
     private static boolean doItemTiersMatch(ItemStack itemStack, ItemStack toCompare) {
-        //TODO THIS
         return new Attribute(itemStack).getItemTier() == new Attribute(toCompare).getItemTier();
     }
+
 
     /**
      * Checks the item to see if its already protected

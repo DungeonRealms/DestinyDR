@@ -94,16 +94,6 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 
 	private ItemStack getTierWeapon(int tier) {
 		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.STAFF, net.dungeonrealms.items.Item.ItemTier.getByTier(tier));
-		// TODO: MAKE THIS TAKE A TIER AND BASE IT ON THAT. DO THE SAME WITH
-		// ARMOR DON'T JUST CREATE NEW SHITTY BUKKIT ONES.
-		/*
-		 * if (tier == 1) { return new ItemStack(Material.WOOD_SWORD, 1); } else
-		 * if (tier == 2) { return new ItemStack(Material.STONE_SWORD, 1); }
-		 * else if (tier == 3) { return new ItemStack(Material.IRON_SWORD, 1); }
-		 * else if (tier == 4) { return new ItemStack(Material.DIAMOND_SWORD,
-		 * 1); } else if (tier == 5) { return new ItemStack(Material.GOLD_SWORD,
-		 * 1); } return new ItemStack(Material.WOOD_SWORD, 1);
-		 */
 	}
 
 

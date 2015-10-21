@@ -143,7 +143,6 @@ public class PetUtils {
             return;
         }
         switch (enumPets) {
-            //TODO: Add check for Achievements to see if Player has pet and can use it.
             case CAVE_SPIDER: {
                 String customPetName = "Spider";
                 CaveSpider petCaveSpider = new CaveSpider(world, customPetName, player.getUniqueId(), EnumEntityType.PET);

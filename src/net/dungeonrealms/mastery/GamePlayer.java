@@ -175,6 +175,7 @@ public class GamePlayer {
         /**
          * Will only happen if the players should level up!
          */
+        //TODO: Fix this formula for levels 1-9
         if (futureExperience > (level * 1000) + factorial(Math.round(8 % level))) {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.level", level + 1, false);
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.experience", experienceToAdd - experience, false);

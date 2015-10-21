@@ -48,7 +48,7 @@ public class Party {
                 Score score = objective.getScore(player.getName());
                 score.setScore(HealthHandler.getInstance().getPlayerHPLive(player));
                 for (Player otherMembers : rp.getMembers()) {
-                    score.setScore(HealthHandler.getInstance().getPlayerHPLive(otherMembers));
+                    objective.getScore(otherMembers.getName()).setScore(HealthHandler.getInstance().getPlayerHPLive(otherMembers));
                 }
             }
 
@@ -63,8 +63,9 @@ public class Party {
                 Score score = objective.getScore(rp.getOwner().getName());
                 score.setScore(HealthHandler.getInstance().getPlayerHPLive(rp.getOwner()));
                 for (Player otherMembers : rp.getMembers()) {
-                    score.setScore(HealthHandler.getInstance().getPlayerHPLive(otherMembers));
+                    objective.getScore(otherMembers.getName()).setScore(HealthHandler.getInstance().getPlayerHPLive(otherMembers));
                 }
+                objective.getScore(rp.getOwner().getName()).setScore(HealthHandler.getInstance().getPlayerHPLive(rp.getOwner()));
             } else {
                 rp.setOwner(rp.members.get(new Random().nextInt(rp.members.size())));
                 Objective objective = ScoreboardHandler.getInstance().getPlayerScoreboardObject(rp.getOwner()).getObjective(DisplaySlot.SIDEBAR);
@@ -76,6 +77,9 @@ public class Party {
                 ScoreboardHandler.getInstance().getPlayerScoreboardObject(rp.getOwner()).resetScores(rp.getOwner().getName());
                 Score score = objective.getScore(rp.getOwner().getName());
                 score.setScore(HealthHandler.getInstance().getPlayerHPLive(rp.getOwner()));
+                for (Player otherMembers : rp.getMembers()) {
+                    objective.getScore(otherMembers.getName()).setScore(HealthHandler.getInstance().getPlayerHPLive(otherMembers));
+                }
             }
         }
     }
