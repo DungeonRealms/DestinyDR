@@ -110,7 +110,7 @@ public class DungeonRealms extends JavaPlugin {
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         FTPUtils.startInitialization();
 
-//        SpawningMechanics.loadSpawners();
+        SpawningMechanics.loadSpawners();
         LootManager.loadLootSpawners();
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
     }

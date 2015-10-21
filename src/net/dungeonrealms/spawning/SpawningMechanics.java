@@ -1,6 +1,8 @@
 package net.dungeonrealms.spawning;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.Utils;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
@@ -39,6 +41,8 @@ public class SpawningMechanics {
         Bukkit.getWorlds().get(0).getEntities().forEach(org.bukkit.entity.Entity::remove);
         SPANWER_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("spawners");
     	for(String line : SPANWER_CONFIG){
+    		if( line == null || line.equalsIgnoreCase("null"))
+    			continue;
     		String[] coords = line.split("=")[0].split(",");
     		double x, y,z;
     		x = Double.parseDouble(coords[0]);
@@ -49,11 +53,28 @@ public class SpawningMechanics {
     		int tier = Integer.parseInt(tierString);
     		int spawnAmount = Integer.parseInt(line.split(";")[1]);
     		String monster = line.split("=")[1].split(":")[0];
-            ALLSPAWNERS.add(new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount));
+    		MobSpawner spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size());
+            ALLSPAWNERS.add(spawner);
     	}
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), SpawningMechanics::initSpawners, 0, 4 * 20L);
     }
 
+    public static void loadSpawner(String line){
+		String[] coords = line.split("=")[0].split(",");
+		double x, y,z;
+		x = Double.parseDouble(coords[0]);
+		y = Double.parseDouble(coords[1]);
+		z = Double.parseDouble(coords[2]);
+		String tierString = line.substring(line.indexOf(":"), line.indexOf(";"));
+		tierString = tierString.substring(1);
+		int tier = Integer.parseInt(tierString);
+		int spawnAmount = Integer.parseInt(line.split(";")[1]);
+		String monster = line.split("=")[1].split(":")[0];
+		MobSpawner spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size());
+		add(spawner);
+        spawner.init();
+    }
+    
     /**
      * @param i
      */
