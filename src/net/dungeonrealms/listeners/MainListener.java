@@ -30,6 +30,7 @@ import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.text.ParseException;
 import java.util.Map;
 
 /**
@@ -102,7 +103,11 @@ public class MainListener implements Listener {
         player.getInventory().clear();
         //I guess this really does work..?
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            API.handleLogin(player.getUniqueId());
+            try {
+                API.handleLogin(player.getUniqueId());
+            } catch (ParseException e) {
+                e.printStackTrace();
+            }
         }, 20L);
     }
 

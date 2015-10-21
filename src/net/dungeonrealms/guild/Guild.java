@@ -248,7 +248,7 @@ public class Guild {
                 if (Guild.getInstance().isInvited(guildName, player.getUniqueId())) {
                     player.sendMessage(ChatColor.RED + "That player is already invited to your guild!");
                 } else {
-                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, "notices.guildInvites", guildName + "," + (System.currentTimeMillis() / 1000l), true);
+                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, "notices.guildInvites", guildName + "," + System.currentTimeMillis(), true);
                     DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "invitations", uuid.toString(), true);
                     player.sendMessage(ChatColor.GREEN + "Player has been invited to a guild!");
                     Bukkit.getPlayer(uuid).sendMessage(ChatColor.GREEN + "You have been invited to " + ChatColor.AQUA + guildName + ChatColor.GREEN + " type /accept guild " + guildName + " to join!");
