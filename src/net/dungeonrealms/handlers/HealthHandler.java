@@ -73,7 +73,6 @@ public class HealthHandler {
      * Updates players "HP Bars"
      * using the bossbar API
      *
-     *
      * @since 1.0
      */
     private void updatePlayerHPBars() {
@@ -132,11 +131,11 @@ public class HealthHandler {
         }
         float healthToDisplay = (float) (healthPercentage * 100.F);
         GamePlayer gamePlayer = new GamePlayer(player);
-        int playerLevel =  gamePlayer.getLevel();
+        int playerLevel = gamePlayer.getLevel();
         double currentEXP = gamePlayer.getExperience();
-        double expToLevel = (playerLevel * 1000) + gamePlayer.factorial(Math.round(8 % playerLevel));
+        double expToLevel = (playerLevel * 1000);
         String playerLevelInfo = ChatColor.AQUA.toString() + ChatColor.BOLD + "LVL " + ChatColor.AQUA + playerLevel;
-        String separator =  ChatColor.BLACK.toString() + ChatColor.BOLD + " - ";
+        String separator = ChatColor.BLACK.toString() + ChatColor.BOLD + " - ";
         String playerHPInfo = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "HP " + ChatColor.LIGHT_PURPLE + hp + ChatColor.BOLD + " / " + ChatColor.LIGHT_PURPLE + getPlayerMaxHPLive(player);
         String playerEXPInfo = ChatColor.GREEN.toString() + ChatColor.BOLD + "EXP " + ChatColor.GREEN + Math.round((currentEXP / expToLevel) * 100.0) + "%";
 
@@ -480,7 +479,7 @@ public class HealthHandler {
 
         if (newHP <= 0) {
             setMonsterHPLive(entity, 0);
-            net.minecraft.server.v1_8_R3.Entity entity1 = ((CraftEntity)entity).getHandle();
+            net.minecraft.server.v1_8_R3.Entity entity1 = ((CraftEntity) entity).getHandle();
             entity1.damageEntity(DamageSource.GENERIC, 20F);
             if (!entity1.dead) {
                 entity1.dead = true;

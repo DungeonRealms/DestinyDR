@@ -30,8 +30,8 @@ public class CommandParty implements CommandExecutor {
                     if (Party.getInstance().isOwnerOfParty(player)) {
                         if (Bukkit.getPlayer(args[1]).equals(player)) {
                             Party.RawParty p = Party.getInstance().getPlayerParty(player);
-                            if (!p.getInviting().contains(player)) {
-                                p.invitePlayer(player);
+                            if (!p.getInviting().contains(Bukkit.getPlayer(args[1]))) {
+                                p.invitePlayer(Bukkit.getPlayer(args[1]));
                                 player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.RED + "You can't invite yourself to your own party..?");
                                 return true;
                             } else {
