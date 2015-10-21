@@ -7,6 +7,7 @@ import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.party.Party;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -42,6 +43,16 @@ public class GamePlayer {
             return Tier.TIER5;
         } else
             return Tier.TIER1;
+    }
+
+    /**
+     * Checks if player is in party.
+     *
+     * @return
+     * @since 1.0
+     */
+    public boolean isInParty() {
+        return Party.getInstance().isInParty(T);
     }
 
     /**
