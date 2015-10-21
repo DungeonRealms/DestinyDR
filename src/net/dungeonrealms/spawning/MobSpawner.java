@@ -47,10 +47,13 @@ public class MobSpawner {
     public List<Entity> SPAWNED_MONSTERS = new CopyOnWriteArrayList<>();
     public boolean isElite = false;
     public int spawnAmount;
+    public int id;
+    public int timerID;
     
-    public MobSpawner(Location location, String type, int tier, int spawnAmount) {
+    public MobSpawner(Location location, String type, int tier, int spawnAmount, int configid) {
     	this.spawnAmount = spawnAmount;
         this.loc = location;
+        this.id = configid;
         this.spawnType = type;
         if(type.contains("*"))
         	isElite = true;
@@ -76,10 +79,10 @@ public class MobSpawner {
         armorstand.setPosition(loc.getX(), loc.getY(), loc.getZ());
         world.addEntity(armorstand, SpawnReason.CUSTOM);
         armorstand.setPosition(loc.getX(), loc.getY(), loc.getZ());
-        ArmorStand armorStandBase = (ArmorStand) armorstand.getBukkitEntity();
-        armorStandBase.setMarker(true);
-        armorstand.setGravity(false);
-        armorstand.setSmall(true);
+//        ArmorStand armorStandBase = (ArmorStand) armorstand.getBukkitEntity();
+//        armorStandBase.setMarker(true);
+//        armorstand.setGravity(false);
+//        armorstand.setSmall(true);
     }
 
     /**
@@ -104,20 +107,22 @@ public class MobSpawner {
             }
             if(SPAWNED_MONSTERS.size() < spawnAmount * 2) {
                 Location location = new Location(Bukkit.getWorlds().get(0), loc.getBlockX() + new Random().nextInt(10), loc.getBlockY(), loc.getBlockZ() + new Random().nextInt(10));
-                int attempts = 0;
-                while(location.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ()).getType() != Material.AIR){
-                	if(attempts >=3){
-                		location = loc;
-                	}else{	
-                		attempts++;
-                		location = new Location(Bukkit.getWorlds().get(0), loc.getBlockX() + new Random().nextInt(10), loc.getBlockY(), loc.getBlockZ() + new Random().nextInt(10));
-                	}
-                }
+//                int attempts = 0;
+//                while(location.getWorld().getBlockAt(loc.getBlockX(), loc.getBlockY() + 1, loc.getBlockZ()).getType() != Material.AIR){
+//                	if(attempts >=3){
+//                		location = loc;
+//                	}else{	
+//                		attempts++;
+//                		location = new Location(Bukkit.getWorlds().get(0), loc.getBlockX() + new Random().nextInt(10), loc.getBlockY(), loc.getBlockZ() + new Random().nextInt(10));
+//                	}
+//                }
                Entity entity = null;
                String mob = spawnType;
                World world = armorstand.getWorld();
                EnumEntityType type = EnumEntityType.HOSTILE_MOB;
                EnumMonster monsEnum = EnumMonster.getMonsterByString(mob);
+               if(monsEnum == null)
+            	   return;
                if(mob.contains("*")){
             	   mob = mob.replace("*", "");
             	   isElite = true;
@@ -207,7 +212,19 @@ public class MobSpawner {
             armorstand.getWorld().kill(spawnedMonster);
         }
     }
+    
+    public void remove(){
+    	kill();
+    	armorstand.getWorld().removeEntity(armorstand);
+    	armorstand.getBukkitEntity().remove();
+    	SpawningMechanics.SPANWER_CONFIG.set(id, null);
+		DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPANWER_CONFIG);
+		DungeonRealms.getInstance().saveConfig();
+    	isRemoved = true;
+    }
 
+    public boolean isRemoved = false;
+    
 	/**
 	 * @return
 	 */
@@ -227,8 +244,11 @@ public class MobSpawner {
 	 */
 	public void init() {
 		if(isSpawning()){
-			Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), ()->{
-				spawnIn();
+			timerID= Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), ()->{
+			if(isRemoved){
+				Bukkit.getScheduler().cancelTask(timerID);
+			}else	
+			spawnIn();
 			}, 0, 4 * 20);
 		}else	{
 			kill();

@@ -3,19 +3,20 @@
  */
 package net.dungeonrealms.commands;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.LootManager;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumOperators;
+import static net.dungeonrealms.spawning.SpawningMechanics.getSpawners;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import static net.dungeonrealms.spawning.SpawningMechanics.SPANWER_CONFIG;
-import static net.dungeonrealms.spawning.SpawningMechanics.getSpawners;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.LootManager;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.spawning.SpawningMechanics;
 
 /**
  * Created by Chase on Sep 22, 2015
@@ -46,16 +47,26 @@ public class CommandSet implements CommandExecutor {
 				        true);
 				break;
 			case "spawner":
-				if (args.length < 3) {
-					player.sendMessage("/set spawner monster tier (* on monster for elite chance)");
-					player.sendMessage("/set spawner goblin 2");
+				if (args.length < 4) {
+					player.sendMessage("/set spawner monster tier (* on monster for elite chance), (MOBS TO SPAWN x2)");
+					player.sendMessage("/set spawner goblin 2 2(spawns 4)");
 					return false;
 				}
-				int tier = Integer.parseInt(args[2]);
+				int tier = 0;
+				int spawnAmount = 0;
+				try{
+				 tier = Integer.parseInt(args[2]);
+				 spawnAmount = Integer.parseInt(args[3]);
+				}catch(Exception exc){
+					return false;
+				}
 				String text = (player.getLocation().getX() + "," + player.getLocation().getY() + ","
-				        + player.getLocation().getZ() + "=" + args[1] + ":" + tier);
-				SPANWER_CONFIG.add(text);
-				DungeonRealms.getInstance().getConfig().set("spawners", SPANWER_CONFIG);
+				        + player.getLocation().getZ() + "=" + args[1] + ":" + tier + ";" + spawnAmount);
+				player.sendMessage("Line " + (SpawningMechanics.SPANWER_CONFIG.size() + 2) + " added "  + args[1] + " tier " + tier);
+				SpawningMechanics.SPANWER_CONFIG.add(text);
+				DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPANWER_CONFIG);
+				DungeonRealms.getInstance().saveConfig();
+				SpawningMechanics.loadSpawner(text);
 				break;
 			case "loot":
 				if (args.length == 2) {

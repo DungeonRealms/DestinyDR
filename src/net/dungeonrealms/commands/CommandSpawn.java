@@ -123,7 +123,7 @@ public class CommandSpawn implements CommandExecutor {
                     int tier = 1;
                     if (args.length == 3)
                         tier = Integer.parseInt(args[2]);
-                    MobSpawner spawner = new MobSpawner(player.getLocation(), monster, tier, 4);
+                    MobSpawner spawner = new MobSpawner(player.getLocation(), monster, tier, 4, SpawningMechanics.getSpawners().size());
     				String text = (player.getLocation().getX() + "," + player.getLocation().getY() + ","
     				        + player.getLocation().getZ() + "=" + args[1] + ":" + tier);
     				SpawningMechanics.SPANWER_CONFIG.add(text);

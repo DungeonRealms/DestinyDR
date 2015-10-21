@@ -7,7 +7,8 @@ public enum EnumBoss {
 
 	Mayel("mayel", "Mayel The Cruel", 1, "How dare you challenge ME, the leader of the Cyrene Bandits! To me, my brethern, let us crush these incolents", "death"),
 	Pyromancer("pyromancer", "Mad Bandit Pyromancer", 1, "WAHAHAHA! EXPLOSIONS! BOOM, BOOM, BOOM! I'm gonna blow you all up!", "death"),
-	Burick("burick", "Burick The Fanatic", 3, "Ahahaha! You dare try to kill ME?! I am Burick, disciple of Goragath! None of you will leave this place alive!", "death");
+	Burick("burick", "Burick The Fanatic", 3, "Ahahaha! You dare try to kill ME?! I am Burick, disciple of Goragath! None of you will leave this place alive!", "death"),
+	Aceron("aceron", "Aceron The Wicked", 4, "", "");
 
 	public String name;
 	public int tier;

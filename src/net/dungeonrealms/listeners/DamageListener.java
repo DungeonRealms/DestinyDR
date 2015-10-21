@@ -112,6 +112,7 @@ public class DamageListener implements Listener {
                     for (MobSpawner current : list) {
                         if (current.loc.getBlockX() == event.getEntity().getLocation().getBlockX() && current.loc.getBlockY() == event.getEntity().getLocation().getBlockY() &&
                                 current.loc.getBlockZ() == event.getEntity().getLocation().getBlockZ()) {
+                        	current.remove();
                             current.kill();
                             break;
                         }
