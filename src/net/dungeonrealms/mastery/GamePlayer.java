@@ -7,6 +7,7 @@ import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.party.Party;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -42,6 +43,16 @@ public class GamePlayer {
             return Tier.TIER5;
         } else
             return Tier.TIER1;
+    }
+
+    /**
+     * Checks if player is in party.
+     *
+     * @return
+     * @since 1.0
+     */
+    public boolean isInParty() {
+        return Party.getInstance().isInParty(T);
     }
 
     /**
@@ -164,6 +175,7 @@ public class GamePlayer {
         /**
          * Will only happen if the players should level up!
          */
+        //TODO: Fix this formula for levels 1-9
         if (futureExperience > (level * 1000) + factorial(Math.round(8 % level))) {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.level", level + 1, false);
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.experience", experienceToAdd - experience, false);

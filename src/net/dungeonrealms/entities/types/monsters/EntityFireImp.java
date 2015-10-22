@@ -41,7 +41,6 @@ public class EntityFireImp extends RangedEntitySkeleton {
 
     @Override
     public void setArmor(int tier) {
-        //TODO: ALL MOBS SET ARMOR LIKE THIS SO ITS OURS.
         ItemStack leggings = new ItemStack(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.LEGGINGS, Armor.ArmorTier.getByTier(tier), ArmorGenerator.getRandomItemModifier()));
         ItemStack chestplate = new ItemStack(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.CHESTPLATE, Armor.ArmorTier.getByTier(tier), ArmorGenerator.getRandomItemModifier()));
         ItemStack boots = new ItemStack(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.BOOTS, Armor.ArmorTier.getByTier(tier), ArmorGenerator.getRandomItemModifier()));

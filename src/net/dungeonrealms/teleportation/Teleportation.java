@@ -104,6 +104,7 @@ public class Teleportation {
         }
         Location location = TeleportAPI.getLocationFromString(locationName);
 
+        assert location != null;
         if (location.equals(Cyrennica)) {
             player.sendMessage("Teleporting to Cyrennica.");
         } else if (location.equals(Harrison_Field)) {

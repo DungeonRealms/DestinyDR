@@ -82,8 +82,16 @@ public class Notice {
 
                 long inviteSent = Long.valueOf(s.split(",")[1]);
 
-                long hoursLeft = (((System.currentTimeMillis() / 1000l) / inviteSent) / 60) / 60;
-                player.sendMessage(ChatColor.YELLOW + "You have been invited to " + ChatColor.GREEN + guildName + ChatColor.YELLOW + " you have " + hoursLeft + " hours to accept!");
+                long currentTime = System.currentTimeMillis();
+
+                long differenceInTime = currentTime - inviteSent;
+                long diffHours = differenceInTime / (60 * 60 * 1000);
+
+                if (24 - diffHours >= 0) {
+                    player.sendMessage(ChatColor.YELLOW + "You have been invited to " + ChatColor.GREEN + guildName + ChatColor.YELLOW + " you have " + (24 - diffHours) + " hours to accept!");
+                } else {
+                    player.sendMessage(ChatColor.YELLOW + "Your invite from " + ChatColor.GREEN + guildName + ChatColor.YELLOW + " has expired!");
+                }
             }
         }
 

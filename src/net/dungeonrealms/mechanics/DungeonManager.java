@@ -1,5 +1,6 @@
 package net.dungeonrealms.mechanics;
 
+import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.Utils;
@@ -12,9 +13,9 @@ import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
 import java.io.*;
-import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 
@@ -32,7 +33,7 @@ public class DungeonManager {
         return instance;
     }
 
-    public ArrayList<DungeonObject> Dungeons = new ArrayList<>();
+    public CopyOnWriteArrayList<DungeonObject> Dungeons = new CopyOnWriteArrayList<>();
 
     public void startInitialization() {
         Utils.log.info("[DUNGEONS] Loading Dungeon Mechanics ... STARTING");
@@ -67,9 +68,22 @@ public class DungeonManager {
                         break;
                 }
                 dungeonObject.modifyTime(1);
+                updateDungeonBoard(dungeonObject);
             }
         }, 0, 20l);
         Utils.log.info("[DUNGEONS] Finished Loading Dungeon Mechanics ... OKAY");
+    }
+
+    /**
+     * Update the dungeon scoreboard.
+     *
+     * @param dungeonObject
+     * @since 1.0
+     */
+    public void updateDungeonBoard(DungeonObject dungeonObject) {
+        dungeonObject.getPlayerList().stream().forEach(player -> {
+            BountifulAPI.sendActionBar(player, ChatColor.AQUA + "Time: " + ChatColor.WHITE + ChatColor.GOLD + String.valueOf(dungeonObject.getTime() / 60) + "/45" + " " + ChatColor.AQUA + "Boss: " + ChatColor.GOLD + dungeonObject.getType().getBossName());
+        });
     }
 
     /**
@@ -80,8 +94,7 @@ public class DungeonManager {
      */
     public void removeInstance(DungeonObject dungeonObject) {
         dungeonObject.getPlayerList().stream().forEach(player -> {
-            GamePlayer gPlayer = new GamePlayer(player);
-            if (gPlayer.isInDungeon()) {
+            if (new GamePlayer(player).isInDungeon()) {
                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance is will close!");
                 player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
             }

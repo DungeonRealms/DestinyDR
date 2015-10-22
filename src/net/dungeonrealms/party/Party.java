@@ -7,7 +7,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.*;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Score;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +47,9 @@ public class Party {
                 ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).resetScores(player.getName());
                 Score score = objective.getScore(player.getName());
                 score.setScore(HealthHandler.getInstance().getPlayerHPLive(player));
+                for (Player otherMembers : rp.getMembers()) {
+                    objective.getScore(otherMembers.getName()).setScore(HealthHandler.getInstance().getPlayerHPLive(otherMembers));
+                }
             }
 
             if (rp.getOwner() != null) {
@@ -57,6 +62,10 @@ public class Party {
                 ScoreboardHandler.getInstance().getPlayerScoreboardObject(rp.getOwner()).resetScores(rp.getOwner().getName());
                 Score score = objective.getScore(rp.getOwner().getName());
                 score.setScore(HealthHandler.getInstance().getPlayerHPLive(rp.getOwner()));
+                for (Player otherMembers : rp.getMembers()) {
+                    objective.getScore(otherMembers.getName()).setScore(HealthHandler.getInstance().getPlayerHPLive(otherMembers));
+                }
+                objective.getScore(rp.getOwner().getName()).setScore(HealthHandler.getInstance().getPlayerHPLive(rp.getOwner()));
             } else {
                 rp.setOwner(rp.members.get(new Random().nextInt(rp.members.size())));
                 Objective objective = ScoreboardHandler.getInstance().getPlayerScoreboardObject(rp.getOwner()).getObjective(DisplaySlot.SIDEBAR);
@@ -68,6 +77,9 @@ public class Party {
                 ScoreboardHandler.getInstance().getPlayerScoreboardObject(rp.getOwner()).resetScores(rp.getOwner().getName());
                 Score score = objective.getScore(rp.getOwner().getName());
                 score.setScore(HealthHandler.getInstance().getPlayerHPLive(rp.getOwner()));
+                for (Player otherMembers : rp.getMembers()) {
+                    objective.getScore(otherMembers.getName()).setScore(HealthHandler.getInstance().getPlayerHPLive(otherMembers));
+                }
             }
         }
     }
@@ -241,8 +253,9 @@ public class Party {
 
         public void invitePlayer(Player player) {
             if (!inviting.contains(player)) {
+                inviting.add(player);
                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.YELLOW + "You've been invited to " + owner.getName() + "'s Party!");
-                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.YELLOW + "Type /party accept " + owner.getName() + " to join!");
+                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.YELLOW + "Type /accept party " + owner.getName() + " to join!");
             } else {
                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.RED + "This player has already been invited!");
             }

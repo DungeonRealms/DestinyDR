@@ -101,9 +101,7 @@ public class MainListener implements Listener {
         }
         player.getInventory().clear();
         //I guess this really does work..?
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            API.handleLogin(player.getUniqueId());
-        }, 20L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> API.handleLogin(player.getUniqueId()), 20L);
     }
 
     /**
