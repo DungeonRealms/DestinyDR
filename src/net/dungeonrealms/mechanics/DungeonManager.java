@@ -43,7 +43,7 @@ public class DungeonManager {
             e.printStackTrace();
         }
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            for (DungeonObject dungeonObject : Dungeons) {
+            Dungeons.stream().forEach(dungeonObject -> {
                 int time = dungeonObject.getTime();
                 if (dungeonObject.getPlayerList().size() <= 0 || Bukkit.getWorld(dungeonObject.worldName).getPlayers().size() <= 0) {
                     removeInstance(dungeonObject);
@@ -69,7 +69,7 @@ public class DungeonManager {
                 }
                 dungeonObject.modifyTime(1);
                 updateDungeonBoard(dungeonObject);
-            }
+            });
         }, 0, 20l);
         Utils.log.info("[DUNGEONS] Finished Loading Dungeon Mechanics ... OKAY");
     }

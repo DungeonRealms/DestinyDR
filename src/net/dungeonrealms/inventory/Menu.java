@@ -38,12 +38,22 @@ import java.util.*;
 @SuppressWarnings({"unchecked", "chasesTouch"})
 public class Menu {
 
-    public static void sendMailInventory(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 45, "Send Mail");
+    public static void openFriendInventory(Player player) {
+        UUID uuid = player.getUniqueId();
+        ArrayList<String> friendRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUSTS, uuid);
 
-        inv.setItem(0, editItem(new ItemStack(Material.BOOK_AND_QUILL), ChatColor.GREEN + "", new String[]{
+        Inventory inv = Bukkit.createInventory(null, 45, "Friend Management");
 
+        inv.setItem(0, editItem(new ItemStack(Material.BOOK_AND_QUILL), ChatColor.GREEN + "Add Friend", new String[]{
+                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to add friend!"
         }));
+
+        int slot = 9;
+        for (String s : friendRequest) {
+            inv.setItem(slot, editItem(s.split(",")[0], "", new String[]{}));
+            if (slot >= 44) break;
+            slot++;
+        }
 
     }
 
@@ -523,7 +533,7 @@ public class Menu {
     public static void openPlayerProfileMenu(Player player) {
 
         Inventory inv = Bukkit.createInventory(null, 27, "Profile");
-        inv.setItem(0, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GREEN + "Attributes",  new String[]{
+        inv.setItem(0, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GREEN + "Attributes", new String[]{
                 ChatColor.DARK_GRAY + "Player Attributes",
                 "",
                 ChatColor.GRAY + "As you play throughout Dungeon Realms,",
@@ -534,9 +544,9 @@ public class Menu {
                 "",
                 ChatColor.YELLOW + "Click to view Player Attributes!"
         }));
-        inv.setItem(4, editItem(Utils.getPlayerHead(player), ChatColor.GREEN + "Player Profile",  new String[]{
+        inv.setItem(4, editItem(Utils.getPlayerHead(player), ChatColor.GREEN + "Player Profile", new String[]{
         }));
-        inv.setItem(6, editItem(new ItemStack(Material.EYE_OF_ENDER), ChatColor.GREEN + "Player Trails",  new String[]{
+        inv.setItem(6, editItem(new ItemStack(Material.EYE_OF_ENDER), ChatColor.GREEN + "Player Trails", new String[]{
                 ChatColor.DARK_GRAY + "Player Trails",
                 "",
                 ChatColor.GRAY + "Want to be the envy of your friends?",
@@ -544,7 +554,7 @@ public class Menu {
                 "",
                 ChatColor.YELLOW + "Click to view Player Trails!"
         }));
-        inv.setItem(7, editItem(new ItemStack(Material.SADDLE), ChatColor.GREEN + "Player Mounts",  new String[]{
+        inv.setItem(7, editItem(new ItemStack(Material.SADDLE), ChatColor.GREEN + "Player Mounts", new String[]{
                 ChatColor.DARK_GRAY + "Player Mounts",
                 "",
                 ChatColor.GRAY + "Want to travel in style?",
@@ -552,7 +562,7 @@ public class Menu {
                 "",
                 ChatColor.YELLOW + "Click to view Player Mounts!"
         }));
-        inv.setItem(8, editItem(new ItemStack(Material.NAME_TAG), ChatColor.GREEN + "Player Pets",  new String[]{
+        inv.setItem(8, editItem(new ItemStack(Material.NAME_TAG), ChatColor.GREEN + "Player Pets", new String[]{
                 ChatColor.DARK_GRAY + "Player Pets",
                 "",
                 ChatColor.GRAY + "Want a friendly companion",
@@ -562,7 +572,7 @@ public class Menu {
                 "",
                 ChatColor.YELLOW + "Click to view Player Pets!"
         }));
-        inv.setItem(18, editItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Donations",  new String[]{
+        inv.setItem(18, editItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Donations", new String[]{
                 ChatColor.DARK_GRAY + "Micro Transactions",
                 "",
                 ChatColor.GRAY + "Want to access to more awesomeness?",
@@ -572,7 +582,7 @@ public class Menu {
                 "",
                 ChatColor.YELLOW + "Click to view Micro Transactions!"
         }));
-        inv.setItem(22, editItem(new ItemStack(Material.QUARTZ), ChatColor.GREEN + "Hearthstone",  new String[]{
+        inv.setItem(22, editItem(new ItemStack(Material.QUARTZ), ChatColor.GREEN + "Hearthstone", new String[]{
                 ChatColor.DARK_GRAY + "Player Hearthstone",
                 "",
                 ChatColor.GRAY + "Teleport home to your saved location of",
@@ -580,7 +590,7 @@ public class Menu {
                 "",
                 ChatColor.YELLOW + "Click to use your Hearhtstone!"
         }));
-        inv.setItem(26, editItem(new ItemStack(Material.REDSTONE_COMPARATOR), ChatColor.GREEN + "Settings & Preferences",  new String[]{
+        inv.setItem(26, editItem(new ItemStack(Material.REDSTONE_COMPARATOR), ChatColor.GREEN + "Settings & Preferences", new String[]{
                 ChatColor.DARK_GRAY + "Settings & Preferences",
                 "",
                 ChatColor.GRAY + "Help us help you! By adjusting",

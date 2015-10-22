@@ -75,6 +75,7 @@ public class ItemGenerator {
     private ItemStack getWeapon(Item.ItemType type, Item.ItemTier tier, Item.ItemModifier modifier) {
         ItemStack item = getBaseItem(type, tier);
         ArrayList<Item.AttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(tier.getAttributeRange()), type);
+        assert item != null;
         ItemMeta meta = item.getItemMeta();
         List<String> list = new NameGenerator().next(type);
         meta.setDisplayName(tier.getChatColorOfTier(tier) + list.get(0) + " " + list.get(1) + " " + list.get(2));
@@ -210,10 +211,7 @@ public class ItemGenerator {
         if (attributeType == Item.AttributeType.PURE_DAMAGE || attributeType == Item.AttributeType.ARMOR_PENETRATION) {
             return itemType == Item.ItemType.AXE;
         }
-        if (attributeType == Item.AttributeType.ACCURACY) {
-            return itemType == Item.ItemType.SWORD;
-        }
-        return true;
+        return attributeType != Item.AttributeType.ACCURACY || itemType == Item.ItemType.SWORD;
     }
 
     /**
@@ -255,25 +253,25 @@ public class ItemGenerator {
         switch (aType) {
             case DAMAGE:
                 int damageRandomizer = getRandomDamageVariable(tierID);
-                return ChatColor.GREEN + "+ " + ChatColor.RED + Math.round((i - (i / damageRandomizer))) + ChatColor.WHITE + " - " + ChatColor.RED + Math.round((i + (i / damageRandomizer))) + ChatColor.WHITE + " " + aType.getName();
+                return "" + ChatColor.RED + Math.round((i - (i / damageRandomizer))) + ChatColor.WHITE + " - " + ChatColor.RED + Math.round((i + (i / damageRandomizer))) + ChatColor.WHITE + " " + aType.getName();
             case VS_MONSTERS:
-                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+                return "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
             case VS_PLAYER:
-                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+                return "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
             case CRITICAL_HIT:
-                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.YELLOW + aType.getName();
+                return "" + ChatColor.RED + i + "% " + ChatColor.YELLOW + aType.getName();
             case LIFE_STEAL:
-                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+                return "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
             case FIRE_DAMAGE:
-                return ChatColor.GREEN + "+ " + ChatColor.RED + i + " " + ChatColor.DARK_RED + aType.getName();
+                return "" + ChatColor.RED + i + " " + ChatColor.DARK_RED + aType.getName();
             case ICE_DAMAGE:
-                return ChatColor.GREEN + "+ " + ChatColor.RED + i + " " + ChatColor.BLUE + aType.getName();
+                return "" + ChatColor.RED + i + " " + ChatColor.BLUE + aType.getName();
             case POISON_DAMAGE:
-                return ChatColor.GREEN + "+ " + ChatColor.RED + i + " " + ChatColor.DARK_GREEN + aType.getName();
+                return "" + ChatColor.RED + i + " " + ChatColor.DARK_GREEN + aType.getName();
             case ACCURACY:
-                return ChatColor.GREEN + "+ " + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+                return "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
             default:
-                return ChatColor.GREEN + "+ " + ChatColor.RED + i + " " + ChatColor.WHITE + aType.getName();
+                return "" + ChatColor.RED + i + " " + ChatColor.WHITE + aType.getName();
         }
     }
 
