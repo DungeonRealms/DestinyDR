@@ -1,24 +1,5 @@
 package net.dungeonrealms.items;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftMonster;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Monster;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
-import org.bukkit.entity.Snowball;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
@@ -28,6 +9,18 @@ import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.EntityMonster;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftMonster;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.*;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Kieran on 9/21/2015.
@@ -444,7 +437,7 @@ public class DamageAPI {
             } else {
                 if (attacker.getType() != EntityType.ARROW) {
                     if (nmsTags[i].getInt("block") != 0) {
-                        int blockChance = nmsTags[0].getInt("block");
+                        int blockChance = nmsTags[i].getInt("block");
                         if (nmsTags[i].getInt("strength") != 0) {
                             blockChance += (blockChance * (nmsTags[i].getInt("strength") * 0.017));
                         }
@@ -522,29 +515,17 @@ public class DamageAPI {
                     damageToBlock[i] += (nmsTags[i].getInt("strength") * 0.023D) / 100D;
                 }
                 if (nmsTags[i].getInt("thorns") != 0) {
-                    int damageFromThorns = 0;
-                    switch (nmsTags[i].getInt("armorTier")) {
-                        case 1:
-                            damageFromThorns += 2 + nmsTags[i].getInt("thorns");
-                            break;
-                        case 2:
-                            damageFromThorns += 10 + nmsTags[i].getInt("thorns");
-                            break;
-                        case 3:
-                            damageFromThorns += 25 + nmsTags[i].getInt("thorns");
-                            break;
-                        case 4:
-                            damageFromThorns += 30 + nmsTags[i].getInt("thorns");
-                            break;
-                        case 5:
-                            damageFromThorns += 60 + nmsTags[i].getInt("thorns");
-                            break;
-                    }
                     if (API.isPlayer(attacker)) {
-                        //HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, damageFromThorns);
-                    }
-                    if (attacker instanceof Monster) {
-                       //HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) attacker, damageFromThorns);
+                        if (((Player) attacker).getItemInHand() != null && ((Player) attacker).getItemInHand().getType() != Material.AIR) {
+                            net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
+                            NBTTagCompound tag = nmsItem.getTag();
+                            if (tag != null) {
+                                if (tag.getDouble("damage") != 0) {
+                                    int damageFromThorns = (int) ((tag.getDouble("damage") / 100) * nmsTags[i].getInt("thorns"));
+                                    HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, damageFromThorns);
+                                }
+                            }
+                        }
                     }
                 }
                 if (nmsTags[i].getInt("fireResistance") != 0) {

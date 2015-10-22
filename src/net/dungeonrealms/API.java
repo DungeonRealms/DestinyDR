@@ -208,7 +208,7 @@ public class API {
         }
         PlayerInventory inv = Bukkit.getPlayer(uuid).getInventory();
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.player", ItemSerialization.toString(inv), false);
-        String locationAsString = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ();
+        String locationAsString = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + "," + player.getLocation().getYaw() + "," + player.getLocation().getPitch();
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "info.currentLocation", locationAsString, false);
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
@@ -256,7 +256,7 @@ public class API {
         TeleportAPI.addPlayerHearthstoneCD(uuid, 150);
         if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, uuid).equals("")) {
             String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, uuid)).split(",");
-            player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2])));
+            player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]), Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
         }
         PlayerManager.checkInventory(uuid);
         EnergyHandler.getInstance().handleLoginEvents(player);

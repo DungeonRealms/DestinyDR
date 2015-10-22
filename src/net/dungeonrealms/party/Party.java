@@ -38,6 +38,7 @@ public class Party {
     public void updateParties() {
         for (RawParty rp : PARTIES) {
             for (Player player : rp.members) {
+                //TODO: Someone have a look at this and see why its not updating when a new member joins.
                 Objective objective = ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).getObjective(DisplaySlot.SIDEBAR);
                 if (objective == null) {
                     objective = ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).registerNewObjective("party", "scoreboard");
@@ -125,12 +126,21 @@ public class Party {
     public void disbandParty(RawParty party) {
         for (Player members : party.getMembers()) {
             ScoreboardHandler.getInstance().getPlayerScoreboardObject(members).resetScores(members.getName());
-            ScoreboardHandler.getInstance().getPlayerScoreboardObject(members).resetScores(party.owner.getName());
+            members.setScoreboard(members.getScoreboard());
+            for (Player otherMembers : party.getMembers()) {
+                ScoreboardHandler.getInstance().getPlayerScoreboardObject(members).resetScores(party.owner.getName());
+                ScoreboardHandler.getInstance().getPlayerScoreboardObject(members).resetScores(otherMembers.getName());
+            }
             members.setScoreboard(members.getScoreboard());
             members.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.RED + "The party has been disbanded!");
         }
         if (party.owner != null) {
             ScoreboardHandler.getInstance().getPlayerScoreboardObject(party.owner).resetScores(party.owner.getName());
+            party.owner.setScoreboard(party.owner.getScoreboard());
+            for (Player otherMembers : party.getMembers()) {
+                ScoreboardHandler.getInstance().getPlayerScoreboardObject(party.owner).resetScores(party.owner.getName());
+                ScoreboardHandler.getInstance().getPlayerScoreboardObject(party.owner).resetScores(otherMembers.getName());
+            }
             party.owner.setScoreboard(party.owner.getScoreboard());
             party.owner.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.RED + "Your party has been disbanded!");
         }
