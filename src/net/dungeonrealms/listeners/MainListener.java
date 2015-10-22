@@ -7,6 +7,7 @@ import net.dungeonrealms.chat.Chat;
 import net.dungeonrealms.core.Callback;
 import net.dungeonrealms.core.CoreAPI;
 import net.dungeonrealms.core.reply.BanReply;
+import net.dungeonrealms.core.reply.ProxyReply;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
@@ -71,6 +72,18 @@ public class MainListener implements Listener {
                         break;
                     default:
                         Utils.log.warning("[BAN] [ASYNC] Unable to parse data from findBan() in onAsyncJoin().");
+                }
+            }
+        });
+        CoreAPI.getInstance().isProxying(event.getAddress(), new Callback<ProxyReply>(ProxyReply.class) {
+            @Override
+            public void callback(Throwable failCause, ProxyReply result) {
+                switch (result.getResult()) {
+                    case YES:
+                        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ChatColor.RED + "Socks 4/5 Proxies & VPNs aren't allowed!");
+                        break;
+                    case NO:
+                        break;
                 }
             }
         });
