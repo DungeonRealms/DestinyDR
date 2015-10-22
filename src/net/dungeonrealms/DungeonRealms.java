@@ -136,6 +136,7 @@ public class DungeonRealms extends JavaPlugin {
         getCommand("mailbox").setExecutor(new CommandMail());
         getCommand("accept").setExecutor(new CommandAccept());
         getCommand("invoke").setExecutor(new CommandInvoke());
+        getCommand("friend").setExecutor(new CommandFriend());
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         FTPUtils.startInitialization();
 

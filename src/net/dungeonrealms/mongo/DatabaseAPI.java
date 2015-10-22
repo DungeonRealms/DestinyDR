@@ -1,7 +1,9 @@
 package net.dungeonrealms.mongo;
 
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.UpdateResult;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.core.Callback;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.rank.Rank;
@@ -46,6 +48,28 @@ public class DatabaseAPI {
     public void update(UUID uuid, EnumOperators EO, String variable, Object object, boolean requestNew) {
         Database.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable, object)),
                 (result, exception) -> {
+                    Utils.log.info("DatabaseAPI update() called ...");
+                    if (exception == null && requestNew) {
+                        REQUEST_NEW_PLAYER_DOCUMENT.add(uuid);
+                    }
+                });
+    }
+
+    /**
+     * Updates a players information in Mongo and returns the updated result.
+     *
+     * @param uuid
+     * @param EO
+     * @param variable
+     * @param object
+     * @param requestNew TRUE = WILL GET NEW DATA FROM MONGO.
+     * @param callback   Calls back the result.
+     * @since 1.0
+     */
+    public void update(UUID uuid, EnumOperators EO, String variable, Object object, boolean requestNew, Callback<UpdateResult> callback) {
+        Database.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable, object)),
+                (result, exception) -> {
+                    callback.callback(exception, result);
                     Utils.log.info("DatabaseAPI update() called ...");
                     if (exception == null && requestNew) {
                         REQUEST_NEW_PLAYER_DOCUMENT.add(uuid);
