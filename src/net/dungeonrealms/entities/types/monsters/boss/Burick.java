@@ -103,7 +103,7 @@ public class Burick extends EntitySkeleton implements Boss {
 
 	@Override
 	public void onBossDeath() {
-
+		say(this.getBukkitEntity(), getEnumBoss().death);
 	}
 
 	public boolean first = false;
@@ -115,7 +115,6 @@ public class Burick extends EntitySkeleton implements Boss {
 		int health = HealthHandler.getInstance().getMonsterMaxHPLive(en);
 		int hp = HealthHandler.getInstance().getMonsterHPLive(en);
 		float tenPercentHP = (float) (health * .10);
-		Bukkit.broadcastMessage(hp + "current :" + health + " MAX : " + tenPercentHP + " 10%");
 		if (hp <= tenPercentHP) {
 			if (!first || !second || !third) {
 				for (Player p : API.getNearbyPlayers(en.getLocation(), 50)) {

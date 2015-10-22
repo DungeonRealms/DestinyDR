@@ -65,7 +65,7 @@ public class InfernalLordsGuard extends EntitySkeleton implements Boss {
 		this.setOnFire((int) System.currentTimeMillis() * 1);
 		setArmor(getEnumBoss().tier);
 		this.getBukkitEntity().setCustomNameVisible(true);
-		int level = Utils.getRandomFromTier(getEnumBoss().tier);
+		int level = 50;
 		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
 		this.getBukkitEntity().setMetadata("boss",
 		        new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));

@@ -1,24 +1,20 @@
 package net.dungeonrealms.entities.types.monsters.boss;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumBoss;
+import net.dungeonrealms.entities.types.monsters.boss.subboss.InfernalLordsGuard;
 import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.DamageSource;
-import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityGhast;
 
 /**
@@ -63,11 +59,15 @@ public class InfernalGhast extends EntityGhast implements Boss {
 
 	@Override
 	public void onBossDeath() {
-		say(this.getBukkitEntity(), "Try this on for size!");
+		say(this.getBukkitEntity(), "Guards!");
+		InfernalLordsGuard guard = new InfernalLordsGuard(world, this.getBukkitEntity().getLocation());
+		guard.isInvulnerable(DamageSource.FALL);
+		guard.setLocation(locX, locY, locZ, 1, 1);
+		this.getWorld().addEntity(guard, SpawnReason.CUSTOM);
+		guard.setLocation(locX, locY, locZ, 1, 1);
 		boss.setLocation(locX, locY, locZ, 1, 1);
 		int maxHP = boss.getBukkitEntity().getMetadata("maxHP").get(0).asInt() / 2;
 		boss.getBukkitEntity().setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHP));
-//		HealthHandler.getInstance().setMonsterHPLive((LivingEntity) boss, (HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) boss) / 2));
 		boss.isInvulnerable(DamageSource.FALL);
 	}
 

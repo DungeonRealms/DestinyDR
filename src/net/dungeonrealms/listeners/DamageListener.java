@@ -6,6 +6,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.entities.Entities;
+import net.dungeonrealms.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
@@ -23,6 +24,7 @@ import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
@@ -198,6 +200,12 @@ public class DamageListener implements Listener {
                 CombatLog.addToCombat(((Player) staffProjectile.getShooter()));
             }
         }
+    	if (event.getEntity().hasMetadata("boss")) {
+			if (event.getEntity() instanceof CraftLivingEntity) {
+				Boss b = (Boss) ((CraftLivingEntity) event.getEntity()).getHandle();
+				b.onBossHit((LivingEntity) event.getEntity());
+			}
+		}
         event.setDamage(finalDamage);
     }
 
