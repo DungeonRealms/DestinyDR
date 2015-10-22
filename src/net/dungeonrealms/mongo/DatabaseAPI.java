@@ -116,6 +116,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("notices")).get("mailbox", ArrayList.class);
             case ALIGNMENT:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("alignment", String.class);
+            case CURRENT_LOCATION:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("currentLocation", String.class);
             /*
             Rank Things. Different Sub-Document().
              */
@@ -299,6 +301,7 @@ public class DatabaseAPI {
                                 .append("netLevel", 1)
                                 .append("experience", 0d)
                                 .append("hearthstone", "Cyrennica")
+                                .append("currentLocation", "")
                                 .append("isPlaying", true)
                                 .append("friends", new ArrayList<>())
                                 .append("alignment", "lawful")

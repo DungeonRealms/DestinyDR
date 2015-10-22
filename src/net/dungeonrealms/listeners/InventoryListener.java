@@ -7,7 +7,6 @@ import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
-import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
 import net.dungeonrealms.handlers.ClickHandler;
@@ -22,7 +21,6 @@ import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
-import net.dungeonrealms.spawning.LootSpawner;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -442,19 +440,17 @@ public class InventoryListener implements Listener {
 			event.setCancelled(true);
 	}
 
-	/**
+	/** Called when a player switches item
+	 *
 	 * @param event
-	 * @since 1.0 Called when a player swithced
+	 * @since 1.0
 	 */
-
 	@EventHandler(priority = EventPriority.LOWEST)
 	public void playerSwitchItem(PlayerItemHeldEvent event) {
-		if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE)
-			return;
+		if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
 		int slot = event.getNewSlot();
 		if (event.getPlayer().getInventory().getItem(slot) != null) {
-			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack
-					.asNMSCopy(event.getPlayer().getInventory().getItem(slot));
+			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getPlayer().getInventory().getItem(slot));
 			if (nms.hasTag()) {
 				if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon")) {
 					ItemTier tier = new Attribute(event.getPlayer().getInventory().getItem(slot)).getItemTier();
@@ -471,24 +467,24 @@ public class InventoryListener implements Listener {
 		}
 	}
 
+	/** Called when a player equips armor
+	 *
+	 * @param event
+	 * @since 1.0
+	 */
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void playerEquipArmor(ArmorEquipEvent event) {
-		if (CombatLog.isInCombat(event.getPlayer())) {
-			event.setCancelled(true);
-			event.getPlayer().sendMessage("You cannot switch armor while in combat!");
-		} else {
-			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-				HealthHandler.getInstance().setPlayerMaxHPLive(event.getPlayer(), HealthHandler.getInstance().calculateMaxHPFromItems(event.getPlayer()));
-				HealthHandler.getInstance().setPlayerHPLive(event.getPlayer(), HealthHandler.getInstance().getPlayerMaxHPLive(event.getPlayer()));
-			}, 10L);
-		}
+		//TODO: Chase do this to prevent all forms of putting on armor if they are not the correct level.
+		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+			HealthHandler.getInstance().setPlayerMaxHPLive(event.getPlayer(), HealthHandler.getInstance().calculateMaxHPFromItems(event.getPlayer()));
+			HealthHandler.getInstance().setPlayerHPLive(event.getPlayer(), HealthHandler.getInstance().getPlayerMaxHPLive(event.getPlayer()));
+		}, 10L);
 	}
 
 	/**
 	 * @param event
 	 * @since 1.0 Closes both players wager inventory.
 	 */
-
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onDuelWagerClosed(InventoryCloseEvent event) {
 		if (event.getInventory().getTitle().contains("vs.")) {
@@ -508,13 +504,7 @@ public class InventoryListener implements Listener {
 		} else if (event.getInventory().getTitle().contains("Loot")) {
 			Player p = (Player) event.getPlayer();
 			Block block = p.getTargetBlock((Set<Material>) null, 100);
-			Location bl = block.getLocation();
-			for (LootSpawner loot : LootManager.spawners) {
-				if (loot.location.getBlockX() == block.getX() && loot.location.getBlockY() == block.getY()
-				        && loot.location.getBlockZ() == block.getLocation().getZ()) {
-					loot.update();
-				}
-			}
+			LootManager.spawners.stream().filter(loot -> loot.location.equals(block.getLocation())).forEach(net.dungeonrealms.spawning.LootSpawner::update);
 		} else if (event.getInventory().getTitle().contains("Trade")) {
 			Player p = (Player) event.getPlayer();
 			TradeHandler t = TradeManager.getTrade(p.getUniqueId());

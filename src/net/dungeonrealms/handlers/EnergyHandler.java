@@ -172,7 +172,7 @@ public class EnergyHandler {
                 regenAmount += 0;
             } else {
                 if (nmsTag.getInt("energyRegen") != 0) {
-                    regenAmount += (regenAmount / 100.F) * (nmsTag.getInt("energyRegen") + 2);
+                    regenAmount += (regenAmount / 100.F) * (nmsTag.getInt("energyRegen"));
                 }
                 if (nmsTag.getInt("intellect") != 0) {
                     regenAmount += ((nmsTag.getInt("intellect") * 0.015F) / 100.0F);
@@ -208,7 +208,6 @@ public class EnergyHandler {
         Bukkit.getOnlinePlayers().stream().filter(player -> player.isSprinting() || player.hasMetadata("sprinting")).forEach(player -> {
             removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 0.135F);
             if (getPlayerCurrentEnergy(player.getUniqueId()) <= 0 || player.hasMetadata("starving")) {
-                int playerFood = player.getFoodLevel();
                 player.setSprinting(false);
                 player.removeMetadata("sprinting", DungeonRealms.getInstance());
                 if (!player.hasPotionEffect(PotionEffectType.SLOW)) {
@@ -218,8 +217,6 @@ public class EnergyHandler {
                     }, 0L);
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "**EXHAUSTED**");
                 }
-                player.setFoodLevel(1);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.setFoodLevel(playerFood), 20L);
                 //TODO: THIS IS A SUPER SKETCHY WAY OF PREVENTING LEFT-CONTROL SPRINTING FROM OVERRIDING. As its CLIENTSIDE setSprinting(false) only cancels it for one tick
                 //TODO: Since this is a plugin and not a mod, we can't toggle keypresses clientside. RIP.
             }
@@ -319,15 +316,15 @@ public class EnergyHandler {
             case GOLD_SPADE:
                 return 0.123F;
             case WOOD_HOE:
-                return 0.11F;
-            case STONE_HOE:
                 return 0.12F;
-            case IRON_HOE:
+            case STONE_HOE:
                 return 0.13F;
-            case DIAMOND_HOE:
+            case IRON_HOE:
                 return 0.14F;
-            case GOLD_HOE:
+            case DIAMOND_HOE:
                 return 0.15F;
+            case GOLD_HOE:
+                return 0.16F;
             case BOW:
                 return 0.093F;
             default:

@@ -16,6 +16,7 @@ public enum EnumData {
     FRIENDS,
     ALIGNMENT,
     EXPERIENCE,
+    CURRENT_LOCATION,
 
     RANK,
     RANK_EXISTENCE,
