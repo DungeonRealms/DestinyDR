@@ -444,7 +444,7 @@ public class DamageAPI {
             } else {
                 if (attacker.getType() != EntityType.ARROW) {
                     if (nmsTags[i].getInt("block") != 0) {
-                        int blockChance = nmsTags[0].getInt("block");
+                        int blockChance = nmsTags[i].getInt("block");
                         if (nmsTags[i].getInt("strength") != 0) {
                             blockChance += (blockChance * (nmsTags[i].getInt("strength") * 0.017));
                         }

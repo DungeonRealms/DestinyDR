@@ -1,9 +1,11 @@
 package net.dungeonrealms.entities.types.monsters.boss;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -12,6 +14,7 @@ import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.entities.types.monsters.boss.subboss.InfernalLordsGuard;
 import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.DamageSource;
@@ -24,6 +27,7 @@ public class InfernalGhast extends EntityGhast implements Boss {
 
 	private InfernalAbyss boss;
 
+	
 	/**
 	 * @param infernalAbyss
 	 */
@@ -59,20 +63,9 @@ public class InfernalGhast extends EntityGhast implements Boss {
 
 	@Override
 	public void onBossDeath() {
-		say(this.getBukkitEntity(), "Guards!");
-		InfernalLordsGuard guard = new InfernalLordsGuard(world, this.getBukkitEntity().getLocation());
-		guard.isInvulnerable(DamageSource.FALL);
-		guard.setLocation(locX, locY, locZ, 1, 1);
-		this.getWorld().addEntity(guard, SpawnReason.CUSTOM);
-		guard.setLocation(locX, locY, locZ, 1, 1);
-		boss.setLocation(locX, locY, locZ, 1, 1);
-		int maxHP = boss.getBukkitEntity().getMetadata("maxHP").get(0).asInt() / 2;
-		boss.getBukkitEntity().setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHP));
-		boss.isInvulnerable(DamageSource.FALL);
-	}
-
-	@Override
-	public void onBossHit(LivingEntity en) {
+		say(this.getBukkitEntity(), "Guuuards!");
+		this.getWorld().addEntity(boss.guard, SpawnReason.CUSTOM);
+		boss.guard.setLocation(locX, locY, locZ, 1, 1);
 	}
 
 	/**
@@ -83,6 +76,14 @@ public class InfernalGhast extends EntityGhast implements Boss {
 		this.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
 		this.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
 		this.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
+	}
+
+	@Override
+	public void onBossHit(EntityDamageByEntityEvent event) {
+		LivingEntity en = (LivingEntity) event.getEntity();	
+		Utils.log.info("message");
+		Bukkit.broadcastMessage(HealthHandler.getInstance().getMonsterHPLive(en) + " | "
+		        + HealthHandler.getInstance().getMonsterMaxHPLive(en) + " max");
 	}
 
 }

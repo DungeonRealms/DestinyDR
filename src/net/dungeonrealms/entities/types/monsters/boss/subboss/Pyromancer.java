@@ -15,6 +15,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.entity.TNTPrimed;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -141,29 +142,30 @@ public class Pyromancer extends EntitySkeleton implements Boss {
 	@Override
 	public void onBossDeath() {
 		Block b1 = this.getBukkitEntity().getWorld().getBlockAt((int) locX + 1, (int) locY, (int) locZ + 1);
-		b1.setType(Material.AIR);
+		b1.setType(Material.TNT);
+		this.getBukkitEntity().getWorld().getBlockAt((int) locX + 1, (int) locY - 1, (int) locZ + 1).setType(Material.REDSTONE_TORCH_ON);
+		
+		
 		Block b2 = this.getBukkitEntity().getWorld().getBlockAt((int) locX + 1, (int) locY, (int) locZ - 1);
-		b2.setType(Material.AIR);
+		b1.setType(Material.TNT);
+		this.getBukkitEntity().getWorld().getBlockAt((int) locX + 1, (int) locY-1, (int) locZ - 1).setType(Material.REDSTONE_TORCH_ON);
+		
 		Block b3 = this.getBukkitEntity().getWorld().getBlockAt((int) locX - 1, (int) locY, (int) locZ + 1);
-		b3.setType(Material.AIR);
+		b1.setType(Material.TNT);
+		this.getBukkitEntity().getWorld().getBlockAt((int) locX - 1, (int) locY, (int) locZ + 1).setType(Material.REDSTONE_TORCH_ON);
+		
 		Block b4 = this.getBukkitEntity().getWorld().getBlockAt((int) locX - 1, (int) locY, (int) locZ - 1);
-		b4.setType(Material.AIR);
-		Entity tnt = this.getBukkitEntity().getWorld().spawn(b1.getLocation(), TNTPrimed.class);
-		((TNTPrimed) tnt).setFuseTicks(40);
-		Entity tnt2 = this.getBukkitEntity().getWorld().spawn(b2.getLocation(), TNTPrimed.class);
-		((TNTPrimed) tnt2).setFuseTicks(40);
-		Entity tnt3 = this.getBukkitEntity().getWorld().spawn(b3.getLocation(), TNTPrimed.class);
-		((TNTPrimed) tnt3).setFuseTicks(40);
-		Entity tnt4 = this.getBukkitEntity().getWorld().spawn(b4.getLocation(), TNTPrimed.class);
-		((TNTPrimed) tnt4).setFuseTicks(40);
+		b1.setType(Material.TNT);
+		this.getBukkitEntity().getWorld().getBlockAt((int) locX - 1, (int) locY, (int) locZ - 1).setType(Material.REDSTONE_TORCH_ON);
+		
 		for (Player p : API.getNearbyPlayers(this.getBukkitEntity().getLocation(), 50)) {
 			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().death);
 		}
 	}
 
 	@Override
-	public void onBossHit(LivingEntity en) {
-
+	public void onBossHit(EntityDamageByEntityEvent event) {
+		LivingEntity en = (LivingEntity) event.getEntity();		
 	}
 
 	@Override

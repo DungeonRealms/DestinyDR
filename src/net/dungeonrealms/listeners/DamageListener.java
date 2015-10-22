@@ -16,6 +16,7 @@ import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.spawning.MobSpawner;
@@ -140,7 +141,7 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
         if ((!(API.isPlayer(event.getDamager()))) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL))) return;
-        if (!(event.getEntity() instanceof Monster) && !(API.isPlayer(event.getEntity()))) return;
+        if (!(event.getEntity() instanceof CraftLivingEntity) && !(API.isPlayer(event.getEntity()))) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
         if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
         //Make sure the player is HOLDING something!
@@ -200,13 +201,15 @@ public class DamageListener implements Listener {
                 CombatLog.addToCombat(((Player) staffProjectile.getShooter()));
             }
         }
+		Utils.log.info("Fight");
+        event.setDamage(finalDamage);
     	if (event.getEntity().hasMetadata("boss")) {
 			if (event.getEntity() instanceof CraftLivingEntity) {
+				Utils.log.info("Is a boss");
 				Boss b = (Boss) ((CraftLivingEntity) event.getEntity()).getHandle();
-				b.onBossHit((LivingEntity) event.getEntity());
+				b.onBossHit(event);
 			}
 		}
-        event.setDamage(finalDamage);
     }
 
     /**

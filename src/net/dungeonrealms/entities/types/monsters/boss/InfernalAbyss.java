@@ -11,6 +11,7 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -20,6 +21,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumBoss;
+import net.dungeonrealms.entities.types.monsters.boss.subboss.InfernalLordsGuard;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.items.Item.ItemTier;
@@ -46,7 +48,12 @@ import net.minecraft.server.v1_8_R3.World;
 public class InfernalAbyss extends EntitySkeleton implements Boss {
 
 	public InfernalGhast ghast;
+	public InfernalLordsGuard guard;
+	
+	public InfernalAbyss(World world) {
+		super(world);
 
+	}
 	/**
 	 * @param world
 	 */
@@ -87,8 +94,12 @@ public class InfernalAbyss extends EntitySkeleton implements Boss {
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
 			if (!this.getBukkitEntity().isDead())
 				this.getBukkitEntity().getLocation().add(0, 1, 0).getBlock().setType(Material.FIRE);
-		}, 0, 20l);
+		} , 0, 20l);
 		ghast = new InfernalGhast(this);
+		guard = new InfernalLordsGuard(this);
+		guard.isInvulnerable(DamageSource.FALL);
+		guard.setLocation(locX, locY, locZ, 1, 1);
+
 		setArmor(getEnumBoss().tier);
 	}
 
@@ -132,14 +143,26 @@ public class InfernalAbyss extends EntitySkeleton implements Boss {
 	@Override
 	public void onBossDeath() {
 		// Giant Explosion that deals massive damage
-		if(hasFiredGhast)
-		say(this.getBukkitEntity(), getEnumBoss().death);
+		if (hasFiredGhast)
+			say(this.getBukkitEntity(), getEnumBoss().death);
 	}
 
 	public boolean hasFiredGhast = false;
-
+	public boolean finalForm = false;
+	
+	
 	@Override
-	public void onBossHit(LivingEntity en) {
+	public void onBossHit(EntityDamageByEntityEvent event) {
+		Utils.log.info(this.ghast.isAddedToChunk() + " ghast");
+		Utils.log.info(this.guard.isAddedToChunk() + " guard");
+		if(!finalForm)
+		if (this.ghast.isAddedToChunk() || this.guard.isAddedToChunk()) {
+			say(this.getBukkitEntity(), "Hah! You must take out my ");
+			event.setDamage(0);
+			event.setCancelled(true);
+		}
+
+		LivingEntity en = (LivingEntity) event.getEntity();
 		double seventyFivePercent = HealthHandler.getInstance().getMonsterMaxHPLive(en) * 0.75;
 
 		Bukkit.broadcastMessage(HealthHandler.getInstance().getMonsterHPLive(en) + " | "
@@ -151,10 +174,10 @@ public class InfernalAbyss extends EntitySkeleton implements Boss {
 			ghast.init();
 			this.isInvulnerable(DamageSource.STUCK);
 			this.setLocation(locX, locY + 100, locZ, 1, 1);
-//            this.damageEntity(DamageSource.GENERIC, 20F);
-//            if (!this.dead) {
-//            	this.dead = true;
-//            }
+			// this.damageEntity(DamageSource.GENERIC, 20F);
+			// if (!this.dead) {
+			// this.dead = true;
+			// }
 			hasFiredGhast = true;
 		}
 	}

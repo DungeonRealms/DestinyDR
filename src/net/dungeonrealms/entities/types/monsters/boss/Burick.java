@@ -20,6 +20,7 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -111,7 +112,8 @@ public class Burick extends EntitySkeleton implements Boss {
 	public boolean third = false;
 
 	@Override
-	public void onBossHit(LivingEntity en) {
+	public void onBossHit(EntityDamageByEntityEvent event) {
+		LivingEntity en = (LivingEntity) event.getEntity();
 		int health = HealthHandler.getInstance().getMonsterMaxHPLive(en);
 		int hp = HealthHandler.getInstance().getMonsterHPLive(en);
 		float tenPercentHP = (float) (health * .10);
