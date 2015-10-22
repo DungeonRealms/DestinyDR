@@ -25,7 +25,9 @@ public enum EnumMonster {
     Skeleton("skeleton1", "Skeleton", "Steve", new String[]{"Scary", "Spooky", "Spooky Scary"}, new String[]{"Archer", "Ranger"}),
     MagmaCube("magmacube", "Magma Cube", "Steve", new String[]{"Weak"}, new String[]{""}),
     Wither("skeleton2", "Chaos Skeleton", "Wither", new String[]{""}, new String[]{""}),
-    Daemon("daemon", "Daemon", "Steve", new String[]{""}, new String[]{""});
+    Daemon("daemon", "Daemon", "Steve", new String[]{""}, new String[]{""}),
+	SpawnOfInferno("spawnofinferno", "Spawn of Inferno", "Steve", new String[]{""},new String[]{""} ),
+	GreaterAbyssalDemon("demon", "Greater Abyssal Demon", "Steve", new String[]{""}, new String[] {""});
 
 	public String idName;
     public String name;

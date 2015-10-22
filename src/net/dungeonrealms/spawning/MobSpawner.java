@@ -5,7 +5,6 @@ import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
@@ -15,9 +14,11 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.BasicEntityBlaze;
 import net.dungeonrealms.entities.types.monsters.BasicEntityMagma;
 import net.dungeonrealms.entities.types.monsters.BasicEntityPigman;
+import net.dungeonrealms.entities.types.monsters.BasicEntitySilverfish;
 import net.dungeonrealms.entities.types.monsters.BasicEntitySkeleton;
 import net.dungeonrealms.entities.types.monsters.BasicMageMonster;
 import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
@@ -28,9 +29,8 @@ import net.dungeonrealms.entities.types.monsters.EntityPirate;
 import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
 import net.dungeonrealms.entities.types.monsters.EntitySpider;
 import net.dungeonrealms.entities.types.monsters.EntityWitherSkeleton;
-import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
@@ -116,7 +116,6 @@ public class MobSpawner {
 //                		location = new Location(Bukkit.getWorlds().get(0), loc.getBlockX() + new Random().nextInt(10), loc.getBlockY(), loc.getBlockZ() + new Random().nextInt(10));
 //                	}
 //                }
-               Entity entity = null;
                String mob = spawnType;
                World world = armorstand.getWorld();
                EnumEntityType type = EnumEntityType.HOSTILE_MOB;
@@ -127,59 +126,7 @@ public class MobSpawner {
             	   mob = mob.replace("*", "");
             	   isElite = true;
                }
-               switch (monsEnum) {
-                   case Bandit:
-                       entity = new EntityBandit(world, tier, type);
-                       break;
-                   case RangedPirate:
-                       entity = new EntityRangedPirate(world, type, tier);
-                       break;
-                   case Pirate:
-                       entity = new EntityPirate(world, EnumMonster.Pirate, tier);
-                       break;
-                   case FireImp:
-                       entity = new EntityFireImp(world, tier, type);
-                       break;
-                   case Troll:
-                       entity = new BasicMeleeMonster(world, EnumMonster.Troll, tier);
-                       break;
-                   case Goblin:
-                       entity = new BasicMeleeMonster(world, EnumMonster.Goblin, tier);
-                       break;
-                   case Mage:
-                       entity = new BasicMageMonster(world, EnumMonster.Mage, tier);
-                       break;
-                   case Spider:
-                       entity = new EntitySpider(world, EnumMonster.Spider, tier);
-                       break;
-                   case Golem:
-                       entity = new EntityGolem(world, tier, type);
-                       break;
-                   case Naga:
-                       entity = new BasicMageMonster(world, EnumMonster.Naga, tier);
-                       break;
-                   case Tripoli:
-                       entity = new BasicMeleeMonster(world, EnumMonster.Tripoli, tier);
-                       break;
-                   case Blaze:
-                       entity = new BasicEntityBlaze(world, EnumMonster.Blaze, tier);
-                       break;
-                   case Skeleton:
-                	   entity = new BasicEntitySkeleton(world, tier);
-                	   break;
-                   case Wither:
-                	   entity = new EntityWitherSkeleton(world, EnumMonster.Wither, tier);
-                	   break;
-                   case MagmaCube:
-                   		entity = new BasicEntityMagma(world, tier);
-                   		break;
-                   case Daemon:
-                	   entity = new BasicEntityPigman(world, EnumMonster.Daemon, tier);
-                	   break;
-                   default:
-                	   Utils.log.info(mob + " is not created yet.");
-                	   return;
-               }
+               Entity entity = SpawningMechanics.getMob(world, tier, monsEnum);
                if(isElite){
             	   int lvl = Utils.getRandomFromTier(tier);
             	   EntityStats.setMonsterElite(entity, lvl, tier);

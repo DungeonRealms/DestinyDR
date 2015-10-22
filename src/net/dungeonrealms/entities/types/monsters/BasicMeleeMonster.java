@@ -34,40 +34,6 @@ public class BasicMeleeMonster extends MeleeEntityZombie {
 				+ ChatColor.RESET + type.getPrefix() + " " + type.name + " " + type.getSuffix());
     }
 
-    /**
-     * @param special
-     * @return
-     */
-    private String getChatColor(String special) {
-        switch (special) {
-            case "Ice":
-                return ChatColor.BLUE.toString();
-            case "Poisonous":
-                return ChatColor.GREEN.toString();
-            case "Fire":
-                return ChatColor.RED.toString();
-            default:
-                return "null";
-        }
-    }
-
-    private String getSpecial() {
-
-		/*
-         * public MobEffect(int i, int j, int k, boolean flag) { this.effectId =
-		 * i; this.duration = j; this.amplification = k; this.ambient = flag; }
-		 * 
-		 */
-
-        switch (name) {
-            case "naga":
-            case "golem":
-                return "Ice";
-            default:
-                return "null";
-        }
-    }
-
     public BasicMeleeMonster(World world) {
         super(world);
     }

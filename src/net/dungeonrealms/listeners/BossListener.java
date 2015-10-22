@@ -1,6 +1,6 @@
 package net.dungeonrealms.listeners;
 
-import net.dungeonrealms.API;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftGhast;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftMonster;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -9,6 +9,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.types.monsters.boss.Boss;
 
@@ -18,22 +19,32 @@ import net.dungeonrealms.entities.types.monsters.boss.Boss;
 public class BossListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onEntityDeath(EntityDeathEvent event) {
+	public void onBossDeath(EntityDeathEvent event) {
 		if (event.getEntity().hasMetadata("boss")) {
 			event.getEntity().removeMetadata("boss", DungeonRealms.getInstance());
-			Boss b = (Boss) ((CraftMonster) event.getEntity()).getHandle();
-			b.onBossDeath();
+			if (event.getEntity() instanceof CraftGhast) {
+				Boss b = (Boss) ((CraftGhast) event.getEntity()).getHandle();
+				b.onBossDeath();
+			} else {
+				Boss b = (Boss) ((CraftMonster) event.getEntity()).getHandle();
+				b.onBossDeath();
+			}
 		}
 	}
 
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void onEntityDeath(org.bukkit.event.entity.EntityDamageByEntityEvent event) {
+	public void onBossDamaged(org.bukkit.event.entity.EntityDamageByEntityEvent event) {
 		if (API.isPlayer(event.getDamager())) {
 			Player p = (Player) event.getDamager();
 			if (event.getEntity() instanceof LivingEntity) {
 				if (event.getEntity().hasMetadata("boss")) {
-					Boss b = (Boss) ((CraftMonster) event.getEntity()).getHandle();
-					b.onBossHit((LivingEntity) event.getEntity());
+					if (event.getEntity() instanceof CraftGhast) {
+						Boss b = (Boss) ((CraftGhast) event.getEntity()).getHandle();
+						b.onBossHit((LivingEntity) event.getEntity());
+					} else {
+						Boss b = (Boss) ((CraftMonster) event.getEntity()).getHandle();
+						b.onBossHit((LivingEntity) event.getEntity());
+					}
 				}
 			}
 		}

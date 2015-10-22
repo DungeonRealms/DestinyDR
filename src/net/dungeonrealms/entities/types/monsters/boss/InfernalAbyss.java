@@ -1,18 +1,16 @@
 package net.dungeonrealms.entities.types.monsters.boss;
 
 import java.lang.reflect.Field;
-import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.entity.Projectile;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -21,46 +19,39 @@ import org.bukkit.metadata.FixedMetadataValue;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.monsters.EntityPirate;
 import net.dungeonrealms.entities.types.monsters.EnumBoss;
-import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.EntityArrow;
+import net.minecraft.server.v1_8_R3.DamageSource;
+import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityHuman;
-import net.minecraft.server.v1_8_R3.EntityLiving;
 import net.minecraft.server.v1_8_R3.EntitySkeleton;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.PathfinderGoalArrowAttack;
-import net.minecraft.server.v1_8_R3.PathfinderGoalFloat;
 import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
+import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
+import net.minecraft.server.v1_8_R3.PathfinderGoalMoveTowardsRestriction;
 import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
-import net.minecraft.server.v1_8_R3.PathfinderGoalRandomLookaround;
 import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
 import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
 import net.minecraft.server.v1_8_R3.World;
 
 /**
- * Created by Chase on Oct 18, 2015
+ * Created by Chase on Oct 21, 2015
  */
-public class Mayel extends EntitySkeleton implements Boss {
+public class InfernalAbyss extends EntitySkeleton implements Boss {
+
+	public InfernalGhast ghast;
 
 	/**
 	 * @param world
 	 */
-	public Mayel(World world) {
+	public InfernalAbyss(World world, Location loc) {
 		super(world);
-	}
-
-	public Location loc;
-
-	public Mayel(World world, Location loc) {
-		super(world);
-		this.loc = loc;
 		try {
 			Field bField = PathfinderGoalSelector.class.getDeclaredField("b");
 			bField.setAccessible(true);
@@ -73,17 +64,15 @@ public class Mayel extends EntitySkeleton implements Boss {
 		} catch (Exception exc) {
 			exc.printStackTrace();
 		}
-
-		this.goalSelector.a(1, new PathfinderGoalFloat(this));
-		this.goalSelector.a(7, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
-		this.goalSelector.a(3, new PathfinderGoalRandomStroll(this, 1.0D));
-		this.goalSelector.a(6, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-		this.goalSelector.a(4, new PathfinderGoalRandomLookaround(this));
-		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
-		this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
-
+		this.goalSelector.a(5, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.0D, false));
+		this.goalSelector.a(6, new PathfinderGoalRandomStroll(this, 1.0D));
+		this.goalSelector.a(1, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
+		this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true));
+		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<EntityHuman>(this, EntityHuman.class, true));
 		this.setSkeletonType(1);
-		setArmor(getEnumBoss().tier);
+		this.fireProof = true;
+		this.setOnFire((int) System.currentTimeMillis() * 1);
 		this.getBukkitEntity().setCustomNameVisible(true);
 		int level = Utils.getRandomFromTier(getEnumBoss().tier);
 		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
@@ -95,43 +84,32 @@ public class Mayel extends EntitySkeleton implements Boss {
 		for (Player p : API.getNearbyPlayers(loc, 50)) {
 			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().greeting);
 		}
-
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+			if (!this.getBukkitEntity().isDead())
+				this.getBukkitEntity().getLocation().add(0, 1, 0).getBlock().setType(Material.FIRE);
+		}, 0, 20l);
+		ghast = new InfernalGhast(this);
+		setArmor(getEnumBoss().tier);
 	}
 
 	protected void setArmor(int tier) {
 		ItemStack[] armor = getArmor();
 		// weapon, boots, legs, chest, helmet/head
 		ItemStack weapon = getWeapon();
-		weapon.addEnchantment(Enchantment.ARROW_DAMAGE, 1);
+		// weapon.addEnchantment(Enchantment.DAMAGE_ALL, 1);
 		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
 		this.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
 		this.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
 		this.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
 		this.setEquipment(4, getHead());
+		ghast.setArmor(armor, weapon);
 	}
 
 	/**
 	 * @return
 	 */
 	private ItemStack getWeapon() {
-		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.BOW,
-		        net.dungeonrealms.items.Item.ItemTier.getByTier(2));
-	}
-
-	/**
-	 * Called when entity fires a projectile.
-	 */
-	@Override
-	public void a(EntityLiving entityliving, float f) {
-		EntityArrow entityarrow = new EntityArrow(this.world, this, entityliving, 1.6F, (float) (14 - 2 * 4));
-		entityarrow.b((double) (f * 2.0F) + this.random.nextGaussian() * 0.25D + (double) ((float) 2 * 0.11F));
-		Projectile arrowProjectile = (Projectile) entityarrow.getBukkitEntity();
-		net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
-		NBTTagCompound tag = nmsItem.getTag();
-		MetadataUtils.registerProjectileMetadata(tag, arrowProjectile, 2);
-		this.makeSound("random.bow", 1.0F, 1.0F / (0.8F));
-		this.world.addEntity(entityarrow);
-
+		return new ItemGenerator().next(ItemTier.TIER_4);
 	}
 
 	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
@@ -147,35 +125,38 @@ public class Mayel extends EntitySkeleton implements Boss {
 	}
 
 	@Override
+	public EnumBoss getEnumBoss() {
+		return EnumBoss.InfernalAbyss;
+	}
+
+	@Override
 	public void onBossDeath() {
+		// Giant Explosion that deals massive damage
+		if(hasFiredGhast)
 		say(this.getBukkitEntity(), getEnumBoss().death);
 	}
 
-	public boolean canSpawn = true;
+	public boolean hasFiredGhast = false;
 
 	@Override
 	public void onBossHit(LivingEntity en) {
-		if (canSpawn)
-			for (int i = 0; i < 2; i++) {
-				EntityPirate pirate = new EntityPirate(this.getWorld(), EnumMonster.MayelPirate, 1);
-				pirate.setLocation(locX + 1, locY, locZ + 1, 1, 1);
-				Location location = new Location(world.getWorld(),
-				        this.getBukkitEntity().getLocation().getX() + new Random().nextInt(3),
-				        this.getBukkitEntity().getLocation().getY(),
-				        this.getBukkitEntity().getLocation().getZ() + new Random().nextInt(3));
-				pirate.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-				world.addEntity(pirate, SpawnReason.CUSTOM);
-				pirate.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-				canSpawn = false;
-				say(this.getBukkitEntity(), "Come to my call, brothers!");
-				Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> canSpawn = true,
-				        20 * 2);
-			}
+		double seventyFivePercent = HealthHandler.getInstance().getMonsterMaxHPLive(en) * 0.75;
 
+		Bukkit.broadcastMessage(HealthHandler.getInstance().getMonsterHPLive(en) + " | "
+		        + HealthHandler.getInstance().getMonsterMaxHPLive(en) + " max |" + seventyFivePercent + " 75%");
+		if (HealthHandler.getInstance().getMonsterHPLive(en) <= seventyFivePercent && !hasFiredGhast) {
+			say(this.getBukkitEntity(), "Taste FIRE!");
+			ghast.setLocation(this.locX, this.locY + 4, this.locZ, 1, 1);
+			this.getWorld().addEntity(ghast, SpawnReason.CUSTOM);
+			ghast.init();
+			this.isInvulnerable(DamageSource.STUCK);
+			this.setLocation(locX, locY + 100, locZ, 1, 1);
+//            this.damageEntity(DamageSource.GENERIC, 20F);
+//            if (!this.dead) {
+//            	this.dead = true;
+//            }
+			hasFiredGhast = true;
+		}
 	}
 
-	@Override
-	public EnumBoss getEnumBoss() {
-		return EnumBoss.Mayel;
-	}
 }

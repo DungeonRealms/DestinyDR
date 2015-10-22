@@ -25,9 +25,12 @@ import net.dungeonrealms.entities.types.monsters.EntityGolem;
 import net.dungeonrealms.entities.types.monsters.EntityPirate;
 import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
 import net.dungeonrealms.entities.types.monsters.EntitySpider;
+import net.dungeonrealms.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.boss.Burick;
+import net.dungeonrealms.entities.types.monsters.boss.InfernalAbyss;
 import net.dungeonrealms.entities.types.monsters.boss.Mayel;
+import net.dungeonrealms.entities.types.monsters.boss.subboss.InfernalLordsGuard;
 import net.dungeonrealms.entities.types.monsters.boss.subboss.Pyromancer;
 import net.dungeonrealms.entities.utils.BuffUtils;
 import net.dungeonrealms.entities.utils.EntityStats;
@@ -69,44 +72,10 @@ public class CommandSpawn implements CommandExecutor {
                             if (args[3].equalsIgnoreCase("*"))
                                 elite = true;
                         }
+                        EnumMonster monsEnum = EnumMonster.getMonsterByString(args[1]);
                         EnumEntityType type = EnumEntityType.HOSTILE_MOB;
-                        Entity entity;
+                        Entity entity = SpawningMechanics.getMob(((CraftWorld)player.getWorld()).getHandle(), tier, monsEnum);
                         World world = ((CraftWorld) player.getWorld()).getHandle();
-                        switch (args[1]) {
-                            case "bandit":
-                                entity = new EntityBandit(world, tier, type);
-                                break;
-                            case "rangedpirate":
-                                entity = new EntityRangedPirate(world, type, tier);
-                                break;
-                            case "pirate":
-                                entity = new EntityPirate(world, EnumMonster.Pirate, tier);
-                                break;
-                            case "imp":
-                                entity = new EntityFireImp(world, tier, type);
-                                break;
-                            case "troll":
-                                entity = new BasicMeleeMonster(world, EnumMonster.Troll, tier);
-                                break;
-                            case "goblin":
-                                entity = new BasicMeleeMonster(world, EnumMonster.Goblin, tier);
-                                break;
-                            case "mage":
-                                entity = new BasicMageMonster(world, EnumMonster.Mage, tier);
-                                break;
-                            case "spider":
-                                entity = new EntitySpider(world, EnumMonster.Spider, tier);
-                                break;
-                            case "golem":
-                                entity = new EntityGolem(world, tier, type);
-                                break;
-                            case "skeleton":
-                            	entity = new BasicEntitySkeleton(world,tier);
-                            	break;
-                            default:
-                                entity = new EntityBandit(world, tier, type);
-                                break;
-                        }
                         if(elite){
                           int lvl = Utils.getRandomFromTier(tier);
                           EntityStats.setMonsterElite(entity, lvl, tier);
@@ -134,15 +103,22 @@ public class CommandSpawn implements CommandExecutor {
                 	String bossName = args[1];
                 	Entity entity = null;
                     World world = ((CraftWorld) player.getWorld()).getHandle();
-                	switch(bossName){
-                		case "mayel" :
+                    EnumBoss boss = EnumBoss.getByID(bossName);
+                	switch(boss){
+                		case Mayel :
                 			entity = new Mayel(world, player.getLocation());
                 			break;
-                		case "burick":
+                		case Burick:
                 			entity = new Burick(world, player.getLocation());
                 			break;
-                		case "pyromancer":
+                		case Pyromancer:
                 			entity = new Pyromancer(world, player.getLocation());
+                			break;
+                		case InfernalAbyss:
+                			entity = new InfernalAbyss(world,player.getLocation());
+                			break;
+                		case LordsGuard:
+                			entity = new InfernalLordsGuard(world, player.getLocation());
                 			break;
                 		default: 
                 			entity = null;

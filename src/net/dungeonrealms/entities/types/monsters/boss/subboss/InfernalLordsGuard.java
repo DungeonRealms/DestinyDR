@@ -1,17 +1,7 @@
-package net.dungeonrealms.entities.types.monsters.boss;
+package net.dungeonrealms.entities.types.monsters.boss.subboss;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.monsters.EnumBoss;
-import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.handlers.HealthHandler;
-import net.dungeonrealms.items.Item.ItemTier;
-import net.dungeonrealms.items.ItemGenerator;
-import net.dungeonrealms.items.armor.ArmorGenerator;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.*;
+import java.lang.reflect.Field;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -24,18 +14,34 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.lang.reflect.Field;
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.monsters.EnumBoss;
+import net.dungeonrealms.entities.types.monsters.boss.Boss;
+import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.items.Item.ItemTier;
+import net.dungeonrealms.items.armor.ArmorGenerator;
+import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.Utils;
+import net.minecraft.server.v1_8_R3.EntityHuman;
+import net.minecraft.server.v1_8_R3.EntitySkeleton;
+import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
+import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
+import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
+import net.minecraft.server.v1_8_R3.PathfinderGoalMoveTowardsRestriction;
+import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
+import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
+import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
- * Created by Chase on Oct 19, 2015
+ * Created by Chase on Oct 21, 2015
  */
-public class Burick extends EntitySkeleton implements Boss {
-
-	public Location loc;
-
-	public Burick(World world, Location loc) {
+public class InfernalLordsGuard extends EntitySkeleton implements Boss {
+	public InfernalLordsGuard(World world, Location loc) {
 		super(world);
-		this.loc = loc;
 		try {
 			Field bField = PathfinderGoalSelector.class.getDeclaredField("b");
 			bField.setAccessible(true);
@@ -55,6 +61,8 @@ public class Burick extends EntitySkeleton implements Boss {
 		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true));
 		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<EntityHuman>(this, EntityHuman.class, true));
 		this.setSkeletonType(1);
+		this.fireProof = true;
+		this.setOnFire((int) System.currentTimeMillis() * 1);
 		setArmor(getEnumBoss().tier);
 		this.getBukkitEntity().setCustomNameVisible(true);
 		int level = Utils.getRandomFromTier(getEnumBoss().tier);
@@ -67,7 +75,21 @@ public class Burick extends EntitySkeleton implements Boss {
 		for (Player p : API.getNearbyPlayers(loc, 50)) {
 			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().greeting);
 		}
+	}
 
+	/**
+	 * @return
+	 */
+	private ItemStack getWeapon() {
+		return new ItemGenerator().next(ItemTier.TIER_4);
+	}
+
+	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
+		ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+		SkullMeta meta = (SkullMeta) head.getItemMeta();
+		meta.setOwner("Steve");
+		head.setItemMeta(meta);
+		return CraftItemStack.asNMSCopy(head);
 	}
 
 	protected void setArmor(int tier) {
@@ -82,61 +104,25 @@ public class Burick extends EntitySkeleton implements Boss {
 		this.setEquipment(4, getHead());
 	}
 
-	/**
-	 * @return
-	 */
-	private ItemStack getWeapon() {
-		return new ItemGenerator().next(ItemTier.TIER_3);
-	}
-
-	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
-		ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-		SkullMeta meta = (SkullMeta) head.getItemMeta();
-		meta.setOwner("Steve");
-		head.setItemMeta(meta);
-		return CraftItemStack.asNMSCopy(head);
-	}
-
 	private ItemStack[] getArmor() {
 		return new ArmorGenerator().nextTier(getEnumBoss().tier);
 	}
 
 	@Override
-	public void onBossDeath() {
-
+	public EnumBoss getEnumBoss() {
+		return EnumBoss.LordsGuard;
 	}
 
-	public boolean first = false;
-	public boolean second = false;
-	public boolean third = false;
-
 	@Override
-	public void onBossHit(LivingEntity en) {
-		int health = HealthHandler.getInstance().getMonsterMaxHPLive(en);
-		int hp = HealthHandler.getInstance().getMonsterHPLive(en);
-		float tenPercentHP = (float) (health * .10);
-		Bukkit.broadcastMessage(hp + "current :" + health + " MAX : " + tenPercentHP + " 10%");
-		if (hp <= tenPercentHP) {
-			if (!first || !second || !third) {
-				for (Player p : API.getNearbyPlayers(en.getLocation(), 50)) {
-					p.sendMessage(
-					        this.getCustomName() + ChatColor.RESET.toString() + ": " + " Goragath give me strength!");
-				}
-				HealthHandler.getInstance().healMonsterByAmount(en,
-				        HealthHandler.getInstance().getMonsterMaxHPLive(en));
-				if (!first)
-					first = true;
-				else if (!second)
-					second = true;
-				else if (!third)
-					third = true;
-			}
+	public void onBossDeath() {
+		for (Player p : API.getNearbyPlayers(this.getBukkitEntity().getLocation(), 50)) {
+			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().death);
 		}
 	}
 
 	@Override
-	public EnumBoss getEnumBoss() {
-		return EnumBoss.Burick;
+	public void onBossHit(LivingEntity en) {
+
 	}
 
 }
