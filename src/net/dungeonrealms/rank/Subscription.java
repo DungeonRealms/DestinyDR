@@ -3,6 +3,8 @@ package net.dungeonrealms.rank;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.SoundAPI;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
@@ -21,7 +23,7 @@ import java.util.UUID;
 /**
  * Created by Nick on 9/24/2015.
  */
-public class Subscription {
+public class Subscription implements GenericMechanic{
 
     static Subscription instance = null;
 
@@ -38,11 +40,21 @@ public class Subscription {
         PLAYER_SUBSCRIPTION.add(uuid);
     }
 
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.PRIESTS;
+    }
+
     public void startInitialization() {
         Utils.log.info("[DUNGEON_REALMS] Starting up Subscription() ... STARTING");
         TimeZone.setDefault(TimeZone.getTimeZone("American/New_York"));
         startTimer();
         Utils.log.info("[DUNGEON_REALMS] Finished starting up Subscription() ... FINISHED");
+    }
+
+    @Override
+    public void stopInvocation() {
+
     }
 
     void startTimer() {

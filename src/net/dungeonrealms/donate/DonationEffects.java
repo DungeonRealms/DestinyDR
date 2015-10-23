@@ -3,6 +3,8 @@ package net.dungeonrealms.donate;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Bukkit;
@@ -17,7 +19,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by Kieran on 10/1/2015.
  */
-public class DonationEffects {
+public class DonationEffects implements GenericMechanic {
 
     private static DonationEffects instance = null;
 
@@ -37,10 +39,20 @@ public class DonationEffects {
     public static ConcurrentHashMap<Location, Material> PLAYER_GOLD_BLOCK_TRAIL_INFO = new ConcurrentHashMap<>();
     public static List<Player> PLAYER_GOLD_BLOCK_TRAILS = new ArrayList<>();
 
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.CATHOLICS;
+    }
+
     public void startInitialization() {
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnPlayerParticleEffects, 40L, 1L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnEntityParticleEffects, 40L, 1L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::removeGoldBlockTrails, 40L, 3L);
+    }
+
+    @Override
+    public void stopInvocation() {
+
     }
 
     private void spawnPlayerParticleEffects() {

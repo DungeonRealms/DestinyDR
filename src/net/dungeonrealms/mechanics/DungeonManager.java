@@ -4,6 +4,8 @@ import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
@@ -22,7 +24,7 @@ import java.util.zip.ZipFile;
 /**
  * Created by Nick on 10/19/2015.
  */
-public class DungeonManager {
+public class DungeonManager implements GenericMechanic{
 
     static DungeonManager instance = null;
 
@@ -34,6 +36,11 @@ public class DungeonManager {
     }
 
     public CopyOnWriteArrayList<DungeonObject> Dungeons = new CopyOnWriteArrayList<>();
+
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.ARCHBISHOPS;
+    }
 
     public void startInitialization() {
         Utils.log.info("[DUNGEONS] Loading Dungeon Mechanics ... STARTING");
@@ -72,6 +79,11 @@ public class DungeonManager {
             });
         }, 0, 20l);
         Utils.log.info("[DUNGEONS] Finished Loading Dungeon Mechanics ... OKAY");
+    }
+
+    @Override
+    public void stopInvocation() {
+
     }
 
     /**

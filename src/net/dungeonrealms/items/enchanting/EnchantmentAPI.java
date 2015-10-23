@@ -4,6 +4,8 @@ import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.armor.Armor;
 import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Material;
@@ -19,7 +21,7 @@ import java.util.List;
 /**
  * Created by Kieran on 9/20/2015.
  */
-public class EnchantmentAPI {
+public class EnchantmentAPI implements GenericMechanic {
 
     private static EnchantmentAPI instance = null;
     static Enchantment enchantment = null;
@@ -31,8 +33,18 @@ public class EnchantmentAPI {
         return instance;
     }
 
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.BISHOPS;
+    }
+
     public void startInitialization() {
         registerCustomEnchantment();
+    }
+
+    @Override
+    public void stopInvocation() {
+
     }
 
     /**

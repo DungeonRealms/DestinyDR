@@ -6,6 +6,8 @@ import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.mastery.GamePlayer;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.minecraft.server.v1_8_R3.DamageSource;
@@ -24,7 +26,7 @@ import org.inventivetalent.bossbar.BossBarAPI;
 /**
  * Created by Kieran on 10/3/2015.
  */
-public class HealthHandler {
+public class HealthHandler implements GenericMechanic{
 
     private static HealthHandler instance = null;
 
@@ -35,9 +37,19 @@ public class HealthHandler {
         return instance;
     }
 
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.CARDINALS;
+    }
+
     public void startInitialization() {
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::updatePlayerHPBars, 40, 5L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40, 20L);
+    }
+
+    @Override
+    public void stopInvocation() {
+
     }
 
     /**

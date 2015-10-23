@@ -1,6 +1,8 @@
 package net.dungeonrealms.combat;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -11,7 +13,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by Nick on 8/29/2015.
  */
-public class CombatLog {
+public class CombatLog implements GenericMechanic{
 
     private static CombatLog instance = null;
 
@@ -49,6 +51,11 @@ public class CombatLog {
         }
     }
 
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.CATHOLICS;
+    }
+
     public void startInitialization() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for (Map.Entry<Player, Integer> e : COMBAT.entrySet()) {
@@ -59,5 +66,10 @@ public class CombatLog {
                 }
             }
         }, 0, 20l);
+    }
+
+    @Override
+    public void stopInvocation() {
+
     }
 }

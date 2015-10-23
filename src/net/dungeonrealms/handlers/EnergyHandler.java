@@ -1,6 +1,8 @@
 package net.dungeonrealms.handlers;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,7 +21,7 @@ import java.util.UUID;
 /**
  * Created by Kieran on 9/24/2015.
  */
-public class EnergyHandler {
+public class EnergyHandler implements GenericMechanic {
 
     private static EnergyHandler instance = null;
 
@@ -30,10 +32,20 @@ public class EnergyHandler {
         return instance;
     }
 
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.ARCHBISHOPS;
+    }
+
     public void startInitialization() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::regenerateAllPlayerEnergy, 40, 3L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::removePlayerEnergySprint, 40, 9L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::addStarvingPotionEffect, 40, 15L);
+    }
+
+    @Override
+    public void stopInvocation() {
+
     }
 
     /**
