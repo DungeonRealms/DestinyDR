@@ -27,6 +27,7 @@ import net.dungeonrealms.party.Party;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.shops.ShopMechanics;
+import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -121,6 +122,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(ScoreboardHandler.getInstance());
         mm.registerMechanic(new LootManager());
         mm.registerMechanic(Entities.getInstance());
+        mm.registerMechanic(new SpawningMechanics());
 
         mm.loadMechanics();
 

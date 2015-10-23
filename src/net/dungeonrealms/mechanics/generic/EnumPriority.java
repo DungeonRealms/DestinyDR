@@ -13,6 +13,5 @@ public enum EnumPriority {
     BISHOPS,
     PRIESTS,
     CATHOLICS,
-    TRAYVON_MARTIN,
 
 }
