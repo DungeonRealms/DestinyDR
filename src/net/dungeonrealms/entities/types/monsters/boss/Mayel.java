@@ -1,8 +1,18 @@
 package net.dungeonrealms.entities.types.monsters.boss;
 
-import java.lang.reflect.Field;
-import java.util.Random;
-
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.monsters.BasicEntitySkeleton;
+import net.dungeonrealms.entities.types.monsters.EntityPirate;
+import net.dungeonrealms.entities.types.monsters.EnumBoss;
+import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.items.armor.ArmorGenerator;
+import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.Utils;
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -13,42 +23,19 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.monsters.EntityPirate;
-import net.dungeonrealms.entities.types.monsters.EnumBoss;
-import net.dungeonrealms.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.items.ItemGenerator;
-import net.dungeonrealms.items.armor.ArmorGenerator;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.EntityArrow;
-import net.minecraft.server.v1_8_R3.EntityHuman;
-import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.EntitySkeleton;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.PathfinderGoalArrowAttack;
-import net.minecraft.server.v1_8_R3.PathfinderGoalFloat;
-import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
-import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
-import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
-import net.minecraft.server.v1_8_R3.PathfinderGoalRandomLookaround;
-import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
-import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
-import net.minecraft.server.v1_8_R3.World;
+import java.lang.reflect.Field;
+import java.util.Random;
 
 /**
  * Created by Chase on Oct 18, 2015
  */
-public class Mayel extends EntitySkeleton implements Boss {
+public class Mayel extends BasicEntitySkeleton implements Boss {
 
 	/**
 	 * @param world

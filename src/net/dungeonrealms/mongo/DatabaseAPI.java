@@ -12,8 +12,9 @@ import org.bson.Document;
 import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Nick on 8/29/2015.
@@ -29,11 +30,11 @@ public class DatabaseAPI {
         return instance;
     }
 
-    public static volatile HashMap<UUID, Document> PLAYERS = new HashMap<>();
-    public static volatile HashMap<String, Document> GUILDS = new HashMap<>();
+    public static volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
+    public static volatile ConcurrentHashMap<String, Document> GUILDS = new ConcurrentHashMap<>();
 
-    private static volatile ArrayList<UUID> REQUEST_NEW_PLAYER_DOCUMENT = new ArrayList<>();
-    private static volatile ArrayList<String> REQUEST_NEW_GUILD_DOCUMENT = new ArrayList<>();
+    private static volatile CopyOnWriteArrayList<UUID> REQUEST_NEW_PLAYER_DOCUMENT = new CopyOnWriteArrayList<>();
+    private static volatile CopyOnWriteArrayList<String> REQUEST_NEW_GUILD_DOCUMENT = new CopyOnWriteArrayList<>();
 
     /**
      * Updates a players information in Mongo and returns the updated result.
@@ -186,8 +187,6 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("collectibles")).get("pets", ArrayList.class);
             case PARTICLES:
                 return ((Document) PLAYERS.get(uuid).get("collectibles")).get("particles", ArrayList.class);
-            case MOB_PARTICLES:
-                return ((Document) PLAYERS.get(uuid).get("collectibles")).get("mob_particles", ArrayList.class);
             default:
         }
         return null;
@@ -340,8 +339,7 @@ public class DatabaseAPI {
                                 new Document("achievements", new ArrayList<String>())
                                         .append("mounts", new ArrayList<String>())
                                         .append("pets", new ArrayList<String>())
-                                        .append("particles", new ArrayList<String>())
-                                        .append("mob_particles", new ArrayList<String>()))
+                                        .append("particles", new ArrayList<String>()))
                         .append("notices",
                                 new Document("guildInvites", new ArrayList<String>())
                                         .append("friendRequest", new ArrayList<String>())

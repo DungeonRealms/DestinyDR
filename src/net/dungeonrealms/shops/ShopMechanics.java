@@ -104,7 +104,9 @@ public class ShopMechanics {
      * @since 1.0
      */
     public static void deleteAllShops() {
+    	
             for(Shop shop : shops.values()){
+            	shop.saveCollectionBin();
             	shop.deleteShop();
             	shops.remove(shop);
             }

@@ -11,43 +11,43 @@ import java.util.UUID;
 public class EntityAPI {
 
     public static boolean hasPetOut(UUID uuid) {
-        return Entities.PLAYER_PETS.containsKey(uuid);
+        return Entities.getInstance().PLAYER_PETS.containsKey(uuid);
     }
 
     public static boolean hasMountOut(UUID uuid) {
-        return Entities.PLAYER_MOUNTS.containsKey(uuid);
+        return Entities.getInstance().PLAYER_MOUNTS.containsKey(uuid);
     }
 
     public static Entity getPlayerPet(UUID uuid) {
-        return Entities.PLAYER_PETS.get(uuid);
+        return Entities.getInstance().PLAYER_PETS.get(uuid);
     }
 
     public static Entity getPlayerMount(UUID uuid) {
-        return Entities.PLAYER_MOUNTS.get(uuid);
+        return Entities.getInstance().PLAYER_MOUNTS.get(uuid);
     }
 
     public static boolean removePlayerPetList(UUID uuid) {
-        if (Entities.PLAYER_PETS.containsKey(uuid)) {
-            Entities.PLAYER_PETS.remove(uuid);
+        if (Entities.getInstance().PLAYER_PETS.containsKey(uuid)) {
+            Entities.getInstance().PLAYER_PETS.remove(uuid);
             return true;
         }
         return false;
     }
 
     public static boolean removePlayerMountList(UUID uuid) {
-        if (Entities.PLAYER_MOUNTS.containsKey(uuid)) {
-            Entities.PLAYER_MOUNTS.remove(uuid);
+        if (Entities.getInstance().PLAYER_MOUNTS.containsKey(uuid)) {
+            Entities.getInstance().PLAYER_MOUNTS.remove(uuid);
             return true;
         }
         return false;
     }
 
     public static void addPlayerPetList(UUID uuid, Entity entity) {
-        Entities.PLAYER_PETS.put(uuid, entity);
+        Entities.getInstance().PLAYER_PETS.put(uuid, entity);
     }
 
     public static void addPlayerMountList(UUID uuid, Entity entity) {
-        Entities.PLAYER_MOUNTS.put(uuid, entity);
+        Entities.getInstance().PLAYER_MOUNTS.put(uuid, entity);
     }
 
 }

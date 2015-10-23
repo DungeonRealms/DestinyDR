@@ -30,6 +30,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
 import net.dungeonrealms.inventory.GUI;
+import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -50,6 +51,21 @@ public class BankListener implements Listener {
     public void onEnderChestRightClick(PlayerInteractEvent e) {
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
+            	
+            	String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, e.getPlayer().getUniqueId());
+            	Utils.log.info(invString);
+            	if(!invString.equalsIgnoreCase("")){
+            		Utils.log.info("Collection Bin Opend");
+            		Inventory tempInv = ItemSerialization.fromString(invString);
+            		Inventory collectionBin = Bukkit.createInventory(e.getPlayer(), tempInv.getSize(), "Collection Bin");
+            		collectionBin.setContents(tempInv.getContents());
+            		DatabaseAPI.getInstance().update(e.getPlayer().getUniqueId(), EnumOperators.$SET, "inventory.collection_bin", "", true);
+            		e.getPlayer().openInventory(collectionBin);
+            		e.setCancelled(true);
+            		return;
+            	}
+            	
+            	
                 Block b = e.getClickedBlock();
                 ItemStack stack = new ItemStack(b.getType(), 1);
                 NBTTagCompound nbt = CraftItemStack.asNMSCopy(stack).getTag();

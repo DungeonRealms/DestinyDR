@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
@@ -258,6 +259,9 @@ public class HealthHandler {
             if (CombatLog.isInCombat(player)) {
                 continue;
             }
+            if (!API.isPlayer(player)) {
+                continue;
+            }
             //Check their Max HP from wherever we decide to store it.
             if (!CombatLog.isInCombat(player)) {
                 double currentHP = getPlayerHPLive(player);
@@ -431,8 +435,10 @@ public class HealthHandler {
         if (API.isPlayer(damager)) {
             return;
         }
-        if (damager instanceof Monster) {
-            leAttacker = (LivingEntity) damager;
+        if (damager instanceof CraftLivingEntity) {
+            if (damager.hasMetadata("type")) {
+                leAttacker = (LivingEntity) damager;
+            }
         } else {
             switch (damager.getType()) {
                 case ARROW:
@@ -455,7 +461,7 @@ public class HealthHandler {
             }
         }
         if (!(leAttacker == null) && !(API.isPlayer(leAttacker))) {
-            Entities.getInstance().MONSTER_LAST_ATTACK.put(leAttacker, 10);
+            Entities.getInstance().MONSTER_LAST_ATTACK.put(leAttacker, 15);
             if (!Entities.getInstance().MONSTERS_LEASHED.contains(leAttacker)) {
                 Entities.getInstance().MONSTERS_LEASHED.add(leAttacker);
             }
@@ -483,6 +489,12 @@ public class HealthHandler {
             entity1.damageEntity(DamageSource.GENERIC, 20F);
             if (!entity1.dead) {
                 entity1.dead = true;
+            }
+            if (Entities.getInstance().MONSTER_LAST_ATTACK.containsKey(entity)) {
+                Entities.getInstance().MONSTER_LAST_ATTACK.remove(entity);
+            }
+            if (Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
+                Entities.getInstance().MONSTERS_LEASHED.remove(entity);
             }
             //TODO: Handle Drop code in here.
             return;

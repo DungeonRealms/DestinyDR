@@ -21,7 +21,8 @@ import java.util.concurrent.Future;
 /**
  * Created by Nick on 10/17/2015.
  *
- * @apiNote This is the new DatabaseAPI. (IN THE WORKS).
+ * A[n] Async callback API.
+ *
  */
 public class CoreAPI {
 

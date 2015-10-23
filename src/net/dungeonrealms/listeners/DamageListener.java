@@ -16,7 +16,6 @@ import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.spawning.MobSpawner;
@@ -142,8 +141,8 @@ public class DamageListener implements Listener {
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
         if ((!(API.isPlayer(event.getDamager()))) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL))) return;
         if (!(event.getEntity() instanceof CraftLivingEntity) && !(API.isPlayer(event.getEntity()))) return;
-        if (Entities.PLAYER_PETS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
-        if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
+        if (Entities.getInstance().PLAYER_PETS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
+        if (Entities.getInstance().PLAYER_MOUNTS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
         if (API.isPlayer(event.getDamager())) {
@@ -219,13 +218,13 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
-        if ((!(event.getDamager() instanceof Monster)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
+        if ((!(event.getDamager() instanceof CraftLivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
             return;
         if (!(API.isPlayer(event.getEntity()))) return;
         double finalDamage = 0;
         Player player = (Player) event.getEntity();
-        if (event.getDamager() instanceof Monster) {
-            Monster attacker = (Monster) event.getDamager();
+        if (event.getDamager() instanceof CraftLivingEntity) {
+            CraftLivingEntity attacker = (CraftLivingEntity) event.getDamager();
             EntityEquipment attackerEquipment = attacker.getEquipment();
             if (attackerEquipment.getItemInHand() == null) return;
             attackerEquipment.getItemInHand().setDurability(((short) -1));
@@ -247,8 +246,10 @@ public class DamageListener implements Listener {
             }
         } else if (event.getDamager().getType() == EntityType.ARROW) {
             Arrow attackingArrow = (Arrow) event.getDamager();
-            if (!(attackingArrow.getShooter() instanceof Monster)) return;
-            finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
+            if (!(attackingArrow.getShooter() instanceof CraftLivingEntity)) return;
+            if (((CraftLivingEntity) attackingArrow.getShooter()).hasMetadata("type")) {
+                finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
+            }
             if (CombatLog.isInCombat(player)) {
                 CombatLog.updateCombat(player);
             } else {
@@ -256,8 +257,10 @@ public class DamageListener implements Listener {
             }
         } else if (event.getDamager().getType() == EntityType.WITHER_SKULL) {
             WitherSkull staffProjectile = (WitherSkull) event.getDamager();
-            if (!(staffProjectile.getShooter() instanceof Monster)) return;
-            finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
+            if (!(staffProjectile.getShooter() instanceof CraftLivingEntity)) return;
+            if (((CraftLivingEntity) staffProjectile.getShooter()).hasMetadata("type")) {
+                finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
+            }
             if (CombatLog.isInCombat(player)) {
                 CombatLog.updateCombat(player);
             } else {
@@ -279,8 +282,8 @@ public class DamageListener implements Listener {
         if ((!(event.getDamager() instanceof LivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
             return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
-        if (Entities.PLAYER_PETS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
-        if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
+        if (Entities.getInstance().PLAYER_PETS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
+        if (Entities.getInstance().PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         double armourReducedDamage = 0;
         LivingEntity defender = (LivingEntity) event.getEntity();
         EntityEquipment defenderEquipment = defender.getEquipment();
@@ -318,20 +321,26 @@ public class DamageListener implements Listener {
         } else if (event.getDamager().getType() == EntityType.ARROW) {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof LivingEntity)) return;
-            if (attackingArrow.getShooter() instanceof Monster) {
-                armourReducedDamage = DamageAPI.calculateArmorReduction(attackingArrow, defender, defenderArmor);
+            if (attackingArrow.getShooter() instanceof CraftLivingEntity) {
+                if (((CraftLivingEntity) attackingArrow.getShooter()).hasMetadata("type")) {
+                    armourReducedDamage = DamageAPI.calculateArmorReduction(attackingArrow, defender, defenderArmor);
+                }
             }
         } else if (event.getDamager().getType() == EntityType.SNOWBALL) {
             Snowball staffProjectile = (Snowball) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof LivingEntity)) return;
-            if (staffProjectile.getShooter() instanceof Monster) {
-                armourReducedDamage = DamageAPI.calculateArmorReduction(staffProjectile, defender, defenderArmor);
+            if (staffProjectile.getShooter() instanceof CraftLivingEntity) {
+                if (((CraftLivingEntity) staffProjectile.getShooter()).hasMetadata("type")) {
+                    armourReducedDamage = DamageAPI.calculateArmorReduction(staffProjectile, defender, defenderArmor);
+                }
             }
         } else if (event.getDamager().getType() == EntityType.WITHER_SKULL) {
             WitherSkull witherSkull =  (WitherSkull) event.getDamager();
             if (!(witherSkull.getShooter() instanceof LivingEntity)) return;
-            if (witherSkull.getShooter() instanceof Monster) {
-                armourReducedDamage = DamageAPI.calculateArmorReduction(witherSkull, defender, defenderArmor);
+            if (witherSkull.getShooter() instanceof CraftLivingEntity) {
+                if (((CraftLivingEntity) witherSkull.getShooter()).hasMetadata("type")) {
+                    armourReducedDamage = DamageAPI.calculateArmorReduction(witherSkull, defender, defenderArmor);
+                }
             }
         }
         if (armourReducedDamage == -1) {
@@ -381,10 +390,12 @@ public class DamageListener implements Listener {
                     event.setDamage(0);
                     return;
                 }
-            } else if (defender instanceof Monster) {
-                HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) event.getEntity(), (event.getDamage() - armourReducedDamage));
-                event.setDamage(0);
-                return;
+            } else if (defender instanceof CraftLivingEntity) {
+                if (defender.hasMetadata("type")) {
+                    HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) event.getEntity(), (event.getDamage() - armourReducedDamage));
+                    event.setDamage(0);
+                    return;
+                }
             }
             event.setDamage(event.getDamage() - armourReducedDamage);
         }
@@ -673,7 +684,7 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
     public void onEliteDeath(EntityDeathEvent event){
         if (event.getEntity() instanceof Player) return;
-        if (!(event.getEntity() instanceof Monster)) return;
+        if (!(event.getEntity() instanceof CraftLivingEntity)) return;
         if (!(event.getEntity().hasMetadata("elite"))) return;
         if (event.getEntity().hasMetadata("elite")){
             //Monster is Elite.

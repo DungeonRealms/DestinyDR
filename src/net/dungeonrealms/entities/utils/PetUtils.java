@@ -54,7 +54,7 @@ public class PetUtils {
 
     public void startInitialization() {
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            for (Map.Entry<UUID, Entity> entry : Entities.PLAYER_PETS.entrySet()) {
+            for (Map.Entry<UUID, Entity> entry : Entities.getInstance().PLAYER_PETS.entrySet()) {
                 Entity pet = entry.getValue();
                 Player player = Bukkit.getPlayer(entry.getKey());
                 org.bukkit.World world = pet.getBukkitEntity().getWorld();

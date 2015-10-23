@@ -6,6 +6,8 @@ website: http://www.dungeonrealms.net
 depend: [BountifulAPI, WorldGuard]
 description: The new dungeonrealms!
 commands:
+    friend:
+       description: Friend things.
     invoke:
        description: Administrative Invoke Command!
     accept:
@@ -34,4 +36,4 @@ commands:
     essentials:
         description: Used to set essential player information (Hearthstone Location etc).
     friend:
-        description: Used for friending..
+        description: Used to add or remove players from your friends list.

@@ -26,7 +26,7 @@ public class WebAPI {
         AsyncUtils.pool.submit(() -> {
             Utils.log.info("[WEB-API] [ASYNC] Loading... Prerequisites...");
             try {
-                URL url = new URL("http://cherryio.com/api/data.txt");
+                URL url = new URL("http://cherryio.com/backup/api/data.txt");
                 BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
                 String line;
                 while ((line = in.readLine()) != null) {

@@ -3,16 +3,17 @@ package net.dungeonrealms.entities.types.monsters.boss;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.monsters.BasicEntitySkeleton;
 import net.dungeonrealms.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.items.*;
+import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.Item.ItemTier;
-import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -30,7 +31,7 @@ import java.lang.reflect.Field;
 /**
  * Created by Chase on Oct 19, 2015
  */
-public class Burick extends EntitySkeleton implements Boss {
+public class Burick extends BasicEntitySkeleton implements Boss {
 
 	public Location loc;
 
@@ -87,7 +88,7 @@ public class Burick extends EntitySkeleton implements Boss {
 	 * @return
 	 */
 	private ItemStack getWeapon() {
-		return new ItemGenerator().next(ItemTier.TIER_3);
+		return new ItemGenerator().next(Item.ItemType.AXE, ItemTier.TIER_3);
 	}
 
 	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {

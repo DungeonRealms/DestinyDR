@@ -24,11 +24,11 @@ public class MountUtils {
     public static void spawnMount(UUID uuid, String mountType) {
         Player player = Bukkit.getPlayer(uuid);
         World world = ((CraftWorld) player.getWorld()).getHandle();
-        EnumMounts enumMounts = EnumMounts.getByName(mountType.toUpperCase());
         if (!API.isStringMount(mountType)) {
             player.sendMessage("Uh oh... Something went wrong with your mount! Please inform a staff member! [PetType]");
             return;
         }
+        EnumMounts enumMounts = EnumMounts.getByName(mountType.toUpperCase());
         switch (enumMounts) {
             case TIER1_HORSE: {
                 Horse mountHorse = new Horse(world, 0, 0.20D, player.getUniqueId(), EnumEntityType.MOUNT);

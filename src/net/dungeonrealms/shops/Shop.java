@@ -3,6 +3,10 @@ package net.dungeonrealms.shops;
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumOperators;
+
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -166,4 +170,19 @@ public class Shop {
     private static int getSize(UUID uniqueId) {
         return 9;
     }
+
+	/**
+	 * 
+	 */
+	public void saveCollectionBin() {
+		Inventory inv = getInv();
+		String invString = "";
+		for(ItemStack stack : inv.getContents()){
+			if(stack != null && stack.getType() != Material.AIR){
+				invString = ItemSerialization.toString(inv);
+				break;
+			}
+		}
+		DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, "collection_bin", invString, false);
+	}
 }

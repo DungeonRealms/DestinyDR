@@ -80,7 +80,7 @@ public class MainListener implements Listener {
             public void callback(Throwable failCause, ProxyReply result) {
                 switch (result.getResult()) {
                     case YES:
-                        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ChatColor.RED + "Socks 4/5 Proxies & VPNs aren't allowed!");
+                        event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED, ChatColor.RED + "Socks 4/5 Proxies & VPNs are NOT allowed!");
                         break;
                     case NO:
                         break;
