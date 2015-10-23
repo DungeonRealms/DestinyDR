@@ -1,35 +1,22 @@
 package net.dungeonrealms.spawning;
 
-import java.util.ArrayList;
-
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.monsters.*;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.monsters.BasicEntityBlaze;
-import net.dungeonrealms.entities.types.monsters.BasicEntityMagma;
-import net.dungeonrealms.entities.types.monsters.BasicEntityPigman;
-import net.dungeonrealms.entities.types.monsters.BasicEntitySilverfish;
-import net.dungeonrealms.entities.types.monsters.BasicEntitySkeleton;
-import net.dungeonrealms.entities.types.monsters.BasicMageMonster;
-import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
-import net.dungeonrealms.entities.types.monsters.EntityBandit;
-import net.dungeonrealms.entities.types.monsters.EntityFireImp;
-import net.dungeonrealms.entities.types.monsters.EntityGolem;
-import net.dungeonrealms.entities.types.monsters.EntityPirate;
-import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
-import net.dungeonrealms.entities.types.monsters.EntitySpider;
-import net.dungeonrealms.entities.types.monsters.EntityWitherSkeleton;
-import net.dungeonrealms.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.World;
+import java.util.ArrayList;
 
 /**
  * Created by Chase on Sep 28, 2015
  */
-public class SpawningMechanics {
+public class SpawningMechanics implements GenericMechanic{
 
     private static ArrayList<MobSpawner> ALLSPAWNERS = new ArrayList<>();
     public static ArrayList<String> SPANWER_CONFIG = new ArrayList<>();
@@ -176,4 +163,19 @@ public class SpawningMechanics {
     }
         return entity;
 	}
+
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.POPE;
+    }
+
+    @Override
+    public void startInitialization() {
+        loadSpawners();
+    }
+
+    @Override
+    public void stopInvocation() {
+        killAll();
+    }
 }

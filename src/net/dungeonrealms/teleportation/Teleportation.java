@@ -4,6 +4,8 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -20,7 +22,7 @@ import java.util.UUID;
 /**
  * Created by Kieran on 9/18/2015.
  */
-public class Teleportation {
+public class Teleportation implements GenericMechanic {
 
     private static Teleportation instance = null;
 
@@ -57,6 +59,11 @@ public class Teleportation {
         }
     }
 
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.CATHOLICS;
+    }
+
     public void startInitialization() {
         Cyrennica = new Location(Bukkit.getWorlds().get(0), -367, 84, 390);
         Harrison_Field = new Location(Bukkit.getWorlds().get(0), -594, 58, 687, 92.0F, 1F);
@@ -73,6 +80,11 @@ public class Teleportation {
                 TeleportAPI.addPlayerHearthstoneCD(e.getKey(), (e.getValue() - 1));
             }
         }, 0, 20L);
+    }
+
+    @Override
+    public void stopInvocation() {
+
     }
 
     /**

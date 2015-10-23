@@ -7,6 +7,8 @@ import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.pets.*;
 import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,7 +26,7 @@ import java.util.UUID;
 /**
  * Created by Kieran on 9/18/2015.
  */
-public class PetUtils {
+public class PetUtils implements GenericMechanic{
 
     private static PetUtils instance = null;
 
@@ -52,6 +54,11 @@ public class PetUtils {
         }
     }
 
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.CATHOLICS;
+    }
+
     public void startInitialization() {
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for (Map.Entry<UUID, Entity> entry : Entities.getInstance().PLAYER_PETS.entrySet()) {
@@ -66,6 +73,11 @@ public class PetUtils {
                 }
             }
         }, 100L, 100L);
+    }
+
+    @Override
+    public void stopInvocation() {
+
     }
 
     /**

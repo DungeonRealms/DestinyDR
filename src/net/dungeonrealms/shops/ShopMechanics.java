@@ -1,6 +1,3 @@
-/**
- *
- */
 package net.dungeonrealms.shops;
 
 import com.minebone.anvilapi.core.AnvilApi;

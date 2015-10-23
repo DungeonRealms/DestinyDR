@@ -3,6 +3,8 @@ package net.dungeonrealms.party;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.ScoreboardHandler;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -18,7 +20,7 @@ import java.util.Random;
 /**
  * Created by Nick on 10/3/2015.
  */
-public class Party {
+public class Party implements GenericMechanic {
 
     static Party instance = null;
 
@@ -31,8 +33,18 @@ public class Party {
 
     ArrayList<RawParty> PARTIES = new ArrayList<>();
 
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.CATHOLICS;
+    }
+
     public void startInitialization() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), this::updateParties, 0, 5L);
+    }
+
+    @Override
+    public void stopInvocation() {
+
     }
 
     public void updateParties() {

@@ -4,6 +4,8 @@ import com.mongodb.Block;
 import com.mongodb.client.model.Filters;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -23,7 +25,7 @@ import java.util.UUID;
 /**
  * Created by Nick on 9/27/2015.
  */
-public class Rank {
+public class Rank implements GenericMechanic{
 
     static Rank instance = null;
 
@@ -49,8 +51,18 @@ public class Rank {
     };
 
 
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.ARCHBISHOPS;
+    }
+
     public void startInitialization() {
         Database.ranks.find().forEach(printDocumentBlock, (aVoid, throwable) -> Utils.log.warning("[RANK] [ASYNC] Successfully grabbed all existing ranks!"));
+    }
+
+    @Override
+    public void stopInvocation() {
+
     }
 
     /**

@@ -1,10 +1,10 @@
 package net.dungeonrealms.banks;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -12,14 +12,15 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumOperators;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Chase on Sep 18, 2015
  */
-public class BankMechanics {
+public class BankMechanics implements GenericMechanic{
 
     public static ItemStack gem;
     public static ItemStack banknote;
@@ -34,8 +35,18 @@ public class BankMechanics {
         return instance;
     }
 
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.CARDINALS;
+    }
+
     public void startInitialization() {
         loadCurrency();
+    }
+
+    @Override
+    public void stopInvocation() {
+
     }
 
     /**
@@ -43,7 +54,7 @@ public class BankMechanics {
      * Checks player inventory for gems, and takes them from their inventory.
      * Return false if player doesn't have amount specified.
      * 
-     * @param ammount
+     * @param amount
      * @param p
      * @return boolean
      */

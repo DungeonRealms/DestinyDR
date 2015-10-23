@@ -18,6 +18,7 @@ import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.DungeonManager;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mechanics.WebAPI;
+import net.dungeonrealms.mechanics.generic.MechanicManager;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.network.NetworkAPI;
@@ -76,6 +77,8 @@ public class DungeonRealms extends JavaPlugin {
         instance = this;
     }
 
+    public MechanicManager mm = null;
+
     public void onEnable() {
         long START_TIME = System.currentTimeMillis() / 1000L;
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
@@ -100,25 +103,29 @@ public class DungeonRealms extends JavaPlugin {
 
         WebAPI.fetchPrerequisites();
 
-        PetUtils.getInstance().startInitialization();
-        Teleportation.getInstance().startInitialization();
-        CombatLog.getInstance().startInitialization();
-        Party.getInstance().startInitialization();
-        EnergyHandler.getInstance().startInitialization();
-        EnchantmentAPI.getInstance().startInitialization();
-        Subscription.getInstance().startInitialization();
-        Rank.getInstance().startInitialization();
-        DonationEffects.getInstance().startInitialization();
-        HealthHandler.getInstance().startInitialization();
-        KarmaHandler.getInstance().startInitialization();
-        BankMechanics.getInstance().startInitialization();
-        NetworkServer.getInstance().startInitialization();
-        DungeonManager.getInstance().startInitialization();
-        ScoreboardHandler.getInstance().startInitialization();
+        mm = new MechanicManager();
 
-        Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
-        Entities.getInstance().startInitialization();
-        Utils.log.info("DungeonRealms Registering Monsters() ... FINISHED!");
+        mm.registerMechanic(PetUtils.getInstance());
+        mm.registerMechanic(Teleportation.getInstance());
+        mm.registerMechanic(CombatLog.getInstance());
+        mm.registerMechanic(Party.getInstance());
+        mm.registerMechanic(EnergyHandler.getInstance());
+        mm.registerMechanic(EnchantmentAPI.getInstance());
+        mm.registerMechanic(Subscription.getInstance());
+        mm.registerMechanic(Rank.getInstance());
+        mm.registerMechanic(DonationEffects.getInstance());
+        mm.registerMechanic(HealthHandler.getInstance());
+        mm.registerMechanic(KarmaHandler.getInstance());
+        mm.registerMechanic(BankMechanics.getInstance());
+        mm.registerMechanic(NetworkServer.getInstance());
+        mm.registerMechanic(DungeonManager.getInstance());
+        mm.registerMechanic(ScoreboardHandler.getInstance());
+        mm.registerMechanic(new LootManager());
+        mm.registerMechanic(Entities.getInstance());
+        mm.registerMechanic(new SpawningMechanics());
+
+        mm.loadMechanics();
+
 
         Utils.log.info("DungeonRealms Registering Commands() ... STARTING ...");
         getCommand("spawn").setExecutor(new CommandSpawn());
@@ -134,20 +141,18 @@ public class DungeonRealms extends JavaPlugin {
         getCommand("mailbox").setExecutor(new CommandMail());
         getCommand("accept").setExecutor(new CommandAccept());
         getCommand("invoke").setExecutor(new CommandInvoke());
-        getCommand("friend").setExecutor(new CommandFriend ());
+        getCommand("friend").setExecutor(new CommandFriend());
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         FTPUtils.startInitialization();
 
-        SpawningMechanics.loadSpawners();
-        LootManager.loadLootSpawners();
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
     }
 
     public void onDisable() {
         saveConfig();
+        mm.stopInvocation();
         ShopMechanics.deleteAllShops();
         API.logoutAllPlayers();
-        SpawningMechanics.killAll();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
         Database.mongoClient.close();
         AsyncUtils.pool.shutdown();

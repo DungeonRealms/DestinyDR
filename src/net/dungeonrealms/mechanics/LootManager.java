@@ -4,6 +4,8 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.spawning.LootSpawner;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -19,7 +21,7 @@ import java.util.Random;
 /**
  * Created by Chase on Oct 9, 2015
  */
-public class LootManager {
+public class LootManager implements GenericMechanic{
 
     public static List<LootSpawner> spawners = new ArrayList<>();
     public static List<String> spawnerConfig = new ArrayList<>();
@@ -136,6 +138,21 @@ public class LootManager {
             LootSpawner lootSpawner = new LootSpawner(loc, tier, chest);
             spawners.add(lootSpawner);
         }
+
+    }
+
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.ARCHBISHOPS;
+    }
+
+    @Override
+    public void startInitialization() {
+        loadLootSpawners();
+    }
+
+    @Override
+    public void stopInvocation() {
 
     }
 }

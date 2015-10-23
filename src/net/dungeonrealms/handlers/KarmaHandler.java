@@ -5,6 +5,8 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
@@ -20,7 +22,7 @@ import java.util.concurrent.ConcurrentHashMap;
 /**
  * Created by Kieran on 10/7/2015.
  */
-public class KarmaHandler {
+public class KarmaHandler implements GenericMechanic {
 
     private static KarmaHandler instance = null;
 
@@ -62,8 +64,18 @@ public class KarmaHandler {
         }
     }
 
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.ARCHBISHOPS;
+    }
+
     public void startInitialization() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::updateAllPlayerAlignments, 100L, 20L);
+    }
+
+    @Override
+    public void stopInvocation() {
+
     }
 
     /**
