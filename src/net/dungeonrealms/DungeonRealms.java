@@ -120,14 +120,10 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(DungeonManager.getInstance());
         mm.registerMechanic(ScoreboardHandler.getInstance());
         mm.registerMechanic(new LootManager());
+        mm.registerMechanic(Entities.getInstance());
 
         mm.loadMechanics();
 
-
-
-        Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
-        Entities.getInstance().startInitialization();
-        Utils.log.info("DungeonRealms Registering Monsters() ... FINISHED!");
 
         Utils.log.info("DungeonRealms Registering Commands() ... STARTING ...");
         getCommand("spawn").setExecutor(new CommandSpawn());

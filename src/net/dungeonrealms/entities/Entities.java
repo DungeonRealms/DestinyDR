@@ -17,6 +17,8 @@ import net.dungeonrealms.entities.types.pets.*;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.mastery.NMSUtils;
 import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
@@ -33,7 +35,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Created by Kieran on 9/18/2015.
  */
-public class Entities {
+public class Entities implements GenericMechanic{
 
     private static Entities instance = null;
     public HashMap<UUID, Entity> PLAYER_PETS = new HashMap<>();
@@ -46,6 +48,11 @@ public class Entities {
             return new Entities();
         }
         return instance;
+    }
+
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.POPE;
     }
 
     public void startInitialization() {
@@ -94,6 +101,11 @@ public class Entities {
         nmsUtils.registerEntity("MountEnderDragon", 63, EntityEnderDragon.class, EnderDragon.class);
 
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::checkForLeashedMobs, 10, 20L);
+    }
+
+    @Override
+    public void stopInvocation() {
+
     }
 
     private void checkForLeashedMobs() {
