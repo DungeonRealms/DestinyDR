@@ -10,6 +10,7 @@ import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.EntityMonster;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftMonster;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.*;
@@ -139,8 +140,10 @@ public class DamageAPI {
             double lifeToHeal = ((tag.getDouble("lifesteal") / 100) * damage);
             if (API.isPlayer(attacker)) {
                 HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal);
-            } else if (attacker instanceof Monster) {
-                HealthHandler.getInstance().healMonsterByAmount(attacker, (int) lifeToHeal);
+            } else if (attacker instanceof CraftLivingEntity) {
+                if (attacker.hasMetadata("type")) {
+                    HealthHandler.getInstance().healMonsterByAmount(attacker, (int) lifeToHeal);
+                }
             }
         }
 
@@ -355,8 +358,10 @@ public class DamageAPI {
             double lifeToHeal = ((projectile.getMetadata("lifesteal").get(0).asDouble() / 100) * damage);
             if (API.isPlayer(attacker)) {
                 HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal);
-            } else if (attacker instanceof Monster) {
-                HealthHandler.getInstance().healMonsterByAmount(attacker, (int) lifeToHeal);
+            } else if (attacker instanceof CraftLivingEntity) {
+                if (attacker.hasMetadata("type")) {
+                    HealthHandler.getInstance().healMonsterByAmount(attacker, (int) lifeToHeal);
+                }
             }
         }
 

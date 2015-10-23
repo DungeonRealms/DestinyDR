@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.ItemStack;
@@ -434,8 +435,10 @@ public class HealthHandler {
         if (API.isPlayer(damager)) {
             return;
         }
-        if (damager instanceof Monster) {
-            leAttacker = (LivingEntity) damager;
+        if (damager instanceof CraftLivingEntity) {
+            if (damager.hasMetadata("type")) {
+                leAttacker = (LivingEntity) damager;
+            }
         } else {
             switch (damager.getType()) {
                 case ARROW:
