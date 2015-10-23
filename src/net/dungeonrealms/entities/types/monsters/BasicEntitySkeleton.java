@@ -24,9 +24,7 @@ public class BasicEntitySkeleton extends RangedEntitySkeleton {
 
 	/**
 	 * @param world
-	 * @param monster
 	 * @param tier
-	 * @param entityType
 	 */
 	public BasicEntitySkeleton(World world, int tier) {
 		super(world, EnumMonster.Skeleton, tier, EnumEntityType.HOSTILE_MOB);

@@ -490,6 +490,12 @@ public class HealthHandler {
             if (!entity1.dead) {
                 entity1.dead = true;
             }
+            if (Entities.getInstance().MONSTER_LAST_ATTACK.containsKey(entity)) {
+                Entities.getInstance().MONSTER_LAST_ATTACK.remove(entity);
+            }
+            if (Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
+                Entities.getInstance().MONSTERS_LEASHED.remove(entity);
+            }
             //TODO: Handle Drop code in here.
             return;
         }

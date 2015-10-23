@@ -3,6 +3,7 @@ package net.dungeonrealms.entities.types.monsters.boss;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.monsters.BasicEntitySkeleton;
 import net.dungeonrealms.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.handlers.HealthHandler;
@@ -30,7 +31,7 @@ import java.lang.reflect.Field;
 /**
  * Created by Chase on Oct 19, 2015
  */
-public class Burick extends EntitySkeleton implements Boss {
+public class Burick extends BasicEntitySkeleton implements Boss {
 
 	public Location loc;
 

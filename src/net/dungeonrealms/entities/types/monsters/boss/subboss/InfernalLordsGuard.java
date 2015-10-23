@@ -1,8 +1,18 @@
 package net.dungeonrealms.entities.types.monsters.boss.subboss;
 
-import java.lang.reflect.Field;
-
-import org.bukkit.Bukkit;
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.monsters.EnumBoss;
+import net.dungeonrealms.entities.types.monsters.boss.Boss;
+import net.dungeonrealms.entities.types.monsters.boss.InfernalAbyss;
+import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.items.Item;
+import net.dungeonrealms.items.Item.ItemTier;
+import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.items.armor.ArmorGenerator;
+import net.dungeonrealms.mastery.MetadataUtils;
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -14,28 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.monsters.EnumBoss;
-import net.dungeonrealms.entities.types.monsters.boss.Boss;
-import net.dungeonrealms.entities.types.monsters.boss.InfernalAbyss;
-import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.handlers.HealthHandler;
-import net.dungeonrealms.items.Item.ItemTier;
-import net.dungeonrealms.items.ItemGenerator;
-import net.dungeonrealms.items.armor.ArmorGenerator;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.minecraft.server.v1_8_R3.DamageSource;
-import net.minecraft.server.v1_8_R3.EntityHuman;
-import net.minecraft.server.v1_8_R3.EntitySkeleton;
-import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
-import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
-import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
-import net.minecraft.server.v1_8_R3.PathfinderGoalMoveTowardsRestriction;
-import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
-import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
-import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
+import java.lang.reflect.Field;
 
 /**
  * Created by Chase on Oct 21, 2015
@@ -87,7 +76,7 @@ public class InfernalLordsGuard extends EntitySkeleton implements Boss {
 	 * @return
 	 */
 	private ItemStack getWeapon() {
-		return new ItemGenerator().next(ItemTier.TIER_4);
+		return new ItemGenerator().next(Item.ItemType.SWORD, ItemTier.TIER_4);
 	}
 
 	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
