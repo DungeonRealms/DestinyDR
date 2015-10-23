@@ -69,9 +69,11 @@ public class CommandEss implements CommandExecutor {
                             commandSender.sendMessage(ChatColor.RED + "This pet is not a real pet!");
                             return false;
                         }
-                        if (!API.isStringTrail(particleType)) {
-                            commandSender.sendMessage(ChatColor.RED + "This pet cannot have that trail!");
-                            return false;
+                        if (!particleType.equals("")) {
+                            if (!API.isStringTrail(particleType)) {
+                                commandSender.sendMessage(ChatColor.RED + "This pet cannot have that trail!");
+                                return false;
+                            }
                         }
                         if (!playerPets.isEmpty()) {
                             if (playerPets.contains(petType.toUpperCase())) {

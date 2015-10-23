@@ -34,10 +34,10 @@ public class DonationEffects implements GenericMechanic {
     //HALLOWEEN PLAYERS = SMALL_SMOKE
     //CHRISTMAS PLAYERS = SNOW_SHOVEL
 
-    public static HashMap<Player, ParticleAPI.ParticleEffect> PLAYER_PARTICLE_EFFECTS = new HashMap<>();
-    public static ConcurrentHashMap<Entity, ParticleAPI.ParticleEffect> ENTITY_PARTICLE_EFFECTS = new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<Location, Material> PLAYER_GOLD_BLOCK_TRAIL_INFO = new ConcurrentHashMap<>();
-    public static List<Player> PLAYER_GOLD_BLOCK_TRAILS = new ArrayList<>();
+    public HashMap<Player, ParticleAPI.ParticleEffect> PLAYER_PARTICLE_EFFECTS = new HashMap<>();
+    public ConcurrentHashMap<Entity, ParticleAPI.ParticleEffect> ENTITY_PARTICLE_EFFECTS = new ConcurrentHashMap<>();
+    public ConcurrentHashMap<Location, Material> PLAYER_GOLD_BLOCK_TRAIL_INFO = new ConcurrentHashMap<>();
+    public List<Player> PLAYER_GOLD_BLOCK_TRAILS = new ArrayList<>();
 
     @Override
     public EnumPriority startPriority() {

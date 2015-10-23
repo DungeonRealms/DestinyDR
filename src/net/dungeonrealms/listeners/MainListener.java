@@ -165,14 +165,21 @@ public class MainListener implements Listener {
         Player player = event.getPlayer();
         if (EntityAPI.hasPetOut(player.getUniqueId())) {
             net.minecraft.server.v1_8_R3.Entity playerPet = EntityAPI.getPlayerPet(player.getUniqueId());
+            if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(playerPet)) {
+                DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(playerPet);
+            }
             if (playerPet.isAlive()) { // Safety check
                 playerPet.dead = true;
             }
+            //.damageEntity(DamageSource.GENERIC, 20);
             EntityAPI.removePlayerPetList(player.getUniqueId());
         }
 
         if (EntityAPI.hasMountOut(player.getUniqueId())) {
             net.minecraft.server.v1_8_R3.Entity playerMount = EntityAPI.getPlayerMount(player.getUniqueId());
+            if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(playerMount)) {
+                DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(playerMount);
+            }
             if (playerMount.isAlive()) { // Safety check
                 if (playerMount.passenger != null) {
                     playerMount.passenger = null;
@@ -307,7 +314,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
-        if (!(DonationEffects.PLAYER_GOLD_BLOCK_TRAILS.contains(event.getPlayer()))) return;
+        if (!(DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAILS.contains(event.getPlayer()))) return;
         if (!(player.getWorld().getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName()))) return;
         if (player.getLocation().getBlock().getType() != Material.AIR) return;
         Material material = player.getLocation().subtract(0, 1, 0).getBlock().getType();
@@ -315,7 +322,7 @@ public class MainListener implements Listener {
                 || material == Material.LOG || material == Material.SMOOTH_BRICK || material == Material.BEDROCK || material == Material.GLASS
                 || material == Material.SANDSTONE || material == Material.SAND || material == Material.BOOKSHELF || material == Material.MOSSY_COBBLESTONE || material == Material.OBSIDIAN
                 || material == Material.SNOW_BLOCK || material == Material.CLAY || material == Material.STAINED_CLAY || material == Material.WOOL) {
-            DonationEffects.PLAYER_GOLD_BLOCK_TRAIL_INFO.put(player.getLocation().subtract(0, 1, 0).getBlock().getLocation(), material);
+            DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAIL_INFO.put(player.getLocation().subtract(0, 1, 0).getBlock().getLocation(), material);
             player.getLocation().subtract(0, 1, 0).getBlock().setType(Material.GOLD_BLOCK);
             player.getLocation().subtract(0, 1, 0).getBlock().setMetadata("time", new FixedMetadataValue(DungeonRealms.getInstance(), 10));
         }

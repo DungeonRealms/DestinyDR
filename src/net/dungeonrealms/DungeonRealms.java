@@ -4,6 +4,7 @@ import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.commands.*;
 import net.dungeonrealms.donate.DonationEffects;
+import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
@@ -115,6 +116,9 @@ public class DungeonRealms extends JavaPlugin {
         NetworkServer.getInstance().startInitialization();
         DungeonManager.getInstance().startInitialization();
         ScoreboardHandler.getInstance().startInitialization();
+
+        Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
+        Entities.getInstance().startInitialization();
 
         /*mm = new MechanicManager();
 

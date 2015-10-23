@@ -98,8 +98,8 @@ public class ClickHandler {
                     if (entity.isAlive()) {
                         entity.getBukkitEntity().remove();
                     }
-                    if (DonationEffects.ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                        DonationEffects.ENTITY_PARTICLE_EFFECTS.remove(entity);
+                    if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                        DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                     }
                     EntityAPI.removePlayerPetList(player.getUniqueId());
                     player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " Your Pet has returned home!");
@@ -114,8 +114,8 @@ public class ClickHandler {
                     if (entity.isAlive()) {
                         entity.getBukkitEntity().remove();
                     }
-                    if (DonationEffects.ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                        DonationEffects.ENTITY_PARTICLE_EFFECTS.remove(entity);
+                    if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                        DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                     }
                     EntityAPI.removePlayerPetList(player.getUniqueId());
                 }
@@ -148,8 +148,8 @@ public class ClickHandler {
                     if (entity.isAlive()) {
                         entity.getBukkitEntity().remove();
                     }
-                    if (DonationEffects.ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                        DonationEffects.ENTITY_PARTICLE_EFFECTS.remove(entity);
+                    if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                        DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                     }
                     EntityAPI.removePlayerMountList(player.getUniqueId());
                     player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " Your Mount has returned home!");
@@ -164,8 +164,8 @@ public class ClickHandler {
                     if (entity.isAlive()) {
                         entity.getBukkitEntity().remove();
                     }
-                    if (DonationEffects.ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                        DonationEffects.ENTITY_PARTICLE_EFFECTS.remove(entity);
+                    if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                        DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                     }
                     EntityAPI.removePlayerMountList(player.getUniqueId());
                     player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " Your Mount has returned home as you've summoned another companion!");
@@ -175,8 +175,8 @@ public class ClickHandler {
                     if (entity.isAlive()) {
                         entity.getBukkitEntity().remove();
                     }
-                    if (DonationEffects.ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                        DonationEffects.ENTITY_PARTICLE_EFFECTS.remove(entity);
+                    if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                        DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                     }
                     EntityAPI.removePlayerPetList(player.getUniqueId());
                     player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " Your Pet has returned home as you've summoned another companion!");
@@ -202,8 +202,8 @@ public class ClickHandler {
                 return;
             }
             if (event.getCurrentItem().getType() == Material.ARMOR_STAND) {
-                if (DonationEffects.PLAYER_PARTICLE_EFFECTS.containsKey(player)) {
-                    DonationEffects.PLAYER_PARTICLE_EFFECTS.remove(player);
+                if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(player)) {
+                    DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(player);
                     player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have disabled your Player trail!");
                 } else {
                     player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You don't have a Player trail enabled!");
@@ -217,7 +217,7 @@ public class ClickHandler {
                     player.closeInventory();
                     return;
                 }
-                DonationEffects.PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")));
+                DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")));
                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have enabled the " + ChatColor.RED + nmsStack.getTag().getString("playerTrailType") + ChatColor.AQUA + " Player trail!");
             }
         }

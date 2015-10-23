@@ -38,8 +38,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 public class Entities implements GenericMechanic{
 
     private static Entities instance = null;
-    public HashMap<UUID, Entity> PLAYER_PETS = new HashMap<>();
-    public HashMap<UUID, Entity> PLAYER_MOUNTS = new HashMap<>();
+    public static HashMap<UUID, Entity> PLAYER_PETS = new HashMap<>();
+    public static HashMap<UUID, Entity> PLAYER_MOUNTS = new HashMap<>();
     public ConcurrentHashMap<LivingEntity, Integer> MONSTER_LAST_ATTACK = new ConcurrentHashMap<>();
     public List<LivingEntity> MONSTERS_LEASHED = new CopyOnWriteArrayList<>();
 

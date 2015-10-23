@@ -275,7 +275,7 @@ public class ArmorGenerator {
 
 	/**
 	 * return ItemStack Array of random armor based on int tier.
-	 * @param i
+	 * @param tier
 	 */
 	public ItemStack[] nextTier(int tier) {
 		return new ItemStack[]{getArmor(EquipmentType.CHESTPLATE, ArmorTier.getByTier(tier), this.getRandomItemModifier()),
