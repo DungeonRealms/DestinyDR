@@ -9,6 +9,7 @@ import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
+import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
 import net.dungeonrealms.listeners.*;
 import net.dungeonrealms.mastery.AsyncUtils;
@@ -16,13 +17,11 @@ import net.dungeonrealms.mastery.FTPUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.DungeonManager;
 import net.dungeonrealms.mechanics.LootManager;
-import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.network.NetworkAPI;
 import net.dungeonrealms.network.NetworkServer;
-import net.dungeonrealms.notice.Notice;
 import net.dungeonrealms.party.Party;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
@@ -109,7 +108,6 @@ public class DungeonRealms extends JavaPlugin {
         EnchantmentAPI.getInstance().startInitialization();
         Subscription.getInstance().startInitialization();
         Rank.getInstance().startInitialization();
-        Notice.getInstance().startInitialization();
         DonationEffects.getInstance().startInitialization();
         HealthHandler.getInstance().startInitialization();
         KarmaHandler.getInstance().startInitialization();
@@ -136,7 +134,7 @@ public class DungeonRealms extends JavaPlugin {
         getCommand("mailbox").setExecutor(new CommandMail());
         getCommand("accept").setExecutor(new CommandAccept());
         getCommand("invoke").setExecutor(new CommandInvoke());
-        getCommand("friend").setExecutor(new CommandFriend());
+        getCommand("friend").setExecutor(new CommandFriend ());
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         FTPUtils.startInitialization();
 

@@ -1,18 +1,17 @@
 package net.dungeonrealms.notice;
 
+import com.mongodb.client.result.UpdateResult;
 import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.core.Callback;
+import net.dungeonrealms.handlers.FriendHandler;
 import net.dungeonrealms.handlers.MailHandler;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
 
 /**
  * Created by Nick on 10/11/2015.
@@ -27,38 +26,6 @@ public class Notice {
             instance = new Notice();
         }
         return instance;
-    }
-
-    private volatile HashMap<UUID, Integer> REFRESH = new HashMap<>();
-
-    public void startInitialization() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            REFRESH.entrySet().stream().filter(entry -> entry.getValue() >= 1).forEach(entry -> {
-                REFRESH.put(entry.getKey(), REFRESH.get(entry.getKey()) - 1);
-            });
-        }, 0l, 20l);
-    }
-
-    /**
-     * We plan to have multiple inventories, so.. if aplayer wants to refresh
-     * the data that's in their inventory we should give them the ability to.
-     * Whilst, making sure that they aren't spamming the clickable item!
-     *
-     * @param uuid
-     * @return
-     * @since 1.0
-     */
-    public boolean refreshData(UUID uuid) {
-        int MAX_THRESH_HOLD = 5;
-        if (REFRESH.get(uuid) >= MAX_THRESH_HOLD) {
-            if (API.isOnline(uuid)) {
-                Bukkit.getPlayer(uuid).sendMessage(ChatColor.RED + "You are requesting data from US MegaServer #1 at a rate which has been blocked!");
-            }
-            return false;
-        } else {
-            DatabaseAPI.getInstance().requestPlayer(uuid);
-            return true;
-        }
     }
 
     //TODO: Friends, Guilds and clickable acceptance.
@@ -99,7 +66,29 @@ public class Notice {
         }
 
         if (friendRequests.size() > 0) {
-            player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "FRIENDS" + ChatColor.WHITE + "] " + ChatColor.GREEN + "You have " + ChatColor.AQUA + friendRequests.size() + ChatColor.GREEN + " pending friend request!");
+            for (String s : friendRequests) {
+                String name = API.getNameFromUUID(s.split(",")[0]);
+                long inviteSent = Long.valueOf(s.split(",")[1]);
+                long currentTime = System.currentTimeMillis();
+                long differenceInTime = currentTime - inviteSent;
+                long diffHours = differenceInTime / (60 * 60 * 1000);
+
+                if (24 - diffHours <= 0) {
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, "notices.friendRequest", s, true, new Callback<UpdateResult>(UpdateResult.class) {
+                        @Override
+                        public void callback(Throwable failCause, UpdateResult result) {
+                            if (result.wasAcknowledged()) {
+                                FriendHandler.getInstance().sendFriendMessage(player, ChatColor.RED + "Friend request for " + ChatColor.AQUA + name + ChatColor.RED + " has expired!");
+                            } else {
+                                player.sendMessage(ChatColor.RED + "Unable to remove invalid friend, please report this issue. (error_Notice:friendRequests Removal");
+                            }
+                        }
+                    });
+                }
+
+            }
+
+            FriendHandler.getInstance().sendFriendMessage(player, ChatColor.GREEN + "You have " + ChatColor.AQUA + friendRequests.size() + ChatColor.GREEN + " pending friend request!");
         }
 
         if (mailbox.size() > 0) {

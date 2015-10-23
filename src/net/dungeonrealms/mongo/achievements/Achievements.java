@@ -14,6 +14,7 @@ import java.util.UUID;
 /**
  * Created by Nick on 8/29/2015.
  */
+@SuppressWarnings("unchecked")
 public class Achievements {
 
     private static Achievements instance = null;
@@ -38,6 +39,7 @@ public class Achievements {
         ArrayList<String> TEMP_LIST = (ArrayList<String>) ((Document) info).get("achievements");
         if (TEMP_LIST == null) {
             Utils.log.warning("Unable to process hasAchievement() method for " + uuid + " the list is NULL!?");
+            return false;
         }
         return TEMP_LIST.contains(achievement.getMongoName());
     }

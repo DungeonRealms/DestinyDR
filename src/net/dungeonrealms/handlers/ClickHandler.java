@@ -3,7 +3,6 @@ package net.dungeonrealms.handlers;
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.entities.utils.EntityAPI;
@@ -47,6 +46,32 @@ public class ClickHandler {
         if (slot == -999) return;
 
         /*
+        Friend Management
+         */
+        if (name.equals("Friend Management")) {
+            event.setCancelled(true);
+            if (slot == 0) {
+                AnvilGUIInterface addFriendGUI = AnvilApi.createNewGUI(player, anvilClick -> {
+                    switch (anvilClick.getSlot()) {
+                        case OUTPUT:
+                            anvilClick.setWillClose(true);
+                            anvilClick.setWillDestroy(true);
+                            if(Bukkit.getPlayer(anvilClick.getName()) != null) {
+                                FriendHandler.getInstance().sendRequest(player, Bukkit.getPlayer(anvilClick.getName()));
+                            }else {
+                                player.sendMessage(ChatColor.RED + "Error, that player doesn't exist!");
+                            }
+                            break;
+                    }
+                });
+                addFriendGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
+                addFriendGUI.open();
+                return;
+            }
+            //other things.
+        }
+
+        /*
         Mail Below
          */
         if (name.equals("Mailbox")) {
@@ -83,7 +108,7 @@ public class ClickHandler {
                 }
                 return;
             }
-            if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR && event.getCurrentItem().getType() != Material.BARRIER && event.getCurrentItem().getType() != Material.LEASH) {
+            if (event.getCurrentItem().getType() != Material.AIR && event.getCurrentItem().getType() != Material.BARRIER && event.getCurrentItem().getType() != Material.LEASH) {
                 if (EntityAPI.hasPetOut(player.getUniqueId())) {
                     Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
                     if (entity.isAlive()) {
@@ -204,14 +229,19 @@ public class ClickHandler {
         if (name.equals("Profile")) {
             event.setCancelled(true);
             switch (slot) {
+                case 0: //todo: attributes
+                    break;
+                case 1:
+                    Menu.openFriendInventory(player);
+                    break;
                 case 6:
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Menu.openPlayerParticleMenu(player), 5L);
+                    Menu.openPlayerParticleMenu(player);
                     break;
                 case 7:
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Menu.openPlayerMountMenu(player), 5L);
+                    Menu.openPlayerMountMenu(player);
                     break;
                 case 8:
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Menu.openPlayerPetMenu(player), 5L);
+                    Menu.openPlayerPetMenu(player);
                     break;
                 case 22:
                     if (!(CombatLog.isInCombat(player))) {

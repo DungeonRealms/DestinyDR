@@ -48,12 +48,27 @@ public class Menu {
                 ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to add friend!"
         }));
 
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
+
         int slot = 9;
         for (String s : friendRequest) {
-            inv.setItem(slot, editItem(s.split(",")[0], "", new String[]{}));
+            String from = s.split(",")[0];
+
+            long unix = Long.valueOf(s.split(",")[1]);
+            Date sentDate = new Date(unix * 1000);
+            String date = sdf.format(sentDate);
+
+            inv.setItem(slot, editItem(API.getNameFromUUID(s.split(",")[0]), "", new String[]{
+                    ChatColor.GRAY + "Sent: " + date,
+                    "",
+                    ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to accept!",
+                    ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to deny!"
+            }));
             if (slot >= 44) break;
             slot++;
         }
+
+        player.openInventory(inv);
 
     }
 
@@ -515,6 +530,13 @@ public class Menu {
                 ChatColor.GRAY + "skills!",
                 "",
                 ChatColor.YELLOW + "Click to view Player Attributes!"
+        }));
+        inv.setItem(1, editItem("xFinityPro", ChatColor.GREEN + "Friends", new String[]{
+                ChatColor.DARK_GRAY + "Player Friends",
+                "",
+                ChatColor.GRAY + "Its okay if you're alone!",
+                "",
+                ChatColor.YELLOW + "Click to open Friend Management!"
         }));
         inv.setItem(4, editItem(Utils.getPlayerHead(player), ChatColor.GREEN + "Player Profile", new String[]{
         }));

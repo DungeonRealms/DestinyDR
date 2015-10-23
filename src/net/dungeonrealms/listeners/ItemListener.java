@@ -83,7 +83,7 @@ public class ItemListener implements Listener {
         if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.SKULL_ITEM) return;
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(player.getItemInHand());
         NBTTagCompound tag = nmsStack.getTag();
-        if (nmsStack == null || tag == null) return;
+        if (tag == null) return;
         if (!(tag.getString("type").equalsIgnoreCase("important")) && !(tag.getString("usage").equalsIgnoreCase("profile"))) return;
         Menu.openPlayerProfileMenu(player);
     }

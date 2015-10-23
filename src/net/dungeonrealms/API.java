@@ -125,11 +125,18 @@ public class API {
             Reader in = new InputStreamReader(url.openStream());
             Object json = JSONValue.parse(in);
 
-            JSONArray array = (JSONArray) json;
 
-            return array.get(array.size() - 1).toString().split("\"")[3];
+            if (((JSONArray) json).get(0) == null) {
+                assert false;
+                return ((JSONObject) json).get("name").toString();
+            } else {
+                JSONArray array = (JSONArray) json;
+                return array.get(array.size() - 1).toString().split("\"")[3];
+            }
+
         } catch (Exception ex) {
             Utils.log.warning("[API] [getNameFromUUID] Unable to find name with UUID.");
+            ex.printStackTrace();
         }
         return null;
     }
@@ -286,7 +293,11 @@ public class API {
      * @since 1.0
      */
     public static boolean isOnline(UUID uuid) {
-        return Bukkit.getPlayer(uuid) != null;
+        try {
+            return Bukkit.getServer().getPlayer(uuid).isOnline();
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     /**
@@ -326,15 +337,15 @@ public class API {
         return entity instanceof Player && !(entity.hasMetadata("NPC") || entity.hasMetadata("npc"));
     }
 
-	/**
+    /**
      * Returns a list of nearby monsters
      * defined via their "type" metadata.
      *
-	 * @param location
-	 * @param radius
-	 * @return List
-     *@since 1.0
-	 */
+     * @param location
+     * @param radius
+     * @return List
+     * @since 1.0
+     */
     public static List<Entity> getNearbyMonsters(Location location, int radius) {
         return location.getWorld().getEntities().stream().filter(mons -> mons.getLocation().distance(location) <= radius && mons.hasMetadata("type") && mons.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")).collect(Collectors.toList());
     }
