@@ -138,32 +138,6 @@ public class CommandEss implements CommandExecutor {
                         commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials playertrail Proxying flame)");
                         return false;
                     }
-                case "mobtrail":
-                    if (args.length == 3) {
-                        Player player = Bukkit.getPlayer(args[1]);
-                        if (player == null) {
-                            commandSender.sendMessage(ChatColor.RED + "This player is not online!");
-                            return false;
-                        }
-                        String trailType = args[2];
-                        if (!API.isStringTrail(trailType)) {
-                            commandSender.sendMessage(ChatColor.RED + "This is not a real trail!");
-                            return false;
-                        }
-                        List<String> mobTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOB_PARTICLES, player.getUniqueId());
-                        if (!mobTrails.isEmpty()) {
-                            if (mobTrails.contains(trailType.toUpperCase())) {
-                                commandSender.sendMessage(ChatColor.RED + "The player already has this trail!");
-                                return false;
-                            }
-                        }
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.mob_particles", trailType.toUpperCase(), true);
-                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have received the " + ChatColor.GREEN + trailType.toUpperCase() +  ChatColor.AQUA + " mob trail!");
-                        break;
-                    } else {
-                        commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials mobtrail Proxying flame)");
-                        return false;
-                    }
                 case "ecash":
                     if (args.length == 4) {
                         int amount = Math.abs(Integer.parseInt(args[3]));

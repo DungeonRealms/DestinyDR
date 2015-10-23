@@ -36,7 +36,6 @@ public enum EnumData {
     MOUNTS,
     PETS,
     PARTICLES,
-    MOB_PARTICLES,
 
 
     MAILBOX,

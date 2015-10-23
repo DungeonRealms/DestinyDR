@@ -258,6 +258,9 @@ public class HealthHandler {
             if (CombatLog.isInCombat(player)) {
                 continue;
             }
+            if (!API.isPlayer(player)) {
+                continue;
+            }
             //Check their Max HP from wherever we decide to store it.
             if (!CombatLog.isInCombat(player)) {
                 double currentHP = getPlayerHPLive(player);
@@ -455,7 +458,7 @@ public class HealthHandler {
             }
         }
         if (!(leAttacker == null) && !(API.isPlayer(leAttacker))) {
-            Entities.getInstance().MONSTER_LAST_ATTACK.put(leAttacker, 10);
+            Entities.getInstance().MONSTER_LAST_ATTACK.put(leAttacker, 15);
             if (!Entities.getInstance().MONSTERS_LEASHED.contains(leAttacker)) {
                 Entities.getInstance().MONSTERS_LEASHED.add(leAttacker);
             }

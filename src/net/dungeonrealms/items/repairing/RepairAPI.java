@@ -281,7 +281,6 @@ public class RepairAPI {
      * @since 1.0
      */
     public static void subtractCustomDurability(Player player, ItemStack itemStack, double amountToSubtract) {
-        if (player.isOp()) return;
         if (player.getGameMode() == GameMode.CREATIVE) return;
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();

@@ -44,7 +44,7 @@ public class DamageAPI {
         }
         ItemStack[] attackerArmor = entityEquipment.getArmorContents();
         NBTTagCompound nmsTags[] = new NBTTagCompound[4];
-        double damage = 0;
+        double damage;
         if (attackerArmor[3].getType() != null && attackerArmor[3].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(attackerArmor[3]).getTag() != null) {
                 nmsTags[0] = CraftItemStack.asNMSCopy(attackerArmor[3]).getTag();

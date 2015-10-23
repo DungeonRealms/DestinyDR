@@ -48,6 +48,7 @@ public class Party {
                 ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).resetScores(player.getName());
                 Score score = objective.getScore(player.getName());
                 score.setScore(HealthHandler.getInstance().getPlayerHPLive(player));
+                objective.getScore(rp.owner.getName()).setScore(HealthHandler.getInstance().getPlayerHPLive(rp.owner));
                 for (Player otherMembers : rp.getMembers()) {
                     objective.getScore(otherMembers.getName()).setScore(HealthHandler.getInstance().getPlayerHPLive(otherMembers));
                 }
@@ -158,6 +159,11 @@ public class Party {
         party.getMembers().remove(player);
         ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).resetScores(player.getName());
         player.setScoreboard(player.getScoreboard());
+        for (Player otherMembers : party.getMembers()) {
+            ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).resetScores(party.owner.getName());
+            ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).resetScores(otherMembers.getName());
+        }
+        player.setScoreboard(player.getScoreboard());
         party.owner.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.RED + "You have been kicked from the party!");
     }
 
@@ -226,6 +232,11 @@ public class Party {
         if (party.members.contains(player)) {
             party.members.remove(player);
             ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).resetScores(player.getName());
+            player.setScoreboard(player.getScoreboard());
+            for (Player otherMembers : party.getMembers()) {
+                ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).resetScores(party.owner.getName());
+                ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).resetScores(otherMembers.getName());
+            }
             player.setScoreboard(player.getScoreboard());
             party.owner.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.RED + "You have left the party!");
         } else if (party.owner.equals(player)) {

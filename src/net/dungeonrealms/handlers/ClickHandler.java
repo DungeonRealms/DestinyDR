@@ -197,57 +197,6 @@ public class ClickHandler {
             }
         }
 
-                /*
-        Particle Trails Below
-         */
-        if (name.equalsIgnoreCase("Mob Trail Selection")) {
-            event.setCancelled(true);
-            if (event.getCurrentItem().getType() == Material.BARRIER) {
-                Menu.openPlayerProfileMenu(player);
-                return;
-            }
-            if (event.getCurrentItem().getType() == Material.ARMOR_STAND) {
-                if (EntityAPI.hasMountOut(player.getUniqueId())) {
-                    Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
-                    if (DonationEffects.ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                        DonationEffects.ENTITY_PARTICLE_EFFECTS.remove(entity);
-                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have disabled your Mob trail!");
-                    } else {
-                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You don't have a Mob trail enabled!");
-                    }
-                } else if (EntityAPI.hasPetOut(player.getUniqueId())) {
-                    Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
-                    if (DonationEffects.ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                        DonationEffects.ENTITY_PARTICLE_EFFECTS.remove(entity);
-                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have disabled your Mob trail!");
-                    } else {
-                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You don't have a Mob trail enabled!");
-                    }
-                } else {
-                    player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You don't have a companion out!");
-                }
-                return;
-            }
-            if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR && event.getCurrentItem().getType() != Material.BARRIER && event.getCurrentItem().getType() != Material.ARMOR_STAND) {
-                net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                if (nmsStack.getTag() == null || nmsStack.getTag().getString("mobTrailType") == null) {
-                    player.sendMessage("Uh oh... Something went wrong with your Mob trail! Please inform a staff member! [NBTTag]");
-                    player.closeInventory();
-                    return;
-                }
-                if (EntityAPI.hasMountOut(player.getUniqueId())) {
-                    Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
-                    DonationEffects.ENTITY_PARTICLE_EFFECTS.put(entity, ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("mobTrailType")));
-                    player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have enabled the " + ChatColor.RED + nmsStack.getTag().getString("mobTrailType") + ChatColor.AQUA + " Mob trail!");
-                } else if (EntityAPI.hasPetOut(player.getUniqueId())) {
-                    Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
-                    DonationEffects.ENTITY_PARTICLE_EFFECTS.put(entity, ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("mobTrailType")));
-                    player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have enabled the " + ChatColor.RED + nmsStack.getTag().getString("mobTrailType") + ChatColor.AQUA + " Mob trail!");
-                } else {
-                    player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You don't have a companion out!");
-                }
-            }
-        }
 
         /*
         Profile Menu Below
