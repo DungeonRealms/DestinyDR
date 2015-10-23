@@ -47,6 +47,7 @@ public class InfernalLordsGuard extends EntitySkeleton implements Boss {
 	
 	public InfernalLordsGuard(InfernalAbyss boss) {
 		super(boss.getWorld());
+		this.boss = boss;
 		try {
 			Field bField = PathfinderGoalSelector.class.getDeclaredField("b");
 			bField.setAccessible(true);
@@ -123,7 +124,7 @@ public class InfernalLordsGuard extends EntitySkeleton implements Boss {
 		for (Player p : API.getNearbyPlayers(this.getBukkitEntity().getLocation(), 50)) {
 			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().death);
 		}
-		boss.say(boss.getBukkitEntity(), "I'll handle it on my own then!");
+		boss.say(boss.getBukkitEntity(), this.getBukkitEntity().getLocation(), "I'll handle it on my own then!");
 		boss.setLocation(locX, locY, locZ, 1, 1);
 		int maxHP = boss.getBukkitEntity().getMetadata("maxHP").get(0).asInt() / 2;
 		boss.getBukkitEntity().setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHP));
@@ -134,8 +135,6 @@ public class InfernalLordsGuard extends EntitySkeleton implements Boss {
 	@Override
 	public void onBossHit(EntityDamageByEntityEvent event) {
 		LivingEntity en = (LivingEntity) event.getEntity();	
-		Bukkit.broadcastMessage(HealthHandler.getInstance().getMonsterHPLive(en) + " | "
-		        + HealthHandler.getInstance().getMonsterMaxHPLive(en) + " max");
 
 	}
 

@@ -1,6 +1,7 @@
 package net.dungeonrealms.entities.types.monsters.boss;
 
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -24,5 +25,9 @@ public interface Boss {
 			p.sendMessage(ent.getCustomName() + ChatColor.RESET.toString() + ": " + msg);
 		}
 	}
-	
+	public default void say(Entity ent, Location location, String msg){
+		for (Player p : API.getNearbyPlayers(location, 50)) {
+			p.sendMessage(ent.getCustomName() + ChatColor.RESET.toString() + ": " + msg);
+		}
+	}
 }

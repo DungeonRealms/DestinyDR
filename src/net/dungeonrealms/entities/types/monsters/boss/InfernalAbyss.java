@@ -120,7 +120,7 @@ public class InfernalAbyss extends EntitySkeleton implements Boss {
 	 * @return
 	 */
 	private ItemStack getWeapon() {
-		return new ItemGenerator().next(ItemTier.TIER_4);
+        return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.SWORD, net.dungeonrealms.items.Item.ItemTier.getByTier(getEnumBoss().tier));
 	}
 
 	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
@@ -153,8 +153,6 @@ public class InfernalAbyss extends EntitySkeleton implements Boss {
 	
 	@Override
 	public void onBossHit(EntityDamageByEntityEvent event) {
-		Utils.log.info(this.ghast.isAddedToChunk() + " ghast");
-		Utils.log.info(this.guard.isAddedToChunk() + " guard");
 		if(!finalForm)
 		if (this.ghast.isAddedToChunk() || this.guard.isAddedToChunk()) {
 			say(this.getBukkitEntity(), "Hah! You must take out my ");
@@ -165,8 +163,6 @@ public class InfernalAbyss extends EntitySkeleton implements Boss {
 		LivingEntity en = (LivingEntity) event.getEntity();
 		double seventyFivePercent = HealthHandler.getInstance().getMonsterMaxHPLive(en) * 0.75;
 
-		Bukkit.broadcastMessage(HealthHandler.getInstance().getMonsterHPLive(en) + " | "
-		        + HealthHandler.getInstance().getMonsterMaxHPLive(en) + " max |" + seventyFivePercent + " 75%");
 		if (HealthHandler.getInstance().getMonsterHPLive(en) <= seventyFivePercent && !hasFiredGhast) {
 			say(this.getBukkitEntity(), "Taste FIRE!");
 			ghast.setLocation(this.locX, this.locY + 4, this.locZ, 1, 1);

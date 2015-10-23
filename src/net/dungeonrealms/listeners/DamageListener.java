@@ -201,11 +201,9 @@ public class DamageListener implements Listener {
                 CombatLog.addToCombat(((Player) staffProjectile.getShooter()));
             }
         }
-		Utils.log.info("Fight");
         event.setDamage(finalDamage);
     	if (event.getEntity().hasMetadata("boss")) {
 			if (event.getEntity() instanceof CraftLivingEntity) {
-				Utils.log.info("Is a boss");
 				Boss b = (Boss) ((CraftLivingEntity) event.getEntity()).getHandle();
 				b.onBossHit(event);
 			}
