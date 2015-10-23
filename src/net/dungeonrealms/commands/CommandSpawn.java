@@ -117,9 +117,9 @@ public class CommandSpawn implements CommandExecutor {
                 		case InfernalAbyss:
                 			entity = new InfernalAbyss(world,player.getLocation());
                 			break;
-                		case LordsGuard:
-                			entity = new InfernalLordsGuard(world, player.getLocation());
-                			break;
+//                		case LordsGuard:
+//                			entity = new InfernalLordsGuard(world, player.getLocation());
+//                			break;
                 		default: 
                 			entity = null;
                 	}

@@ -6,13 +6,13 @@ import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.items.*;
+import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.Item.ItemTier;
-import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -20,6 +20,7 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -86,7 +87,7 @@ public class Burick extends EntitySkeleton implements Boss {
 	 * @return
 	 */
 	private ItemStack getWeapon() {
-		return new ItemGenerator().next(ItemTier.TIER_3);
+		return new ItemGenerator().next(Item.ItemType.AXE, ItemTier.TIER_3);
 	}
 
 	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
@@ -111,7 +112,8 @@ public class Burick extends EntitySkeleton implements Boss {
 	public boolean third = false;
 
 	@Override
-	public void onBossHit(LivingEntity en) {
+	public void onBossHit(EntityDamageByEntityEvent event) {
+		LivingEntity en = (LivingEntity) event.getEntity();
 		int health = HealthHandler.getInstance().getMonsterMaxHPLive(en);
 		int hp = HealthHandler.getInstance().getMonsterHPLive(en);
 		float tenPercentHP = (float) (health * .10);

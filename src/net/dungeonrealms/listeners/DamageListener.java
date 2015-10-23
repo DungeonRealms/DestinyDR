@@ -140,7 +140,7 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
         if ((!(API.isPlayer(event.getDamager()))) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL))) return;
-        if (!(event.getEntity() instanceof Monster) && !(API.isPlayer(event.getEntity()))) return;
+        if (!(event.getEntity() instanceof CraftLivingEntity) && !(API.isPlayer(event.getEntity()))) return;
         if (Entities.getInstance().PLAYER_PETS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
         if (Entities.getInstance().PLAYER_MOUNTS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
         //Make sure the player is HOLDING something!
@@ -200,13 +200,13 @@ public class DamageListener implements Listener {
                 CombatLog.addToCombat(((Player) staffProjectile.getShooter()));
             }
         }
+        event.setDamage(finalDamage);
     	if (event.getEntity().hasMetadata("boss")) {
 			if (event.getEntity() instanceof CraftLivingEntity) {
 				Boss b = (Boss) ((CraftLivingEntity) event.getEntity()).getHandle();
-				b.onBossHit((LivingEntity) event.getEntity());
+				b.onBossHit(event);
 			}
 		}
-        event.setDamage(finalDamage);
     }
 
     /**

@@ -12,7 +12,10 @@ import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
+import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntitySilverfish;
+import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
+import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
 import net.minecraft.server.v1_8_R3.World;
 
 /**
@@ -24,6 +27,8 @@ public class BasicEntitySilverfish extends EntitySilverfish {
 
 	public BasicEntitySilverfish(World world, EnumMonster type, int tier) {
 		super(world);
+        this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+        this.goalSelector.a(5, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.0D, false));
 		this.enumMonster = type;
 		int level = Utils.getRandomFromTier(tier);
 		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, tier, level);

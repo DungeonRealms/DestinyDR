@@ -110,6 +110,7 @@ public class Entities {
                         tryToReturnMobToBase(((CraftEntity) entity).getHandle());
                         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
                             if (HealthHandler.getInstance().getMonsterHPLive(entity) < HealthHandler.getInstance().getMonsterMaxHPLive(entity) && !MONSTERS_LEASHED.contains(entity) && !MONSTER_LAST_ATTACK.containsKey(entity)) {
+                            	Utils.log.info("Healed " + entity.getCustomName());
                                 HealthHandler.getInstance().healMonsterByAmount(entity, (HealthHandler.getInstance().getMonsterMaxHPLive(entity) / 10));
                                 //TODO: Inform nearby players it is being healed -- Message or Particle effect?
                             }

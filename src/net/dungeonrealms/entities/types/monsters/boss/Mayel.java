@@ -13,6 +13,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -154,9 +155,10 @@ public class Mayel extends EntitySkeleton implements Boss {
 	public boolean canSpawn = true;
 
 	@Override
-	public void onBossHit(LivingEntity en) {
-		if (canSpawn)
-			for (int i = 0; i < 2; i++) {
+	public void onBossHit(EntityDamageByEntityEvent event) {
+		LivingEntity en = (LivingEntity) event.getEntity();
+		if (canSpawn) {
+			for (int i = 0; i < 5; i++) {
 				EntityPirate pirate = new EntityPirate(this.getWorld(), EnumMonster.MayelPirate, 1);
 				pirate.setLocation(locX + 1, locY, locZ + 1, 1, 1);
 				Location location = new Location(world.getWorld(),
@@ -167,10 +169,10 @@ public class Mayel extends EntitySkeleton implements Boss {
 				world.addEntity(pirate, SpawnReason.CUSTOM);
 				pirate.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 				canSpawn = false;
-				say(this.getBukkitEntity(), "Come to my call, brothers!");
-				Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> canSpawn = true,
-				        20 * 2);
 			}
+			say(this.getBukkitEntity(), "Come to my call, brothers!");
+			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> canSpawn = true, 20 * 3);
+		}
 
 	}
 

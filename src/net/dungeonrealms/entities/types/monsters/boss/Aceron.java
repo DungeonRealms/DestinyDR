@@ -1,6 +1,7 @@
 package net.dungeonrealms.entities.types.monsters.boss;
 
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import net.dungeonrealms.entities.types.monsters.EntityWitherSkeleton;
 import net.dungeonrealms.entities.types.monsters.EnumBoss;
@@ -30,10 +31,9 @@ public class Aceron extends EntityWitherSkeleton implements Boss{
 	public void onBossDeath() {
 		
 	}
-
 	@Override
-	public void onBossHit(LivingEntity en) {
-		
+	public void onBossHit(EntityDamageByEntityEvent event) {
+		LivingEntity en = (LivingEntity) event.getEntity();		
 	}
 
 }

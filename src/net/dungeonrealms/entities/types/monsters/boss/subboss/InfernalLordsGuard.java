@@ -4,12 +4,12 @@ import java.lang.reflect.Field;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -19,12 +19,14 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.entities.types.monsters.boss.Boss;
+import net.dungeonrealms.entities.types.monsters.boss.InfernalAbyss;
 import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.items.Item.ItemTier;
+import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
+import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntitySkeleton;
 import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
@@ -34,14 +36,18 @@ import net.minecraft.server.v1_8_R3.PathfinderGoalMoveTowardsRestriction;
 import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
 import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
-import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Oct 21, 2015
  */
 public class InfernalLordsGuard extends EntitySkeleton implements Boss {
-	public InfernalLordsGuard(World world, Location loc) {
-		super(world);
+	
+	public boolean died = false;
+	public InfernalAbyss boss;
+	
+	public InfernalLordsGuard(InfernalAbyss boss) {
+		super(boss.getWorld());
+		this.boss = boss;
 		try {
 			Field bField = PathfinderGoalSelector.class.getDeclaredField("b");
 			bField.setAccessible(true);
@@ -65,14 +71,14 @@ public class InfernalLordsGuard extends EntitySkeleton implements Boss {
 		this.setOnFire((int) System.currentTimeMillis() * 1);
 		setArmor(getEnumBoss().tier);
 		this.getBukkitEntity().setCustomNameVisible(true);
-		int level = 50;
+		int level = 40;
 		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
 		this.getBukkitEntity().setMetadata("boss",
 		        new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
 		EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
 		this.getBukkitEntity()
 		        .setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
-		for (Player p : API.getNearbyPlayers(loc, 50)) {
+		for (Player p : API.getNearbyPlayers(boss.getBukkitEntity().getLocation(), 50)) {
 			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().greeting);
 		}
 	}
@@ -118,10 +124,17 @@ public class InfernalLordsGuard extends EntitySkeleton implements Boss {
 		for (Player p : API.getNearbyPlayers(this.getBukkitEntity().getLocation(), 50)) {
 			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().death);
 		}
+		boss.say(boss.getBukkitEntity(), this.getBukkitEntity().getLocation(), "I'll handle it on my own then!");
+		boss.setLocation(locX, locY, locZ, 1, 1);
+		int maxHP = boss.getBukkitEntity().getMetadata("maxHP").get(0).asInt() / 2;
+		boss.getBukkitEntity().setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHP));
+		boss.isInvulnerable(DamageSource.FALL);
+		boss.finalForm = true;
 	}
 
 	@Override
-	public void onBossHit(LivingEntity en) {
+	public void onBossHit(EntityDamageByEntityEvent event) {
+		LivingEntity en = (LivingEntity) event.getEntity();	
 
 	}
 
