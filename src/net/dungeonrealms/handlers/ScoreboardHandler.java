@@ -5,7 +5,10 @@ import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.scoreboard.*;
+import org.bukkit.scoreboard.DisplaySlot;
+import org.bukkit.scoreboard.Objective;
+import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.scoreboard.Team;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -29,20 +32,19 @@ public class ScoreboardHandler implements GenericMechanic {
 
     @Override
     public EnumPriority startPriority() {
-        return EnumPriority.CARDINALS;
+        return EnumPriority.POPE;
     }
 
     public void startInitialization() {
         mainScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
-        Objective objective = mainScoreboard.registerNewObjective("playerScoreboard", "playerScoreboard");
+        Objective objective = mainScoreboard.registerNewObjective("mainScoreboard", "mainScoreboard");
         objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
         objective.setDisplayName(ChatColor.RED.toString() + "❤");
     }
 
     @Override
     public void stopInvocation() {
-
     }
 
     /**

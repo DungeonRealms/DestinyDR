@@ -55,7 +55,7 @@ public class ItemListener implements Listener {
             }
             if (TeleportAPI.isTeleportBook(itemStack)) {
                 net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
-                Teleportation.teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, nmsItem.getTag());
+                Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, nmsItem.getTag());
                 if (player.getItemInHand().getAmount() == 1) {
                     player.setItemInHand(new ItemStack(Material.AIR));
                 } else {

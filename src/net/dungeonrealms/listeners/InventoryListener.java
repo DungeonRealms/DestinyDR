@@ -15,6 +15,7 @@ import net.dungeonrealms.handlers.TradeHandler;
 import net.dungeonrealms.handlers.TradeHandler.TradeManager;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.Item.ItemTier;
+import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -32,6 +33,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -610,4 +612,45 @@ public class InventoryListener implements Listener {
 		}
 	}
 
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void onPlayerUseScrapItem(InventoryClickEvent event) {
+		if (event.getCursor() == null) return;
+		if (event.getCurrentItem() == null) return;
+		if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
+		if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
+		ItemStack cursorItem = event.getCursor();
+		ItemStack slotItem = event.getCurrentItem();
+		Player player = (Player) event.getWhoClicked();
+		//TODO: Chase check if its a profession item too some shit about not being able to repair level 100 profession items
+		if (RepairAPI.isItemArmorScrap(cursorItem) && (RepairAPI.isItemArmorOrWeapon(slotItem))) {
+			if (RepairAPI.canItemBeRepaired(slotItem)) {
+				int scrapTier = RepairAPI.getScrapTier(cursorItem);
+				int slotTier = RepairAPI.getArmorOrWeaponTier(slotItem);
+				if (scrapTier != slotTier) return;
+				if (slotItem.getDurability() == 0) return;
+				if (cursorItem.getAmount() == 1) {
+					event.setCancelled(true);
+					event.setCursor(new ItemStack(Material.AIR));
+				} else if (cursorItem.getAmount() > 1) {
+					event.setCancelled(true);
+					cursorItem.setAmount(cursorItem.getAmount() - 1);
+					event.setCursor(cursorItem);
+				}
+
+				double itemDurability = RepairAPI.getCustomDurability(slotItem);
+
+				if (itemDurability + 45.0D >= 1500.0D) {
+					RepairAPI.setCustomItemDurability(slotItem, 1499);
+					player.updateInventory();
+				} else if (itemDurability + 45.0D < 1500.0D) {
+					RepairAPI.setCustomItemDurability(slotItem, (itemDurability + 45.0D));
+					player.updateInventory();
+				}
+
+				player.updateInventory();
+				double newPercent = RepairAPI.getCustomDurability(slotItem);
+				player.sendMessage("(TODO: Toggle) You used an Item Scrap to repair 3% durability to " + newPercent + "/1500");
+			}
+		}
+	}
 }

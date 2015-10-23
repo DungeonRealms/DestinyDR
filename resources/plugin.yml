@@ -6,8 +6,6 @@ website: http://www.dungeonrealms.net
 depend: [BountifulAPI, WorldGuard]
 description: The new dungeonrealms!
 commands:
-    friend:
-       description: Friend things.
     invoke:
        description: Administrative Invoke Command!
     accept:

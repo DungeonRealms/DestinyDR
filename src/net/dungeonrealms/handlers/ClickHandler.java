@@ -251,7 +251,7 @@ public class ClickHandler {
                         }
                         if (TeleportAPI.canUseHearthstone(player.getUniqueId())) {
                             net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                            Teleportation.teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.HEARTHSTONE, nmsItem.getTag());
+                            Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.HEARTHSTONE, nmsItem.getTag());
                             break;
                         } else {
                             player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "HEARTHSTONE " + ChatColor.RED + "[Usage Exhausted] " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s" + ChatColor.RED + ")");
