@@ -59,7 +59,7 @@ public class FriendHandler {
                     sendFriendMessage(friend, ChatColor.AQUA + player.getName() + ChatColor.GREEN + " sent you a friend request! Check your friend management UI to accept / deny!");
                     NetworkAPI.getInstance().sendNetworkMessage("player", "update", friend.getName());
                 } else {
-                    sendFriendMessage(player, ChatColor.RED + "Unable to process request MatchCount:" + result.getMatchedCount() + " ModifiedCount:" + result.getModifiedCount());
+                    sendFriendMessage(player, ChatColor.RED + "Unable to process request MatchCount: " + result.getMatchedCount() + " ModifiedCount:" + result.getModifiedCount());
                 }
             }
         });

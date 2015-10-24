@@ -20,6 +20,7 @@ import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mechanics.generic.MechanicManager;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.achievements.AchievementManager;
 import net.dungeonrealms.network.NetworkAPI;
 import net.dungeonrealms.network.NetworkServer;
 import net.dungeonrealms.party.Party;
@@ -98,6 +99,7 @@ public class DungeonRealms extends JavaPlugin {
         pm.registerEvents(new EnergyListener(), this);
         pm.registerEvents(new AntiCheatListener(), this);
         pm.registerEvents(new BossListener(), this);
+        pm.registerEvents(new AchievementManager(), this);
         Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
 
         WebAPI.fetchPrerequisites();
@@ -117,7 +119,9 @@ public class DungeonRealms extends JavaPlugin {
         NetworkServer.getInstance().startInitialization();
         DungeonManager.getInstance().startInitialization();
         ScoreboardHandler.getInstance().startInitialization();
+        AchievementManager.getInstance().startInitialization();
         SpawningMechanics.getInstance().startInitialization();
+
         Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
         Entities.getInstance().startInitialization();
 

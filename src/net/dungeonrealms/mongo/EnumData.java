@@ -18,6 +18,8 @@ public enum EnumData {
     EXPERIENCE,
     CURRENT_LOCATION,
 
+    ACHIEVEMENTS,
+
     RANK,
     RANK_EXISTENCE,
     PURCHASE_HISTORY,

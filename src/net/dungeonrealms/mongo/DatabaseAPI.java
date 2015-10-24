@@ -187,6 +187,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("collectibles")).get("pets", ArrayList.class);
             case PARTICLES:
                 return ((Document) PLAYERS.get(uuid).get("collectibles")).get("particles", ArrayList.class);
+            case ACHIEVEMENTS:
+                return ((Document) PLAYERS.get(uuid).get("collectibles")).get("achievements", ArrayList.class);
             default:
         }
         return null;

@@ -6,6 +6,7 @@ import com.google.gson.JsonParser;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
 import net.dungeonrealms.entities.types.mounts.EnumMounts;
@@ -54,6 +55,39 @@ import java.util.stream.Collectors;
  * Created by Nick on 9/17/2015.
  */
 public class API {
+
+    /**
+     * To get the players region.
+     *
+     * @param location The location
+     * @return The region name
+     * @since 1.0
+     */
+    public static String getRegionName(Location location) {
+
+        try {
+            ApplicableRegionSet set = WorldGuardPlugin.inst().getRegionManager(location.getWorld()).getApplicableRegions(location);
+            if (set.size() == 0)
+                return "";
+
+            String returning = "";
+            int priority = -1;
+            for (ProtectedRegion s : set) {
+                if (s.getPriority() > priority) {
+                    if (!s.getId().equals("")) {
+                        returning = s.getId();
+                        priority = s.getPriority();
+                    }
+                }
+            }
+
+            return returning;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 
     /**
      * Will return the players
