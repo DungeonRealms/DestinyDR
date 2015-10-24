@@ -17,6 +17,8 @@ import net.dungeonrealms.inventory.GUI;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;

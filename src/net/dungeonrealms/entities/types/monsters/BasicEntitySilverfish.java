@@ -62,7 +62,7 @@ public class BasicEntitySilverfish extends EntitySilverfish {
 	}
 
 	private ItemStack getTierWeapon(int tier) {
-		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.BOW,
+		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.SWORD,
 		        net.dungeonrealms.items.Item.ItemTier.getByTier(tier));
 	}
 

@@ -71,11 +71,11 @@ public abstract class MeleeEntityZombie extends EntityZombie implements Monster{
 				+ ChatColor.RESET + monster.getPrefix() + " " + name + " " + monster.getSuffix());
     }
 
-    @Override
-    protected abstract Item getLoot();
-
-    @Override
-    protected abstract void getRareDrop();
+//    @Override
+//    protected abstract Item getLoot();
+//
+//    @Override
+//    protected abstract void getRareDrop();
 
     protected MeleeEntityZombie(World world) {
         super(world);
@@ -220,6 +220,7 @@ public abstract class MeleeEntityZombie extends EntityZombie implements Monster{
 	
 	@Override
 	public void onMonsterDeath() {
-		
+		this.getLoot();
+		this.getRareDrop();
 	}
 }

@@ -2,6 +2,7 @@ package net.dungeonrealms.entities.types;
 
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.Monster;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
@@ -11,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -19,7 +21,7 @@ import java.lang.reflect.Field;
 /**
  * Created by Chase on Sep 19, 2015
  */
-public abstract class RangedEntitySkeleton extends EntitySkeleton {
+public abstract class RangedEntitySkeleton extends EntitySkeleton implements Monster{
     private String name;
     private String mobHead;
     protected EnumEntityType entityType;
@@ -131,4 +133,16 @@ public abstract class RangedEntitySkeleton extends EntitySkeleton {
         }
         return null;
     }
+    
+    @Override
+	public void onMonsterAttack(Player p) {
+    	
+    	
+    }
+    
+	@Override
+	public void onMonsterDeath() {
+		this.getLoot();
+		this.getRareDrop();
+	}
 }

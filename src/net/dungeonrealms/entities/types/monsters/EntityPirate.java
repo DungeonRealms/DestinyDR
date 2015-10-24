@@ -1,25 +1,28 @@
 package net.dungeonrealms.entities.types.monsters;
 
+import org.bukkit.inventory.ItemStack;
+
 import net.dungeonrealms.banks.BankMechanics;
-import net.dungeonrealms.entities.types.MeleeEntityZombie;
 import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.Monster;
+import net.dungeonrealms.entities.types.MeleeEntityZombie;
+import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.Items;
 import net.minecraft.server.v1_8_R3.World;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by Nick on 9/17/2015.
  */
-public class EntityPirate extends MeleeEntityZombie {
+public class EntityPirate extends MeleeEntityZombie{
 
     public EntityPirate(World world, EnumMonster enumMons, int tier) {
         super(world, enumMons, tier, EnumEntityType.HOSTILE_MOB, true);
         int level = Utils.getRandomFromTier(tier);
         MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, tier, level);
-        //EntityStats.setMonsterRandomStats(this, level, tier);
+        EntityStats.setMonsterRandomStats(this, level, tier);
     }
 
     /**
@@ -40,7 +43,7 @@ public class EntityPirate extends MeleeEntityZombie {
     }
 
     @Override
-    protected Item getLoot() {
+    public Item getLoot() {
         ItemStack item = BankMechanics.gem.clone();
         item.setAmount(this.random.nextInt(5));
         this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation(), item);
@@ -49,6 +52,7 @@ public class EntityPirate extends MeleeEntityZombie {
 
     @Override
     protected void getRareDrop() {
+        Utils.log.info("rare items");
         switch (this.random.nextInt(3)) {
             case 0:
                 this.a(Items.GOLD_NUGGET, 1);
@@ -75,5 +79,9 @@ public class EntityPirate extends MeleeEntityZombie {
     protected String bp() {
         return "mob.zombie.death";
     }
-
+    
+//    @Override
+//	public void onMonsterDeath(){
+//		getLoot();
+//	}
 }

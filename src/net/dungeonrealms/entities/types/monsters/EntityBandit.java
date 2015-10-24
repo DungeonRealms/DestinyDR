@@ -22,7 +22,7 @@ import net.minecraft.server.v1_8_R3.World;
 /**
  * Created by Chase on Sep 21, 2015
  */
-public class EntityBandit extends MeleeEntityZombie implements Monster{
+public class EntityBandit extends MeleeEntityZombie{
     public EntityBandit(World world) {
         super(world);
     }
@@ -72,6 +72,7 @@ public class EntityBandit extends MeleeEntityZombie implements Monster{
         ItemStack item = BankMechanics.gem.clone();
         item.setAmount(this.random.nextInt(5));
         this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation(), item);
+        Utils.log.info("drop items");
         return null;
     }
 

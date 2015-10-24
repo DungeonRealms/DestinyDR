@@ -1,13 +1,14 @@
 package net.dungeonrealms.shops;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mastery.ItemSerialization;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumOperators;
+import java.util.List;
+import java.util.UUID;
 
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -15,8 +16,15 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.List;
-import java.util.UUID;
+import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
 
 /**
  * Created by Chase on Sep 23, 2015
@@ -133,6 +141,10 @@ public class Shop {
             }
         }
         Block chest = getBlock();
+        block.setType(Material.AIR);
+        chest.setType(Material.AIR);
+        chest.getWorld().playSound(chest.getLocation(), Sound.PISTON_RETRACT, 1, 1);
+        
         // TODO: WTF ARE YOU DOING CHASE WE HAVE A PARTICLE API. DON'T CALL THIS
         // SHIT. GOOD BOY
         /*
@@ -156,7 +168,6 @@ public class Shop {
         // } catch (Exception ex) {
         // ex.printStackTrace();
         // }
-        chest.getWorld().playSound(chest.getLocation(), Sound.PISTON_RETRACT, 1, 1);
         getBlock().setType(Material.AIR);
         ShopMechanics.shops.remove(owner);
     }
@@ -168,6 +179,8 @@ public class Shop {
      * @since 1.0
      */
     private static int getSize(UUID uniqueId) {
+    	//TODO MAKE SHOPS UPGRADE
+//    	int lvl = (Integer) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, Bukkit.getPlayer(uniqueId).getUniqueId());
         return 9;
     }
 
@@ -180,9 +193,11 @@ public class Shop {
 		for(ItemStack stack : inv.getContents()){
 			if(stack != null && stack.getType() != Material.AIR){
 				invString = ItemSerialization.toString(inv);
+				Utils.log.info("Saved Collection Bin");
 				break;
 			}
 		}
-		DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, "collection_bin", invString, false);
+		Utils.log.info(invString); 
+		DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, "info.collection_bin", invString, false);
 	}
 }

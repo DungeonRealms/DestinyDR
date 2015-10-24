@@ -508,7 +508,8 @@ public class HealthHandler implements GenericMechanic{
             if (Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
                 Entities.getInstance().MONSTERS_LEASHED.remove(entity);
             }
-            //TODO: Handle Drop code in here.
+            if(entity.hasMetadata("type"))
+            	((net.dungeonrealms.entities.Monster)entity1).onMonsterDeath();
             return;
         }
 

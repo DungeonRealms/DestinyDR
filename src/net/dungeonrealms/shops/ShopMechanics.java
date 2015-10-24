@@ -107,6 +107,7 @@ public class ShopMechanics {
             	shop.deleteShop();
             	shops.remove(shop);
             }
+            Bukkit.getWorlds().get(0).save();
     }
 
     /**

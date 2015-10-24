@@ -210,7 +210,7 @@ public class API {
                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.storage", serializedInv, false);
             }
         }
-        PlayerInventory inv = Bukkit.getPlayer(uuid).getInventory();
+        PlayerInventory inv = player.getInventory();
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.player", ItemSerialization.toString(inv), false);
         String locationAsString = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + "," + player.getLocation().getYaw() + "," + player.getLocation().getPitch();
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "info.currentLocation", locationAsString, false);

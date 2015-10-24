@@ -2,6 +2,7 @@ package net.dungeonrealms.entities.types;
 
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.Monster;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
@@ -12,6 +13,7 @@ import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
@@ -20,7 +22,7 @@ import java.lang.reflect.Field;
 /**
  * Created by Chase on Oct 4, 2015
  */
-public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze {
+public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze implements Monster {
 
 	protected String name;
 	protected String mobHead;
@@ -120,5 +122,18 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 	@Override
 	protected String bp() {
 		return "mob.ghast.scream";
+	}
+	
+    
+    @Override
+	public void onMonsterAttack(Player p) {
+    	
+    	
+    }
+	
+	@Override
+	public void onMonsterDeath() {
+		this.getLoot();
+		this.getRareDrop();
 	}
 }
