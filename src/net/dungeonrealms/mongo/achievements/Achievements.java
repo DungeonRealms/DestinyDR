@@ -2,11 +2,13 @@ package net.dungeonrealms.mongo.achievements;
 
 import com.mongodb.client.result.UpdateResult;
 import net.dungeonrealms.core.Callback;
+import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -51,7 +53,11 @@ public class Achievements {
             @Override
             public void callback(Throwable failCause, UpdateResult result) {
                 if (result.wasAcknowledged()) {
-                    Bukkit.broadcastMessage(ChatColor.AQUA + Bukkit.getPlayer(uuid).getName() + ChatColor.YELLOW + " has earned " + ChatColor.GREEN + achievement.getName());
+                    if (Bukkit.getPlayer(uuid) != null) {
+                        Player player = Bukkit.getPlayer(uuid);
+                        player.sendMessage(ChatColor.GREEN + "[Achievement Earned] " + ChatColor.YELLOW + achievement.getMessage()[0]);
+                        new GamePlayer(player).addExperience(achievement.getReward());
+                    }
                     switch (((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid)).size()) {
                         case 10:
                             Achievements.getInstance().giveAchievement(uuid, EnumAchievements.NOVICE);

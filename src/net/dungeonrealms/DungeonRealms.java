@@ -16,6 +16,7 @@ import net.dungeonrealms.mastery.AsyncUtils;
 import net.dungeonrealms.mastery.FTPUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.DungeonManager;
+import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mechanics.generic.MechanicManager;
 import net.dungeonrealms.mongo.Database;
@@ -26,8 +27,6 @@ import net.dungeonrealms.network.NetworkServer;
 import net.dungeonrealms.party.Party;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
-import net.dungeonrealms.shops.ShopMechanics;
-import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -104,6 +103,7 @@ public class DungeonRealms extends JavaPlugin {
 
         WebAPI.fetchPrerequisites();
 
+        /*
         PetUtils.getInstance().startInitialization();
         Teleportation.getInstance().startInitialization();
         CombatLog.getInstance().startInitialization();
@@ -120,12 +120,11 @@ public class DungeonRealms extends JavaPlugin {
         DungeonManager.getInstance().startInitialization();
         ScoreboardHandler.getInstance().startInitialization();
         AchievementManager.getInstance().startInitialization();
-        SpawningMechanics.getInstance().startInitialization();
-
-        Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
+        //SpawningMechanics.getInstance().startInitialization();
         Entities.getInstance().startInitialization();
+         */
 
-        /*mm = new MechanicManager();
+        mm = new MechanicManager();
 
         mm.registerMechanic(PetUtils.getInstance());
         mm.registerMechanic(Teleportation.getInstance());
@@ -143,10 +142,13 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(DungeonManager.getInstance());
         mm.registerMechanic(new LootManager());
         mm.registerMechanic(Entities.getInstance());
-        mm.registerMechanic(new SpawningMechanics());
         mm.registerMechanic(ScoreboardHandler.getInstance());
+        /*
+        Commented out until he fixes Async Entity Add some shit.
+        mm.registerMechanic(new SpawningMechanics());
+         */
 
-        mm.loadMechanics();*/
+        mm.loadMechanics();
 
         Utils.log.info("DungeonRealms Registering Commands() ... STARTING ...");
         getCommand("spawn").setExecutor(new CommandSpawn());
@@ -171,9 +173,7 @@ public class DungeonRealms extends JavaPlugin {
 
     public void onDisable() {
         saveConfig();
-        SpawningMechanics.killAll();
-        //mm.stopInvocation();
-        ShopMechanics.deleteAllShops();
+        mm.stopInvocation();
         API.logoutAllPlayers();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
         Database.mongoClient.close();

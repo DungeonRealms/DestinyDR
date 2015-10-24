@@ -4,7 +4,8 @@ import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.banks.BankMechanics;
-import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -21,7 +22,7 @@ import java.util.UUID;
 /**
  * Created by Chase on Sep 23, 2015
  */
-public class ShopMechanics {
+public class ShopMechanics implements GenericMechanic{
     public static HashMap<UUID, Shop> shops = new HashMap<>();
 
     /**
@@ -158,4 +159,18 @@ public class ShopMechanics {
         }
     }
 
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.NO_STARTUP;
+    }
+
+    @Override
+    public void startInitialization() {
+
+    }
+
+    @Override
+    public void stopInvocation() {
+        deleteAllShops();
+    }
 }

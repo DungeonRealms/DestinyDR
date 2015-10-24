@@ -85,7 +85,7 @@ public class GamePlayer {
      * @since 1.0
      */
     public double getExperience() {
-        return (double) DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, T.getUniqueId());
+        return Double.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, T.getUniqueId())));
     }
 
     /**
@@ -176,7 +176,7 @@ public class GamePlayer {
          * Will only happen if the players should level up!
          */
         //TODO: Fix this formula for levels 1-9
-        if (futureExperience > (level * 1000) + factorial(Math.round(8 % level))) {
+        if (futureExperience > (level * 1000) + Math.round(level % (64 * 2))) {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.level", level + 1, false);
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.experience", experienceToAdd - experience, false);
             Utils.log.info("[LEVEL] Leveling " + T.getName() + " to level " + getLevel() + 1 + " with new experience" + String.valueOf(experience - experience));
@@ -185,6 +185,7 @@ public class GamePlayer {
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(T, getPlayerAlignment().getAlignmentColor(), level + 1);
         } else {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.experience", experienceToAdd, true);
+            T.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "+ " + ChatColor.GREEN + experienceToAdd + " experience!");
         }
 
     }
@@ -198,9 +199,7 @@ public class GamePlayer {
      */
     public int factorial(int n) {
         int output;
-        if (n == 1) {
-            return 1;
-        }
+        if (n == 0) return 0;
         output = factorial(n - 1) * n;
         return output;
     }

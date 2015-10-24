@@ -14,4 +14,6 @@ public enum EnumPriority {
     PRIESTS,
     CATHOLICS,
 
+    NO_STARTUP,
+
 }
