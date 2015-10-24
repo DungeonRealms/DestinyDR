@@ -265,7 +265,6 @@ public class KarmaHandler implements GenericMechanic {
                 leKiller = (LivingEntity) killer;
                 break;
             default:
-                Utils.log.info("[KARMA] Could not find deathcause for player " + player.getName());
                 break;
         }
         Player killerPlayer;

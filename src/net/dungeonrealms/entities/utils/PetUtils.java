@@ -163,20 +163,20 @@ public class PetUtils implements GenericMechanic{
                 petCaveSpider.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 player.playSound(player.getLocation(), Sound.SPIDER_IDLE, 1F, 1F);
                 makePet(petCaveSpider, player.getUniqueId());
-                EntityAPI.addPlayerPetList(player.getUniqueId(), petCaveSpider);
                 if (particleEffect != null) {
                     switch (particleEffect) {
                         case FLAME:
                             customPetName = ChatColor.RED + "Flaming Spider";
-                            DonationEffects.ENTITY_PARTICLE_EFFECTS.put(petCaveSpider, ParticleAPI.ParticleEffect.FLAME);
+                            DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.put(petCaveSpider, ParticleAPI.ParticleEffect.FLAME);
                             break;
                         case HAPPY_VILLAGER:
                             customPetName = ChatColor.DARK_GREEN + "Poisonous Spider";
-                            DonationEffects.ENTITY_PARTICLE_EFFECTS.put(petCaveSpider, ParticleAPI.ParticleEffect.HAPPY_VILLAGER);
+                            DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.put(petCaveSpider, ParticleAPI.ParticleEffect.HAPPY_VILLAGER);
                             break;
                     }
                 }
                 petCaveSpider.setCustomName(customPetName);
+                EntityAPI.addPlayerPetList(player.getUniqueId(), petCaveSpider);
                 player.closeInventory();
                 break;
             }

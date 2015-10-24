@@ -16,7 +16,6 @@ import net.dungeonrealms.mastery.AsyncUtils;
 import net.dungeonrealms.mastery.FTPUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.DungeonManager;
-import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mechanics.generic.MechanicManager;
 import net.dungeonrealms.mongo.Database;
@@ -27,7 +26,6 @@ import net.dungeonrealms.party.Party;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.shops.ShopMechanics;
-import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -53,7 +51,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * or who imports copies or phonorecords into the United States in violation of section 602,
  * is an infringer of the copyright or right of the author, as the case may be. For purposes
  * of this chapter (other than section 506), any reference to copyright shall be deemed to
- * include the rights conferred by section 106A(a). As used in this subsection, the term “anyone”
+ * include the rights conferred by section 106A(a). As used in this subsection, the term ï¿½anyoneï¿½
  * includes any State, any instrumentality of a State, and any officer or employee of a State or
  * instrumentality of a State acting in his or her official capacity. Any State, and any such
  * instrumentality, officer, or employee, shall be subject to the provisions of this title in
@@ -103,7 +101,26 @@ public class DungeonRealms extends JavaPlugin {
 
         WebAPI.fetchPrerequisites();
 
-        mm = new MechanicManager();
+        PetUtils.getInstance().startInitialization();
+        Teleportation.getInstance().startInitialization();
+        CombatLog.getInstance().startInitialization();
+        Party.getInstance().startInitialization();
+        EnergyHandler.getInstance().startInitialization();
+        EnchantmentAPI.getInstance().startInitialization();
+        Subscription.getInstance().startInitialization();
+        Rank.getInstance().startInitialization();
+        DonationEffects.getInstance().startInitialization();
+        HealthHandler.getInstance().startInitialization();
+        KarmaHandler.getInstance().startInitialization();
+        BankMechanics.getInstance().startInitialization();
+        NetworkServer.getInstance().startInitialization();
+        DungeonManager.getInstance().startInitialization();
+        ScoreboardHandler.getInstance().startInitialization();
+
+        Utils.log.info("DungeonRealms Registering Monsters() ... STARTING ...");
+        Entities.getInstance().startInitialization();
+
+        /*mm = new MechanicManager();
 
         mm.registerMechanic(PetUtils.getInstance());
         mm.registerMechanic(Teleportation.getInstance());
@@ -119,13 +136,12 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(BankMechanics.getInstance());
         mm.registerMechanic(NetworkServer.getInstance());
         mm.registerMechanic(DungeonManager.getInstance());
-        mm.registerMechanic(ScoreboardHandler.getInstance());
         mm.registerMechanic(new LootManager());
         mm.registerMechanic(Entities.getInstance());
         mm.registerMechanic(new SpawningMechanics());
+        mm.registerMechanic(ScoreboardHandler.getInstance());
 
-        mm.loadMechanics();
-
+        mm.loadMechanics();*/
 
         Utils.log.info("DungeonRealms Registering Commands() ... STARTING ...");
         getCommand("spawn").setExecutor(new CommandSpawn());
@@ -150,7 +166,7 @@ public class DungeonRealms extends JavaPlugin {
 
     public void onDisable() {
         saveConfig();
-        mm.stopInvocation();
+        //mm.stopInvocation();
         ShopMechanics.deleteAllShops();
         API.logoutAllPlayers();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");

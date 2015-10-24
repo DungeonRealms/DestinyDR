@@ -79,7 +79,7 @@ public class Teleportation implements GenericMechanic {
             for (Map.Entry<UUID, Integer> e : PLAYER_TELEPORT_COOLDOWNS.entrySet()) {
                 TeleportAPI.addPlayerHearthstoneCD(e.getKey(), (e.getValue() - 1));
             }
-        }, 0, 20L);
+        }, 20L, 20L);
     }
 
     @Override
@@ -95,7 +95,7 @@ public class Teleportation implements GenericMechanic {
      * @param nbt
      * @since 1.0
      */
-    public static void teleportPlayer(UUID uuid, EnumTeleportType teleportType, NBTTagCompound nbt) {
+    public void teleportPlayer(UUID uuid, EnumTeleportType teleportType, NBTTagCompound nbt) {
         Player player = Bukkit.getPlayer(uuid);
         if (!(player.getWorld().getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName()))) {
             if (teleportType == EnumTeleportType.HEARTHSTONE) {

@@ -81,7 +81,7 @@ public class ArmorGenerator {
 		// Settings NBT for the Attribute Class. () -> itemType, itemTier,
 		// itemModifier
 		tag.set("armorType", new NBTTagInt(type.getId()));
-		tag.set("armorTier", new NBTTagInt(tier.getId()));
+		tag.set("armorTier", new NBTTagInt(tier.getTierId()));
 		tag.set("armorModifier", new NBTTagInt(modifier.getId()));
 
 		/*
@@ -275,7 +275,7 @@ public class ArmorGenerator {
 
 	/**
 	 * return ItemStack Array of random armor based on int tier.
-	 * @param i
+	 * @param tier
 	 */
 	public ItemStack[] nextTier(int tier) {
 		return new ItemStack[]{getArmor(EquipmentType.CHESTPLATE, ArmorTier.getByTier(tier), this.getRandomItemModifier()),

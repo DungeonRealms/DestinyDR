@@ -44,8 +44,8 @@ public class ItemListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerUseTeleportItem(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
+        Player player = event.getPlayer();
         if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.BOOK) return;
         ItemStack itemStack = player.getItemInHand();
         if (!(CombatLog.isInCombat(event.getPlayer()))) {
@@ -55,7 +55,7 @@ public class ItemListener implements Listener {
             }
             if (TeleportAPI.isTeleportBook(itemStack)) {
                 net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
-                Teleportation.teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, nmsItem.getTag());
+                Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, nmsItem.getTag());
                 if (player.getItemInHand().getAmount() == 1) {
                     player.setItemInHand(new ItemStack(Material.AIR));
                 } else {
@@ -78,8 +78,8 @@ public class ItemListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerUseProfileItem(PlayerInteractEvent event) {
-        Player player = event.getPlayer();
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
+        Player player = event.getPlayer();
         if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.SKULL_ITEM) return;
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(player.getItemInHand());
         NBTTagCompound tag = nmsStack.getTag();

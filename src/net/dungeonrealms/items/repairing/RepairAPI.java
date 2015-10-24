@@ -114,7 +114,7 @@ public class RepairAPI {
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return 0;
         if (tag.getInt("itemTier") == 0 && tag.getInt("armorTier") == 0) return 0;
-        double percentDurability = ((itemStack.getType().getMaxDurability() - itemStack.getDurability()) / itemStack.getType().getMaxDurability()); //Weird DR formula?
+        double percentDurability = ((itemStack.getType().getMaxDurability() - itemStack.getDurability()) / itemStack.getType().getMaxDurability());
         if (tag.getString("type").equalsIgnoreCase("weapon")) {
             return Math.round(percentDurability * (1450 / 15));
         }
@@ -218,10 +218,112 @@ public class RepairAPI {
         if (!(itemStack.getType() == Material.LEATHER || itemStack.getType() == Material.IRON_FENCE || itemStack.getType() == Material.IRON_INGOT || itemStack.getType() == Material.DIAMOND || itemStack.getType() == Material.GOLD_INGOT))
             return false;
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+        if (nmsItem == null) {
+            return false;
+        }
         NBTTagCompound tag = nmsItem.getTag();
         return tag != null && tag.getString("type").equalsIgnoreCase("scrap");
     }
 
+    /**
+     * Returns the item tier of
+     * an itemstack that is
+     * scrap
+     *
+     * @param itemStack
+     * @return boolean
+     * @since 1.0
+     */
+    public static int getScrapTier(ItemStack itemStack) {
+        if (!(itemStack.getType() == Material.LEATHER || itemStack.getType() == Material.IRON_FENCE || itemStack.getType() == Material.IRON_INGOT || itemStack.getType() == Material.DIAMOND || itemStack.getType() == Material.GOLD_INGOT))
+            return 0;
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+        if (nmsItem == null) {
+            return 0;
+        }
+        NBTTagCompound tag = nmsItem.getTag();
+        if (tag != null && tag.getString("type").equalsIgnoreCase("scrap")) {
+            if (tag.getInt("itemTier") != 0) {
+                return tag.getInt("itemTier");
+            }
+        }
+        return 0;
+    }
+
+    /**
+     * Returns the item tier of
+     * an itemstack that is
+     * an armor/weapon piece
+     *
+     * @param itemStack
+     * @return boolean
+     * @since 1.0
+     */
+    public static int getArmorOrWeaponTier(ItemStack itemStack) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+        if (nmsItem == null) {
+            return 0;
+        }
+        NBTTagCompound tag = nmsItem.getTag();
+        if (tag == null) return 0;
+        if (tag.getInt("itemTier") == 0 && tag.getInt("armorTier") == 0) return 0;
+        if (tag.getString("type").equalsIgnoreCase("weapon")) {
+            return tag.getInt("itemTier");
+        }
+        if (tag.getString("type").equalsIgnoreCase("armor")) {
+            return tag.getInt("armorTier");
+        }
+        return 0;
+    }
+
+    /**
+     * Checks if the itemstack
+     * is an armor piece or weapons
+     *
+     * @param itemStack
+     * @return boolean
+     * @since 1.0
+     */
+    public static boolean isItemArmorOrWeapon(ItemStack itemStack) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+        if (nmsItem == null) {
+            return false;
+        }
+        NBTTagCompound tag = nmsItem.getTag();
+        if (tag == null) return false;
+        if (tag.getInt("itemTier") == 0 && tag.getInt("armorTier") == 0) return false;
+        if (tag.getString("type").equalsIgnoreCase("weapon")) {
+            return true;
+        }
+        if (tag.getString("type").equalsIgnoreCase("armor")) {
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the itemstack
+     * can be repaired
+     *
+     * @param itemStack
+     * @return boolean
+     * @since 1.0
+     */
+    public static boolean canItemBeRepaired(ItemStack itemStack) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+        if (nmsItem == null) {
+            return false;
+        }
+        NBTTagCompound tag = nmsItem.getTag();
+        if (tag == null) return false;
+        if (tag.getInt("itemTier") == 0 && tag.getInt("armorTier") == 0) return false;
+        if (tag.getString("type").equalsIgnoreCase("weapon") || tag.getString("type").equalsIgnoreCase("armor")) {
+            if (getCustomDurability(itemStack) < 1500) {
+                return true;
+            }
+        }
+        return false;
+    }
     /**
      * Sets the custom durability
      * of a specified itemstack
