@@ -43,7 +43,6 @@ public class EntityBandit extends MeleeEntityZombie{
     private void checkSpecial() {
         if (Utils.randInt(1, 10) == 4) {
         	int number = Utils.randInt(1, 3);
-        	Utils.log.info(number + "");
         	if(number == 1){
             this.getBukkitEntity().setMetadata("special", new FixedMetadataValue(DungeonRealms.getInstance(), "poison"));
             this.setCustomName(ChatColor.DARK_GREEN.toString() + ChatColor.UNDERLINE.toString() + monsterType.getPrefix() + " Poisonous Bandit");

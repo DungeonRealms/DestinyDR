@@ -52,7 +52,6 @@ public class EntityPirate extends MeleeEntityZombie{
 
     @Override
     protected void getRareDrop() {
-        Utils.log.info("rare items");
         switch (this.random.nextInt(3)) {
             case 0:
                 this.a(Items.GOLD_NUGGET, 1);

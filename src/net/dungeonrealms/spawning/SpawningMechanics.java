@@ -1,17 +1,34 @@
 package net.dungeonrealms.spawning;
 
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.monsters.*;
+import net.dungeonrealms.entities.types.monsters.BasicEntityBlaze;
+import net.dungeonrealms.entities.types.monsters.BasicEntityMagma;
+import net.dungeonrealms.entities.types.monsters.BasicEntityPigman;
+import net.dungeonrealms.entities.types.monsters.BasicEntitySilverfish;
+import net.dungeonrealms.entities.types.monsters.BasicEntitySkeleton;
+import net.dungeonrealms.entities.types.monsters.BasicMageMonster;
+import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
+import net.dungeonrealms.entities.types.monsters.EntityBandit;
+import net.dungeonrealms.entities.types.monsters.EntityFireImp;
+import net.dungeonrealms.entities.types.monsters.EntityGolem;
+import net.dungeonrealms.entities.types.monsters.EntityPirate;
+import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
+import net.dungeonrealms.entities.types.monsters.EntitySpider;
+import net.dungeonrealms.entities.types.monsters.EntityWitherSkeleton;
+import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.World;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-
-import java.util.ArrayList;
 
 /**
  * Created by Chase on Sep 28, 2015
@@ -20,6 +37,7 @@ public class SpawningMechanics implements GenericMechanic{
 
     private static ArrayList<MobSpawner> ALLSPAWNERS = new ArrayList<>();
     public static ArrayList<String> SPANWER_CONFIG = new ArrayList<>();
+	private static SpawningMechanics instance;
 
     
     public static void initSpawners(){
@@ -166,16 +184,28 @@ public class SpawningMechanics implements GenericMechanic{
 
     @Override
     public EnumPriority startPriority() {
-        return EnumPriority.POPE;
+        return EnumPriority.ARCHBISHOPS;
     }
 
     @Override
     public void startInitialization() {
+    	Utils.log.info("#################Started Loading Spawners#################");
         loadSpawners();
+    	Utils.log.info("#################Done Loading Spawners#################");
+        
     }
 
     @Override
     public void stopInvocation() {
         killAll();
     }
+
+	/**
+	 * @return
+	 */
+	public static SpawningMechanics getInstance() {
+		if(instance == null)
+			instance = new SpawningMechanics();
+		return instance;
+	}
 }
