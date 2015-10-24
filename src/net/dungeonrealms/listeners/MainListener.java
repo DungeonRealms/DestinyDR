@@ -12,13 +12,13 @@ import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
 import net.dungeonrealms.entities.utils.EntityAPI;
+import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.TradeHandler;
 import net.dungeonrealms.inventory.GUI;
+import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -34,6 +34,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Map;
+import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -313,10 +314,11 @@ public class MainListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerMove(PlayerMoveEvent event) {
-        Player player = event.getPlayer();
+        if (!API.isPlayer(event.getPlayer())) return;
         if (!(DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAILS.contains(event.getPlayer()))) return;
+        Player player = event.getPlayer();
         if (!(player.getWorld().getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName()))) return;
         if (player.getLocation().getBlock().getType() != Material.AIR) return;
         Material material = player.getLocation().subtract(0, 1, 0).getBlock().getType();
@@ -327,6 +329,31 @@ public class MainListener implements Listener {
             DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAIL_INFO.put(player.getLocation().subtract(0, 1, 0).getBlock().getLocation(), material);
             player.getLocation().subtract(0, 1, 0).getBlock().setType(Material.GOLD_BLOCK);
             player.getLocation().subtract(0, 1, 0).getBlock().setMetadata("time", new FixedMetadataValue(DungeonRealms.getInstance(), 10));
+        }
+    }
+
+    /**
+     * Checks player movement, if they are chaotic and
+     * entering or currently in a Non-PvP zone, remove
+     * them from it.
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerMoveWhileChaotic(PlayerMoveEvent event) {
+        if (!API.isPlayer(event.getPlayer())) return;
+        Player player = event.getPlayer();
+        if (new GamePlayer(player).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) return;
+        if (!(player.getWorld().getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName()))) return;
+        if (API.isInSafeRegion(event.getFrom()) && !API.isInSafeRegion(event.getTo())) {
+            player.teleport(KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1)));
+            player.sendMessage(ChatColor.RED + "The guards have kicked you out of the " + ChatColor.UNDERLINE + "protected area" + ChatColor.RED + " due to your Chaotic alignment.");
+        }
+        if (API.isInSafeRegion(event.getTo())) {
+            //Might not cancel it as it could look buggy. May have to force TP to a Chaotic spawn from KarmaHandler.
+            event.setCancelled(true);
+            player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " enter " + ChatColor.BOLD.toString() + "NON-PVP" + ChatColor.RED + " zones with a Chaotic alignment.");
         }
     }
 }

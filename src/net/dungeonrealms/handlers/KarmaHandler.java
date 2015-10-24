@@ -12,11 +12,10 @@ import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.entity.*;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -33,8 +32,9 @@ public class KarmaHandler implements GenericMechanic {
         return instance;
     }
 
-    public static HashMap<Player, EnumPlayerAlignments> playerAlignments = new HashMap<>();
-    public static ConcurrentHashMap<Player, Integer> playerAlignmentTime = new ConcurrentHashMap<>();
+    public static HashMap<Player, EnumPlayerAlignments> PLAYER_ALIGNMENTS = new HashMap<>();
+    public static ConcurrentHashMap<Player, Integer> PLAYER_ALIGNMENT_TIMES = new ConcurrentHashMap<>();
+    public static List<Location> CHAOTIC_RESPAWNS = new ArrayList<>();
 
     public enum EnumPlayerAlignments {
         LAWFUL(0, "lawful", ChatColor.WHITE),
@@ -70,6 +70,11 @@ public class KarmaHandler implements GenericMechanic {
     }
 
     public void startInitialization() {
+        CHAOTIC_RESPAWNS.add(new Location(Bukkit.getWorlds().get(0), -382, 68, 867));
+        CHAOTIC_RESPAWNS.add(new Location(Bukkit.getWorlds().get(0), -350, 67, 883));
+        CHAOTIC_RESPAWNS.add(new Location(Bukkit.getWorlds().get(0), -330, 65, 898));
+        CHAOTIC_RESPAWNS.add(new Location(Bukkit.getWorlds().get(0), -419, 61, 830));
+
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::updateAllPlayerAlignments, 100L, 20L);
     }
 
@@ -87,19 +92,19 @@ public class KarmaHandler implements GenericMechanic {
      * @since 1.0
      */
     private void updateAllPlayerAlignments() {
-        for (Map.Entry<Player, EnumPlayerAlignments> alignment : playerAlignments.entrySet()) {
+        for (Map.Entry<Player, EnumPlayerAlignments> alignment : PLAYER_ALIGNMENTS.entrySet()) {
             Player player = alignment.getKey();
             EnumPlayerAlignments currentAlignment = alignment.getValue();
 
-            if (!(playerAlignmentTime.containsKey(player))) {
+            if (!(PLAYER_ALIGNMENT_TIMES.containsKey(player))) {
                 continue;
             }
             if (CombatLog.isInCombat(player)) {
                 continue;
             }
             if (currentAlignment.equals(EnumPlayerAlignments.LAWFUL)) {
-                if (playerAlignmentTime.containsKey(player)) {
-                    playerAlignmentTime.remove(player);
+                if (PLAYER_ALIGNMENT_TIMES.containsKey(player)) {
+                    PLAYER_ALIGNMENT_TIMES.remove(player);
                 }
                 continue;
             }
@@ -107,7 +112,7 @@ public class KarmaHandler implements GenericMechanic {
                 continue;
             }
 
-            int timeLeft = playerAlignmentTime.get(player);
+            int timeLeft = PLAYER_ALIGNMENT_TIMES.get(player);
             timeLeft--;
 
             if (timeLeft <= 0) {
@@ -115,10 +120,10 @@ public class KarmaHandler implements GenericMechanic {
                     setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL.name);
                 } else if (currentAlignment.equals(EnumPlayerAlignments.NEUTRAL)) {
                     setPlayerAlignment(player, EnumPlayerAlignments.LAWFUL.name);
-                    playerAlignmentTime.remove(player);
+                    PLAYER_ALIGNMENT_TIMES.remove(player);
                 }
             } else {
-                playerAlignmentTime.put(player, timeLeft);
+                PLAYER_ALIGNMENT_TIMES.put(player, timeLeft);
             }
         }
     }
@@ -156,8 +161,8 @@ public class KarmaHandler implements GenericMechanic {
      * @since 1.0
      */
     public String getPlayerRawAlignment(Player player) {
-        if (playerAlignments.containsKey(player)) {
-            return playerAlignments.get(player).name;
+        if (PLAYER_ALIGNMENTS.containsKey(player)) {
+            return PLAYER_ALIGNMENTS.get(player).name;
         }
         return "lawful"; //Should never happen, but safety checks.
     }
@@ -187,7 +192,7 @@ public class KarmaHandler implements GenericMechanic {
                         });
                     }
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, new GamePlayer(player).getLevel());
-                    playerAlignments.put(player, alignment);
+                    PLAYER_ALIGNMENTS.put(player, alignment);
                     break;
                 case NEUTRAL:
                     if (!(playerAlignment.equalsIgnoreCase(EnumPlayerAlignments.NEUTRAL.name))) {
@@ -199,8 +204,8 @@ public class KarmaHandler implements GenericMechanic {
                         });
                     }
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.YELLOW, new GamePlayer(player).getLevel());
-                    playerAlignmentTime.put(player, 120);
-                    playerAlignments.put(player, alignment);
+                    PLAYER_ALIGNMENT_TIMES.put(player, 120);
+                    PLAYER_ALIGNMENTS.put(player, alignment);
                     break;
                 case CHAOTIC:
                     if (!(playerAlignment.equalsIgnoreCase(EnumPlayerAlignments.CHAOTIC.name))) {
@@ -212,8 +217,8 @@ public class KarmaHandler implements GenericMechanic {
                         });
                     }
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.RED, new GamePlayer(player).getLevel());
-                    playerAlignmentTime.put(player, 1200);
-                    playerAlignments.put(player, alignment);
+                    PLAYER_ALIGNMENT_TIMES.put(player, 1200);
+                    PLAYER_ALIGNMENTS.put(player, alignment);
                     break;
                 default:
                     Utils.log.info("[KARMA] Could not set player " + player.getName() + "'s alignment! UH OH");

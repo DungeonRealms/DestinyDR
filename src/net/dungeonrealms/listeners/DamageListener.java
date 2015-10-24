@@ -514,6 +514,7 @@ public class DamageListener implements Listener {
         event.setDeathMessage("");
         Player player = event.getEntity();
         ItemStack armorToSave[] = new ItemStack[5];
+        Location respawnLocation = Teleportation.Cyrennica;
         boolean savedArmorContents = false;
         if (EntityAPI.hasPetOut(player.getUniqueId())) {
             net.minecraft.server.v1_8_R3.Entity pet = EntityAPI.getPlayerPet(player.getUniqueId());
@@ -573,7 +574,7 @@ public class DamageListener implements Listener {
                 }
             }
         } else if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.CHAOTIC.name())) {
-            //Add something here later for Chaotic deaths?
+            respawnLocation = KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1));
         }
         event.setDroppedExp(0);
         for (ItemStack itemStack : event.getDrops()) {
@@ -599,7 +600,7 @@ public class DamageListener implements Listener {
         HealthHandler.getInstance().setPlayerHPLive(player, HealthHandler.getInstance().getPlayerMaxHPLive(player));
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 10));
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 10));
-        player.teleport(Teleportation.Cyrennica);
+        player.teleport(respawnLocation);
         player.setFireTicks(0);
         player.setMaximumNoDamageTicks(50);
         player.setNoDamageTicks(50);

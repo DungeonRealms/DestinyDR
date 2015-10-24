@@ -8,6 +8,7 @@ import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -118,23 +119,23 @@ public class Teleportation implements GenericMechanic {
 
         assert location != null;
         if (location.equals(Cyrennica)) {
-            player.sendMessage("Teleporting to Cyrennica.");
+            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to Cyrennica.");
         } else if (location.equals(Harrison_Field)) {
-            player.sendMessage("Teleporting to Harrison Field.");
+            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to Harrison Field.");
         } else if (location.equals(Dark_Oak_Tavern)) {
-            player.sendMessage("Teleporting to Dark Oak Tavern.");
+            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to Dark Oak Tavern.");
         } else if (location.equals(Deadpeaks_Mountain_Camp)) {
-            player.sendMessage("Teleporting to return to DeadPeaks Camp.");
+            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to return to DeadPeaks Camp.");
         } else if (location.equals(Trollsbane_tavern)) {
-            player.sendMessage("Teleporting to Trollsbane Tavern.");
+            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to Trollsbane Tavern.");
         } else if (location.equals(Tripoli)) {
-            player.sendMessage("Teleporting to return to Tripoli.");
+            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to return to Tripoli.");
         } else if (location.equals(Gloomy_Hollows)) {
-            player.sendMessage("Teleporting to Gloomy Hollows.");
+            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to Gloomy Hollows.");
         } else if (location.equals(Crestguard_Keep)) {
-            player.sendMessage("Teleporting to Crestgaurd Keep.");
+            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to Crestgaurd Keep.");
         } else if (location.equals(Tutorial)) {
-            player.sendMessage("Teleporting to the Tutorial Island");
+            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to the Tutorial Island");
         }
 
         ParticleAPI.ParticleEffect[] particleEffect = new ParticleAPI.ParticleEffect[2];
@@ -156,6 +157,7 @@ public class Teleportation implements GenericMechanic {
         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
                 if (player.getLocation().getX() == PLAYERS_TELEPORTING.get(player.getUniqueId()).getX() && player.getLocation().getZ() == PLAYERS_TELEPORTING.get(player.getUniqueId()).getZ()) {
+                    player.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + taskTimer[0] + "s...");
                     try {
                         ParticleAPI.sendParticleToLocation(particleEffect[0], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
                         ParticleAPI.sendParticleToLocation(particleEffect[1], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 4F, 400);
@@ -164,7 +166,7 @@ public class Teleportation implements GenericMechanic {
                     }
                     if (taskTimer[0] <= 0) {
                         if (CombatLog.isInCombat(player)) {
-                            player.sendMessage("Your teleport has been interrupted by combat!");
+                            player.sendMessage(ChatColor.RED + "Your teleport has been interrupted by combat!");
                             if (teleportType == EnumTeleportType.HEARTHSTONE) {
                                 TeleportAPI.addPlayerHearthstoneCD(uuid, 280);
                             }
@@ -183,7 +185,7 @@ public class Teleportation implements GenericMechanic {
                         player.removePotionEffect(PotionEffectType.BLINDNESS);
                         player.removePotionEffect(PotionEffectType.CONFUSION);
                     }
-                    player.sendMessage("Your teleport was canceled due to moving!");
+                    player.sendMessage(ChatColor.RED + "Your teleport was canceled due to moving!");
                     if (teleportType == EnumTeleportType.HEARTHSTONE) {
                         TeleportAPI.addPlayerHearthstoneCD(uuid, 300);
                     }
