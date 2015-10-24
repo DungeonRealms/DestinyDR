@@ -68,6 +68,14 @@ public class DamageListener implements Listener {
             for (Entity e : event.getEntity().getNearbyEntities(radius, radius, radius)) {
                 if (!(API.isPlayer(e))) continue;
                 ((Player) e).addPotionEffect(new PotionEffect(effectType, duration, 2));
+                if (effectType.equals(PotionEffectType.HEAL)) {
+                    HealthHandler.getInstance().healPlayerByAmount((Player) e, HealthHandler.getInstance().getPlayerMaxHPLive((Player) e));
+                }
+                if (effectType.equals(PotionEffectType.REGENERATION)) {
+                    int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> HealthHandler.getInstance().healPlayerByAmount((Player) e, (HealthHandler.getInstance().getPlayerMaxHPLive((Player) e) / 10))
+                    , 0 , 20L);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 90L);
+                }
                 e.sendMessage(new String[]{
                         "",
                         ChatColor.BLUE + "[BUFF] " + ChatColor.YELLOW + "You have received the " + ChatColor.UNDERLINE + effectType.getName() + ChatColor.YELLOW + " buff!",
