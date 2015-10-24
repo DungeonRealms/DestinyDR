@@ -167,6 +167,7 @@ public class DungeonRealms extends JavaPlugin {
 
     public void onDisable() {
         saveConfig();
+        SpawningMechanics.killAll();
         //mm.stopInvocation();
         ShopMechanics.deleteAllShops();
         API.logoutAllPlayers();

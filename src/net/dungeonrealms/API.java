@@ -159,12 +159,11 @@ public class API {
     /**
      * Checks if player is in a region that denys PVP
      *
-     * @param uuid
+     * @param location
      * @since 1.0
      */
-    public static boolean isInSafeRegion(UUID uuid) {
-        Player p = Bukkit.getPlayer(uuid);
-        ApplicableRegionSet region = getWorldGuard().getRegionManager(p.getWorld()).getApplicableRegions(p.getLocation());
+    public static boolean isInSafeRegion(Location location) {
+        ApplicableRegionSet region = getWorldGuard().getRegionManager(location.getWorld()).getApplicableRegions(location);
         return region.getFlag(DefaultFlag.PVP) != null && !region.allows(DefaultFlag.PVP);
     }
 

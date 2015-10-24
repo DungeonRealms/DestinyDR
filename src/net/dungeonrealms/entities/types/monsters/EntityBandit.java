@@ -71,7 +71,6 @@ public class EntityBandit extends MeleeEntityZombie{
         ItemStack item = BankMechanics.gem.clone();
         item.setAmount(this.random.nextInt(5));
         this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation(), item);
-        Utils.log.info("drop items");
         return null;
     }
 

@@ -32,6 +32,7 @@ import net.dungeonrealms.entities.types.monsters.EntityWitherSkeleton;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.mastery.Utils;
+import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.World;
@@ -96,6 +97,9 @@ public class MobSpawner {
             if (!SPAWNED_MONSTERS.isEmpty()) {
                 for (Entity monster : SPAWNED_MONSTERS) {
                     if (monster.isAlive()) {
+                    	if(API.isInSafeRegion(monster.getBukkitEntity().getLocation())){
+                            monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
+                    	}
                     	double num = monster.getBukkitEntity().getLocation().distance(loc);
                         if (num > 32) {
                             monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
@@ -156,6 +160,8 @@ public class MobSpawner {
     public void kill() {
         for (Entity spawnedMonster : SPAWNED_MONSTERS) {
             spawnedMonster.getBukkitEntity().remove();
+            spawnedMonster.damageEntity(DamageSource.GENERIC, 20f);
+            spawnedMonster.dead = true;
             armorstand.getWorld().kill(spawnedMonster);
         }
     }

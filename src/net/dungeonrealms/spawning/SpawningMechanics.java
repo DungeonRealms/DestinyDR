@@ -1,11 +1,10 @@
 package net.dungeonrealms.spawning;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
@@ -27,6 +26,7 @@ import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.World;
 
@@ -61,7 +61,6 @@ public class SpawningMechanics implements GenericMechanic{
     }
 
     public static void loadSpawners() {
-        Bukkit.getWorlds().get(0).getEntities().forEach(org.bukkit.entity.Entity::remove);
         SPANWER_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("spawners");
     	for(String line : SPANWER_CONFIG){
     		if( line == null || line.equalsIgnoreCase("null"))
@@ -80,6 +79,13 @@ public class SpawningMechanics implements GenericMechanic{
             ALLSPAWNERS.add(spawner);
     	}
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), SpawningMechanics::initSpawners, 0, 4 * 20L);
+        Bukkit.getWorlds().get(0).getEntities().forEach(entity ->{
+        	((CraftEntity)entity).getHandle().damageEntity(DamageSource.GENERIC, 20f);
+        	entity.remove();
+        	});
+        Bukkit.getWorlds().get(0).getLivingEntities().forEach(entity ->{
+        	((CraftEntity)entity).getHandle().damageEntity(DamageSource.GENERIC, 20f);
+        	});
     }
 
     public static void loadSpawner(String line){
@@ -198,6 +204,15 @@ public class SpawningMechanics implements GenericMechanic{
     @Override
     public void stopInvocation() {
         killAll();
+        Bukkit.getWorlds().get(0).getEntities().forEach(entity ->{
+        	Utils.log.info("killed entity");
+        	((CraftEntity)entity).getHandle().damageEntity(DamageSource.GENERIC, 20f);
+        	entity.remove();
+        	});
+        Bukkit.getWorlds().get(0).getLivingEntities().forEach(entity ->{
+        	Utils.log.info("killed entity");
+        	((CraftEntity)entity).getHandle().damageEntity(DamageSource.GENERIC, 20f);
+        	});
     }
 
 	/**

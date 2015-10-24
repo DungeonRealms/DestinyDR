@@ -221,7 +221,7 @@ public class MainListener implements Listener {
                                 theevent.getPlayer().closeInventory();
                                 Player p1 = theevent.getPlayer();
                                 Player p2 = playerClicked;
-                                if (API.isInSafeRegion(p1.getUniqueId()) && API.isInSafeRegion(p2.getUniqueId())) {
+                                if (API.isInSafeRegion(p1.getLocation()) && API.isInSafeRegion(p2.getLocation())) {
                                     if (DuelMechanics.isDueling(p2.getUniqueId())) {
                                         return;
                                     } else {
@@ -286,7 +286,7 @@ public class MainListener implements Listener {
         if (!(API.isPlayer(event.getEntity()) && API.isPlayer(event.getDamager()))) return;
         Player p1 = (Player) event.getDamager();
         Player p2 = (Player) event.getEntity();
-        if (API.isInSafeRegion(p1.getUniqueId()) && API.isInSafeRegion(p2.getUniqueId())) {
+        if (API.isInSafeRegion(p1.getLocation()) && API.isInSafeRegion(p2.getLocation())) {
             if (DuelMechanics.isDueling(p2.getUniqueId())) {
                 // If player they're punching is their duel partner
                 if (DuelMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
