@@ -20,9 +20,6 @@ public class WebAPI {
     public static volatile ArrayList<String> JOIN_INFORMATION = new ArrayList<>();
 
     public static void fetchPrerequisites() {
-        if (ANNOUNCEMENTS.size() > 0) {
-            ANNOUNCEMENTS.clear();
-        }
         AsyncUtils.pool.submit(() -> {
             Utils.log.info("[WEB-API] [ASYNC] Loading... Prerequisites...");
             try {

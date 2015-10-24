@@ -7,7 +7,10 @@ import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.network.NetworkAPI;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
 import java.util.UUID;
@@ -25,6 +28,16 @@ public class FriendHandler {
             instance = new FriendHandler();
         }
         return instance;
+    }
+
+    public void addOrRemove(Player player, ClickType type, ItemStack itemStack) {
+        if (itemStack == null || itemStack.getType() == null || itemStack.getType().equals(Material.AIR)) return;
+        switch (type) {
+            case RIGHT:
+                break;
+            case LEFT:
+                break;
+        }
     }
 
     /**

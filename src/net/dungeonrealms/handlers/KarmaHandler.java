@@ -66,7 +66,7 @@ public class KarmaHandler implements GenericMechanic {
 
     @Override
     public EnumPriority startPriority() {
-        return EnumPriority.ARCHBISHOPS;
+        return EnumPriority.POPE;
     }
 
     public void startInitialization() {

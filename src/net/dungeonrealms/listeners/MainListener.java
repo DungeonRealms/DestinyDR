@@ -116,7 +116,6 @@ public class MainListener implements Listener {
             player.sendMessage(ChatColor.translateAlternateColorCodes('&', s));
         }
         player.getInventory().clear();
-        //I guess this really does work..?
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> API.handleLogin(player.getUniqueId()), 20L);
     }
 

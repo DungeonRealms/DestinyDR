@@ -35,6 +35,7 @@ public class ScoreboardHandler implements GenericMechanic {
         return EnumPriority.POPE;
     }
 
+    @Override
     public void startInitialization() {
         mainScoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 

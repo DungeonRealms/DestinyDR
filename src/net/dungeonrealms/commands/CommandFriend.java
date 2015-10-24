@@ -21,14 +21,14 @@ public class CommandFriend implements CommandExecutor {
         Player player = (Player) s;
 
         if (args.length > 0) {
-            switch (args[0].toLowerCase()) {
+            switch (args[1].toLowerCase()) {
                 case "add":
                     if (args.length != 1) {
                         player.sendMessage(ChatColor.RED + "/friend add <playerName>");
                         return false;
                     }
-                    if (API.isOnline(Bukkit.getPlayer(args[1]).getUniqueId())) {
-                        Player wantingToAdd = Bukkit.getPlayer(args[1]);
+                    if (API.isOnline(Bukkit.getPlayer(args[2]).getUniqueId())) {
+                        Player wantingToAdd = Bukkit.getPlayer(args[2]);
                         FriendHandler.getInstance().sendRequest(player, wantingToAdd);
                     } else {
                         player.sendMessage(ChatColor.RED + "You cannot send friend requests to offline players!");
