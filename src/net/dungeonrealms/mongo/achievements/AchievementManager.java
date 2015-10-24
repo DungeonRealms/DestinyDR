@@ -72,7 +72,7 @@ public class AchievementManager implements GenericMechanic, Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onRegionEnter(PlayerEnterRegionEvent event) {
         Player pl = event.getPlayer();
-        String region = event.getRegion();
+        String region = event.getRegion().toLowerCase();
         switch (region) {
             case "villagesafe":
                 Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.VILLAGE_SAFE);
