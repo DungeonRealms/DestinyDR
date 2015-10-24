@@ -1,11 +1,11 @@
 package net.dungeonrealms.commands;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.handlers.FriendHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -13,7 +13,11 @@ import org.bukkit.entity.Player;
 /**
  * Created by Nick on 10/22/2015.
  */
-public class CommandFriend implements CommandExecutor {
+public class CommandFriend extends BasicCommand {
+
+    public CommandFriend(String command, String usage, String description) {
+        super(command, usage, description);
+    }
 
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
         if (s instanceof ConsoleCommandSender) return false;

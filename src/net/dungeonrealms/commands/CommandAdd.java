@@ -1,5 +1,6 @@
 package net.dungeonrealms.commands;
 
+import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.items.ItemGenerator;
@@ -11,7 +12,6 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -23,7 +23,12 @@ import java.util.Random;
 /**
  * Created by Nick on 9/17/2015.
  */
-public class CommandAdd implements CommandExecutor {
+public class CommandAdd extends BasicCommand {
+
+    public CommandAdd(String command, String usage, String description) {
+        super(command, usage, description);
+    }
+
     @Override
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
         if (s instanceof ConsoleCommandSender) return false;

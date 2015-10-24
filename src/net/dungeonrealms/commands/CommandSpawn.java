@@ -1,36 +1,13 @@
 package net.dungeonrealms.commands;
 
-import java.util.Random;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Wolf;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.monsters.BasicEntitySkeleton;
-import net.dungeonrealms.entities.types.monsters.BasicMageMonster;
-import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
-import net.dungeonrealms.entities.types.monsters.EntityBandit;
-import net.dungeonrealms.entities.types.monsters.EntityFireImp;
-import net.dungeonrealms.entities.types.monsters.EntityGolem;
-import net.dungeonrealms.entities.types.monsters.EntityPirate;
-import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
-import net.dungeonrealms.entities.types.monsters.EntitySpider;
 import net.dungeonrealms.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.boss.Burick;
 import net.dungeonrealms.entities.types.monsters.boss.InfernalAbyss;
 import net.dungeonrealms.entities.types.monsters.boss.Mayel;
-import net.dungeonrealms.entities.types.monsters.boss.subboss.InfernalLordsGuard;
 import net.dungeonrealms.entities.types.monsters.boss.subboss.Pyromancer;
 import net.dungeonrealms.entities.utils.BuffUtils;
 import net.dungeonrealms.entities.utils.EntityStats;
@@ -40,11 +17,27 @@ import net.dungeonrealms.spawning.MobSpawner;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.World;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Wolf;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+
+import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
  */
-public class CommandSpawn implements CommandExecutor {
+public class CommandSpawn extends BasicCommand {
+
+    public CommandSpawn(String command, String usage, String description) {
+        super(command, usage, description);
+    }
 
     @Override
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {

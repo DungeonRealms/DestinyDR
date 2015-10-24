@@ -3,6 +3,7 @@ package net.dungeonrealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.commands.*;
+import net.dungeonrealms.commands.generic.CommandManager;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.PetUtils;
@@ -150,21 +151,23 @@ public class DungeonRealms extends JavaPlugin {
 
         mm.loadMechanics();
 
-        Utils.log.info("DungeonRealms Registering Commands() ... STARTING ...");
-        getCommand("spawn").setExecutor(new CommandSpawn());
-        getCommand("add").setExecutor(new CommandAdd());
-        getCommand("analyze").setExecutor(new CommandAnalyze());
-        getCommand("lag").setExecutor(new CommandLag());
-        getCommand("party").setExecutor(new CommandParty());
-        getCommand("set").setExecutor(new CommandSet());
-        getCommand("list").setExecutor(new CommandList());
-        getCommand("rank").setExecutor(new CommandRank());
-        getCommand("guild").setExecutor(new CommandGuild());
-        getCommand("essentials").setExecutor(new CommandEss());
-        getCommand("mailbox").setExecutor(new CommandMail());
-        getCommand("accept").setExecutor(new CommandAccept());
-        getCommand("invoke").setExecutor(new CommandInvoke());
-        getCommand("friend").setExecutor(new CommandFriend());
+        CommandManager cm = new CommandManager();
+
+        cm.registerCommand(new CommandAnalyze("analyze", "/<command> [args]", "This command does nothing!"));
+        cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menu!"));
+        cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "Spawns a mob? idk chase"));
+        cm.registerCommand(new CommandAdd("add", "/<command> [args]", "Adds shit"));
+        cm.registerCommand(new CommandLag("lag", "/<command> [args]", "checks for lag."));
+        cm.registerCommand(new CommandParty("party", "/<command> [args]", "Does this and that."));
+        cm.registerCommand(new CommandSet("set", "/<command> [args]", "SETS THE YEAH."));
+        cm.registerCommand(new CommandList("list", "/<command> [args]", "THE LIST"));
+        cm.registerCommand(new CommandRank("rank", "/<command> [args]", "The rank command!"));
+        cm.registerCommand(new CommandEss("essentials", "/<command> [args]", "The essentials command."));
+        cm.registerCommand(new CommandMail("mailbox", "/<command> [args]", "The mail command."));
+        cm.registerCommand(new CommandAccept("accept", "/<command> [args]", "The accept command."));
+        cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
+        cm.registerCommand(new CommandFriend("friend", "/<command> [args]", "The friend command."));
+
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         FTPUtils.startInitialization();
 

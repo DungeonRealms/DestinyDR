@@ -1,10 +1,10 @@
 package net.dungeonrealms.commands;
 
-import net.dungeonrealms.inventory.Menu;
+import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.handlers.MailHandler;
+import net.dungeonrealms.inventory.Menu;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -12,7 +12,11 @@ import org.bukkit.entity.Player;
 /**
  * Created by Nick on 10/15/2015.
  */
-public class CommandMail implements CommandExecutor {
+public class CommandMail extends BasicCommand {
+
+    public CommandMail(String command, String usage, String description) {
+        super(command, usage, description);
+    }
 
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
         if (s instanceof ConsoleCommandSender) return false;

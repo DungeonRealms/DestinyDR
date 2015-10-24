@@ -5,33 +5,3 @@ authors: [xFinityPro, Proxying, Xwaffle]
 website: http://www.dungeonrealms.net
 depend: [BountifulAPI, WorldGuard, BossBarAPI]
 description: The new dungeonrealms!
-commands:
-    invoke:
-       description: Administrative Invoke Command!
-    accept:
-       description: Accept Guild invitations or party invitations.
-    mail:
-        description: Does mail things
-        aliases: [mailbox, ups, fedex]
-    guild:
-        description: does guild things.
-    rank:
-        description: Ranks and things for admins.
-    spawn:
-        description: Handles manual spawning.
-    add:
-        description: Handles manual spawning items.
-    analyze:
-        description: Handles analyzing items/mobs.
-    lag:
-        description: Shows server information.
-    party:
-        description: The main party command.
-    set:
-        description: The main set command.
-    list:
-        description: Shows amount of players currently online.
-    essentials:
-        description: Used to set essential player information (Hearthstone Location etc).
-    friend:
-        description: Used to add or remove players from your friends list.

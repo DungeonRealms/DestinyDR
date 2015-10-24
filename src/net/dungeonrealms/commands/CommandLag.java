@@ -1,9 +1,9 @@
 package net.dungeonrealms.commands;
 
+import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.mastery.Utils;
 import org.bukkit.*;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
@@ -13,7 +13,11 @@ import java.util.List;
 /**
  * Created by Kieran on 9/17/2015.
  */
-public class CommandLag implements CommandExecutor {
+public class CommandLag extends BasicCommand {
+
+    public CommandLag(String command, String usage, String description) {
+        super(command, usage, description);
+    }
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {

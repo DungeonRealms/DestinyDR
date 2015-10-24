@@ -1,6 +1,7 @@
 package net.dungeonrealms.commands;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
@@ -8,7 +9,6 @@ import net.dungeonrealms.teleportation.TeleportAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
@@ -19,7 +19,11 @@ import java.util.List;
 /**
  * Created by Kieran on 10/9/2015.
  */
-public class CommandEss implements CommandExecutor {
+public class CommandEss extends BasicCommand {
+
+    public CommandEss(String command, String usage, String description) {
+        super(command, usage, description);
+    }
 
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {

@@ -3,25 +3,28 @@
  */
 package net.dungeonrealms.commands;
 
-import static net.dungeonrealms.spawning.SpawningMechanics.getSpawners;
-
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandExecutor;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
-
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.spawning.SpawningMechanics;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
+
+import static net.dungeonrealms.spawning.SpawningMechanics.getSpawners;
 
 /**
  * Created by Chase on Sep 22, 2015
  */
-public class CommandSet implements CommandExecutor {
+public class CommandSet extends BasicCommand {
+
+	public CommandSet(String command, String usage, String description) {
+		super(command, usage, description);
+	}
 
 	@Override
 	public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
