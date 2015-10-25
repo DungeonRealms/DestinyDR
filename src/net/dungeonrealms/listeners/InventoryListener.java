@@ -93,7 +93,7 @@ public class InventoryListener implements Listener {
 			String owner = event.getInventory().getTitle().split("@")[1];
 			Player shopOwner = Bukkit.getPlayer(owner);
 			Player clicker = (Player) event.getWhoClicked();
-			Shop shop = ShopMechanics.shops.get(shopOwner.getUniqueId());
+			Shop shop = ShopMechanics.PLAYER_SHOPS.get(shopOwner.getUniqueId());
 			ItemStack item = event.getCurrentItem();
 			if (item != null && item.getType() != Material.AIR) {
 				net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);

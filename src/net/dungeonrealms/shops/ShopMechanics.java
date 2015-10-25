@@ -23,7 +23,7 @@ import java.util.UUID;
  * Created by Chase on Sep 23, 2015
  */
 public class ShopMechanics implements GenericMechanic{
-    public static HashMap<UUID, Shop> shops = new HashMap<>();
+    public static HashMap<UUID, Shop> PLAYER_SHOPS = new HashMap<>();
 
     /**
      * setup new shop for player
@@ -60,7 +60,7 @@ public class ShopMechanics implements GenericMechanic{
                 if (b.getType() == Material.AIR) {
                     b.setType(Material.CHEST);
                     Shop shop = new Shop(uniqueId, shopName, b);
-                    shops.put(uniqueId, shop);
+                    PLAYER_SHOPS.put(uniqueId, shop);
                     event.setWillClose(true);
                     event.setWillDestroy(true);
                 } else {
@@ -87,10 +87,9 @@ public class ShopMechanics implements GenericMechanic{
      * @param block
      */
     public static Shop getShop(Block block) {
-        for (int i = 0; i < shops.values().size(); i++) {
-            Shop current = (Shop) shops.values().toArray()[i];
-            if (current.block.getX() == block.getX() && current.block.getY() == block.getY() && current.getBlock().getZ() == block.getZ()) {
-                return current;
+        for (Shop shop : PLAYER_SHOPS.values()) {
+            if (shop.block.getX() == block.getX() && shop.block.getY() == block.getY() && shop.getBlock().getZ() == block.getZ()) {
+                return shop;
             }
         }
         return null;
@@ -102,13 +101,11 @@ public class ShopMechanics implements GenericMechanic{
      * @since 1.0
      */
     public static void deleteAllShops() {
-    	
-            for(Shop shop : shops.values()){
-            	shop.saveCollectionBin();
-            	shop.deleteShop();
-            	shops.remove(shop);
-            }
-            Bukkit.getWorlds().get(0).save();
+        for(Shop shop : PLAYER_SHOPS.values()){
+            shop.saveCollectionBin();
+            shop.deleteShop();
+        }
+        Bukkit.getWorlds().get(0).save();
     }
 
     /**

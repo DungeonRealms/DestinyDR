@@ -5,7 +5,6 @@ package net.dungeonrealms.commands;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.commands.generic.BasicCommand;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumOperators;
@@ -45,9 +44,7 @@ public class CommandSet extends BasicCommand {
 				break;
 			case "invlevel":
 				int invlvl = Integer.parseInt(args[1]);
-				Utils.log.info(invlvl + " level");
-				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "inventory.level", invlvl,
-				        true);
+				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "inventory.level", invlvl, true);
 				break;
 			case "spawner":
 				if (args.length < 4) {
@@ -74,11 +71,8 @@ public class CommandSet extends BasicCommand {
 			case "loot":
 				if (args.length == 2) {
 					int lootTier = Integer.parseInt(args[1]);
-						String data = player.getLocation().getX() + "," + player.getLocation().getY() + ","
-					        + player.getLocation().getZ() + ":" + lootTier;
-						LootManager.spawnerConfig.add(data);
-					Utils.log.info(LootManager.spawnerConfig.get(LootManager.spawnerConfig.size() - 1));
-					Utils.log.info(LootManager.spawnerConfig.size()+ " size");
+					String data = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + ":" + lootTier;
+					LootManager.spawnerConfig.add(data);
 					DungeonRealms.getInstance().getConfig().set("loot", LootManager.spawnerConfig);
 				}
 				break;

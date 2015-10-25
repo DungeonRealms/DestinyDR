@@ -168,7 +168,7 @@ public class BlockListener implements Listener {
                 ItemStack item = event.getPlayer().getItemInHand();
                 net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
                 if (nms.getTag().hasKey("usage") && nms.getTag().getString("usage").equalsIgnoreCase("profile")) {
-                    if (ShopMechanics.shops.get(event.getPlayer().getUniqueId()) != null) {
+                    if (ShopMechanics.PLAYER_SHOPS.get(event.getPlayer().getUniqueId()) != null) {
                         event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "You already have an active shop");
                         return;
                     }
