@@ -14,7 +14,7 @@ import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
 import net.dungeonrealms.listeners.*;
 import net.dungeonrealms.mastery.AsyncUtils;
-import net.dungeonrealms.mastery.FTPUtils;
+import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.DungeonManager;
 import net.dungeonrealms.mechanics.LootManager;
@@ -144,6 +144,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(new LootManager());
         mm.registerMechanic(Entities.getInstance());
         mm.registerMechanic(ScoreboardHandler.getInstance());
+        mm.registerMechanic(RealmManager.getInstance());
         /*
         Commented out until he fixes Async Entity Add some shit.
         mm.registerMechanic(new SpawningMechanics());
@@ -153,7 +154,7 @@ public class DungeonRealms extends JavaPlugin {
 
         CommandManager cm = new CommandManager();
 
-        cm.registerCommand(new CommandAnalyze("analyze", "/<command> [args]", "This command does nothing!"));
+        cm.registerCommand(new CommandAnalyze("analyze", "/<command> [args]", "This command does nothing!D"));
         cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menu!"));
         cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "Spawns a mob? idk chase"));
         cm.registerCommand(new CommandAdd("add", "/<command> [args]", "Adds shit"));
@@ -167,9 +168,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandAccept("accept", "/<command> [args]", "The accept command."));
         cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
         cm.registerCommand(new CommandFriend("friend", "/<command> [args]", "The friend command."));
-
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
-        FTPUtils.startInitialization();
 
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
     }
