@@ -508,7 +508,7 @@ public class HealthHandler implements GenericMechanic{
             if (Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
                 Entities.getInstance().MONSTERS_LEASHED.remove(entity);
             }
-            if(entity.hasMetadata("type"))
+            if(entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile"))
             	((net.dungeonrealms.entities.Monster)entity1).onMonsterDeath();
             return;
         }
@@ -523,6 +523,9 @@ public class HealthHandler implements GenericMechanic{
         if (convHPToDisplay > 20) {
             convHPToDisplay = 20;
         }
+        String healthBar = "||||||||||||||||||||||||||||||||||||||||";
+        healthBar = ChatColor.GREEN.toString() +healthBar.substring(0, convHPToDisplay*2) + ChatColor.RED.toString() + healthBar.substring(convHPToDisplay*2, healthBar.length());
+        entity.setCustomName(healthBar);
         entity.setHealth(convHPToDisplay);
         if (!Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
             Entities.getInstance().MONSTERS_LEASHED.add(entity);

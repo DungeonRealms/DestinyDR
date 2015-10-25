@@ -62,6 +62,11 @@ public class EntityFireImp extends RangedEntitySkeleton {
     protected void getRareDrop() {
 
     }
+    
+	@Override
+	public EnumMonster getEnum() {
+		return this.monsterType;
+	}
 
     @Override
     public void setStats() {

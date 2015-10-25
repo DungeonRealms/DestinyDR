@@ -22,6 +22,7 @@ import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityTargetEvent;
@@ -120,6 +121,13 @@ public class Entities implements GenericMechanic{
                         MONSTERS_LEASHED.remove(entity);
                         MONSTER_LAST_ATTACK.remove(entity);
                         tryToReturnMobToBase(((CraftEntity) entity).getHandle());
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
+                        int level = entity.getMetadata("level").get(0).asInt();
+                        String name = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ((net.dungeonrealms.entities.Monster)entity).getEnum().name;
+                      	if(!entity.isDead())
+                          entity.setCustomName(name);
+
+                      }, 100);
                         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
                             if (HealthHandler.getInstance().getMonsterHPLive(entity) < HealthHandler.getInstance().getMonsterMaxHPLive(entity) && !MONSTERS_LEASHED.contains(entity) && !MONSTER_LAST_ATTACK.containsKey(entity)) {
                             	Utils.log.info("Healed " + entity.getCustomName());

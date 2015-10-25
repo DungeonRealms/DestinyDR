@@ -40,6 +40,11 @@ public class EntityGolem extends MeleeEntityZombie {
         this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation(), item);
         return null;
     }
+    
+	@Override
+	public EnumMonster getEnum() {
+		return this.monsterType;
+	}
 
     @Override
     protected void getRareDrop() {

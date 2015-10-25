@@ -10,32 +10,37 @@ import net.minecraft.server.v1_8_R3.World;
  */
 public class EntitySpider extends MeleeEntityZombie {
 
-    /**
-     * @param world
-     * @param mobName
-     * @param tier
-     */
-    public EntitySpider(World world, EnumMonster monst, int tier) {
-        super(world, monst, tier, EnumEntityType.HOSTILE_MOB, true);
-    }
+	/**
+	 * @param world
+	 * @param mobName
+	 * @param tier
+	 */
+	public EntitySpider(World world, EnumMonster monst, int tier) {
+		super(world, monst, tier, EnumEntityType.HOSTILE_MOB, true);
+	}
 
-    public EntitySpider(World world) {
-        super(world);
-    }
+	public EntitySpider(World world) {
+		super(world);
+	}
 
-    @Override
-    protected Item getLoot() {
-        return null;
-    }
+	@Override
+	protected Item getLoot() {
+		return null;
+	}
 
-    @Override
-    protected void getRareDrop() {
+	@Override
+	protected void getRareDrop() {
 
-    }
+	}
 
-    @Override
-    protected void setStats() {
+	@Override
+	public EnumMonster getEnum() {
+		return this.monsterType;
+	}
 
-    }
+	@Override
+	protected void setStats() {
+
+	}
 
 }

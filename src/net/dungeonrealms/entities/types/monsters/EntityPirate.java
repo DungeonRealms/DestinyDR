@@ -64,6 +64,11 @@ public class EntityPirate extends MeleeEntityZombie{
         }
     }
 
+	@Override
+	public EnumMonster getEnum() {
+		return this.monsterType;
+	}
+    
     @Override
     protected String z() {
         return "mob.zombie.say";

@@ -15,20 +15,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.monsters.BasicEntityBlaze;
-import net.dungeonrealms.entities.types.monsters.BasicEntityMagma;
-import net.dungeonrealms.entities.types.monsters.BasicEntityPigman;
-import net.dungeonrealms.entities.types.monsters.BasicEntitySilverfish;
-import net.dungeonrealms.entities.types.monsters.BasicEntitySkeleton;
-import net.dungeonrealms.entities.types.monsters.BasicMageMonster;
-import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
-import net.dungeonrealms.entities.types.monsters.EntityBandit;
-import net.dungeonrealms.entities.types.monsters.EntityFireImp;
-import net.dungeonrealms.entities.types.monsters.EntityGolem;
-import net.dungeonrealms.entities.types.monsters.EntityPirate;
-import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
-import net.dungeonrealms.entities.types.monsters.EntitySpider;
-import net.dungeonrealms.entities.types.monsters.EntityWitherSkeleton;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.mastery.Utils;
@@ -202,7 +188,7 @@ public class MobSpawner {
 				Bukkit.getScheduler().cancelTask(timerID);
 			}else	
 			spawnIn();
-			}, 0, 4 * 20);
+			}, 0, 10 * 20);
 		}else	{
 			kill();
 		}

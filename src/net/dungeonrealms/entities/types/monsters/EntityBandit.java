@@ -68,11 +68,18 @@ public class EntityBandit extends MeleeEntityZombie{
 
     @Override
     protected Item getLoot() {
+    	if(this.random.nextInt(100) < 50){
         ItemStack item = BankMechanics.gem.clone();
         item.setAmount(this.random.nextInt(5));
         this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation(), item);
+    	}
         return null;
     }
+    
+	@Override
+	public EnumMonster getEnum() {
+		return this.monsterType;
+	}
 
     @Override
     protected void getRareDrop() {

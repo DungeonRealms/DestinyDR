@@ -36,31 +36,31 @@ public class EntityStats {
             switch (tier) {
                 case 1:
                     lvldef = (lvl + 5) + (random.nextInt(5) - 3);
-                    lvlhp = Math.abs((lvl * 2) + (random.nextInt(30) - 15));
+                    lvlhp = Math.abs((lvl * 5) + (random.nextInt(30) - 15));
                     lvlatk = (lvl + 5) + (random.nextInt(5) - 3);
                     lvlspd = (lvl + 5) + (random.nextInt(5) - 3);
                     break;
                 case 2:
                     lvldef = (lvl + 20) + (random.nextInt(20) - 10);
-                    lvlhp = Math.abs((lvl * 5) + (random.nextInt(50) - 35));
+                    lvlhp = Math.abs((lvl * 20) + (random.nextInt(50) - 35));
                     lvlatk = (lvl + 20) + (random.nextInt(20) - 10);
                     lvlspd = (lvl + 20) + (random.nextInt(20) - 10);
                     break;
                 case 3:
                     lvldef = (lvl + 40) + (random.nextInt(35) - 20);
-                    lvlhp = Math.abs((lvl * 10) + (random.nextInt(75) - 50));
+                    lvlhp = Math.abs((lvl * 30) + (random.nextInt(75) - 50));
                     lvlatk = (lvl + 40) + (random.nextInt(35) - 20);
                     lvlspd = (lvl + 40) + (random.nextInt(35) - 20);
                     break;
                 case 4:
                     lvldef = (lvl + 60) + (random.nextInt(55) - 35);
-                    lvlhp = Math.abs((lvl * 20) + (random.nextInt(100) - 70));
+                    lvlhp = Math.abs((lvl * 50) + (random.nextInt(100) - 70));
                     lvlatk = (lvl + 60) + (random.nextInt(55) - 35);
                     lvlspd = (lvl + 60) + (random.nextInt(55) - 35);
                     break;
                 case 5:
                     lvldef = (lvl + 85) + (random.nextInt(80) - 50);
-                    lvlhp = Math.abs((lvl * 50) + (random.nextInt(150) - 100));
+                    lvlhp = Math.abs((lvl * 70) + (random.nextInt(150) - 100));
                     lvlatk = (lvl + 85) + (random.nextInt(80) - 50);
                     lvlspd = (lvl + 85) + (random.nextInt(80) - 50);
                     break;

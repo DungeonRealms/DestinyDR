@@ -94,4 +94,9 @@ public class BasicEntitySkeleton extends RangedEntitySkeleton {
     protected String bp() {
         return "mob.zombie.death";
     }
+
+	@Override
+	public EnumMonster getEnum() {
+		return this.monsterType;
+	}
 }

@@ -53,7 +53,10 @@ public class BasicMageMonster extends RangedEntitySkeleton {
     public void setStats() {
 
     }
-
+	@Override
+	public EnumMonster getEnum() {
+		return this.monsterType;
+	}
     @Override
     public void a(EntityLiving entity, float f) {
         double d0 = entity.locX - this.locX;

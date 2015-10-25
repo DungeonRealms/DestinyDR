@@ -28,6 +28,11 @@ public class BasicEntityBlaze extends RangedEntityBlaze {
 	protected Item getLoot() {
 		return null;
 	}
+	
+	@Override
+	public EnumMonster getEnum() {
+		return this.monsterType;
+	}
 
 	@Override
 	protected void getRareDrop() {

@@ -5,10 +5,12 @@ import java.util.Random;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.Monster;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
@@ -19,7 +21,7 @@ import net.minecraft.server.v1_8_R3.World;
 /**
  * Created by Chase on Oct 17, 2015
  */
-public class BasicEntityMagma extends EntityMagmaCube{
+public class BasicEntityMagma extends EntityMagmaCube implements Monster{
 
 	private EnumMonster monsterType;
 
@@ -85,5 +87,20 @@ public class BasicEntityMagma extends EntityMagmaCube{
     protected String bp() {
         return "mob.ghast.scream";
     }
+
+	@Override
+	public void onMonsterAttack(Player p) {
+		
+	}
+
+	@Override
+	public void onMonsterDeath() {
+		
+	}
+
+	@Override
+	public EnumMonster getEnum() {
+		return monsterType;
+	}
 
 }

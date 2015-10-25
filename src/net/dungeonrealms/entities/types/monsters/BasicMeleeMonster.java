@@ -46,6 +46,11 @@ public class BasicMeleeMonster extends MeleeEntityZombie {
         return null;
     }
 
+	@Override
+	public EnumMonster getEnum() {
+		return this.monsterType;
+	}
+    
     @Override
     protected void getRareDrop() {
 

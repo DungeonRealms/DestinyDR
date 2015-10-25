@@ -1,12 +1,16 @@
 package net.dungeonrealms.entities.types.monsters;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.Monster;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
@@ -21,7 +25,7 @@ import net.minecraft.server.v1_8_R3.World;
 /**
  * Created by Chase on Oct 21, 2015
  */
-public class BasicEntitySilverfish extends EntitySilverfish {
+public class BasicEntitySilverfish extends EntitySilverfish implements Monster{
 
 	public EnumMonster enumMonster;
 
@@ -68,5 +72,24 @@ public class BasicEntitySilverfish extends EntitySilverfish {
 
 	private ItemStack[] getTierArmor(int tier) {
 		return new ArmorGenerator().nextTier(tier);
+	}
+
+	@Override
+	public void onMonsterAttack(Player p) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onMonsterDeath() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
+		this.getLoot();
+		this.getRareDrop();
+		});
+	}
+
+	@Override
+	public EnumMonster getEnum() {
+		return enumMonster;
 	}
 }

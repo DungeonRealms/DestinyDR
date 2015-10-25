@@ -1,6 +1,7 @@
 package net.dungeonrealms.entities.types;
 
 import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.Monster;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
@@ -8,6 +9,8 @@ import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.*;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -140,9 +143,13 @@ public abstract class RangedEntitySkeleton extends EntitySkeleton implements Mon
     	
     }
     
+	public abstract EnumMonster getEnum();
+
 	@Override
 	public void onMonsterDeath() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
 		this.getLoot();
 		this.getRareDrop();
+		});
 	}
 }

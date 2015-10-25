@@ -1,6 +1,7 @@
 package net.dungeonrealms.entities.types;
 
 import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.Monster;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
@@ -10,6 +11,8 @@ import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -130,10 +133,14 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
     	
     	
     }
-	
+    
+	public abstract EnumMonster getEnum();
+
 	@Override
 	public void onMonsterDeath() {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
 		this.getLoot();
 		this.getRareDrop();
+		});
 	}
 }
