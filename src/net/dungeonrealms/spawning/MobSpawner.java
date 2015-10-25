@@ -1,9 +1,15 @@
 package net.dungeonrealms.spawning;
 
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.CopyOnWriteArrayList;
-
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.mastery.Utils;
+import net.minecraft.server.v1_8_R3.DamageSource;
+import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.EntityArmorStand;
+import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -12,30 +18,9 @@ import org.bukkit.entity.ArmorStand;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.monsters.BasicEntityBlaze;
-import net.dungeonrealms.entities.types.monsters.BasicEntityMagma;
-import net.dungeonrealms.entities.types.monsters.BasicEntityPigman;
-import net.dungeonrealms.entities.types.monsters.BasicEntitySilverfish;
-import net.dungeonrealms.entities.types.monsters.BasicEntitySkeleton;
-import net.dungeonrealms.entities.types.monsters.BasicMageMonster;
-import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
-import net.dungeonrealms.entities.types.monsters.EntityBandit;
-import net.dungeonrealms.entities.types.monsters.EntityFireImp;
-import net.dungeonrealms.entities.types.monsters.EntityGolem;
-import net.dungeonrealms.entities.types.monsters.EntityPirate;
-import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
-import net.dungeonrealms.entities.types.monsters.EntitySpider;
-import net.dungeonrealms.entities.types.monsters.EntityWitherSkeleton;
-import net.dungeonrealms.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.DamageSource;
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.EntityArmorStand;
-import net.minecraft.server.v1_8_R3.World;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Chase on Sep 25, 2015
@@ -197,14 +182,14 @@ public class MobSpawner {
 	 */
 	public void init() {
 		if(isSpawning()){
-			timerID= Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), ()->{
+			timerID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), ()-> {
 			if(isRemoved){
 				Bukkit.getScheduler().cancelTask(timerID);
-			}else	
-			spawnIn();
-			}, 0, 4 * 20);
+			} else
+			    spawnIn();
+			}, 0, 80L);
 		}else	{
-			kill();
+			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::kill, 5L);
 		}
 	}
 }
