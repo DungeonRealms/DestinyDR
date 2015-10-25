@@ -162,7 +162,7 @@ public class Teleportation implements GenericMechanic {
                         ParticleAPI.sendParticleToLocation(particleEffect[0], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
                         ParticleAPI.sendParticleToLocation(particleEffect[1], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 4F, 400);
                     } catch (Exception e) {
-                        Utils.log.info("Teleportation tried to send particle to player and failed. Continuing");
+                        Utils.log.info("[TELEPORT] Tried to send particle to player and failed. Continuing");
                     }
                     if (taskTimer[0] <= 0) {
                         if (CombatLog.isInCombat(player)) {

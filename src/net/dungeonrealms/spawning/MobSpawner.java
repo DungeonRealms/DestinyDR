@@ -1,17 +1,5 @@
 package net.dungeonrealms.spawning;
 
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.metadata.FixedMetadataValue;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
@@ -22,6 +10,17 @@ import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.World;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Chase on Sep 25, 2015
@@ -183,14 +182,14 @@ public class MobSpawner {
 	 */
 	public void init() {
 		if(isSpawning()){
-			timerID= Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), ()->{
+			timerID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), ()-> {
 			if(isRemoved){
 				Bukkit.getScheduler().cancelTask(timerID);
-			}else	
-			spawnIn();
-			}, 0, 10 * 20);
+			} else
+			    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::spawnIn, 0L);
+			}, 0, 80L);
 		}else	{
-			kill();
+			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::kill, 5L);
 		}
 	}
 }

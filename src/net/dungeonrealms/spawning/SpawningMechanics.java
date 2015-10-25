@@ -68,9 +68,7 @@ public class SpawningMechanics implements GenericMechanic {
             ((CraftEntity) entity).getHandle().damageEntity(DamageSource.GENERIC, 20f);
             entity.remove();
         });
-        Bukkit.getWorlds().get(0).getLivingEntities().forEach(entity -> {
-            ((CraftEntity) entity).getHandle().damageEntity(DamageSource.GENERIC, 20f);
-        });
+        Bukkit.getWorlds().get(0).getLivingEntities().forEach(entity -> ((CraftEntity) entity).getHandle().damageEntity(DamageSource.GENERIC, 20f));
     }
 
     public static void loadSpawner(String line) {
@@ -167,7 +165,7 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new BasicEntitySilverfish(world, EnumMonster.GreaterAbyssalDemon, tier);
                 break;
             default:
-                Utils.log.info(monsEnum.idName + " is not created yet.");
+                Utils.log.info("[SPAWNING] Tried to create " + monsEnum.idName + " but it has failed.");
                 return null;
         }
         return entity;
@@ -180,22 +178,17 @@ public class SpawningMechanics implements GenericMechanic {
 
     @Override
     public void startInitialization() {
-        Utils.log.info("#################Started Loading Spawners#################");
         loadSpawners();
-        Utils.log.info("#################Done Loading Spawners#################");
-
     }
 
     @Override
     public void stopInvocation() {
         killAll();
         Bukkit.getWorlds().get(0).getEntities().forEach(entity -> {
-            Utils.log.info("killed entity");
             ((CraftEntity) entity).getHandle().damageEntity(DamageSource.GENERIC, 20f);
             entity.remove();
         });
         Bukkit.getWorlds().get(0).getLivingEntities().forEach(entity -> {
-            Utils.log.info("killed entity");
             ((CraftEntity) entity).getHandle().damageEntity(DamageSource.GENERIC, 20f);
         });
     }

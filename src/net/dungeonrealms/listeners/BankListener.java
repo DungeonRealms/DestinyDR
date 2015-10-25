@@ -1,13 +1,18 @@
 package net.dungeonrealms.listeners;
 
-import java.util.ArrayList;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import com.minebone.anvilapi.core.AnvilApi;
+import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
+import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.banks.BankMechanics;
+import net.dungeonrealms.banks.Storage;
+import net.dungeonrealms.inventory.GUI;
+import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -22,20 +27,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.minebone.anvilapi.core.AnvilApi;
-import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
-import com.minebone.anvilapi.nms.anvil.AnvilSlot;
-
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.banks.BankMechanics;
-import net.dungeonrealms.banks.Storage;
-import net.dungeonrealms.inventory.GUI;
-import net.dungeonrealms.mastery.ItemSerialization;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.mongo.EnumOperators;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by Chase, by fixed by Proxying and under inspection of xFinityPro.
@@ -53,9 +46,7 @@ public class BankListener implements Listener {
             if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
             	
             	String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, e.getPlayer().getUniqueId());
-            	Utils.log.info(invString);
             	if(!invString.equalsIgnoreCase("")){
-            		Utils.log.info("Collection Bin Opend");
             		Inventory tempInv = ItemSerialization.fromString(invString);
             		Inventory collectionBin = Bukkit.createInventory(e.getPlayer(), tempInv.getSize(), "Collection Bin");
             		collectionBin.setContents(tempInv.getContents());
@@ -198,7 +189,6 @@ public class BankListener implements Listener {
                         if (nms.hasTag() && e.getCursor().getType() == Material.EMERALD
                                 || nms.hasTag() && e.getCursor().getType() == Material.PAPER) {
                             if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
-                                Utils.log.info("Added Gem");
                                 int size = 0;
                                 if (e.isLeftClick()) {
                                     if (e.getCursor().getType() == Material.EMERALD)

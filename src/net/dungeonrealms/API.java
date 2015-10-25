@@ -245,7 +245,10 @@ public class API {
         }
         PlayerInventory inv = player.getInventory();
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.player", ItemSerialization.toString(inv), false);
-        String locationAsString = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + "," + player.getLocation().getYaw() + "," + player.getLocation().getPitch();
+        String locationAsString = "-367,84,390,0,0"; //Cyrennica
+        if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+            locationAsString = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + "," + player.getLocation().getYaw() + "," + player.getLocation().getPitch();
+        }
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "info.currentLocation", locationAsString, false);
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
