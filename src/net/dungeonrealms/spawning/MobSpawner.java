@@ -186,7 +186,7 @@ public class MobSpawner {
 			if(isRemoved){
 				Bukkit.getScheduler().cancelTask(timerID);
 			} else
-			    spawnIn();
+			    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::spawnIn, 0L);
 			}, 0, 80L);
 		}else	{
 			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::kill, 5L);
