@@ -53,7 +53,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * or who imports copies or phonorecords into the United States in violation of section 602,
  * is an infringer of the copyright or right of the author, as the case may be. For purposes
  * of this chapter (other than section 506), any reference to copyright shall be deemed to
- * include the rights conferred by section 106A(a). As used in this subsection, the term �anyone�
+ * include the rights conferred by section 106A(a). As used in this subsection, the term anyone
  * includes any State, any instrumentality of a State, and any officer or employee of a State or
  * instrumentality of a State acting in his or her official capacity. Any State, and any such
  * instrumentality, officer, or employee, shall be subject to the provisions of this title in
@@ -64,7 +64,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  *
  * (http://www.copyright.gov/title17/92chap5.html)
  *
- * Big thanks your our proud sponsors (Casey Keeling).
+ * Big thanks your our proud sponsor(s) (Casey Keeling).
  * Who is nothing more or less than a sponsor.
  * Hereinafter declaring that the individual shall NOT
  * hold ANY legal grounds over the source.
