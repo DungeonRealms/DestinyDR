@@ -45,7 +45,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  *
  * Written by Nick Doran (xFinityPro) <nick@cherryio.com>, October 2015 -
  * Written by Kieran Quigley (Proxying) <Proxying@cherryio.com>, October 2015 -
- * Written by Chase BR (Xwaffle) <chase@cherryio.com>, October 2015 -
+ * Written by Kimberly Myers  (Xwaffle) <chase@cherryio.com>, October 2015 -
  *
  *
  * (a) Anyone who violates any of the exclusive rights of the copyright owners as
