@@ -104,27 +104,6 @@ public class DungeonRealms extends JavaPlugin {
 
         WebAPI.fetchPrerequisites();
 
-        /*
-        PetUtils.getInstance().startInitialization();
-        Teleportation.getInstance().startInitialization();
-        CombatLog.getInstance().startInitialization();
-        Party.getInstance().startInitialization();
-        EnergyHandler.getInstance().startInitialization();
-        EnchantmentAPI.getInstance().startInitialization();
-        Subscription.getInstance().startInitialization();
-        Rank.getInstance().startInitialization();
-        DonationEffects.getInstance().startInitialization();
-        HealthHandler.getInstance().startInitialization();
-        KarmaHandler.getInstance().startInitialization();
-        BankMechanics.getInstance().startInitialization();
-        NetworkServer.getInstance().startInitialization();
-        DungeonManager.getInstance().startInitialization();
-        ScoreboardHandler.getInstance().startInitialization();
-        AchievementManager.getInstance().startInitialization();
-        //SpawningMechanics.getInstance().startInitialization();
-        Entities.getInstance().startInitialization();
-         */
-
         mm = new MechanicManager();
 
         mm.registerMechanic(PetUtils.getInstance());
