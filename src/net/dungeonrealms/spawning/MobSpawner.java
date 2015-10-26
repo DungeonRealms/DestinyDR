@@ -155,8 +155,8 @@ public class MobSpawner {
     	kill();
     	armorstand.getWorld().removeEntity(armorstand);
     	armorstand.getBukkitEntity().remove();
-    	SpawningMechanics.SPANWER_CONFIG.set(id, null);
-		DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPANWER_CONFIG);
+    	SpawningMechanics.SPAWNER_CONFIG.set(id, null);
+		DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
 		DungeonRealms.getInstance().saveConfig();
     	isRemoved = true;
     }

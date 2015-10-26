@@ -366,6 +366,15 @@ public class API {
         return ParticleAPI.ParticleEffect.getByName(trailType.toUpperCase()) != null;
     }
 
+
+    /**
+     * Returns if the entity is an actual player
+     * and not a Citizens NPC
+     *
+     * @param entity
+     * @return boolean
+     * @since 1.0
+     */
     public static boolean isPlayer(Entity entity) {
         return entity instanceof Player && !(entity.hasMetadata("NPC") || entity.hasMetadata("npc"));
     }

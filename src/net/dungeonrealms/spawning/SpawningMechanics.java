@@ -21,7 +21,7 @@ import java.util.ArrayList;
 public class SpawningMechanics implements GenericMechanic {
 
     private static ArrayList<MobSpawner> ALLSPAWNERS = new ArrayList<>();
-    public static ArrayList<String> SPANWER_CONFIG = new ArrayList<>();
+    public static ArrayList<String> SPAWNER_CONFIG = new ArrayList<>();
     private static SpawningMechanics instance;
 
 
@@ -46,8 +46,8 @@ public class SpawningMechanics implements GenericMechanic {
     }
 
     public static void loadSpawners() {
-        SPANWER_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("spawners");
-        for (String line : SPANWER_CONFIG) {
+        SPAWNER_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("spawners");
+        for (String line : SPAWNER_CONFIG) {
             if (line == null || line.equalsIgnoreCase("null"))
                 continue;
             String[] coords = line.split("=")[0].split(",");

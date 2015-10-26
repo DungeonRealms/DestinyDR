@@ -9,6 +9,7 @@ import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.EntityMonster;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftMonster;
@@ -521,13 +522,15 @@ public class DamageAPI {
                 }
                 if (nmsTags[i].getInt("thorns") != 0) {
                     if (API.isPlayer(attacker)) {
-                        if (((Player) attacker).getItemInHand() != null && ((Player) attacker).getItemInHand().getType() != Material.AIR) {
-                            net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
-                            NBTTagCompound tag = nmsItem.getTag();
-                            if (tag != null) {
-                                if (tag.getDouble("damage") != 0) {
-                                    int damageFromThorns = (int) ((tag.getDouble("damage") / 100) * nmsTags[i].getInt("thorns"));
-                                    HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, damageFromThorns);
+                        if (((Player) attacker).getGameMode() == GameMode.SURVIVAL) {
+                            if (((Player) attacker).getItemInHand() != null && ((Player) attacker).getItemInHand().getType() != Material.AIR) {
+                                net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
+                                NBTTagCompound tag = nmsItem.getTag();
+                                if (tag != null) {
+                                    if (tag.getDouble("damage") != 0) {
+                                        int damageFromThorns = (int) ((tag.getDouble("damage") / 100) * nmsTags[i].getInt("thorns"));
+                                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, damageFromThorns);
+                                    }
                                 }
                             }
                         }
