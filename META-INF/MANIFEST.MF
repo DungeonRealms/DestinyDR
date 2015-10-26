@@ -1,4 +1,6 @@
 Manifest-Version: 1.0
 Class-Path: lib/bson-3.0.2.jar lib/mongodb-driver-core-3.0.2.jar lib/m
- ongodb-driver-async-3.0.2.jar lib/commons-net-3.3.jar
+ ongodb-driver-async-3.0.2.jar lib/commons-net-3.3.jar lib/twitter4j-c
+ ore-4.0.4.jar lib/twitter4j-async-4.0.4.jar lib/twitter4j-media-suppo
+ rt-4.0.4.jar lib/twitter4j-stream-4.0.4.jar
 

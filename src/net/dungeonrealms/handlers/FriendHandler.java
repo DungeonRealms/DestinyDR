@@ -2,12 +2,15 @@ package net.dungeonrealms.handlers;
 
 import com.mongodb.client.result.UpdateResult;
 import net.dungeonrealms.core.Callback;
+import net.dungeonrealms.inventory.Menu;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.network.NetworkAPI;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
@@ -31,11 +34,33 @@ public class FriendHandler {
     }
 
     public void addOrRemove(Player player, ClickType type, ItemStack itemStack) {
-        if (itemStack == null || itemStack.getType() == null || itemStack.getType().equals(Material.AIR)) return;
+        if (itemStack == null || itemStack.getType() == null || !(itemStack.getType().equals(Material.SKULL_ITEM)))
+            return;
+        NBTTagCompound tag = CraftItemStack.asNMSCopy(itemStack).getTag();
+        UUID friend = UUID.fromString(tag.getString("info").split(",")[0]);
+
         switch (type) {
             case RIGHT:
+                //Remove Pending request
+                player.closeInventory();
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, "notices.friendRequest", tag.getString("info"), true, new Callback<UpdateResult>(UpdateResult.class) {
+                    @Override
+                    public void callback(Throwable failCause, UpdateResult result) {
+                        sendFriendMessage(player, ChatColor.GREEN + "You have successfully removed pending request for " + itemStack.getItemMeta().getDisplayName().split("'")[0]);
+                        Menu.openFriendInventory(player);
+                    }
+                });
                 break;
             case LEFT:
+                //Add Friend
+                player.closeInventory();
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, "notices.friendRequest", tag.get("info"), true);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "friends", friend.toString(), true, new Callback<UpdateResult>(UpdateResult.class) {
+                    @Override
+                    public void callback(Throwable failCause, UpdateResult result) {
+                        sendFriendMessage(player, ChatColor.GREEN + "You have successfully added " + ChatColor.AQUA + itemStack.getItemMeta().getDisplayName().split("'")[0]);
+                    }
+                });
                 break;
         }
     }
@@ -99,7 +124,7 @@ public class FriendHandler {
      * @since 1.0
      */
     public void sendFriendMessage(Player player, String message) {
-        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "FRIEND" + ChatColor.WHITE + "] " + ChatColor.RESET + message);
+        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "FRIENDS" + ChatColor.WHITE + "] " + ChatColor.RESET + message);
     }
 
 }

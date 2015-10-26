@@ -50,16 +50,16 @@ public class ClickHandler {
          */
         if (name.equals("Friend Management")) {
             event.setCancelled(true);
-            if(slot >= 44)return;
+            if (slot >= 44) return;
             if (slot == 0) {
                 AnvilGUIInterface addFriendGUI = AnvilApi.createNewGUI(player, anvilClick -> {
                     switch (anvilClick.getSlot()) {
                         case OUTPUT:
                             anvilClick.setWillClose(true);
                             anvilClick.setWillDestroy(true);
-                            if(Bukkit.getPlayer(anvilClick.getName()) != null) {
+                            if (Bukkit.getPlayer(anvilClick.getName()) != null) {
                                 FriendHandler.getInstance().sendRequest(player, Bukkit.getPlayer(anvilClick.getName()));
-                            }else {
+                            } else {
                                 player.sendMessage(ChatColor.RED + "Error, that player doesn't exist!");
                             }
                             break;
