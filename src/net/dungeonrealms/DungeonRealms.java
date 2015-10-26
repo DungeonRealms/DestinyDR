@@ -63,6 +63,12 @@ import org.bukkit.plugin.java.JavaPlugin;
  * freedom development please reference United States Copyright Laws below.
  *
  * (http://www.copyright.gov/title17/92chap5.html)
+ *
+ * Big thanks your our proud sponsors (Casey Keeling).
+ * Who is nothing more or less than a sponsor.
+ * Hereinafter declaring that the individual shall NOT
+ * hold ANY legal grounds over the source.
+ *
  */
 public class DungeonRealms extends JavaPlugin {
 
