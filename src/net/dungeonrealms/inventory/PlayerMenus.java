@@ -1,28 +1,9 @@
 package net.dungeonrealms.inventory;
 
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-
-import org.bson.Document;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
-
 import com.mongodb.Block;
 import com.mongodb.async.SingleResultCallback;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.model.Sorts;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.types.mounts.EnumMounts;
@@ -37,12 +18,53 @@ import net.dungeonrealms.mongo.EnumGuildData;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
+import org.bson.Document;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 /**
  * Created by Nick on 9/29/2015.
  */
 @SuppressWarnings({"unchecked", "chasesTouch"})
 public class PlayerMenus {
+
+    public static void openFriendsMenu(Player player) {
+        UUID uuid = player.getUniqueId();
+        ArrayList<String> friendRequest = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIENDS, uuid);
+
+        Inventory inv = Bukkit.createInventory(null, 54, "Friends");
+
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{
+                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to go back!"
+        }));
+
+
+        int slot = 9;
+        for (String s : friendRequest) {
+            String from = s;
+
+            ItemStack stack = editItem(API.getNameFromUUID(from), "", new String[]{
+                    ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to delete!"
+            });
+            inv.setItem(slot, stack);
+
+            if (slot >= 54) break;
+            slot++;
+        }
+
+        player.openInventory(inv);
+
+    }
 
     public static void openFriendInventory(Player player) {
         UUID uuid = player.getUniqueId();
@@ -52,6 +74,10 @@ public class PlayerMenus {
 
         inv.setItem(0, editItem(new ItemStack(Material.BOOK_AND_QUILL), ChatColor.GREEN + "Add Friend", new String[]{
                 ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to add friend!"
+        }));
+
+        inv.setItem(2, editItem(new ItemStack(Material.CHEST), ChatColor.GREEN + "View Friend", new String[]{
+                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to view friends!"
         }));
 
         SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
@@ -108,7 +134,7 @@ public class PlayerMenus {
             Date sentDate = new Date(unix * 1000);
             String loginTime = sdf.format(sentDate);
 
-            ItemStack mailTemplateItem = MailHandler.getInstance().setItemAsMail(editItem(new ItemStack(Material.PAPER), ChatColor.GREEN + "Mail Item", new String[]{
+            ItemStack mailTemplateItem = MailHandler.getInstance().setItemAsMail(editItem(new ItemStack(Material.CHEST), ChatColor.GREEN + "Mail Item", new String[]{
                     ChatColor.GRAY + "From: " + ChatColor.AQUA + from,
                     ChatColor.GRAY + "Sent: " + ChatColor.AQUA + sentDate,
                     "",

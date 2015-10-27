@@ -132,11 +132,6 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(RealmManager.getInstance());
 
         /*
-        Commented out until we register a "Twitter App"
-        mm.registerMechanic(TwitterManager.getInstance());
-         */
-
-        /*
         Commented out until he fixes Async Entity Add some shit.
         mm.registerMechanic(new SpawningMechanics());
          */
