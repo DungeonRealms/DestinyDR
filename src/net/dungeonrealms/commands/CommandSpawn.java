@@ -113,8 +113,8 @@ public class CommandSpawn extends BasicCommand {
                     MobSpawner spawner = new MobSpawner(player.getLocation(), monster, tier, 4, SpawningMechanics.getSpawners().size());
     				String text = (player.getLocation().getX() + "," + player.getLocation().getY() + ","
     				        + player.getLocation().getZ() + "=" + args[1] + ":" + tier);
-    				SpawningMechanics.SPANWER_CONFIG.add(text);
-    				DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPANWER_CONFIG);
+    				SpawningMechanics.SPAWNER_CONFIG.add(text);
+    				DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
                     SpawningMechanics.add(spawner);
                     break;
                 case "boss":

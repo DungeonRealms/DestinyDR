@@ -63,9 +63,9 @@ public class CommandSet extends BasicCommand {
 				}
 				String text = (player.getLocation().getX() + "," + player.getLocation().getY() + ","
 				        + player.getLocation().getZ() + "=" + args[1] + ":" + tier + ";" + spawnAmount);
-				player.sendMessage("Line " + (SpawningMechanics.SPANWER_CONFIG.size() + 2) + " added "  + args[1] + " tier " + tier);
-				SpawningMechanics.SPANWER_CONFIG.add(text);
-				DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPANWER_CONFIG);
+				player.sendMessage("Line " + (SpawningMechanics.SPAWNER_CONFIG.size() + 2) + " added "  + args[1] + " tier " + tier);
+				SpawningMechanics.SPAWNER_CONFIG.add(text);
+				DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
 				DungeonRealms.getInstance().saveConfig();
 				SpawningMechanics.loadSpawner(text);
 				break;

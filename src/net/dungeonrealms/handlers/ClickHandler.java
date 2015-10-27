@@ -1,5 +1,24 @@
 package net.dungeonrealms.handlers;
 
+import com.minebone.anvilapi.core.AnvilApi;
+import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
+import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+import net.dungeonrealms.banks.BankMechanics;
+import net.dungeonrealms.combat.CombatLog;
+import net.dungeonrealms.donate.DonationEffects;
+import net.dungeonrealms.entities.utils.EntityAPI;
+import net.dungeonrealms.entities.utils.MountUtils;
+import net.dungeonrealms.entities.utils.PetUtils;
+import net.dungeonrealms.guild.Guild;
+import net.dungeonrealms.inventory.PlayerMenus;
+import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.network.NetworkAPI;
+import net.dungeonrealms.teleportation.TeleportAPI;
+import net.dungeonrealms.teleportation.Teleportation;
+import net.minecraft.server.v1_8_R3.Entity;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -8,24 +27,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
-import com.minebone.anvilapi.core.AnvilApi;
-import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
-import com.minebone.anvilapi.nms.anvil.AnvilSlot;
-
-import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.donate.DonationEffects;
-import net.dungeonrealms.entities.utils.EntityAPI;
-import net.dungeonrealms.entities.utils.MountUtils;
-import net.dungeonrealms.entities.utils.PetUtils;
-import net.dungeonrealms.guild.Guild;
-import net.dungeonrealms.inventory.Menu;
-import net.dungeonrealms.mechanics.ParticleAPI;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.network.NetworkAPI;
-import net.dungeonrealms.teleportation.TeleportAPI;
-import net.dungeonrealms.teleportation.Teleportation;
-import net.minecraft.server.v1_8_R3.Entity;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Nick on 10/2/2015.
@@ -48,26 +52,55 @@ public class ClickHandler {
         if (slot == -999) return;
 
         /*
+        Animal Tamer NPC
+         */
+        if (name.equals("Mount Vendor")) {
+            event.setCancelled(true);
+            UUID uuid = player.getUniqueId();
+            if (event.getCurrentItem().getType() != Material.AIR) {
+                net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                if (nmsStack == null) return;
+                if (nmsStack.getTag() == null) return;
+                if (slot > 9) return;
+                List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, uuid);
+                if (playerMounts.contains(nmsStack.getTag().getString("mountType"))) {
+                    player.sendMessage("You already own this mount!");
+                    return;
+                } else {
+                    if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.mounts", nmsStack.getTag().getString("mountType").toUpperCase(), true);
+                        player.sendMessage("You have purchased the " + nmsStack.getTag().getString("mountType") + " mount!");
+                        return;
+                    } else {
+                        player.sendMessage("You cannot afford this mount!");
+                        return;
+                    }
+                }
+            }
+            return;
+        }
+
+        /*
         Friend Management
          */
         if (name.equals("Friend Management")) {
             event.setCancelled(true);
-            if(slot >= 44)return;
+            if (slot >= 44) return;
             if (slot == 0) {
                 AnvilGUIInterface addFriendGUI = AnvilApi.createNewGUI(player, anvilClick -> {
                     switch (anvilClick.getSlot()) {
                         case OUTPUT:
                             anvilClick.setWillClose(true);
                             anvilClick.setWillDestroy(true);
-                            if(Bukkit.getPlayer(anvilClick.getName()) != null) {
+                            if (Bukkit.getPlayer(anvilClick.getName()) != null) {
                                 FriendHandler.getInstance().sendRequest(player, Bukkit.getPlayer(anvilClick.getName()));
-                            }else {
+                            } else {
                                 player.sendMessage(ChatColor.RED + "Error, that player doesn't exist!");
                             }
                             break;
                     }
                 });
-                addFriendGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
+                addFriendGUI.setSlot(AnvilSlot.INPUT_LEFT, PlayerMenus.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
                 addFriendGUI.open();
                 return;
             }
@@ -93,7 +126,7 @@ public class ClickHandler {
         if (name.equalsIgnoreCase("Pet Selection")) {
             event.setCancelled(true);
             if (event.getCurrentItem().getType() == Material.BARRIER) {
-                Menu.openPlayerProfileMenu(player);
+                PlayerMenus.openPlayerProfileMenu(player);
                 return;
             }
             if (event.getCurrentItem().getType() == Material.LEASH) {
@@ -143,7 +176,7 @@ public class ClickHandler {
         if (name.equalsIgnoreCase("Mount Selection")) {
             event.setCancelled(true);
             if (event.getCurrentItem().getType() == Material.BARRIER) {
-                Menu.openPlayerProfileMenu(player);
+                PlayerMenus.openPlayerProfileMenu(player);
                 return;
             }
             if (event.getCurrentItem().getType() == Material.LEASH) {
@@ -202,7 +235,7 @@ public class ClickHandler {
         if (name.equalsIgnoreCase("Player Trail Selection")) {
             event.setCancelled(true);
             if (event.getCurrentItem().getType() == Material.BARRIER) {
-                Menu.openPlayerProfileMenu(player);
+                PlayerMenus.openPlayerProfileMenu(player);
                 return;
             }
             if (event.getCurrentItem().getType() == Material.ARMOR_STAND) {
@@ -236,16 +269,16 @@ public class ClickHandler {
                 case 0: //todo: attributes
                     break;
                 case 1:
-                    Menu.openFriendInventory(player);
+                    PlayerMenus.openFriendInventory(player);
                     break;
                 case 6:
-                    Menu.openPlayerParticleMenu(player);
+                    PlayerMenus.openPlayerParticleMenu(player);
                     break;
                 case 7:
-                    Menu.openPlayerMountMenu(player);
+                    PlayerMenus.openPlayerMountMenu(player);
                     break;
                 case 8:
-                    Menu.openPlayerPetMenu(player);
+                    PlayerMenus.openPlayerPetMenu(player);
                     break;
                 case 22:
                     if (!(CombatLog.isInCombat(player))) {
@@ -280,7 +313,7 @@ public class ClickHandler {
             event.setCancelled(true);
             switch (slot) {
                 case 0:
-                    Menu.openPlayerGuildInventory(player);
+                    PlayerMenus.openPlayerGuildInventory(player);
                     break;
                 case 10:
                     if (Guild.getInstance().isOfficer(guildName, player.getUniqueId()) || Guild.getInstance().isOwner(player.getUniqueId(), guildName) || Guild.getInstance().isCoOwner(player.getUniqueId(), guildName)) {
@@ -293,7 +326,7 @@ public class ClickHandler {
                                     break;
                             }
                         });
-                        invitePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
+                        invitePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, PlayerMenus.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
                         invitePlayerGUI.open();
                     } else {
                         player.sendMessage(ChatColor.RED + "You do not have the required permissions to invite a player!");
@@ -310,7 +343,7 @@ public class ClickHandler {
                                     break;
                             }
                         });
-                        removePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
+                        removePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, PlayerMenus.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
                         removePlayerGUI.open();
                     } else {
                         player.sendMessage(ChatColor.RED + "You do not have the required permissions to remove a player!");
@@ -326,7 +359,7 @@ public class ClickHandler {
                                     Guild.getInstance().promotePlayer(player, anvilClick.getName());
                             }
                         });
-                        promotePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
+                        promotePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, PlayerMenus.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
                         promotePlayerGUI.open();
                     } else {
                         player.sendMessage(ChatColor.RED + "You do not have the required permissions to promote a player!");
@@ -343,7 +376,7 @@ public class ClickHandler {
                                     Guild.getInstance().demotePlayer(player, anvilClick.getName());
                             }
                         });
-                        demotePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
+                        demotePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, PlayerMenus.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
                         demotePlayerGUI.open();
                     } else {
                         player.sendMessage(ChatColor.RED + "You do not have the required permissions to demote a player!");
@@ -364,7 +397,7 @@ public class ClickHandler {
                                     }
                             }
                         });
-                        pickIconGUI.setSlot(AnvilSlot.INPUT_LEFT, Menu.editItem(new ItemStack(Material.DIAMOND), "Type material here..", new String[]{
+                        pickIconGUI.setSlot(AnvilSlot.INPUT_LEFT, PlayerMenus.editItem(new ItemStack(Material.DIAMOND), "Type material here..", new String[]{
                                 ChatColor.GRAY + "",
                                 ChatColor.GRAY + "How to use:",
                                 ChatColor.GRAY + "dirt -> dirt block",
@@ -381,43 +414,43 @@ public class ClickHandler {
         if (name.endsWith("- Officers")) {
             event.setCancelled(true);
             if (slot == 0) {
-                Menu.openPlayerGuildInventory(player);
+                PlayerMenus.openPlayerGuildInventory(player);
             }
         } else if (name.endsWith("- Members")) {
             event.setCancelled(true);
             if (slot == 0) {
-                Menu.openPlayerGuildInventory(player);
+                PlayerMenus.openPlayerGuildInventory(player);
             }
         } else if (name.endsWith(" - (Bank Logs)")) {
             event.setCancelled(true);
             if (slot == 0) {
-                Menu.openPlayerGuildLog(player);
+                PlayerMenus.openPlayerGuildLog(player);
             }
         } else if (name.endsWith("- (Invite Logs)")) {
             event.setCancelled(true);
             if (slot == 0) {
-                Menu.openPlayerGuildLog(player);
+                PlayerMenus.openPlayerGuildLog(player);
             }
         } else if (name.endsWith(" - (Login Logs)")) {
             event.setCancelled(true);
             if (slot == 0) {
-                Menu.openPlayerGuildLog(player);
+                PlayerMenus.openPlayerGuildLog(player);
             }
         } else if (name.endsWith("- (Logs)")) {
             event.setCancelled(true);
             if (slot > 18) return;
             switch (slot) {
                 case 0:
-                    Menu.openPlayerGuildInventory(player);
+                    PlayerMenus.openPlayerGuildInventory(player);
                     break;
                 case 12:
-                    Menu.openPlayerGuildLogLogins(player);
+                    PlayerMenus.openPlayerGuildLogLogins(player);
                     break;
                 case 13:
-                    Menu.openPlayerGuildLogInvitations(player);
+                    PlayerMenus.openPlayerGuildLogInvitations(player);
                     break;
                 case 14:
-                    Menu.openPlayerGuildLogBankClicks(player);
+                    PlayerMenus.openPlayerGuildLogBankClicks(player);
                     break;
 
             }
@@ -430,19 +463,19 @@ public class ClickHandler {
             if (slot > 54) return;
             switch (slot) {
                 case 0:
-                    Menu.openPlayerGuildLog(player);
+                    PlayerMenus.openPlayerGuildLog(player);
                     break;
                 case 1:
-                    Menu.openGuildManagement(player);
+                    PlayerMenus.openGuildManagement(player);
                     break;
                 case 17:
-                    Menu.openGuildRankingBoard(player);
+                    PlayerMenus.openGuildRankingBoard(player);
                     break;
                 case 18:
-                    Menu.openGuildOfficers(player);
+                    PlayerMenus.openGuildOfficers(player);
                     break;
                 case 27:
-                    Menu.openGuildMembers(player);
+                    PlayerMenus.openGuildMembers(player);
                     break;
             }
         }

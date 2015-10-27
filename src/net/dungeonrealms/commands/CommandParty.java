@@ -33,6 +33,10 @@ public class CommandParty extends BasicCommand {
                     break;
                 case "invite":
                     if (Party.getInstance().isOwnerOfParty(player)) {
+                        if (Bukkit.getPlayer(args[1]) == null) {
+                            player.sendMessage(ChatColor.RED + "The player you specified doesn't exist!?");
+                            return false;
+                        }
                         if (Bukkit.getPlayer(args[1]).equals(player)) {
                             Party.RawParty p = Party.getInstance().getPlayerParty(player);
                             if (!p.getInviting().contains(Bukkit.getPlayer(args[1]))) {

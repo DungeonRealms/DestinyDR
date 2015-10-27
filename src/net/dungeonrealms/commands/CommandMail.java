@@ -1,14 +1,13 @@
 package net.dungeonrealms.commands;
 
+import net.dungeonrealms.commands.generic.BasicCommand;
+import net.dungeonrealms.handlers.MailHandler;
+import net.dungeonrealms.inventory.PlayerMenus;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-
-import net.dungeonrealms.commands.generic.BasicCommand;
-import net.dungeonrealms.handlers.MailHandler;
-import net.dungeonrealms.inventory.Menu;
 
 /**
  * Created by Nick on 10/15/2015.
@@ -34,7 +33,7 @@ public class CommandMail extends BasicCommand {
             return true;
         }
 
-        Menu.openMailInventory(player);
+        PlayerMenus.openMailInventory(player);
 
         return true;
 

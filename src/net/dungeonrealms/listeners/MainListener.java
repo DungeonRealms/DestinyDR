@@ -38,6 +38,7 @@ import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.TradeHandler;
 import net.dungeonrealms.inventory.GUI;
+import net.dungeonrealms.inventory.NPCMenus;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.WebAPI;
@@ -137,10 +138,9 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onSpawn(CreatureSpawnEvent event) {
-        /*
-         * if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM)
-		 * { event.setCancelled(true); }
-		 */
+        if (event.getSpawnReason() != CreatureSpawnEvent.SpawnReason.CUSTOM) {
+            event.setCancelled(true);
+        }
     }
 
     /**
@@ -367,6 +367,51 @@ public class MainListener implements Listener {
             //Might not cancel it as it could look buggy. May have to force TP to a Chaotic spawn from KarmaHandler.
             event.setCancelled(true);
             player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " enter " + ChatColor.BOLD.toString() + "NON-PVP" + ChatColor.RED + " zones with a Chaotic alignment.");
+        }
+    }
+
+    /**
+     * Checks for player interacting with
+     * NPC Players, opens an inventory
+     * if they have one.
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void playerInteractWithNPC(PlayerInteractEntityEvent event) {
+        if (!(event.getRightClicked() instanceof Player)) return;
+        if (API.isPlayer(event.getRightClicked())) return;
+        if (event.getRightClicked().getName().equalsIgnoreCase("")) return;
+        if (event.getRightClicked().getName().equalsIgnoreCase("Animal Tamer")) {
+            NPCMenus.openMountPurchaseMenu(event.getPlayer());
+        }
+        if (event.getRightClicked().getName().equalsIgnoreCase("Merchant")) {
+            //TODO: Open Merchant Menu
+        }
+        if (event.getRightClicked().getName().equalsIgnoreCase("E-Cash Vendor")) {
+            //TODO: Open E-Cash Menu
+        }
+        if (event.getRightClicked().getName().equalsIgnoreCase("Wizard")) {
+            //TODO: Open Attributes Reset Menu
+        }
+        if (event.getRightClicked().getName().equalsIgnoreCase("Dungeoneer")) {
+            //TODO: Open Dungeoneer Menu
+        }
+        if (event.getRightClicked().getName().equalsIgnoreCase("Skill Trainer")) {
+            //TODO: Open Profession Item Menu
+        }
+        if (event.getRightClicked().getName().equalsIgnoreCase("Food Vendor")) {
+            //TODO: Open Food Menu
+        }
+        if (event.getRightClicked().getName().equalsIgnoreCase("Item Vendor")) {
+            //TODO: Open Item Vendor
+        }
+        if (event.getRightClicked().getName().equalsIgnoreCase("Guild Registrar")) {
+            //TODO: Open Guild Registrar
+        }
+        if (event.getRightClicked().getName().equalsIgnoreCase("Innkeeper")) {
+            //TODO: Open Hearthstone Guy (Anvil API)
         }
     }
 }

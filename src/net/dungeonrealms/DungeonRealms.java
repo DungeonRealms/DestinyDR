@@ -1,25 +1,8 @@
 package net.dungeonrealms;
 
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.commands.CommandAccept;
-import net.dungeonrealms.commands.CommandAdd;
-import net.dungeonrealms.commands.CommandAnalyze;
-import net.dungeonrealms.commands.CommandEss;
-import net.dungeonrealms.commands.CommandFriend;
-import net.dungeonrealms.commands.CommandGuild;
-import net.dungeonrealms.commands.CommandInvoke;
-import net.dungeonrealms.commands.CommandLag;
-import net.dungeonrealms.commands.CommandList;
-import net.dungeonrealms.commands.CommandMail;
-import net.dungeonrealms.commands.CommandParty;
-import net.dungeonrealms.commands.CommandRank;
-import net.dungeonrealms.commands.CommandSet;
-import net.dungeonrealms.commands.CommandSpawn;
+import net.dungeonrealms.commands.*;
 import net.dungeonrealms.commands.generic.CommandManager;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.entities.Entities;
@@ -29,17 +12,9 @@ import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
-import net.dungeonrealms.listeners.AntiCheatListener;
-import net.dungeonrealms.listeners.BankListener;
-import net.dungeonrealms.listeners.BlockListener;
-import net.dungeonrealms.listeners.BossListener;
-import net.dungeonrealms.listeners.DamageListener;
-import net.dungeonrealms.listeners.EnergyListener;
-import net.dungeonrealms.listeners.InventoryListener;
-import net.dungeonrealms.listeners.ItemListener;
-import net.dungeonrealms.listeners.MainListener;
+import net.dungeonrealms.listeners.*;
 import net.dungeonrealms.mastery.AsyncUtils;
-import net.dungeonrealms.mastery.FTPUtils;
+import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.DungeonManager;
 import net.dungeonrealms.mechanics.LootManager;
@@ -53,8 +28,10 @@ import net.dungeonrealms.network.NetworkServer;
 import net.dungeonrealms.party.Party;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
-import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /* Copyright (C) 2015 CherryIO, LLC - All Rights Reserved http://cherryio.com
 
@@ -68,7 +45,7 @@ import net.dungeonrealms.teleportation.Teleportation;
  *
  * Written by Nick Doran (xFinityPro) <nick@cherryio.com>, October 2015 -
  * Written by Kieran Quigley (Proxying) <Proxying@cherryio.com>, October 2015 -
- * Written by Chase BR (Xwaffle) <chase@cherryio.com>, October 2015 -
+ * Written by Kimberly Myers  (Xwaffle) <chase@cherryio.com>, October 2015 -
  *
  *
  * (a) Anyone who violates any of the exclusive rights of the copyright owners as
@@ -76,7 +53,7 @@ import net.dungeonrealms.teleportation.Teleportation;
  * or who imports copies or phonorecords into the United States in violation of section 602,
  * is an infringer of the copyright or right of the author, as the case may be. For purposes
  * of this chapter (other than section 506), any reference to copyright shall be deemed to
- * include the rights conferred by section 106A(a). As used in this subsection, the term �anyone�
+ * include the rights conferred by section 106A(a). As used in this subsection, the term anyone
  * includes any State, any instrumentality of a State, and any officer or employee of a State or
  * instrumentality of a State acting in his or her official capacity. Any State, and any such
  * instrumentality, officer, or employee, shall be subject to the provisions of this title in
@@ -86,6 +63,12 @@ import net.dungeonrealms.teleportation.Teleportation;
  * freedom development please reference United States Copyright Laws below.
  *
  * (http://www.copyright.gov/title17/92chap5.html)
+ *
+ * Big thanks your our proud sponsor(s) (Casey Keeling).
+ * Who is nothing more or less than a sponsor.
+ * Hereinafter declaring that the individual shall NOT
+ * hold ANY legal grounds over the source.
+ *
  */
 public class DungeonRealms extends JavaPlugin {
 
@@ -127,27 +110,6 @@ public class DungeonRealms extends JavaPlugin {
 
         WebAPI.fetchPrerequisites();
 
-        /*
-        PetUtils.getInstance().startInitialization();
-        Teleportation.getInstance().startInitialization();
-        CombatLog.getInstance().startInitialization();
-        Party.getInstance().startInitialization();
-        EnergyHandler.getInstance().startInitialization();
-        EnchantmentAPI.getInstance().startInitialization();
-        Subscription.getInstance().startInitialization();
-        Rank.getInstance().startInitialization();
-        DonationEffects.getInstance().startInitialization();
-        HealthHandler.getInstance().startInitialization();
-        KarmaHandler.getInstance().startInitialization();
-        BankMechanics.getInstance().startInitialization();
-        NetworkServer.getInstance().startInitialization();
-        DungeonManager.getInstance().startInitialization();
-        ScoreboardHandler.getInstance().startInitialization();
-        AchievementManager.getInstance().startInitialization();
-        //SpawningMechanics.getInstance().startInitialization();
-        Entities.getInstance().startInitialization();
-         */
-
         mm = new MechanicManager();
 
         mm.registerMechanic(PetUtils.getInstance());
@@ -167,13 +129,23 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(new LootManager());
         mm.registerMechanic(Entities.getInstance());
         mm.registerMechanic(ScoreboardHandler.getInstance());
+        mm.registerMechanic(RealmManager.getInstance());
+
+        /*
+        Commented out until we register a "Twitter App"
+        mm.registerMechanic(TwitterManager.getInstance());
+         */
+
+        /*
+        Commented out until he fixes Async Entity Add some shit.
         mm.registerMechanic(new SpawningMechanics());
+         */
 
         mm.loadMechanics();
 
         CommandManager cm = new CommandManager();
 
-        cm.registerCommand(new CommandAnalyze("analyze", "/<command> [args]", "This command does nothing!"));
+        cm.registerCommand(new CommandAnalyze("analyze", "/<command> [args]", "This command does nothing!D"));
         cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menu!"));
         cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "Spawns a mob? idk chase"));
         cm.registerCommand(new CommandAdd("add", "/<command> [args]", "Adds shit"));
@@ -187,9 +159,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandAccept("accept", "/<command> [args]", "The accept command."));
         cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
         cm.registerCommand(new CommandFriend("friend", "/<command> [args]", "The friend command."));
-
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
-        FTPUtils.startInitialization();
 
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
     }

@@ -1,7 +1,10 @@
 package net.dungeonrealms.entities.utils;
 
-import java.util.UUID;
-
+import net.dungeonrealms.API;
+import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.mounts.EnumMounts;
+import net.dungeonrealms.entities.types.mounts.Horse;
+import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -11,11 +14,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.ItemStack;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.mounts.EnumMounts;
-import net.dungeonrealms.entities.types.mounts.Horse;
-import net.minecraft.server.v1_8_R3.World;
+import java.util.UUID;
 
 /**
  * Created by Kieran on 9/18/2015.
@@ -48,7 +47,7 @@ public class MountUtils {
                 break;
             }
             case GOLD_HORSE: {
-                Horse mountHorse = new Horse(world, 0, 0.25D, player.getUniqueId(), EnumEntityType.MOUNT);
+                Horse mountHorse = new Horse(world, 0, 0.3D, player.getUniqueId(), EnumEntityType.MOUNT);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
@@ -64,7 +63,7 @@ public class MountUtils {
                 break;
             }
             case DIAMOND_HORSE: {
-                Horse mountHorse = new Horse(world, 0, 0.3D, player.getUniqueId(), EnumEntityType.MOUNT);
+                Horse mountHorse = new Horse(world, 0, 0.25D, player.getUniqueId(), EnumEntityType.MOUNT);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(mountHorse, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);

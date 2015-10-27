@@ -15,7 +15,7 @@ import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
-import net.dungeonrealms.mastery.FTPUtils;
+import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -40,10 +40,10 @@ public class CommandAdd extends BasicCommand {
                     Guild.getInstance().createGuild(args[1], args[2], player.getUniqueId());
                     break;
                 case "uploadrealm":
-                    new FTPUtils().uploadRealm(player.getUniqueId());
+                    new RealmManager().uploadRealm(player.getUniqueId());
                     break;
                 case "realm":
-                    new FTPUtils().downloadRealm(player.getUniqueId());
+                    new RealmManager().downloadRealm(player.getUniqueId());
                     break;
                 case "weapon":
                     player.getInventory().addItem(new ItemGenerator().next());

@@ -580,7 +580,7 @@ public class Guild {
                                             .append("bankClicks", new ArrayList<String>()))
                     , (aVoid, throwable1) -> {
                         DatabaseAPI.getInstance().requestGuild(name);
-                        DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, "info.guild", name, true);
+                        DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, "info.guild", name.toUpperCase(), true);
                     });
         });
 

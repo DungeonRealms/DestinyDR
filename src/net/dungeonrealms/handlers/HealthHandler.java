@@ -154,11 +154,14 @@ public class HealthHandler implements GenericMechanic{
         GamePlayer gamePlayer = new GamePlayer(player);
         int playerLevel = gamePlayer.getLevel();
         double currentEXP = gamePlayer.getExperience();
-        double expToLevel = (playerLevel * 1000);
+        double expToLevel = (playerLevel * 1000) + Math.round(playerLevel % (64 * 2));
         String playerLevelInfo = ChatColor.AQUA.toString() + ChatColor.BOLD + "LVL " + ChatColor.AQUA + playerLevel;
         String separator = ChatColor.BLACK.toString() + ChatColor.BOLD + " - ";
-        String playerHPInfo = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "HP " + ChatColor.LIGHT_PURPLE + hp + ChatColor.BOLD + " / " + ChatColor.LIGHT_PURPLE + getPlayerMaxHPLive(player);
-        String playerEXPInfo = ChatColor.GREEN.toString() + ChatColor.BOLD + "EXP " + ChatColor.GREEN + Math.round((currentEXP / expToLevel) * 100.0) + "%";
+        String playerHPInfo = ChatColor.GREEN.toString() + ChatColor.BOLD + "HP " + ChatColor.GREEN + hp + ChatColor.BOLD + " / " + ChatColor.GREEN + maxHP;
+        if (!API.isInSafeRegion(player.getLocation())) {
+            playerHPInfo = ChatColor.RED.toString() + ChatColor.BOLD + "HP " + ChatColor.RED + hp + ChatColor.BOLD + " / " + ChatColor.RED + maxHP;
+        }
+        String playerEXPInfo = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "EXP " + ChatColor.LIGHT_PURPLE + Math.round((currentEXP / expToLevel) * 100.0) + "%";
 
         BossBarAPI.setMessage(player, playerLevelInfo + separator + playerHPInfo + separator + playerEXPInfo, 100F);
         BossBarAPI.setHealth(player, healthToDisplay);

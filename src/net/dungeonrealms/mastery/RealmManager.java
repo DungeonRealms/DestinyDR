@@ -1,11 +1,19 @@
 package net.dungeonrealms.mastery;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
+import org.bukkit.entity.Player;
+
+import java.io.*;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.UUID;
@@ -13,23 +21,16 @@ import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipOutputStream;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-
-import net.dungeonrealms.DungeonRealms;
-
 /**
  * Created by Nick on 9/22/2015.
  */
-public class FTPUtils {
+public class RealmManager implements GenericMechanic {
 
-    static FTPUtils instance = null;
+    static RealmManager instance = null;
 
-    public static FTPUtils getInstance() {
+    public static RealmManager getInstance() {
         if (instance == null) {
-            instance = new FTPUtils();
+            instance = new RealmManager();
         }
         return instance;
     }
@@ -58,13 +59,18 @@ public class FTPUtils {
     String USER = "dr.23";
     String PASSWORD = "devpass123";
 
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.BISHOPS;
+    }
+
     /**
      * Checks for proper local folders.
      * creates if don't exist.
      *
      * @since 1.0
      */
-    public static void startInitialization() {
+    public void startInitialization() {
         Utils.log.info("DungeonRealms Registering FTP() ... STARTING ...");
         File coreDirectory = DungeonRealms.getInstance().getDataFolder();
         try {
@@ -74,6 +80,11 @@ public class FTPUtils {
             e.printStackTrace();
         }
         Utils.log.info("DungeonRealms Finished Registering FTP() ... FINISHED!");
+    }
+
+    @Override
+    public void stopInvocation() {
+
     }
 
     public void uploadRealm(UUID uuid) {
@@ -123,7 +134,7 @@ public class FTPUtils {
      * @since 1.0
      */
     public void downloadRealm(UUID uuid) {
-        if (REALMS.containsKey(uuid)) return;
+        if (REALMS.containsKey(uuid) && REALMS.get(uuid) == FTPStatus.DOWNLOADED) return;
         AsyncUtils.pool.submit(() -> {
             REALMS.put(uuid, FTPStatus.DOWNLOADING);
             FTPClient ftpClient = new FTPClient();
@@ -202,12 +213,13 @@ public class FTPUtils {
      * @since 1.0
      */
     public void unZip(ZipFile zipFile, UUID uuid) {
-        Utils.log.info("[REALM] LEFT -> [ASYNC].. Unzipping Realm for " + uuid.toString());
+        Utils.log.info("[REALMS] Unzipping instance for " + uuid.toString());
+        new File(uuid.toString()).mkdir();
         try {
             Enumeration<? extends ZipEntry> entries = zipFile.entries();
             while (entries.hasMoreElements()) {
                 ZipEntry entry = entries.nextElement();
-                File entryDestination = new File(DungeonRealms.getInstance().getDataFolder() + "/realms", entry.getName());
+                File entryDestination = new File(uuid.toString(), entry.getName());
                 if (entry.isDirectory())
                     entryDestination.mkdirs();
                 else {
@@ -227,7 +239,7 @@ public class FTPUtils {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            REALMS.put(uuid, FTPStatus.DOWNLOADED);
+            //loadInWorld(uuid.toString(), Bukkit.getPlayer(uuid));
         }
     }
 
@@ -315,6 +327,57 @@ public class FTPUtils {
             } else {
                 addFileToZip(path + "/" + folder.getName(), srcFolder + "/" + fileName, zip);
             }
+        }
+    }
+
+    /**
+     * Loads a players realm into BUKKIT.
+     *
+     * @param worldName name of the world, player.UUID.
+     * @param player    the player!
+     * @since 1.0
+     */
+    public void loadInWorld(String worldName, Player player) {
+        /*
+        Only creates a world if the contents of a world don't already exist.
+        This method loadInWorld() is called in the actual object load().
+         */
+        System.out.println("1");
+        World w = Bukkit.getServer().createWorld(new WorldCreator(worldName));
+        System.out.println("2");
+        w.setKeepSpawnInMemory(true);
+        System.out.println("3");
+        w.setAutoSave(false);
+        System.out.println("4");
+        w.setPVP(false);
+        System.out.println("5");
+        w.setStorm(false);
+        System.out.println("6");
+        w.setMonsterSpawnLimit(0);
+        System.out.println("7");
+        Bukkit.getWorlds().add(w);
+        System.out.println("8");
+
+        player.teleport(w.getSpawnLocation());
+        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "REALMS" + ChatColor.WHITE + "] " + ChatColor.YELLOW + "Your realm is ready! Teleporting you now...");
+    }
+
+    /**
+     * Removes the instance dungeon from EVERYTHING.
+     *
+     * @param worldName The players UUID.
+     * @since 1.0
+     */
+    public void removeRealm(String worldName) {
+        Bukkit.getWorlds().remove(Bukkit.getWorld(worldName));
+        Utils.log.info("[REALMS] Removing world: " + worldName + " from worldList().");
+        Bukkit.unloadWorld(worldName, false);
+        Utils.log.info("[REALMS] Unloading world: " + worldName + " in preparation for deletion!");
+        try {
+            FileUtils.deleteDirectory(new File(worldName));
+            Utils.log.info("[REALMS] Deleted world: " + worldName + " final stage.");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

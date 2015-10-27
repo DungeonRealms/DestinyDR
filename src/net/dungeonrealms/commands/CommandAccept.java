@@ -70,11 +70,11 @@ public class CommandAccept extends BasicCommand {
 
                     break;
                 case "party":
-                    if (!Party.getInstance().isInParty(player) && Party.getInstance().isInParty(Bukkit.getPlayer(args[1]))) {
+                    if (!Party.getInstance().isInParty(player) && Bukkit.getPlayer(args[1]) != null && Party.getInstance().isInParty(Bukkit.getPlayer(args[1]))) {
                         Party.RawParty party = Party.getInstance().getPlayerParty(Bukkit.getPlayer(args[1]));
                         if (party.getInviting().contains(player)) {
-                            party.getMembers().add(player);
                             party.getInviting().remove(player);
+                            party.getMembers().add(player);
                             player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.YELLOW + "You've join " + Bukkit.getPlayer(args[1]).getName() + "'s party!");
                         } else {
                             player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.RED + "That party doesn't have you in the request!");

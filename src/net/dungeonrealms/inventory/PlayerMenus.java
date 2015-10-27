@@ -42,7 +42,7 @@ import net.minecraft.server.v1_8_R3.NBTTagString;
  * Created by Nick on 9/29/2015.
  */
 @SuppressWarnings({"unchecked", "chasesTouch"})
-public class Menu {
+public class PlayerMenus {
 
     public static void openFriendInventory(Player player) {
         UUID uuid = player.getUniqueId();
@@ -64,12 +64,20 @@ public class Menu {
             Date sentDate = new Date(unix * 1000);
             String date = sdf.format(sentDate);
 
-            inv.setItem(slot, editItem(API.getNameFromUUID(s.split(",")[0]), "", new String[]{
+            ItemStack stack = editItem(API.getNameFromUUID(from), "", new String[]{
                     ChatColor.GRAY + "Sent: " + date,
                     "",
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to accept!",
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to deny!"
-            }));
+            });
+
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+            NBTTagCompound tag = new NBTTagCompound();
+            tag.set("info", new NBTTagString(s));
+            nmsStack.setTag(tag);
+
+            inv.setItem(slot, CraftItemStack.asBukkitCopy(nmsStack));
+
             if (slot >= 44) break;
             slot++;
         }
