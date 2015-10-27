@@ -30,7 +30,7 @@ public class RepairAPI {
      * @return int
      * @since 1.0
      */
-    public int getItemRepairCost(ItemStack itemStack) {
+    public static int getItemRepairCost(ItemStack itemStack) {
         double totalRepairCost = 0;
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
