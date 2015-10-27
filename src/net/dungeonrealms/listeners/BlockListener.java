@@ -6,9 +6,11 @@ import java.util.Collection;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -18,9 +20,16 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import com.minebone.anvilapi.core.AnvilApi;
+import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
+import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.banks.BankMechanics;
+import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
@@ -83,6 +92,47 @@ public class BlockListener implements Listener {
             return;
         }
 
+    }
+    
+    
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void playerRightClickAnvil(PlayerInteractEvent event){
+        Block block = event.getClickedBlock();
+        if (block == null) return;
+        if (block.getType() != Material.ANVIL) return;
+        if(event.getPlayer().getItemInHand() != null){
+        	ItemStack item = event.getPlayer().getItemInHand();
+        	if(RepairAPI.isItemArmorOrWeapon(item)){
+        		int cost = RepairAPI.getItemRepairCost(item);
+        		Player player = event.getPlayer();
+        		AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
+					if (e.getSlot() == AnvilSlot.OUTPUT) {
+						String text = e.getName();
+						if(text.equalsIgnoreCase("yes")){
+							if(BankMechanics.getInstance().takeGemsFromInventory(cost, player)){
+								RepairAPI.setCustomItemDurability(player.getItemInHand(), 1499);
+								player.updateInventory();
+							}else{
+							player.sendMessage("You do not have " + cost +"g");	
+							}
+						}else{
+							e.destroy();
+							e.setWillClose(true);
+						}
+					}
+				});
+				ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
+				ItemMeta meta = stack.getItemMeta();
+				meta.setDisplayName("Repair for " + cost + "?");
+				stack.setItemMeta(meta);
+				gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
+				gui.open();
+        	}else{
+        		event.setCancelled(true);
+        	}
+        }else{
+        	event.setCancelled(true);
+        }
     }
 
     /**
