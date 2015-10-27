@@ -235,7 +235,7 @@ public class BankListener implements Listener {
                             GUI profileMain = new GUI("Upgrade your bank storage?", 9, guievent ->{
                             	int slot = guievent.getPosition();
                             	if(slot ==3){
-                            		if(BankMechanics.takeGemsFromInventory(num, player)){
+                            		if(BankMechanics.getInstance().takeGemsFromInventory(num, player)){
                             			int invlvl = (int)DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId()) + 1;
                             			DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "inventory.level", invlvl,
                         				        true);

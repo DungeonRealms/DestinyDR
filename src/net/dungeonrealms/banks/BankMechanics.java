@@ -58,22 +58,22 @@ public class BankMechanics implements GenericMechanic{
      * @param p
      * @return boolean
      */
-    public static boolean takeGemsFromInventory(int amount, Player p){
+    public boolean takeGemsFromInventory(int amount, Player p) {
     	int cost = 0;
-    	for(ItemStack stack : p.getInventory().getContents()){
-    		if(stack != null && stack.getType() != Material.AIR)
-    		if(stack.getType() == Material.EMERALD){
+    	for (ItemStack stack : p.getInventory().getContents()) {
+    		if (stack != null && stack.getType() != Material.AIR)
+    		if (stack.getType() == Material.EMERALD) {
     			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-    			if(nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")){
+    			if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")){
     				p.getInventory().remove(stack);
     				cost += stack.getAmount();
-    				if(cost >= amount){
+    				if (cost >= amount) {
     					int leftover = cost - amount;
     					ItemStack gems = stack.clone();
     					gems.setAmount(leftover);
     					p.getInventory().addItem(gems);
     					return true;
-    				}else{
+    				} else {
     					ItemStack gems = BankMechanics.gem.clone();
     					gems.setAmount(cost);
     					p.getInventory().addItem(gems);
@@ -119,7 +119,7 @@ public class BankMechanics implements GenericMechanic{
     }
 
     /**
-     * Creates a new Bank Note for the set ammount
+     * Creates a new Bank Note for the set amount
      * @param amount
      * @return
      */

@@ -151,7 +151,11 @@ public class DamageListener implements Listener {
         if (!(event.getEntity() instanceof CraftLivingEntity) && !(API.isPlayer(event.getEntity()))) return;
         if (Entities.getInstance().PLAYER_PETS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
         if (Entities.getInstance().PLAYER_MOUNTS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
-        if (!event.getEntity().hasMetadata("type")) return;
+        if (event.getEntity() instanceof CraftLivingEntity) {
+            if (!(event.getEntity() instanceof Player)) {
+                if (!event.getEntity().hasMetadata("type")) return;
+            }
+        }
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
         if (API.isPlayer(event.getDamager())) {

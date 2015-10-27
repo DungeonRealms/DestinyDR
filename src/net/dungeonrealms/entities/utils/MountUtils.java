@@ -1,9 +1,9 @@
 package net.dungeonrealms.entities.utils;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.entities.types.mounts.Horse;
-import net.dungeonrealms.entities.EnumEntityType;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;

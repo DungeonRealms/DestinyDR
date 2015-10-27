@@ -2,7 +2,7 @@ package net.dungeonrealms.commands;
 
 import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.guild.Guild;
-import net.dungeonrealms.inventory.Menu;
+import net.dungeonrealms.inventory.PlayerMenus;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -42,7 +42,7 @@ public class CommandGuild extends BasicCommand {
                     break;
             }
         } else {
-            Menu.openPlayerGuildInventory(player);
+            PlayerMenus.openPlayerGuildInventory(player);
         }
 
         return true;

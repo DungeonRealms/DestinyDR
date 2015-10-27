@@ -1,7 +1,7 @@
 package net.dungeonrealms.listeners;
 
 import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.inventory.Menu;
+import net.dungeonrealms.inventory.PlayerMenus;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -85,6 +85,6 @@ public class ItemListener implements Listener {
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
         if (!(tag.getString("type").equalsIgnoreCase("important")) && !(tag.getString("usage").equalsIgnoreCase("profile"))) return;
-        Menu.openPlayerProfileMenu(player);
+        PlayerMenus.openPlayerProfileMenu(player);
     }
 }

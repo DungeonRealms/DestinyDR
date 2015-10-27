@@ -36,7 +36,7 @@ import java.util.*;
  * Created by Nick on 9/29/2015.
  */
 @SuppressWarnings({"unchecked", "chasesTouch"})
-public class Menu {
+public class PlayerMenus {
 
     public static void openFriendInventory(Player player) {
         UUID uuid = player.getUniqueId();
