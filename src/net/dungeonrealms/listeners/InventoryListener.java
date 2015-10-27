@@ -1,15 +1,25 @@
 package net.dungeonrealms.listeners;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import ca.thederpygolems.armorequip.ArmorEquipEvent;
+import com.minebone.anvilapi.core.AnvilApi;
+import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
+import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.banks.BankMechanics;
+import net.dungeonrealms.banks.Storage;
+import net.dungeonrealms.duel.DuelMechanics;
+import net.dungeonrealms.duel.DuelWager;
+import net.dungeonrealms.handlers.ClickHandler;
+import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.handlers.TradeHandler;
+import net.dungeonrealms.handlers.TradeHandler.TradeManager;
+import net.dungeonrealms.items.repairing.RepairAPI;
+import net.dungeonrealms.mechanics.ItemManager;
+import net.dungeonrealms.mechanics.LootManager;
+import net.dungeonrealms.shops.Shop;
+import net.dungeonrealms.shops.ShopMechanics;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -20,34 +30,12 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.minebone.anvilapi.core.AnvilApi;
-import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
-import com.minebone.anvilapi.nms.anvil.AnvilSlot;
-
-import ca.thederpygolems.armorequip.ArmorEquipEvent;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.banks.BankMechanics;
-import net.dungeonrealms.banks.Storage;
-import net.dungeonrealms.duel.DuelMechanics;
-import net.dungeonrealms.duel.DuelWager;
-import net.dungeonrealms.handlers.ClickHandler;
-import net.dungeonrealms.handlers.HealthHandler;
-import net.dungeonrealms.handlers.TradeHandler;
-import net.dungeonrealms.handlers.TradeHandler.TradeManager;
-import net.dungeonrealms.items.Attribute;
-import net.dungeonrealms.items.Item.ItemTier;
-import net.dungeonrealms.items.repairing.RepairAPI;
-import net.dungeonrealms.mechanics.ItemManager;
-import net.dungeonrealms.mechanics.LootManager;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.shops.Shop;
-import net.dungeonrealms.shops.ShopMechanics;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -454,7 +442,7 @@ public class InventoryListener implements Listener {
 	 * @param event
 	 * @since 1.0
 	 */
-	@EventHandler(priority = EventPriority.LOWEST)
+	/*@EventHandler(priority = EventPriority.LOWEST)
 	public void playerSwitchItem(PlayerItemHeldEvent event) {
 		if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
 		int slot = event.getNewSlot();
@@ -474,7 +462,7 @@ public class InventoryListener implements Listener {
 				}
 			}
 		}
-	}
+	}*/
 
 	/** Called when a player equips armor
 	 *
