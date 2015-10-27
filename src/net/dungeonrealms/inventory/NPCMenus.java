@@ -41,7 +41,7 @@ public class NPCMenus {
 
         inv.setItem(0, editItem(CraftItemStack.asBukkitCopy(nmsStackT1), ChatColor.GREEN + "Old Horse Mount", new String[]{
                 ChatColor.RED + "Speed 120%"}));
-        inv.setItem(2, editItem(CraftItemStack.asBukkitCopy(nmsStackDiamond), ChatColor.GREEN + "Traveler's Horse Mount", new String[]{
+        inv.setItem(1, editItem(CraftItemStack.asBukkitCopy(nmsStackDiamond), ChatColor.GREEN + "Traveler's Horse Mount", new String[]{
                 ChatColor.RED + "Speed 140%",
                 ChatColor.RED + "Jump 110%"}));
         inv.setItem(2, editItem(CraftItemStack.asBukkitCopy(nmsStackGold), ChatColor.GREEN + "Knight's Horse Mount", new String[]{
