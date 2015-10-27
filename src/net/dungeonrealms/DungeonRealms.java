@@ -45,7 +45,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  *
  * Written by Nick Doran (xFinityPro) <nick@cherryio.com>, October 2015 -
  * Written by Kieran Quigley (Proxying) <Proxying@cherryio.com>, October 2015 -
- * Written by Chase BR (Xwaffle) <chase@cherryio.com>, October 2015 -
+ * Written by Kimberly Myers  (Xwaffle) <chase@cherryio.com>, October 2015 -
  *
  *
  * (a) Anyone who violates any of the exclusive rights of the copyright owners as
@@ -53,7 +53,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  * or who imports copies or phonorecords into the United States in violation of section 602,
  * is an infringer of the copyright or right of the author, as the case may be. For purposes
  * of this chapter (other than section 506), any reference to copyright shall be deemed to
- * include the rights conferred by section 106A(a). As used in this subsection, the term �anyone�
+ * include the rights conferred by section 106A(a). As used in this subsection, the term anyone
  * includes any State, any instrumentality of a State, and any officer or employee of a State or
  * instrumentality of a State acting in his or her official capacity. Any State, and any such
  * instrumentality, officer, or employee, shall be subject to the provisions of this title in
@@ -63,6 +63,12 @@ import org.bukkit.plugin.java.JavaPlugin;
  * freedom development please reference United States Copyright Laws below.
  *
  * (http://www.copyright.gov/title17/92chap5.html)
+ *
+ * Big thanks your our proud sponsor(s) (Casey Keeling).
+ * Who is nothing more or less than a sponsor.
+ * Hereinafter declaring that the individual shall NOT
+ * hold ANY legal grounds over the source.
+ *
  */
 public class DungeonRealms extends JavaPlugin {
 
@@ -104,27 +110,6 @@ public class DungeonRealms extends JavaPlugin {
 
         WebAPI.fetchPrerequisites();
 
-        /*
-        PetUtils.getInstance().startInitialization();
-        Teleportation.getInstance().startInitialization();
-        CombatLog.getInstance().startInitialization();
-        Party.getInstance().startInitialization();
-        EnergyHandler.getInstance().startInitialization();
-        EnchantmentAPI.getInstance().startInitialization();
-        Subscription.getInstance().startInitialization();
-        Rank.getInstance().startInitialization();
-        DonationEffects.getInstance().startInitialization();
-        HealthHandler.getInstance().startInitialization();
-        KarmaHandler.getInstance().startInitialization();
-        BankMechanics.getInstance().startInitialization();
-        NetworkServer.getInstance().startInitialization();
-        DungeonManager.getInstance().startInitialization();
-        ScoreboardHandler.getInstance().startInitialization();
-        AchievementManager.getInstance().startInitialization();
-        //SpawningMechanics.getInstance().startInitialization();
-        Entities.getInstance().startInitialization();
-         */
-
         mm = new MechanicManager();
 
         mm.registerMechanic(PetUtils.getInstance());
@@ -145,6 +130,12 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(Entities.getInstance());
         mm.registerMechanic(ScoreboardHandler.getInstance());
         mm.registerMechanic(RealmManager.getInstance());
+
+        /*
+        Commented out until we register a "Twitter App"
+        mm.registerMechanic(TwitterManager.getInstance());
+         */
+
         /*
         Commented out until he fixes Async Entity Add some shit.
         mm.registerMechanic(new SpawningMechanics());
