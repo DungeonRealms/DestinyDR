@@ -1,10 +1,14 @@
 package net.dungeonrealms.commands.generic;
 
-import org.bukkit.Bukkit;
-import org.bukkit.command.*;
-
 import java.lang.reflect.Field;
 import java.util.List;
+
+import org.bukkit.Bukkit;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandExecutor;
+import org.bukkit.command.CommandMap;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabExecutor;
 
 /**
  * Created by Nick on 10/24/2015.

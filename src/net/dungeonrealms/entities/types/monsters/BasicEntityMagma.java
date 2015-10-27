@@ -3,14 +3,13 @@ package net.dungeonrealms.entities.types.monsters;
 import java.util.Random;
 
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.Monster;
+import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;

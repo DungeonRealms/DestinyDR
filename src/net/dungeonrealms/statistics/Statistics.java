@@ -1,12 +1,12 @@
 package net.dungeonrealms.statistics;
 
-import net.dungeonrealms.mastery.AsyncUtils;
-import net.dungeonrealms.mastery.Utils;
-
 import java.io.IOException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.util.UUID;
+
+import net.dungeonrealms.mastery.AsyncUtils;
+import net.dungeonrealms.mastery.Utils;
 
 /**
  * Created by Nick on 9/26/2015.

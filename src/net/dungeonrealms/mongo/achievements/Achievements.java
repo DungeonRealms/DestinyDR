@@ -1,17 +1,19 @@
 package net.dungeonrealms.mongo.achievements;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 import com.mongodb.client.result.UpdateResult;
+
 import net.dungeonrealms.core.Callback;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
-import java.util.UUID;
 
 /**
  * Created by Nick on 8/29/2015.

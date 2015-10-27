@@ -1,11 +1,11 @@
 package net.dungeonrealms.entities.types.pets;
 
+import java.util.UUID;
+
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.EntitySnowman;
 import net.minecraft.server.v1_8_R3.World;
-
-import java.util.UUID;
 
 /**
  * Created by Kieran on 9/25/2015.

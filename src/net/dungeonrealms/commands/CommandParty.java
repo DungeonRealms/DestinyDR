@@ -1,13 +1,14 @@
 package net.dungeonrealms.commands;
 
-import net.dungeonrealms.commands.generic.BasicCommand;
-import net.dungeonrealms.party.Party;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+
+import net.dungeonrealms.commands.generic.BasicCommand;
+import net.dungeonrealms.party.Party;
+import net.md_5.bungee.api.ChatColor;
 
 public class CommandParty extends BasicCommand {
 

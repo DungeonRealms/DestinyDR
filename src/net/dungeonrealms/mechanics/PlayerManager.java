@@ -1,10 +1,10 @@
 package net.dungeonrealms.mechanics;
 
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-
-import java.util.UUID;
 
 /**
  * Created by Nick on 9/18/2015.

@@ -1,20 +1,22 @@
 package net.dungeonrealms.mongo;
 
+import java.util.ArrayList;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.bson.Document;
+import org.bukkit.Bukkit;
+
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.core.Callback;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
-import org.bson.Document;
-import org.bukkit.Bukkit;
-
-import java.util.ArrayList;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Nick on 8/29/2015.

@@ -1,11 +1,16 @@
 package net.dungeonrealms.mechanics;
 
-import com.connorlinfoot.bountifulapi.BountifulAPI;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mastery.GamePlayer;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.generic.EnumPriority;
-import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
@@ -14,12 +19,13 @@ import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
 
-import java.io.*;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
+import com.connorlinfoot.bountifulapi.BountifulAPI;
+
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.GamePlayer;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 
 /**
  * Created by Nick on 10/19/2015.

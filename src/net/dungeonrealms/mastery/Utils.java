@@ -1,12 +1,12 @@
 package net.dungeonrealms.mastery;
 
+import java.util.Random;
+import java.util.logging.Logger;
+
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
-
-import java.util.Random;
-import java.util.logging.Logger;
 
 /**
  * Created by Nick on 9/17/2015.

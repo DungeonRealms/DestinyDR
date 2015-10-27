@@ -1,9 +1,10 @@
 package net.dungeonrealms.items;
 
-import net.dungeonrealms.items.armor.Armor;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
+
+import net.dungeonrealms.items.armor.Armor;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
  * Created by Nick on 9/19/2015.

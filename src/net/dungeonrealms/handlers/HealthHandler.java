@@ -1,5 +1,22 @@
 package net.dungeonrealms.handlers;
 
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
+import org.bukkit.entity.WitherSkull;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.inventivetalent.bossbar.BossBarAPI;
+
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
@@ -11,17 +28,8 @@ import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.minecraft.server.v1_8_R3.DamageSource;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.*;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.inventivetalent.bossbar.BossBarAPI;
+import net.minecraft.server.v1_8_R3.EntityArmorStand;
+import net.minecraft.server.v1_8_R3.EntityLiving;
 
 /**
  * Created by Kieran on 10/3/2015.
@@ -494,6 +502,8 @@ public class HealthHandler implements GenericMechanic{
         double maxHP = getMonsterMaxHPLive(entity);
         double currentHP = getMonsterHPLive(entity);
         double newHP = currentHP - damage;
+        if(entity instanceof EntityArmorStand || entity instanceof net.minecraft.server.v1_8_R3.EntityArmorStand)
+        	return;
 
         if (newHP <= 0) {
             setMonsterHPLive(entity, 0);
@@ -523,9 +533,12 @@ public class HealthHandler implements GenericMechanic{
         if (convHPToDisplay > 20) {
             convHPToDisplay = 20;
         }
-        String healthBar = "||||||||||||||||||||||||||||||||||||||||";
-        healthBar = ChatColor.GREEN.toString() +healthBar.substring(0, convHPToDisplay*2) + ChatColor.RED.toString() + healthBar.substring(convHPToDisplay*2, healthBar.length());
-        entity.setCustomName(healthBar);
+        int level = entity.getMetadata("level").get(0).asInt();
+        EntityLiving entity1 = ((CraftLivingEntity)entity).getHandle();	
+        String name = entity.getMetadata("customname").get(0).asString();
+        if(entity.getPassenger() != null)
+		entity.getPassenger().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
+				+ ChatColor.RESET + name +" "+ entity.getMetadata("currentHP").get(0).asInt() +ChatColor.RED.toString()+ "❤");
         entity.setHealth(convHPToDisplay);
         if (!Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
             Entities.getInstance().MONSTERS_LEASHED.add(entity);

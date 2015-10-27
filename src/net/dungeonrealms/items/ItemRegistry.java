@@ -1,14 +1,21 @@
 package net.dungeonrealms.items;
 
-import net.dungeonrealms.mechanics.ReflectionAPI;
-import net.minecraft.server.v1_8_R3.*;
-import net.minecraft.server.v1_8_R3.Item;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+
+import net.dungeonrealms.mechanics.ReflectionAPI;
+import net.minecraft.server.v1_8_R3.CraftingStatistic;
+import net.minecraft.server.v1_8_R3.Item;
+import net.minecraft.server.v1_8_R3.Items;
+import net.minecraft.server.v1_8_R3.MinecraftKey;
+import net.minecraft.server.v1_8_R3.RegistryID;
+import net.minecraft.server.v1_8_R3.RegistryMaterials;
+import net.minecraft.server.v1_8_R3.RegistrySimple;
+import net.minecraft.server.v1_8_R3.Statistic;
+import net.minecraft.server.v1_8_R3.StatisticList;
 
 
 /**

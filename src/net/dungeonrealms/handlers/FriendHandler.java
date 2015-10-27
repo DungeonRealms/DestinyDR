@@ -1,19 +1,21 @@
 package net.dungeonrealms.handlers;
 
-import com.mongodb.client.result.UpdateResult;
-import net.dungeonrealms.core.Callback;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.mongo.EnumOperators;
-import net.dungeonrealms.network.NetworkAPI;
+import java.util.ArrayList;
+import java.util.UUID;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.UUID;
+import com.mongodb.client.result.UpdateResult;
+
+import net.dungeonrealms.core.Callback;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.network.NetworkAPI;
 
 /**
  * Created by Nick on 10/22/2015.

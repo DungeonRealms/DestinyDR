@@ -1,11 +1,8 @@
 package net.dungeonrealms.commands;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.commands.generic.BasicCommand;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.mongo.EnumOperators;
-import net.dungeonrealms.teleportation.TeleportAPI;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -13,8 +10,12 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
+import net.dungeonrealms.API;
+import net.dungeonrealms.commands.generic.BasicCommand;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.teleportation.TeleportAPI;
 
 /**
  * Created by Kieran on 10/9/2015.

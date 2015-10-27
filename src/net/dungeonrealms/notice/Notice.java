@@ -1,6 +1,12 @@
 package net.dungeonrealms.notice;
 
+import java.util.ArrayList;
+
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
 import com.mongodb.client.result.UpdateResult;
+
 import net.dungeonrealms.API;
 import net.dungeonrealms.core.Callback;
 import net.dungeonrealms.handlers.FriendHandler;
@@ -8,10 +14,6 @@ import net.dungeonrealms.handlers.MailHandler;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
-import java.util.ArrayList;
 
 /**
  * Created by Nick on 10/11/2015.

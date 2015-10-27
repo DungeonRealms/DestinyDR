@@ -1,8 +1,8 @@
 package net.dungeonrealms.items;
 
-import net.dungeonrealms.items.armor.Armor;
-
 import java.util.Random;
+
+import net.dungeonrealms.items.armor.Armor;
 
 /**
  * Created by Nick on 9/19/2015.

@@ -1,15 +1,16 @@
 package net.dungeonrealms.commands;
 
-import net.dungeonrealms.commands.generic.BasicCommand;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumOperators;
-import net.dungeonrealms.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+
+import net.dungeonrealms.commands.generic.BasicCommand;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.rank.Rank;
 
 /**
  * Created by Nick on 9/27/2015.

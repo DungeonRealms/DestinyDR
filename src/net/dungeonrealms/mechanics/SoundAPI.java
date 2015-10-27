@@ -1,10 +1,11 @@
 package net.dungeonrealms.mechanics;
 
-import net.dungeonrealms.API;
-import net.minecraft.server.v1_8_R3.PacketPlayOutNamedSoundEffect;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
+
+import net.dungeonrealms.API;
+import net.minecraft.server.v1_8_R3.PacketPlayOutNamedSoundEffect;
 
 /**
  * Created by Nick on 9/4/2015.

@@ -1,7 +1,5 @@
 package net.dungeonrealms.listeners;
 
-import net.dungeonrealms.anticheat.AntiCheat;
-import net.dungeonrealms.mastery.Utils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
@@ -9,6 +7,9 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.permissions.ServerOperator;
+
+import net.dungeonrealms.anticheat.AntiCheat;
+import net.dungeonrealms.mastery.Utils;
 
 /**
  * Created by Nick on 10/1/2015.

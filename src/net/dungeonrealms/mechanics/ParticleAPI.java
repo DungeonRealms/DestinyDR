@@ -1,10 +1,8 @@
 package net.dungeonrealms.mechanics;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.EnumParticle;
-import net.minecraft.server.v1_8_R3.Packet;
-import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
+import java.lang.reflect.Field;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -12,8 +10,11 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 
-import java.lang.reflect.Field;
-import java.util.UUID;
+import net.dungeonrealms.API;
+import net.dungeonrealms.mastery.Utils;
+import net.minecraft.server.v1_8_R3.EnumParticle;
+import net.minecraft.server.v1_8_R3.Packet;
+import net.minecraft.server.v1_8_R3.PacketPlayOutWorldParticles;
 
 /**
  * Created by Kieran on 9/20/2015.

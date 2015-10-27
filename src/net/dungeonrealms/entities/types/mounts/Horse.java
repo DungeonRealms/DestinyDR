@@ -1,12 +1,12 @@
 package net.dungeonrealms.entities.types.mounts;
 
+import java.util.UUID;
+
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.EntityHorse;
 import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.World;
-
-import java.util.UUID;
 
 /**
  * Created by Kieran on 9/18/2015.

@@ -1,5 +1,9 @@
 package net.dungeonrealms.mastery;
 
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
@@ -8,9 +12,6 @@ import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.party.Party;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * Created by Nick on 10/19/2015.

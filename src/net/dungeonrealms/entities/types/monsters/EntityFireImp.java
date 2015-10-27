@@ -1,18 +1,24 @@
 package net.dungeonrealms.entities.types.monsters;
 
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Projectile;
+import org.bukkit.inventory.ItemStack;
+
 import net.dungeonrealms.banks.BankMechanics;
-import net.dungeonrealms.entities.types.RangedEntitySkeleton;
 import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.RangedEntitySkeleton;
 import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.items.Item.ItemType;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.Armor;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
-import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Projectile;
-import org.bukkit.inventory.ItemStack;
+import net.minecraft.server.v1_8_R3.EntityLiving;
+import net.minecraft.server.v1_8_R3.EntityWitherSkull;
+import net.minecraft.server.v1_8_R3.Item;
+import net.minecraft.server.v1_8_R3.MathHelper;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Sep 21, 2015

@@ -1,12 +1,10 @@
 package net.dungeonrealms.teleportation;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.ParticleAPI;
-import net.dungeonrealms.mechanics.generic.EnumPriority;
-import net.dungeonrealms.mechanics.generic.GenericMechanic;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -15,10 +13,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.combat.CombatLog;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
  * Created by Kieran on 9/18/2015.

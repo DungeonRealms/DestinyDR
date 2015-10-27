@@ -1,12 +1,13 @@
 package net.dungeonrealms.mastery;
 
+import org.bukkit.entity.Projectile;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffectType;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.entity.Projectile;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffectType;
 
 /**
  * Created by Kieran on 9/18/2015.

@@ -1,13 +1,14 @@
 package net.dungeonrealms.entities.utils;
 
+import java.util.Random;
+
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.metadata.FixedMetadataValue;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.metadata.FixedMetadataValue;
-
-import java.util.Random;
 
 /**
  * Created by Chase on Sep 18, 2015

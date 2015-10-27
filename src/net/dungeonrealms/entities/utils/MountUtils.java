@@ -1,10 +1,7 @@
 package net.dungeonrealms.entities.utils;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.entities.types.mounts.EnumMounts;
-import net.dungeonrealms.entities.types.mounts.Horse;
-import net.dungeonrealms.entities.EnumEntityType;
-import net.minecraft.server.v1_8_R3.World;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
@@ -14,7 +11,11 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.HorseInventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.UUID;
+import net.dungeonrealms.API;
+import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.mounts.EnumMounts;
+import net.dungeonrealms.entities.types.mounts.Horse;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Kieran on 9/18/2015.

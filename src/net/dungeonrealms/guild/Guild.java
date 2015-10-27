@@ -1,12 +1,9 @@
 package net.dungeonrealms.guild;
 
-import com.mongodb.async.SingleResultCallback;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.result.DeleteResult;
-import net.dungeonrealms.API;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mongo.*;
-import net.dungeonrealms.network.NetworkAPI;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -14,9 +11,18 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import com.mongodb.async.SingleResultCallback;
+import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.DeleteResult;
+
+import net.dungeonrealms.API;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mongo.Database;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumGuildData;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.network.NetworkAPI;
 
 /**
  * Created by Nick on 9/29/2015.

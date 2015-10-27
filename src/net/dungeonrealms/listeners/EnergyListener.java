@@ -1,9 +1,7 @@
 package net.dungeonrealms.listeners;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.handlers.EnergyHandler;
-import net.minecraft.server.v1_8_R3.EntityExperienceOrb;
+import java.util.Random;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.ExperienceOrb;
@@ -24,7 +22,10 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.Random;
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.handlers.EnergyHandler;
+import net.minecraft.server.v1_8_R3.EntityExperienceOrb;
 
 /**
  * Created by Kieran on 9/24/2015.

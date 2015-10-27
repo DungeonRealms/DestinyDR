@@ -1,8 +1,9 @@
 package net.dungeonrealms.commands;
 
-import net.dungeonrealms.commands.generic.BasicCommand;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
+
+import net.dungeonrealms.commands.generic.BasicCommand;
 
 /**
  * Created by Nick on 9/17/2015.

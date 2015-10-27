@@ -4,9 +4,9 @@ import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.banks.BankMechanics;
+import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.RangedEntitySkeleton;
 import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.EntityArrow;

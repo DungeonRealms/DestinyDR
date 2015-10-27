@@ -1,16 +1,17 @@
 package net.dungeonrealms.chat;
 
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
+
+import org.bukkit.ChatColor;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumGuildData;
 import net.dungeonrealms.rank.Rank;
-import org.bukkit.ChatColor;
-import org.bukkit.event.player.AsyncPlayerChatEvent;
-
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
 
 /**
  * Created by Nick on 9/26/2015.

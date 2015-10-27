@@ -1,9 +1,9 @@
 package net.dungeonrealms.entities.utils;
 
+import java.util.UUID;
+
 import net.dungeonrealms.entities.Entities;
 import net.minecraft.server.v1_8_R3.Entity;
-
-import java.util.UUID;
 
 /**
  * Created by Kieran on 9/19/2015.

@@ -1,10 +1,9 @@
 package net.dungeonrealms.party;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.handlers.HealthHandler;
-import net.dungeonrealms.handlers.ScoreboardHandler;
-import net.dungeonrealms.mechanics.generic.EnumPriority;
-import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -13,9 +12,11 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.handlers.ScoreboardHandler;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 
 /**
  * Created by Nick on 10/3/2015.

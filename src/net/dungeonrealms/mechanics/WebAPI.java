@@ -1,8 +1,5 @@
 package net.dungeonrealms.mechanics;
 
-import net.dungeonrealms.mastery.AsyncUtils;
-import net.dungeonrealms.mastery.Utils;
-
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -10,6 +7,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import net.dungeonrealms.mastery.AsyncUtils;
+import net.dungeonrealms.mastery.Utils;
 
 /**
  * Created by Nick on 9/17/2015.

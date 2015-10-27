@@ -1,14 +1,15 @@
 package net.dungeonrealms.commands;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.commands.generic.BasicCommand;
-import net.dungeonrealms.handlers.FriendHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+
+import net.dungeonrealms.API;
+import net.dungeonrealms.commands.generic.BasicCommand;
+import net.dungeonrealms.handlers.FriendHandler;
 
 /**
  * Created by Nick on 10/22/2015.

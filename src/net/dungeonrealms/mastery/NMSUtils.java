@@ -1,15 +1,16 @@
 package net.dungeonrealms.mastery;
 
-import net.minecraft.server.v1_8_R3.BiomeBase;
-import net.minecraft.server.v1_8_R3.EntityInsentient;
-import net.minecraft.server.v1_8_R3.EntityTypes;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+
+import net.minecraft.server.v1_8_R3.BiomeBase;
+import net.minecraft.server.v1_8_R3.EntityInsentient;
+import net.minecraft.server.v1_8_R3.EntityTypes;
 
 /**
  * Created by Nick on 9/17/2015.

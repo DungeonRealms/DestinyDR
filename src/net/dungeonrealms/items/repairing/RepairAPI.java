@@ -1,11 +1,5 @@
 package net.dungeonrealms.items.repairing;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.items.Attribute;
-import net.dungeonrealms.items.enchanting.EnchantmentAPI;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.SoundAPI;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -15,6 +9,13 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
+
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.items.Attribute;
+import net.dungeonrealms.items.enchanting.EnchantmentAPI;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.SoundAPI;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
  * Created by Kieran on 9/26/2015.

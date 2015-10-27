@@ -1,18 +1,19 @@
 package net.dungeonrealms.teleportation;
 
-import net.dungeonrealms.handlers.KarmaHandler;
-import net.dungeonrealms.mastery.GamePlayer;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.Random;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Random;
-import java.util.UUID;
+import net.dungeonrealms.handlers.KarmaHandler;
+import net.dungeonrealms.mastery.GamePlayer;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
  * Created by Kieran on 9/19/2015.
