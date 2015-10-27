@@ -1,37 +1,12 @@
 package net.dungeonrealms;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.rmi.activation.UnknownObjectException;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.plugin.Plugin;
-import org.json.simple.JSONArray;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
-import com.sk89q.worldguard.protection.flags.StateFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
 import net.dungeonrealms.entities.types.mounts.EnumMounts;
@@ -53,6 +28,28 @@ import net.dungeonrealms.party.Party;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.teleportation.TeleportAPI;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.plugin.Plugin;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.rmi.activation.UnknownObjectException;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -194,14 +191,25 @@ public class API {
     }
 
     /**
-     * Checks if player is in a region that denys PVP
+     * Checks if player is in a region that
+     * denies PvP and Mob Damage
      *
      * @param location
      * @since 1.0
      */
     public static boolean isInSafeRegion(Location location) {
         ApplicableRegionSet region = getWorldGuard().getRegionManager(location.getWorld()).getApplicableRegions(location);
-        return region.queryState(null, DefaultFlag.PVP) == StateFlag.State.DENY;
+        return region.getFlag(DefaultFlag.PVP) != null && !region.allows(DefaultFlag.PVP) && region.getFlag(DefaultFlag.MOB_DAMAGE) != null && !region.allows(DefaultFlag.MOB_DAMAGE);
+    }
+
+    public static boolean isNonPvPRegion(Location location) {
+        ApplicableRegionSet region = getWorldGuard().getRegionManager(location.getWorld()).getApplicableRegions(location);
+        return region.getFlag(DefaultFlag.PVP) != null && !region.allows(DefaultFlag.PVP);
+    }
+
+    public static boolean isNonMobDamageRegion(Location location) {
+        ApplicableRegionSet region = getWorldGuard().getRegionManager(location.getWorld()).getApplicableRegions(location);
+        return region.getFlag(DefaultFlag.MOB_DAMAGE) != null && !region.allows(DefaultFlag.MOB_DAMAGE);
     }
 
     /**
