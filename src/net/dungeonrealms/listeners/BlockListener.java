@@ -30,6 +30,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.items.repairing.RepairAPI;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
@@ -103,12 +104,13 @@ public class BlockListener implements Listener {
         if(event.getPlayer().getItemInHand() != null){
         	ItemStack item = event.getPlayer().getItemInHand();
         	if(RepairAPI.isItemArmorOrWeapon(item)){
+        		if(RepairAPI.canItemBeRepaired(item)){
         		int cost = RepairAPI.getItemRepairCost(item);
         		Player player = event.getPlayer();
         		AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
 					if (e.getSlot() == AnvilSlot.OUTPUT) {
 						String text = e.getName();
-						if(text.equalsIgnoreCase("yes")){
+						if(text.equalsIgnoreCase("yes") || text.equalsIgnoreCase("y")){
 							if(BankMechanics.getInstance().takeGemsFromInventory(cost, player)){
 								RepairAPI.setCustomItemDurability(player.getItemInHand(), 1499);
 								player.updateInventory();
@@ -121,12 +123,17 @@ public class BlockListener implements Listener {
 						}
 					}
 				});
+        		Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
 				ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
 				ItemMeta meta = stack.getItemMeta();
 				meta.setDisplayName("Repair for " + cost + "?");
 				stack.setItemMeta(meta);
 				gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
 				gui.open();
+        		});
+        		}else{
+        			event.getPlayer().sendMessage("This item is already repaired all the way!");
+        		}
         	}else{
         		event.setCancelled(true);
         	}
