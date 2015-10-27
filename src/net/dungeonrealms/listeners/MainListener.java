@@ -371,23 +371,32 @@ public class MainListener implements Listener {
         if (event.getRightClicked().getName().equalsIgnoreCase("")) return;
         if (event.getRightClicked().getName().equalsIgnoreCase("Animal Tamer")) {
             NPCMenus.openMountPurchaseMenu(event.getPlayer());
-        } else if (event.getRightClicked().getName().equalsIgnoreCase("Merchant")) {
+        }
+        if (event.getRightClicked().getName().equalsIgnoreCase("Merchant")) {
             //TODO: Open Merchant Menu
-        } else if (event.getRightClicked().getName().equalsIgnoreCase("E-Cash Vendor")) {
+        }
+        if (event.getRightClicked().getName().equalsIgnoreCase("E-Cash Vendor")) {
             //TODO: Open E-Cash Menu
-        } else if (event.getRightClicked().getName().equalsIgnoreCase("Wizard")) {
+        }
+        if (event.getRightClicked().getName().equalsIgnoreCase("Wizard")) {
             //TODO: Open Attributes Reset Menu
-        } else if (event.getRightClicked().getName().equalsIgnoreCase("Dungeoneer")) {
+        }
+        if (event.getRightClicked().getName().equalsIgnoreCase("Dungeoneer")) {
             //TODO: Open Dungeoneer Menu
-        } else if (event.getRightClicked().getName().equalsIgnoreCase("Skill Trainer")) {
+        }
+        if (event.getRightClicked().getName().equalsIgnoreCase("Skill Trainer")) {
             //TODO: Open Profession Item Menu
-        } else if (event.getRightClicked().getName().equalsIgnoreCase("Food Vendor")) {
+        }
+        if (event.getRightClicked().getName().equalsIgnoreCase("Food Vendor")) {
             //TODO: Open Food Menu
-        } else if (event.getRightClicked().getName().equalsIgnoreCase("Item Vendor")) {
+        }
+        if (event.getRightClicked().getName().equalsIgnoreCase("Item Vendor")) {
             //TODO: Open Item Vendor
-        } else if (event.getRightClicked().getName().equalsIgnoreCase("Guild Registrar")) {
+        }
+        if (event.getRightClicked().getName().equalsIgnoreCase("Guild Registrar")) {
             //TODO: Open Guild Registrar
-        } else if (event.getRightClicked().getName().equalsIgnoreCase("Innkeeper")) {
+        }
+        if (event.getRightClicked().getName().equalsIgnoreCase("Innkeeper")) {
             //TODO: Open Hearthstone Guy (Anvil API)
         }
     }

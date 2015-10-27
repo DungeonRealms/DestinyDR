@@ -32,7 +32,7 @@ public class NPCMenus {
         tagDiamond.set("mountType", new NBTTagString("DIAMONDHORSE"));
         tagDiamond.setInt("mountCost", 12500);
         nmsStackDiamond.setTag(tagDiamond);
-        ItemStack goldHorse = new ItemStack(Material.SADDLE);
+        ItemStack goldHorse = new ItemStack(Material.GOLD_BARDING);
         net.minecraft.server.v1_8_R3.ItemStack nmsStackGold = CraftItemStack.asNMSCopy(goldHorse);
         NBTTagCompound tagGold = nmsStackGold.getTag() == null ? new NBTTagCompound() : nmsStackGold.getTag();
         tagGold.set("mountType", new NBTTagString("GOLDHORSE"));
