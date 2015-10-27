@@ -191,14 +191,25 @@ public class API {
     }
 
     /**
-     * Checks if player is in a region that denys PVP
+     * Checks if player is in a region that
+     * denies PvP and Mob Damage
      *
      * @param location
      * @since 1.0
      */
     public static boolean isInSafeRegion(Location location) {
         ApplicableRegionSet region = getWorldGuard().getRegionManager(location.getWorld()).getApplicableRegions(location);
+        return region.getFlag(DefaultFlag.PVP) != null && !region.allows(DefaultFlag.PVP) && region.getFlag(DefaultFlag.MOB_DAMAGE) != null && !region.allows(DefaultFlag.MOB_DAMAGE);
+    }
+
+    public static boolean isNonPvPRegion(Location location) {
+        ApplicableRegionSet region = getWorldGuard().getRegionManager(location.getWorld()).getApplicableRegions(location);
         return region.getFlag(DefaultFlag.PVP) != null && !region.allows(DefaultFlag.PVP);
+    }
+
+    public static boolean isNonMobDamageRegion(Location location) {
+        ApplicableRegionSet region = getWorldGuard().getRegionManager(location.getWorld()).getApplicableRegions(location);
+        return region.getFlag(DefaultFlag.MOB_DAMAGE) != null && !region.allows(DefaultFlag.MOB_DAMAGE);
     }
 
     /**
