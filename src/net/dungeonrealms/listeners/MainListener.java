@@ -146,12 +146,12 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onMountDismount(VehicleExitEvent event) {
-    	Utils.log.info(event.getExited().getClass().getName());
-        if (!(API.isPlayer(event.getExited()))){
-        	if(event.getExited() instanceof EntityArmorStand){
-        		event.getExited().remove();
-        	}
-        	return;
+        Utils.log.info(event.getExited().getClass().getName());
+        if (!(API.isPlayer(event.getExited()))) {
+            if (event.getExited() instanceof EntityArmorStand) {
+                event.getExited().remove();
+            }
+            return;
         }
         if (EntityAPI.hasMountOut(event.getExited().getUniqueId())) {
             if (event.getVehicle().hasMetadata("type")) {
