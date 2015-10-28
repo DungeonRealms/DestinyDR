@@ -55,7 +55,7 @@ public class Achievements {
                 if (result.wasAcknowledged()) {
                     if (Bukkit.getPlayer(uuid) == null) return;
                     Player player = Bukkit.getPlayer(uuid);
-                    player.sendMessage(ChatColor.GREEN + "[Achievement Earned] " + ChatColor.YELLOW + achievement.getMessage()[0] + "\n " + ChatColor.GREEN + "+" + achievement.getReward() + " XP");
+                    player.sendMessage(ChatColor.GREEN + "[Achievement Earned] " + ChatColor.YELLOW + achievement.getMessage()[0]);
                     new GamePlayer(player).addExperience(achievement.getReward());
 
                     switch (((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid)).size()) {

@@ -33,6 +33,44 @@ public class FriendHandler {
         return instance;
     }
 
+    /**
+     * for "Friends" GUI.
+     *
+     * @param player
+     * @param type
+     * @param itemStack
+     * @since 1.0
+     */
+    public void remove(Player player, ClickType type, ItemStack itemStack) {
+        if (itemStack == null || itemStack.getType() == null || !(itemStack.getType().equals(Material.SKULL_ITEM)))
+            return;
+        NBTTagCompound tag = CraftItemStack.asNMSCopy(itemStack).getTag();
+        UUID friend = UUID.fromString(tag.getString("info"));
+
+        switch (type) {
+            case RIGHT:
+                //Remove Pending request
+                player.closeInventory();
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, "info.friends", friend.toString(), true, new Callback<UpdateResult>(UpdateResult.class) {
+                    @Override
+                    public void callback(Throwable failCause, UpdateResult result) {
+                        sendFriendMessage(player, ChatColor.GREEN + "You have deleted " + itemStack.getItemMeta().getDisplayName().split("'")[0] + " from your friends list!");
+                        PlayerMenus.openFriendInventory(player);
+                    }
+                });
+                DatabaseAPI.getInstance().update(friend, EnumOperators.$PULL, "info.friends", player.toString(), true);
+                break;
+        }
+    }
+
+    /**
+     * for "Friend Management" Gui.
+     *
+     * @param player
+     * @param type
+     * @param itemStack
+     * @since 1.0
+     */
     public void addOrRemove(Player player, ClickType type, ItemStack itemStack) {
         if (itemStack == null || itemStack.getType() == null || !(itemStack.getType().equals(Material.SKULL_ITEM)))
             return;
@@ -55,12 +93,13 @@ public class FriendHandler {
                 //Add Friend
                 player.closeInventory();
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, "notices.friendRequest", tag.getString("info"), true);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "friends", friend.toString(), true, new Callback<UpdateResult>(UpdateResult.class) {
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "info.friends", friend.toString(), true, new Callback<UpdateResult>(UpdateResult.class) {
                     @Override
                     public void callback(Throwable failCause, UpdateResult result) {
                         sendFriendMessage(player, ChatColor.GREEN + "You have successfully added " + ChatColor.AQUA + itemStack.getItemMeta().getDisplayName().split("'")[0]);
                     }
                 });
+                DatabaseAPI.getInstance().update(friend, EnumOperators.$PUSH, "info.friends", player.getUniqueId(), true);
                 break;
         }
     }

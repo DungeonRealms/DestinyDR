@@ -17,6 +17,7 @@ import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mastery.NameFetcher;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
@@ -36,7 +37,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
-import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
@@ -47,6 +47,7 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -126,9 +127,9 @@ public class API {
             Reader in = new InputStreamReader(url.openStream());
             Object json = JSONValue.parse(in);
 
-            JSONObject array = (JSONObject) json;
+            JSONObject object = (JSONObject) json;
 
-            String rawInput = (String) array.get("id");
+            String rawInput = (String) object.get("id");
             StringBuilder input = new StringBuilder(rawInput);
 
             input.insert(8, "-");
@@ -146,30 +147,19 @@ public class API {
     /**
      * Gets players name from UUID. ASYNC.
      *
-     * @param UUID
+     * @param playerUuid
      * @return
      */
-    public static String getNameFromUUID(String UUID) {
+    public static String getNameFromUUID(String playerUuid) {
+
+        NameFetcher fetcher = new NameFetcher(Collections.singletonList(UUID.fromString(playerUuid)));
+
         try {
-            URL url = new URL("https://api.mojang.com/user/profiles/" + UUID.replaceAll("-", "") + "/names");
-
-            Reader in = new InputStreamReader(url.openStream());
-            Object json = JSONValue.parse(in);
-
-
-            if (((JSONArray) json).get(0) == null) {
-                assert false;
-                return ((JSONObject) json).get("name").toString();
-            } else {
-                JSONArray array = (JSONArray) json;
-                return array.get(array.size() - 1).toString().split("\"")[3];
-            }
-
-        } catch (Exception ex) {
-            Utils.log.warning("[API] [getNameFromUUID] Unable to find name with UUID.");
-            ex.printStackTrace();
+            return fetcher.call();
+        } catch (Exception e) {
+            e.printStackTrace();
         }
-        return null;
+        return "BOB";
     }
 
     /**

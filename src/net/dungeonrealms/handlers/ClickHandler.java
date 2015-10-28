@@ -84,6 +84,9 @@ public class ClickHandler {
         if (name.equals("Friend Management")) {
             event.setCancelled(true);
             if (slot >= 44) return;
+            if (slot == 1) {
+                PlayerMenus.openFriendsMenu(player);
+            }
             if (slot == 0) {
                 AnvilGUIInterface addFriendGUI = AnvilApi.createNewGUI(player, anvilClick -> {
                     switch (anvilClick.getSlot()) {
@@ -102,6 +105,7 @@ public class ClickHandler {
                 addFriendGUI.open();
                 return;
             }
+            FriendHandler.getInstance().addOrRemove(player, event.getClick(), event.getCurrentItem());
         }
 
         /*
@@ -110,7 +114,10 @@ public class ClickHandler {
         if (name.equals("Friends")) {
             event.setCancelled(true);
             if (slot >= 54) return;
-            FriendHandler.getInstance().addOrRemove(player, event.getClick(), event.getCurrentItem());
+            if (slot == 0) {
+                PlayerMenus.openFriendInventory(player);
+            }
+            FriendHandler.getInstance().remove(player, event.getClick(), event.getCurrentItem());
         }
 
         /*

@@ -90,10 +90,6 @@ public class DungeonRealms extends JavaPlugin {
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
         saveDefaultConfig();
 
-        if(((((((((((((((((((((((((((((((((((((((((((((((((((((((1 != 1))))))))))))))))))))))))))))))))))))))))))))))))))))))){
-            Bukkit.shutdown();
-        }
-
         Database.getInstance().startInitialization();
         DatabaseAPI.getInstance().startInitialization();
         NetworkAPI.getInstance().startInitialization();
