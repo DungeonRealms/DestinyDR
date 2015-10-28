@@ -1,7 +1,9 @@
 package net.dungeonrealms.entities.types.monsters.boss;
 
 import java.lang.reflect.Field;
+import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,6 +29,7 @@ import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
@@ -115,6 +118,15 @@ public class Burick extends BasicEntitySkeleton implements Boss {
 	@Override
 	public void onBossDeath() {
 		say(this.getBukkitEntity(), getEnumBoss().death);
+		List<Player> list = API.getNearbyPlayers(this.getBukkitEntity().getLocation(), 50);
+		Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
+			for(Player p : list){
+			p.teleport(Teleportation.Cyrennica);
+			}
+		}, 20*30);
+		for(Player p : list){
+			p.sendMessage("You will be teleported out in 30 seconds");
+		}
 	}
 
 	public boolean first = false;
