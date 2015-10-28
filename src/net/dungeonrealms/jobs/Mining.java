@@ -1,7 +1,6 @@
 package net.dungeonrealms.jobs;
 
-import java.util.Collections;
-
+import net.dungeonrealms.mechanics.ItemManager;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -9,8 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.ItemManager;
+import java.util.Collections;
 
 /**
  * Created by Chase on Oct 27, 2015
@@ -142,7 +140,7 @@ public class Mining {
 	/**
 	 * Sets players item in hand to upgraded Tier
 	 * 
-	 * @param stackInHand
+	 * @param tier
 	 * @param p
 	 * @since 1.0
 	 */
@@ -157,17 +155,18 @@ public class Mining {
 	 */
 	public static int getBlockTier(Material type) {
 		switch (type) {
-		case COAL_ORE:
-			return 1;
-		case EMERALD_ORE:
-			return 2;
-		case IRON_ORE:
-			return 3;
-		case DIAMOND_ORE:
-			return 4;
-		case GOLD_ORE:
-			return 5;
-		default:
-			return 0;
-		}	}
+			case COAL_ORE:
+				return 1;
+			case EMERALD_ORE:
+				return 2;
+			case IRON_ORE:
+				return 3;
+			case DIAMOND_ORE:
+				return 4;
+			case GOLD_ORE:
+				return 5;
+			default:
+				return 0;
+		}
+	}
 }

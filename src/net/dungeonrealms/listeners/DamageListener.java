@@ -157,6 +157,11 @@ public class DamageListener implements Listener {
                 if (!event.getEntity().hasMetadata("type")) return;
             }
         }
+        if (API.isInSafeRegion(event.getDamager().getLocation()) || API.isInSafeRegion(event.getEntity().getLocation())) {
+            event.setCancelled(true);
+            event.setDamage(0);
+            return;
+        }
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
         if (API.isPlayer(event.getDamager())) {
@@ -232,10 +237,14 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
-        if ((!(event.getDamager() instanceof CraftLivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
-            return;
+        if ((!(event.getDamager() instanceof CraftLivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL))) return;
         if (!(API.isPlayer(event.getEntity()))) return;
         if (!event.getDamager().hasMetadata("type")) return;
+        if (API.isInSafeRegion(event.getDamager().getLocation()) || API.isInSafeRegion(event.getEntity().getLocation())) {
+            event.setCancelled(true);
+            event.setDamage(0);
+            return;
+        }
         double finalDamage = 0;
         Player player = (Player) event.getEntity();
         if (event.getDamager() instanceof CraftLivingEntity) {
@@ -434,6 +443,10 @@ public class DamageListener implements Listener {
         if (nmsItem == null || nmsItem.getTag() == null) return;
         //Get the NBT of the item the player is holding.
         if (!(API.isPlayer(shooter))) return;
+        if (API.isInSafeRegion(shooter.getLocation())) {
+            event.setCancelled(true);
+            return;
+        }
         int weaponTier = nmsItem.getTag().getInt("itemTier");
         Player player = (Player) shooter;
         player.updateInventory();
@@ -666,6 +679,10 @@ public class DamageListener implements Listener {
             return;
         }
         if (event.getPlayer().isInsideVehicle()) {
+            event.setCancelled(true);
+            return;
+        }
+        if (API.isInSafeRegion(event.getPlayer().getLocation())) {
             event.setCancelled(true);
             return;
         }

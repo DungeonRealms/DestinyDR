@@ -3,6 +3,7 @@ package net.dungeonrealms.handlers;
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.entities.utils.EntityAPI;
@@ -13,6 +14,7 @@ import net.dungeonrealms.inventory.PlayerMenus;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.network.NetworkAPI;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.dungeonrealms.teleportation.Teleportation;
@@ -24,6 +26,9 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Nick on 10/2/2015.
@@ -44,6 +49,34 @@ public class ClickHandler {
         Player player = (Player) event.getWhoClicked();
         int slot = event.getRawSlot();
         if (slot == -999) return;
+
+        /*
+        Animal Tamer NPC
+         */
+        if (name.equals("Mount Vendor")) {
+            event.setCancelled(true);
+            if (event.getCurrentItem().getType() != Material.AIR) {
+                net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                if (nmsStack == null) return;
+                if (nmsStack.getTag() == null) return;
+                if (slot > 27) return;
+                List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
+                if (playerMounts.contains(nmsStack.getTag().getString("mountType"))) {
+                    player.sendMessage(ChatColor.RED + "You already own this mount!");
+                    return;
+                } else {
+                    if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.mounts", nmsStack.getTag().getString("mountType").toUpperCase(), true);
+                        player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("mountType") + " mount!");
+                        return;
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You cannot afford this mount!");
+                        return;
+                    }
+                }
+            }
+            return;
+        }
 
         /*
         Friend Management
