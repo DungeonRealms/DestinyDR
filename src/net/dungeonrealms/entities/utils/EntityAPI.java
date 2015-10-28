@@ -1,9 +1,9 @@
 package net.dungeonrealms.entities.utils;
 
-import java.util.UUID;
-
 import net.dungeonrealms.entities.Entities;
 import net.minecraft.server.v1_8_R3.Entity;
+
+import java.util.UUID;
 
 /**
  * Created by Kieran on 9/19/2015.
@@ -26,20 +26,18 @@ public class EntityAPI {
         return Entities.PLAYER_PETS.get(uuid);
     }
 
-    public static boolean removePlayerPetList(UUID uuid) {
+    public static void removePlayerPetList(UUID uuid) {
         if (Entities.PLAYER_PETS.containsKey(uuid)) {
             Entities.PLAYER_PETS.remove(uuid);
-            return true;
+            return;
         }
-        return false;
     }
 
-    public static boolean removePlayerMountList(UUID uuid) {
+    public static void removePlayerMountList(UUID uuid) {
         if (Entities.PLAYER_MOUNTS.containsKey(uuid)) {
             Entities.PLAYER_MOUNTS.remove(uuid);
-            return true;
+            return;
         }
-        return false;
     }
 
     public static void addPlayerPetList(UUID uuid, Entity entity) {

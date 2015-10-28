@@ -1,8 +1,6 @@
 package net.dungeonrealms.guild;
 
-import com.mongodb.async.SingleResultCallback;
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.result.DeleteResult;
 import net.dungeonrealms.API;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.*;
@@ -63,7 +61,7 @@ public class Guild {
      * @since 1.0
      */
     public void disbandGuild(Player player, String guildName) {
-        if (isOwner(player.getUniqueId(), guildName)) {
+        if (!isOwner(player.getUniqueId(), guildName)) {
             player.sendMessage(ChatColor.RED + "You cannot disband the Guild! You aren't the Owner!");
             NetworkAPI.getInstance().sendNetworkMessage("guild", "message", player.getName() + " tried to disband the guild but was denied because they aren't of the rank [OWNER]!");
             return;
@@ -88,12 +86,7 @@ public class Guild {
         });
 
 
-        Database.guilds.deleteOne(Filters.eq("info.guild", guildName), new SingleResultCallback<DeleteResult>() {
-            @Override
-            public void onResult(DeleteResult deleteResult, Throwable throwable) {
-                Utils.log.info("[GUILD] [ASYNC] PURGED Guild=" + guildName + " ACKNOWLEDGED=" + deleteResult.wasAcknowledged());
-            }
-        });
+        Database.guilds.deleteOne(Filters.eq("info.guild", guildName), (deleteResult, throwable) -> Utils.log.info("[GUILD] [ASYNC] PURGED Guild=" + guildName + " ACKNOWLEDGED=" + deleteResult.wasAcknowledged()));
 
     }
 

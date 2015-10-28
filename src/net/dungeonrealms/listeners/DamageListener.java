@@ -377,12 +377,6 @@ public class DamageListener implements Listener {
             if (leDefender.hasPotionEffect(PotionEffectType.POISON)) {
                 leDefender.removePotionEffect(PotionEffectType.POISON);
             }
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, defender.getLocation(),
-                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 20);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
             return;
         }
         if (event.getDamage() - armourReducedDamage <= 0 || armourReducedDamage == -2) {
@@ -393,12 +387,6 @@ public class DamageListener implements Listener {
             }
             if (leDefender.hasPotionEffect(PotionEffectType.POISON)) {
                 leDefender.removePotionEffect(PotionEffectType.POISON);
-            }
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, defender.getLocation(),
-                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 20);
-            } catch (Exception ex) {
-                ex.printStackTrace();
             }
         } else {
             if (API.isPlayer(defender)) {
@@ -476,7 +464,6 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void petDamageListener(EntityDamageByEntityEvent event) {
         if (!(event.getEntity().hasMetadata("type"))) return;
-
         if (event.getEntity() instanceof Player) return;
         String metaValue = event.getEntity().getMetadata("type").get(0).asString().toLowerCase();
         switch (metaValue) {
@@ -487,6 +474,7 @@ public class DamageListener implements Listener {
                 event.setCancelled(true);
                 break;
             default:
+                break;
         }
     }
 

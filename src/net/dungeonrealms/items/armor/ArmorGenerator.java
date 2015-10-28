@@ -165,17 +165,8 @@ public class ArmorGenerator {
 	 * @return boolean
 	 * @since 1.0
 	 */
-	private static boolean canAddAttribute(Armor.ArmorAttributeType attributeType,
-	        ArrayList<Armor.ArmorAttributeType> attributeList) {
-		if (attributeType == Armor.ArmorAttributeType.VITALITY || attributeType == Armor.ArmorAttributeType.DEXTERITY
-		        || attributeType == Armor.ArmorAttributeType.INTELLECT
-		        || attributeType == Armor.ArmorAttributeType.STRENGTH) {
-			return !attributeList.contains(Armor.ArmorAttributeType.VITALITY)
-			        && !attributeList.contains(Armor.ArmorAttributeType.DEXTERITY)
-			        && !attributeList.contains(Armor.ArmorAttributeType.INTELLECT)
-			        && !attributeList.contains(Armor.ArmorAttributeType.STRENGTH);
-		}
-		return true;
+	private static boolean canAddAttribute(Armor.ArmorAttributeType attributeType, ArrayList<Armor.ArmorAttributeType> attributeList) {
+		return !(attributeType == Armor.ArmorAttributeType.VITALITY || attributeType == Armor.ArmorAttributeType.DEXTERITY || attributeType == Armor.ArmorAttributeType.INTELLECT || attributeType == Armor.ArmorAttributeType.STRENGTH) || !attributeList.contains(Armor.ArmorAttributeType.VITALITY) && !attributeList.contains(Armor.ArmorAttributeType.DEXTERITY) && !attributeList.contains(Armor.ArmorAttributeType.INTELLECT) && !attributeList.contains(Armor.ArmorAttributeType.STRENGTH);
 	}
 
 	/**
@@ -278,9 +269,9 @@ public class ArmorGenerator {
 	 * @param tier
 	 */
 	public ItemStack[] nextTier(int tier) {
-		return new ItemStack[]{getArmor(EquipmentType.CHESTPLATE, ArmorTier.getByTier(tier), this.getRandomItemModifier()),
-		getArmor(EquipmentType.LEGGINGS, ArmorTier.getByTier(tier), this.getRandomItemModifier()),
-		getArmor(EquipmentType.BOOTS, ArmorTier.getByTier(tier), this.getRandomItemModifier())};
+		return new ItemStack[]{getArmor(EquipmentType.CHESTPLATE, ArmorTier.getByTier(tier), getRandomItemModifier()),
+		getArmor(EquipmentType.LEGGINGS, ArmorTier.getByTier(tier), getRandomItemModifier()),
+		getArmor(EquipmentType.BOOTS, ArmorTier.getByTier(tier), getRandomItemModifier())};
 
 	}
 }

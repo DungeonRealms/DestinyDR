@@ -1,7 +1,12 @@
 package net.dungeonrealms.handlers;
 
-import java.util.UUID;
-
+import net.dungeonrealms.API;
+import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.network.NetworkAPI;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -10,13 +15,7 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.mastery.ItemSerialization;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumOperators;
-import net.dungeonrealms.network.NetworkAPI;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.NBTTagString;
+import java.util.UUID;
 
 /**
  * Created by Nick on 10/14/2015.
@@ -65,8 +64,7 @@ public class MailHandler {
      * @since 1.0
      */
     private boolean isMailItem(ItemStack item) {
-        if (item == null || item.getType() == null || item.getType().equals(Material.AIR)) return false;
-        return CraftItemStack.asNMSCopy(item).hasTag() && CraftItemStack.asNMSCopy(item).getTag().hasKey("item");
+        return !(item == null || item.getType() == null || item.getType().equals(Material.AIR)) && CraftItemStack.asNMSCopy(item).hasTag() && CraftItemStack.asNMSCopy(item).getTag().hasKey("item");
     }
 
     /**
