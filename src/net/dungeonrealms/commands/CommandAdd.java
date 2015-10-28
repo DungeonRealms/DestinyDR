@@ -81,7 +81,12 @@ public class CommandAdd extends BasicCommand {
                 		tier = Integer.parseInt(args[1]);
                 	player.getInventory().addItem(ItemManager.createPickaxe(tier));
                 	break;
-
+                case "rod":
+                	int rodTier = 1;
+                	if(args.length == 2)
+                		rodTier = Integer.parseInt(args[1]);
+                	player.getInventory().addItem(ItemManager.createFishingPole(rodTier));
+                	break;
             }
         }
 

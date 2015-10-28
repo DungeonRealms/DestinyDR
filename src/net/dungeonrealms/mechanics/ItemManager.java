@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import net.dungeonrealms.profession.Fishing;
 import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -166,6 +167,46 @@ public class ItemManager {
         return null;
     }
     
+    
+    public static ItemStack createFishingPole(int tier){
+        ItemStack rawStack = new ItemStack(Material.FISHING_ROD);
+        String name = "";
+        switch (tier) {
+            case 1:
+                name = ChatColor.BOLD + "Weak Rod";
+                break;
+            case 2:
+                name = ChatColor.GREEN.toString() + ChatColor.BOLD + "Basic Rod";
+                break;
+            case 3:
+                name = ChatColor.AQUA.toString() + ChatColor.BOLD + "Intermediate Rod";
+                break;
+            case 4:
+                name = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Strong Rod";
+                break;
+            case 5:
+                name = ChatColor.YELLOW.toString() + ChatColor.BOLD + "Master Rod";
+                break;
+            default:
+                break;
+        }
+        if (rawStack != null) {
+            ItemMeta meta = rawStack.getItemMeta();
+            meta.setDisplayName(name);
+    		String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
+            meta.setLore(Collections.singletonList(ChatColor.RED.toString() + expBar));
+            rawStack.setItemMeta(meta);
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+            tag.set("type", new NBTTagString("rod"));
+            tag.setInt("itemTier", tier);
+            tag.setInt("XP", 0);
+            tag.setInt("maxXP", Fishing.getMaxXP(tier));
+            nmsStack.setTag(tag);
+            return CraftItemStack.asBukkitCopy(nmsStack);
+        }
+        return null;
+    }
     
     /**
      * @param m
