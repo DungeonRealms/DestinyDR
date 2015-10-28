@@ -16,6 +16,21 @@ import net.dungeonrealms.mastery.Utils;
  * Created by Chase on Oct 28, 2015
  */
 public class Fishing {
+	
+	public enum EnumFish{
+		Bass("Bass", 1), Cod("Cod", 1), Trout("Trout",2);
+		
+		//TODO All this shit
+		
+		int regenLvl;
+		String fishName;
+		
+		EnumFish(String fishName, int regenlevel){
+			this.fishName = fishName;
+			this.regenLvl = regenlevel;
+		}
+	}
+	
 
 	public static int T1Exp = 2500;
 	public static int T2Exp = 5000;
@@ -45,6 +60,7 @@ public class Fishing {
 	 * 
 	 * @param stack
 	 * @return boolean
+	 * @since 1.0
 	 */
 	public static boolean isDRFishingPole(ItemStack stack) {
 		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
@@ -52,8 +68,11 @@ public class Fishing {
 	}
 
 	/**
+	 * return chance of capture out of 100
+	 * 
 	 * @param tier
-	 * @return
+	 * @return integer
+	 * @since 1.0
 	 */
 	public static int getChance(int tier) {
 		switch (tier) {
@@ -72,7 +91,9 @@ public class Fishing {
 	}
 
 	/**
-	 * @return
+	 * return size of fish based on tier
+	 * @return integer
+	 * @since 1.0
 	 */
 	public static int getSize(int tier) {
 		int size = 0;
@@ -102,26 +123,33 @@ public class Fishing {
 				size = new Random().nextInt(20) + new Random().nextInt(10) - new Random().nextInt(9);
 			break;
 		}
-		if(size <= 0)
+		if (size <= 0)
 			size = new Random().nextInt(5);
 		return size;
 	}
 
 	/**
 	 * 
+	 * gets a random fish name
 	 * 
 	 * @param tier
 	 * @return String
+	 * @since 1.0
 	 * 
 	 */
 	public static String getFish(int tier) {
 		// TODO MAKE MORE FISH AND CHANCES FOR POLES
-		return "Bass";
+		String[] list = new String[] { "Herring", "Salmon", "Eel", "Whiting", "Turbot", "Plaice", "Cod", "Trout",
+		        "Pike", "Skate", "Oysters", "Crab", "Cockles", "Mussels" };
+		return list[new Random().nextInt(list.length - 1)];
 	}
 
 	/**
+	 * Return new Fish caught by stack(fishing pole)
+	 * 
 	 * @param stack
-	 * @return
+	 * @return ItemStac
+	 * @since 1.0
 	 */
 	public static ItemStack getFishItem(ItemStack stack) {
 		ItemStack fish = new ItemStack(Material.RAW_FISH);
@@ -130,14 +158,17 @@ public class Fishing {
 		ItemMeta meta = fish.getItemMeta();
 		Utils.log.info(tier + "tier");
 		int size = Fishing.getSize(tier);
-		meta.setDisplayName(size + "in. " + Fishing.getFish(tier));
+		String type = Fishing.getFish(tier);
+		meta.setDisplayName(size + "in. " + type);
 		fish.setItemMeta(meta);
 		nms = CraftItemStack.asNMSCopy(fish);
 		nms.getTag().setInt("size", size);
+		nms.getTag().setString("type", type);
 		return CraftItemStack.asBukkitCopy(nms);
 	}
 
 	/**
+	 * Add Expereicen to the specified stack(fishing pole)
 	 * @param stack
 	 */
 	public static void gainExp(ItemStack stack, Player p) {
@@ -167,8 +198,11 @@ public class Fishing {
 	}
 
 	/**
+	 * Get the tier of said Rod.
+	 * 
 	 * @param rodStack
-	 * @return
+	 * @return Integer
+	 * @since 1.0
 	 */
 	public static int getRodTier(ItemStack rodStack) {
 		return CraftItemStack.asNMSCopy(rodStack).getTag().getInt("itemTier");
