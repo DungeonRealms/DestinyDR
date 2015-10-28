@@ -3,8 +3,13 @@
  */
 package net.dungeonrealms.commands;
 
-import static net.dungeonrealms.spawning.SpawningMechanics.getSpawners;
-
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.commands.generic.BasicCommand;
+import net.dungeonrealms.mechanics.LootManager;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.profession.Mining;
+import net.dungeonrealms.spawning.SpawningMechanics;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -12,13 +17,7 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.commands.generic.BasicCommand;
-import net.dungeonrealms.jobs.Mining;
-import net.dungeonrealms.mechanics.LootManager;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumOperators;
-import net.dungeonrealms.spawning.SpawningMechanics;
+import static net.dungeonrealms.spawning.SpawningMechanics.getSpawners;
 
 /**
  * Created by Chase on Sep 22, 2015

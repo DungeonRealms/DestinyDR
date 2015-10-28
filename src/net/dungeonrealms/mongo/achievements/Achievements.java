@@ -1,19 +1,17 @@
 package net.dungeonrealms.mongo.achievements;
 
-import java.util.ArrayList;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
 import com.mongodb.client.result.UpdateResult;
-
 import net.dungeonrealms.core.Callback;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by Nick on 8/29/2015.
@@ -55,26 +53,26 @@ public class Achievements {
             @Override
             public void callback(Throwable failCause, UpdateResult result) {
                 if (result.wasAcknowledged()) {
-                    if (Bukkit.getPlayer(uuid) != null) {
-                        Player player = Bukkit.getPlayer(uuid);
-                        player.sendMessage(ChatColor.GREEN + "[Achievement Earned] " + ChatColor.YELLOW + achievement.getMessage()[0]);
-                        new GamePlayer(player).addExperience(achievement.getReward());
-                    }
+                    if (Bukkit.getPlayer(uuid) == null) return;
+                    Player player = Bukkit.getPlayer(uuid);
+                    player.sendMessage(ChatColor.GREEN + "[Achievement Earned] " + ChatColor.YELLOW + achievement.getMessage()[0] + "\n " + ChatColor.GREEN + "+" + achievement.getReward() + " XP");
+                    new GamePlayer(player).addExperience(achievement.getReward());
+
                     switch (((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid)).size()) {
                         case 10:
-                            Achievements.getInstance().giveAchievement(uuid, EnumAchievements.NOVICE);
+                            giveAchievement(uuid, EnumAchievements.NOVICE);
                             break;
                         case 20:
-                            Achievements.getInstance().giveAchievement(uuid, EnumAchievements.APPRENTICE);
+                            giveAchievement(uuid, EnumAchievements.APPRENTICE);
                             break;
                         case 50:
-                            Achievements.getInstance().giveAchievement(uuid, EnumAchievements.ADEPT);
+                            giveAchievement(uuid, EnumAchievements.ADEPT);
                             break;
                         case 100:
-                            Achievements.getInstance().giveAchievement(uuid, EnumAchievements.EXPERT);
+                            giveAchievement(uuid, EnumAchievements.EXPERT);
                             break;
                         case 200:
-                            Achievements.getInstance().giveAchievement(uuid, EnumAchievements.MASTER);
+                            giveAchievement(uuid, EnumAchievements.MASTER);
                             break;
                     }
                 }
@@ -186,7 +184,10 @@ public class Achievements {
         }, 100, "achievement.expert"),
         MASTER(22, "Master", new String[]{
                 "Dungeon Realms Master",
-        }, 100, "achievement.master"),;
+        }, 100, "achievement.master"),
+        PLAY_WITH_XFINITYPRO(23, "Play with xFinityPro", new String[]{
+                "Congratulations! You've been granted the privilege to play on the same server as xFinityPro!",
+        }, 450, "achievement.play_with_xfinitypro"),;
 
         private int id;
         private String name;

@@ -54,7 +54,7 @@ public class FriendHandler {
             case LEFT:
                 //Add Friend
                 player.closeInventory();
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, "notices.friendRequest", tag.get("info"), true);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, "notices.friendRequest", tag.getString("info"), true);
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "friends", friend.toString(), true, new Callback<UpdateResult>(UpdateResult.class) {
                     @Override
                     public void callback(Throwable failCause, UpdateResult result) {
@@ -66,7 +66,7 @@ public class FriendHandler {
     }
 
     /**
-     * Send a friend request, ALREADY PERFORMS CHECKs.
+     * Send a friend request, ALREADY PERFORMS CHECKS.
      *
      * @param player The invoker.
      * @param friend Wanting to add.

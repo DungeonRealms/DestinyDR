@@ -89,8 +89,10 @@ public class PlayerMenus {
             long unix = Long.valueOf(s.split(",")[1]);
             Date sentDate = new Date(unix * 1000);
             String date = sdf.format(sentDate);
+            
+            String name = API.getNameFromUUID(from);
 
-            ItemStack stack = editItem(API.getNameFromUUID(from), "", new String[]{
+            ItemStack stack = editItem(name, name, new String[]{
                     ChatColor.GRAY + "Sent: " + date,
                     "",
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to accept!",

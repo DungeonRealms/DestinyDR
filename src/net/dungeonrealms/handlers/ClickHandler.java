@@ -102,8 +102,15 @@ public class ClickHandler {
                 addFriendGUI.open();
                 return;
             }
+        }
+
+        /*
+        Friends List Menu
+         */
+        if (name.equals("Friends")) {
+            event.setCancelled(true);
+            if (slot >= 54) return;
             FriendHandler.getInstance().addOrRemove(player, event.getClick(), event.getCurrentItem());
-            //other things.
         }
 
         /*

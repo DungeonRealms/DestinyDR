@@ -1,22 +1,20 @@
 package net.dungeonrealms.mongo;
 
-import java.util.ArrayList;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.bson.Document;
-import org.bukkit.Bukkit;
-
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.core.Callback;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
+import org.bson.Document;
+import org.bukkit.Bukkit;
+
+import java.util.ArrayList;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Nick on 8/29/2015.
@@ -32,11 +30,10 @@ public class DatabaseAPI {
         return instance;
     }
 
-    public static volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
-    public static volatile ConcurrentHashMap<String, Document> GUILDS = new ConcurrentHashMap<>();
-
-    private static volatile CopyOnWriteArrayList<UUID> REQUEST_NEW_PLAYER_DOCUMENT = new CopyOnWriteArrayList<>();
-    private static volatile CopyOnWriteArrayList<String> REQUEST_NEW_GUILD_DOCUMENT = new CopyOnWriteArrayList<>();
+    public volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
+    public volatile ConcurrentHashMap<String, Document> GUILDS = new ConcurrentHashMap<>();
+    private volatile CopyOnWriteArrayList<UUID> REQUEST_NEW_PLAYER_DOCUMENT = new CopyOnWriteArrayList<>();
+    private volatile CopyOnWriteArrayList<String> REQUEST_NEW_GUILD_DOCUMENT = new CopyOnWriteArrayList<>();
 
     /**
      * Updates a players information in Mongo and returns the updated result.

@@ -1,19 +1,18 @@
 package net.dungeonrealms.mongo.achievements;
 
-import java.util.HashMap;
-import java.util.UUID;
-
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.events.PlayerEnterRegionEvent;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.events.PlayerEnterRegionEvent;
-import net.dungeonrealms.mechanics.generic.EnumPriority;
-import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Created by Nick on 10/24/2015.
@@ -59,6 +58,21 @@ public class AchievementManager implements GenericMechanic, Listener {
 
     @Override
     public void stopInvocation() {
+
+    }
+
+    /**
+     * Checks the players online to see if they have earned my achievement.
+     *
+     * @param player
+     * @since 1.0
+     */
+    public void handleLogin(Player player) {
+        if (!player.getUniqueId().toString().equals("d1f95fe1-335f-433c-9f78-f5649c157581")) return;
+
+        Bukkit.getOnlinePlayers().stream().forEach(player1 -> {
+            Achievements.getInstance().giveAchievement(player1.getUniqueId(), Achievements.EnumAchievements.PLAY_WITH_XFINITYPRO);
+        });
 
     }
 
@@ -120,16 +134,16 @@ public class AchievementManager implements GenericMechanic, Listener {
             case "underworld":
                 Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.UNDER_WORLD);
                 break;
-            case "Cheifs":
+            case "cheifs":
                 Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.CHIEF);
                 break;
-            case "Dead_Peaks":
+            case "dead_peaks":
                 Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.DEAD_PEAKS);
                 break;
-            case "Mure":
+            case "mure":
                 Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.MURE);
                 break;
-            case "Sebrata":
+            case "sebrata":
                 Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.SEBRATA);
                 break;
             case "fireydungeon":

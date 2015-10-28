@@ -11,7 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import net.dungeonrealms.jobs.Mining;
+import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
