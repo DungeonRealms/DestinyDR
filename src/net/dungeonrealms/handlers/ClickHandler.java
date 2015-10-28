@@ -327,6 +327,9 @@ public class ClickHandler {
                 case 0:
                     PlayerMenus.openPlayerGuildInventory(player);
                     break;
+                case 8:
+                    Guild.getInstance().disbandGuild(player, guildName);
+                    break;
                 case 10:
                     if (Guild.getInstance().isOfficer(guildName, player.getUniqueId()) || Guild.getInstance().isOwner(player.getUniqueId(), guildName) || Guild.getInstance().isCoOwner(player.getUniqueId(), guildName)) {
                         AnvilGUIInterface invitePlayerGUI = AnvilApi.createNewGUI(player, anvilClick -> {

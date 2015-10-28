@@ -1,13 +1,5 @@
 package net.dungeonrealms.rank;
 
-import java.util.ArrayList;
-import java.util.TimeZone;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.SoundAPI;
@@ -20,6 +12,13 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.TimeZone;
+import java.util.UUID;
 
 /**
  * Created by Nick on 9/24/2015.
@@ -99,8 +98,7 @@ public class Subscription implements GenericMechanic{
     public int getHoursLeft(Player player) {
         long currentTime = System.currentTimeMillis() / 1000l;
         long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId())));
-        int hoursLeft = (int) ((endTime - currentTime) / 1000l);
-        return hoursLeft;
+        return (int) ((endTime - currentTime) / 1000l);
     }
 
     /**
