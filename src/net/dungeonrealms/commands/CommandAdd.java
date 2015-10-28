@@ -74,6 +74,13 @@ public class CommandAdd extends BasicCommand {
                 case "gold":
                     DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAILS.add(player);
                     break;
+                    
+                case "pick":
+                	int tier = 1;
+                	if(args.length == 2)
+                		tier = Integer.parseInt(args[1]);
+                	player.getInventory().addItem(ItemManager.createPickaxe(tier));
+                	break;
 
             }
         }

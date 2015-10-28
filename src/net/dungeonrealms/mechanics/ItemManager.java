@@ -11,6 +11,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
+import net.dungeonrealms.jobs.Mining;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
@@ -112,7 +113,60 @@ public class ItemManager {
         }
         return null;
     }
-
+    /**
+     * Creates a pickaxe based on
+     * given tier
+     *
+     * @param tier
+     * @return ItemStack
+     * @since 1.0
+     */
+    public static ItemStack createPickaxe(int tier){
+        ItemStack rawStack = null;
+        String name = "";
+        switch (tier) {
+            case 1:
+                rawStack = new ItemStack(Material.WOOD_PICKAXE);
+                name = ChatColor.BOLD + "Weak Pick";
+                break;
+            case 2:
+                rawStack = new ItemStack(Material.STONE_PICKAXE);
+                name = ChatColor.GREEN.toString() + ChatColor.BOLD + "Basic Pick";
+                break;
+            case 3:
+                rawStack = new ItemStack(Material.IRON_PICKAXE);
+                name = ChatColor.AQUA.toString() + ChatColor.BOLD + "Intermediate Pick";
+                break;
+            case 4:
+                rawStack = new ItemStack(Material.DIAMOND_PICKAXE);
+                name = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Strong Pick";
+                break;
+            case 5:
+                rawStack = new ItemStack(Material.GOLD_PICKAXE);
+                name = ChatColor.YELLOW.toString() + ChatColor.BOLD + "Master Pick";
+                break;
+            default:
+                break;
+        }
+        if (rawStack != null) {
+            ItemMeta meta = rawStack.getItemMeta();
+            meta.setDisplayName(name);
+    		String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
+            meta.setLore(Collections.singletonList(ChatColor.RED.toString() + expBar));
+            rawStack.setItemMeta(meta);
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+            tag.set("type", new NBTTagString("pick"));
+            tag.setInt("itemTier", tier);
+            tag.setInt("XP", 0);
+            tag.setInt("maxXP", Mining.getMaxXP(tier));
+            nmsStack.setTag(tag);
+            return CraftItemStack.asBukkitCopy(nmsStack);
+        }
+        return null;
+    }
+    
+    
     /**
      * @param m
      * @param name

@@ -8,10 +8,13 @@ import static net.dungeonrealms.spawning.SpawningMechanics.getSpawners;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.commands.generic.BasicCommand;
+import net.dungeonrealms.jobs.Mining;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumOperators;
@@ -81,6 +84,18 @@ public class CommandSet extends BasicCommand {
 				player.getWorld().getLivingEntities().forEach(org.bukkit.entity.Entity::remove);
 				getSpawners().forEach(net.dungeonrealms.spawning.MobSpawner::kill);
 				break;
+				
+			case "pick":
+				ItemStack stack = player.getItemInHand();
+				if(stack != null){
+					if(Mining.isDRPickaxe(stack)){
+						int pickTier = Mining.getPickTier(stack);
+						int xp = Mining.getMaxXP(pickTier) / 2;
+						net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+						nms.getTag().setInt("XP", xp);
+						player.setItemInHand(CraftItemStack.asBukkitCopy(nms));
+					}
+				}
 			}
 		}
 		return true;

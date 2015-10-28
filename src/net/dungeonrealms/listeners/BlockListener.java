@@ -2,11 +2,11 @@ package net.dungeonrealms.listeners;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
@@ -30,7 +30,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.items.repairing.RepairAPI;
-import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.jobs.Mining;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
@@ -94,7 +94,42 @@ public class BlockListener implements Listener {
         }
 
     }
+    /**
+     * Handles breaking ore
+     *
+     * @param e
+     * @since 1.0
+     */
     
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void breakOre(BlockBreakEvent e) {
+        Block block = e.getBlock();
+        if (block == null) return;
+        if(e.getPlayer().getItemInHand() != null){
+        ItemStack stackInHand = e.getPlayer().getItemInHand();
+        if(block.getType() == Material.COAL_ORE || block.getType() == Material.IRON_ORE || block.getType() == Material.GOLD_ORE || block.getType() == Material.DIAMOND_ORE || block.getType() == Material.EMERALD_ORE){
+            if(Mining.isDRPickaxe(stackInHand)){
+        	Player p = e.getPlayer();
+        	Material type = block.getType();
+        	int tier = Mining.getBlockTier(type);
+        	int pickTier = Mining.getPickTier(stackInHand);
+        	if(pickTier<tier){
+        		p.sendMessage("Your pick is to weak to break that ore");
+        		e.setCancelled(true);
+        		return;
+        	}
+        	int experienceGain = Mining.getExperienceGain(stackInHand, type);
+        	Mining.addExperience(stackInHand, experienceGain, p);
+    		p.getItemInHand().setDurability((short) (stackInHand.getDurability() + tier));
+        	e.setCancelled(true);
+        	if(new Random().nextInt(100) <= 75)//TODO INCORPORATE CHANCE INTO PICKS 
+        		p.getInventory().addItem(new ItemStack(type));
+        	e.getBlock().setType(Material.STONE);
+        	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->e.getBlock().setType(type), 20 * 30);
+        	}
+        }
+        }
+    }
     
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerRightClickAnvil(PlayerInteractEvent event){
