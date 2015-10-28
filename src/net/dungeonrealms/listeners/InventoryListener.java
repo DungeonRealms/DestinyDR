@@ -565,14 +565,12 @@ public class InventoryListener implements Listener {
 				} else {
 					//Right Player Clicked left Slot
 					event.setCancelled(true);
-					return;
 				}
 			} else {
 				//Right Slot Clicked
 				if (trade.isLeft(event.getWhoClicked().getUniqueId())) {
 					//Left Player Clicked Right Slot
 					event.setCancelled(true);
-					return;
 				} else {
 					//Right Player and Right Slot
 					if (slot == 8) {

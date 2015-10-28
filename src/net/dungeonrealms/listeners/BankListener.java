@@ -1,13 +1,18 @@
 package net.dungeonrealms.listeners;
 
-import java.util.ArrayList;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import com.minebone.anvilapi.core.AnvilApi;
+import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
+import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.banks.BankMechanics;
+import net.dungeonrealms.banks.Storage;
+import net.dungeonrealms.inventory.GUI;
+import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -22,19 +27,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.minebone.anvilapi.core.AnvilApi;
-import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
-import com.minebone.anvilapi.nms.anvil.AnvilSlot;
-
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.banks.BankMechanics;
-import net.dungeonrealms.banks.Storage;
-import net.dungeonrealms.inventory.GUI;
-import net.dungeonrealms.mastery.ItemSerialization;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.mongo.EnumOperators;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by Chase, by fixed by Proxying and under inspection of xFinityPro.
@@ -257,9 +251,7 @@ public class BankListener implements Listener {
                             	}
                             }, DungeonRealms.getInstance()).setOption(3, new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), ChatColor.GREEN.toString() +"Accept", new String[]{
                                     ChatColor.GRAY + "Upgrade your bank storage for " + ChatColor.RED.toString() + num +" gems"
-                            }).setOption(5, new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()), ChatColor.RED.toString() + "Deny", new String[]{
-                                    ChatColor.GRAY + "Cancel the upgrade"
-                            });
+                            }).setOption(5, new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()), ChatColor.RED.toString() + "Deny", ChatColor.GRAY + "Cancel the upgrade");
 
                             profileMain.open(player);
 

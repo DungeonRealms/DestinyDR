@@ -37,7 +37,6 @@ import org.bukkit.event.player.*;
 import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Map;
@@ -242,7 +241,6 @@ public class MainListener implements Listener {
 								Player p2 = playerClicked;
 								if (API.isInSafeRegion(p1.getLocation()) && API.isInSafeRegion(p2.getLocation())) {
 									if (DuelMechanics.isDueling(p2.getUniqueId())) {
-										return;
 									} else {
 										if (DuelMechanics.isPendingDuel(p1.getUniqueId())) {
 											if (DuelMechanics.isPendingDuelPartner(p1.getUniqueId(),
@@ -291,13 +289,13 @@ public class MainListener implements Listener {
 				} , DungeonRealms.getInstance());
 
 				gui.setOption(4, Utils.getPlayerHead(playerClicked),
-				        ChatColor.AQUA.toString() + playerClicked.getName(), new String[] {});
+				        ChatColor.AQUA.toString() + playerClicked.getName());
 				gui.setOption(8, new ItemStack(Material.IRON_SWORD), "Challenge to duel",
-				        new String[] { "Challenges " + playerClicked.getName() + " to a battle!" });
+						"Challenges " + playerClicked.getName() + " to a battle!");
 				gui.setOption(17, new ItemStack(Material.PAPER), "Private Message",
-				        new String[] { "Privately message " + playerClicked.getName() });
+						"Privately message " + playerClicked.getName());
 				gui.setOption(26, new ItemStack(Material.EMERALD), "Trade",
-				        new String[] { "Send a trade request to " + playerClicked.getName() });
+						"Send a trade request to " + playerClicked.getName());
 				gui.open(theevent.getPlayer());
 			}
 		}

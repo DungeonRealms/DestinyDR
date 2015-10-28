@@ -79,12 +79,11 @@ public class TeleportAPI {
      * @@return boolean
      * @since 1.0
      */
-    public static boolean removePlayerCurrentlyTeleporting(UUID uuid) {
+    public static void removePlayerCurrentlyTeleporting(UUID uuid) {
         if (Teleportation.PLAYERS_TELEPORTING.containsKey(uuid)) {
             Teleportation.PLAYERS_TELEPORTING.remove(uuid);
-            return true;
+            return;
         }
-        return false;
     }
 
     /**

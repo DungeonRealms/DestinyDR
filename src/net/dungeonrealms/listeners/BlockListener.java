@@ -7,12 +7,11 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.items.repairing.RepairAPI;
-import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.mechanics.LootManager;
+import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.spawning.LootSpawner;
-import net.dungeonrealms.spawning.MobSpawner;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
@@ -33,7 +32,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Random;
 
@@ -71,26 +69,15 @@ public class BlockListener implements Listener {
         if (block == null) return;
         if (block.getType() == Material.CHEST) {
             Shop shop = ShopMechanics.getShop(block);
-            if (shop == null) {
-                return;
-            } else {
+            if (shop != null) {
                 e.setCancelled(true);
                 if (e.getPlayer().isOp()) {
                     shop.deleteShop();
                 }
             }
         } else if (block.getType() == Material.ARMOR_STAND) {
-            ArrayList<MobSpawner> list = SpawningMechanics.getSpawners();
-            for (int i = 0; i < list.size(); i++) {
-                MobSpawner current = list.get(i);
-                if (current.loc == block.getLocation()) {
-                    SpawningMechanics.remove(i);
-                }
-            }
-        } else {
-            return;
+            SpawningMechanics.getSpawners().stream().filter(spawner -> spawner.loc == block.getLocation()).forEach(SpawningMechanics::remove);
         }
-
     }
 
     /**
@@ -112,7 +99,7 @@ public class BlockListener implements Listener {
                 int tier = Mining.getBlockTier(type);
                 int pickTier = Mining.getPickTier(stackInHand);
                 if (pickTier < tier) {
-                    p.sendMessage("Your pick is to weak to break that ore");
+                    p.sendMessage(ChatColor.RED + "Your pick not strong enough to mine this ore!");
                     e.setCancelled(true);
                     return;
                 }
@@ -123,7 +110,7 @@ public class BlockListener implements Listener {
                 if (new Random().nextInt(100) <= 75)//TODO INCORPORATE CHANCE INTO PICKS
                     p.getInventory().addItem(new ItemStack(type));
                 e.getBlock().setType(Material.STONE);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> e.getBlock().setType(type), 20 * 30);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> e.getBlock().setType(type), (Mining.getOreRespawnTime(type) * 20L));
             }
         }
     }
@@ -147,7 +134,7 @@ public class BlockListener implements Listener {
                                 RepairAPI.setCustomItemDurability(player.getItemInHand(), 1499);
                                 player.updateInventory();
                             } else {
-                                player.sendMessage("You do not have " + cost + "g");
+                                player.sendMessage(ChatColor.RED + "You do not have " + cost + "g");
                             }
                         } else {
                             e.destroy();
@@ -164,7 +151,7 @@ public class BlockListener implements Listener {
                     gui.open();
                 });
             } else {
-                event.getPlayer().sendMessage("This item is already repaired all the way!");
+                event.getPlayer().sendMessage(ChatColor.RED + "This item is already repaired all the way!");
             }
         } else {
             event.setCancelled(true);
@@ -205,7 +192,7 @@ public class BlockListener implements Listener {
                             break;
                     }
                 } else {
-                    e.getPlayer().sendMessage(ChatColor.RED.toString() + "You can't open this while monsters are around!");
+                    e.getPlayer().sendMessage(ChatColor.RED + "You can't open this while monsters are around!");
                     e.setCancelled(true);
                 }
             }
@@ -220,9 +207,9 @@ public class BlockListener implements Listener {
                 if (shop.isopen || shop.getOwner().getUniqueId() == e.getPlayer().getUniqueId()) {
                     e.setCancelled(true);
                     e.getPlayer().openInventory(shop.getInv());
-                } else if (!shop.isopen) {
+                } else {
                     e.setCancelled(true);
-                    e.getPlayer().sendMessage(ChatColor.RED.toString() + "This shop is closed!");
+                    e.getPlayer().sendMessage(ChatColor.RED + "This shop is closed!");
                 }
                 break;
             case LEFT_CLICK_BLOCK:
@@ -265,6 +252,14 @@ public class BlockListener implements Listener {
         }
     }
 
+
+    /**
+     * Removes snow that snowmen pets
+     * create after 3 seconds.
+     *
+     * @param event
+     * @since 1.0
+     */
     @EventHandler(priority = EventPriority.LOWEST)
     public void snowmanMakeSnow(EntityBlockFormEvent event) {
         if (event.getNewState().getType() == Material.SNOW) {

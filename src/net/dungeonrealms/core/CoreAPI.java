@@ -1,5 +1,12 @@
 package net.dungeonrealms.core;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import net.dungeonrealms.core.reply.BanReply;
+import net.dungeonrealms.core.reply.ProxyReply;
+import net.dungeonrealms.mastery.AsyncUtils;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
@@ -10,14 +17,6 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import net.dungeonrealms.core.reply.BanReply;
-import net.dungeonrealms.core.reply.ProxyReply;
-import net.dungeonrealms.mastery.AsyncUtils;
 
 /**
  * Created by Nick on 10/17/2015.
@@ -101,7 +100,7 @@ public class CoreAPI {
 
 
         try {
-            callback.callback(null, new ProxyReply(ProxyReply.Result.getByBoolean((Boolean) isProxy.get())));
+            callback.callback(null, new ProxyReply(ProxyReply.Result.getByBoolean(isProxy.get())));
         } catch (InterruptedException | ExecutionException e) {
             e.printStackTrace();
         }

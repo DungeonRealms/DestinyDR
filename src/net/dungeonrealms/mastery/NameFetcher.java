@@ -29,7 +29,7 @@ public class NameFetcher implements Callable<String> {
         for (UUID uuid : uuids) {
             HttpURLConnection connection = (HttpURLConnection) new URL(PROFILE_URL + uuid.toString().replace("-", "") + "/names").openConnection();
             JSONArray response = (JSONArray) jsonParser.parse(new InputStreamReader(connection.getInputStream()));
-            String name = (String) response.get(0).toString().split("\"")[3];
+            String name = response.get(0).toString().split("\"")[3];
             if (name == null) {
                 continue;
             }

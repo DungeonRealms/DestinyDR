@@ -100,6 +100,29 @@ public class Mining {
     }
 
     /**
+     * Returns the respawn time of ore in seconds
+     *
+     * @param oreType
+     * @return integer
+     * @since 1.0
+     */
+    public static int getOreRespawnTime(Material oreType) {
+        switch (oreType) {
+            case COAL_ORE:
+                return 120;
+            case EMERALD_BLOCK:
+                return 300;
+            case IRON_ORE:
+                return 600;
+            case DIAMOND_ORE:
+                return 1200;
+            case GOLD_ORE:
+                return 2400;
+        }
+        return 0;
+    }
+
+    /**
      * Adds experienceGain to players pick
      *
      * @param stackInHand
