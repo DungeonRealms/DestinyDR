@@ -1,12 +1,6 @@
 package net.dungeonrealms.notice;
 
-import java.util.ArrayList;
-
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-
 import com.mongodb.client.result.UpdateResult;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.core.Callback;
 import net.dungeonrealms.handlers.FriendHandler;
@@ -14,6 +8,10 @@ import net.dungeonrealms.handlers.MailHandler;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
 
 /**
  * Created by Nick on 10/11/2015.
@@ -50,7 +48,7 @@ public class Notice {
             for (String s : guildInvitations) {
                 String guildName = s.split(",")[0];
 
-                long inviteSent = Long.valueOf(s.split(",")[1]);
+                long inviteSent = Long.valueOf(s.split(",")[1]) * 1000;
 
                 long currentTime = System.currentTimeMillis();
 
@@ -70,7 +68,7 @@ public class Notice {
         if (friendRequests.size() > 0) {
             for (String s : friendRequests) {
                 String name = API.getNameFromUUID(s.split(",")[0]);
-                long inviteSent = Long.valueOf(s.split(",")[1]);
+                long inviteSent = Long.valueOf(s.split(",")[1]) * 1000;
                 long currentTime = System.currentTimeMillis();
                 long differenceInTime = currentTime - inviteSent;
                 long diffHours = differenceInTime / (60 * 60 * 1000);

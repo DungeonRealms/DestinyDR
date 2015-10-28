@@ -23,15 +23,21 @@ public class CommandFriend extends BasicCommand {
 
         Player player = (Player) s;
 
-        if (args.length == 2) {
-            if (Bukkit.getPlayer(args[2]) != null) {
-                Player wantingToAdd = Bukkit.getPlayer(args[2]);
-                FriendHandler.getInstance().sendRequest(player, wantingToAdd);
-            } else {
-                player.sendMessage(ChatColor.RED + "You cannot send friend requests to offline players!");
+        if (args.length > 0) {
+            switch (args[0]) {
+                case "add":
+                    if (Bukkit.getPlayer(args[1]) != null) {
+                        Player wantingToAdd = Bukkit.getPlayer(args[1]);
+                        FriendHandler.getInstance().sendRequest(player, wantingToAdd);
+                    } else {
+                        player.sendMessage(ChatColor.RED + "That player isn't online!");
+                    }
+                    break;
+                case "remove":
+                    break;
             }
         } else {
-            player.sendMessage(ChatColor.RED + "/friend add <playerName>");
+            player.sendMessage(ChatColor.RED + "Syntax Error (/friend add <playerName>)");
         }
 
         return false;

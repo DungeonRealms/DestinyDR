@@ -53,10 +53,18 @@ public class PlayerMenus {
         for (String s : friendRequest) {
             String from = s;
 
-            ItemStack stack = editItem(API.getNameFromUUID(from), "", new String[]{
+            String name = API.getNameFromUUID(from);
+            ItemStack stack = editItem(name, name, new String[]{
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to delete!"
             });
-            inv.setItem(slot, stack);
+
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+            tag.set("info", new NBTTagString(s));
+            nmsStack.setTag(tag);
+
+
+            inv.setItem(slot, CraftItemStack.asBukkitCopy(nmsStack));
 
             if (slot >= 54) break;
             slot++;
@@ -76,7 +84,7 @@ public class PlayerMenus {
                 ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to add friend!"
         }));
 
-        inv.setItem(2, editItem(new ItemStack(Material.CHEST), ChatColor.GREEN + "View Friend", new String[]{
+        inv.setItem(1, editItem(new ItemStack(Material.CHEST), ChatColor.GREEN + "View Friend", new String[]{
                 ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to view friends!"
         }));
 
@@ -85,12 +93,11 @@ public class PlayerMenus {
         int slot = 9;
         for (String s : friendRequest) {
             String from = s.split(",")[0];
+            String name = API.getNameFromUUID(from);
 
             long unix = Long.valueOf(s.split(",")[1]);
             Date sentDate = new Date(unix * 1000);
             String date = sdf.format(sentDate);
-            
-            String name = API.getNameFromUUID(from);
 
             ItemStack stack = editItem(name, name, new String[]{
                     ChatColor.GRAY + "Sent: " + date,
@@ -100,7 +107,7 @@ public class PlayerMenus {
             });
 
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
-            NBTTagCompound tag = new NBTTagCompound();
+            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("info", new NBTTagString(s));
             nmsStack.setTag(tag);
 

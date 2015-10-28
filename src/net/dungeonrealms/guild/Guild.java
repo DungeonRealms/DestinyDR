@@ -63,7 +63,7 @@ public class Guild {
      * @since 1.0
      */
     public void disbandGuild(Player player, String guildName) {
-        if (!isOwner(player.getUniqueId(), guildName)) {
+        if (isOwner(player.getUniqueId(), guildName)) {
             player.sendMessage(ChatColor.RED + "You cannot disband the Guild! You aren't the Owner!");
             NetworkAPI.getInstance().sendNetworkMessage("guild", "message", player.getName() + " tried to disband the guild but was denied because they aren't of the rank [OWNER]!");
             return;
