@@ -7,7 +7,6 @@ import net.dungeonrealms.chat.Chat;
 import net.dungeonrealms.core.Callback;
 import net.dungeonrealms.core.CoreAPI;
 import net.dungeonrealms.core.reply.BanReply;
-import net.dungeonrealms.core.reply.ProxyReply;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
@@ -87,7 +86,7 @@ public class MainListener implements Listener {
 				}
 			}
 		});
-		CoreAPI.getInstance().isProxying(event.getAddress(), new Callback<ProxyReply>(ProxyReply.class) {
+		/*CoreAPI.getInstance().isProxying(event.getAddress(), new Callback<ProxyReply>(ProxyReply.class) {
 			@Override
 			public void callback(Throwable failCause, ProxyReply result) {
 				switch (result.getResult()) {
@@ -99,7 +98,7 @@ public class MainListener implements Listener {
 					break;
 				}
 			}
-		});
+		});*/
 	}
 
 	/**
@@ -411,38 +410,40 @@ public class MainListener implements Listener {
 			return;
 		if (API.isPlayer(event.getRightClicked()))
 			return;
-		if (event.getRightClicked().getName().equalsIgnoreCase(""))
+		String npcNameStripped = ChatColor.stripColor(event.getRightClicked().getName());
+		if (npcNameStripped.equals(""))
 			return;
-		if (event.getRightClicked().getName().equalsIgnoreCase("Animal Tamer")) {
+		if (npcNameStripped.equalsIgnoreCase("Animal Tamer")) {
 			NPCMenus.openMountPurchaseMenu(event.getPlayer());
 			return;
 		}
-		if (event.getRightClicked().getName().equalsIgnoreCase("Merchant")) {
+		if (npcNameStripped.equalsIgnoreCase("Merchant")) {
 			// TODO: Open Merchant Menu
 		}
-		if (event.getRightClicked().getName().equalsIgnoreCase("E-Cash Vendor")) {
-			// TODO: Open E-Cash Menu
+		if (npcNameStripped.equalsIgnoreCase("E-Cash Vendor")) {
+			NPCMenus.openECashPurchaseMenu(event.getPlayer());
+			return;
 		}
-		if (event.getRightClicked().getName().equalsIgnoreCase("Wizard")) {
+		if (npcNameStripped.equalsIgnoreCase("Wizard")) {
 			// TODO: Open Attributes Reset Menu
 		}
-		if (event.getRightClicked().getName().equalsIgnoreCase("Dungeoneer")) {
+		if (npcNameStripped.equalsIgnoreCase("Dungeoneer")) {
 			// TODO: Open Dungeoneer Menu
 		}
-		if (event.getRightClicked().getName().equalsIgnoreCase("Skill Trainer")) {
+		if (npcNameStripped.equalsIgnoreCase("Skill Trainer")) {
 			NPCMenus.openProfessionPurchaseMenu(event.getPlayer());
 			return;
 		}
-		if (event.getRightClicked().getName().equalsIgnoreCase("Food Vendor")) {
+		if (npcNameStripped.equalsIgnoreCase("Food Vendor")) {
 			// TODO: Open Food Menu
 		}
-		if (event.getRightClicked().getName().equalsIgnoreCase("Item Vendor")) {
+		if (npcNameStripped.equalsIgnoreCase("Item Vendor")) {
 			// TODO: Open Item Vendor
 		}
-		if (event.getRightClicked().getName().equalsIgnoreCase("Guild Registrar")) {
+		if (npcNameStripped.equalsIgnoreCase("Guild Registrar")) {
 			// TODO: Open Guild Registrar
 		}
-		if (event.getRightClicked().getName().equalsIgnoreCase("Innkeeper")) {
+		if (npcNameStripped.equalsIgnoreCase("Innkeeper")) {
 			// TODO: Open Hearthstone Guy (Anvil API)
 		}
 	}
@@ -470,5 +471,4 @@ public class MainListener implements Listener {
 		}
 		}
 	}
-
 }

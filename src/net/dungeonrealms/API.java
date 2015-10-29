@@ -9,8 +9,10 @@ import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
+import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.entities.types.pets.EnumPets;
+import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
@@ -256,6 +258,16 @@ public class API {
         KarmaHandler.getInstance().handleLogoutEvents(player);
         Party.getInstance().handleLogout(player);
         ScoreboardHandler.getInstance().removePlayerScoreboard(player);
+        if (EntityAPI.hasPetOut(uuid)) {
+            net.minecraft.server.v1_8_R3.Entity pet = Entities.PLAYER_PETS.get(uuid);
+            pet.dead = true;
+            EntityAPI.removePlayerPetList(uuid);
+        }
+        if (EntityAPI.hasMountOut(uuid)) {
+            net.minecraft.server.v1_8_R3.Entity mount = Entities.PLAYER_MOUNTS.get(uuid);
+            mount.dead = true;
+            EntityAPI.removePlayerMountList(uuid);
+        }
     }
 
 

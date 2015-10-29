@@ -1,25 +1,23 @@
 package net.dungeonrealms.donate;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.MinecraftServer;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.ParticleAPI;
-import net.dungeonrealms.mechanics.generic.EnumPriority;
-import net.dungeonrealms.mechanics.generic.GenericMechanic;
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.MinecraftServer;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Kieran on 10/1/2015.
@@ -96,5 +94,22 @@ public class DonationEffects implements GenericMechanic {
                 Utils.log.warning("[Donations] [ASYNC] Could not spawn donation particle " + ENTITY_PARTICLE_EFFECTS.get(entity).name() + " for entity " + entity.getName());
             }
         }, 0L));
+    }
+
+    public boolean removeECashFromPlayer(Player player, int amount) {
+        if (amount <= 0) {
+            return true;
+            //Someone done fucked up and made it remove a negative amount. Probably Chase.
+        }
+        int playerEcash = (int) DatabaseAPI.getInstance().getData(EnumData.ECASH, player.getUniqueId());
+        if (playerEcash <= 0) {
+            return false;
+        }
+        if (playerEcash - amount >= 0) {
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, "info.ecash", (amount * -1), true);
+            return true;
+        } else {
+            return false;
+        }
     }
 }

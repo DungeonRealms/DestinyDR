@@ -1,9 +1,10 @@
 package net.dungeonrealms.party;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.handlers.ScoreboardHandler;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -12,11 +13,9 @@ import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Score;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.handlers.HealthHandler;
-import net.dungeonrealms.handlers.ScoreboardHandler;
-import net.dungeonrealms.mechanics.generic.EnumPriority;
-import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Nick on 10/3/2015.
@@ -144,6 +143,10 @@ public class Party implements GenericMechanic {
             for (Player otherMembers : party.getMembers()) {
                 ScoreboardHandler.getInstance().getPlayerScoreboardObject(members).resetScores(party.owner.getName());
                 ScoreboardHandler.getInstance().getPlayerScoreboardObject(members).resetScores(otherMembers.getName());
+                ScoreboardHandler.getInstance().getPlayerScoreboardObject(otherMembers).resetScores(party.getOwner().getName());
+                ScoreboardHandler.getInstance().getPlayerScoreboardObject(otherMembers).resetScores(otherMembers.getName());
+                ScoreboardHandler.getInstance().getPlayerScoreboardObject(otherMembers).resetScores(members.getName());
+                otherMembers.setScoreboard(otherMembers.getScoreboard());
             }
             members.setScoreboard(members.getScoreboard());
             members.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.RED + "The party has been disbanded!");
@@ -154,6 +157,7 @@ public class Party implements GenericMechanic {
             for (Player otherMembers : party.getMembers()) {
                 ScoreboardHandler.getInstance().getPlayerScoreboardObject(party.owner).resetScores(party.owner.getName());
                 ScoreboardHandler.getInstance().getPlayerScoreboardObject(party.owner).resetScores(otherMembers.getName());
+                otherMembers.setScoreboard(otherMembers.getScoreboard());
             }
             party.owner.setScoreboard(party.owner.getScoreboard());
             party.owner.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.RED + "Your party has been disbanded!");
@@ -175,6 +179,7 @@ public class Party implements GenericMechanic {
         for (Player otherMembers : party.getMembers()) {
             ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).resetScores(party.owner.getName());
             ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).resetScores(otherMembers.getName());
+            otherMembers.setScoreboard(otherMembers.getScoreboard());
         }
         player.setScoreboard(player.getScoreboard());
         party.owner.sendMessage(ChatColor.WHITE + "[" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + "] " + ChatColor.RED + "You have been kicked from the party!");

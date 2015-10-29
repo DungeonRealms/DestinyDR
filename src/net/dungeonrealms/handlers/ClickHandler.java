@@ -112,6 +112,71 @@ public class ClickHandler {
         }
 
         /*
+        E-Cash Vendor NPC
+         */
+        if (name.equals("E-Cash Vendor")) {
+            event.setCancelled(true);
+            if (slot > 9) return;
+            if (event.getCurrentItem().getType() != Material.AIR) {
+                net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                if (nmsStack == null) return;
+                if (nmsStack.getTag() == null) return;
+                if (nmsStack.getTag().hasKey("playerTrailType")) {
+                    List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, player.getUniqueId());
+                    if (playerTrails.contains(nmsStack.getTag().getString("playerTrailType"))) {
+                        player.sendMessage(ChatColor.RED + "You already own this trail!");
+                        return;
+                    } else {
+                        if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.particles", nmsStack.getTag().getString("playerTrailType").toUpperCase(), true);
+                            player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("playerTrailType") + " trail!");
+                            player.closeInventory();
+                            return;
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You cannot afford this trail, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash!");
+                            return;
+                        }
+                    }
+                }
+                if (nmsStack.getTag().hasKey("mountType")) {
+                    List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
+                    if (playerMounts.contains(nmsStack.getTag().getString("mountType"))) {
+                        player.sendMessage(ChatColor.RED + "You already own this mount!");
+                        return;
+                    } else {
+                        if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.mounts", nmsStack.getTag().getString("mountType").toUpperCase(), true);
+                            player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("mountType") + " mount!");
+                            player.closeInventory();
+                            return;
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You cannot afford this mount, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash!");
+                            return;
+                        }
+                    }
+                }
+                if (nmsStack.getTag().hasKey("petType")) {
+                    List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, player.getUniqueId());
+                    if (playerPets.contains(nmsStack.getTag().getString("petType"))) {
+                        player.sendMessage(ChatColor.RED + "You already own this pet!");
+                        return;
+                    } else {
+                        if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.pets", nmsStack.getTag().getString("petType").toUpperCase(), true);
+                            player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("petType") + " pet!");
+                            player.closeInventory();
+                            return;
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You cannot afford this pet, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash!");
+                            return;
+                        }
+                    }
+                }
+            }
+            return;
+        }
+
+        /*
         Friend Management
          */
         if (name.equals("Friend Management")) {

@@ -1,7 +1,9 @@
 package net.dungeonrealms.handlers;
 
-import java.util.UUID;
-
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -14,10 +16,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mechanics.generic.EnumPriority;
-import net.dungeonrealms.mechanics.generic.GenericMechanic;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.UUID;
 
 /**
  * Created by Kieran on 9/24/2015.
@@ -225,7 +224,9 @@ public class EnergyHandler implements GenericMechanic {
                 player.removeMetadata("sprinting", DungeonRealms.getInstance());
                 if (!player.hasPotionEffect(PotionEffectType.SLOW)) {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20, 100));
+                        //player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20, 100));
+                        player.damage(1);
+                        HealthHandler.getInstance().healPlayerByAmount(player, 100000);
                         player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20, 150));
                     }, 0L);
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "**EXHAUSTED**");
