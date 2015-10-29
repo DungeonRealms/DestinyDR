@@ -77,15 +77,15 @@ public class Fishing {
 	public static int getChance(int tier) {
 		switch (tier) {
 		case 1:
-			return 10;
+			return 25;
 		case 2:
-			return 20;
-		case 3:
 			return 30;
+		case 3:
+			return 45;
 		case 4:
-			return 40;
+			return 65;
 		case 5:
-			return 50;
+			return 85;
 		}
 		return 0;
 	}
