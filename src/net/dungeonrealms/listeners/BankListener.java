@@ -8,6 +8,7 @@ import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
 import net.dungeonrealms.inventory.GUI;
 import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
@@ -28,6 +29,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.UUID;
 
 /**
@@ -153,17 +155,8 @@ public class BankListener implements Listener {
                                         } else if (number > currentGems) {
                                             player.getPlayer().sendMessage("You only have " + currentGems);
                                         } else {
-                                            ItemStack stack = BankMechanics.banknote.clone();
-                                            ItemMeta meta = stack.getItemMeta();
-                                            ArrayList<String> lore = new ArrayList<>();
-                                            lore.add(ChatColor.BOLD.toString() + "Value: " + ChatColor.WHITE.toString()
-                                                    + number);
-                                            meta.setLore(lore);
-                                            stack.setItemMeta(meta);
-                                            net.minecraft.server.v1_8_R3.ItemStack nms1 = CraftItemStack.asNMSCopy(stack);
-                                            nms1.getTag().setInt("worth", number);
                                             Player p = player.getPlayer();
-                                            p.getInventory().addItem(CraftItemStack.asBukkitCopy(nms1));
+                                            p.getInventory().addItem(BankMechanics.createBankNote(number));
                                             DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(),
                                                     EnumOperators.$INC, "info.gems", -number, true);
                                             player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
@@ -229,31 +222,25 @@ public class BankListener implements Listener {
                             // Open Storage
                             player.openInventory(storage.inv);
                         } else if (e.isRightClick()) {
-            				int num = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId()) * 100;
-            				//TODO PRICE OF UPGRADE ^ 
-            				
-                            GUI profileMain = new GUI("Upgrade your bank storage?", 9, guievent ->{
-                            	int slot = guievent.getPosition();
-                            	if(slot ==3){
-                            		if(BankMechanics.getInstance().takeGemsFromInventory(num, player)){
-                            			int invlvl = (int)DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId()) + 1;
-                            			DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "inventory.level", invlvl,
-                        				        true);
-                            			player.sendMessage(ChatColor.GREEN.toString() + "Storage updated!");
-                            			player.closeInventory();
-                            			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->BankMechanics.getStorage(player.getUniqueId()).update(), 20l);
-                            		}else{
-                            			player.closeInventory();
-                            			player.sendMessage(ChatColor.RED.toString() + "Not enough Gems in your inventory!");
-                            		}
-                            	}else{
-                            		
-                            	}
-                            }, DungeonRealms.getInstance()).setOption(3, new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), ChatColor.GREEN.toString() +"Accept", new String[]{
-                                    ChatColor.GRAY + "Upgrade your bank storage for " + ChatColor.RED.toString() + num +" gems"
-                            }).setOption(5, new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()), ChatColor.RED.toString() + "Deny", ChatColor.GRAY + "Cancel the upgrade");
-
-                            profileMain.open(player);
+                            Inventory inv = Bukkit.createInventory(null, 9, "Upgrade your bank storage?");
+                        	int invLvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
+                			int num = (int) invLvl * 100;
+                            ItemStack accept = new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData());
+                            ItemMeta acceptMeta = accept.getItemMeta();
+                            acceptMeta.setDisplayName(ChatColor.GREEN.toString() +"Accept");
+                            acceptMeta.setLore(Arrays.asList(new String[] {ChatColor.GRAY + "Upgrade your bank storage for " + ChatColor.RED.toString() + num +" gems"}));
+                            accept.setItemMeta(acceptMeta);
+                            
+                            
+                            ItemStack deny = new ItemStack(Material.WOOL, 1, DyeColor.RED.getData());
+                            ItemMeta denyMeta = deny.getItemMeta();
+                            denyMeta.setDisplayName(ChatColor.RED.toString() +"Deny");
+                            denyMeta.setLore(Arrays.asList(new String[] {ChatColor.GRAY + "Cancel bank upgrade"}));
+                            deny.setItemMeta(denyMeta);
+                            
+                            inv.setItem(3, accept);
+                            inv.setItem(5, deny);
+                            player.openInventory(inv);
 
                             // Upgrade Storage
                         }
@@ -402,6 +389,27 @@ public class BankListener implements Listener {
                     }
                 }
             }
+        }else if(e.getInventory().getTitle().contains("Upgrade your bank storage")){
+        	e.setCancelled(true);
+        	int invLvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
+			int num = (int) invLvl * 100;
+			//TODO PRICE OF UPGRADE ^ 
+        	int slot = e.getRawSlot();
+        	if(slot ==3){
+            	boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(num, player);
+        		if(tookGems){
+        			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
+        			DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "inventory.level", invLvl + 1,
+    				        true);
+        			player.sendMessage(ChatColor.GREEN.toString() + "Storage updated!");
+        			player.closeInventory();
+        			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->BankMechanics.getStorage(player.getUniqueId()).update(), 20l);
+        			});
+        		}else{
+        			player.closeInventory();
+        			player.sendMessage(ChatColor.RED.toString() + "Not enough Gems in your inventory!");
+        		}
+        	}
         }
     }
 

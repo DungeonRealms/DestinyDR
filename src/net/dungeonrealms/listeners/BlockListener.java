@@ -7,6 +7,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.items.repairing.RepairAPI;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.shops.Shop;
@@ -130,7 +131,8 @@ public class BlockListener implements Listener {
                     if (e.getSlot() == AnvilSlot.OUTPUT) {
                         String text = e.getName();
                         if (text.equalsIgnoreCase("yes") || text.equalsIgnoreCase("y")) {
-                            if (BankMechanics.getInstance().takeGemsFromInventory(cost, player)) {
+                        	boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(cost, player);
+                            if (tookGems) {
                                 RepairAPI.setCustomItemDurability(player.getItemInHand(), 1499);
                                 player.updateInventory();
                             } else {
