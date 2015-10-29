@@ -47,7 +47,7 @@ public class Mining {
      */
     public static boolean isDRPickaxe(ItemStack stack) {
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        return nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("pick");
+        return !(nms == null || nms.getTag() == null) && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("pick");
     }
 
     /**

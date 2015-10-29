@@ -69,6 +69,7 @@ public class ClickHandler {
                     if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
                         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.mounts", nmsStack.getTag().getString("mountType").toUpperCase(), true);
                         player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("mountType") + " mount!");
+                        player.closeInventory();
                         return;
                     } else {
                         player.sendMessage(ChatColor.RED + "You cannot afford this mount, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("mountCost") + ChatColor.RED + " Gems!");
@@ -91,10 +92,12 @@ public class ClickHandler {
                         case 0:
                             player.getInventory().addItem(ItemManager.createPickaxe(1));
                             player.sendMessage(ChatColor.GREEN + "You have purchased a Pickaxe!");
+                            player.closeInventory();
                             break;
                         case 1:
                             player.getInventory().addItem(ItemManager.createFishingPole(1));
                             player.sendMessage(ChatColor.GREEN + "You have purchased a Fishing Rod!");
+                            player.closeInventory();
                             break;
                         default:
                             break;
