@@ -1,5 +1,6 @@
 package net.dungeonrealms.inventory;
 
+import net.dungeonrealms.mechanics.ItemManager;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Bukkit;
@@ -19,7 +20,7 @@ import java.util.Arrays;
 public class NPCMenus {
 
     public static void openMountPurchaseMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 27, "Mount Vendor");
+        Inventory inv = Bukkit.createInventory(null, 9, "Mount Vendor");
         ItemStack t1Horse = new ItemStack(Material.SADDLE);
         net.minecraft.server.v1_8_R3.ItemStack nmsStackT1 = CraftItemStack.asNMSCopy(t1Horse);
         NBTTagCompound tagT1 = nmsStackT1.getTag() == null ? new NBTTagCompound() : nmsStackT1.getTag();
@@ -48,6 +49,15 @@ public class NPCMenus {
                 ChatColor.RED + "Speed 160%",
                 ChatColor.RED + "Jump 110%"}));
         //TODO: Add Mule when Chase finishes it.
+
+        player.openInventory(inv);
+    }
+
+    public static void openProfessionPurchaseMenu(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 9, "Profession Vendor");
+
+        inv.addItem(ItemManager.createPickaxe(1));
+        inv.addItem(ItemManager.createFishingPole(1));
 
         player.openInventory(inv);
     }

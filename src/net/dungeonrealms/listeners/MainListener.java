@@ -415,6 +415,7 @@ public class MainListener implements Listener {
 			return;
 		if (event.getRightClicked().getName().equalsIgnoreCase("Animal Tamer")) {
 			NPCMenus.openMountPurchaseMenu(event.getPlayer());
+			return;
 		}
 		if (event.getRightClicked().getName().equalsIgnoreCase("Merchant")) {
 			// TODO: Open Merchant Menu
@@ -429,7 +430,8 @@ public class MainListener implements Listener {
 			// TODO: Open Dungeoneer Menu
 		}
 		if (event.getRightClicked().getName().equalsIgnoreCase("Skill Trainer")) {
-			// TODO: Open Profession Item Menu
+			NPCMenus.openProfessionPurchaseMenu(event.getPlayer());
+			return;
 		}
 		if (event.getRightClicked().getName().equalsIgnoreCase("Food Vendor")) {
 			// TODO: Open Food Menu

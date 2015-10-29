@@ -1,8 +1,11 @@
 package net.dungeonrealms.mechanics;
 
-import java.util.Arrays;
-import java.util.Collections;
-
+import net.dungeonrealms.profession.Fishing;
+import net.dungeonrealms.profession.Mining;
+import net.dungeonrealms.teleportation.TeleportAPI;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.NBTTagList;
+import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -11,11 +14,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import net.dungeonrealms.profession.Fishing;
-import net.dungeonrealms.profession.Mining;
-import net.dungeonrealms.teleportation.TeleportAPI;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.NBTTagString;
+import java.util.Arrays;
+import java.util.Collections;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -157,10 +157,11 @@ public class ItemManager {
             rawStack.setItemMeta(meta);
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("type", new NBTTagString("pick"));
+            tag.set("type", new NBTTagString("pickaxe"));
             tag.setInt("itemTier", tier);
             tag.setInt("XP", 0);
             tag.setInt("maxXP", Mining.getMaxXP(tier));
+            tag.set("AttributeModifiers", new NBTTagList());
             nmsStack.setTag(tag);
             return CraftItemStack.asBukkitCopy(nmsStack);
         }
@@ -190,22 +191,19 @@ public class ItemManager {
             default:
                 break;
         }
-        if (rawStack != null) {
-            ItemMeta meta = rawStack.getItemMeta();
-            meta.setDisplayName(name);
-    		String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
-            meta.setLore(Collections.singletonList(ChatColor.RED.toString() + expBar));
-            rawStack.setItemMeta(meta);
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
-            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("type", new NBTTagString("rod"));
-            tag.setInt("itemTier", tier);
-            tag.setInt("XP", 0);
-            tag.setInt("maxXP", Fishing.getMaxXP(tier));
-            nmsStack.setTag(tag);
-            return CraftItemStack.asBukkitCopy(nmsStack);
-        }
-        return null;
+        ItemMeta meta = rawStack.getItemMeta();
+        meta.setDisplayName(name);
+        String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
+        meta.setLore(Collections.singletonList(ChatColor.RED.toString() + expBar));
+        rawStack.setItemMeta(meta);
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set("type", new NBTTagString("fishingrod"));
+        tag.setInt("itemTier", tier);
+        tag.setInt("XP", 0);
+        tag.setInt("maxXP", Fishing.getMaxXP(tier));
+        nmsStack.setTag(tag);
+        return CraftItemStack.asBukkitCopy(nmsStack);
     }
     
     /**

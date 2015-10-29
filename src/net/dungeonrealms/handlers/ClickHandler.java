@@ -11,6 +11,7 @@ import net.dungeonrealms.entities.utils.MountUtils;
 import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.inventory.PlayerMenus;
+import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -55,11 +56,11 @@ public class ClickHandler {
          */
         if (name.equals("Mount Vendor")) {
             event.setCancelled(true);
+            if (slot > 9) return;
             if (event.getCurrentItem().getType() != Material.AIR) {
                 net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                 if (nmsStack == null) return;
                 if (nmsStack.getTag() == null) return;
-                if (slot > 27) return;
                 List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
                 if (playerMounts.contains(nmsStack.getTag().getString("mountType"))) {
                     player.sendMessage(ChatColor.RED + "You already own this mount!");
@@ -68,12 +69,44 @@ public class ClickHandler {
                     if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
                         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.mounts", nmsStack.getTag().getString("mountType").toUpperCase(), true);
                         player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("mountType") + " mount!");
+                        player.closeInventory();
                         return;
                     } else {
-                        player.sendMessage(ChatColor.RED + "You cannot afford this mount!");
+                        player.sendMessage(ChatColor.RED + "You cannot afford this mount, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("mountCost") + ChatColor.RED + " Gems!");
                         return;
                     }
                 }
+            }
+            return;
+        }
+
+        /*
+        Skill Trainer NPC
+         */
+        if (name.equals("Profession Vendor")) {
+            event.setCancelled(true);
+            if (slot > 9) return;
+            if (event.getCurrentItem().getType() != Material.AIR) {
+                if (BankMechanics.getInstance().takeGemsFromInventory(100, player)) {
+                    switch (slot) {
+                        case 0:
+                            player.getInventory().addItem(ItemManager.createPickaxe(1));
+                            player.sendMessage(ChatColor.GREEN + "You have purchased a Pickaxe!");
+                            player.closeInventory();
+                            break;
+                        case 1:
+                            player.getInventory().addItem(ItemManager.createFishingPole(1));
+                            player.sendMessage(ChatColor.GREEN + "You have purchased a Fishing Rod!");
+                            player.closeInventory();
+                            break;
+                        default:
+                            break;
+                    }
+                    return;
+                } else {
+                    player.sendMessage(ChatColor.RED + "You cannot afford this item, you require " + ChatColor.BOLD + "100" + ChatColor.RED + " Gems!");
+                }
+                return;
             }
             return;
         }
