@@ -14,6 +14,7 @@ import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.TradeHandler;
 import net.dungeonrealms.handlers.TradeHandler.TradeManager;
 import net.dungeonrealms.items.repairing.RepairAPI;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.shops.Shop;
@@ -182,8 +183,18 @@ public class InventoryListener implements Listener {
 											                    .sendMessage("You can't ask for negative money!");
 													} else {
 														ItemStack stack = stackInSlot.clone();
-														ItemMeta meta = stack.getItemMeta();
+														ItemMeta meta = stackInSlot.getItemMeta();
 														ArrayList<String> lore = new ArrayList<>();
+														if(meta.hasLore()){
+															lore = (ArrayList<String>) meta.getLore();
+														}
+														for (int i = 0; i < lore.size(); i++) {
+															String current = lore.get(i);
+															if (current.contains("Price")) {
+																lore.remove(i);
+																break;
+															}
+														}
 														lore.add(ChatColor.BOLD.toString() + ChatColor.GREEN.toString()
 											                    + "Price: " + ChatColor.WHITE.toString() + number
 											                    + "g");
@@ -286,8 +297,11 @@ public class InventoryListener implements Listener {
 								player.getPlayer().sendMessage("You can't ask for negative money!");
 							} else {
 								ItemStack stack = itemHeld.clone();
-								ItemMeta meta = stack.getItemMeta();
+								ItemMeta meta = itemHeld.getItemMeta();
 								ArrayList<String> lore = new ArrayList<>();
+								if(meta.hasLore()){
+									lore = (ArrayList<String>) meta.getLore();
+								}
 								lore.add(ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "Price: "
 					                    + ChatColor.WHITE.toString() + number);
 								meta.setLore(lore);
