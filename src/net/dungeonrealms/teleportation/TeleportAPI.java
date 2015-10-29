@@ -1,19 +1,20 @@
 package net.dungeonrealms.teleportation;
 
-import java.util.Random;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.inventory.ItemStack;
-
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.achievements.Achievements;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.Random;
+import java.util.UUID;
 
 /**
  * Created by Kieran on 9/19/2015.
@@ -82,7 +83,6 @@ public class TeleportAPI {
     public static void removePlayerCurrentlyTeleporting(UUID uuid) {
         if (Teleportation.PLAYERS_TELEPORTING.containsKey(uuid)) {
             Teleportation.PLAYERS_TELEPORTING.remove(uuid);
-            return;
         }
     }
 
@@ -177,6 +177,9 @@ public class TeleportAPI {
             case "crestguard": {
                 return Teleportation.Crestguard_Keep;
             }
+            case "deadpeaks": {
+                return Teleportation.Deadpeaks_Mountain_Camp;
+            }
             default: {
                 return null;
             }
@@ -190,7 +193,7 @@ public class TeleportAPI {
      * @since 1.0
      */
     public static String getRandomTeleportString() {
-        switch (new Random().nextInt(6)) {
+        switch (new Random().nextInt(8)) {
             case 0: {
                 return "Cyrennica";
             }
@@ -212,9 +215,37 @@ public class TeleportAPI {
             case 6: {
                 return "Crestguard";
             }
+            case 7: {
+                return "Deadpeaks";
+            }
             default: {
                 return "Cyrennica";
             }
+        }
+    }
+
+    public static boolean canSetHearthstoneLocation(Player player, String hearthstoneLocation) {
+        switch (hearthstoneLocation.toLowerCase()) {
+            case "starter":
+                return false;
+            case "cyrennica":
+                return true;
+            case "harrison_field":
+                return Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.VILLAGE_SAFE);
+            case "dark_oak":
+                return Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.DARK_OAK_WILD2);
+            case "trollsbane":
+                return Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.INFRONT_OF_TAVERN);
+            case "tripoli":
+                return Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.SAVANNAH_SAFEZONE);
+            case "gloomy_hollows":
+                return Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.SWAMP1);
+            case "crestguard":
+                return Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.CREST_GUARD);
+            case "deadpeaks":
+                return Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.DEAD_PEAKS);
+            default:
+                return false;
         }
     }
 }

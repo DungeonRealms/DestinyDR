@@ -138,6 +138,78 @@ public class NPCMenus {
         player.openInventory(inv);
     }
 
+    public static void openHearthstoneRelocateMenu(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 9, "Hearthstone Re-Location");
+
+        ItemStack cyrennica = new ItemStack(Material.BOOK_AND_QUILL);
+        net.minecraft.server.v1_8_R3.ItemStack nmsStackCyrennica = CraftItemStack.asNMSCopy(cyrennica);
+        NBTTagCompound tagCyrennica = nmsStackCyrennica.getTag() == null ? new NBTTagCompound() : nmsStackCyrennica.getTag();
+        tagCyrennica.set("hearthstoneLocation", new NBTTagString("CYRENNICA"));
+        tagCyrennica.setInt("gemCost", 1000);
+        nmsStackCyrennica.setTag(tagCyrennica);
+        ItemStack harrisons = new ItemStack(Material.BOOK_AND_QUILL);
+        net.minecraft.server.v1_8_R3.ItemStack nmsStackHarrisons = CraftItemStack.asNMSCopy(harrisons);
+        NBTTagCompound tagHarrisons = nmsStackHarrisons.getTag() == null ? new NBTTagCompound() : nmsStackHarrisons.getTag();
+        tagHarrisons.set("hearthstoneLocation", new NBTTagString("HARRISON_FIELD"));
+        tagHarrisons.setInt("gemCost", 1500);
+        nmsStackHarrisons.setTag(tagHarrisons);
+        ItemStack darkOak = new ItemStack(Material.BOOK_AND_QUILL);
+        net.minecraft.server.v1_8_R3.ItemStack nmsStackDarkOak = CraftItemStack.asNMSCopy(darkOak);
+        NBTTagCompound tagDarkOak = nmsStackDarkOak.getTag() == null ? new NBTTagCompound() : nmsStackDarkOak.getTag();
+        tagDarkOak.set("hearthstoneLocation", new NBTTagString("DARK_OAK"));
+        tagDarkOak.setInt("gemCost", 3500);
+        nmsStackDarkOak.setTag(tagDarkOak);
+        ItemStack tripoli = new ItemStack(Material.BOOK_AND_QUILL);
+        net.minecraft.server.v1_8_R3.ItemStack nmsStackTripoli = CraftItemStack.asNMSCopy(tripoli);
+        NBTTagCompound tagTripoli = nmsStackTripoli.getTag() == null ? new NBTTagCompound() : nmsStackCyrennica.getTag();
+        tagTripoli.set("hearthstoneLocation", new NBTTagString("TRIPOLI"));
+        tagTripoli.setInt("gemCost", 7500);
+        nmsStackTripoli.setTag(tagTripoli);
+        ItemStack gloomyHollows = new ItemStack(Material.BOOK_AND_QUILL);
+        net.minecraft.server.v1_8_R3.ItemStack nmsStackGloomyHollows = CraftItemStack.asNMSCopy(gloomyHollows);
+        NBTTagCompound tagGloomyHollows = nmsStackGloomyHollows.getTag() == null ? new NBTTagCompound() : nmsStackGloomyHollows.getTag();
+        tagGloomyHollows.set("hearthstoneLocation", new NBTTagString("GLOOMY_HOLLOWS"));
+        tagGloomyHollows.setInt("gemCost", 3500);
+        nmsStackGloomyHollows.setTag(tagGloomyHollows);
+        ItemStack crestguardKeep = new ItemStack(Material.BOOK_AND_QUILL);
+        net.minecraft.server.v1_8_R3.ItemStack nmsStackCrestguardKeep = CraftItemStack.asNMSCopy(crestguardKeep);
+        NBTTagCompound tagCrestguardKeep = nmsStackCrestguardKeep.getTag() == null ? new NBTTagCompound() : nmsStackCrestguardKeep.getTag();
+        tagCrestguardKeep.set("hearthstoneLocation", new NBTTagString("CRESTGUARD"));
+        tagCrestguardKeep.setInt("gemCost", 15000);
+        nmsStackCrestguardKeep.setTag(tagCrestguardKeep);
+        ItemStack trollsbaneTavern = new ItemStack(Material.BOOK_AND_QUILL);
+        net.minecraft.server.v1_8_R3.ItemStack nmsStackTrollsbaneTavern = CraftItemStack.asNMSCopy(trollsbaneTavern);
+        NBTTagCompound tagTrollsbaneTavern = nmsStackTrollsbaneTavern.getTag() == null ? new NBTTagCompound() : nmsStackTrollsbaneTavern.getTag();
+        tagTrollsbaneTavern.set("hearthstoneLocation", new NBTTagString("TROLLSBANE"));
+        tagTrollsbaneTavern.setInt("gemCost", 7500);
+        nmsStackTrollsbaneTavern.setTag(tagTrollsbaneTavern);
+        ItemStack deadpeaksMountain = new ItemStack(Material.BOOK_AND_QUILL);
+        net.minecraft.server.v1_8_R3.ItemStack nmsStackDeadpeaksMountain = CraftItemStack.asNMSCopy(deadpeaksMountain);
+        NBTTagCompound tagDeadpeaksMountain = nmsStackDeadpeaksMountain.getTag() == null ? new NBTTagCompound() : nmsStackDeadpeaksMountain.getTag();
+        tagDeadpeaksMountain.set("hearthstoneLocation", new NBTTagString("DEADPEAKS"));
+        tagDeadpeaksMountain.setInt("gemCost", 25000);
+        nmsStackDeadpeaksMountain.setTag(tagDeadpeaksMountain);
+
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackCyrennica), ChatColor.WHITE + "Cyrennica", new String[]{
+                ChatColor.GREEN + "1000 Gems"}));
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackHarrisons), ChatColor.WHITE + "Harrison Fields", new String[]{
+                ChatColor.GREEN + "1500 Gems"}));
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackGloomyHollows), ChatColor.WHITE + "Gloomy Hollows", new String[]{
+                ChatColor.GREEN + "3500 Gems"}));
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackDarkOak), ChatColor.WHITE + "Dark Oak Tavern", new String[]{
+                ChatColor.GREEN + "3500 Gems"}));
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackTripoli), ChatColor.WHITE + "Tripoli", new String[]{
+                ChatColor.GREEN + "7500 Gems"}));
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackTrollsbaneTavern), ChatColor.WHITE + "Trollsbane Tavern", new String[]{
+                ChatColor.GREEN + "7500 Gems"}));
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackCrestguardKeep), ChatColor.WHITE + "Crestguard Keep", new String[]{
+                ChatColor.GREEN + "15000 Gems"}));
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackDeadpeaksMountain), ChatColor.WHITE + "Deadpeaks Mountain", new String[]{
+                ChatColor.GREEN + "25000 Gems"}));
+
+        player.openInventory(inv);
+    }
+
     public static ItemStack editItem(ItemStack itemStack, String name, String[] lore) {
         ItemMeta meta = itemStack.getItemMeta();
         meta.setDisplayName(name);

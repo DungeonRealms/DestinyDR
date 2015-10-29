@@ -36,7 +36,7 @@ public class Achievements {
      * @return
      * @since 1.0
      */
-    private boolean hasAchievement(UUID uuid, EnumAchievements achievement) {
+    public boolean hasAchievement(UUID uuid, EnumAchievements achievement) {
         return ((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid)).contains(achievement.getMongoName());
     }
 

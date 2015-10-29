@@ -444,7 +444,7 @@ public class MainListener implements Listener {
 			// TODO: Open Guild Registrar
 		}
 		if (npcNameStripped.equalsIgnoreCase("Innkeeper")) {
-			// TODO: Open Hearthstone Guy (Anvil API)
+			NPCMenus.openHearthstoneRelocateMenu(event.getPlayer());
 		}
 	}
 

@@ -177,6 +177,42 @@ public class ClickHandler {
         }
 
         /*
+        Inn Keeper NPC
+         */
+        if (name.equals("Hearthstone Re-Location")) {
+            event.setCancelled(true);
+            if (slot > 9) return;
+            if (event.getCurrentItem().getType() != Material.AIR) {
+                net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                if (nmsStack == null) return;
+                if (nmsStack.getTag() == null) return;
+                if (nmsStack.getTag().hasKey("playerTrailType")) {
+                    String hearthstoneLocation = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, player.getUniqueId()));
+                    if (hearthstoneLocation.equalsIgnoreCase(nmsStack.getTag().getString("hearthstoneLocation"))) {
+                        player.sendMessage(ChatColor.RED + "Your Hearthstone is already at this location!");
+                        return;
+                    } else {
+                        if (TeleportAPI.canSetHearthstoneLocation(player, nmsStack.getTag().getString("hearthstoneLocation"))) {
+                            if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("gemCost"), player)) {
+                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.hearthstone", nmsStack.getTag().getString("hearthstoneLocation"), true);
+                                player.sendMessage(ChatColor.GREEN + "You have changed your Hearthstone location to " + nmsStack.getTag().getString("hearthstoneLocation") + "!");
+                                player.closeInventory();
+                                return;
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You cannot afford this location, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("gemCost") + ChatColor.RED + " Gems!");
+                                return;
+                            }
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You have not explored the surrounding area of this Hearthstone Location yet!");
+                            return;
+                        }
+                    }
+                }
+            }
+            return;
+        }
+
+        /*
         Friend Management
          */
         if (name.equals("Friend Management")) {

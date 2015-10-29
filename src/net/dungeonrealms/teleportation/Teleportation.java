@@ -1,10 +1,12 @@
 package net.dungeonrealms.teleportation;
 
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
-import java.util.UUID;
-
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.combat.CombatLog;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -13,13 +15,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.ParticleAPI;
-import net.dungeonrealms.mechanics.generic.EnumPriority;
-import net.dungeonrealms.mechanics.generic.GenericMechanic;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Random;
+import java.util.UUID;
 
 /**
  * Created by Kieran on 9/18/2015.
@@ -67,7 +66,7 @@ public class Teleportation implements GenericMechanic {
     }
 
     public void startInitialization() {
-        Cyrennica = new Location(Bukkit.getWorlds().get(0), -367, 84, 390);
+        Cyrennica = new Location(Bukkit.getWorlds().get(0), -378, 83, 362);
         Harrison_Field = new Location(Bukkit.getWorlds().get(0), -594, 58, 687, 92.0F, 1F);
         Dark_Oak_Tavern = new Location(Bukkit.getWorlds().get(0), 280, 58, 1132, 2.0F, 1F);
         Deadpeaks_Mountain_Camp = new Location(Bukkit.getWorlds().get(0), -1173, 105, 1030, -88.0F, 1F);
