@@ -1,16 +1,11 @@
 package net.dungeonrealms.profession;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.ConcurrentModificationException;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map.Entry;
-import java.util.Random;
-
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.mechanics.ParticleAPI.ParticleEffect;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -20,12 +15,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.ParticleAPI;
-import net.dungeonrealms.mechanics.ParticleAPI.ParticleEffect;
-import net.dungeonrealms.mechanics.generic.EnumPriority;
-import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.*;
+import java.util.Map.Entry;
 
 /**
  * Created by Chase on Oct 28, 2015
@@ -224,22 +218,20 @@ public class Fishing implements GenericMechanic {
 		return CraftItemStack.asNMSCopy(rodStack).getTag().getInt("itemTier");
 	}
 
-	private HashMap<Location, Integer> FISHING_LOCATIONS = new HashMap<Location, Integer>();
-	public HashMap<Location, List<Location>> FISHING_PARTICLES = new HashMap<Location, List<Location>>();
+	private HashMap<Location, Integer> FISHING_LOCATIONS = new HashMap<>();
+	public HashMap<Location, List<Location>> FISHING_PARTICLES = new HashMap<>();
 
-	
     public void generateFishingParticleBlockList() {
         int count = 0;
 
         for (Entry<Location, Integer> data : FISHING_LOCATIONS.entrySet()) {
             Location epicenter = data.getKey();
-            List<Location> lfishingParticles = new ArrayList<Location>();
+            List<Location> lfishingParticles = new ArrayList<>();
             int radius = 10;
-            Location location = epicenter;
-            for (int x = -(radius); x <= radius; x++) {
+			for (int x = -(radius); x <= radius; x++) {
                 for (int y = -(radius); y <= radius; y++) {
                     for (int z = -(radius); z <= radius; z++) {
-                        Location loc = location.getBlock().getRelative(x, y, z).getLocation();
+                        Location loc = epicenter.getBlock().getRelative(x, y, z).getLocation();
                         if (loc.getBlock().getType() == Material.WATER || loc.getBlock().getType() == Material.STATIONARY_WATER) {
                             if (loc.add(0, 1, 0).getBlock().getType() == Material.AIR) {
                                 if (!(lfishingParticles.contains(loc))) {
@@ -255,26 +247,17 @@ public class Fishing implements GenericMechanic {
             FISHING_PARTICLES.put(epicenter, lfishingParticles);
         }
 
-        Utils.log.info("[ProfessionMechanics] Loaded a total of " + count + " possible FISHING PARTICLE locations.");
+        Utils.log.info("[Professions] Loaded a total of " + count + " possible FISHING PARTICLE locations.");
     }
 	
 	
 	public Location getFishingSpot(Location loc) {
-		double closest_spot_distance_sqr = -1;
 		Location closest_loc = null;
 		for (Location fish_loc : FISHING_LOCATIONS.keySet()) {
 			double dist_sqr = loc.distanceSquared(fish_loc);
 			if (dist_sqr <= 100) {
 				// Within 10 blocks.
-				if (closest_spot_distance_sqr != -1) {
-					if (dist_sqr < closest_spot_distance_sqr) {
-						closest_loc = fish_loc;
-						closest_spot_distance_sqr = dist_sqr;
-						continue;
-					}
-				} else {
-					closest_loc = fish_loc;
-				}
+				closest_loc = fish_loc;
 			}
 		}
 
@@ -293,7 +276,7 @@ public class Fishing implements GenericMechanic {
 				file.createNewFile();
 			}
 			BufferedReader reader = new BufferedReader(new FileReader(file));
-			String line = "";
+			String line;
 			while ((line = reader.readLine()) != null) {
 				if (line.contains("=")) {
 					String[] cords = line.split("=")[0].split(",");
@@ -309,7 +292,7 @@ public class Fishing implements GenericMechanic {
 		} catch (Exception exc) {
 			exc.printStackTrace();
 		}
-		Utils.log.info(count + " FISHING SPOT locations have been LOADED.");
+		Utils.log.info("[Professions] " + count + " FISHING SPOT locations have been LOADED.");
 	}
 
 	private static Fishing instance;
@@ -326,52 +309,41 @@ public class Fishing implements GenericMechanic {
 		return EnumPriority.CATHOLICS;
 	}
     public static int splashCounter = 10;
+
 	@Override
 	public void startInitialization() {
 		loadFishingLocations();
 		generateFishingParticleBlockList();
-		 DungeonRealms.getInstance().getServer().getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), new Runnable() {
-	            public void run() {
-	                int chance = splashCounter * splashCounter;
-	                if (splashCounter == 1)
-	                    splashCounter = 21;
-	                splashCounter--;
-	                Random r = new Random();
-
-	                if (FISHING_PARTICLES.size() <= 0) {
-	                    return; // Do nothing.
-	                }
-
-	                try {
-	                    for (Entry<Location, List<Location>> data : FISHING_PARTICLES.entrySet()) {
-	                        Location epicenter = data.getKey();
-	                        int tier = FISHING_LOCATIONS.get(epicenter);
-//	                        if ((System.currentTimeMillis() - fishing_respawn.get(epicenter)) <= (getFishingSpotRespawnTime(tier) * 1000)) {
-//	                            continue; // Not time to respawn fish yet.
-//	                        }
-	                        try {
-	                            ParticleAPI.sendParticleToLocation(ParticleEffect.SPLASH, epicenter, r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.4F, 20);
-	                        } catch (Exception e1) {
-	                            e1.printStackTrace();
-	                        }
-	                        // epicenter.getWorld().spawnParticle(epicenter, Particle.SPLASH, 0.4F, 20);
-
-	                        for (Location loc : data.getValue()) {
-	                            if (r.nextInt(chance) == 1) {
-	                                try {
-	                                	ParticleAPI.sendParticleToLocation(ParticleEffect.SPLASH, loc, r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.4F, 20);
-	                                } catch (Exception e1) {
-	                                    e1.printStackTrace();
-	                                }
-	                                // loc.getWorld().spawnParticle(loc, Particle.SPLASH, 0.4F, 20);
-	                            }
-	                        }
-	                    }
-	                } catch (ConcurrentModificationException cme) {
-	                    return;
-	                }
-	            }
-	        }, 10 * 20L, 10L);
+		 DungeonRealms.getInstance().getServer().getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> {
+             int chance = splashCounter * splashCounter;
+             if (splashCounter == 1) {
+                 splashCounter = 21;
+             }
+             splashCounter--;
+             Random r = new Random();
+             if (FISHING_PARTICLES.size() <= 0) {
+                 return; // Do nothing.
+             }
+             try {
+                 for (Entry<Location, List<Location>> data : FISHING_PARTICLES.entrySet()) {
+                     Location epicenter = data.getKey();
+                     try {
+                         ParticleAPI.sendParticleToLocation(ParticleEffect.SPLASH, epicenter, r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.4F, 20);
+                     } catch (Exception e1) {
+                         e1.printStackTrace();
+                     }
+                     data.getValue().stream().filter(loc -> r.nextInt(chance) == 1).forEach(loc -> {
+                         try {
+                             ParticleAPI.sendParticleToLocation(ParticleEffect.SPLASH, loc, r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.4F, 20);
+                         } catch (Exception e1) {
+                             e1.printStackTrace();
+                         }
+                     });
+                 }
+             } catch (ConcurrentModificationException cme) {
+                 Utils.log.info("[Professions] [ASYNC] Something went wrong checking a fishing spot and adding particles!");
+             }
+         }, 200L, 15L);
 	}
 
 	@Override
