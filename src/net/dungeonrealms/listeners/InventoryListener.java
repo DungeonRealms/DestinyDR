@@ -264,6 +264,8 @@ public class InventoryListener implements Listener {
 									}
 								}
 							}
+						}else{
+							event.setCancelled(true);
 						}
 					}
 				}
@@ -332,6 +334,8 @@ public class InventoryListener implements Listener {
 					player.closeInventory();
 					gui.open();
 				}
+				}else{
+					event.setCancelled(true);
 				}
 			}
 		}
