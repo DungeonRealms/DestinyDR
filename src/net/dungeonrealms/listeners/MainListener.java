@@ -1,6 +1,33 @@
 package net.dungeonrealms.listeners;
 
+import java.util.Map;
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerFishEvent.State;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+
 import com.connorlinfoot.bountifulapi.BountifulAPI;
+
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.chat.Chat;
@@ -22,24 +49,6 @@ import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.achievements.AchievementManager;
 import net.dungeonrealms.profession.Fishing;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.player.*;
-import org.bukkit.event.player.PlayerFishEvent.State;
-import org.bukkit.event.vehicle.VehicleExitEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-
-import java.util.Map;
-import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -450,25 +459,35 @@ public class MainListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void catchFish(PlayerFishEvent event) {
-		if(event.getState() == State.CAUGHT_FISH){
-		Player p = event.getPlayer();
-		ItemStack stack = p.getItemInHand();
-		if (stack != null && stack.getType() == Material.FISHING_ROD) {
-			if (Fishing.isDRFishingPole(stack)) {
-				event.getCaught().remove();
-				event.setExpToDrop(0);
-				net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-				int tier = nms.getTag().getInt("itemTier");
-				if (new Random().nextInt(100) <= Fishing.getChance(tier)) {
-					ItemStack fish = Fishing.getFishItem(stack);
-					Fishing.gainExp(stack, p);
-					p.getInventory().addItem(fish);
-				} else {
-					p.sendMessage("Oh no, it got away!");
-				}
+		if(event.getState().equals(State.FISHING)){
+	        Location loc = Fishing.getInstance().getFishingSpot(event.getPlayer().getLocation());
+	        if(loc == null){
+	        	event.getPlayer().sendMessage("You must be near a fishing spot to cast");
+	        	event.setCancelled(true);
+	        }
+		}else{
+			Player p = event.getPlayer();
+			ItemStack stack = p.getItemInHand();
+			Utils.log.info(event.getState().name());
+			if (stack != null && stack.getType() == Material.FISHING_ROD) {
 				p.getItemInHand().setDurability((short) (stack.getDurability() + 1));
+				if(event.getState() == State.CAUGHT_FISH){
+					if (Fishing.isDRFishingPole(stack)) {
+						Utils.log.info("Catching fish");
+						event.getCaught().remove();
+						event.setExpToDrop(0);
+						net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+						int tier = nms.getTag().getInt("itemTier");
+				    if (new Random().nextInt(100) <= Fishing.getChance(tier)) {
+				    	ItemStack fish = Fishing.getFishItem(stack);
+				    	Fishing.gainExp(stack, p);
+				    	p.getInventory().addItem(fish);
+				    } else {
+						p.sendMessage("Oh no, it got away!");
+						}
+					}
+				}
 			}
-		}
 		}
 	}
 }

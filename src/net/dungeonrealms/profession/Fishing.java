@@ -1,36 +1,50 @@
 package net.dungeonrealms.profession;
 
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Collections;
+import java.util.ConcurrentModificationException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map.Entry;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.mechanics.ParticleAPI.ParticleEffect;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 
 /**
  * Created by Chase on Oct 28, 2015
  */
-public class Fishing {
-	
-	public enum EnumFish{
-		Bass("Bass", 1), Cod("Cod", 1), Trout("Trout",2);
-		
-		//TODO All this shit
-		
+public class Fishing implements GenericMechanic {
+
+	public enum EnumFish {
+		Bass("Bass", 1), Cod("Cod", 1), Trout("Trout", 2);
+
+		// TODO All this shit
+
 		int regenLvl;
 		String fishName;
-		
-		EnumFish(String fishName, int regenlevel){
+
+		EnumFish(String fishName, int regenlevel) {
 			this.fishName = fishName;
 			this.regenLvl = regenlevel;
 		}
 	}
-	
 
 	public static int T1Exp = 2500;
 	public static int T2Exp = 5000;
@@ -92,6 +106,7 @@ public class Fishing {
 
 	/**
 	 * return size of fish based on tier
+	 * 
 	 * @return integer
 	 * @since 1.0
 	 */
@@ -169,6 +184,7 @@ public class Fishing {
 
 	/**
 	 * Add Expereicen to the specified stack(fishing pole)
+	 * 
 	 * @param stack
 	 */
 	public static void gainExp(ItemStack stack, Player p) {
@@ -206,6 +222,161 @@ public class Fishing {
 	 */
 	public static int getRodTier(ItemStack rodStack) {
 		return CraftItemStack.asNMSCopy(rodStack).getTag().getInt("itemTier");
+	}
+
+	private HashMap<Location, Integer> FISHING_LOCATIONS = new HashMap<Location, Integer>();
+	public HashMap<Location, List<Location>> FISHING_PARTICLES = new HashMap<Location, List<Location>>();
+
+	
+    public void generateFishingParticleBlockList() {
+        int count = 0;
+
+        for (Entry<Location, Integer> data : FISHING_LOCATIONS.entrySet()) {
+            Location epicenter = data.getKey();
+            List<Location> lfishingParticles = new ArrayList<Location>();
+            int radius = 10;
+            Location location = epicenter;
+            for (int x = -(radius); x <= radius; x++) {
+                for (int y = -(radius); y <= radius; y++) {
+                    for (int z = -(radius); z <= radius; z++) {
+                        Location loc = location.getBlock().getRelative(x, y, z).getLocation();
+                        if (loc.getBlock().getType() == Material.WATER || loc.getBlock().getType() == Material.STATIONARY_WATER) {
+                            if (loc.add(0, 1, 0).getBlock().getType() == Material.AIR) {
+                                if (!(lfishingParticles.contains(loc))) {
+                                    lfishingParticles.add(loc);
+                                    count++;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            FISHING_PARTICLES.put(epicenter, lfishingParticles);
+        }
+
+        Utils.log.info("[ProfessionMechanics] Loaded a total of " + count + " possible FISHING PARTICLE locations.");
+    }
+	
+	
+	public Location getFishingSpot(Location loc) {
+		double closest_spot_distance_sqr = -1;
+		Location closest_loc = null;
+		for (Location fish_loc : FISHING_LOCATIONS.keySet()) {
+			double dist_sqr = loc.distanceSquared(fish_loc);
+			if (dist_sqr <= 100) {
+				// Within 10 blocks.
+				if (closest_spot_distance_sqr != -1) {
+					if (dist_sqr < closest_spot_distance_sqr) {
+						closest_loc = fish_loc;
+						closest_spot_distance_sqr = dist_sqr;
+						continue;
+					}
+				} else {
+					closest_loc = fish_loc;
+				}
+			}
+		}
+
+		if (closest_loc == null) {
+			return null; // No spot within 50 blocks.
+		}
+
+		return closest_loc;
+	}
+
+	public void loadFishingLocations() {
+		int count = 0;
+		try {
+			File file = new File(DungeonRealms.getInstance().getDataFolder() + "//fishing_spawns.dat");
+			if (!(file.exists())) {
+				file.createNewFile();
+			}
+			BufferedReader reader = new BufferedReader(new FileReader(file));
+			String line = "";
+			while ((line = reader.readLine()) != null) {
+				if (line.contains("=")) {
+					String[] cords = line.split("=")[0].split(",");
+					Location loc = new Location(Bukkit.getWorlds().get(0), Double.parseDouble(cords[0]),
+					        Double.parseDouble(cords[1]), Double.parseDouble(cords[2]));
+
+					int tier = Integer.parseInt(line.split("=")[1]);
+					FISHING_LOCATIONS.put(loc, tier);
+					count++;
+				}
+			}
+			reader.close();
+		} catch (Exception exc) {
+			exc.printStackTrace();
+		}
+		Utils.log.info(count + " FISHING SPOT locations have been LOADED.");
+	}
+
+	private static Fishing instance;
+
+	public static Fishing getInstance() {
+		if (instance == null)
+			instance = new Fishing();
+		return instance;
+
+	}
+
+	@Override
+	public EnumPriority startPriority() {
+		return EnumPriority.CATHOLICS;
+	}
+    public static int splashCounter = 10;
+	@Override
+	public void startInitialization() {
+		loadFishingLocations();
+		generateFishingParticleBlockList();
+		 DungeonRealms.getInstance().getServer().getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), new Runnable() {
+	            public void run() {
+	                int chance = splashCounter * splashCounter;
+	                if (splashCounter == 1)
+	                    splashCounter = 21;
+	                splashCounter--;
+	                Random r = new Random();
+
+	                if (FISHING_PARTICLES.size() <= 0) {
+	                    return; // Do nothing.
+	                }
+
+	                try {
+	                    for (Entry<Location, List<Location>> data : FISHING_PARTICLES.entrySet()) {
+	                        Location epicenter = data.getKey();
+	                        int tier = FISHING_LOCATIONS.get(epicenter);
+//	                        if ((System.currentTimeMillis() - fishing_respawn.get(epicenter)) <= (getFishingSpotRespawnTime(tier) * 1000)) {
+//	                            continue; // Not time to respawn fish yet.
+//	                        }
+	                        try {
+	                            ParticleAPI.sendParticleToLocation(ParticleEffect.SPLASH, epicenter, r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.4F, 20);
+	                        } catch (Exception e1) {
+	                            e1.printStackTrace();
+	                        }
+	                        // epicenter.getWorld().spawnParticle(epicenter, Particle.SPLASH, 0.4F, 20);
+
+	                        for (Location loc : data.getValue()) {
+	                            if (r.nextInt(chance) == 1) {
+	                                try {
+	                                	ParticleAPI.sendParticleToLocation(ParticleEffect.SPLASH, loc, r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.4F, 20);
+	                                } catch (Exception e1) {
+	                                    e1.printStackTrace();
+	                                }
+	                                // loc.getWorld().spawnParticle(loc, Particle.SPLASH, 0.4F, 20);
+	                            }
+	                        }
+	                    }
+	                } catch (ConcurrentModificationException cme) {
+	                    return;
+	                }
+	            }
+	        }, 10 * 20L, 10L);
+	}
+
+	@Override
+	public void stopInvocation() {
+
 	}
 
 }

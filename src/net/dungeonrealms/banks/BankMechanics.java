@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -180,10 +181,23 @@ public class BankMechanics implements GenericMechanic{
      * @param uuid
      * @param num
      */
-    public static void addGemsToPlayer(UUID uuid, int num) {
+    public static void addGemsToPlayerBank(UUID uuid, int num) {
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, "info.gems", num, true);
     }
-
+    
+    /**
+     * Add gems to player database
+     * 
+     * @param uuid
+     * @param num
+     */
+    public static void addGemsToPlayerInventory(UUID uuid, int num) {
+    	Player p = Bukkit.getPlayer(uuid);
+    	ItemStack gems = gem.clone();
+    	gems.setAmount(num);
+    	p.getInventory().addItem(gems);
+    }
+    
     /**
      * @param uniqueId
      */

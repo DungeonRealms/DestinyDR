@@ -26,6 +26,8 @@ import net.dungeonrealms.mongo.achievements.AchievementManager;
 import net.dungeonrealms.network.NetworkAPI;
 import net.dungeonrealms.network.NetworkServer;
 import net.dungeonrealms.party.Party;
+import net.dungeonrealms.profession.Fishing;
+import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.teleportation.Teleportation;
@@ -130,6 +132,8 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(Entities.getInstance());
         mm.registerMechanic(ScoreboardHandler.getInstance());
         mm.registerMechanic(RealmManager.getInstance());
+        mm.registerMechanic(Mining.getInstance());
+        mm.registerMechanic(Fishing.getInstance());
 
         /*
         Commented out until he fixes Async Entity Add some shit.
