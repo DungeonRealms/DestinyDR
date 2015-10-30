@@ -1,7 +1,14 @@
 package net.dungeonrealms.entities.types;
 
-import java.lang.reflect.Field;
-
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.Monster;
+import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.Utils;
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -11,27 +18,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.Monster;
-import net.dungeonrealms.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.items.ItemGenerator;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.EntityHuman;
-import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.EntitySkeleton;
-import net.minecraft.server.v1_8_R3.Item;
-import net.minecraft.server.v1_8_R3.PathfinderGoalArrowAttack;
-import net.minecraft.server.v1_8_R3.PathfinderGoalFloat;
-import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
-import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
-import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
-import net.minecraft.server.v1_8_R3.PathfinderGoalRandomLookaround;
-import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
-import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
-import net.minecraft.server.v1_8_R3.World;
+import java.lang.reflect.Field;
+import java.util.Random;
 
 /**
  * Created by Chase on Sep 19, 2015
@@ -155,7 +143,9 @@ public abstract class RangedEntitySkeleton extends EntitySkeleton implements Mon
 	public void onMonsterDeath() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
 		this.getLoot();
-		this.getRareDrop();
+            if (new Random().nextInt(99) < 3) {
+                this.getRareDrop();
+            }
 		});
 	}
 }

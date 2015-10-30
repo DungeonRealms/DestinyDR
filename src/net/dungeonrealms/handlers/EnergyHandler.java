@@ -222,14 +222,16 @@ public class EnergyHandler implements GenericMechanic {
             if (getPlayerCurrentEnergy(player.getUniqueId()) <= 0 || player.hasMetadata("starving")) {
                 player.setSprinting(false);
                 player.removeMetadata("sprinting", DungeonRealms.getInstance());
-                if (!player.hasPotionEffect(PotionEffectType.SLOW)) {
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        //player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 20, 100));
-                        player.damage(1);
-                        HealthHandler.getInstance().healPlayerByAmount(player, 100000);
-                        player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20, 150));
-                    }, 0L);
+                if (!player.hasPotionEffect(PotionEffectType.JUMP)) {
+                    int foodLevel = player.getFoodLevel();
+                    if (player.getFoodLevel() > 1) {
+                        player.setFoodLevel(1);
+                    }
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20, 150)), 0L);
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "**EXHAUSTED**");
+                    if (foodLevel > 1) {
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.setFoodLevel(foodLevel), 60L);
+                    }
                 }
                 //TODO: THIS IS A SUPER SKETCHY WAY OF PREVENTING LEFT-CONTROL SPRINTING FROM OVERRIDING. As its CLIENTSIDE setSprinting(false) only cancels it for one tick
                 //TODO: Since this is a plugin and not a mod, we can't toggle keypresses clientside. RIP.

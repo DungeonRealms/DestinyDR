@@ -158,9 +158,23 @@ public class DamageListener implements Listener {
             }
         }
         if (API.isInSafeRegion(event.getDamager().getLocation()) || API.isInSafeRegion(event.getEntity().getLocation())) {
-            event.setCancelled(true);
-            event.setDamage(0);
-            return;
+            if (API.isPlayer(event.getEntity())) {
+                if (DuelMechanics.isDueling(event.getEntity().getUniqueId()) && DuelMechanics.isDueling(event.getDamager().getUniqueId())) {
+                    if (!DuelMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
+                        event.setCancelled(true);
+                        event.setDamage(0);
+                        return;
+                    }
+                } else {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
+                }
+            } else {
+                event.setCancelled(true);
+                event.setDamage(0);
+                return;
+            }
         }
         //Make sure the player is HOLDING something!
         double finalDamage = 0;
@@ -241,9 +255,23 @@ public class DamageListener implements Listener {
         if (!(API.isPlayer(event.getEntity()))) return;
         if (!event.getDamager().hasMetadata("type")) return;
         if (API.isInSafeRegion(event.getDamager().getLocation()) || API.isInSafeRegion(event.getEntity().getLocation())) {
-            event.setCancelled(true);
-            event.setDamage(0);
-            return;
+            if (API.isPlayer(event.getEntity()) && API.isPlayer(event.getDamager())) {
+                if (DuelMechanics.isDueling(event.getEntity().getUniqueId()) && DuelMechanics.isDueling(event.getDamager().getUniqueId())) {
+                    if (!DuelMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
+                        event.setCancelled(true);
+                        event.setDamage(0);
+                        return;
+                    }
+                } else {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
+                }
+            } else {
+                event.setCancelled(true);
+                event.setDamage(0);
+                return;
+            }
         }
         double finalDamage = 0;
         Player player = (Player) event.getEntity();
