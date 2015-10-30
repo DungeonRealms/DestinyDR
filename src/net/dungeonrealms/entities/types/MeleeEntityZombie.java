@@ -1,8 +1,16 @@
 package net.dungeonrealms.entities.types;
 
-import java.lang.reflect.Field;
-import java.util.Random;
-
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.Monster;
+import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.items.armor.ArmorGenerator;
+import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.ParticleAPI;
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -14,26 +22,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.Monster;
-import net.dungeonrealms.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.items.ItemGenerator;
-import net.dungeonrealms.items.armor.ArmorGenerator;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.ParticleAPI;
-import net.minecraft.server.v1_8_R3.EntityHuman;
-import net.minecraft.server.v1_8_R3.EntityZombie;
-import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
-import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
-import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
-import net.minecraft.server.v1_8_R3.PathfinderGoalMoveTowardsRestriction;
-import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
-import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
-import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
-import net.minecraft.server.v1_8_R3.World;
+import java.lang.reflect.Field;
+import java.util.Random;
 
 /**
  * Created by Xwaffle on 8/29/2015.
@@ -229,7 +219,9 @@ public abstract class MeleeEntityZombie extends EntityZombie implements Monster{
 	public void onMonsterDeath() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
 		this.getLoot();
-		this.getRareDrop();
+            if (new Random().nextInt(99) < 3) {
+                this.getRareDrop();
+            }
 		});
 	}
 }

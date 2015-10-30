@@ -1,15 +1,5 @@
 package net.dungeonrealms.entities.types;
 
-import java.lang.reflect.Field;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.Monster;
@@ -21,6 +11,16 @@ import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
+
+import java.lang.reflect.Field;
+import java.util.Random;
 
 /**
  * Created by Chase on Oct 4, 2015
@@ -140,7 +140,9 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 	public void onMonsterDeath() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
 		this.getLoot();
-		this.getRareDrop();
+			if (new Random().nextInt(99) < 3) {
+				this.getRareDrop();
+			}
 		});
 	}
 }

@@ -88,83 +88,83 @@ public class Achievements {
 
         VILLAGE_SAFE(1, "Harrisons Fields", new String[]{
                 "Explorer: harrisons Fields",
-        }, 100, "achievement.harrisons_fields"),
+        }, 500, "achievement.harrisons_fields"),
 
         PLAINS_OF_CYRENE(2, "Plains of Cyrene", new String[]{
                 "Explorer: Plains of Cyrene",
-        }, 100, "achievement.plains_of_cyrene"),
+        }, 500, "achievement.plains_of_cyrene"),
 
         DARK_OAK_WILD2(3, "Darkoak", new String[]{
                 "Explorer: Darkoak",
-        }, 100, "achievement.darkoak"),
+        }, 500, "achievement.darkoak"),
 
         INFRONT_OF_TAVERN(4, "Jagged Rocks", new String[]{
                 "Explorer: Jagged Rocks",
-        }, 100, "achievement.jagged_rocks"),
+        }, 500, "achievement.jagged_rocks"),
 
         GOBLIN_CITY(5, "Skullneck", new String[]{
                 "Explorer: Skullneck",
-        }, 100, "achievement.skull_neck"),
+        }, 500, "achievement.skull_neck"),
 
         TROLL_CITY1(6, "Trollingor", new String[]{
                 "Explorer: Trollingor",
-        }, 100, "achievement.trollingor"),
+        }, 500, "achievement.trollingor"),
 
         CRYSTALPEAKT(7, "Crystalpeak Tower", new String[]{
                 "Explorer: Crystalpeak Tower",
-        }, 100, "achievement.crystalpeak_tower"),
+        }, 500, "achievement.crystalpeak_tower"),
 
         TRANSITIONAL_13(8, "Helmchen", new String[]{
                 "Explorer: Helmchen",
-        }, 100, "achievement.helmchen"),
+        }, 500, "achievement.helmchen"),
 
         ALSAHRA(9, "Al Sahra", new String[]{
                 "Explorer: Al Sahra",
-        }, 100, "achievement.al_sahra"),
+        }, 500, "achievement.al_sahra"),
 
         SAVANNAH_SAFEZONE(10, "Tripoli", new String[]{
                 "Explorer: Tripoli",
-        }, 100, "achievement.tripoli"),
+        }, 500, "achievement.tripoli"),
 
         SWAMP_VILLAGE2(11, "Dreadwood", new String[]{
                 "Explorer: Dreadwood",
-        }, 100, "achievement.dreadwood"),
+        }, 500, "achievement.dreadwood"),
 
         SWAMP1(12, "Gloomy Hallows", new String[]{
                 "Explorer: Gloomy Hallows",
-        }, 100, "achievement.gloomy_hallows"),
+        }, 500, "achievement.gloomy_hallows"),
 
         CREST_GUARD(13, "Avalon Peaks", new String[]{
                 "Explorer: Avalon Peaks",
-        }, 100, "achievement.avalon_peaks"),
+        }, 500, "achievement.avalon_peaks"),
 
         CS_TRIP_6(14, "The Frozen North", new String[]{
                 "Explorer: The Frozen North",
-        }, 100, "achievement.the_frozen_north"),
+        }, 500, "achievement.the_frozen_north"),
 
         UNDER_WORLD(15, "The Lost City of Avalon", new String[]{
                 "Explorer: The Lost City of Avalon",
-        }, 100, "achievement.the_lost_city_of_avalon"),
+        }, 500, "achievement.the_lost_city_of_avalon"),
 
         CHIEF(16, "Cheif's Glory\"", new String[]{
                 "Explorer: Cheif's Glory\"",
-        }, 100, "achievement.chiefs_glory"),
+        }, 500, "achievement.chiefs_glory"),
 
         DEAD_PEAKS(17, "Deadpeaks", new String[]{
                 "Explorer: Deadpeaks",
-        }, 100, "achievement.deadpeaks"),
+        }, 500, "achievement.deadpeaks"),
 
         MURE(18, "Mure", new String[]{
                 "Explorer: Mure",
-        }, 100, "achievement.mure"),
+        }, 500, "achievement.mure"),
 
         SEBRATA(19, "Sebrata", new String[]{
                 "Explorer: Sebrata",
-        }, 100, "achievement.sebrata"),
+        }, 500, "achievement.sebrata"),
 
         FIREY_DUNGEON(20, "The Infernal Abyss", new String[]{
                 "Explorer: The Infernal Abyss",
-        }, 100, "achievement.the_infernal_abyss"),
+        }, 500, "achievement.the_infernal_abyss"),
 
         TUTORAL_ISLAND(21, "Tutorial Island", new String[]{
                 "Explorer: Tutorial Island",
@@ -172,19 +172,19 @@ public class Achievements {
 
         NOVICE(22, "Novice", new String[]{
                 "Dungeon Realms Novice",
-        }, 100, "achievement.novice"),
+        }, 500, "achievement.novice"),
         APPRENTICE(23, "Apprentice", new String[]{
                 "Dungeon Realms Apprentice",
-        }, 100, "achievement.apprentice"),
+        }, 1000, "achievement.apprentice"),
         ADEPT(24, "Adept", new String[]{
                 "Dungeon Realms Adept",
-        }, 100, "achievement.adept"),
+        }, 2000, "achievement.adept"),
         EXPERT(25, "Expert", new String[]{
                 "Dungeon Realms Expert",
-        }, 100, "achievement.expert"),
+        }, 4000, "achievement.expert"),
         MASTER(22, "Master", new String[]{
                 "Dungeon Realms Master",
-        }, 100, "achievement.master"),
+        }, 8000, "achievement.master"),
         PLAY_WITH_XFINITYPRO(23, "Play with xFinityPro", new String[]{
                 "Congratulations! You've been granted the privilege to play on the same server as xFinityPro!",
         }, 450, "achievement.play_with_xfinitypro"),;
