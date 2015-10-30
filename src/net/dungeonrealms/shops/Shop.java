@@ -27,6 +27,7 @@ public class Shop {
     public boolean isopen;
     public Inventory inventory;
     public Block block;
+    public Block block2;
     Hologram hologram = null;
 
     public Shop(UUID owner, String shopName, Block block) {
@@ -35,9 +36,10 @@ public class Shop {
         this.isopen = false;
         this.inventory = createNewInv();
         this.block = block;
+        this.block2 = block.getWorld().getBlockAt(block.getLocation().add(1, 0, 0));
         Location loc = block.getLocation();
 
-        loc.add(.5, 1.5, .5);
+        loc.add(1, 1.5, .5);
         hologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), loc);
         hologram.appendTextLine(ChatColor.RED.toString() + ChatColor.BOLD + shopName);
         hologram.getVisibilityManager().setVisibleByDefault(true);
@@ -134,6 +136,7 @@ public class Shop {
         Block chest = getBlock();
         block.setType(Material.AIR);
         chest.setType(Material.AIR);
+        block2.setType(Material.AIR);
         chest.getWorld().playSound(chest.getLocation(), Sound.PISTON_RETRACT, 1, 1);
         
         // TODO: WTF ARE YOU DOING CHASE WE HAVE A PARTICLE API. DON'T CALL THIS
@@ -160,6 +163,7 @@ public class Shop {
         // ex.printStackTrace();
         // }
         getBlock().setType(Material.AIR);
+        block.getWorld().save();
         ShopMechanics.PLAYER_SHOPS.remove(owner);
     }
 

@@ -31,11 +31,6 @@ public class BasicEntityMagma extends EntityMagmaCube implements Monster{
 	 */
 	public BasicEntityMagma(World name, EnumMonster enumMonster, int tier) {
 		super(name);
-        int level = Utils.getRandomFromTier(tier);
-        MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, tier, level);
-        EntityStats.setMonsterRandomStats(this, level, tier);
-        this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
-				+ ChatColor.RESET + enumMonster.getPrefix() + " " + enumMonster.name + " " + enumMonster.getSuffix());
         setArmor(tier);
 	}
 
@@ -46,12 +41,6 @@ public class BasicEntityMagma extends EntityMagmaCube implements Monster{
 		super(world);
         monsterType = EnumMonster.MagmaCube;
         setArmor(tier);
-        this.getBukkitEntity().setCustomNameVisible(true);
-        int level = Utils.getRandomFromTier(tier);
-        MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, tier, level);
-        EntityStats.setMonsterRandomStats(this, level, tier);
-        this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
-				+ ChatColor.RESET + monsterType.getPrefix() + " " + "Magma Cube" + " " + monsterType.getSuffix());
 
 	}
     private void setArmor(int tier) {

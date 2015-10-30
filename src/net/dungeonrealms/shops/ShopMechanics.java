@@ -59,7 +59,9 @@ public class ShopMechanics implements GenericMechanic{
                     return;
                 }
                 Block b = player.getWorld().getBlockAt(block.getLocation().add(0, 1, 0));
-                if (b.getType() == Material.AIR) {
+                Block block2 = block.getWorld().getBlockAt(block.getLocation().add(1, 1, 0));
+                if (b.getType() == Material.AIR && block2.getType() == Material.AIR) {
+                    block2.setType(Material.CHEST);
                     b.setType(Material.CHEST);
                     Shop shop = new Shop(uniqueId, shopName, b);
                     PLAYER_SHOPS.put(uniqueId, shop);

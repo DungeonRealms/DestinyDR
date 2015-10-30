@@ -30,7 +30,7 @@ public class InfernalGhast extends EntityGhast implements Boss {
 	public InfernalGhast(InfernalAbyss infernalAbyss) {
 		super(infernalAbyss.getWorld());
 		this.getBukkitEntity().setCustomNameVisible(true);
-		int level = Utils.getRandomFromTier(getEnumBoss().tier);
+		int level = 100;
 		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
 		this.getBukkitEntity().setMetadata("boss",
 		        new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));

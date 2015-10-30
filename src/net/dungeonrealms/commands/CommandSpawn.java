@@ -28,7 +28,9 @@ import net.dungeonrealms.entities.types.monsters.boss.Mayel;
 import net.dungeonrealms.entities.types.monsters.boss.subboss.Pyromancer;
 import net.dungeonrealms.entities.utils.BuffUtils;
 import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.NBTUtils;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.spawning.MobSpawner;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.Entity;
@@ -65,15 +67,24 @@ public class CommandSpawn extends BasicCommand {
                             tier = Integer.parseInt(args[2]);
                         }
                         boolean elite = false;
+                        String lvlRange = "low";
                         if (args.length == 4) {
-                            if (args[3].equalsIgnoreCase("*"))
+                            if (args[3].equalsIgnoreCase("*")){
                                 elite = true;
+                            }else if(args[3].equalsIgnoreCase("+")){
+                            	lvlRange = "high";
+                            }else if(args[3].equalsIgnoreCase("-")){
+                            	lvlRange = "low";
+                            }
                         }
                         EnumMonster monsEnum = EnumMonster.getMonsterByString(args[1]);
                         EnumEntityType type = EnumEntityType.HOSTILE_MOB;
                         Entity entity = SpawningMechanics.getMob(((CraftWorld)player.getWorld()).getHandle(), tier, monsEnum);
                         
-                    	int level = entity.getBukkitEntity().getMetadata("level").get(0).asInt();
+                        int level = Utils.getRandomFromTier(tier, lvlRange);
+                        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
+                        EntityStats.setMonsterRandomStats(entity, level, tier);
+
                         String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "+ChatColor.RESET;
                         String healthName = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt()+ChatColor.RED.toString() + "❤";
                         String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
@@ -109,7 +120,7 @@ public class CommandSpawn extends BasicCommand {
                     int tier = 1;
                     if (args.length == 3)
                         tier = Integer.parseInt(args[2]);
-                    MobSpawner spawner = new MobSpawner(player.getLocation(), monster, tier, 4, SpawningMechanics.getSpawners().size());
+                    MobSpawner spawner = new MobSpawner(player.getLocation(), monster, tier, 4, SpawningMechanics.getSpawners().size(), "high");
     				String text = (player.getLocation().getX() + "," + player.getLocation().getY() + ","
     				        + player.getLocation().getZ() + "=" + args[1] + ":" + tier);
     				SpawningMechanics.SPAWNER_CONFIG.add(text);

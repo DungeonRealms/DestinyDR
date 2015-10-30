@@ -64,9 +64,6 @@ public abstract class MeleeEntityZombie extends EntityZombie implements Monster{
         this.entityType = entityType;
         if (setArmor)
             setArmor(tier);
-        int level = Utils.getRandomFromTier(tier);
-        MetadataUtils.registerEntityMetadata(this, this.entityType, tier, level);
-        EntityStats.setMonsterRandomStats(this, level, tier);
         setStats();
         String customName = monster.getPrefix() + " " + name + " " + monster.getSuffix() + " ";
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));

@@ -20,6 +20,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.Entity;
@@ -39,10 +40,10 @@ public class MobSpawner {
     public int spawnAmount;
     public int id;
     public int timerID;
-    
+    public String lvlRange;
     public String eliteName;
     
-    public MobSpawner(Location location, String type, int tier, int spawnAmount, int configid) {
+    public MobSpawner(Location location, String type, int tier, int spawnAmount, int configid, String lvlRange) {
 		if (type.contains("(")) 
         	isElite = true;
         if(isElite){
@@ -56,6 +57,7 @@ public class MobSpawner {
 			
 			spawnAmount = 1;
         }
+        this.lvlRange = lvlRange;
     	this.spawnAmount = spawnAmount;
         this.loc = location;
         this.id = configid;
@@ -119,9 +121,10 @@ public class MobSpawner {
                 	if(monsEnum == null)
              	   		return;
                 	Entity entity = SpawningMechanics.getMob(world, tier, monsEnum);
+                    int level = Utils.getRandomFromTier(tier, lvlRange);
+                    MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
+                    EntityStats.setMonsterRandomStats(entity, level, tier);
                 	
-                	
-                	int level = entity.getBukkitEntity().getMetadata("level").get(0).asInt();
                 	if(entity == null)
                 		return;
                 	
@@ -141,7 +144,6 @@ public class MobSpawner {
                     LivingEntity ent = stand;
                     ent.setRemoveWhenFarAway(false);
                     entity.getBukkitEntity().setPassenger(stand);
-                	
              		EntityStats.setMonsterElite(entity, level, tier);
              		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
              			Utils.log.info("Elite spawned");
@@ -163,7 +165,9 @@ public class MobSpawner {
             	   return;
                		Entity entity = SpawningMechanics.getMob(world, tier, monsEnum);
                		
-                	int level = entity.getBukkitEntity().getMetadata("level").get(0).asInt();
+                    int level = Utils.getRandomFromTier(tier, lvlRange);
+                    MetadataUtils.registerEntityMetadata(entity, type, tier, level);
+                    EntityStats.setMonsterRandomStats(entity, level, tier);
                 	
                     String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "+ChatColor.RESET;
                     String healthName = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt()+ChatColor.RED.toString() + "❤";

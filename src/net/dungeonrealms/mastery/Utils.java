@@ -39,7 +39,7 @@ public class Utils {
         return randomNum;
     }
 
-    public static int getRandomFromTier(int tier) {
+    public static int getRandomFromTier(int tier, String lvlRange) {
         Random r = new Random();
         int Low = 1;
         int High = 10;
@@ -47,27 +47,47 @@ public class Utils {
         switch (tier) {
             case 1:
                 Low = 1;
+                if(lvlRange.equalsIgnoreCase("high"))
+                	Low = 5;
                 High = 10;
+                if(lvlRange.equalsIgnoreCase("low"))
+                	High = 5;
                 R = r.nextInt(High - Low) + Low;
                 return R;
             case 2:
                 Low = 10;
+                if(lvlRange.equalsIgnoreCase("high"))
+                	Low = 15;
                 High = 20;
+                if(lvlRange.equalsIgnoreCase("low"))
+                	High = 15;
                 R = r.nextInt(High - Low) + Low;
                 return R;
             case 3:
                 Low = 20;
+                if(lvlRange.equalsIgnoreCase("high"))
+                	Low = 25;
                 High = 30;
+                if(lvlRange.equalsIgnoreCase("low"))
+                	High = 25;
                 R = r.nextInt(High - Low) + Low;
                 return R;
             case 4:
                 Low = 30;
+                if(lvlRange.equalsIgnoreCase("high"))
+                	Low = 35;
                 High = 40;
+                if(lvlRange.equalsIgnoreCase("low"))
+                	High = 35;
                 R = r.nextInt(High - Low) + Low;
                 return R;
             case 5:
                 Low = 40;
+                if(lvlRange.equalsIgnoreCase("high"))
+                	Low = 45;
                 High = 50;
+                if(lvlRange.equalsIgnoreCase("low"))
+                	High = 45;
                 R = r.nextInt(High - Low) + Low;
                 return R;
         }

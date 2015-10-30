@@ -26,9 +26,6 @@ public class EntityRangedPirate extends RangedEntitySkeleton {
         super(world, EnumMonster.RangedPirate, tier, entityType);
         this.entityType = entityType;
         this.tier = tier;
-        int level = Utils.getRandomFromTier(tier);
-        MetadataUtils.registerEntityMetadata(this, this.entityType, tier, level);
-        EntityStats.setMonsterRandomStats(this, level, tier);
     }
 
     public EntityRangedPirate(World world) {

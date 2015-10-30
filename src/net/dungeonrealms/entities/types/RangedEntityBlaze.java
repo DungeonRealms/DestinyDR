@@ -40,12 +40,7 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 		if (setArmor)
 			setArmor(tier);
 		this.getBukkitEntity().setCustomNameVisible(true);
-		int level = Utils.getRandomFromTier(tier);
-		MetadataUtils.registerEntityMetadata(this, this.entityType, tier, level);
-		EntityStats.setMonsterRandomStats(this, level, tier);
 		setStats();
-		this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET
-		        + monster.getPrefix() + name + monster.getSuffix());
 	}
 
 	@Override
