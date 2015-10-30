@@ -62,7 +62,7 @@ public class SpawningMechanics implements GenericMechanic {
             String monster = line.split("=")[1].split(":")[0];
             String spawnRange = String.valueOf(line.charAt(line.length() - 1));
             MobSpawner spawner;
-            if(spawnRange.equalsIgnoreCase("-"))
+            if(spawnRange.equalsIgnoreCase("+"))
              spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "high");
             else
              spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low");
