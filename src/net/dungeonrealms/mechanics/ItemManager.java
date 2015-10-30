@@ -198,7 +198,7 @@ public class ItemManager {
         rawStack.setItemMeta(meta);
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-        tag.set("type", new NBTTagString("fishingrod"));
+        tag.set("type", new NBTTagString("rod"));
         tag.setInt("itemTier", tier);
         tag.setInt("XP", 0);
         tag.setInt("maxXP", Fishing.getMaxXP(tier));

@@ -197,7 +197,7 @@ public class BankListener implements Listener {
                                     else
                                         size = nms.getTag().getInt("worth");
                                 }
-                                BankMechanics.addGemsToPlayer(player.getUniqueId(), size);
+                                BankMechanics.addGemsToPlayerBank(player.getUniqueId(), size);
                                 ItemStack bankItem = new ItemStack(Material.EMERALD);
                                 ItemMeta meta = bankItem.getItemMeta();
                                 meta.setDisplayName(getPlayerGems(player.getUniqueId()) + size + ChatColor.BOLD.toString()
@@ -256,7 +256,7 @@ public class BankListener implements Listener {
                         }
                         if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                             e.setCancelled(true);
-                            BankMechanics.addGemsToPlayer(player.getUniqueId(), size);
+                            BankMechanics.addGemsToPlayerBank(player.getUniqueId(), size);
                             e.setCurrentItem(null);
                             ItemStack bankItem = new ItemStack(Material.EMERALD);
                             ItemMeta meta = bankItem.getItemMeta();
