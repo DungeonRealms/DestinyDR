@@ -51,9 +51,7 @@ public class PlayerMenus {
 
         int slot = 9;
         for (String s : friendRequest) {
-            String from = s;
-
-            String name = API.getNameFromUUID(from);
+            String name = API.getNameFromUUID(s);
             ItemStack stack = editItem(name, name, new String[]{
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to delete!"
             });

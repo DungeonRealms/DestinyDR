@@ -38,11 +38,11 @@ public class SpawningMechanics implements GenericMechanic {
     }
 
     public static void killAll() {
-        for (MobSpawner spawner : ALLSPAWNERS) {
-            spawner.kill();
-            spawner.armorstand.getBukkitEntity().remove();
-            spawner.armorstand.getWorld().removeEntity(spawner.armorstand);
-        }
+        ALLSPAWNERS.stream().forEach(mobSpawner -> {
+            mobSpawner.kill();
+            mobSpawner.armorstand.getBukkitEntity().remove();
+            mobSpawner.armorstand.getWorld().removeEntity(mobSpawner.armorstand);
+        });
     }
 
     public static void loadSpawners() {

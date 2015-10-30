@@ -230,7 +230,7 @@ public class ClickHandler {
                             if (Bukkit.getPlayer(anvilClick.getName()) != null) {
                                 FriendHandler.getInstance().sendRequest(player, Bukkit.getPlayer(anvilClick.getName()));
                             } else {
-                                player.sendMessage(ChatColor.RED + "Error, that player doesn't exist!");
+                                player.sendMessage(ChatColor.RED + "Oops, I can't find that player!");
                             }
                             break;
                     }
