@@ -260,6 +260,15 @@ public class Mining implements GenericMechanic {
 	@Override
 	public void startInitialization() {
 		loadOreLocations();
+		Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> placeOre());
+	}
+
+	/**
+	 * Place all ore from ORE_LOCATIONS
+	 * @since 1.0;
+	 */
+	private void placeOre() {
+		ORE_LOCATIONS.keySet().stream().forEach(loc -> loc.getWorld().getBlockAt(loc).setType(ORE_LOCATIONS.get(loc)));
 	}
 
 	@Override
