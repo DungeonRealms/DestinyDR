@@ -29,9 +29,6 @@ public class BasicEntitySkeleton extends RangedEntitySkeleton {
 	public BasicEntitySkeleton(World world, int tier) {
 		super(world, EnumMonster.Skeleton, tier, EnumEntityType.HOSTILE_MOB);
         this.tier = tier;
-        int level = Utils.getRandomFromTier(tier);
-        MetadataUtils.registerEntityMetadata(this, this.entityType, tier, level);
-        EntityStats.setMonsterRandomStats(this, level, tier);
 	}
 
 	/**

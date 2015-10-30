@@ -34,11 +34,6 @@ public class BasicEntitySilverfish extends EntitySilverfish implements Monster{
         this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
         this.goalSelector.a(5, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.0D, false));
 		this.enumMonster = type;
-		int level = Utils.getRandomFromTier(tier);
-		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, tier, level);
-		EntityStats.setMonsterRandomStats(this, level, tier);
-		this.getBukkitEntity().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET
-		        + type.getPrefix() + " " + type.name + " " + type.getSuffix());
 		setArmor(tier);
 	}
 

@@ -71,7 +71,7 @@ public class Burick extends BasicEntitySkeleton implements Boss {
 		this.setSkeletonType(1);
 		setArmor(getEnumBoss().tier);
 		this.getBukkitEntity().setCustomNameVisible(true);
-		int level = Utils.getRandomFromTier(getEnumBoss().tier);
+		int level = 100;
 		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
 		this.getBukkitEntity().setMetadata("boss",
 		        new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));

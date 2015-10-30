@@ -21,9 +21,6 @@ public class EntityGolem extends MeleeEntityZombie {
     public EntityGolem(World world, int tier, EnumEntityType entityType) {
         super(world, EnumMonster.Golem, tier, entityType, true);
         this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().next()));
-        int level = Utils.getRandomFromTier(tier);
-        MetadataUtils.registerEntityMetadata(this, entityType, tier, level);
-        EntityStats.setMonsterRandomStats(this, level, tier);
     }
 
     /**

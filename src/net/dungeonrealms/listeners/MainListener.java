@@ -468,12 +468,10 @@ public class MainListener implements Listener {
 		}else{
 			Player p = event.getPlayer();
 			ItemStack stack = p.getItemInHand();
-			Utils.log.info(event.getState().name());
 			if (stack != null && stack.getType() == Material.FISHING_ROD) {
 				p.getItemInHand().setDurability((short) (stack.getDurability() + 1));
 				if(event.getState() == State.CAUGHT_FISH){
 					if (Fishing.isDRFishingPole(stack)) {
-						Utils.log.info("Catching fish");
 						event.getCaught().remove();
 						event.setExpToDrop(0);
 						net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);

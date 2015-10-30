@@ -60,7 +60,14 @@ public class SpawningMechanics implements GenericMechanic {
             int tier = Integer.parseInt(tierString);
             int spawnAmount = Integer.parseInt(line.split(";")[1]);
             String monster = line.split("=")[1].split(":")[0];
-            MobSpawner spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size());
+            String spawnRange = String.valueOf(line.charAt(line.length() - 1));
+            MobSpawner spawner;
+            if(spawnRange.equalsIgnoreCase("-"))
+             spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "high");
+            else
+             spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low");
+            if(spawner == null)
+            	break;
             ALLSPAWNERS.add(spawner);
         }
         Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), SpawningMechanics::initSpawners, 0, 4 * 20L);
@@ -82,7 +89,12 @@ public class SpawningMechanics implements GenericMechanic {
         int tier = Integer.parseInt(tierString);
         int spawnAmount = Integer.parseInt(line.split(";")[1]);
         String monster = line.split("=")[1].split(":")[0];
-        MobSpawner spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size());
+        String spawnRange = String.valueOf(line.charAt(line.length() - 1));
+        MobSpawner spawner;
+        if(spawnRange.equalsIgnoreCase("-"))
+         spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "high");
+        else
+         spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low");
         add(spawner);
         spawner.init();
     }
