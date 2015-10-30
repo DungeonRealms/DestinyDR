@@ -92,7 +92,7 @@ public class ShopMechanics implements GenericMechanic{
      */
     public static Shop getShop(Block block) {
         for (Shop shop : PLAYER_SHOPS.values()) {
-            if (shop.block.getX() == block.getX() && shop.block.getY() == block.getY() && shop.getBlock().getZ() == block.getZ()) {
+            if (shop.block.getX() == block.getX() && shop.block.getY() == block.getY() && shop.getBlock().getZ() == block.getZ() || shop.block2.getX() == block.getX() && shop.block2.getY() == block.getY() && shop.block2.getZ() == block.getZ()) {
                 return shop;
             }
         }
