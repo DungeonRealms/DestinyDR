@@ -237,7 +237,7 @@ public class Mining implements GenericMechanic {
 				}
 			}
 			reader.close();
-			Utils.log.info("[ProfessionMechanics] " + count + " ORE SPAWN locations have been LOADED.");
+			Utils.log.info("[Profession] " + count + " ORE SPAWN locations have been LOADED.");
 		} catch (Exception exc) {
 			exc.printStackTrace();
 		}
@@ -260,7 +260,7 @@ public class Mining implements GenericMechanic {
 	@Override
 	public void startInitialization() {
 		loadOreLocations();
-		Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> placeOre());
+		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> placeOre());
 	}
 
 	/**

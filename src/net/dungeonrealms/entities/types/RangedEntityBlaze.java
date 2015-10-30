@@ -18,6 +18,7 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.lang.reflect.Field;
 import java.util.Random;
@@ -40,6 +41,8 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 		if (setArmor)
 			setArmor(tier);
 		this.getBukkitEntity().setCustomNameVisible(true);
+        String customName = monster.getPrefix() + " " + name + " " + monster.getSuffix() + " ";
+        this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
 		setStats();
 	}
 

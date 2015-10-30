@@ -236,7 +236,7 @@ public class InventoryListener implements Listener {
 									if (nms.getTag().hasKey("status"))
 										return;
 									int price = nms.getTag().getInt("worth");
-									if (ShopMechanics.checkPlayerForMoney(clicker.getUniqueId(), price)) {
+									if (BankMechanics.getInstance().takeGemsFromInventory(price, clicker)) {
 										ItemStack stack = item.clone();
 										ItemMeta meta = stack.getItemMeta();
 										List<String> lore = meta.getLore();
@@ -267,6 +267,7 @@ public class InventoryListener implements Listener {
 					}
 				}
 			} else { // Setting new item to shop
+				if(clicker.getUniqueId() == shopOwner.getUniqueId()){
 				if (event.getRawSlot() < shop.inventory.getSize()) {
 					ItemStack itemHeld = event.getCursor();
 					if (itemHeld.getType() == Material.AIR)
@@ -329,6 +330,7 @@ public class InventoryListener implements Listener {
 					gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
 					player.closeInventory();
 					gui.open();
+				}
 				}
 			}
 		}

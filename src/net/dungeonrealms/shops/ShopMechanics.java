@@ -112,53 +112,6 @@ public class ShopMechanics implements GenericMechanic{
         Bukkit.getWorlds().get(0).save();
     }
 
-    /**
-     * Check a player for money
-     *
-     * @param uuid
-     * @param price
-     * @return
-     * @since 1.0
-     */
-    public static boolean checkPlayerForMoney(UUID uuid, int price) {
-        Player p = Bukkit.getPlayer(uuid);
-        Inventory inv = p.getInventory();
-        int gemWorth = 0;
-        int noteWorth = 0;
-        for (int i = 0; i < inv.getSize(); i++) {
-            ItemStack current = inv.getItem(i);
-            if (current != null && current.getType() != Material.AIR) {
-                net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(current);
-                p.sendMessage("0");
-                if (nms.hasTag() && nms.getTag().hasKey("type")
-                        && nms.getTag().getString("type").equalsIgnoreCase("money")) {
-                    p.sendMessage("1");
-                    if (current.getType() == Material.EMERALD) {
-                        p.sendMessage("2");
-                        gemWorth += (current.getAmount());
-                    } else if (current.getType() == Material.PAPER) {
-                        p.sendMessage("3");
-                        if (nms.getTag().getInt("worth") == price)
-                            noteWorth = (nms.getTag().getInt("worth"));
-                    }
-                }
-            }
-        }
-        p.sendMessage(gemWorth + " gems");
-        p.sendMessage(noteWorth + " notes");
-        if (gemWorth >= price) {
-            ItemStack gem = BankMechanics.gem.clone();
-            gem.setAmount(price);
-            p.getInventory().removeItem(gem);
-            return true;
-        } else if (noteWorth > 0) {
-            ItemStack note = BankMechanics.createBankNote(price);
-            p.getInventory().removeItem(note);
-            return true;
-        } else {
-            return false;
-        }
-    }
 
     @Override
     public EnumPriority startPriority() {

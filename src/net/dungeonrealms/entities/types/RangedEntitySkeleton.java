@@ -17,6 +17,7 @@ import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.lang.reflect.Field;
 import java.util.Random;
@@ -61,6 +62,8 @@ public abstract class RangedEntitySkeleton extends EntitySkeleton implements Mon
         this.entityType = entityType;
         setArmor(tier);
         this.getBukkitEntity().setCustomNameVisible(true);
+        String customName = monster.getPrefix() + " " + name + " " + monster.getSuffix() + " ";
+        this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
         setStats();
     }
 

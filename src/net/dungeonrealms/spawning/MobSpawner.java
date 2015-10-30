@@ -115,6 +115,8 @@ public class MobSpawner {
             	if(SPAWNED_MONSTERS.size() == 0){
             		Utils.log.info("Elite set to spawn");
             		Location location = new Location(Bukkit.getWorlds().get(0), loc.getBlockX() + new Random().nextInt(10), loc.getBlockY(), loc.getBlockZ() + new Random().nextInt(10));
+                    if(location.getBlock().getType() != Material.AIR || location.add(0, 1, 0).getBlock().getType() != Material.AIR)
+                    	return;
                 	String mob = spawnType;
                 	World world = armorstand.getWorld();
                 	EnumMonster monsEnum = EnumMonster.getMonsterByString(mob);
@@ -156,7 +158,9 @@ public class MobSpawner {
 
             }else{
             if(SPAWNED_MONSTERS.size() < spawnAmount * 2) {
-                Location location = new Location(Bukkit.getWorlds().get(0), loc.getBlockX() + new Random().nextInt(10), loc.getBlockY(), loc.getBlockZ() + new Random().nextInt(10));
+               Location location = new Location(Bukkit.getWorlds().get(0), loc.getBlockX() + new Random().nextInt(10), loc.getBlockY(), loc.getBlockZ() + new Random().nextInt(10));
+               if(location.getBlock().getType() != Material.AIR || location.add(0, 1, 0).getBlock().getType() != Material.AIR)
+                	return;
                String mob = spawnType;
                World world = armorstand.getWorld();
                EnumEntityType type = EnumEntityType.HOSTILE_MOB;
@@ -186,10 +190,12 @@ public class MobSpawner {
                     ent.setRemoveWhenFarAway(false);
                     entity.getBukkitEntity().setPassenger(stand);
                     
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
                		entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                		world.addEntity(entity, SpawnReason.CUSTOM);
                		entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                		SPAWNED_MONSTERS.add(entity);
+                    },20 * 10);
             	}
             }
     	}else{
