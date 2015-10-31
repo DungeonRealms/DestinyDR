@@ -14,9 +14,10 @@ import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.TradeHandler;
 import net.dungeonrealms.handlers.TradeHandler.TradeManager;
 import net.dungeonrealms.items.repairing.RepairAPI;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.LootManager;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -31,7 +32,6 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -663,7 +663,9 @@ public class InventoryListener implements Listener {
 
 				player.updateInventory();
 				double newPercent = RepairAPI.getCustomDurability(slotItem);
-				player.sendMessage("(TODO: Toggle) You used an Item Scrap to repair 3% durability to " + newPercent + "/1500");
+				if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+					player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + newPercent + "/1500");
+				}
 			}
 		}
 	}

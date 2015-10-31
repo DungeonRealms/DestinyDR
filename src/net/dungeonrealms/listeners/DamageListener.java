@@ -339,10 +339,11 @@ public class DamageListener implements Listener {
         double armourReducedDamage = 0;
         LivingEntity defender = (LivingEntity) event.getEntity();
         EntityEquipment defenderEquipment = defender.getEquipment();
+        LivingEntity attacker = null;
         if (defenderEquipment.getArmorContents() == null) return;
         ItemStack[] defenderArmor = defenderEquipment.getArmorContents();
         if (event.getDamager() instanceof LivingEntity) {
-            LivingEntity attacker = (LivingEntity) event.getDamager();
+            attacker = (LivingEntity) event.getDamager();
             armourReducedDamage = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor);
             if (attacker.getEquipment().getItemInHand() != null && attacker.getEquipment().getItemInHand().getType() != Material.AIR) {
                 net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attacker.getEquipment().getItemInHand()));
@@ -360,7 +361,7 @@ public class DamageListener implements Listener {
                                         entityNear.setVelocity(unitVector.multiply(0.15D));
                                     }
                                 } else {
-                                    HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entityNear, (event.getDamage() - armourReducedDamage));
+                                    HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entityNear, attacker, (event.getDamage() - armourReducedDamage));
                                     Vector unitVector = entityNear.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
                                     entityNear.setVelocity(unitVector.multiply(0.15D));
                                 }
@@ -373,22 +374,17 @@ public class DamageListener implements Listener {
         } else if (event.getDamager().getType() == EntityType.ARROW) {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof LivingEntity)) return;
-            if (attackingArrow.getShooter() instanceof CraftLivingEntity) {
-                if (((CraftLivingEntity) attackingArrow.getShooter()).hasMetadata("type")) {
-                    armourReducedDamage = DamageAPI.calculateArmorReduction(attackingArrow, defender, defenderArmor);
-                }
-            }
+            attacker = (LivingEntity) attackingArrow.getShooter();
+            armourReducedDamage = DamageAPI.calculateArmorReduction(attackingArrow, defender, defenderArmor);
         } else if (event.getDamager().getType() == EntityType.SNOWBALL) {
             Snowball staffProjectile = (Snowball) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof LivingEntity)) return;
-            if (staffProjectile.getShooter() instanceof CraftLivingEntity) {
-                if (((CraftLivingEntity) staffProjectile.getShooter()).hasMetadata("type")) {
-                    armourReducedDamage = DamageAPI.calculateArmorReduction(staffProjectile, defender, defenderArmor);
-                }
-            }
+            attacker = (LivingEntity) staffProjectile.getShooter();
+            armourReducedDamage = DamageAPI.calculateArmorReduction(staffProjectile, defender, defenderArmor);
         } else if (event.getDamager().getType() == EntityType.WITHER_SKULL) {
             WitherSkull witherSkull =  (WitherSkull) event.getDamager();
             if (!(witherSkull.getShooter() instanceof LivingEntity)) return;
+            attacker = (LivingEntity) witherSkull.getShooter();
             if (witherSkull.getShooter() instanceof CraftLivingEntity) {
                 if (((CraftLivingEntity) witherSkull.getShooter()).hasMetadata("type")) {
                     armourReducedDamage = DamageAPI.calculateArmorReduction(witherSkull, defender, defenderArmor);
@@ -432,7 +428,7 @@ public class DamageListener implements Listener {
                 }
             } else if (defender instanceof CraftLivingEntity) {
                 if (defender.hasMetadata("type") && defender.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-                    HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) event.getEntity(), (event.getDamage() - armourReducedDamage));
+                    HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) event.getEntity(), attacker, (event.getDamage() - armourReducedDamage));
                     event.setDamage(0);
                     return;
                 }

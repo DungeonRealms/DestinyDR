@@ -1,5 +1,6 @@
 package net.dungeonrealms.handlers;
 
+import net.dungeonrealms.mongo.EnumData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -462,6 +463,9 @@ public class HealthHandler implements GenericMechanic{
         player.setHealth(convHPToDisplay);
         LivingEntity leAttacker = null;
         if (API.isPlayer(damager)) {
+            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+                player.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + "Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + ChatColor.BOLD + "[" + newHP + "]");
+            }
             return;
         }
         if (damager instanceof CraftLivingEntity) {
@@ -507,11 +511,11 @@ public class HealthHandler implements GenericMechanic{
      * @param damage
      * @since 1.0
      */
-    public void handleMonsterBeingDamaged(LivingEntity entity, double damage) {
+    public void handleMonsterBeingDamaged(LivingEntity entity, LivingEntity attacker, double damage) {
         double maxHP = getMonsterMaxHPLive(entity);
         double currentHP = getMonsterHPLive(entity);
         double newHP = currentHP - damage;
-        if(entity instanceof EntityArmorStand || entity instanceof net.minecraft.server.v1_8_R3.EntityArmorStand)
+        if(entity instanceof EntityArmorStand)
         	return;
 
         if (newHP <= 0) {
@@ -542,10 +546,16 @@ public class HealthHandler implements GenericMechanic{
         if (convHPToDisplay > 20) {
             convHPToDisplay = 20;
         }
+
+        if (API.isPlayer(attacker)) {
+            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
+                attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + "Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + entity.getCustomName() + ChatColor.BOLD + "[" + newHP + "]");
+            }
+        }
         int level = entity.getMetadata("level").get(0).asInt();
         EntityLiving entity1 = ((CraftLivingEntity)entity).getHandle();	
         String name = entity.getMetadata("customname").get(0).asString();
-        if(entity.getPassenger() != null)
+        if (entity.getPassenger() != null)
 		entity.getPassenger().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
 				+ ChatColor.RESET + name +" "+ entity.getMetadata("currentHP").get(0).asInt() +ChatColor.RED.toString()+ "❤");
         entity.setHealth(convHPToDisplay);
