@@ -529,7 +529,7 @@ public class PlayerMenus {
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("mountType", new NBTTagString(mountType));
             nmsStack.setTag(tag);
-            inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStack), ChatColor.GREEN + mountType.toUpperCase(), new String[]{
+            inv.addItem(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), EnumMounts.getByName(mountType).getShortID(), ChatColor.GREEN + mountType.toUpperCase(), new String[]{
             }));
         }
 
@@ -658,6 +658,16 @@ public class PlayerMenus {
     public static ItemStack editItem(ItemStack itemStack, String name, String[] lore) {
         ItemMeta meta = itemStack.getItemMeta();
         meta.setDisplayName(name);
+        meta.setLore(Arrays.asList(lore));
+        itemStack.setItemMeta(meta);
+        itemStack.setAmount(1);
+        return itemStack;
+    }
+
+    public static ItemStack editItemWithShort(ItemStack itemStack, short shortID, String name, String[] lore) {
+        ItemMeta meta = itemStack.getItemMeta();
+        meta.setDisplayName(name);
+        itemStack.setDurability(shortID);
         meta.setLore(Arrays.asList(lore));
         itemStack.setItemMeta(meta);
         itemStack.setAmount(1);

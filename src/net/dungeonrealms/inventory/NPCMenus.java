@@ -40,12 +40,12 @@ public class NPCMenus {
         tagGold.setInt("mountCost", 25000);
         nmsStackGold.setTag(tagGold);
 
-        inv.setItem(0, editItem(CraftItemStack.asBukkitCopy(nmsStackT1), ChatColor.GREEN + "Old Horse Mount", new String[]{
+        inv.setItem(0, editItem(CraftItemStack.asBukkitCopy(nmsStackT1), (short) 0, ChatColor.GREEN + "Old Horse Mount", new String[]{
                 ChatColor.RED + "Speed 120%"}));
-        inv.setItem(1, editItem(CraftItemStack.asBukkitCopy(nmsStackDiamond), ChatColor.GREEN + "Traveler's Horse Mount", new String[]{
+        inv.setItem(1, editItem(CraftItemStack.asBukkitCopy(nmsStackDiamond), (short) 0, ChatColor.GREEN + "Traveler's Horse Mount", new String[]{
                 ChatColor.RED + "Speed 140%",
                 ChatColor.RED + "Jump 110%"}));
-        inv.setItem(2, editItem(CraftItemStack.asBukkitCopy(nmsStackGold), ChatColor.GREEN + "Knight's Horse Mount", new String[]{
+        inv.setItem(2, editItem(CraftItemStack.asBukkitCopy(nmsStackGold), (short) 0, ChatColor.GREEN + "Knight's Horse Mount", new String[]{
                 ChatColor.RED + "Speed 160%",
                 ChatColor.RED + "Jump 110%"}));
         //TODO: Add Mule when Chase finishes it.
@@ -89,50 +89,50 @@ public class NPCMenus {
         tagCursedTrail.set("playerTrailType", new NBTTagString("WITCHMAGIC"));
         tagCursedTrail.setInt("ecashCost", 649);
         nmsStackCursedTrail.setTag(tagCursedTrail);
-        ItemStack zombieHorse = new ItemStack(Material.SKULL_ITEM, (short) 2);
+        ItemStack zombieHorse = new ItemStack(Material.SKULL_ITEM, 1, (short) 2);
         net.minecraft.server.v1_8_R3.ItemStack nmsStackZombieHorse = CraftItemStack.asNMSCopy(zombieHorse);
         NBTTagCompound tagZombieHorse = nmsStackZombieHorse.getTag() == null ? new NBTTagCompound() : nmsStackZombieHorse.getTag();
         tagZombieHorse.set("mountType", new NBTTagString("ZOMBIEHORSE"));
         tagZombieHorse.setInt("ecashCost", 399);
         nmsStackZombieHorse.setTag(tagZombieHorse);
-        ItemStack skeletonHorse = new ItemStack(Material.SKULL_ITEM, (short) 0);
+        ItemStack skeletonHorse = new ItemStack(Material.SKULL_ITEM, 1, (short) 0);
         net.minecraft.server.v1_8_R3.ItemStack nmsStackSkeletonHorse = CraftItemStack.asNMSCopy(skeletonHorse);
         NBTTagCompound tagSkeletonHorse = nmsStackSkeletonHorse.getTag() == null ? new NBTTagCompound() : nmsStackSkeletonHorse.getTag();
         tagSkeletonHorse.set("mountType", new NBTTagString("SKELETONHORSE"));
         tagSkeletonHorse.setInt("ecashCost", 399);
         nmsStackSkeletonHorse.setTag(tagSkeletonHorse);
-        ItemStack rabbitPet = new ItemStack(Material.MONSTER_EGG, (short) 101);
+        ItemStack rabbitPet = new ItemStack(Material.MONSTER_EGG, 1, (short) 101);
         net.minecraft.server.v1_8_R3.ItemStack nmsStackRabbitPet = CraftItemStack.asNMSCopy(rabbitPet);
         NBTTagCompound tagRabbitPet = nmsStackRabbitPet.getTag() == null ? new NBTTagCompound() : nmsStackRabbitPet.getTag();
         tagRabbitPet.set("petType", new NBTTagString("RABBIT"));
         tagRabbitPet.setInt("ecashCost", 749);
         nmsStackRabbitPet.setTag(tagRabbitPet);
-        ItemStack ocelotPet = new ItemStack(Material.MONSTER_EGG, (short) 98);
+        ItemStack ocelotPet = new ItemStack(Material.MONSTER_EGG, 1, (short) 98);
         net.minecraft.server.v1_8_R3.ItemStack nmsStackOcelotPet = CraftItemStack.asNMSCopy(ocelotPet);
         NBTTagCompound tagOcelotPet = nmsStackOcelotPet.getTag() == null ? new NBTTagCompound() : nmsStackOcelotPet.getTag();
         tagOcelotPet.set("petType", new NBTTagString("OCELOT"));
         tagOcelotPet.setInt("ecashCost", 749);
         nmsStackOcelotPet.setTag(tagOcelotPet);
 
-        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackFlameTrail), ChatColor.RED + "Flame Trail", new String[]{
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackFlameTrail), (short) 0, ChatColor.RED + "Flame Trail", new String[]{
                 ChatColor.AQUA + "649 E-Cash"}));
-        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackMusicTrail), ChatColor.LIGHT_PURPLE + "Musical Trail", new String[]{
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackMusicTrail), (short) 0, ChatColor.LIGHT_PURPLE + "Musical Trail", new String[]{
                 ChatColor.AQUA + "649 E-Cash"}));
-        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackCloudTrail), ChatColor.WHITE + "Cloud Trail", new String[]{
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackCloudTrail), (short) 0, ChatColor.WHITE + "Cloud Trail", new String[]{
                 ChatColor.AQUA + "649 E-Cash"}));
-        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackCursedTrail), ChatColor.DARK_PURPLE + "Cursed Trail", new String[]{
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackCursedTrail), (short) 0, ChatColor.DARK_PURPLE + "Cursed Trail", new String[]{
                 ChatColor.AQUA + "649 E-Cash"}));
-        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackZombieHorse),ChatColor.GREEN + "Zombie Horse", new String[]{
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackZombieHorse), (short) 2, ChatColor.GREEN + "Zombie Horse", new String[]{
                 ChatColor.RED + "Speed 160%",
                 ChatColor.RED + "Jump 110%",
                 ChatColor.AQUA + "399 E-Cash"}));
-        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackSkeletonHorse),ChatColor.GRAY + "Skeleton Horse", new String[]{
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackSkeletonHorse), (short) 0, ChatColor.GRAY + "Skeleton Horse", new String[]{
                 ChatColor.RED + "Speed 160%",
                 ChatColor.RED + "Jump 110%",
                 ChatColor.AQUA + "399 E-Cash"}));
-        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackRabbitPet), ChatColor.YELLOW + "Rabbit Pet", new String[]{
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackRabbitPet), (short) 101, ChatColor.YELLOW + "Rabbit Pet", new String[]{
                 ChatColor.AQUA + "749 E-Cash"}));
-        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackOcelotPet), ChatColor.YELLOW + "Ocelot Pet", new String[]{
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackOcelotPet), (short) 98, ChatColor.YELLOW + "Ocelot Pet", new String[]{
                 ChatColor.AQUA + "749 E-Cash"}));
 
         player.openInventory(inv);
@@ -190,30 +190,31 @@ public class NPCMenus {
         tagDeadpeaksMountain.setInt("gemCost", 25000);
         nmsStackDeadpeaksMountain.setTag(tagDeadpeaksMountain);
 
-        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackCyrennica), ChatColor.WHITE + "Cyrennica", new String[]{
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackCyrennica), (short) 0, ChatColor.WHITE + "Cyrennica", new String[]{
                 ChatColor.GREEN + "1000 Gems"}));
-        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackHarrisons), ChatColor.WHITE + "Harrison Fields", new String[]{
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackHarrisons), (short) 0, ChatColor.WHITE + "Harrison Fields", new String[]{
                 ChatColor.GREEN + "1500 Gems"}));
-        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackGloomyHollows), ChatColor.WHITE + "Gloomy Hollows", new String[]{
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackGloomyHollows), (short) 0, ChatColor.WHITE + "Gloomy Hollows", new String[]{
                 ChatColor.GREEN + "3500 Gems"}));
-        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackDarkOak), ChatColor.WHITE + "Dark Oak Tavern", new String[]{
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackDarkOak), (short) 0, ChatColor.WHITE + "Dark Oak Tavern", new String[]{
                 ChatColor.GREEN + "3500 Gems"}));
-        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackTripoli), ChatColor.WHITE + "Tripoli", new String[]{
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackTripoli), (short) 0, ChatColor.WHITE + "Tripoli", new String[]{
                 ChatColor.GREEN + "7500 Gems"}));
-        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackTrollsbaneTavern), ChatColor.WHITE + "Trollsbane Tavern", new String[]{
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackTrollsbaneTavern), (short) 0, ChatColor.WHITE + "Trollsbane Tavern", new String[]{
                 ChatColor.GREEN + "7500 Gems"}));
-        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackCrestguardKeep), ChatColor.WHITE + "Crestguard Keep", new String[]{
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackCrestguardKeep), (short) 0, ChatColor.WHITE + "Crestguard Keep", new String[]{
                 ChatColor.GREEN + "15000 Gems"}));
-        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackDeadpeaksMountain), ChatColor.WHITE + "Deadpeaks Mountain", new String[]{
+        inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackDeadpeaksMountain), (short) 0, ChatColor.WHITE + "Deadpeaks Mountain", new String[]{
                 ChatColor.GREEN + "25000 Gems"}));
 
         player.openInventory(inv);
     }
 
-    public static ItemStack editItem(ItemStack itemStack, String name, String[] lore) {
+    public static ItemStack editItem(ItemStack itemStack, short shortDataID, String name, String[] lore) {
         ItemMeta meta = itemStack.getItemMeta();
         meta.setDisplayName(name);
         meta.setLore(Arrays.asList(lore));
+        itemStack.setDurability(shortDataID);
         itemStack.setItemMeta(meta);
         itemStack.setAmount(1);
         return itemStack;
