@@ -7,7 +7,9 @@ import net.dungeonrealms.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.entities.types.monsters.boss.subboss.InfernalLordsGuard;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.items.Item.ItemModifier;
 import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.items.armor.Armor.ArmorModifier;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.*;
@@ -117,7 +119,7 @@ public class InfernalAbyss extends EntitySkeleton implements Boss {
 	}
 
 	private ItemStack[] getArmor() {
-		return new ArmorGenerator().nextTier(getEnumBoss().tier);
+		return new ArmorGenerator().nextArmor(getEnumBoss().tier, ArmorModifier.LEGENDARY);
 	}
 
 	@Override

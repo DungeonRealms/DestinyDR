@@ -2,11 +2,19 @@ package net.dungeonrealms.entities.utils;
 
 import java.util.Random;
 
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.items.Item.ItemModifier;
+import net.dungeonrealms.items.Item.ItemTier;
+import net.dungeonrealms.items.Item.ItemType;
+import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.items.armor.Armor.ArmorModifier;
+import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.Entity;
 
@@ -100,6 +108,14 @@ public class EntityStats {
         entity.getBukkitEntity().setMetadata("def", new FixedMetadataValue(DungeonRealms.getInstance(), stat.def));
         entity.getBukkitEntity().setMetadata("attack", new FixedMetadataValue(DungeonRealms.getInstance(), stat.atk));
         entity.getBukkitEntity().setMetadata("spd", new FixedMetadataValue(DungeonRealms.getInstance(), stat.spd));
+        
+		ItemStack[] armor = new ArmorGenerator().nextArmor(tier, ArmorModifier.UNIQUE);
+		ItemStack weapon = new ItemGenerator().getDefinedStack(ItemType.SWORD, ItemTier.getByTier(tier), ItemModifier.UNIQUE);
+		entity.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
+		entity.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
+		entity.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
+		entity.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
+
     }
     
     public static void setMonsterRandomStats(Entity entity, int lvl, int tier) {

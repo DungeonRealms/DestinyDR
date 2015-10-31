@@ -27,6 +27,7 @@ import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
+import net.dungeonrealms.items.armor.Armor.ArmorModifier;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.teleportation.Teleportation;
@@ -112,7 +113,7 @@ public class Burick extends BasicEntitySkeleton implements Boss {
 	}
 
 	private ItemStack[] getArmor() {
-		return new ArmorGenerator().nextTier(getEnumBoss().tier);
+		return new ArmorGenerator().nextArmor(getEnumBoss().tier, ArmorModifier.LEGENDARY);
 	}
 
 	@Override

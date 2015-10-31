@@ -13,6 +13,7 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import net.dungeonrealms.API;
@@ -20,6 +21,8 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.items.armor.ArmorGenerator;
+import net.dungeonrealms.items.armor.Armor.ArmorModifier;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.DamageSource;
