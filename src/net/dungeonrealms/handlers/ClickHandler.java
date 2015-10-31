@@ -186,7 +186,7 @@ public class ClickHandler {
                 net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                 if (nmsStack == null) return;
                 if (nmsStack.getTag() == null) return;
-                if (nmsStack.getTag().hasKey("playerTrailType")) {
+                if (nmsStack.getTag().hasKey("hearthstoneLocation")) {
                     String hearthstoneLocation = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, player.getUniqueId()));
                     if (hearthstoneLocation.equalsIgnoreCase(nmsStack.getTag().getString("hearthstoneLocation"))) {
                         player.sendMessage(ChatColor.RED + "Your Hearthstone is already at this location!");
