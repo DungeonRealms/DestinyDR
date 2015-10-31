@@ -1,5 +1,6 @@
 package net.dungeonrealms.chat;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -57,6 +58,15 @@ public class Chat {
 
         UUID uuid = event.getPlayer().getUniqueId();
         StringBuilder prefix = new StringBuilder();
+
+        boolean gChat = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, uuid);
+
+        if (gChat) {
+            prefix.append(ChatColor.GREEN + "<G>");
+        } else {
+            prefix.append(ChatColor.GREEN + "<L>");
+        }
+
         Rank.RankBlob r = Rank.getInstance().getRank(uuid);
         if (r != null && !r.getPrefix().equals("null")) {
             prefix.append(ChatColor.translateAlternateColorCodes('&', "[" + r.getPrefix() + ChatColor.RESET + "]"));
@@ -66,7 +76,14 @@ public class Chat {
             String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
             prefix.append(ChatColor.translateAlternateColorCodes('&', " (" + clanTag + ChatColor.RESET + ")"));
         }
-        event.setFormat(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage());
+
+        if (gChat) {
+            event.setFormat(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage());
+        } else {
+            API.getNearbyPlayers(event.getPlayer().getLocation(), 100).stream().forEach(player -> {
+                player.sendMessage(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage());
+            });
+        }
     }
 
 }

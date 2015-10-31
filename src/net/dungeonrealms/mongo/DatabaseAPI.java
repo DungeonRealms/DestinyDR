@@ -178,6 +178,23 @@ public class DatabaseAPI {
             case INVENTORY:
                 return ((Document) PLAYERS.get(uuid).get("inventory")).get("player", String.class);
             /*
+            Toggles
+             */
+            case TOGGLE_DEBUG:
+                return ((Document) PLAYERS.get(uuid).get("toggles")).get("debug", Boolean.class);
+            case TOGGLE_TRADE:
+                return ((Document) PLAYERS.get(uuid).get("toggles")).get("trade", Boolean.class);
+            case TOGGLE_TRADE_CHAT:
+                return ((Document) PLAYERS.get(uuid).get("toggles")).get("tradeChat", Boolean.class);
+            case TOGGLE_GLOBAL_CHAT:
+                return ((Document) PLAYERS.get(uuid).get("toggles")).get("globalChat", Boolean.class);
+            case TOGGLE_RECEIVE_MESSAGE:
+                return ((Document) PLAYERS.get(uuid).get("toggles")).get("receiveMessage", Boolean.class);
+            case TOGGLE_PVP:
+                return ((Document) PLAYERS.get(uuid).get("toggles")).get("pvp", Boolean.class);
+            case TOGGLE_DUEL:
+                return ((Document) PLAYERS.get(uuid).get("toggles")).get("duel", Boolean.class);
+            /*
             Player Collectibles
              */
             case MOUNTS:
@@ -341,6 +358,14 @@ public class DatabaseAPI {
                                         .append("mounts", new ArrayList<String>())
                                         .append("pets", new ArrayList<String>())
                                         .append("particles", new ArrayList<String>()))
+                        .append("toggles",
+                                new Document("debug", false)
+                                        .append("trade", false)
+                                        .append("tradeChat", false)
+                                        .append("globalChat", false)
+                                        .append("receiveMessage", false)
+                                        .append("pvp", false)
+                                        .append("duel", false))
                         .append("notices",
                                 new Document("guildInvites", new ArrayList<String>())
                                         .append("friendRequest", new ArrayList<String>())

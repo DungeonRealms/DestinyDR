@@ -39,6 +39,14 @@ public enum EnumData {
     PETS,
     PARTICLES,
 
+    TOGGLE_DEBUG,
+    TOGGLE_TRADE,
+    TOGGLE_TRADE_CHAT,
+    TOGGLE_GLOBAL_CHAT,
+    TOGGLE_RECEIVE_MESSAGE,
+    TOGGLE_PVP,
+    TOGGLE_DUEL,
+
 
     MAILBOX,
 
