@@ -56,7 +56,6 @@ public class Chat {
             event.getPlayer().sendMessage(ChatColor.RED + "Wow! You have used a terrible word.. Please rethink your sentence!");
         });
 
-
         UUID uuid = event.getPlayer().getUniqueId();
         StringBuilder prefix = new StringBuilder();
 
