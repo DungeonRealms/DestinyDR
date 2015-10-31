@@ -153,6 +153,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandMail("mailbox", "/<command> [args]", "The mail command."));
         cm.registerCommand(new CommandAccept("accept", "/<command> [args]", "The accept command."));
         cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
+        cm.registerCommand(new CommandGlobalChat("invoke", "/<command> [args]", "The invoke command."));
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
 
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
