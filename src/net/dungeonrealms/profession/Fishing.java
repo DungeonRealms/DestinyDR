@@ -204,7 +204,6 @@ public class Fishing implements GenericMechanic {
 		meta.setLore(Collections.singletonList(newexpBar));
 		stack.setItemMeta(meta);
 		p.setItemInHand(stack);
-
 	}
 
 	/**
@@ -256,13 +255,12 @@ public class Fishing implements GenericMechanic {
 		for (Location fish_loc : FISHING_LOCATIONS.keySet()) {
 			double dist_sqr = loc.distanceSquared(fish_loc);
 			if (dist_sqr <= 100) {
-				// Within 10 blocks.
 				closest_loc = fish_loc;
 			}
 		}
 
 		if (closest_loc == null) {
-			return null; // No spot within 50 blocks.
+			return null;
 		}
 
 		return closest_loc;
@@ -322,7 +320,7 @@ public class Fishing implements GenericMechanic {
              splashCounter--;
              Random r = new Random();
              if (FISHING_PARTICLES.size() <= 0) {
-                 return; // Do nothing.
+                 return;
              }
              try {
                  for (Entry<Location, List<Location>> data : FISHING_PARTICLES.entrySet()) {

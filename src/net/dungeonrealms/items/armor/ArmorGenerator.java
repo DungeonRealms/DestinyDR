@@ -1,7 +1,20 @@
 package net.dungeonrealms.items.armor;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
 import net.dungeonrealms.items.DamageMeta;
 import net.dungeonrealms.items.NameGenerator;
+import net.dungeonrealms.items.armor.Armor.ArmorModifier;
 import net.dungeonrealms.items.armor.Armor.ArmorTier;
 import net.dungeonrealms.items.armor.Armor.EquipmentType;
 import net.dungeonrealms.items.repairing.RepairAPI;
@@ -9,13 +22,6 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagInt;
 import net.minecraft.server.v1_8_R3.NBTTagList;
 import net.minecraft.server.v1_8_R3.NBTTagString;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.*;
 
 /**
  * Created by Nick on 9/21/2015.
@@ -273,5 +279,14 @@ public class ArmorGenerator {
 		getArmor(EquipmentType.LEGGINGS, ArmorTier.getByTier(tier), getRandomItemModifier()),
 		getArmor(EquipmentType.BOOTS, ArmorTier.getByTier(tier), getRandomItemModifier())};
 
+	}
+
+	/**
+	 * @return
+	 */
+	public ItemStack[] nextArmor(int tier, ArmorModifier modifier) {
+		return new ItemStack[]{getArmor(EquipmentType.CHESTPLATE, ArmorTier.getByTier(tier), modifier),
+		getArmor(EquipmentType.LEGGINGS, ArmorTier.getByTier(tier), modifier),
+		getArmor(EquipmentType.BOOTS, ArmorTier.getByTier(tier), modifier)};
 	}
 }
