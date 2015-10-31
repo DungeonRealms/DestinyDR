@@ -1,19 +1,35 @@
 package net.dungeonrealms.spawning;
 
+import java.util.ArrayList;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.monsters.*;
+import net.dungeonrealms.entities.types.monsters.BasicEntityBlaze;
+import net.dungeonrealms.entities.types.monsters.BasicEntityMagma;
+import net.dungeonrealms.entities.types.monsters.BasicEntityPigman;
+import net.dungeonrealms.entities.types.monsters.BasicEntitySilverfish;
+import net.dungeonrealms.entities.types.monsters.BasicEntitySkeleton;
+import net.dungeonrealms.entities.types.monsters.BasicMageMonster;
+import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
+import net.dungeonrealms.entities.types.monsters.EntityBandit;
+import net.dungeonrealms.entities.types.monsters.EntityFireImp;
+import net.dungeonrealms.entities.types.monsters.EntityGolem;
+import net.dungeonrealms.entities.types.monsters.EntityPirate;
+import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
+import net.dungeonrealms.entities.types.monsters.EntitySpider;
+import net.dungeonrealms.entities.types.monsters.EntityWitherSkeleton;
+import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.World;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-
-import java.util.ArrayList;
 
 /**
  * Created by Chase on Sep 28, 2015
@@ -195,11 +211,12 @@ public class SpawningMechanics implements GenericMechanic {
     public void stopInvocation() {
         killAll();
         Bukkit.getWorlds().get(0).getEntities().forEach(entity -> {
-            ((CraftEntity) entity).getHandle().damageEntity(DamageSource.GENERIC, 20f);
+           ((CraftWorld)entity.getWorld()).getHandle().removeEntity(((CraftEntity) entity).getHandle());
             entity.remove();
         });
         Bukkit.getWorlds().get(0).getLivingEntities().forEach(entity -> {
-            ((CraftEntity) entity).getHandle().damageEntity(DamageSource.GENERIC, 20f);
+            ((CraftWorld)entity.getWorld()).getHandle().removeEntity(((CraftEntity) entity).getHandle());
+            entity.remove();
         });
     }
 

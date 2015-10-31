@@ -160,7 +160,7 @@ public class MobSpawner {
             	}
 
             }else{
-            if(SPAWNED_MONSTERS.size() < spawnAmount * 2) {
+            if(SPAWNED_MONSTERS.size() < spawnAmount) {
                Location location = new Location(Bukkit.getWorlds().get(0), loc.getBlockX() + new Random().nextInt(10), loc.getBlockY(), loc.getBlockZ() + new Random().nextInt(10));
                if(location.getBlock().getType() != Material.AIR || location.add(0, 1, 0).getBlock().getType() != Material.AIR)
                 	return;
