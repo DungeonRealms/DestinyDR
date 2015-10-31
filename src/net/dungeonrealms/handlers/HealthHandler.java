@@ -464,7 +464,7 @@ public class HealthHandler implements GenericMechanic{
         LivingEntity leAttacker = null;
         if (API.isPlayer(damager)) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-                player.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + "Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + ChatColor.BOLD + "[" + newHP + "]");
+                player.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + ChatColor.BOLD + "[" + newHP + "]");
             }
             return;
         }
@@ -549,7 +549,7 @@ public class HealthHandler implements GenericMechanic{
 
         if (API.isPlayer(attacker)) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
-                attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + "Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + entity.getCustomName() + ChatColor.BOLD + "[" + newHP + "]");
+                attacker.sendMessage(ChatColor.RED + "" + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + entity.getPassenger().getCustomName() + ChatColor.BOLD + " [" + newHP + "]");
             }
         }
         int level = entity.getMetadata("level").get(0).asInt();
@@ -557,7 +557,7 @@ public class HealthHandler implements GenericMechanic{
         String name = entity.getMetadata("customname").get(0).asString();
         if (entity.getPassenger() != null)
 		entity.getPassenger().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
-				+ ChatColor.RESET + name +" "+ entity.getMetadata("currentHP").get(0).asInt() +ChatColor.RED.toString()+ "❤");
+				+ ChatColor.RESET + name +" "+ entity.getMetadata("currentHP").get(0).asInt() + ChatColor.RED.toString()+ "❤");
         entity.setHealth(convHPToDisplay);
         if (!Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
             Entities.getInstance().MONSTERS_LEASHED.add(entity);
