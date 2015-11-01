@@ -175,7 +175,7 @@ public class MobSpawner {
                     try{
                         customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
                     } catch (Exception exc) {
-                        Utils.log.info(entity.getCustomName() + " doesn't have metadata 'cusomname' ");
+                        Utils.log.info(entity.getCustomName() + " doesn't have metadata 'customname' ");
                     	customName = monsEnum.name;
                     }
                     ArmorStand stand = entity.getBukkitEntity().getLocation().getWorld().spawn(entity.getBukkitEntity().getLocation(), ArmorStand.class);
@@ -187,7 +187,7 @@ public class MobSpawner {
                     stand.setGravity(false);
                     stand.setArms(false);
                     stand.setCustomNameVisible(true);
-                    stand.setCustomName(lvl + customName + healthName);
+                    stand.setCustomName(healthName + lvl + customName);
                     stand.setRemoveWhenFarAway(false);
                     entity.getBukkitEntity().setPassenger(stand);
                		NAMETAGS.put(entity.getBukkitEntity(), stand);

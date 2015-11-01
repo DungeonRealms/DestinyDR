@@ -561,7 +561,8 @@ public class HealthHandler implements GenericMechanic{
         if (API.isPlayer(attacker)) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
                 if (entity.getPassenger() != null) {
-                    attacker.sendMessage(ChatColor.RED + "" + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + entity.getPassenger().getCustomName() + ChatColor.BOLD + " [" + newHP + "]");
+                    String customNameAppended = entity.getPassenger().getCustomName().split("]")[1];
+                    attacker.sendMessage(ChatColor.RED + "" + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + customNameAppended + ChatColor.BOLD + " [" + newHP + "]");
                 } else {
                     attacker.sendMessage(ChatColor.RED + "" + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + "MOB" + ChatColor.BOLD + " [" + newHP + "]");
                 }
@@ -571,8 +572,8 @@ public class HealthHandler implements GenericMechanic{
         EntityLiving entity1 = ((CraftLivingEntity)entity).getHandle();	
         String name = entity.getMetadata("customname").get(0).asString();
         if (entity.getPassenger() != null)
-		entity.getPassenger().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
-				+ ChatColor.RESET + name +" "+ entity.getMetadata("currentHP").get(0).asInt() + ChatColor.RED.toString()+ "❤");
+		entity.getPassenger().setCustomName(entity.getMetadata("currentHP").get(0).asInt() + ChatColor.RED.toString()+ " ❤" + ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
+				+ ChatColor.RESET + name);
         entity.setHealth(convHPToDisplay);
         if (!Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
             Entities.getInstance().MONSTERS_LEASHED.add(entity);
