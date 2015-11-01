@@ -5,18 +5,15 @@ import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.MeleeEntityZombie;
-import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.entities.types.monsters.base.DRZombie;
 import net.dungeonrealms.items.ItemGenerator;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Sep 28, 2015
  */
-public class EntityGolem extends MeleeEntityZombie {
+public class EntityGolem extends DRZombie {
 
     public EntityGolem(World world, int tier, EnumEntityType entityType) {
         super(world, EnumMonster.Golem, tier, entityType, true);

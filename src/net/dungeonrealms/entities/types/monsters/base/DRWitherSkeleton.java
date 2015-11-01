@@ -1,4 +1,4 @@
-package net.dungeonrealms.entities.types.monsters;
+package net.dungeonrealms.entities.types.monsters.base;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -7,44 +7,40 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.Monster;
+import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.EntityPigZombie;
+import net.minecraft.server.v1_8_R3.EntitySkeleton;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
 
 /**
- * Created by Chase on Oct 18, 2015
+ * Created by Chase on Oct 3, 2015
  */
-public class BasicEntityPigman extends EntityPigZombie implements Monster {
+public class DRWitherSkeleton extends EntitySkeleton implements Monster{
 
-	/**
-	 * @param name
-	 */
-	public BasicEntityPigman(World name) {
-		super(name);
-	}
-	
 	public EnumMonster enumMonster;
 
-	/**
-	 * @param world
-	 * @param daemon
-	 * @param tier
-	 */
-	public BasicEntityPigman(World world, EnumMonster mon, int tier) {
+	public DRWitherSkeleton(World world) {
+		super(world);
+	}
+
+	public DRWitherSkeleton(World world, EnumMonster mon, int tier) {
 		super(world);
 		enumMonster = mon;
+		this.setSkeletonType(1);
 
 		setArmor(tier);
-		this.getBukkitEntity().setCustomNameVisible(true);
+        String customName = enumMonster.getPrefix() + " " + enumMonster.name + " " + enumMonster.getSuffix() + " ";
+        this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
 	}
 
 	@Override
@@ -81,27 +77,12 @@ public class BasicEntityPigman extends EntityPigZombie implements Monster {
 	}
 
 	private ItemStack getTierWeapon(int tier) {
-		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.SWORD,
+		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.BOW,
 		        net.dungeonrealms.items.Item.ItemTier.getByTier(tier));
 	}
 
 	private ItemStack[] getTierArmor(int tier) {
 		return new ArmorGenerator().nextTier(tier);
-	}
-
-	@Override
-	protected String z() {
-		return "";
-	}
-
-	@Override
-	protected String bo() {
-		return "game.player.hurt";
-	}
-
-	@Override
-	protected String bp() {
-		return "mob.ghast.scream";
 	}
 
 	@Override

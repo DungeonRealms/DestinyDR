@@ -1,14 +1,14 @@
 package net.dungeonrealms.entities.types.monsters;
 
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.RangedEntityBlaze;
+import net.dungeonrealms.entities.types.monsters.base.DRBlaze;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Oct 4, 2015
  */
-public class BasicEntityBlaze extends RangedEntityBlaze {
+public class BasicEntityBlaze extends DRBlaze {
 
 	/**
 	 * @param world

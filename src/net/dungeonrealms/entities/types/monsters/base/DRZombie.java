@@ -1,9 +1,9 @@
-package net.dungeonrealms.entities.types;
+package net.dungeonrealms.entities.types.monsters.base;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.Monster;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
@@ -29,7 +29,7 @@ import java.util.Random;
  * Created by Xwaffle on 8/29/2015.
  */
 
-public abstract class MeleeEntityZombie extends EntityZombie implements Monster{
+public abstract class DRZombie extends EntityZombie implements Monster{
 
     protected String name;
     protected String mobHead;
@@ -37,7 +37,7 @@ public abstract class MeleeEntityZombie extends EntityZombie implements Monster{
     protected EnumMonster monsterType;
     public int tier;
     
-    protected MeleeEntityZombie(World world, EnumMonster monster, int tier, EnumEntityType entityType, boolean setArmor) {
+    protected DRZombie(World world, EnumMonster monster, int tier, EnumEntityType entityType, boolean setArmor) {
         this(world);
         try {
             Field bField = PathfinderGoalSelector.class.getDeclaredField("b");
@@ -69,7 +69,7 @@ public abstract class MeleeEntityZombie extends EntityZombie implements Monster{
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
     }
 
-    protected MeleeEntityZombie(World world) {
+    protected DRZombie(World world) {
         super(world);
     }
 

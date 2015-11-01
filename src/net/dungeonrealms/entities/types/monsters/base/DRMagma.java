@@ -1,4 +1,4 @@
-package net.dungeonrealms.entities.types.monsters;
+package net.dungeonrealms.entities.types.monsters.base;
 
 import java.util.Random;
 
@@ -6,9 +6,12 @@ import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.Monster;
+import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
@@ -20,7 +23,7 @@ import net.minecraft.server.v1_8_R3.World;
 /**
  * Created by Chase on Oct 17, 2015
  */
-public class BasicEntityMagma extends EntityMagmaCube implements Monster{
+public class DRMagma extends EntityMagmaCube implements Monster{
 
 	private EnumMonster monsterType;
 
@@ -29,7 +32,7 @@ public class BasicEntityMagma extends EntityMagmaCube implements Monster{
 	 * @param tier 
 	 * @param enumMonster 
 	 */
-	public BasicEntityMagma(World name, EnumMonster enumMonster, int tier) {
+	public DRMagma(World name, EnumMonster enumMonster, int tier) {
 		super(name);
         setArmor(tier);
 	}
@@ -37,10 +40,12 @@ public class BasicEntityMagma extends EntityMagmaCube implements Monster{
 	/**
 	 * @param name
 	 */
-	public BasicEntityMagma(World world, int tier) {
+	public DRMagma(World world, int tier) {
 		super(world);
         monsterType = EnumMonster.MagmaCube;
         setArmor(tier);
+        String customName = monsterType.getPrefix() + " " + monsterType.name + " " + monsterType.getSuffix() + " ";
+        this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
 
 	}
     private void setArmor(int tier) {

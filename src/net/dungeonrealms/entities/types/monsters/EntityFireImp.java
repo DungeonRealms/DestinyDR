@@ -6,7 +6,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.RangedEntitySkeleton;
+import net.dungeonrealms.entities.types.monsters.base.DRSkeleton;
 import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.items.Item.ItemType;
 import net.dungeonrealms.items.ItemGenerator;
@@ -23,7 +23,7 @@ import net.minecraft.server.v1_8_R3.World;
 /**
  * Created by Chase on Sep 21, 2015
  */
-public class EntityFireImp extends RangedEntitySkeleton {
+public class EntityFireImp extends DRSkeleton {
 
     /**
      * @param world

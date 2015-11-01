@@ -1,22 +1,26 @@
 package net.dungeonrealms.banks;
 
-import net.dungeonrealms.mechanics.generic.EnumPriority;
-import net.dungeonrealms.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumOperators;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
  * Created by Chase on Sep 18, 2015
@@ -50,64 +54,179 @@ public class BankMechanics implements GenericMechanic {
 
     }
 
+    
+    
+    
+	public static boolean takeGemsFromInventory(int amount, Player p) {
+		Inventory i = p.getInventory();
+		int paid_off = 0;
+
+		if (amount <= 0) {
+			return true; // It's free.
+		}
+
+		HashMap<Integer, ? extends ItemStack> invItems = i.all(Material.EMERALD);
+		for (Map.Entry<Integer, ? extends ItemStack> entry : invItems.entrySet()) {
+			int index = entry.getKey();
+			ItemStack item = entry.getValue();
+			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+			if(!nms.hasTag() || !nms.getTag().hasKey("type") || !nms.getTag().getString("type").equalsIgnoreCase("money"))
+				continue;
+			int stackAmount = item.getAmount();
+
+			if ((paid_off + stackAmount) <= amount) {
+				p.getInventory().setItem(index, new ItemStack(Material.AIR));
+				paid_off += stackAmount;
+			} else {
+				int to_take = amount - paid_off;
+				p.getInventory().setItem(index, createGems(stackAmount - to_take));
+				paid_off += to_take;
+			}
+			if (paid_off >= amount) {
+				p.updateInventory();
+				return true;
+			}
+		}
+		
+		if(paid_off> 0){
+			p.getInventory().addItem(createGems(paid_off));
+			paid_off = 0;
+		}
+		
+		//TODO GEM POUCH
+
+//		HashMap<Integer, ? extends ItemStack> gem_pouches = i.all(Material.INK_SACK);
+//		for (Map.Entry<Integer, ? extends ItemStack> entry : gem_pouches.entrySet()) {
+//			ItemStack item = entry.getValue();
+//
+//			if (!MoneyMechanics.isGemPouch(item)) {
+//				continue;
+//			}
+//
+//			int worth = MoneyMechanics.getGemPouchWorth(item);
+//
+//			if ((paid_off + worth) <= amount) {
+//				paid_off += worth;
+//				MoneyMechanics.setPouchWorth(item, 0);
+//			} else {
+//				int to_take = amount - paid_off;
+//				paid_off += to_take;
+//				MoneyMechanics.setPouchWorth(item, worth - to_take);
+//			}
+//
+//			if (paid_off >= amount) {
+//				p.updateInventory();
+//				break;
+//			}
+//
+//		}
+
+		HashMap<Integer, ? extends ItemStack> bank_notes = i.all(Material.PAPER);
+		for (Map.Entry<Integer, ? extends ItemStack> entry : bank_notes.entrySet()) {
+			ItemStack item = entry.getValue();
+			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+			if(!nms.hasTag() || !nms.getTag().hasKey("type") || !nms.getTag().getString("type").equalsIgnoreCase("money"))
+				continue;
+			int bank_note_val = getNoteValue(item);
+			int index = entry.getKey();
+
+			if ((paid_off + bank_note_val) <= amount) {
+				p.getInventory().setItem(index, new ItemStack(Material.AIR));
+				paid_off += bank_note_val;
+			} else {
+				int to_take = amount - paid_off;
+				paid_off += to_take;
+				updateMoney(p, index, (bank_note_val - to_take));
+			}
+
+			if (paid_off >= amount) {
+				p.updateInventory();
+				return true;
+			}
+
+		}
+		
+		if(paid_off > 0){
+			p.getInventory().addItem(createBankNote(paid_off));
+			paid_off = 0;
+		}
+		return false;
+	}
+    
+    
+	public static void updateMoney(Player p, int slot, int new_amount) { 
+		p.getInventory().setItem(slot, createBankNote(new_amount));
+	}
+    
     /**
-     * Checks player inventory for gems, and takes them from their inventory.
-     * Return false if player doesn't have amount specified.
-     *
-     * @param amount
-     * @param p
-     * @return boolean
-     */
-    public boolean takeGemsFromInventory(int amount, Player p) {
-        int cost = 0;
-        for (ItemStack stack : p.getInventory().getContents()) {
-            if (stack != null && stack.getType() != Material.AIR) {
-                if (stack.getType() == Material.EMERALD) {
-                    net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-                    if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
-                        p.getInventory().remove(stack);
-                        cost += stack.getAmount();
-                        if (cost >= amount) {
-                            int leftover = cost - amount;
-                            ItemStack gems = stack.clone();
-                            gems.setAmount(leftover);
-                            p.getInventory().addItem(gems);
-                            return true;
-                        } else {
-                            ItemStack gems = BankMechanics.gem.clone();
-                            gems.setAmount(cost);
-                            p.getInventory().addItem(gems);
-                        }
-                    }
-                } else if (stack.getType() == Material.PAPER) {
-                    net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-                    if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
-                        int tempcost = getNoteValue(stack);
-                        if (stack.getAmount() > 1) {
-                            stack.setAmount(stack.getAmount() - 1);
-                            p.updateInventory();
-                        } else {
-                            p.getInventory().remove(stack);
-                        }
-                        if (tempcost >= amount) {
-                            int leftover = tempcost - amount;
-                            if (leftover > 0) {
-                                ItemStack giveBack = BankMechanics.createBankNote(leftover);
-                                p.getInventory().addItem(giveBack);
-                            }
-                            return true;
-                        } else {
-                            p.getInventory().addItem(BankMechanics.createBankNote(tempcost));
-                        }
-                        continue;
-                    }
-                }
-            } else {
-                continue;
-            }
-        }
-        return false;
-    }
+	 * @param amount
+	 * @return ItemStack
+	 * @since 1.0
+	 */
+	private static ItemStack createGems(int amount) {
+		ItemStack stack = gem.clone();
+		stack.setAmount(amount);
+		return stack;
+	}
+
+//	/**
+//     * Checks player inventory for gems, and takes them from their inventory.
+//     * Return false if player doesn't have amount specified.
+//     *
+//     * @param amount
+//     * @param p
+//     * @return boolean
+//     */
+//    public boolean takeGemsFromInventory(int amount, Player p) {
+//        int cost = 0;
+//        for (ItemStack stack : p.getInventory().getContents()) {
+//            if (stack != null && stack.getType() != Material.AIR) {
+//                if (stack.getType() == Material.EMERALD) {
+//                    net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+//                    if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
+//                        p.getInventory().remove(stack);
+//                        cost += stack.getAmount();
+//                        if (cost >= amount) {
+//                            int leftover = cost - amount;
+//                            ItemStack gems = stack.clone();
+//                            gems.setAmount(leftover);
+//                            p.getInventory().addItem(gems);
+//                            return true;
+//                        } else {
+//                            ItemStack gems = BankMechanics.gem.clone();
+//                            gems.setAmount(cost);
+//                            p.getInventory().addItem(gems);
+//                        }
+//                    }
+//                } else if (stack.getType() == Material.PAPER) {
+//                    net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+//                    if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
+//                        int tempcost = getNoteValue(stack);
+//                        if (stack.getAmount() > 1) {
+//                            stack.setAmount(stack.getAmount() - 1);
+//                            p.updateInventory();
+//                        } else {
+//                            p.getInventory().remove(stack);
+//                        }
+//                        if (tempcost >= amount) {
+//                            int leftover = tempcost - amount;
+//                            if (leftover > 0) {
+//                                ItemStack giveBack = BankMechanics.createBankNote(leftover);
+//                                p.getInventory().addItem(giveBack);
+//                            }
+//                            return true;
+//                        } else {
+//                            p.getInventory().addItem(BankMechanics.createBankNote(tempcost));
+//                        }
+//                        continue;
+//                    }
+//                }
+//            } else {
+//                continue;
+//            }
+//        }
+//        return false;
+//    }
 
 
     /**
@@ -188,8 +307,7 @@ public class BankMechanics implements GenericMechanic {
      * @param uuid
      * @param num
      */
-    public static void addGemsToPlayerInventory(UUID uuid, int num) {
-        Player p = Bukkit.getPlayer(uuid);
+    public static void addGemsToPlayerInventory(Player p, int num) {
         ItemStack gems = gem.clone();
         gems.setAmount(num);
         p.getInventory().addItem(gems);

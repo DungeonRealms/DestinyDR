@@ -16,6 +16,7 @@ import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
@@ -75,6 +76,10 @@ public class MainListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
 	public void onAsyncJoin(AsyncPlayerPreLoginEvent event) {
+		if(!DungeonRealms.getInstance().hasFinishedSetup()){
+			event.disallow(Result.KICK_OTHER, ChatColor.GREEN + "The server is still setting up reconnect shortly!");
+			return;
+		}
 		CoreAPI.getInstance().findBan(event.getName(), new Callback<BanReply>(BanReply.class) {
 			@Override
 			public void callback(Throwable failCause, BanReply result) {

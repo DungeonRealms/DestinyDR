@@ -1,9 +1,9 @@
-package net.dungeonrealms.entities.types;
+package net.dungeonrealms.entities.types.monsters.base;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.Monster;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
@@ -26,13 +26,13 @@ import java.util.Random;
 /**
  * Created by Chase on Oct 4, 2015
  */
-public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze implements Monster {
+public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze implements Monster {
 
 	protected String name;
 	protected String mobHead;
 	protected EnumEntityType entityType;
 	protected EnumMonster monsterType;
-	public RangedEntityBlaze(World world, EnumMonster monster, int tier, EnumEntityType entityType, boolean setArmor) {
+	public DRBlaze(World world, EnumMonster monster, int tier, EnumEntityType entityType, boolean setArmor) {
 		this(world);
 		monsterType = monster;
 		this.name = monster.name;
@@ -52,7 +52,7 @@ public abstract class RangedEntityBlaze extends net.minecraft.server.v1_8_R3.Ent
 	@Override
 	protected abstract void getRareDrop();
 
-	protected RangedEntityBlaze(World world) {
+	protected DRBlaze(World world) {
 		super(world);
 	}
 

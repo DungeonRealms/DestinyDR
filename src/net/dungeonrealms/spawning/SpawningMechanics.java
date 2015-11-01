@@ -1,19 +1,35 @@
 package net.dungeonrealms.spawning;
 
+import java.util.ArrayList;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.monsters.*;
+import net.dungeonrealms.entities.types.monsters.BasicEntityBlaze;
+import net.dungeonrealms.entities.types.monsters.BasicEntitySkeleton;
+import net.dungeonrealms.entities.types.monsters.BasicMageMonster;
+import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
+import net.dungeonrealms.entities.types.monsters.EntityBandit;
+import net.dungeonrealms.entities.types.monsters.EntityFireImp;
+import net.dungeonrealms.entities.types.monsters.EntityGolem;
+import net.dungeonrealms.entities.types.monsters.EntityPirate;
+import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
+import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.types.monsters.base.DRMagma;
+import net.dungeonrealms.entities.types.monsters.base.DRPigman;
+import net.dungeonrealms.entities.types.monsters.base.DRSilverfish;
+import net.dungeonrealms.entities.types.monsters.base.DRSpider;
+import net.dungeonrealms.entities.types.monsters.base.DRWitherSkeleton;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.World;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-
-import java.util.ArrayList;
 
 /**
  * Created by Chase on Sep 28, 2015
@@ -58,7 +74,9 @@ public class SpawningMechanics implements GenericMechanic {
             String tierString = line.substring(line.indexOf(":"), line.indexOf(";"));
             tierString = tierString.substring(1);
             int tier = Integer.parseInt(tierString);
-            int spawnAmount = Integer.parseInt(line.split(";")[1]);
+            String stringAmount = line.split(";")[1].replace("-", "");
+            stringAmount = stringAmount.replace("+", "");
+            int spawnAmount = Integer.parseInt(stringAmount);
             String monster = line.split("=")[1].split(":")[0];
             String spawnRange = String.valueOf(line.charAt(line.length() - 1));
             MobSpawner spawner;
@@ -141,7 +159,7 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new BasicMageMonster(world, EnumMonster.Mage, tier);
                 break;
             case Spider:
-                entity = new EntitySpider(world, EnumMonster.Spider, tier);
+                entity = new DRSpider(world, EnumMonster.Spider, tier);
                 break;
             case Golem:
                 entity = new EntityGolem(world, tier, type);
@@ -159,20 +177,20 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new BasicEntitySkeleton(world, tier);
                 break;
             case Wither:
-                entity = new EntityWitherSkeleton(world, EnumMonster.Wither, tier);
+                entity = new DRWitherSkeleton(world, EnumMonster.Wither, tier);
                 break;
             case MagmaCube:
-                entity = new BasicEntityMagma(world, EnumMonster.MagmaCube, tier);
+                entity = new DRMagma(world, EnumMonster.MagmaCube, tier);
                 break;
             case Daemon:
-                entity = new BasicEntityPigman(world, EnumMonster.Daemon, tier);
+                entity = new DRPigman(world, EnumMonster.Daemon, tier);
                 break;
             case SpawnOfInferno:
-                entity = new BasicEntityMagma(world, EnumMonster.SpawnOfInferno, tier);
-                ((BasicEntityMagma) entity).setSize(4);
+                entity = new DRMagma(world, EnumMonster.SpawnOfInferno, tier);
+                ((DRMagma) entity).setSize(4);
                 break;
             case GreaterAbyssalDemon:
-                entity = new BasicEntitySilverfish(world, EnumMonster.GreaterAbyssalDemon, tier);
+                entity = new DRSilverfish(world, EnumMonster.GreaterAbyssalDemon, tier);
                 break;
             default:
                 Utils.log.info("[SPAWNING] Tried to create " + monsEnum.idName + " but it has failed.");
@@ -195,11 +213,12 @@ public class SpawningMechanics implements GenericMechanic {
     public void stopInvocation() {
         killAll();
         Bukkit.getWorlds().get(0).getEntities().forEach(entity -> {
-            ((CraftEntity) entity).getHandle().damageEntity(DamageSource.GENERIC, 20f);
+           ((CraftWorld)entity.getWorld()).getHandle().removeEntity(((CraftEntity) entity).getHandle());
             entity.remove();
         });
         Bukkit.getWorlds().get(0).getLivingEntities().forEach(entity -> {
-            ((CraftEntity) entity).getHandle().damageEntity(DamageSource.GENERIC, 20f);
+            ((CraftWorld)entity.getWorld()).getHandle().removeEntity(((CraftEntity) entity).getHandle());
+            entity.remove();
         });
     }
 

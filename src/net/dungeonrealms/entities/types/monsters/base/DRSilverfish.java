@@ -1,4 +1,4 @@
-package net.dungeonrealms.entities.types.monsters;
+package net.dungeonrealms.entities.types.monsters.base;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -7,46 +7,38 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.Monster;
+import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.EntitySkeleton;
-import net.minecraft.server.v1_8_R3.Item;
+import net.minecraft.server.v1_8_R3.EntityHuman;
+import net.minecraft.server.v1_8_R3.EntitySilverfish;
+import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
+import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
 import net.minecraft.server.v1_8_R3.World;
 
 /**
- * Created by Chase on Oct 3, 2015
+ * Created by Chase on Oct 21, 2015
  */
-public class EntityWitherSkeleton extends EntitySkeleton implements Monster{
+public class DRSilverfish extends EntitySilverfish implements Monster{
 
 	public EnumMonster enumMonster;
 
-	public EntityWitherSkeleton(World world) {
+	public DRSilverfish(World world, EnumMonster type, int tier) {
 		super(world);
-	}
-
-	public EntityWitherSkeleton(World world, EnumMonster mon, int tier) {
-		super(world);
-		enumMonster = mon;
-		this.setSkeletonType(1);
-
+        this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+        this.goalSelector.a(5, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.0D, false));
+		this.enumMonster = type;
 		setArmor(tier);
-		this.getBukkitEntity().setCustomNameVisible(true);
-	}
-
-	@Override
-	protected Item getLoot() {
-		return null;
-	}
-
-	@Override
-	protected void getRareDrop() {
+        String customName = enumMonster.getPrefix() + " " + enumMonster.name + " " + enumMonster.getSuffix() + " ";
+        this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
 
 	}
 
@@ -74,7 +66,7 @@ public class EntityWitherSkeleton extends EntitySkeleton implements Monster{
 	}
 
 	private ItemStack getTierWeapon(int tier) {
-		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.BOW,
+		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.SWORD,
 		        net.dungeonrealms.items.Item.ItemTier.getByTier(tier));
 	}
 
@@ -98,6 +90,6 @@ public class EntityWitherSkeleton extends EntitySkeleton implements Monster{
 
 	@Override
 	public EnumMonster getEnum() {
-		return this.enumMonster;
+		return enumMonster;
 	}
 }

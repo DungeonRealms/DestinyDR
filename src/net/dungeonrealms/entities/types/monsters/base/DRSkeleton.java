@@ -1,9 +1,9 @@
-package net.dungeonrealms.entities.types;
+package net.dungeonrealms.entities.types.monsters.base;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.Monster;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
@@ -25,7 +25,7 @@ import java.util.Random;
 /**
  * Created by Chase on Sep 19, 2015
  */
-public abstract class RangedEntitySkeleton extends EntitySkeleton implements Monster{
+public abstract class DRSkeleton extends EntitySkeleton implements Monster{
     private String name;
     private String mobHead;
     protected EnumEntityType entityType;
@@ -34,7 +34,7 @@ public abstract class RangedEntitySkeleton extends EntitySkeleton implements Mon
     /**
      * @param world
      */
-    protected RangedEntitySkeleton(World world, EnumMonster monster, int tier, EnumEntityType entityType) {
+    protected DRSkeleton(World world, EnumMonster monster, int tier, EnumEntityType entityType) {
         super(world);
         try {
             Field bField = PathfinderGoalSelector.class.getDeclaredField("b");
@@ -74,7 +74,7 @@ public abstract class RangedEntitySkeleton extends EntitySkeleton implements Mon
     @Override
     protected abstract void getRareDrop();
 
-    protected RangedEntitySkeleton(World world) {
+    protected DRSkeleton(World world) {
         super(world);
     }
 
