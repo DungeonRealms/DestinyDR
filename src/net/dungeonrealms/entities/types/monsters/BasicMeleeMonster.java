@@ -1,21 +1,17 @@
 package net.dungeonrealms.entities.types.monsters;
 
-import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.MeleeEntityZombie;
-import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.entities.types.monsters.base.DRZombie;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Oct 2, 2015
  */
-public class BasicMeleeMonster extends MeleeEntityZombie {
+public class BasicMeleeMonster extends DRZombie {
 
     /**
      * @param world

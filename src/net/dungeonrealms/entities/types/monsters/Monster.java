@@ -1,8 +1,6 @@
-package net.dungeonrealms.entities;
+package net.dungeonrealms.entities.types.monsters;
 
 import org.bukkit.entity.Player;
-
-import net.dungeonrealms.entities.types.monsters.EnumMonster;
 
 /**
  * Created by Chase on Oct 21, 2015

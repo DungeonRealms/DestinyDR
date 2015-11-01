@@ -3,15 +3,15 @@ package net.dungeonrealms.entities.types.monsters.boss;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
-import net.dungeonrealms.entities.types.monsters.EntityWitherSkeleton;
 import net.dungeonrealms.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.types.monsters.base.DRWitherSkeleton;
 import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Oct 20, 2015
  */
-public class Aceron extends EntityWitherSkeleton implements Boss{
+public class Aceron extends DRWitherSkeleton implements Boss{
 
 	/**
 	 * @param world

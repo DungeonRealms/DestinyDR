@@ -4,9 +4,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.MeleeEntityZombie;
-import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.entities.types.monsters.base.DRZombie;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.Items;
@@ -15,7 +13,7 @@ import net.minecraft.server.v1_8_R3.World;
 /**
  * Created by Nick on 9/17/2015.
  */
-public class EntityPirate extends MeleeEntityZombie{
+public class EntityPirate extends DRZombie{
 
     public EntityPirate(World world, EnumMonster enumMons, int tier) {
         super(world, enumMons, tier, EnumEntityType.HOSTILE_MOB, true);

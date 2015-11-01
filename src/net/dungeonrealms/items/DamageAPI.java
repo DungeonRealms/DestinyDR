@@ -78,8 +78,8 @@ public class DamageAPI {
             if(attacker.hasMetadata("type")){
 			if(attacker.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")){
 				EntityMonster nms = ((CraftMonster)attacker).getHandle();
-				if(nms instanceof net.dungeonrealms.entities.Monster){
-					net.dungeonrealms.entities.Monster mons = (net.dungeonrealms.entities.Monster)nms;
+				if(nms instanceof net.dungeonrealms.entities.types.monsters.Monster){
+					net.dungeonrealms.entities.types.monsters.Monster mons = (net.dungeonrealms.entities.types.monsters.Monster)nms;
 					mons.onMonsterAttack((Player) receiver);
 				}
 			}

@@ -7,7 +7,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.MeleeEntityZombie;
+import net.dungeonrealms.entities.types.monsters.base.DRZombie;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
@@ -15,7 +15,7 @@ import net.minecraft.server.v1_8_R3.World;
 /**
  * Created by Chase on Sep 21, 2015
  */
-public class EntityBandit extends MeleeEntityZombie{
+public class EntityBandit extends DRZombie{
     public EntityBandit(World world) {
         super(world);
     }

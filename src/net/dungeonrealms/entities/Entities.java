@@ -13,10 +13,6 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityTargetEvent;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.entities.types.RangedEntityBlaze;
-import net.dungeonrealms.entities.types.monsters.BasicEntityMagma;
-import net.dungeonrealms.entities.types.monsters.BasicEntityPigman;
-import net.dungeonrealms.entities.types.monsters.BasicEntitySilverfish;
 import net.dungeonrealms.entities.types.monsters.BasicEntitySkeleton;
 import net.dungeonrealms.entities.types.monsters.BasicMageMonster;
 import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
@@ -25,8 +21,12 @@ import net.dungeonrealms.entities.types.monsters.EntityFireImp;
 import net.dungeonrealms.entities.types.monsters.EntityGolem;
 import net.dungeonrealms.entities.types.monsters.EntityPirate;
 import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
-import net.dungeonrealms.entities.types.monsters.EntitySpider;
-import net.dungeonrealms.entities.types.monsters.EntityWitherSkeleton;
+import net.dungeonrealms.entities.types.monsters.base.DRBlaze;
+import net.dungeonrealms.entities.types.monsters.base.DRMagma;
+import net.dungeonrealms.entities.types.monsters.base.DRPigman;
+import net.dungeonrealms.entities.types.monsters.base.DRSilverfish;
+import net.dungeonrealms.entities.types.monsters.base.DRSpider;
+import net.dungeonrealms.entities.types.monsters.base.DRWitherSkeleton;
 import net.dungeonrealms.entities.types.monsters.boss.Burick;
 import net.dungeonrealms.entities.types.monsters.boss.InfernalAbyss;
 import net.dungeonrealms.entities.types.monsters.boss.InfernalGhast;
@@ -103,15 +103,15 @@ public class Entities implements GenericMechanic{
         nmsUtils.registerEntity("Fire Imp", 54, EntityZombie.class, EntityFireImp.class);
         nmsUtils.registerEntity("Bandit", 51, EntitySkeleton.class, EntityBandit.class);
         nmsUtils.registerEntity("Enchanted Golem", 99, net.minecraft.server.v1_8_R3.EntityGolem.class, EntityGolem.class);
-        nmsUtils.registerEntity("DR Spider", 59, net.minecraft.server.v1_8_R3.EntitySpider.class, EntitySpider.class);
+        nmsUtils.registerEntity("DR Spider", 59, net.minecraft.server.v1_8_R3.EntitySpider.class, DRSpider.class);
         nmsUtils.registerEntity("CustomEntity", 54, EntityZombie.class, BasicMeleeMonster.class);
         nmsUtils.registerEntity("BasicMage", 54, EntityZombie.class, BasicMageMonster.class);
-        nmsUtils.registerEntity("DRWither", 51, EntitySkeleton.class, EntityWitherSkeleton.class);
-        nmsUtils.registerEntity("DRBlaze", 61, EntityBlaze.class, RangedEntityBlaze.class);
+        nmsUtils.registerEntity("DRWither", 51, EntitySkeleton.class, DRWitherSkeleton.class);
+        nmsUtils.registerEntity("DRBlaze", 61, EntityBlaze.class, DRBlaze.class);
         nmsUtils.registerEntity("DRSkeleton", 51, EntitySkeleton.class, BasicEntitySkeleton.class);
-        nmsUtils.registerEntity("DRMagma", 62, EntityMagmaCube.class, BasicEntityMagma.class);
-        nmsUtils.registerEntity("DRPigman", 57, EntityPigZombie.class, BasicEntityPigman.class);
-        nmsUtils.registerEntity("DRSilverfish", 60, EntitySilverfish.class, BasicEntitySilverfish.class);
+        nmsUtils.registerEntity("DRMagma", 62, EntityMagmaCube.class, DRMagma.class);
+        nmsUtils.registerEntity("DRPigman", 57, EntityPigZombie.class, DRPigman.class);
+        nmsUtils.registerEntity("DRSilverfish", 60, EntitySilverfish.class, DRSilverfish.class);
         
         //Tier 1 Boss
         nmsUtils.registerEntity("Mayel", 51, EntitySkeleton.class, Mayel.class);
@@ -161,9 +161,9 @@ public class Entities implements GenericMechanic{
                         tryToReturnMobToBase(((CraftEntity) entity).getHandle());
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
                         int level = entity.getMetadata("level").get(0).asInt();
-                        String name = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ((net.dungeonrealms.entities.Monster)entity).getEnum().name;
+                        String name = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ((net.dungeonrealms.entities.types.monsters.Monster)entity).getEnum().name;
                       	if(!entity.isDead()){	
-                      		net.dungeonrealms.entities.Monster enumMonster = (net.dungeonrealms.entities.Monster)entity;
+                      		net.dungeonrealms.entities.types.monsters.Monster enumMonster = (net.dungeonrealms.entities.types.monsters.Monster)entity;
                             entity.getPassenger().setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
                     				+ ChatColor.RESET + enumMonster.getEnum().getPrefix() + " " + name + " " + enumMonster.getEnum().getSuffix() +" "+ entity.getMetadata("currentHP").get(0).asInt() +ChatColor.RED.toString()+ "❤");
                       	}

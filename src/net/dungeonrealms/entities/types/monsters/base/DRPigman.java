@@ -1,4 +1,4 @@
-package net.dungeonrealms.entities.types.monsters;
+package net.dungeonrealms.entities.types.monsters.base;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -7,34 +7,57 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.Monster;
+import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.EntityHuman;
-import net.minecraft.server.v1_8_R3.EntitySilverfish;
-import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
-import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
+import net.minecraft.server.v1_8_R3.EntityPigZombie;
+import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
 
 /**
- * Created by Chase on Oct 21, 2015
+ * Created by Chase on Oct 18, 2015
  */
-public class BasicEntitySilverfish extends EntitySilverfish implements Monster{
+public class DRPigman extends EntityPigZombie implements Monster {
 
+	/**
+	 * @param name
+	 */
+	public DRPigman(World name) {
+		super(name);
+	}
+	
 	public EnumMonster enumMonster;
 
-	public BasicEntitySilverfish(World world, EnumMonster type, int tier) {
+	/**
+	 * @param world
+	 * @param daemon
+	 * @param tier
+	 */
+	public DRPigman(World world, EnumMonster mon, int tier) {
 		super(world);
-        this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
-        this.goalSelector.a(5, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.0D, false));
-		this.enumMonster = type;
+		enumMonster = mon;
+
 		setArmor(tier);
+        String customName = enumMonster.getPrefix() + " " + enumMonster.name + " " + enumMonster.getSuffix() + " ";
+        this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
+	}
+
+	@Override
+	protected Item getLoot() {
+		return null;
+	}
+
+	@Override
+	protected void getRareDrop() {
+
 	}
 
 	protected void setArmor(int tier) {
@@ -70,6 +93,21 @@ public class BasicEntitySilverfish extends EntitySilverfish implements Monster{
 	}
 
 	@Override
+	protected String z() {
+		return "";
+	}
+
+	@Override
+	protected String bo() {
+		return "game.player.hurt";
+	}
+
+	@Override
+	protected String bp() {
+		return "mob.ghast.scream";
+	}
+
+	@Override
 	public void onMonsterAttack(Player p) {
 		// TODO Auto-generated method stub
 		
@@ -85,6 +123,6 @@ public class BasicEntitySilverfish extends EntitySilverfish implements Monster{
 
 	@Override
 	public EnumMonster getEnum() {
-		return enumMonster;
+		return this.enumMonster;
 	}
 }
