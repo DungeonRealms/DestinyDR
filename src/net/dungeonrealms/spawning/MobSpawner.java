@@ -1,5 +1,6 @@
 package net.dungeonrealms.spawning;
 
+import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -13,7 +14,6 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import net.dungeonrealms.API;
@@ -21,8 +21,6 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.items.armor.ArmorGenerator;
-import net.dungeonrealms.items.armor.Armor.ArmorModifier;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.DamageSource;
@@ -39,6 +37,7 @@ public class MobSpawner {
     public EntityArmorStand armorstand;
     public int tier;
     public List<Entity> SPAWNED_MONSTERS = new CopyOnWriteArrayList<>();
+    public HashMap<org.bukkit.entity.Entity, org.bukkit.entity.Entity> NAMETAGS = new HashMap<org.bukkit.entity.Entity, org.bukkit.entity.Entity>();
     public boolean isElite = false;
     public int spawnAmount;
     public int id;
@@ -151,6 +150,7 @@ public class MobSpawner {
                     entity.getBukkitEntity().setPassenger(stand);
              		EntityStats.setMonsterElite(entity, level, tier);
              		toSpawn = true;
+               		NAMETAGS.put(entity.getBukkitEntity(), stand);
              		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
              			Utils.log.info("Elite spawned");
              			entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
@@ -198,6 +198,7 @@ public class MobSpawner {
                     LivingEntity ent = stand;
                     ent.setRemoveWhenFarAway(false);
                     entity.getBukkitEntity().setPassenger(stand);
+               		NAMETAGS.put(entity.getBukkitEntity(), stand);
                     toSpawn = true;
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
                		entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
@@ -222,7 +223,11 @@ public class MobSpawner {
                     monster.getBukkitEntity().remove();
                     armorstand.getWorld().kill(monster);
                     SPAWNED_MONSTERS.remove(monster);
-                }
+                	if(NAMETAGS.containsKey(monster)){
+                    	NAMETAGS.get(monster).remove();
+                        NAMETAGS.remove(monster);
+                    	}
+                	}
             }
     	}
     }
@@ -239,6 +244,10 @@ public class MobSpawner {
             spawnedMonster.damageEntity(DamageSource.GENERIC, 20f);
             spawnedMonster.dead = true;
             armorstand.getWorld().kill(spawnedMonster);
+        	if(NAMETAGS.containsKey(spawnedMonster)){
+        	NAMETAGS.get(spawnedMonster).remove();
+            NAMETAGS.remove(spawnedMonster);
+        	}
         }
     }
     
@@ -281,6 +290,19 @@ public class MobSpawner {
 			}, 0, 80L);
 		}else	{
 			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::kill, 5L);
+		}
+		
+		Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), ()-> checkNameTags(),0, 5*20);
+	}
+
+	/**
+	 * @return
+	 */
+	private void checkNameTags() {
+		for(org.bukkit.entity.Entity ent : NAMETAGS.keySet()){
+			if(NAMETAGS.get(ent).isDead() && !toSpawn)
+				NAMETAGS.get(ent).remove();
+	            NAMETAGS.remove(ent);
 		}
 	}
 }
