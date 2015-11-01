@@ -462,9 +462,12 @@ public class HealthHandler implements GenericMechanic{
         }
         player.setHealth(convHPToDisplay);
         LivingEntity leAttacker = null;
+        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+            player.sendMessage(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.RED + " -> " + ChatColor.GREEN + " [" + newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+        }
         if (API.isPlayer(damager)) {
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-                player.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + ChatColor.BOLD + "[" + newHP + "]");
+            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, damager.getUniqueId()).toString())) {
+                damager.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + "[" + newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
             }
             return;
         }
@@ -549,7 +552,11 @@ public class HealthHandler implements GenericMechanic{
 
         if (API.isPlayer(attacker)) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
-                attacker.sendMessage(ChatColor.RED + "" + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + entity.getPassenger().getCustomName() + ChatColor.BOLD + " [" + newHP + "]");
+                if (entity.getPassenger() != null) {
+                    attacker.sendMessage(ChatColor.RED + "" + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + entity.getPassenger().getCustomName() + ChatColor.BOLD + " [" + newHP + "]");
+                } else {
+                    attacker.sendMessage(ChatColor.RED + "" + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + "MOB" + ChatColor.BOLD + " [" + newHP + "]");
+                }
             }
         }
         int level = entity.getMetadata("level").get(0).asInt();

@@ -41,13 +41,16 @@ public class NPCMenus {
         nmsStackGold.setTag(tagGold);
 
         inv.setItem(0, editItem(CraftItemStack.asBukkitCopy(nmsStackT1), (short) 0, ChatColor.GREEN + "Old Horse Mount", new String[]{
-                ChatColor.RED + "Speed 120%"}));
+                ChatColor.RED + "Speed 120%",
+                ChatColor.AQUA + "5000 Gems"}));
         inv.setItem(1, editItem(CraftItemStack.asBukkitCopy(nmsStackDiamond), (short) 0, ChatColor.GREEN + "Traveler's Horse Mount", new String[]{
                 ChatColor.RED + "Speed 140%",
-                ChatColor.RED + "Jump 110%"}));
+                ChatColor.RED + "Jump 110%",
+                ChatColor.AQUA + "12500 Gems"}));
         inv.setItem(2, editItem(CraftItemStack.asBukkitCopy(nmsStackGold), (short) 0, ChatColor.GREEN + "Knight's Horse Mount", new String[]{
                 ChatColor.RED + "Speed 160%",
-                ChatColor.RED + "Jump 110%"}));
+                ChatColor.RED + "Jump 110%",
+                ChatColor.AQUA + "25000 Gems"}));
         //TODO: Add Mule when Chase finishes it.
 
         player.openInventory(inv);
@@ -191,21 +194,21 @@ public class NPCMenus {
         nmsStackDeadpeaksMountain.setTag(tagDeadpeaksMountain);
 
         inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackCyrennica), (short) 0, ChatColor.WHITE + "Cyrennica", new String[]{
-                ChatColor.GREEN + "1000 Gems"}));
+                ChatColor.AQUA + "1000 Gems"}));
         inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackHarrisons), (short) 0, ChatColor.WHITE + "Harrison Fields", new String[]{
-                ChatColor.GREEN + "1500 Gems"}));
+                ChatColor.AQUA + "1500 Gems"}));
         inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackGloomyHollows), (short) 0, ChatColor.WHITE + "Gloomy Hollows", new String[]{
-                ChatColor.GREEN + "3500 Gems"}));
+                ChatColor.AQUA + "3500 Gems"}));
         inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackDarkOak), (short) 0, ChatColor.WHITE + "Dark Oak Tavern", new String[]{
-                ChatColor.GREEN + "3500 Gems"}));
+                ChatColor.AQUA + "3500 Gems"}));
         inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackTripoli), (short) 0, ChatColor.WHITE + "Tripoli", new String[]{
-                ChatColor.GREEN + "7500 Gems"}));
+                ChatColor.AQUA + "7500 Gems"}));
         inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackTrollsbaneTavern), (short) 0, ChatColor.WHITE + "Trollsbane Tavern", new String[]{
-                ChatColor.GREEN + "7500 Gems"}));
+                ChatColor.AQUA + "7500 Gems"}));
         inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackCrestguardKeep), (short) 0, ChatColor.WHITE + "Crestguard Keep", new String[]{
-                ChatColor.GREEN + "15000 Gems"}));
+                ChatColor.AQUA + "15000 Gems"}));
         inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStackDeadpeaksMountain), (short) 0, ChatColor.WHITE + "Deadpeaks Mountain", new String[]{
-                ChatColor.GREEN + "25000 Gems"}));
+                ChatColor.AQUA + "25000 Gems"}));
 
         player.openInventory(inv);
     }
