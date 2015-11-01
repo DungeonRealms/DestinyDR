@@ -12,6 +12,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -58,9 +59,15 @@ public class NPCMenus {
 
     public static void openProfessionPurchaseMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 9, "Profession Vendor");
-
-        inv.addItem(ItemManager.createPickaxe(1));
-        inv.addItem(ItemManager.createFishingPole(1));
+        ItemStack pickAxe = ItemManager.createPickaxe(1);
+        ItemStack fishingRod = ItemManager.createFishingPole(1);
+    	ItemMeta meta = pickAxe.getItemMeta();
+		String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
+    	editItem(pickAxe, (short) 0, meta.getDisplayName(), new String[]{expBar, ChatColor.AQUA + "100 Gems"});
+    	meta = fishingRod.getItemMeta();
+    	editItem(fishingRod, (short) 0, meta.getDisplayName(), new String[]{expBar, ChatColor.AQUA + "100 Gems"});
+        inv.addItem(pickAxe);
+        inv.addItem(fishingRod);
 
         player.openInventory(inv);
     }

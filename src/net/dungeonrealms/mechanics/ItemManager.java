@@ -16,6 +16,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -260,5 +261,28 @@ public class ItemManager {
         tag.set("usage", new NBTTagString("profile"));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
+    }
+    
+    /**
+     * Remove the cost of gems from itemstacks lore.
+     * 
+     * @param stack
+     */
+    public static ItemStack removePrice(ItemStack stack){
+    	ItemStack item = stack.clone();
+    	ItemMeta meta = stack.getItemMeta();
+    	if(meta != null && meta.hasLore()){
+    		List<String> lore = meta.getLore();
+    		for(int i =0; i < lore.size(); i++){
+    			String line = lore.get(i);
+    			if(line.contains("Price") || line.contains("Gems")){
+    				lore.remove(i);
+    				break;
+    			}
+    		}
+    		meta.setLore(lore);
+    		item.setItemMeta(meta);
+    	}
+    	return item;
     }
 }
