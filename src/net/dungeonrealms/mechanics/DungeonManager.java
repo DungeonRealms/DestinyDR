@@ -55,35 +55,33 @@ public class DungeonManager implements GenericMechanic{
         } catch (IOException e) {
             e.printStackTrace();
         }
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            Dungeons.stream().forEach(dungeonObject -> {
-                int time = dungeonObject.getTime();
-                if (dungeonObject.getPlayerList().size() <= 0 || Bukkit.getWorld(dungeonObject.worldName).getPlayers().size() <= 0) {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeonObject -> {
+            int time = dungeonObject.getTime();
+            if (dungeonObject.getPlayerList().size() <= 0 || Bukkit.getWorld(dungeonObject.worldName).getPlayers().size() <= 0) {
+                removeInstance(dungeonObject);
+                return;
+            }
+            switch (time) {
+                //46 minutes
+                case 2760:
                     removeInstance(dungeonObject);
-                    return;
-                }
-                switch (time) {
-                    //46 minutes
-                    case 2760:
-                        removeInstance(dungeonObject);
-                        break;
-                    //45 minutes
-                    case 2700:
-                        dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance has reached it's max threshold, it will now terminate in (1) minute."));
-                        break;
-                    //35 minutes
-                    case 2100:
-                        dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance has reached (35) minute marker!"));
-                        break;
-                    //15 minutes
-                    case 900:
-                        dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance has reached (15) minute marker!"));
-                        break;
-                }
-                dungeonObject.modifyTime(1);
-                updateDungeonBoard(dungeonObject);
-            });
-        }, 0, 20l);
+                    break;
+                //45 minutes
+                case 2700:
+                    dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance has reached it's max threshold, it will now terminate in (1) minute."));
+                    break;
+                //35 minutes
+                case 2100:
+                    dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance has reached (35) minute marker!"));
+                    break;
+                //15 minutes
+                case 900:
+                    dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance has reached (15) minute marker!"));
+                    break;
+            }
+            dungeonObject.modifyTime(1);
+            updateDungeonBoard(dungeonObject);
+        }), 0, 20l);
         Utils.log.info("[DUNGEONS] Finished Loading Dungeon Mechanics ... OKAY");
     }
 
@@ -99,9 +97,7 @@ public class DungeonManager implements GenericMechanic{
      * @since 1.0
      */
     public void updateDungeonBoard(DungeonObject dungeonObject) {
-        dungeonObject.getPlayerList().stream().forEach(player -> {
-            BountifulAPI.sendActionBar(player, ChatColor.AQUA + "Time: " + ChatColor.WHITE + ChatColor.GOLD + String.valueOf(dungeonObject.getTime() / 60) + "/45" + " " + ChatColor.AQUA + "Boss: " + ChatColor.GOLD + dungeonObject.getType().getBossName());
-        });
+        dungeonObject.getPlayerList().stream().forEach(player -> BountifulAPI.sendActionBar(player, ChatColor.AQUA + "Time: " + ChatColor.WHITE + ChatColor.GOLD + String.valueOf(dungeonObject.getTime() / 60) + "/45" + " " + ChatColor.AQUA + "Boss: " + ChatColor.GOLD + dungeonObject.getType().getBossName()));
     }
 
     /**

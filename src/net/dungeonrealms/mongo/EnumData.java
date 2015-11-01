@@ -46,6 +46,7 @@ public enum EnumData {
     TOGGLE_RECEIVE_MESSAGE,
     TOGGLE_PVP,
     TOGGLE_DUEL,
+    TOGGLE_CHAOTIC_PREVENTION,
 
 
     MAILBOX,

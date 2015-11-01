@@ -60,9 +60,7 @@ public class NetworkAPI implements PluginMessageListener {
                 break;
             case "player":
                 if (in.readUTF().equals("update")) {
-                    Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> {
-                        DatabaseAPI.getInstance().requestPlayer(p.getUniqueId());
-                    });
+                    Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> DatabaseAPI.getInstance().requestPlayer(p.getUniqueId()));
                 }
                 break;
             case "guild":
@@ -132,9 +130,7 @@ public class NetworkAPI implements PluginMessageListener {
         members.add((String) DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, guildName));
         members.add((String) DatabaseAPI.getInstance().getData(EnumGuildData.CO_OWNER, guildName));
 
-        members.stream().filter(s -> s != null && !s.equals("") && API.isOnline(UUID.fromString(s))).forEach(s -> {
-            Bukkit.getPlayer(UUID.fromString(s)).sendMessage("[" + ChatColor.GREEN.toString() + ChatColor.BOLD + guildName + ChatColor.RESET + "]" + " " + message);
-        });
+        members.stream().filter(s -> s != null && !s.equals("") && API.isOnline(UUID.fromString(s))).forEach(s -> Bukkit.getPlayer(UUID.fromString(s)).sendMessage("[" + ChatColor.GREEN.toString() + ChatColor.BOLD + guildName + ChatColor.RESET + "]" + " " + message));
     }
 
 }

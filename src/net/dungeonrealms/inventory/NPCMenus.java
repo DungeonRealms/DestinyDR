@@ -12,7 +12,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -61,13 +60,9 @@ public class NPCMenus {
         Inventory inv = Bukkit.createInventory(null, 9, "Profession Vendor");
         ItemStack pickAxe = ItemManager.createPickaxe(1);
         ItemStack fishingRod = ItemManager.createFishingPole(1);
-    	ItemMeta meta = pickAxe.getItemMeta();
 		String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
-    	editItem(pickAxe, (short) 0, meta.getDisplayName(), new String[]{expBar, ChatColor.AQUA + "100 Gems"});
-    	meta = fishingRod.getItemMeta();
-    	editItem(fishingRod, (short) 0, meta.getDisplayName(), new String[]{expBar, ChatColor.AQUA + "100 Gems"});
-        inv.addItem(pickAxe);
-        inv.addItem(fishingRod);
+    	inv.addItem(editItem(pickAxe, (short) 0, pickAxe.getItemMeta().getDisplayName(), new String[]{expBar, ChatColor.AQUA + "100 Gems"}));
+    	inv.addItem(editItem(fishingRod, (short) 0, fishingRod.getItemMeta().getDisplayName(), new String[]{expBar, ChatColor.AQUA + "100 Gems"}));
 
         player.openInventory(inv);
     }

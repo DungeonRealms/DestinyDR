@@ -44,16 +44,14 @@ public class AchievementManager implements GenericMechanic, Listener {
          *
          * @since 1.0
          */
-        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            Bukkit.getOnlinePlayers().stream().forEach(player -> {
-                String region = API.getRegionName(player.getLocation());
-                if (REGION_TRACKER.containsKey(player.getUniqueId()))
-                    if (REGION_TRACKER.get(player.getUniqueId()).equalsIgnoreCase(region))
-                        return;
-                Bukkit.getServer().getPluginManager().callEvent(new PlayerEnterRegionEvent(player, region));
-                REGION_TRACKER.put(player.getUniqueId(), region);
-            });
-        }, 0, 20 * 4l);
+        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Bukkit.getOnlinePlayers().stream().forEach(player -> {
+            String region = API.getRegionName(player.getLocation());
+            if (REGION_TRACKER.containsKey(player.getUniqueId()))
+                if (REGION_TRACKER.get(player.getUniqueId()).equalsIgnoreCase(region))
+                    return;
+            Bukkit.getServer().getPluginManager().callEvent(new PlayerEnterRegionEvent(player, region));
+            REGION_TRACKER.put(player.getUniqueId(), region);
+        }), 0, 20 * 4l);
     }
 
     @Override
@@ -70,9 +68,7 @@ public class AchievementManager implements GenericMechanic, Listener {
     public void handleLogin(Player player) {
         if (!player.getUniqueId().toString().equals("d1f95fe1-335f-433c-9f78-f5649c157581")) return;
 
-        Bukkit.getOnlinePlayers().stream().forEach(player1 -> {
-            Achievements.getInstance().giveAchievement(player1.getUniqueId(), Achievements.EnumAchievements.PLAY_WITH_XFINITYPRO);
-        });
+        Bukkit.getOnlinePlayers().stream().forEach(player1 -> Achievements.getInstance().giveAchievement(player1.getUniqueId(), Achievements.EnumAchievements.PLAY_WITH_XFINITYPRO));
 
     }
 

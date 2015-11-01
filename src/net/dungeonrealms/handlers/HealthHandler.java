@@ -427,6 +427,14 @@ public class HealthHandler implements GenericMechanic{
             newHP = 1;
         }
 
+        if (newHP <= 0 && API.isPlayer(damager) && Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, damager.getUniqueId()).toString())) {
+            if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.LAWFUL.name())) {
+                newHP = 1;
+                damager.sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + player.getName() + "!");
+                player.sendMessage(ChatColor.YELLOW + damager.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
+            }
+        }
+
         if (newHP <= 0) {
             if (player.hasMetadata("last_death_time")) {
                 if (player.getMetadata("last_death_time").get(0).asLong() > 100) {

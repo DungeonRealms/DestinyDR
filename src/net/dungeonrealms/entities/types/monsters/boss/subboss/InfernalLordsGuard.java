@@ -54,7 +54,7 @@ public class InfernalLordsGuard extends EntitySkeleton implements Boss {
 		this.goalSelector.a(1, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
 		this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
 		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true));
-		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<EntityHuman>(this, EntityHuman.class, true));
+		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<>(this, EntityHuman.class, true));
 		this.setSkeletonType(1);
 		this.fireProof = true;
 		this.setOnFire(Integer.MAX_VALUE);
