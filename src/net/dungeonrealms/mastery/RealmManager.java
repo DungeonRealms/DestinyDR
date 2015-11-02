@@ -2,7 +2,10 @@ package net.dungeonrealms.mastery;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.combat.CombatLog;
+import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.teleportation.Teleportation;
@@ -82,7 +85,7 @@ public class RealmManager implements GenericMechanic {
         Utils.log.info("DungeonRealms Finished Registering FTP() ... FINISHED!");
     }
 
-    private class RealmObject {
+    public class RealmObject {
 
         private UUID realmOwner;
         private Location portalLocation;
@@ -470,11 +473,60 @@ public class RealmManager implements GenericMechanic {
         }
     }
 
-    public void openPlayerRealm(Player player, Location clickLocation) {
+    /**
+     * Opens a players realm and creates
+     * the Portal Blocks.
+     *
+     * @since 1.0
+     */
+    public void tryToOpenRealm(Player player, Location clickLocation) {
         if (getPlayerRealmPlayer(player) == null) {
+            if (CombatLog.isInCombat(player)) {
+                player.sendMessage("Cannot open Realm while in Combat!");
+                return;
+            }
+            if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+                player.sendMessage("You can only open a realm portal in the main world!");
+                return;
+            }
+            final Location portalLocation = clickLocation.clone();
+            if (!(portalLocation.clone().add(0, 1, 0).getBlock().getType() == Material.AIR) || !(portalLocation.clone().add(0, 1, 0).getBlock().getType() == Material.AIR)
+                    || clickLocation.clone().getBlock().getType() == Material.CHEST || clickLocation.clone().getBlock().getType() == Material.ENDER_CHEST
+                    || clickLocation.clone().getBlock().getType() == Material.PORTAL || clickLocation.clone().getBlock().getType() == Material.ANVIL) {
+                player.sendMessage("You cannot open a realm portal here!");
+                return;
+            }
+            if (LootManager.checkLocationForLootSpawner(clickLocation.clone())) {
+                player.sendMessage("You cannot place a realm portal this close to a Loot Spawning location");
+                return;
+            }
+            if (API.isMaterialNearby(clickLocation.clone().getBlock(), 3, Material.LADDER)) {
+                player.sendMessage("You cannot place a realm portal here!");
+                return;
+            }
+            if (API.isMaterialNearby(clickLocation.clone().getBlock(), 10, Material.ENDER_CHEST)) {
+                player.sendMessage("You cannot place a realm portal here!");
+                return;
+            }
+            if (isThereARealmPortalNearby(clickLocation.clone().add(0, 1, 0), 6) || API.isMaterialNearby(clickLocation.clone().getBlock(), 6, Material.PORTAL)) {
+                player.sendMessage("You cannot place a portal so close to another! (Min 3 Blocks)");
+                return;
+            }
+            for (Player player1 : Bukkit.getWorlds().get(0).getPlayers()) {
+                if (player1.getName().equals(player.getName())) {
+                    continue;
+                }
+                if (!player1.getWorld().equals(player.getWorld())) {
+                    continue;
+                }
+                if (player1.getLocation().distanceSquared(player.getLocation()) <= 2) {
+                    player.sendMessage("You cannot place your realm portal near another player");
+                    return;
+                }
+            }
+
             downloadRealm(player.getUniqueId());
 
-            Location portalLocation = clickLocation.clone();
             portalLocation.add(0, 1, 0).getBlock().setType(Material.PORTAL);
             portalLocation.add(0, 1, 0).getBlock().setType(Material.PORTAL);
             Hologram realmHologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), portalLocation.add(0.5, 1.5, 0.5));
@@ -487,10 +539,18 @@ public class RealmManager implements GenericMechanic {
 
             loadInWorld(player.getUniqueId().toString(), player);
         } else {
-            player.sendMessage(ChatColor.RED + "For some reason you already have a realm?!?");
+            player.sendMessage(ChatColor.RED + "You already have a Realm Portal in the world, please destroy it!");
         }
     }
 
+    /**
+     * Gets a Realm Spawn Location from
+     * the location of a Portal in the
+     * main world.
+     *
+     * @return Location (The Location)
+     * @since 1.0
+     */
     public Location getRealmLocation(Location location, Player player) {
         if (!CURRENT_REALMS.isEmpty()) {
             for (RealmObject realmObject : CURRENT_REALMS) {
@@ -516,6 +576,14 @@ public class RealmManager implements GenericMechanic {
         return null;
     }
 
+    /**
+     * Gets a Realm Portal location from
+     * a player object that is currently
+     * in THE realm.
+     *
+     * @return Location (The Location)
+     * @since 1.0
+     */
     public Location getPortalLocationFromRealmWorld(Player player) {
         for (RealmObject realmObject : CURRENT_REALMS) {
             if (player.getWorld().getName().equalsIgnoreCase(realmObject.getRealmOwner().toString())) {
@@ -526,7 +594,48 @@ public class RealmManager implements GenericMechanic {
         return Teleportation.Cyrennica;
     }
 
+    /**
+     * Gets a Realm Object from
+     * the location of a Portal in the
+     * main world.
+     *
+     * @return Location (The Location)
+     * @since 1.0
+     */
+    public RealmObject getRealmViaLocation(Location location) {
+        if (!CURRENT_REALMS.isEmpty()) {
+            for (RealmObject realmObject : CURRENT_REALMS) {
+                if (location.distanceSquared(realmObject.getLocation()) <= 4) {
+                    return realmObject;
+                }
+            }
+        } else {
+            return null;
+        }
+        return null;
+    }
+
+    /**
+     * Removes a realm via its portal location.
+     *
+     * @since 1.0
+     */
     public void removeRealmViaPortalLocation(Location location) {
         CURRENT_REALMS.stream().filter(realmObject -> location.distanceSquared(realmObject.getLocation()) <= 4).forEach(this::removeRealm);
+    }
+
+    /**
+     * Checks if there is a Realm Portal nearby.
+     *
+     * @since 1.0
+     */
+    public boolean isThereARealmPortalNearby(Location location, int radius) {
+        double rad = Math.pow(radius, 2);
+        for (RealmObject realmObject : CURRENT_REALMS) {
+            if (realmObject.getLocation().distanceSquared(location.clone()) <= rad) {
+                return true;
+            }
+        }
+        return false;
     }
 }

@@ -173,7 +173,7 @@ public class BlockListener implements Listener {
         Block block = e.getClickedBlock();
         if (block == null) return;
         if (block.getType() != Material.CHEST) return;
-        for (LootSpawner loot : LootManager.spawners) {
+        for (LootSpawner loot : LootManager.LOOT_SPAWNERS) {
             if (loot.location.getBlockX() == block.getX() && loot.location.getBlockY() == block.getY() && loot.location.getBlockZ() == block.getLocation().getZ()) {
                 Collection<Entity> list = API.getNearbyMonsters(loot.location, 10);
                 if (list.isEmpty()) {
@@ -251,7 +251,18 @@ public class BlockListener implements Listener {
                         return;
                     }*/
                     //ShopMechanics.setupShop(event.getClickedBlock(), event.getPlayer().getUniqueId());
-                    RealmManager.getInstance().openPlayerRealm(event.getPlayer(), event.getClickedBlock().getLocation());
+                    RealmManager.getInstance().tryToOpenRealm(event.getPlayer(), event.getClickedBlock().getLocation());
+                }
+            } else {
+                if (event.getClickedBlock().getType() == Material.PORTAL) {
+                    event.getPlayer().sendMessage("PORTAL NEARBY!");
+                    if (RealmManager.getInstance().getPlayerRealmPlayer(event.getPlayer()) != null) {
+                        event.getPlayer().sendMessage("YOU HAVE A PORTAL TOO!");
+                        if (RealmManager.getInstance().getRealmViaLocation(event.getClickedBlock().getLocation()).getRealmOwner().equals(event.getPlayer().getUniqueId())) {
+                            event.getPlayer().sendMessage("YOUR PORTAL!");
+                            RealmManager.getInstance().removeRealm(RealmManager.getInstance().getRealmViaLocation(event.getClickedBlock().getLocation()));
+                        }
+                    }
                 }
             }
         }
@@ -273,6 +284,13 @@ public class BlockListener implements Listener {
         }
     }
 
+    /**
+     * Cancels Portals changing to Air if
+     * they are not surrounded by obsidian.
+     *
+     * @param event
+     * @since 1.0
+     */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onBlockPhysicsChange(BlockPhysicsEvent event) {
         if (event.getBlock().getType() == Material.PORTAL && event.getChangedType() == Material.AIR) {
@@ -280,6 +298,15 @@ public class BlockListener implements Listener {
         }
     }
 
+    /**
+     * Handles a player entering a portal,
+     * teleports them to wherever they should
+     * be, or cancels it if they're in combat
+     * etc.
+     *
+     * @param event
+     * @since 1.0
+     */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerEnterPortal(PlayerPortalEvent event) {
         if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) {

@@ -34,6 +34,9 @@ import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -407,4 +410,38 @@ public class API {
         return location.getWorld().getEntities().stream().filter(mons -> mons.getLocation().distance(location) <= radius && mons.hasMetadata("type") && mons.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")).collect(Collectors.toList());
     }
 
+    /**
+     * Checks if there is a certain material nearby.
+     *
+     * @param block
+     * @param maxradius
+     * @param materialToSearchFor
+     * @return Boolean (If the material is nearby).
+     * @since 1.0
+     */
+    public static boolean isMaterialNearby(Block block, int maxradius, Material materialToSearchFor) {
+        BlockFace[] faces = { BlockFace.UP, BlockFace.NORTH, BlockFace.EAST };
+        BlockFace[][] orth = { { BlockFace.NORTH, BlockFace.EAST }, { BlockFace.UP, BlockFace.EAST }, { BlockFace.NORTH, BlockFace.UP } };
+        for (int r = 0; r <= maxradius; r++) {
+            for (int s = 0; s < 6; s++) {
+                BlockFace f = faces[s % 3];
+                BlockFace[] o = orth[s % 3];
+                if (s >= 3) {
+                    f = f.getOppositeFace();
+                }
+                if (!(block.getRelative(f, r) == null)) {
+                    Block c = block.getRelative(f, r);
+                    for (int x = -r; x <= r; x++) {
+                        for (int y = -r; y <= r; y++) {
+                            Block a = c.getRelative(o[0], x).getRelative(o[1], y);
+                            if (a.getType() == materialToSearchFor) {
+                                return true;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
 }
