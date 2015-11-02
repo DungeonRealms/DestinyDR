@@ -159,7 +159,7 @@ public class KarmaHandler implements GenericMechanic {
      * @since 1.0
      */
     public void handleLogoutEvents(Player player) {
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.alignment", getPlayerRawAlignment(player), false);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, getPlayerRawAlignment(player), false);
     }
 
     /**

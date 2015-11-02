@@ -243,16 +243,16 @@ public class API {
             if (inv != null) {
                 String serializedInv = ItemSerialization.toString(inv);
                 BankMechanics.storage.remove(uuid);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.storage", serializedInv, false);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, false);
             }
         }
         PlayerInventory inv = player.getInventory();
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "inventory.player", ItemSerialization.toString(inv), false);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, ItemSerialization.toString(inv), false);
         String locationAsString = "-367,84,390,0,0"; //Cyrennica
         if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
             locationAsString = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + "," + player.getLocation().getYaw() + "," + player.getLocation().getPitch();
         }
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "info.currentLocation", locationAsString, false);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, false);
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
         KarmaHandler.getInstance().handleLogoutEvents(player);

@@ -14,6 +14,7 @@ import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumGuildData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.network.NetworkAPI;
 import net.dungeonrealms.party.Party;
@@ -55,12 +56,12 @@ public class CommandAccept extends BasicCommand {
 
                     String guildName = invitation.split(",")[0];
 
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, "notices.guildInvites", guildName + "," + invitation.split(",")[1], true);
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.guild", guildName, true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.GUILD_INVITES, guildName + "," + invitation.split(",")[1], true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, guildName, true);
 
 
-                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "invitations", player.getUniqueId().toString(), true);
-                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "info.members", player.getUniqueId().toString(), true);
+                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.INVITATIONS, player.getUniqueId().toString(), true);
+                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, EnumGuildData.MEMBERS, player.getUniqueId().toString(), true);
 
 
                     NetworkAPI.getInstance().sendNetworkMessage("guild", "update", guildName);

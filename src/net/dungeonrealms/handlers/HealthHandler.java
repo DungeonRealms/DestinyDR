@@ -85,7 +85,7 @@ public class HealthHandler implements GenericMechanic{
      * @since 1.0
      */
     public void handleLogoutEvents(Player player) {
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.health", getPlayerMaxHPLive(player), false);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, getPlayerMaxHPLive(player), false);
         for (PotionEffect potionEffect : player.getActivePotionEffects()) {
             player.removePotionEffect(potionEffect.getType());
         }

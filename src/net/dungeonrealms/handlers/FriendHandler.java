@@ -51,14 +51,14 @@ public class FriendHandler {
             case RIGHT:
                 //Remove Pending request
                 player.closeInventory();
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, "info.friends", friend.toString(), true, new Callback<UpdateResult>(UpdateResult.class) {
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIENDS, friend.toString(), true, new Callback<UpdateResult>(UpdateResult.class) {
                     @Override
                     public void callback(Throwable failCause, UpdateResult result) {
                         sendFriendMessage(player, ChatColor.GREEN + "You have deleted " + itemStack.getItemMeta().getDisplayName().split("'")[0] + " from your friends list!");
                         PlayerMenus.openFriendInventory(player);
                     }
                 });
-                DatabaseAPI.getInstance().update(friend, EnumOperators.$PULL, "info.friends", player.toString(), true);
+                DatabaseAPI.getInstance().update(friend, EnumOperators.$PULL, EnumData.FRIENDS, player.toString(), true);
                 break;
         }
     }
@@ -81,7 +81,7 @@ public class FriendHandler {
             case RIGHT:
                 //Remove Pending request
                 player.closeInventory();
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, "notices.friendRequest", tag.getString("info"), true, new Callback<UpdateResult>(UpdateResult.class) {
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, tag.getString("info"), true, new Callback<UpdateResult>(UpdateResult.class) {
                     @Override
                     public void callback(Throwable failCause, UpdateResult result) {
                         sendFriendMessage(player, ChatColor.GREEN + "You have successfully removed pending request for " + itemStack.getItemMeta().getDisplayName().split("'")[0]);
@@ -92,14 +92,14 @@ public class FriendHandler {
             case LEFT:
                 //Add Friend
                 player.closeInventory();
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, "notices.friendRequest", tag.getString("info"), true);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "info.friends", friend.toString(), true, new Callback<UpdateResult>(UpdateResult.class) {
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, tag.getString("info"), true);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIENDS, friend.toString(), true, new Callback<UpdateResult>(UpdateResult.class) {
                     @Override
                     public void callback(Throwable failCause, UpdateResult result) {
                         sendFriendMessage(player, ChatColor.GREEN + "You have successfully added " + ChatColor.AQUA + itemStack.getItemMeta().getDisplayName().split("'")[0]);
                     }
                 });
-                DatabaseAPI.getInstance().update(friend, EnumOperators.$PUSH, "info.friends", player.getUniqueId(), true);
+                DatabaseAPI.getInstance().update(friend, EnumOperators.$PUSH, EnumData.FRIENDS, player.getUniqueId(), true);
                 break;
         }
     }
@@ -114,7 +114,7 @@ public class FriendHandler {
     public void sendRequest(Player player, Player friend) {
         if (areFriends(player, friend.getUniqueId())) return;
 
-        DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, "notices.friendRequest", player.getUniqueId() + "," + (System.currentTimeMillis() / 1000l), true, new Callback<UpdateResult>(UpdateResult.class) {
+        DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUSTS, player.getUniqueId() + "," + (System.currentTimeMillis() / 1000l), true, new Callback<UpdateResult>(UpdateResult.class) {
             @Override
             public void callback(Throwable failCause, UpdateResult result) {
                 if (result.wasAcknowledged()) {

@@ -45,8 +45,8 @@ public class DatabaseAPI {
      * @param requestNew TRUE = WILL GET NEW DATA FROM MONGO.
      * @since 1.0
      */
-    public void update(UUID uuid, EnumOperators EO, String variable, Object object, boolean requestNew) {
-        Database.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable, object)),
+    public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean requestNew) {
+        Database.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)),
                 (result, exception) -> {
                     Utils.log.info("DatabaseAPI update() called ...");
                     if (exception == null && requestNew) {
@@ -66,8 +66,8 @@ public class DatabaseAPI {
      * @param callback   Calls back the result.
      * @since 1.0
      */
-    public void update(UUID uuid, EnumOperators EO, String variable, Object object, boolean requestNew, Callback<UpdateResult> callback) {
-        Database.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable, object)),
+    public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean requestNew, Callback<UpdateResult> callback) {
+        Database.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)),
                 (result, exception) -> {
                     callback.callback(exception, result);
                     Utils.log.info("DatabaseAPI update() called ...");
@@ -87,8 +87,8 @@ public class DatabaseAPI {
      * @param requestNew Pull new guild once injected?
      * @since 1.0
      */
-    public void updateGuild(String guildName, EnumOperators EO, String variable, Object object, boolean requestNew) {
-        Database.guilds.updateOne(Filters.eq("info.name", guildName.toUpperCase()), new Document(EO.getUO(), new Document(variable, object)),
+    public void updateGuild(String guildName, EnumOperators EO, EnumGuildData variable, Object object, boolean requestNew) {
+        Database.guilds.updateOne(Filters.eq("info.name", guildName.toUpperCase()), new Document(EO.getUO(), new Document(variable.getKey(), object)),
                 (result, exception) -> {
                     Utils.log.info("DatabaseAPI update() called ...");
                     if (exception == null && requestNew) {

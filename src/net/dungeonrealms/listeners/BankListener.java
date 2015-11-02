@@ -50,7 +50,7 @@ public class BankListener implements Listener {
             		Inventory tempInv = ItemSerialization.fromString(invString);
             		Inventory collectionBin = Bukkit.createInventory(e.getPlayer(), tempInv.getSize(), "Collection Bin");
             		collectionBin.setContents(tempInv.getContents());
-            		DatabaseAPI.getInstance().update(e.getPlayer().getUniqueId(), EnumOperators.$SET, "inventory.collection_bin", "", true);
+            		DatabaseAPI.getInstance().update(e.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
             		e.getPlayer().openInventory(collectionBin);
             		e.setCancelled(true);
             		return;
@@ -107,7 +107,7 @@ public class BankListener implements Listener {
                                             if (hasSpaceInInventory(player.getUniqueId(), number)) {
                                                 Player p = player.getPlayer();
                                                 DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(),
-                                                        EnumOperators.$INC, "info.gems", -number, true);
+                                                        EnumOperators.$INC, EnumData.GEMS, -number, true);
                                                 while (number > 0) {
                                                     while (number > 64) {
                                                         ItemStack item = stack.clone();
@@ -156,7 +156,7 @@ public class BankListener implements Listener {
                                             Player p = player.getPlayer();
                                             p.getInventory().addItem(BankMechanics.createBankNote(number));
                                             DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(),
-                                                    EnumOperators.$INC, "info.gems", -number, true);
+                                                    EnumOperators.$INC, EnumData.GEMS, -number, true);
                                             player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
 
                                         }
@@ -308,7 +308,7 @@ public class BankListener implements Listener {
                                 if (hasSpaceInInventory(player.getUniqueId(), number)) {
                                     Player p = player.getPlayer();
                                     DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(), EnumOperators.$INC,
-                                            "info.gems", -number, true);
+                                            EnumData.GEMS, -number, true);
                                     while (number > 0) {
                                         while (number > 64) {
                                             ItemStack item = stack.clone();
@@ -376,7 +376,7 @@ public class BankListener implements Listener {
                                 Player p = player.getPlayer();
                                 p.getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
                                 DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(), EnumOperators.$INC,
-                                        "info.gems", -number, true);
+                                        EnumData.GEMS, -number, true);
                                 player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
                             }
                             player.closeInventory();
@@ -397,7 +397,7 @@ public class BankListener implements Listener {
             	boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(num, player);
         		if(tookGems){
         			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
-        			DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "inventory.level", invLvl + 1,
+        			DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invLvl + 1,
     				        true);
         			player.sendMessage(ChatColor.GREEN.toString() + "Storage updated!");
         			player.closeInventory();

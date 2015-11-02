@@ -3,6 +3,7 @@ package net.dungeonrealms.handlers;
 import net.dungeonrealms.API;
 import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.network.NetworkAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -49,7 +50,7 @@ public class MailHandler {
             ItemStack actualItem = ItemSerialization.itemStackFromBase64(rawItem);
 
 
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, "notices.mailbox", from + "," + String.valueOf(unix) + "," + rawItem, true);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.MAILBOX, from + "," + String.valueOf(unix) + "," + rawItem, true);
             player.getInventory().addItem(actualItem);
             sendMailMessage(player, ChatColor.GREEN + "You opened mail from " + ChatColor.AQUA + from + ChatColor.GREEN + "!");
             player.playSound(player.getLocation(), Sound.ENDERDRAGON_WINGS, 1f, 63f);
@@ -109,10 +110,10 @@ public class MailHandler {
         String mailIdentification = player.getName() + "," + (System.currentTimeMillis() / 1000l) + "," + serializedItem;
 
         if (API.isOnline(toUUID)) {
-            DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, "notices.mailbox", mailIdentification, true);
+            DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification, true);
             sendMailMessage(Bukkit.getPlayer(toUUID), ChatColor.GREEN + "You have received mail from " + ChatColor.AQUA + player.getName());
         } else {
-            DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, "notices.mailbox", mailIdentification, false);
+            DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification, false);
             NetworkAPI.getInstance().sendNetworkMessage("mail", "update", toPlayer);
         }
 

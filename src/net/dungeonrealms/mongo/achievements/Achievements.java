@@ -49,7 +49,7 @@ public class Achievements {
      */
     public void giveAchievement(UUID uuid, EnumAchievements achievement) {
         if (hasAchievement(uuid, achievement)) return;
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, "collectibles.achievements", achievement.getMongoName(), true, new Callback<UpdateResult>(UpdateResult.class) {
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.ACHIEVEMENTS, achievement.getMongoName(), true, new Callback<UpdateResult>(UpdateResult.class) {
             @Override
             public void callback(Throwable failCause, UpdateResult result) {
                 if (result.wasAcknowledged()) {

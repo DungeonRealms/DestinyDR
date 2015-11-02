@@ -7,6 +7,7 @@ import net.dungeonrealms.handlers.FriendHandler;
 import net.dungeonrealms.handlers.MailHandler;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumGuildData;
 import net.dungeonrealms.mongo.EnumOperators;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -58,8 +59,8 @@ public class Notice {
                 if (24 - diffHours >= 0) {
                     player.sendMessage(ChatColor.YELLOW + "You have been invited to " + ChatColor.GREEN + guildName + ChatColor.YELLOW + " you have " + (24 - diffHours) + " hours to accept!");
                 } else {
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, "notices.guildInvites", guildName + "," + inviteSent, true);
-                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "invitations", player.getUniqueId().toString(), true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.GUILD_INVITES, guildName + "," + inviteSent, true);
+                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.INVITATIONS, player.getUniqueId().toString(), true);
                     player.sendMessage(ChatColor.YELLOW + "Your invite from " + ChatColor.GREEN + guildName + ChatColor.YELLOW + " has expired!");
                 }
             }
@@ -74,7 +75,7 @@ public class Notice {
                 long diffHours = differenceInTime / (60 * 60 * 1000);
 
                 if (24 - diffHours <= 0) {
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, "notices.friendRequest", s, true, new Callback<UpdateResult>(UpdateResult.class) {
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, s, true, new Callback<UpdateResult>(UpdateResult.class) {
                         @Override
                         public void callback(Throwable failCause, UpdateResult result) {
                             if (result.wasAcknowledged()) {

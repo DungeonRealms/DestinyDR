@@ -178,14 +178,14 @@ public class GamePlayer {
          */
         //TODO: Fix this formula for levels 1-9
         if (futureExperience > (level ^ 2 * 250) + Math.round(level % (64 * 2))) {
-            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.level", level + 1, false);
-            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.experience", experienceToAdd - experience, false);
+            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, level + 1, false);
+            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, experienceToAdd - experience, false);
             Utils.log.info("[LEVEL] Leveling " + T.getName() + " to level " + getLevel() + 1 + " with new experience" + String.valueOf(experience - experience));
-            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, "info.attributes.bufferPoints", 6, false);
+            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.BUFFER_POINTS, 6, false);
             T.sendMessage(ChatColor.GREEN + "You have reached level " + ChatColor.AQUA + level + 1 + ChatColor.GREEN + " and have gained 6 Attribute Points!");
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(T, getPlayerAlignment().getAlignmentColor(), level + 1);
         } else {
-            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, "info.experience", experienceToAdd, true);
+            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, experienceToAdd, true);
             T.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "+ " + ChatColor.GREEN + Math.round(experienceToAdd));
         }
 

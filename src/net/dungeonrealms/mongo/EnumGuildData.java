@@ -5,25 +5,34 @@ package net.dungeonrealms.mongo;
  */
 public enum EnumGuildData {
 
-    NAME,
-    MOTD,
-    CLAN_TAG,
+    NAME("info.name"),
+    MOTD("info.motd"),
+    CLAN_TAG("info.clanTag"),
 
-    OWNER,
-    CO_OWNER,
+    OWNER("info.owner"),
+    CO_OWNER("info.coOwner"),
 
-    OFFICERS,
-    MEMBERS,
-    CREATION_UNIX_DATA,
-    INVITATIONS,
+    OFFICERS("info.officers"),
+    MEMBERS("info.members"),
+    CREATION_UNIX_DATA("info.unixCreation"),
+    INVITATIONS("info.invitations"),
 
-    PLAYER_LOGINS,
-    PLAYER_INVITES,
-    BANK_CLICK,
+    PLAYER_LOGINS("logs.playerLogin"),
+    PLAYER_INVITES("logs.playerInvites"),
+    BANK_CLICK("logs.bankClicks"),
 
-    ICON,
+    ICON("logs.icon"),
 
-    LEVEL,
-    EXPERIENCE,
-
+    LEVEL("info.netLevel"),
+    EXPERIENCE("info.experience");
+	
+	public String key;
+	
+	EnumGuildData(String key){
+		this.key = key;
+	}
+	
+	 public String getKey(){
+		return this.key;
+	 }
 }

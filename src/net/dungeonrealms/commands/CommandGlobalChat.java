@@ -31,7 +31,7 @@ public class CommandGlobalChat extends BasicCommand {
         boolean gChat = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
 
 
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "toggles.globalChat", !gChat, true, new Callback<UpdateResult>(UpdateResult.class) {
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_GLOBAL_CHAT, !gChat, true, new Callback<UpdateResult>(UpdateResult.class) {
             @Override
             public void callback(Throwable failCause, UpdateResult result) {
                 player.sendMessage(ChatColor.GREEN + "Global chat is now set to: " + gChat);

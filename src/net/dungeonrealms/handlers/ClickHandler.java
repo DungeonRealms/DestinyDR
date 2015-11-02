@@ -67,7 +67,7 @@ public class ClickHandler {
                     return;
                 } else {
                     if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.mounts", nmsStack.getTag().getString("mountType").toUpperCase(), true);
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, nmsStack.getTag().getString("mountType").toUpperCase(), true);
                         player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("mountType") + " mount!");
                         player.closeInventory();
                         return;
@@ -128,7 +128,7 @@ public class ClickHandler {
                         return;
                     } else {
                         if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.particles", nmsStack.getTag().getString("playerTrailType").toUpperCase(), true);
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PARTICLES, nmsStack.getTag().getString("playerTrailType").toUpperCase(), true);
                             player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("playerTrailType") + " trail!");
                             player.closeInventory();
                             return;
@@ -145,7 +145,7 @@ public class ClickHandler {
                         return;
                     } else {
                         if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.mounts", nmsStack.getTag().getString("mountType").toUpperCase(), true);
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.INVENTORY_COLLECTION_BIN, nmsStack.getTag().getString("mountType").toUpperCase(), true);
                             player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("mountType") + " mount!");
                             player.closeInventory();
                             return;
@@ -162,7 +162,7 @@ public class ClickHandler {
                         return;
                     } else {
                         if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, "collectibles.pets", nmsStack.getTag().getString("petType").toUpperCase(), true);
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, nmsStack.getTag().getString("petType").toUpperCase(), true);
                             player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("petType") + " pet!");
                             player.closeInventory();
                             return;
@@ -194,7 +194,7 @@ public class ClickHandler {
                     } else {
                         if (TeleportAPI.canSetHearthstoneLocation(player, nmsStack.getTag().getString("hearthstoneLocation"))) {
                             if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("gemCost"), player)) {
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.hearthstone", nmsStack.getTag().getString("hearthstoneLocation"), true);
+                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEARTHSTONE, nmsStack.getTag().getString("hearthstoneLocation"), true);
                                 player.sendMessage(ChatColor.GREEN + "You have changed your Hearthstone location to " + nmsStack.getTag().getString("hearthstoneLocation") + "!");
                                 player.closeInventory();
                                 return;
