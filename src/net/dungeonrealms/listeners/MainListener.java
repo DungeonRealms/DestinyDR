@@ -126,6 +126,7 @@ public class MainListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public void onJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
+        API.GAMEPLAYERS.add(new GamePlayer(player));
 		if (WebAPI.ANNOUNCEMENTS != null && WebAPI.ANNOUNCEMENTS.size() > 0) {
 			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
 				for (Map.Entry<String, Integer> e : WebAPI.ANNOUNCEMENTS.entrySet()) {

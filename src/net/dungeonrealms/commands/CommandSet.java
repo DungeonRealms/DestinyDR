@@ -59,9 +59,12 @@ public class CommandSet extends BasicCommand {
 				}
 				int tier = 0;
 				int spawnAmount = 0;
+				String range = "-";
 				try{
 				 tier = Integer.parseInt(args[2]);
 				 spawnAmount = Integer.parseInt(args[3]);
+				 if(args.length == 5)
+					 range = args[4];
 				}catch(Exception exc){
 					return false;
 				}

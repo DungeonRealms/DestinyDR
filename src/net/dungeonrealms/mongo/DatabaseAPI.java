@@ -351,10 +351,10 @@ public class DatabaseAPI {
                                 .append("guild", ""))
                          .append("attributes",
                                 new Document("bufferPoints", 6)
-                                        .append("strength", 1)
-                                        .append("dexterity", 1)
-                                        .append("intellect", 1)
-                                        .append("vitality", 1))
+                                        .append("strength", 0)
+                                        .append("dexterity", 0)
+                                        .append("intellect", 0)
+                                        .append("vitality", 0))
                         .append("collectibles",
                                 new Document("achievements", new ArrayList<String>())
                                         .append("mounts", new ArrayList<String>())

@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -23,9 +24,9 @@ import net.dungeonrealms.mongo.EnumOperators;
 public class StatsManager {
 
 	public static Inventory getInventory(Player p) {
-		PlayerStats stats = getPlayerStats();
+		PlayerStats stats = getPlayerStats(p);
 		Inventory inv = Bukkit.createInventory(null, 18, ChatColor.LIGHT_PURPLE + "Stat Points");
-		stats.tempFreePoints =(stats.freePoints);
+		stats.tempFreePoints = (stats.freePoints);
 		ItemStack confirmItem = stats.loadConfirmItem();
 		ItemStack dexItem = stats.loadDexItem();
 		ItemStack dexStatsItem = stats.loadDexStatsItem();
@@ -50,10 +51,10 @@ public class StatsManager {
 	}
 
 	/**
-	 * @return
+	 * @return PlayerStats
 	 */
-	static PlayerStats getPlayerStats() {
-		return null;
+	public static PlayerStats getPlayerStats(Player p ) {
+		return API.getGamePlayer(p).getStats();
 	}
 	
 }

@@ -4,6 +4,7 @@ import java.text.DecimalFormat;
 import java.util.UUID;
 
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -19,19 +20,20 @@ import net.dungeonrealms.mongo.EnumOperators;
  * Created by Chase on Nov 2, 2015
  */
 public class PlayerStats {
-	 int freePoints;
-	 int strPoints;
-	 int tempstrPoints;
-	 int dexPoints;
-	 int tempdexPoints;
-	 int vitPoints;
-	 int tempvitPoints;
-	 int intPoints;
-	 int tempintPoints;
-	 int tempFreePoints;
-	 int level;
-	UUID playerUUID;
+	public int freePoints;
+	 public int strPoints;
+	 public int tempstrPoints;
+	 public int dexPoints;
+	 public int tempdexPoints;
+	 public int vitPoints;
+	 public int tempvitPoints;
+	 public int intPoints;
+	 public int tempintPoints;
+	 public int tempFreePoints;
+	 public int level;
+	 UUID playerUUID;
 	 final static int POINTS_PER_LEVEL = 6;
+	 public boolean reset = true;
 
 	public PlayerStats(UUID playerUUID) {
 		this.playerUUID = playerUUID;
@@ -54,19 +56,22 @@ public class PlayerStats {
 	 * 
 	 * @since 1.0;
 	 */
-	private void loadPlayerStats() {
-		Utils.log.info(playerUUID + " uuid");
-		Utils.log.info((int) DatabaseAPI.getInstance().getData(EnumData.BUFFER_POINTS, playerUUID) + " free points");
-//		this.freePoints = (int) ;
+	public void loadPlayerStats() {
+		this.freePoints = (int) DatabaseAPI.getInstance().getData(EnumData.BUFFER_POINTS, playerUUID);
 		this.intPoints = (int) DatabaseAPI.getInstance().getData(EnumData.INTELLECT, playerUUID);
 		this.dexPoints = (int) DatabaseAPI.getInstance().getData(EnumData.DEXTERITY, playerUUID);
 		this.strPoints = (int) DatabaseAPI.getInstance().getData(EnumData.STRENGTH, playerUUID);
 		this.vitPoints = (int) DatabaseAPI.getInstance().getData(EnumData.VITALITY, playerUUID);
 		this.level = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, playerUUID);
-		
+		Utils.log.info(freePoints + " free Points");
+		Utils.log.info(intPoints + " INT Points");
+		Utils.log.info(dexPoints + " DEX Points");
+		Utils.log.info(strPoints + " STR Points");
+		Utils.log.info(vitPoints + " VIT Points");
+		Utils.log.info(level + " Level");
 	}
 
-	private void allocatePoint(String type, Player p, Inventory inv) {
+	public void allocatePoint(String type, Player p, Inventory inv) {
 		if (tempFreePoints > 0) {
 			if (type.equalsIgnoreCase("dex")) {
 				tempdexPoints += 1;
@@ -84,10 +89,8 @@ public class PlayerStats {
 
 	}
 
-	private void updateItems(Inventory openInventory, Player p) {
-		PlayerStats stats = StatsManager.getPlayerStats();
-		
-		//TODO GET P STATS
+	public void updateItems(Inventory openInventory, Player p) {
+		PlayerStats stats = StatsManager.getPlayerStats(p);
 		ItemStack confirmItem = loadConfirmItem();
 		ItemStack dexItem = loadDexItem();
 		ItemStack dexStatsItem = loadDexStatsItem();
@@ -111,7 +114,7 @@ public class PlayerStats {
 		
 	}
 
-	private void removePoint(String type, Player p, Inventory inv) {
+	public void removePoint(String type, Player p, Inventory inv) {
 		if (type.equalsIgnoreCase("dex")) {
 			if (tempdexPoints > 0) {
 				tempdexPoints = (tempdexPoints - 1);
@@ -145,10 +148,26 @@ public class PlayerStats {
 		return ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.RED + "Vitality Bonuses: " + vit + (spent ? ChatColor.GREEN + " [+" + aPoints + "]" : ""), new String[]{	ChatColor.GOLD + "HP: " + ChatColor.AQUA + df.format(vit * 0.034) + "%" + (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.034) + "%]" : ""),
 				ChatColor.GOLD + "HP REGEN: " + ChatColor.AQUA + df.format(vit * 0.03) + " HP/s"
 						+ (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.03) + " HP/s]" : ""),
-				ChatColor.GOLD + "ELE RESIST: " + ChatColor.AQUA + df.format(vit * 0.04) + "%" + (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.04) + "%]" : ""),
+//				ChatColor.GOLD + "ELE RESIST: " + ChatColor.AQUA + df.format(vit * 0.04) + "%" + (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.04) + "%]" : ""),
 				ChatColor.GOLD + "SWORD DMG: " + ChatColor.AQUA + df.format(vit * 0.01) + "%" + (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.01) + "%]" : "")});
 	}
-
+	
+	public double getVitHP(){
+		return (vitPoints * 0.034);
+	}
+	
+	public double getHPRegen(){
+		return (vitPoints * 0.03);
+	}
+	
+//	public double getEleResist(){
+//		return vitPoints * 0.04;
+//	}
+	
+	public double getSwordDMG(){
+		return (vitPoints * 0.01);
+	}
+	
 	  ItemStack loadVitItem() {
 		int points = vitPoints;
 		boolean spent = tempvitPoints > 0;
@@ -168,21 +187,31 @@ public class PlayerStats {
 				ChatColor.GOLD + "AXE DMG: " + ChatColor.AQUA + df.format(str * 0.015) + "%" + (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.015) + "%]" : ""),
 				ChatColor.GOLD + "POLEARM DMG: " + ChatColor.AQUA + df.format(str * 0.023) + "%"
 						+ (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.023) + "%]" : "")});
-		
 	}
+	  
+	  public double getBlock(){
+		  return strPoints * 0.017;
+	  }
+	  
+	  public double getAxeDMG(){
+		  return strPoints * .015;
+	  }
+	  
+	  public double getPolearmDMG(){
+		  return strPoints * 0.023;
+	  }
 
 	  ItemStack loadStrItem() {
 		int points = strPoints;
 		boolean spent = tempstrPoints > 0;
-		
 		return ItemManager.createItem(Material.EMPTY_MAP, ChatColor.DARK_PURPLE + "Strength", new String[]{ChatColor.GRAY + "Adds armor, block chance, axe ", ChatColor.GRAY + "damage, and polearm damage.",
 				ChatColor.AQUA + "Allocated Points: " + strPoints + (spent ? ChatColor.GREEN + " [+" + tempstrPoints + "]" : ""),
-				ChatColor.RED + "Free Points: " + tempstrPoints});
+				ChatColor.RED + "Free Points: " + tempFreePoints});
 	}
 
 	  ItemStack loadStatsInfoItem() {
 		
-		return ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.YELLOW + "Stat Point Info", new String[]{ChatColor.LIGHT_PURPLE + "Points to Allocate: " + tempFreePoints,
+		return ItemManager.createItem(Material.ENCHANTED_BOOK, ChatColor.YELLOW + "Stat Point Info", new String[]{ChatColor.LIGHT_PURPLE + "Points to Allocate: " + tempFreePoints,
 				ChatColor.AQUA + "LCLICK" + ChatColor.GRAY + " to allocate " + ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "1" + ChatColor.GRAY + " point",
 				ChatColor.AQUA + "RCLICK" + ChatColor.GRAY + " to unallocate " + ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "1" + ChatColor.GRAY + " point"});
 	}
@@ -201,6 +230,18 @@ public class PlayerStats {
 				ChatColor.GOLD + "STAFF DMG: " + ChatColor.AQUA + df.format(in * 0.02) + "%" + (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.02) + "%]" : "")});
 	}
 
+	  public double getEnergyRegen(){
+		  return intPoints * 0.015;
+	  }
+	  
+	  public double getCritChance(){
+		  return intPoints * 0.025;
+	  }
+	  
+	  public double getStaffDMG(){
+		  return intPoints * 0.02;
+	  }
+	  
 	  ItemStack loadIntItem() {
 		int points = intPoints;
 		boolean spent = tempintPoints > 0;
@@ -208,7 +249,7 @@ public class PlayerStats {
 		return ItemManager.createItem(Material.EMPTY_MAP, ChatColor.DARK_PURPLE + "Intellect", new String[]{ChatColor.GRAY + "Adds energy regeneration,  ", ChatColor.GRAY + "elemental damage, critical ",
 				ChatColor.GRAY + "hit chance, and staff damage.",
 				ChatColor.AQUA + "Allocated Points: " + intPoints + (spent ? ChatColor.GREEN + " [+" + tempintPoints + "]" : ""),
-				ChatColor.RED + "Free Points: " + tempintPoints});
+				ChatColor.RED + "Free Points: " + tempFreePoints});
 	}
 
 	  DecimalFormat df = new DecimalFormat("##.###");
@@ -234,11 +275,28 @@ public class PlayerStats {
 		ChatColor.GOLD + "BOW DMG: " + ChatColor.AQUA + df.format(dex * 0.015) + "%" + (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.015) + "%]" : "")});
 		
 	  }
+	  
+	  public double getDPS(){
+		  return dexPoints * 0.03;
+	  }
+	  
+	  public double getDodge(){
+		  return dexPoints * 0.017;
+	  }
+	  
+	  public double getArmorPen(){
+		  return dexPoints * 0.02;
+	  }
+	  
+	  public double getBowDMG(){
+		  return dexPoints * 0.015;
+	  }
 
 	  	ItemStack loadConfirmItem() {
-	  		return ItemManager.createItem(Material.INK_SACK, ChatColor.GREEN + "Confirm", new String[] {ChatColor.GRAY + "Click to confirm your stat ", ChatColor.GRAY + "point allocation.  If you ",
-				ChatColor.GRAY + "want to undo your changes, ", ChatColor.GRAY + "press escape."});
+	  		return ItemManager.createItemWithData(Material.INK_SACK ,ChatColor.GREEN + "Confirm", new String[] {ChatColor.GRAY + "Click to confirm your stat ", ChatColor.GRAY + "point allocation.  If you ",
+				ChatColor.GRAY + "want to undo your changes, ", ChatColor.GRAY + "press escape."}, DyeColor.LIME.getDyeData());
 	  	}
+	  	
 	  
 	  	public void lvlUp() {
 			freePoints += PlayerStats.POINTS_PER_LEVEL * level;
@@ -252,6 +310,17 @@ public class PlayerStats {
 			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DEXTERITY, dexPoints, false);
 			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BUFFER_POINTS, freePoints, false);
 			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LEVEL, level, false);
+		}
+
+		/**
+		 * Resets temp stats
+		 */
+		public void resetTemp() {
+			tempFreePoints = freePoints;
+			tempdexPoints = 0;
+			tempintPoints = 0;
+			tempstrPoints = 0;
+			tempvitPoints = 0;			
 		}
 
 }
