@@ -1,6 +1,8 @@
 package net.dungeonrealms.mongo.achievements;
 
 import com.mongodb.client.result.UpdateResult;
+
+import net.dungeonrealms.API;
 import net.dungeonrealms.core.Callback;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -56,7 +58,7 @@ public class Achievements {
                     if (Bukkit.getPlayer(uuid) == null) return;
                     Player player = Bukkit.getPlayer(uuid);
                     player.sendMessage(ChatColor.GREEN + "[Achievement Earned] " + ChatColor.YELLOW + achievement.getMessage()[0]);
-                    new GamePlayer(player).addExperience(achievement.getReward());
+                    API.getGamePlayer(player).addExperience(achievement.getReward());
 
                     switch (((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid)).size()) {
                         case 10:

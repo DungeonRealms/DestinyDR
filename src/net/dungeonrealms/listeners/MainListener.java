@@ -392,7 +392,7 @@ public class MainListener implements Listener {
 		if (!API.isPlayer(event.getPlayer()))
 			return;
 		Player player = event.getPlayer();
-		if (new GamePlayer(player).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC)
+		if (API.getGamePlayer(player).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC)
 			return;
 		if (!(player.getWorld().getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName())))
 			return;

@@ -24,6 +24,7 @@ import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.mastery.GamePlayer;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -152,7 +153,11 @@ public class HealthHandler implements GenericMechanic{
             healthPercentage = 1.0;
         }
         float healthToDisplay = (float) (healthPercentage * 100.F);
-        GamePlayer gamePlayer = new GamePlayer(player);
+        GamePlayer gamePlayer = API.getGamePlayer(player);
+        if(gamePlayer == null){
+        	Utils.log.info("NULL GAME PLAYER");
+        	return;
+        }
         int playerLevel = gamePlayer.getLevel();
         double currentEXP = gamePlayer.getExperience();
         double expToLevel = (playerLevel * 1000) + Math.round(playerLevel % (64 * 2));
@@ -209,7 +214,7 @@ public class HealthHandler implements GenericMechanic{
      * @since 1.0
      */
     public int getPlayerMaxHPOnLogin(Player player) {
-        return new GamePlayer(player).getPlayerMaxHP();
+        return API.getGamePlayer(player).getPlayerMaxHP();
     }
 
     /**

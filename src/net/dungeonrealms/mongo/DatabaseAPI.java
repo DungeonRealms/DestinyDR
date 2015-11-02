@@ -155,15 +155,15 @@ public class DatabaseAPI {
             Player Attribute Variables
              */
             case STRENGTH:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("attributes.strength", Integer.class);
+                return ((Document) PLAYERS.get(uuid).get("attributes")).get("strength", Integer.class);
             case DEXTERITY:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("attributes.dexterity", Integer.class);
+                return ((Document) PLAYERS.get(uuid).get("attributes")).get("dexterity", Integer.class);
             case INTELLECT:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("attributes.intellect", Integer.class);
+                return ((Document) PLAYERS.get(uuid).get("attributes")).get("intellect", Integer.class);
             case VITALITY:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("attributes.vitality", Integer.class);
+                return ((Document) PLAYERS.get(uuid).get("attributes")).get("vitality", Integer.class);
             case BUFFER_POINTS:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("attributes.bufferPoints", Integer.class);
+                return ((Document) PLAYERS.get(uuid).get("attributes")).get("bufferPoints", Integer.class);
             /*
             Player Storage
              */
@@ -348,13 +348,13 @@ public class DatabaseAPI {
                                 .append("isPlaying", true)
                                 .append("friends", new ArrayList<>())
                                 .append("alignment", "lawful")
-                                .append("guild", "")
-                                .append("attributes",
-                                        new Document("bufferPoints", 6)
-                                                .append("strength", 1)
-                                                .append("dexterity", 1)
-                                                .append("intellect", 1)
-                                                .append("vitality", 1)))
+                                .append("guild", ""))
+                         .append("attributes",
+                                new Document("bufferPoints", 6)
+                                        .append("strength", 1)
+                                        .append("dexterity", 1)
+                                        .append("intellect", 1)
+                                        .append("vitality", 1))
                         .append("collectibles",
                                 new Document("achievements", new ArrayList<String>())
                                         .append("mounts", new ArrayList<String>())
