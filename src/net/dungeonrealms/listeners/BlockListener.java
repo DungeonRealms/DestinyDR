@@ -6,7 +6,11 @@ import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
+import net.dungeonrealms.combat.CombatLog;
+import net.dungeonrealms.entities.Entities;
+import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.items.repairing.RepairAPI;
+import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.shops.Shop;
@@ -16,6 +20,7 @@ import net.dungeonrealms.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -24,11 +29,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.EntityBlockFormEvent;
+import org.bukkit.event.block.*;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -243,16 +246,16 @@ public class BlockListener implements Listener {
                 ItemStack item = event.getPlayer().getItemInHand();
                 net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
                 if (nms.getTag().hasKey("usage") && nms.getTag().getString("usage").equalsIgnoreCase("profile")) {
-                    if (ShopMechanics.PLAYER_SHOPS.get(event.getPlayer().getUniqueId()) != null) {
+                    /*if (ShopMechanics.PLAYER_SHOPS.get(event.getPlayer().getUniqueId()) != null) {
                         event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "You already have an active shop");
                         return;
-                    }
-                    ShopMechanics.setupShop(event.getClickedBlock(), event.getPlayer().getUniqueId());
+                    }*/
+                    //ShopMechanics.setupShop(event.getClickedBlock(), event.getPlayer().getUniqueId());
+                    RealmManager.getInstance().openPlayerRealm(event.getPlayer(), event.getClickedBlock().getLocation());
                 }
             }
         }
     }
-
 
     /**
      * Removes snow that snowmen pets
@@ -267,6 +270,51 @@ public class BlockListener implements Listener {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> event.getBlock().setType(Material.AIR), 60L);
         } else {
             event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onBlockPhysicsChange(BlockPhysicsEvent event) {
+        if (event.getBlock().getType() == Material.PORTAL && event.getChangedType() == Material.AIR) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerEnterPortal(PlayerPortalEvent event) {
+        if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) {
+            if (EntityAPI.hasPetOut(event.getPlayer().getUniqueId())) {
+                net.minecraft.server.v1_8_R3.Entity pet = Entities.PLAYER_PETS.get(event.getPlayer().getUniqueId());
+                pet.dead = true;
+                EntityAPI.removePlayerPetList(event.getPlayer().getUniqueId());
+            }
+            if (EntityAPI.hasMountOut(event.getPlayer().getUniqueId())) {
+                net.minecraft.server.v1_8_R3.Entity mount = Entities.PLAYER_MOUNTS.get(event.getPlayer().getUniqueId());
+                mount.dead = true;
+                EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
+            }
+            if (!CombatLog.isInCombat(event.getPlayer())) {
+                if (RealmManager.getInstance().getRealmLocation(event.getFrom(), event.getPlayer()) != null) {
+                    event.setTo(RealmManager.getInstance().getRealmLocation(event.getFrom(), event.getPlayer()));
+                    //event.getPlayer().sendMessage(ChatColor.AQUA + "Teleporting to " + Bukkit.getPlayer(realmObject.getRealmOwner()).getName() + "'s Realm!");
+                } else {
+                    event.setCancelled(true);
+                    event.getPlayer().sendMessage(ChatColor.RED + "Sorry, you've tried to enter a null realm. Attempting to remove it!");
+                    RealmManager.getInstance().removeRealmViaPortalLocation(event.getFrom());
+                    event.getFrom().getBlock().setType(Material.AIR);
+                    if (event.getFrom().subtract(0, 1, 0).getBlock().getType() == Material.PORTAL) {
+                        event.getFrom().getBlock().setType(Material.AIR);
+                    }
+                    if (event.getFrom().add(0, 2, 0).getBlock().getType() == Material.PORTAL) {
+                        event.getFrom().getBlock().setType(Material.AIR);
+                    }
+                }
+            } else {
+                event.setCancelled(true);
+            }
+        } else {
+            Location realmPortalLocation = RealmManager.getInstance().getPortalLocationFromRealmWorld(event.getPlayer());
+            event.setTo(realmPortalLocation.clone().add(0, 2, 0));
         }
     }
 }

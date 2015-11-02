@@ -20,6 +20,7 @@ import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mastery.NameFetcher;
+import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
@@ -256,6 +257,7 @@ public class API {
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
         KarmaHandler.getInstance().handleLogoutEvents(player);
+        RealmManager.getInstance().removePlayerRealm(player);
         Party.getInstance().handleLogout(player);
         ScoreboardHandler.getInstance().removePlayerScoreboard(player);
         if (EntityAPI.hasPetOut(uuid)) {
