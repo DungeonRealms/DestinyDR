@@ -13,7 +13,6 @@ import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.EntityGhast;
 
 /**

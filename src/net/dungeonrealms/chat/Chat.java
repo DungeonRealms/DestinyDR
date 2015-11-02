@@ -80,9 +80,7 @@ public class Chat {
         if (gChat) {
             event.setFormat(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage());
         } else {
-            API.getNearbyPlayers(event.getPlayer().getLocation(), 100).stream().forEach(player -> {
-                player.sendMessage(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage());
-            });
+            API.getNearbyPlayers(event.getPlayer().getLocation(), 100).stream().forEach(player -> player.sendMessage(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage()));
         }
     }
 

@@ -251,9 +251,7 @@ public class PlayerMenus {
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
 
         for (String s : members) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                inv.addItem(editItem(API.getNameFromUUID(s), ChatColor.GREEN + "Officer " + API.getNameFromUUID(s), new String[]{}));
-            }, 0l);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> inv.addItem(editItem(API.getNameFromUUID(s), ChatColor.GREEN + "Officer " + API.getNameFromUUID(s), new String[]{})), 0l);
         }
 
         player.openInventory(inv);
@@ -415,9 +413,7 @@ public class PlayerMenus {
 
             }, 0l);
         };
-        SingleResultCallback<Void> callbackWhenFinished = (result, t) -> {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.openInventory(inv), 1l);
-        };
+        SingleResultCallback<Void> callbackWhenFinished = (result, t) -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.openInventory(inv), 1l);
 
         Database.guilds.find(Filters.exists("info.netLevel")).sort(Sorts.descending("info.netLevel")).limit(16).forEach(printDocumentBlock, callbackWhenFinished);
     }

@@ -206,7 +206,7 @@ public class Mining implements GenericMechanic {
 		}
 	}
 
-	private HashMap<Location, Material> ORE_LOCATIONS = new HashMap<Location, Material>();
+	private HashMap<Location, Material> ORE_LOCATIONS = new HashMap<>();
 
 	public void loadOreLocations() {
 		int count = 0;
@@ -260,7 +260,7 @@ public class Mining implements GenericMechanic {
 	@Override
 	public void startInitialization() {
 		loadOreLocations();
-		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> placeOre());
+		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::placeOre);
 	}
 
 	/**

@@ -2,21 +2,16 @@ package net.dungeonrealms.entities.types.monsters.base;
 
 import java.util.Random;
 
-import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
-import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.EntityMagmaCube;
 import net.minecraft.server.v1_8_R3.World;
 

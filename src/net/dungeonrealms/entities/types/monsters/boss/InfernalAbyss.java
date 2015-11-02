@@ -7,7 +7,6 @@ import net.dungeonrealms.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.entities.types.monsters.boss.subboss.InfernalLordsGuard;
 import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.handlers.HealthHandler;
-import net.dungeonrealms.items.Item.ItemModifier;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.Armor.ArmorModifier;
 import net.dungeonrealms.items.armor.ArmorGenerator;
@@ -63,7 +62,7 @@ public class InfernalAbyss extends EntitySkeleton implements Boss {
 		this.goalSelector.a(1, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
 		this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
 		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true));
-		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<EntityHuman>(this, EntityHuman.class, true));
+		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<>(this, EntityHuman.class, true));
 		this.setSkeletonType(1);
 		this.fireProof = true;
 		this.setOnFire(Integer.MAX_VALUE);

@@ -194,6 +194,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("toggles")).get("pvp", Boolean.class);
             case TOGGLE_DUEL:
                 return ((Document) PLAYERS.get(uuid).get("toggles")).get("duel", Boolean.class);
+            case TOGGLE_CHAOTIC_PREVENTION:
+                return ((Document) PLAYERS.get(uuid).get("toggles")).get("chaoticPrevention", Boolean.class);
             /*
             Player Collectibles
              */
@@ -365,7 +367,8 @@ public class DatabaseAPI {
                                         .append("globalChat", false)
                                         .append("receiveMessage", false)
                                         .append("pvp", false)
-                                        .append("duel", false))
+                                        .append("duel", false)
+                                        .append("chaoticPrevention", false))
                         .append("notices",
                                 new Document("guildInvites", new ArrayList<String>())
                                         .append("friendRequest", new ArrayList<String>())
