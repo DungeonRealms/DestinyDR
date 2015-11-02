@@ -63,6 +63,7 @@ public abstract class DRZombie extends EntityZombie implements Monster{
             setArmor(tier);
         setStats();
         String customName = monster.getPrefix() + " " + name + " " + monster.getSuffix() + " ";
+        this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
     }
 

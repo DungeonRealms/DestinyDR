@@ -17,6 +17,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
@@ -296,7 +297,7 @@ public class BankMechanics implements GenericMechanic {
      * @param num
      */
     public static void addGemsToPlayerBank(UUID uuid, int num) {
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, "info.gems", num, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.GEMS, num, true);
     }
 
     /**

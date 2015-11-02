@@ -7,6 +7,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.profession.Fishing;
 import net.dungeonrealms.profession.Mining;
@@ -38,17 +39,17 @@ public class CommandSet extends BasicCommand {
 			switch (args[0]) {
 			case "level":
 				int lvl = Integer.parseInt(args[1]);
-				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.netLevel", lvl, true);
+				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, lvl, true);
 				s.sendMessage("Level set to " + lvl);
 				break;
 			case "gems":
 				int gems = Integer.parseInt(args[1]);
-				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "info.gems", gems, true);
+				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GEMS, gems, true);
 				s.sendMessage("Gems set to " + gems);
 				break;
 			case "invlevel":
 				int invlvl = Integer.parseInt(args[1]);
-				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, "inventory.level", invlvl, true);
+				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl, true);
 				break;
 			case "spawner":
 				if (args.length < 4) {

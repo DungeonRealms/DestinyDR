@@ -33,6 +33,7 @@ public class DRSilverfish extends EntitySilverfish implements Monster{
 		this.enumMonster = type;
 		setArmor(tier);
         String customName = enumMonster.getPrefix() + " " + enumMonster.name + " " + enumMonster.getSuffix() + " ";
+        this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
 
 	}

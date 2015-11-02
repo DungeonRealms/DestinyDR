@@ -51,7 +51,7 @@ public class Guild {
     public void doLogin(Player player) {
         if (isGuildNull(player.getUniqueId())) return;
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
-        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "logs.playerLogin", player.getName() + "," + (System.currentTimeMillis() / 1000l), true);
+        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, EnumGuildData.PLAYER_LOGINS, player.getName() + "," + (System.currentTimeMillis() / 1000l), true);
         NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + player.getName() + ChatColor.GREEN + " is now online!");
     }
 
@@ -81,12 +81,12 @@ public class Guild {
         NetworkAPI.getInstance().sendNetworkMessage("guild", "message", "Preparing to purge guild!");
 
         ENTIRE_GUILD.stream().filter(s -> !s.equals("")).forEach(s1 -> {
-            DatabaseAPI.getInstance().update(UUID.fromString(s1), EnumOperators.$SET, "info.guild", "", true);
+            DatabaseAPI.getInstance().update(UUID.fromString(s1), EnumOperators.$SET, EnumData.GUILD, "", true);
             NetworkAPI.getInstance().sendNetworkMessage("player", "update", API.getNameFromUUID(s1));
         });
 
 
-        Database.guilds.deleteOne(Filters.eq("info.guild", guildName), (deleteResult, throwable) -> Utils.log.info("[GUILD] [ASYNC] PURGED Guild=" + guildName + " ACKNOWLEDGED=" + deleteResult.wasAcknowledged()));
+        Database.guilds.deleteOne(Filters.eq(EnumData.GUILD.getKey(), guildName), (deleteResult, throwable) -> Utils.log.info("[GUILD] [ASYNC] PURGED Guild=" + guildName + " ACKNOWLEDGED=" + deleteResult.wasAcknowledged()));
 
     }
 
@@ -113,16 +113,16 @@ public class Guild {
         }
 
         if (isOfficer(guildName, uuid)) {
-            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.officers", uuid.toString(), false);
-            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "info.members", uuid.toString(), true);
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.OFFICERS, uuid.toString(), false);
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, EnumGuildData.MEMBERS, uuid.toString(), true);
             NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + API.getNameFromUUID(uuid.toString()) + " " + ChatColor.GREEN + "has been demoted to member!");
         } else if (isMember(guildName, uuid)) {
-            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.guild", "", true);
-            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.members", uuid.toString(), true);
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.GUILD, "", true);
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.MEMBERS, uuid.toString(), true);
             NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + API.getNameFromUUID(uuid.toString()) + " " + ChatColor.GREEN + "has been removed by demotion!");
             player.sendMessage(ChatColor.RED + "As future reference use the 'Remove Player' option in the Guild Management GUI to remove players!");
         } else if (isInvited(guildName, uuid)) {
-            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.invitations", uuid.toString(), true);
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.INVITATIONS, uuid.toString(), true);
             NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + API.getNameFromUUID(uuid.toString()) + " " + ChatColor.GREEN + "'s invitation has been revoked!");
             player.sendMessage(ChatColor.RED + "As future reference use the 'Remove Player' option in the Guild Management GUI to remove players!");
         } else {
@@ -155,14 +155,14 @@ public class Guild {
 
         if (isOfficer(guildName, uuid)) {
             if (DatabaseAPI.getInstance().getData(EnumGuildData.CO_OWNER, guildName).equals("")) {
-                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, "info.coOwner", uuid.toString(), true);
+                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, EnumGuildData.CO_OWNER, uuid.toString(), true);
                 NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + API.getNameFromUUID(uuid.toString()) + " " + ChatColor.GREEN + "has been promoted to CoOwner!");
             } else {
                 player.sendMessage(ChatColor.RED + "You already have someone as an CoOwner!");
             }
         } else if (isMember(guildName, uuid)) {
-            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.members", uuid.toString(), false);
-            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "info.officers", uuid.toString(), true);
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.MEMBERS, uuid.toString(), false);
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, EnumGuildData.OFFICERS, uuid.toString(), true);
             NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + API.getNameFromUUID(uuid.toString()) + " " + ChatColor.GREEN + "has been promoted to an Officer!");
         } else if (isInvited(guildName, uuid)) {
             player.sendMessage(ChatColor.RED + "You cannot promote a player that hasn't accepted the Guild Invitation Yet!");
@@ -186,18 +186,18 @@ public class Guild {
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
         if (API.isOnline(uuid)) {
             if (Guild.getInstance().isInvited(guildName, uuid)) {
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, "notices.guildInvites", guildName, true);
-                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "invitations", uuid.toString(), true);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$PULL, EnumData.GUILD_INVITES, guildName, true);
+                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.INVITATIONS, uuid.toString(), true);
                 player.sendMessage(ChatColor.GREEN + "You have successfully remove a pending invitation from " + playerName);
             } else {
                 //Something wrong here.
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "info.guild", "", true);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.GUILD, "", true);
                 if (Guild.getInstance().isMember(guildName, uuid)) {
-                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.members", uuid.toString(), true);
+                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.MEMBERS, uuid.toString(), true);
                     player.sendMessage(ChatColor.GREEN + "You have successfully remove member " + playerName);
                     NetworkAPI.getInstance().sendAllGuildMessage(guildName, player.getName() + " has removed Member " + playerName + "!");
                 } else if (Guild.getInstance().isOfficer(guildName, uuid)) {
-                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.officers", uuid.toString(), true);
+                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.OFFICERS, uuid.toString(), true);
                     player.sendMessage(ChatColor.GREEN + "You have successfully remove officer " + playerName);
                     NetworkAPI.getInstance().sendAllGuildMessage(guildName, player.getName() + " has removed Officer " + playerName + "!");
                 }
@@ -217,8 +217,8 @@ public class Guild {
                         break;
                     }
                 }
-                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.invitations", uuid.toString(), true);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, "guildInvites", invitations, false);
+                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.INVITATIONS, uuid.toString(), true);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.GUILD_INVITES, invitations, false);
                 player.sendMessage(ChatColor.GREEN + "You have successfully removed " + playerName);
             });
 
@@ -241,8 +241,8 @@ public class Guild {
                 if (Guild.getInstance().isInvited(guildName, player.getUniqueId())) {
                     player.sendMessage(ChatColor.RED + "That player is already invited to your guild!");
                 } else {
-                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, "notices.guildInvites", guildName + "," + System.currentTimeMillis(), true);
-                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "invitations", uuid.toString(), true);
+                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.GUILD_INVITES, guildName + "," + System.currentTimeMillis(), true);
+                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, EnumGuildData.INVITATIONS, uuid.toString(), true);
                     player.sendMessage(ChatColor.GREEN + "Player has been invited to a guild!");
                     Bukkit.getPlayer(uuid).sendMessage(ChatColor.GREEN + "You have been invited to " + ChatColor.AQUA + guildName + ChatColor.GREEN + " type /accept guild " + guildName + " to join!");
                     NetworkAPI.getInstance().sendAllGuildMessage(guildName, player.getName() + " has invited " + playerName + " to your guild!");
@@ -279,7 +279,7 @@ public class Guild {
      * @since 1.0
      */
     public void setGuildIcon(String guildName, Material material) {
-        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, "info.icon", material.toString(), true);
+        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, EnumGuildData.ICON, material.toString(), true);
     }
 
     /**
@@ -328,7 +328,7 @@ public class Guild {
      * @since 1.0
      */
     public void setCoOwner(UUID uuid, String guildName) {
-        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, "info.coOwner", uuid.toString(), true);
+        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, EnumGuildData.CO_OWNER, uuid.toString(), true);
     }
 
     /**
@@ -340,7 +340,7 @@ public class Guild {
      */
     public void removeMember(UUID uuid, String guildName) {
         if (isMember(guildName, uuid)) {
-            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.members", uuid.toString(), true);
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.MEMBERS, uuid.toString(), true);
         }
     }
 
@@ -353,7 +353,7 @@ public class Guild {
      */
     public void removeOfficer(UUID uuid, String guildName) {
         if (isOfficer(guildName, uuid)) {
-            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, "info.officers", uuid.toString(), true);
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.OFFICERS, uuid.toString(), true);
         }
     }
 
@@ -366,7 +366,7 @@ public class Guild {
      */
     public void addMember(UUID uuid, String guildName) {
         if (!isMember(guildName, uuid)) {
-            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "info.members", uuid.toString(), true);
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, EnumGuildData.MEMBERS, uuid.toString(), true);
         }
     }
 
@@ -378,7 +378,7 @@ public class Guild {
      */
     public void addOfficer(UUID uuid, String guildName) {
         if (!isMember(guildName, uuid) && !isOfficer(guildName, uuid)) {
-            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, "info.officers", uuid.toString(), true);
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, EnumGuildData.OFFICERS, uuid.toString(), true);
         }
     }
 
@@ -454,11 +454,11 @@ public class Guild {
         double experience = (double) DatabaseAPI.getInstance().getData(EnumGuildData.EXPERIENCE, guildName);
         if (level <= 50) {
             if ((level * (experience + experienceToAdd)) > (level * 1500 + (factorial(Math.round(level % 8))))) {
-                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.netLevel", 1, false);
-                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, "info.experience", 0, true);
+                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, EnumGuildData.LEVEL, 1, false);
+                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, EnumGuildData.EXPERIENCE, 0, true);
                 NetworkAPI.getInstance().sendAllGuildMessage(guildName, "Has leveled to " + level);
             } else {
-                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.experience", experienceToAdd, true);
+                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, EnumGuildData.EXPERIENCE, experienceToAdd, true);
             }
         } else {
             /*
@@ -468,47 +468,47 @@ public class Guild {
             switch (level) {
                 case 51:
                     if ((level * (experience + experienceToAdd)) > (level * 3500 + (factorial(Math.round(level % 6))))) {
-                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.netLevel", 1, false);
-                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, "info.experience", 0, true);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, EnumGuildData.LEVEL, 1, false);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, EnumGuildData.EXPERIENCE, 0, true);
                         NetworkAPI.getInstance().sendAllGuildMessage(guildName, "Has leveled to V1");
                     } else {
-                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.experience", experienceToAdd, true);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, EnumGuildData.EXPERIENCE, experienceToAdd, true);
                     }
                     break;
                 case 52:
                     if ((level * (experience + experienceToAdd)) > (level * 4500 + (factorial(Math.round(level % 6))))) {
-                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.netLevel", 1, false);
-                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, "info.experience", 0, true);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, EnumGuildData.LEVEL, 1, false);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, EnumGuildData.EXPERIENCE, 0, true);
                         NetworkAPI.getInstance().sendAllGuildMessage(guildName, "Has leveled to V2");
                     } else {
-                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.experience", experienceToAdd, true);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, EnumGuildData.EXPERIENCE, experienceToAdd, true);
                     }
                     break;
                 case 53:
                     if ((level * (experience + experienceToAdd)) > (level * 5500 + (factorial(Math.round(level % 5))))) {
-                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.netLevel", 1, false);
-                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, "info.experience", 0, true);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, EnumGuildData.LEVEL, 1, false);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, EnumGuildData.EXPERIENCE, 0, true);
                         NetworkAPI.getInstance().sendAllGuildMessage(guildName, "Has leveled to V3");
                     } else {
-                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.experience", experienceToAdd, true);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, EnumGuildData.EXPERIENCE, experienceToAdd, true);
                     }
                     break;
                 case 54:
                     if ((level * (experience + experienceToAdd)) > (level * 6500 + (factorial(Math.round(level % 4))))) {
-                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.netLevel", 1, false);
-                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, "info.experience", 0, true);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, EnumGuildData.LEVEL, 1, false);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, EnumGuildData.EXPERIENCE, 0, true);
                         NetworkAPI.getInstance().sendAllGuildMessage(guildName, "Has leveled to V4");
                     } else {
-                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.experience", experienceToAdd, true);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, EnumGuildData.EXPERIENCE, experienceToAdd, true);
                     }
                     break;
                 case 55:
                     if ((level * (experience + experienceToAdd)) > (level * 7500 + (factorial(Math.round(level % 3))))) {
-                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.netLevel", 1, false);
-                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, "info.experience", 0, true);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, EnumGuildData.LEVEL, 1, false);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, EnumGuildData.EXPERIENCE, 0, true);
                         NetworkAPI.getInstance().sendAllGuildMessage(guildName, "Has leveled to V5");
                     } else {
-                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, "info.experience", experienceToAdd, true);
+                        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$INC, EnumGuildData.EXPERIENCE, experienceToAdd, true);
                     }
                     break;
             }
@@ -567,7 +567,7 @@ public class Guild {
                                             .append("bankClicks", new ArrayList<String>()))
                     , (aVoid, throwable1) -> {
                         DatabaseAPI.getInstance().requestGuild(name);
-                        DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, "info.guild", name.toUpperCase(), true);
+                        DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, EnumData.GUILD, name.toUpperCase(), true);
                     });
         });
 

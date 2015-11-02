@@ -38,6 +38,7 @@ public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze i
 			setArmor(tier);
 		this.getBukkitEntity().setCustomNameVisible(true);
         String customName = monster.getPrefix() + " " + name + " " + monster.getSuffix() + " ";
+        this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
 		setStats();
 	}

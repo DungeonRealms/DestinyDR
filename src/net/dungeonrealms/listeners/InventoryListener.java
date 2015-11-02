@@ -18,6 +18,7 @@ import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.network.NetworkAPI;
 import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -258,6 +259,8 @@ public class InventoryListener implements Listener {
 										clicker.getInventory().addItem(CraftItemStack.asBukkitCopy(nms2));
 										ItemStack tempStack = event.getInventory().getItem(event.getRawSlot());
 										tempStack.setAmount(1);
+										BankMechanics.addGemsToPlayerBank(shop.getOwner().getUniqueId(), price);
+										NetworkAPI.getInstance().sendPlayerMessage(shop.getOwner().getDisplayName(), ChatColor.GREEN.toString() + price + "gems added to your bank!");
 										shop.inventory.remove(tempStack);
 									} else {
 										clicker.sendMessage("not enought money");

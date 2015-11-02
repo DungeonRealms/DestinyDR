@@ -1,5 +1,7 @@
 package net.dungeonrealms.entities.types.monsters;
 
+import java.util.Random;
+
 import org.bukkit.ChatColor;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -61,10 +63,10 @@ public class EntityBandit extends DRZombie{
 
     @Override
     protected Item getLoot() {
-    	if(this.random.nextInt(100) < 50){
+    	if(this.random.nextInt(100) < 33){
         ItemStack item = BankMechanics.gem.clone();
-        item.setAmount(this.random.nextInt(5));
-        this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation(), item);
+        item.setAmount(new Random().nextInt(5));
+        this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation().add(0, 1, 0), item);
     	}
         return null;
     }

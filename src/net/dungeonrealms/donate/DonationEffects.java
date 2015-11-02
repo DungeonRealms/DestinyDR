@@ -106,7 +106,7 @@ public class DonationEffects implements GenericMechanic {
             return false;
         }
         if (playerEcash - amount >= 0) {
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, "info.ecash", (amount * -1), true);
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, (amount * -1), true);
             return true;
         } else {
             return false;

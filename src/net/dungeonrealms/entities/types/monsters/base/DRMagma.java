@@ -40,6 +40,7 @@ public class DRMagma extends EntityMagmaCube implements Monster{
         monsterType = EnumMonster.MagmaCube;
         setArmor(tier);
         String customName = monsterType.getPrefix() + " " + monsterType.name + " " + monsterType.getSuffix() + " ";
+        this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
 
 	}

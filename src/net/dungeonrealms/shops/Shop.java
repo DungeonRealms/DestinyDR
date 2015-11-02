@@ -5,6 +5,7 @@ import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -191,6 +192,6 @@ public class Shop {
 				break;
 			}
 		}
-		DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, "info.collection_bin", invString, false);
+		DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, invString, false);
 	}
 }

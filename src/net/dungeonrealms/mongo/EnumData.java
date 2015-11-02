@@ -5,65 +5,74 @@ package net.dungeonrealms.mongo;
  */
 public enum EnumData {
 
-    HEALTH,
-    FIRST_LOGIN,
-    LAST_LOGIN,
-    LEVEL,
-    IS_PLAYING,
-    GEMS,
-    HEARTHSTONE,
-    ECASH,
-    FRIENDS,
-    ALIGNMENT,
-    EXPERIENCE,
-    CURRENT_LOCATION,
+    HEALTH("info.health"),
+    FIRST_LOGIN("info.firstLogin"),
+    LAST_LOGIN("info.lastLogin"),
+    LEVEL("info.isPlaying"),
+    IS_PLAYING("info.netLevel"),
+    EXPERIENCE("info.experience"),
+    GEMS("info.gems"),
+    HEARTHSTONE("info.hearthstone"),
+    ECASH("info.ecash"),
+    FRIENDS("info.friends"),
+    ALIGNMENT("info.alignment"),
+    CURRENT_LOCATION("info.currentLocation"),
 
-    ACHIEVEMENTS,
+    ACHIEVEMENTS("collectibles.achievements"),
 
-    RANK,
-    RANK_EXISTENCE,
-    PURCHASE_HISTORY,
+    RANK("rank.rank"),
+    RANK_EXISTENCE("rank.lastPurchase"),
+    PURCHASE_HISTORY("rank.purchaseHistory"),
 
-    INVENTORY_COLLECTION_BIN,
-    INVENTORY_MULE,
-    INVENTORY_STORAGE,
-    INVENTORY,
-    INVENTORY_LEVEL,
+    INVENTORY_COLLECTION_BIN("inventory.collection_bin"),
+    INVENTORY_MULE("inventory.mule"),
+    INVENTORY_STORAGE("inventory.storage"),
+    INVENTORY("inventory.player"),
+    INVENTORY_LEVEL("inventory.level"),
 
-    GUILD,
+    GUILD("info.guild"),
 
-    GUILD_INVITES,
-    FRIEND_REQUSTS,
+    GUILD_INVITES("notices.guildInvites"),
+    FRIEND_REQUSTS("notices.friendRequest"),
 
-    MOUNTS,
-    PETS,
-    PARTICLES,
+    MOUNTS("collectibles.mounts"),
+    PETS("collectibles.pets"),
+    PARTICLES("collectibles.particles"),
 
-    TOGGLE_DEBUG,
-    TOGGLE_TRADE,
-    TOGGLE_TRADE_CHAT,
-    TOGGLE_GLOBAL_CHAT,
-    TOGGLE_RECEIVE_MESSAGE,
-    TOGGLE_PVP,
-    TOGGLE_DUEL,
-    TOGGLE_CHAOTIC_PREVENTION,
+    TOGGLE_DEBUG("toggles.debug"),
+    TOGGLE_TRADE("toggles.trade"),
+    TOGGLE_TRADE_CHAT("toggles.tradeChat"),
+    TOGGLE_GLOBAL_CHAT("toggles.globalChat"),
+    TOGGLE_RECEIVE_MESSAGE("toggles.receiveMessage"),
+    TOGGLE_PVP("toggles.pvp"),
+    TOGGLE_DUEL("toggles.duel"),
+    TOGGLE_CHAOTIC_PREVENTION("toggles.chaoticPrevention"),
 
 
-    MAILBOX,
+    MAILBOX("notices.mailbox"),
 
 
     /*
     Player Attributes
      */
     //Adds Armor, Block Chance, Axe Damage and Polearm Damage
-    STRENGTH,
+    STRENGTH("info.attributes.strength"),
     //Add DPS%, Dodge Chance, Armor Penetration and Bow Damage
-    DEXTERITY,
+    DEXTERITY("info.attributes.dexterity"),
     //Adds Energy Regeneration, elemental damage, critical hit chance and staff damamge.
-    INTELLECT,
+    INTELLECT("info.attributes.intellect"),
     //Adds Health, hp regen, elemental resistance, and sword damage.
-    VITALITY,
+    VITALITY("info.attributes.vitality"),
 
-    BUFFER_POINTS,;
+    BUFFER_POINTS("info.attributes.bufferPoints");
+	
+	private String key;
+	EnumData(String key){
+		this.key = key;
+	}
+	
+	public String getKey(){
+		return key;
+	}
 
 }
