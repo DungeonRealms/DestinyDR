@@ -61,14 +61,13 @@ public class Chat {
 
         boolean gChat = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, uuid);
 
-        if (gChat) {
-            prefix.append(ChatColor.GREEN + "<G>");
-        } else {
-            prefix.append(ChatColor.GREEN + "<L>");
-        }
+        prefix.append(gChat ?
+                ChatColor.GREEN + "<" + ChatColor.BOLD + "G" + ChatColor.GREEN + ">" + ChatColor.RESET + " "
+                :
+                ChatColor.GREEN + "<" + ChatColor.BOLD + "L" + ChatColor.GREEN + ">" + ChatColor.RESET + " ");
 
         Rank.RankBlob r = Rank.getInstance().getRank(uuid);
-        if (r != null && !r.getPrefix().equals("null")) {
+        if (r != null || !r.getPrefix().equals("null")) {
             prefix.append(ChatColor.translateAlternateColorCodes('&', "[" + r.getPrefix() + ChatColor.RESET + "]"));
         }
 
@@ -80,6 +79,7 @@ public class Chat {
         if (gChat) {
             event.setFormat(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage());
         } else {
+            event.setCancelled(true);
             API.getNearbyPlayers(event.getPlayer().getLocation(), 100).stream().forEach(player -> player.sendMessage(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage()));
         }
     }
