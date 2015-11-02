@@ -1,5 +1,6 @@
 package net.dungeonrealms.mastery;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -100,6 +101,15 @@ public class GamePlayer {
      */
     public boolean isInDungeon() {
         return T.getWorld().getName().contains("DUNGEON");
+    }
+
+    /**
+     * Checks if the player is in a Players Realm
+     *
+     * @return Is player in Realm?
+     */
+    public boolean isInRealm() {
+        return !T.getWorld().getName().contains("DUNGEON") && !T.getWorld().equals(Bukkit.getWorlds().get(0));
     }
 
     /**

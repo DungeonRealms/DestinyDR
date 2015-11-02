@@ -1,16 +1,5 @@
 package net.dungeonrealms.mechanics;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-import org.bukkit.inventory.ItemStack;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.items.Item.ItemTier;
@@ -18,14 +7,24 @@ import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.spawning.LootSpawner;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Chase on Oct 9, 2015
  */
 public class LootManager implements GenericMechanic{
 
-    public static List<LootSpawner> spawners = new ArrayList<>();
-    public static List<String> spawnerConfig = new ArrayList<>();
+    public static List<LootSpawner> LOOT_SPAWNERS = new ArrayList<>();
+    public static List<String> SPAWNER_CONFIG = new ArrayList<>();
     public static List<ItemStack> tier1Loot = new ArrayList<>();
     public static List<ItemStack> tier2Loot = new ArrayList<>();
     public static List<ItemStack> tier3Loot = new ArrayList<>();
@@ -124,8 +123,8 @@ public class LootManager implements GenericMechanic{
      */
     public static void loadLootSpawners() {
         loadLootItems();
-        spawnerConfig = DungeonRealms.getInstance().getConfig().getStringList("loot");
-        for (String line : spawnerConfig) {
+        SPAWNER_CONFIG = DungeonRealms.getInstance().getConfig().getStringList("loot");
+        for (String line : SPAWNER_CONFIG) {
             int tier = Integer.parseInt(line.split(":")[1]);
             double x, y, z;
             String[] location = line.split(":")[0].split(",");
@@ -137,9 +136,18 @@ public class LootManager implements GenericMechanic{
             Block chest = world.getBlockAt(loc);
             chest.setType(Material.CHEST);
             LootSpawner lootSpawner = new LootSpawner(loc, tier, chest);
-            spawners.add(lootSpawner);
+            LOOT_SPAWNERS.add(lootSpawner);
         }
 
+    }
+
+    public static boolean checkLocationForLootSpawner(Location location) {
+        for (LootSpawner lootSpawner : LOOT_SPAWNERS) {
+            if (lootSpawner.location.distanceSquared(location) <= 2) {
+                return true;
+            }
+        }
+        return false;
     }
 
     @Override

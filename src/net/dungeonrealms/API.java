@@ -46,6 +46,7 @@ import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mastery.NameFetcher;
+import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
@@ -260,6 +261,7 @@ public class API {
             locationAsString = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + "," + player.getLocation().getYaw() + "," + player.getLocation().getPitch();
         }
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, false);
+        RealmManager.getInstance().removePlayerRealm(player);
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
         KarmaHandler.getInstance().handleLogoutEvents(player);

@@ -77,8 +77,8 @@ public class CommandSet extends BasicCommand {
 				if (args.length == 2) {
 					int lootTier = Integer.parseInt(args[1]);
 					String data = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + ":" + lootTier;
-					LootManager.spawnerConfig.add(data);
-					DungeonRealms.getInstance().getConfig().set("loot", LootManager.spawnerConfig);
+					LootManager.SPAWNER_CONFIG.add(data);
+					DungeonRealms.getInstance().getConfig().set("loot", LootManager.SPAWNER_CONFIG);
 				}
 				break;
 			case "kill":
