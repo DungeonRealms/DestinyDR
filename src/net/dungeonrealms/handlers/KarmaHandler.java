@@ -201,7 +201,7 @@ public class KarmaHandler implements GenericMechanic {
                                 ""
                         });
                     }
-                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, new GamePlayer(player).getLevel());
+                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, API.getGamePlayer(player).getLevel());
                     PLAYER_ALIGNMENTS.put(player, alignment);
                     break;
                 case NEUTRAL:
@@ -213,7 +213,7 @@ public class KarmaHandler implements GenericMechanic {
                                 ""
                         });
                     }
-                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.YELLOW, new GamePlayer(player).getLevel());
+                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.YELLOW, API.getGamePlayer(player).getLevel());
                     PLAYER_ALIGNMENT_TIMES.put(player, 120);
                     PLAYER_ALIGNMENTS.put(player, alignment);
                     break;

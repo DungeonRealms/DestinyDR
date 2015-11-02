@@ -12,6 +12,7 @@ import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.party.Party;
+import net.dungeonrealms.stats.PlayerStats;
 
 /**
  * Created by Nick on 10/19/2015.
@@ -19,9 +20,12 @@ import net.dungeonrealms.party.Party;
 public class GamePlayer {
 
     private Player T;
-
+    private PlayerStats stats;
+    
     public GamePlayer(Player player) {
         T = player;
+        stats = new PlayerStats(player.getUniqueId());
+        Utils.log.info("Created GamePlayer for " + player.getName());
     }
 
     /**
@@ -178,10 +182,9 @@ public class GamePlayer {
          */
         //TODO: Fix this formula for levels 1-9
         if (futureExperience > (level ^ 2 * 250) + Math.round(level % (64 * 2))) {
-            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, level + 1, false);
+        	getStats().lvlUp();
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, experienceToAdd - experience, false);
             Utils.log.info("[LEVEL] Leveling " + T.getName() + " to level " + getLevel() + 1 + " with new experience" + String.valueOf(experience - experience));
-            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.BUFFER_POINTS, 6, false);
             T.sendMessage(ChatColor.GREEN + "You have reached level " + ChatColor.AQUA + level + 1 + ChatColor.GREEN + " and have gained 6 Attribute Points!");
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(T, getPlayerAlignment().getAlignmentColor(), level + 1);
         } else {
@@ -204,5 +207,20 @@ public class GamePlayer {
         output = factorial(n - 1) * n;
         return output;
     }
+
+	/**
+	 * @return Player
+	 */
+	public Player getPlayer() {
+		return T;
+	}
+
+	/**
+	 * @return Player Stats
+	 * 
+	 */
+	public PlayerStats getStats() {
+		return stats;
+	}
 
 }

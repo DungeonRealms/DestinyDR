@@ -56,15 +56,15 @@ public enum EnumData {
     Player Attributes
      */
     //Adds Armor, Block Chance, Axe Damage and Polearm Damage
-    STRENGTH("info.attributes.strength"),
+    STRENGTH("attributes.strength"),
     //Add DPS%, Dodge Chance, Armor Penetration and Bow Damage
-    DEXTERITY("info.attributes.dexterity"),
+    DEXTERITY("attributes.dexterity"),
     //Adds Energy Regeneration, elemental damage, critical hit chance and staff damamge.
-    INTELLECT("info.attributes.intellect"),
+    INTELLECT("attributes.intellect"),
     //Adds Health, hp regen, elemental resistance, and sword damage.
-    VITALITY("info.attributes.vitality"),
+    VITALITY("attributes.vitality"),
 
-    BUFFER_POINTS("info.attributes.bufferPoints");
+    BUFFER_POINTS("attributes.bufferPoints");
 	
 	private String key;
 	EnumData(String key){

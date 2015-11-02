@@ -21,6 +21,7 @@ import org.bukkit.entity.Player;
 
 import com.connorlinfoot.bountifulapi.BountifulAPI;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.Utils;
@@ -108,7 +109,7 @@ public class DungeonManager implements GenericMechanic{
      */
     public void removeInstance(DungeonObject dungeonObject) {
         dungeonObject.getPlayerList().stream().forEach(player -> {
-            if (new GamePlayer(player).isInDungeon()) {
+            if (API.getGamePlayer(player).isInDungeon()) {
                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance is will close!");
                 player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
             }

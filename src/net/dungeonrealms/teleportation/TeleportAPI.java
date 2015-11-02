@@ -1,5 +1,6 @@
 package net.dungeonrealms.teleportation;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -30,7 +31,7 @@ public class TeleportAPI {
      */
     public static boolean canUseHearthstone(UUID uuid) {
         if (Teleportation.PLAYER_TELEPORT_COOLDOWNS.containsKey(uuid)) {
-            if (new GamePlayer(Bukkit.getPlayer(uuid)).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+            if (API.getGamePlayer(Bukkit.getPlayer(uuid)).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
                 if (Teleportation.PLAYER_TELEPORT_COOLDOWNS.get(uuid) <= 0 && Bukkit.getPlayer(uuid).getWorld().getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName())) {
                     return true;
                 }

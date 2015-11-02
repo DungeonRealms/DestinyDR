@@ -19,6 +19,7 @@ import net.dungeonrealms.commands.CommandParty;
 import net.dungeonrealms.commands.CommandRank;
 import net.dungeonrealms.commands.CommandSet;
 import net.dungeonrealms.commands.CommandSpawn;
+import net.dungeonrealms.commands.CommandStats;
 import net.dungeonrealms.commands.generic.CommandManager;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.entities.Entities;
@@ -180,6 +181,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandAccept("accept", "/<command> [args]", "The accept command."));
         cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
         cm.registerCommand(new CommandGlobalChat("g", "/<command> [args]", "The invoke command."));
+        cm.registerCommand(new CommandStats("stats", "/<command> [args]", "The stats command."));
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         getInstance().hasFinishedSetup = true;
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");

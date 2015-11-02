@@ -1,5 +1,29 @@
 package net.dungeonrealms;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.rmi.activation.UnknownObjectException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.plugin.Plugin;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -7,6 +31,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
 import net.dungeonrealms.entities.Entities;
@@ -18,6 +43,7 @@ import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.ScoreboardHandler;
+import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mastery.NameFetcher;
 import net.dungeonrealms.mastery.Utils;
@@ -31,34 +57,15 @@ import net.dungeonrealms.party.Party;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.teleportation.TeleportAPI;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.plugin.Plugin;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.rmi.activation.UnknownObjectException;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/17/2015.
  */
 public class API {
 
+	public static ArrayList<GamePlayer> GAMEPLAYERS = new ArrayList<>();
+	
+	
     /**
      * To get the players region.
      *
@@ -268,6 +275,14 @@ public class API {
             mount.dead = true;
             EntityAPI.removePlayerMountList(uuid);
         }
+        
+        for(GamePlayer gPlayer : GAMEPLAYERS){
+        	if(gPlayer.getPlayer().getName().equalsIgnoreCase(player.getName())){
+        		gPlayer.getStats().onLogOff();
+        		GAMEPLAYERS.remove(gPlayer);
+        	}
+        }
+        
     }
 
 
@@ -292,6 +307,7 @@ public class API {
      */
     public static void handleLogin(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
+        GAMEPLAYERS.add(new GamePlayer(player));
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
             ItemStack[] items = ItemSerialization.fromString(playerInv).getContents();
@@ -315,7 +331,6 @@ public class API {
         EnergyHandler.getInstance().handleLoginEvents(player);
         HealthHandler.getInstance().handleLoginEvents(player);
         KarmaHandler.getInstance().handleLoginEvents(player);
-
         //Essentials
         Subscription.getInstance().doAdd(uuid);
         Subscription.getInstance().handleJoin(player);
@@ -405,4 +420,12 @@ public class API {
         return location.getWorld().getEntities().stream().filter(mons -> mons.getLocation().distance(location) <= radius && mons.hasMetadata("type") && mons.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")).collect(Collectors.toList());
     }
 
+    public static GamePlayer getGamePlayer(Player p ){
+    	for(GamePlayer gPlayer : GAMEPLAYERS){
+    		if(gPlayer.getPlayer().getName().equalsIgnoreCase(p.getName()))
+    			return gPlayer;
+    	}
+		return null;
+    }
+    
 }
