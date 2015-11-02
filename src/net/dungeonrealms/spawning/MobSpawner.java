@@ -296,7 +296,7 @@ public class MobSpawner {
 	}
 
 	/**
-	 * @return
+	 * Force NameTags to be removed if the owner is dead.
 	 */
 	private void checkNameTags() {
 		for(org.bukkit.entity.Entity ent : NAMETAGS.keySet()){

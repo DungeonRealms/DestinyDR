@@ -11,9 +11,9 @@ public enum EnumMonster {
 
     Troll("troll", "Troll", "Steve", new String[]{"Strong", "Smelly"}, new String[]{"Warrior", "Rebel"}),
     Goblin("goblin", "Goblin", "Shrek", new String[]{"Short", "Ugly", "Smelly"}, new String[]{""}),
-    Bandit("bandit", "Bandit", "Steve", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Majestic", "Intrigued", "Dignified", "Courageous", "Timid", "Gloomy", "Noble", "Naive", "Black"}, new String[]{""}),
+    Bandit("bandit", "Bandit", "Steve", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Majestic", "Intrigued", "Dignified", "Courageous", "Timid", "Gloomy", "Noble", "Naive"}, new String[]{""}),
     Pirate("pirate", "Pirate", "samsamsam1234", new String[]{""}, new String[]{""}),
-    RangedPirate("rangedpirate", "Ranged Pirate", "samsamsam1234", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Majestic", "Intrigued", "Dignified", "Courageous", "Timid", "Gloomy", "Noble", "Naive", "Black"}, new String[]{""}),
+    RangedPirate("rangedpirate", "Ranged Pirate", "samsamsam1234", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Majestic", "Intrigued", "Dignified", "Courageous", "Timid", "Gloomy", "Noble", "Naive"}, new String[]{""}),
     MayelPirate("mayelpirate", "Pirate", "samsamsam1234", new String[]{"Mayel"}, new String[]{""}),
     Naga("naga","Naga", "Das_Doktor", new String[]{"Weak"}, new String[]{"Shaman", "Mage"}),
     Tripoli("tripoli","Tripoli", "Xmattpt", new String[]{" "}, new String[]{"Soldier", "Commander"}),
