@@ -18,10 +18,7 @@ import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.spawning.LootSpawner;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
@@ -66,8 +63,9 @@ public class BlockListener implements Listener {
      * @param e
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void blockBreak(BlockBreakEvent e) {
+        if (!e.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
         Block block = e.getBlock();
         if (block == null) return;
         if (block.getType() == Material.CHEST) {
@@ -255,11 +253,8 @@ public class BlockListener implements Listener {
                 }
             } else {
                 if (event.getClickedBlock().getType() == Material.PORTAL) {
-                    event.getPlayer().sendMessage("PORTAL NEARBY!");
-                    if (RealmManager.getInstance().getPlayerRealmPlayer(event.getPlayer()) != null) {
-                        event.getPlayer().sendMessage("YOU HAVE A PORTAL TOO!");
+                    if (RealmManager.getInstance().getPlayerRealm(event.getPlayer()) != null) {
                         if (RealmManager.getInstance().getRealmViaLocation(event.getClickedBlock().getLocation()).getRealmOwner().equals(event.getPlayer().getUniqueId())) {
-                            event.getPlayer().sendMessage("YOUR PORTAL!");
                             RealmManager.getInstance().removeRealm(RealmManager.getInstance().getRealmViaLocation(event.getClickedBlock().getLocation()));
                         }
                     }
@@ -342,6 +337,44 @@ public class BlockListener implements Listener {
         } else {
             Location realmPortalLocation = RealmManager.getInstance().getPortalLocationFromRealmWorld(event.getPlayer());
             event.setTo(realmPortalLocation.clone().add(0, 2, 0));
+            event.getPlayer().setFlying(false);
+        }
+    }
+
+    /**
+     * Handles a player breaking a block
+     * within a realm.
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerBreakBlockInRealm(BlockBreakEvent event) {
+        if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
+        if (event.getPlayer().getWorld().getName().contains("DUNGEON")) return;
+        if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
+        if (!RealmManager.getInstance().getPlayersCurrentRealm(event.getPlayer()).getRealmBuilders().contains(event.getPlayer())) {
+            event.setCancelled(true);
+            event.setExpToDrop(0);
+            event.getPlayer().sendMessage(ChatColor.RED + "You cannot break blocks in this realm, please ask the owner to add you to the builders list!");
+        }
+    }
+
+    /**
+     * Handles a player placing a block
+     * within a realm.
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerPlaceBlockInRealm(BlockPlaceEvent event) {
+        if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
+        if (event.getPlayer().getWorld().getName().contains("DUNGEON")) return;
+        if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
+        if (!RealmManager.getInstance().getPlayersCurrentRealm(event.getPlayer()).getRealmBuilders().contains(event.getPlayer())) {
+            event.setCancelled(true);
+            event.getPlayer().sendMessage(ChatColor.RED + "You cannot place blocks in this realm, please ask the owner to add you to the builders list!");
         }
     }
 }

@@ -5,6 +5,7 @@ import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
+import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
@@ -91,12 +92,14 @@ public class RealmManager implements GenericMechanic {
         private Location portalLocation;
         private List<Player> playerList;
         private Hologram realmHologram;
+        private List<Player> realmBuilders;
 
-        public RealmObject(UUID realmOwner, Location portalLocation, List<Player> playerList, Hologram realmHologram) {
+        public RealmObject(UUID realmOwner, Location portalLocation, List<Player> playerList, Hologram realmHologram, List<Player> realmBuilders) {
             this.realmOwner = realmOwner;
             this.portalLocation = portalLocation;
             this.playerList = playerList;
             this.realmHologram = realmHologram;
+            this.realmBuilders = realmBuilders;
         }
 
         public UUID getRealmOwner() {
@@ -113,6 +116,10 @@ public class RealmManager implements GenericMechanic {
 
         public Hologram getRealmHologram() {
             return realmHologram;
+        }
+
+        public List<Player> getRealmBuilders() {
+            return realmBuilders;
         }
     }
 
@@ -419,6 +426,7 @@ public class RealmManager implements GenericMechanic {
             if (new GamePlayer(player).isInRealm()) {
                 player.sendMessage(ChatColor.RED + "This Realm has been closed!");
                 player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+                player.setFlying(false);
             }
         });
         Bukkit.getWorlds().remove(Bukkit.getWorld(realmObject.getRealmOwner().toString()));
@@ -450,10 +458,22 @@ public class RealmManager implements GenericMechanic {
      *
      * @since 1.0
      */
-    public RealmObject getPlayerRealmPlayer(Player player) {
+    public RealmObject getPlayerRealm(Player player) {
         if (!CURRENT_REALMS.isEmpty()) {
             for (RealmObject realmObject : CURRENT_REALMS) {
                 if (realmObject.getRealmOwner().equals(player.getUniqueId())) {
+                    return realmObject;
+                }
+            }
+            return null;
+        }
+        return null;
+    }
+
+    public RealmObject getPlayersCurrentRealm(Player player) {
+        if (!CURRENT_REALMS.isEmpty()) {
+            for (RealmObject realmObject : CURRENT_REALMS) {
+                if (realmObject.getRealmOwner().toString().equals(player.getWorld().getName())) {
                     return realmObject;
                 }
             }
@@ -468,8 +488,8 @@ public class RealmManager implements GenericMechanic {
      * @since 1.0
      */
     public void removePlayerRealm(Player player) {
-        if (getPlayerRealmPlayer(player) != null) {
-            removeRealm(getPlayerRealmPlayer(player));
+        if (getPlayerRealm(player) != null) {
+            removeRealm(getPlayerRealm(player));
         }
     }
 
@@ -480,36 +500,32 @@ public class RealmManager implements GenericMechanic {
      * @since 1.0
      */
     public void tryToOpenRealm(Player player, Location clickLocation) {
-        if (getPlayerRealmPlayer(player) == null) {
+        if (getPlayerRealm(player) == null) {
             if (CombatLog.isInCombat(player)) {
-                player.sendMessage("Cannot open Realm while in Combat!");
+                player.sendMessage(ChatColor.RED + "Cannot open Realm while in Combat!");
                 return;
             }
             if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
-                player.sendMessage("You can only open a realm portal in the main world!");
+                player.sendMessage(ChatColor.RED + "You can only open a realm portal in the main world!");
                 return;
             }
             final Location portalLocation = clickLocation.clone();
             if (!(portalLocation.clone().add(0, 1, 0).getBlock().getType() == Material.AIR) || !(portalLocation.clone().add(0, 1, 0).getBlock().getType() == Material.AIR)
                     || clickLocation.clone().getBlock().getType() == Material.CHEST || clickLocation.clone().getBlock().getType() == Material.ENDER_CHEST
                     || clickLocation.clone().getBlock().getType() == Material.PORTAL || clickLocation.clone().getBlock().getType() == Material.ANVIL) {
-                player.sendMessage("You cannot open a realm portal here!");
+                player.sendMessage(ChatColor.RED + "You cannot open a realm portal here!");
                 return;
             }
             if (LootManager.checkLocationForLootSpawner(clickLocation.clone())) {
-                player.sendMessage("You cannot place a realm portal this close to a Loot Spawning location");
+                player.sendMessage(ChatColor.RED + "You cannot place a realm portal this close to a Loot Spawning location");
                 return;
             }
-            if (API.isMaterialNearby(clickLocation.clone().getBlock(), 3, Material.LADDER)) {
-                player.sendMessage("You cannot place a realm portal here!");
-                return;
-            }
-            if (API.isMaterialNearby(clickLocation.clone().getBlock(), 10, Material.ENDER_CHEST)) {
-                player.sendMessage("You cannot place a realm portal here!");
+            if (API.isMaterialNearby(clickLocation.clone().getBlock(), 3, Material.LADDER) || API.isMaterialNearby(clickLocation.clone().getBlock(), 10, Material.ENDER_CHEST)) {
+                player.sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
                 return;
             }
             if (isThereARealmPortalNearby(clickLocation.clone().add(0, 1, 0), 6) || API.isMaterialNearby(clickLocation.clone().getBlock(), 6, Material.PORTAL)) {
-                player.sendMessage("You cannot place a portal so close to another! (Min 3 Blocks)");
+                player.sendMessage(ChatColor.RED + "You cannot place a portal so close to another! (Min 3 Blocks)");
                 return;
             }
             for (Player player1 : Bukkit.getWorlds().get(0).getPlayers()) {
@@ -520,7 +536,7 @@ public class RealmManager implements GenericMechanic {
                     continue;
                 }
                 if (player1.getLocation().distanceSquared(player.getLocation()) <= 2) {
-                    player.sendMessage("You cannot place your realm portal near another player");
+                    player.sendMessage(ChatColor.RED + "You cannot place your realm portal near another player");
                     return;
                 }
             }
@@ -530,9 +546,11 @@ public class RealmManager implements GenericMechanic {
             portalLocation.add(0, 1, 0).getBlock().setType(Material.PORTAL);
             portalLocation.add(0, 1, 0).getBlock().setType(Material.PORTAL);
             Hologram realmHologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), portalLocation.add(0.5, 1.5, 0.5));
-            realmHologram.appendTextLine(ChatColor.WHITE + player.getName() + " REALM");
+            realmHologram.appendTextLine(new GamePlayer(player).getPlayerAlignment().getAlignmentColor() + player.getName() + "(s) REALM");
             realmHologram.getVisibilityManager().setVisibleByDefault(true);
-            RealmObject realmObject = new RealmObject(player.getUniqueId(), clickLocation, new ArrayList<>(), realmHologram);
+            RealmObject realmObject = new RealmObject(player.getUniqueId(), clickLocation, new ArrayList<>(), realmHologram, new ArrayList<>());
+            realmObject.getRealmBuilders().add(player);
+            realmObject.getPlayerList().add(player);
             CURRENT_REALMS.add(realmObject);
 
             player.sendMessage(ChatColor.AQUA + "Your Portal Has Been Opened!");
@@ -638,4 +656,6 @@ public class RealmManager implements GenericMechanic {
         }
         return false;
     }
+
+    RealMechanics line 4827 download realm template!
 }
