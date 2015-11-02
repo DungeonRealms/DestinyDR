@@ -59,6 +59,7 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
         setArmor(tier);
         this.getBukkitEntity().setCustomNameVisible(true);
         String customName = monster.getPrefix() + " " + name + " " + monster.getSuffix() + " ";
+        this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
         setStats();
     }

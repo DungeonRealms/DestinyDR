@@ -26,6 +26,7 @@ public class DRSpider extends DRZombie implements Monster{
 	public DRSpider(World world, EnumMonster monst, int tier) {
 		super(world, monst, tier, EnumEntityType.HOSTILE_MOB, true);
         String customName = monsterType.getPrefix() + " " + monsterType.name + " " + monsterType.getSuffix() + " ";
+        this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
 
 	}
