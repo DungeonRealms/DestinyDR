@@ -61,7 +61,7 @@ public class PlayerStats {
 	 * @since 1.0;
 	 */
 	public void loadPlayerStats() {
-		this.freePoints = (int) DatabaseAPI.getInstance().getData(EnumData.BUFFER_POINTS, playerUUID);
+		this.freePoints = Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.BUFFER_POINTS, playerUUID)));
 		this.intPoints = (int) DatabaseAPI.getInstance().getData(EnumData.INTELLECT, playerUUID);
 		this.dexPoints = (int) DatabaseAPI.getInstance().getData(EnumData.DEXTERITY, playerUUID);
 		this.strPoints = (int) DatabaseAPI.getInstance().getData(EnumData.STRENGTH, playerUUID);

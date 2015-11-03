@@ -164,6 +164,10 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("attributes")).get("vitality", Integer.class);
             case BUFFER_POINTS:
                 return ((Document) PLAYERS.get(uuid).get("attributes")).get("bufferPoints", Integer.class);
+            case RESETS:
+                return ((Document) PLAYERS.get(uuid).get("attributes")).get("resets", Integer.class);
+            case FREERESETS:
+                return ((Document) PLAYERS.get(uuid).get("attributes")).get("freeresets", Integer.class);
             /*
             Player Storage
              */
