@@ -163,6 +163,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(Mining.getInstance());
         mm.registerMechanic(Fishing.getInstance());
         mm.registerMechanic(SpawningMechanics.getInstance());
+        mm.registerMechanic(AchievementManager.getInstance());
 
         mm.loadMechanics();
 
