@@ -183,10 +183,13 @@ public class RealmManager implements GenericMechanic {
     public void downloadRealm(UUID uuid) {
         if (REALM_STATUS.containsKey(uuid) && REALM_STATUS.get(uuid) == FTPStatus.DOWNLOADED) return;
         AsyncUtils.pool.submit(() -> {
+            //TODO: xFin fix this. It makes it to this line below.
             REALM_STATUS.put(uuid, FTPStatus.DOWNLOADING);
             FTPClient ftpClient = new FTPClient();
             FileOutputStream fos = null;
             String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
+            //TODO: xFin fix this. But never below here. This line is never shown to console. REALM_STATUS is always "DOWNLOADING".
+            Utils.log.info("Attempting to start Realm Download!");
             try {
                 ftpClient.connect(HOST, port);
                 boolean login = ftpClient.login(USER, PASSWORD);
@@ -201,6 +204,7 @@ public class RealmManager implements GenericMechanic {
                     ftpClient.disconnect();
                     Utils.log.warning("[REALM] [ASYNC] Player: " + uuid.toString() + " doesn't exist remotely!");
                     generateBlankRealm(uuid);
+                    Bukkit.broadcastMessage("GENERATING BLANK REALM!");
                     return;
                 }
 
@@ -229,6 +233,7 @@ public class RealmManager implements GenericMechanic {
                         e.printStackTrace();
                     }
                 }
+                REALM_STATUS.put(uuid, FTPStatus.DOWNLOADED);
                 loadInWorld(uuid.toString(), Bukkit.getPlayer(uuid));
             }
         });
@@ -403,7 +408,7 @@ public class RealmManager implements GenericMechanic {
         realmObject.getRealmHologram().delete();
         if (playerLoggingOut) {
             realmObject.getPlayerList().stream().forEach(player -> {
-                if (new GamePlayer(player).isInRealm()) {
+                if (API.getGamePlayer(player).isInRealm()) {
                     player.sendMessage(ChatColor.RED + "This Realm has been closed!");
                     player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
                     player.setFlying(false);
@@ -513,11 +518,12 @@ public class RealmManager implements GenericMechanic {
             }
 
             downloadRealm(player.getUniqueId());
+            //generateBlankRealm(player.getUniqueId());
 
             portalLocation.add(0, 1, 0).getBlock().setType(Material.PORTAL);
             portalLocation.add(0, 1, 0).getBlock().setType(Material.PORTAL);
             Hologram realmHologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), portalLocation.add(0.5, 1.5, 0.5));
-            realmHologram.appendTextLine(new GamePlayer(player).getPlayerAlignment().getAlignmentColor() + player.getName() + "(s) REALM");
+            realmHologram.appendTextLine(player.getName() + "(s) REALM");
             realmHologram.getVisibilityManager().setVisibleByDefault(true);
             RealmObject realmObject = new RealmObject(player.getUniqueId(), clickLocation, new ArrayList<>(), realmHologram, new ArrayList<>(), true);
             realmObject.getRealmBuilders().add(player);
@@ -684,6 +690,7 @@ public class RealmManager implements GenericMechanic {
                         e.printStackTrace();
                     }
                 }
+                REALM_STATUS.put(uuid, FTPStatus.DOWNLOADED);
             }
         });
     }
@@ -719,10 +726,10 @@ public class RealmManager implements GenericMechanic {
             }
         }
 
-        world.getSpawnLocation().getBlock().setType(Material.PORTAL);
-        world.getSpawnLocation().subtract(0, 1, 0);
-        world.getSpawnLocation().getBlock().setType(Material.PORTAL);
-        world.getSpawnLocation().add(0, 1, 0);
+        Location portalLocation = world.getSpawnLocation().clone();
+        portalLocation.getBlock().setType(Material.PORTAL);
+        portalLocation.subtract(0, 1, 0).getBlock().setType(Material.PORTAL);
+        portalLocation.add(0, 1, 0);
 
         Utils.log.info("[REALMS] Blank Realm generated for player " + ownerUUID.toString());
     }

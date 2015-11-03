@@ -22,6 +22,10 @@ import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.network.NetworkAPI;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.dungeonrealms.teleportation.Teleportation;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.Entity;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -83,7 +87,7 @@ public class ClickHandler {
                 }
             }
             return;
-        }else
+        } else
 
         /*
         Skill Trainer NPC
@@ -114,14 +118,14 @@ public class ClickHandler {
                 return;
             }
             return;
-        }else
+        } else
 
         /*
         E-Cash Vendor NPC
          */
         if (name.equals("E-Cash Vendor")) {
             event.setCancelled(true);
-            if (slot > 9) return;
+            if (slot > 25) return;
             if (event.getCurrentItem().getType() != Material.AIR) {
                 net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                 if (nmsStack == null) return;
@@ -177,9 +181,19 @@ public class ClickHandler {
                         }
                     }
                 }
+                if (nmsStack.getTag().hasKey("donationStore")) {
+                    player.closeInventory();
+                    TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
+                    bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://dungeonrealms.net/shop"));
+                    bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Dungeon Realms Store!").create()));
+                    TextComponent test = new TextComponent(ChatColor.WHITE + "[" + ChatColor.YELLOW + ChatColor.BOLD + "DONATE" + ChatColor.RESET + ChatColor.WHITE + "] " + ChatColor.RED + "To Purchase E-Cash from our Shop, Click ");
+                    test.addExtra(bungeeMessage);
+                    player.spigot().sendMessage(test);
+                    return;
+                }
             }
             return;
-        }else
+        } else
 
         /*
         Inn Keeper NPC
@@ -215,7 +229,7 @@ public class ClickHandler {
                 }
             }
             return;
-        }else
+        } else
 
         /*
         Friend Management
@@ -245,7 +259,7 @@ public class ClickHandler {
                 return;
             }
             FriendHandler.getInstance().addOrRemove(player, event.getClick(), event.getCurrentItem());
-        }else
+        } else
 
         /*
         Friends List Menu
@@ -257,7 +271,7 @@ public class ClickHandler {
                 PlayerMenus.openFriendInventory(player);
             }
             FriendHandler.getInstance().remove(player, event.getClick(), event.getCurrentItem());
-        }else
+        } else
 
         /*
         Mail Below
@@ -269,7 +283,7 @@ public class ClickHandler {
                 MailHandler.getInstance().giveItemToPlayer(clickedItem, player);
             }
             return;
-        }else
+        } else
 
         /*
         Pets Below
@@ -319,7 +333,7 @@ public class ClickHandler {
                 }
                 PetUtils.spawnPet(player.getUniqueId(), nmsStack.getTag().getString("petType"), particleType);
             }
-        }else
+        } else
 
         /*
         Mounts Below
@@ -378,7 +392,7 @@ public class ClickHandler {
                 MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"));
             }
             return;
-        }else
+        } else
 
         /*
         Particle Trails Below
@@ -408,7 +422,7 @@ public class ClickHandler {
                 DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")));
                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have enabled the " + ChatColor.RED + nmsStack.getTag().getString("playerTrailType") + ChatColor.AQUA + " Player trail!");
             }
-        }else
+        } else
 
 
         /*
@@ -453,7 +467,7 @@ public class ClickHandler {
                     break;
             }
             return;
-        }else
+        } else
 
 
         /*
@@ -564,7 +578,7 @@ public class ClickHandler {
                     break;
             }
             return;
-        }else
+        } else
         	
         /*Reset Stats Wizard*/
         if(name.equalsIgnoreCase("Wizard")){

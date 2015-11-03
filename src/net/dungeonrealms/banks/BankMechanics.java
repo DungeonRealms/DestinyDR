@@ -56,7 +56,7 @@ public class BankMechanics implements GenericMechanic {
     
     
     
-	public static boolean takeGemsFromInventory(int amount, Player p) {
+	public boolean takeGemsFromInventory(int amount, Player p) {
 		Inventory i = p.getInventory();
 		int paid_off = 0;
 
@@ -153,7 +153,7 @@ public class BankMechanics implements GenericMechanic {
 	}
     
     
-	public static void updateMoney(Player p, int slot, int new_amount) { 
+	public void updateMoney(Player p, int slot, int new_amount) {
 		p.getInventory().setItem(slot, createBankNote(new_amount));
 	}
     
@@ -233,7 +233,7 @@ public class BankMechanics implements GenericMechanic {
      *
      * @return
      */
-    private static void loadCurrency() {
+    private void loadCurrency() {
         ItemStack item = new ItemStack(Material.EMERALD, 1);
         ItemMeta meta = item.getItemMeta();
         List<String> lore = new ArrayList<>();
@@ -286,7 +286,7 @@ public class BankMechanics implements GenericMechanic {
      * @param stack
      * @return integer
      */
-    public static int getNoteValue(ItemStack stack) {
+    public int getNoteValue(ItemStack stack) {
         return CraftItemStack.asNMSCopy(stack).getTag().getInt("worth");
     }
 
@@ -296,7 +296,7 @@ public class BankMechanics implements GenericMechanic {
      * @param uuid
      * @param num
      */
-    public static void addGemsToPlayerBank(UUID uuid, int num) {
+    public void addGemsToPlayerBank(UUID uuid, int num) {
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$INC, EnumData.GEMS, num, true);
     }
 
@@ -306,7 +306,7 @@ public class BankMechanics implements GenericMechanic {
      * @param uuid
      * @param num
      */
-    public static void addGemsToPlayerInventory(Player p, int num) {
+    public void addGemsToPlayerInventory(Player p, int num) {
         ItemStack gems = gem.clone();
         gems.setAmount(num);
         p.getInventory().addItem(gems);
@@ -315,7 +315,7 @@ public class BankMechanics implements GenericMechanic {
     /**
      * @param uniqueId
      */
-    public static Storage getStorage(UUID uniqueId) {
+    public Storage getStorage(UUID uniqueId) {
         return storage.get(uniqueId);
     }
 

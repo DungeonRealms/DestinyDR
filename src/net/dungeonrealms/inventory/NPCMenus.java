@@ -1,5 +1,6 @@
 package net.dungeonrealms.inventory;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.items.ItemBuilder;
 import net.dungeonrealms.mechanics.ItemManager;
 import org.bukkit.Bukkit;
@@ -48,7 +49,7 @@ public class NPCMenus {
     }
 
     public static void openECashPurchaseMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 9, "E-Cash Vendor");
+        Inventory inv = Bukkit.createInventory(null, 27, "E-Cash Vendor");
 
         inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.BLAZE_POWDER), ChatColor.RED + "Flame Trail", new String[]{
                 ChatColor.AQUA + "649 E-Cash"}).setNBTString("playerTrailType", "FLAME").setNBTInt("ecashCost", 649).build());
@@ -70,6 +71,12 @@ public class NPCMenus {
                 ChatColor.AQUA + "749 E-Cash"}).setNBTString("petType", "RABBIT").setNBTInt("ecashCost", 749).build());
         inv.setItem(7, new ItemBuilder().setItem(Material.MONSTER_EGG, (short) 98, ChatColor.YELLOW + "Ocelot Pet", new String[]{
                 ChatColor.AQUA + "749 E-Cash"}).setNBTString("petType", "OCELOT").setNBTInt("ecashCost", 749).build());
+        inv.setItem(18, new ItemBuilder().setItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Our Store", new String[]{
+                ChatColor.AQUA + "Click here to visit our store!"}).setNBTString("donationStore", "ProxyIsAwesome").build());
+        inv.setItem(26, new ItemBuilder().setItem(new ItemStack(Material.APPLE), ChatColor.GREEN + "Current E-Cash", new String[]{
+                ChatColor.AQUA + "Your E-Cash Balance is: " + ChatColor.YELLOW.toString() + ChatColor.BOLD + API.getGamePlayer(player).getEcashBalance()}).build());
+        //18 Button that you click and it links the shop in chat.
+        //26 Button that you can hover over and in its lore it tells you your current ecash balance.
 
         player.openInventory(inv);
     }

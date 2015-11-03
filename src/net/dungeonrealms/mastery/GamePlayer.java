@@ -25,7 +25,7 @@ public class GamePlayer {
     
     public GamePlayer(Player player) {
         T = player;
-        stats = new PlayerStats(player.getUniqueId());
+        //stats = new PlayerStats(player.getUniqueId());
         Utils.log.info("Created GamePlayer for " + player.getName());
     }
 
@@ -134,6 +134,10 @@ public class GamePlayer {
         } else {
             return 50;
         }
+    }
+
+    public int getEcashBalance() {
+        return (int) DatabaseAPI.getInstance().getData(EnumData.ECASH, T.getUniqueId());
     }
 
     /**

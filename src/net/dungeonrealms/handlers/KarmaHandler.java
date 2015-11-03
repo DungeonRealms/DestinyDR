@@ -3,8 +3,6 @@ package net.dungeonrealms.handlers;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.mastery.GamePlayer;
-import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
@@ -193,9 +191,9 @@ public class KarmaHandler implements GenericMechanic {
                         });
                     }
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, API.getGamePlayer(player).getLevel());
-                    if (RealmManager.getInstance().getPlayerRealm(player) != null) {
+                    /*if (RealmManager.getInstance().getPlayerRealm(player) != null) {
                         RealmManager.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + "(s) REALM");
-                    }
+                    }*/
                     PLAYER_ALIGNMENTS.put(player, alignment);
                     break;
                 case NEUTRAL:
@@ -208,9 +206,9 @@ public class KarmaHandler implements GenericMechanic {
                         });
                     }
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.YELLOW, API.getGamePlayer(player).getLevel());
-                    if (RealmManager.getInstance().getPlayerRealm(player) != null) {
+                    /*if (RealmManager.getInstance().getPlayerRealm(player) != null) {
                         RealmManager.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.YELLOW + player.getName() + "(s) REALM");
-                    }
+                    }*/
                     PLAYER_ALIGNMENT_TIMES.put(player, 120);
                     PLAYER_ALIGNMENTS.put(player, alignment);
                     break;
@@ -223,10 +221,10 @@ public class KarmaHandler implements GenericMechanic {
                                 ""
                         });
                     }
-                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.RED, new GamePlayer(player).getLevel());
-                    if (RealmManager.getInstance().getPlayerRealm(player) != null) {
+                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.RED, API.getGamePlayer(player).getLevel());
+                    /*if (RealmManager.getInstance().getPlayerRealm(player) != null) {
                         RealmManager.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.RED + player.getName() + "(s) REALM");
-                    }
+                    }*/
                     PLAYER_ALIGNMENT_TIMES.put(player, 1200);
                     PLAYER_ALIGNMENTS.put(player, alignment);
                     break;

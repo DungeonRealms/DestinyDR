@@ -7,7 +7,6 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
 
 import java.util.Arrays;
 
@@ -29,7 +28,7 @@ public class ItemBuilder {
 
     public ItemBuilder setItem(Material material, short shortID, String name, String[] lore) {
         ItemStack tempItem = new ItemStack(material, 1, shortID);
-        SkullMeta meta = (SkullMeta) tempItem.getItemMeta();
+        ItemMeta meta = tempItem.getItemMeta();
         meta.setDisplayName(name);
         meta.setLore(Arrays.asList(lore));
         tempItem.setItemMeta(meta);
