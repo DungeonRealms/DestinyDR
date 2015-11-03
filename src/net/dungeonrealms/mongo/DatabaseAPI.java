@@ -354,7 +354,9 @@ public class DatabaseAPI {
                                         .append("strength", 0)
                                         .append("dexterity", 0)
                                         .append("intellect", 0)
-                                        .append("vitality", 0))
+                                        .append("vitality", 0)
+                                        .append("resets", 0)
+                                        .append("freeresets", 0))
                         .append("collectibles",
                                 new Document("achievements", new ArrayList<String>())
                                         .append("mounts", new ArrayList<String>())

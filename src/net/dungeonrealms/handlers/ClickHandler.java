@@ -1,8 +1,25 @@
 package net.dungeonrealms.handlers;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.donate.DonationEffects;
@@ -11,6 +28,7 @@ import net.dungeonrealms.entities.utils.MountUtils;
 import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.inventory.PlayerMenus;
+import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -20,16 +38,6 @@ import net.dungeonrealms.network.NetworkAPI;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.Entity;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Nick on 10/2/2015.
@@ -78,7 +86,7 @@ public class ClickHandler {
                 }
             }
             return;
-        }
+        }else
 
         /*
         Skill Trainer NPC
@@ -109,7 +117,7 @@ public class ClickHandler {
                 return;
             }
             return;
-        }
+        }else
 
         /*
         E-Cash Vendor NPC
@@ -174,7 +182,7 @@ public class ClickHandler {
                 }
             }
             return;
-        }
+        }else
 
         /*
         Inn Keeper NPC
@@ -210,7 +218,7 @@ public class ClickHandler {
                 }
             }
             return;
-        }
+        }else
 
         /*
         Friend Management
@@ -240,7 +248,7 @@ public class ClickHandler {
                 return;
             }
             FriendHandler.getInstance().addOrRemove(player, event.getClick(), event.getCurrentItem());
-        }
+        }else
 
         /*
         Friends List Menu
@@ -252,7 +260,7 @@ public class ClickHandler {
                 PlayerMenus.openFriendInventory(player);
             }
             FriendHandler.getInstance().remove(player, event.getClick(), event.getCurrentItem());
-        }
+        }else
 
         /*
         Mail Below
@@ -264,7 +272,7 @@ public class ClickHandler {
                 MailHandler.getInstance().giveItemToPlayer(clickedItem, player);
             }
             return;
-        }
+        }else
 
         /*
         Pets Below
@@ -314,7 +322,7 @@ public class ClickHandler {
                 }
                 PetUtils.spawnPet(player.getUniqueId(), nmsStack.getTag().getString("petType"), particleType);
             }
-        }
+        }else
 
         /*
         Mounts Below
@@ -373,7 +381,7 @@ public class ClickHandler {
                 MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"));
             }
             return;
-        }
+        }else
 
         /*
         Particle Trails Below
@@ -403,7 +411,7 @@ public class ClickHandler {
                 DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")));
                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have enabled the " + ChatColor.RED + nmsStack.getTag().getString("playerTrailType") + ChatColor.AQUA + " Player trail!");
             }
-        }
+        }else
 
 
         /*
@@ -448,7 +456,7 @@ public class ClickHandler {
                     break;
             }
             return;
-        }
+        }else
 
 
         /*
@@ -559,7 +567,44 @@ public class ClickHandler {
                     break;
             }
             return;
+        }else
+        	
+        /*Reset Stats Wizard*/
+        if(name.equalsIgnoreCase("Wizard")){
+        	GamePlayer gp = API.getGamePlayer(player);
+        	if(gp.getLevel() >= 10){
+        		if(gp.getStats().resetAmounts > 0){
+        			player.sendMessage(ChatColor.GREEN + "You have a free stat reset available!");
+        			AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
+						if (e.getSlot() == AnvilSlot.OUTPUT) {
+							if(e.getName().equalsIgnoreCase("Yes") || e.getName().equalsIgnoreCase("y")){
+								gp.getStats().freeResets -= 1;
+							}else{
+								e.destroy();
+							}
+						}
+					});
+					ItemStack stack = new ItemStack(Material.INK_SACK, 1, DyeColor.GREEN.getDyeData());
+					ItemMeta meta = stack.getItemMeta();
+					meta.setDisplayName("Use your ONE stat points reset?");
+					stack.setItemMeta(meta);
+					gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
+					Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+						player.sendMessage("Opening stat reset confirmation");
+					}, 0, 20 * 3);
+					Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+					gui.open();
+					}, 20 * 5);
+        		}else{
+        		player.sendMessage(ChatColor.RED + "You have already used your free stat reset for your character.");
+        		player.sendMessage(ChatColor.YELLOW + "You may purchase more resets from the E-Cash vendor!.");
+        		}
+        	}else{
+        		player.sendMessage(ChatColor.RED + "You need to be level 10 to use your ONE reset.");
+        	}
+        	
         }
+        	
         if (name.endsWith("- Officers")) {
             event.setCancelled(true);
             if (slot == 0) {

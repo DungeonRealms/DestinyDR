@@ -32,7 +32,9 @@ public class PlayerStats {
 	 public int tempFreePoints;
 	 public int level;
 	 UUID playerUUID;
+	 public int freeResets;
 	 final static int POINTS_PER_LEVEL = 6;
+	 public int resetAmounts;
 	 public boolean reset = true;
 
 	public PlayerStats(UUID playerUUID) {
@@ -48,6 +50,8 @@ public class PlayerStats {
 		this.tempdexPoints = 0;
 		this.tempvitPoints = 0;
 		this.tempintPoints = 0;
+		this.resetAmounts = 0;
+		this.freeResets = 0;
 		loadPlayerStats();
 	}
 
@@ -63,12 +67,8 @@ public class PlayerStats {
 		this.strPoints = (int) DatabaseAPI.getInstance().getData(EnumData.STRENGTH, playerUUID);
 		this.vitPoints = (int) DatabaseAPI.getInstance().getData(EnumData.VITALITY, playerUUID);
 		this.level = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, playerUUID);
-		Utils.log.info(freePoints + " free Points");
-		Utils.log.info(intPoints + " INT Points");
-		Utils.log.info(dexPoints + " DEX Points");
-		Utils.log.info(strPoints + " STR Points");
-		Utils.log.info(vitPoints + " VIT Points");
-		Utils.log.info(level + " Level");
+		this.resetAmounts = (int) DatabaseAPI.getInstance().getData(EnumData.RESETS, playerUUID);
+		this.freeResets = (int) DatabaseAPI.getInstance().getData(EnumData.FREERESETS, playerUUID);
 	}
 
 	public void allocatePoint(String type, Player p, Inventory inv) {
