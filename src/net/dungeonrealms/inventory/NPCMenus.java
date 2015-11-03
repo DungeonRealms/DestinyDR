@@ -1,7 +1,13 @@
 package net.dungeonrealms.inventory;
 
-import java.util.Arrays;
-
+import com.minebone.anvilapi.core.AnvilApi;
+import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
+import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.items.ItemBuilder;
+import net.dungeonrealms.mastery.GamePlayer;
+import net.dungeonrealms.mechanics.ItemManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -11,15 +17,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.minebone.anvilapi.core.AnvilApi;
-import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
-import com.minebone.anvilapi.nms.anvil.AnvilSlot;
-
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.items.ItemBuilder;
-import net.dungeonrealms.mastery.GamePlayer;
-import net.dungeonrealms.mechanics.ItemManager;
+import java.util.Arrays;
 
 /**
  * Created by Kieran on 10/26/2015.
@@ -56,40 +54,35 @@ public class NPCMenus {
         player.openInventory(inv);
     }
     
-    public static void openWizardMenu(Player player){
+    public static void openWizardMenu(Player player) {
     	GamePlayer gp = API.getGamePlayer(player);
-    	if(gp.getLevel() >= 10){
-    		if(gp.getStats().resetAmounts > 0){
-    			player.sendMessage(ChatColor.GREEN + "You have a free stat reset available!");
-    			AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
+    	if (gp.getLevel() >= 10) {
+    		if (gp.getStats().resetAmounts > 0) {
+                player.sendMessage(ChatColor.GREEN + "You have a free stat reset available!");
+                AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
 					if (e.getSlot() == AnvilSlot.OUTPUT) {
-						if(e.getName().equalsIgnoreCase("Yes") || e.getName().equalsIgnoreCase("y")){
-							gp.getStats().freeResets -= 1;
-						}else{
-							e.destroy();
+						if (e.getName().equalsIgnoreCase("Yes") || e.getName().equalsIgnoreCase("y")) {
+                            gp.getStats().freeResets -= 1;
+						} else {
+                            e.destroy();
 						}
 					}
 				});
-				ItemStack stack = new ItemStack(Material.INK_SACK, 1, DyeColor.GREEN.getDyeData());
+                ItemStack stack = new ItemStack(Material.INK_SACK, 1, DyeColor.GREEN.getDyeData());
 				ItemMeta meta = stack.getItemMeta();
 				meta.setDisplayName("Use your ONE stat points reset?");
 				stack.setItemMeta(meta);
 				gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
-				Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-					player.sendMessage("Opening stat reset confirmation");
-				}, 0, 20 * 3);
-				Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-				gui.open();
-				}, 20 * 5);
-    		}else{
-    		player.sendMessage(ChatColor.RED + "You have already used your free stat reset for your character.");
-    		player.sendMessage(ChatColor.YELLOW + "You may purchase more resets from the E-Cash vendor!.");
+				Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), gui::open, 50L);
+    		} else {
+                player.sendMessage(ChatColor.RED + "You have already used your free stat reset for your character.");
+                player.sendMessage(ChatColor.YELLOW + "You may purchase more resets from the E-Cash vendor!.");
     		}
-    	}else{
+    	} else {
     		player.sendMessage(ChatColor.RED + "You need to be level 10 to use your ONE reset.");
     	}
-    	
     }
+
     public static void openECashPurchaseMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 27, "E-Cash Vendor");
 

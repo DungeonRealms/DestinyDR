@@ -432,7 +432,8 @@ public class MainListener implements Listener {
 			return;
 		}
 		if (npcNameStripped.equalsIgnoreCase("Wizard")) {
-			// TODO: Open Attributes Reset Menu
+			NPCMenus.openWizardMenu(event.getPlayer());
+			return;
 		}
 		if (npcNameStripped.equalsIgnoreCase("Dungeoneer")) {
 			// TODO: Open Dungeoneer Menu
@@ -452,9 +453,6 @@ public class MainListener implements Listener {
 		}
 		if (npcNameStripped.equalsIgnoreCase("Innkeeper")) {
 			NPCMenus.openHearthstoneRelocateMenu(event.getPlayer());
-		}
-		if (npcNameStripped.equalsIgnoreCase("Wizard")){
-			NPCMenus.openWizardMenu(event.getPlayer());
 		}
 	}
 
