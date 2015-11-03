@@ -1,32 +1,21 @@
 package net.dungeonrealms.handlers;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
-import org.bukkit.entity.WitherSkull;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.entity.*;
+
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Kieran on 10/7/2015.
@@ -202,6 +191,9 @@ public class KarmaHandler implements GenericMechanic {
                         });
                     }
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, API.getGamePlayer(player).getLevel());
+                    /*if (RealmManager.getInstance().getPlayerRealm(player) != null) {
+                        RealmManager.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + "(s) REALM");
+                    }*/
                     PLAYER_ALIGNMENTS.put(player, alignment);
                     break;
                 case NEUTRAL:
@@ -214,6 +206,9 @@ public class KarmaHandler implements GenericMechanic {
                         });
                     }
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.YELLOW, API.getGamePlayer(player).getLevel());
+                    /*if (RealmManager.getInstance().getPlayerRealm(player) != null) {
+                        RealmManager.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.YELLOW + player.getName() + "(s) REALM");
+                    }*/
                     PLAYER_ALIGNMENT_TIMES.put(player, 120);
                     PLAYER_ALIGNMENTS.put(player, alignment);
                     break;
@@ -226,7 +221,10 @@ public class KarmaHandler implements GenericMechanic {
                                 ""
                         });
                     }
-                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.RED, new GamePlayer(player).getLevel());
+                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.RED, API.getGamePlayer(player).getLevel());
+                    /*if (RealmManager.getInstance().getPlayerRealm(player) != null) {
+                        RealmManager.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.RED + player.getName() + "(s) REALM");
+                    }*/
                     PLAYER_ALIGNMENT_TIMES.put(player, 1200);
                     PLAYER_ALIGNMENTS.put(player, alignment);
                     break;

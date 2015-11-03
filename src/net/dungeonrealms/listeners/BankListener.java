@@ -195,7 +195,7 @@ public class BankListener implements Listener {
                                     else
                                         size = nms.getTag().getInt("worth");
                                 }
-                                BankMechanics.addGemsToPlayerBank(player.getUniqueId(), size);
+                                BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
                                 ItemStack bankItem = new ItemStack(Material.EMERALD);
                                 ItemMeta meta = bankItem.getItemMeta();
                                 meta.setDisplayName(getPlayerGems(player.getUniqueId()) + size + ChatColor.BOLD.toString()
@@ -215,7 +215,7 @@ public class BankListener implements Listener {
                         }
                     } else {
                         e.setCancelled(true);
-                        Storage storage = BankMechanics.getStorage(player.getUniqueId());
+                        Storage storage = BankMechanics.getInstance().getStorage(player.getUniqueId());
                         if (e.isLeftClick()) {
                             // Open Storage
                             player.openInventory(storage.inv);
@@ -254,7 +254,7 @@ public class BankListener implements Listener {
                         }
                         if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                             e.setCancelled(true);
-                            BankMechanics.addGemsToPlayerBank(player.getUniqueId(), size);
+                            BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
                             e.setCurrentItem(null);
                             ItemStack bankItem = new ItemStack(Material.EMERALD);
                             ItemMeta meta = bankItem.getItemMeta();
@@ -401,7 +401,7 @@ public class BankListener implements Listener {
     				        true);
         			player.sendMessage(ChatColor.GREEN.toString() + "Storage updated!");
         			player.closeInventory();
-        			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->BankMechanics.getStorage(player.getUniqueId()).update(), 20l);
+        			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->BankMechanics.getInstance().getStorage(player.getUniqueId()).update(), 20l);
         			});
         		}else{
         			player.closeInventory();

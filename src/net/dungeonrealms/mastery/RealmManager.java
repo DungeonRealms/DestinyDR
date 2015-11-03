@@ -1,37 +1,7 @@
 package net.dungeonrealms.mastery;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
-import org.bukkit.WorldType;
-import org.bukkit.entity.Player;
-
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
@@ -39,6 +9,20 @@ import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.teleportation.Teleportation;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.apache.commons.net.ftp.FTP;
+import org.apache.commons.net.ftp.FTPClient;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
+
+import java.io.*;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
+import java.util.zip.ZipOutputStream;
 
 /**
  * Created by Nick on 9/22/2015.
@@ -108,12 +92,16 @@ public class RealmManager implements GenericMechanic {
         private Location portalLocation;
         private List<Player> playerList;
         private Hologram realmHologram;
+        private List<Player> realmBuilders;
+        private boolean isRealmPortalOpen;
 
-        public RealmObject(UUID realmOwner, Location portalLocation, List<Player> playerList, Hologram realmHologram) {
+        public RealmObject(UUID realmOwner, Location portalLocation, List<Player> playerList, Hologram realmHologram, List<Player> realmBuilders, boolean isRealmPortalOpen) {
             this.realmOwner = realmOwner;
             this.portalLocation = portalLocation;
             this.playerList = playerList;
             this.realmHologram = realmHologram;
+            this.realmBuilders = realmBuilders;
+            this.isRealmPortalOpen = isRealmPortalOpen;
         }
 
         public UUID getRealmOwner() {
@@ -130,6 +118,14 @@ public class RealmManager implements GenericMechanic {
 
         public Hologram getRealmHologram() {
             return realmHologram;
+        }
+
+        public List<Player> getRealmBuilders() {
+            return realmBuilders;
+        }
+
+        public boolean isRealmPortalOpen() {
+            return isRealmPortalOpen;
         }
     }
 
@@ -187,10 +183,13 @@ public class RealmManager implements GenericMechanic {
     public void downloadRealm(UUID uuid) {
         if (REALM_STATUS.containsKey(uuid) && REALM_STATUS.get(uuid) == FTPStatus.DOWNLOADED) return;
         AsyncUtils.pool.submit(() -> {
+            //TODO: xFin fix this. It makes it to this line below.
             REALM_STATUS.put(uuid, FTPStatus.DOWNLOADING);
             FTPClient ftpClient = new FTPClient();
             FileOutputStream fos = null;
             String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
+            //TODO: xFin fix this. But never below here. This line is never shown to console. REALM_STATUS is always "DOWNLOADING".
+            Utils.log.info("Attempting to start Realm Download!");
             try {
                 ftpClient.connect(HOST, port);
                 boolean login = ftpClient.login(USER, PASSWORD);
@@ -204,6 +203,8 @@ public class RealmManager implements GenericMechanic {
                     ftpClient.logout();
                     ftpClient.disconnect();
                     Utils.log.warning("[REALM] [ASYNC] Player: " + uuid.toString() + " doesn't exist remotely!");
+                    generateBlankRealm(uuid);
+                    Bukkit.broadcastMessage("GENERATING BLANK REALM!");
                     return;
                 }
 
@@ -232,6 +233,8 @@ public class RealmManager implements GenericMechanic {
                         e.printStackTrace();
                     }
                 }
+                REALM_STATUS.put(uuid, FTPStatus.DOWNLOADED);
+                loadInWorld(uuid.toString(), Bukkit.getPlayer(uuid));
             }
         });
     }
@@ -388,37 +391,7 @@ public class RealmManager implements GenericMechanic {
      * @since 1.0
      */
     public void loadInWorld(String worldName, Player player) {
-        /*
-        Only creates a world if the contents of a world don't already exist.
-        This method loadInWorld() is called in the actual object load().
-         */
-        WorldCreator worldCreator = new WorldCreator(worldName);
-        System.out.println("1");
-        worldCreator.type(WorldType.FLAT);
-        worldCreator.generateStructures(false);
-        World w = Bukkit.createWorld(worldCreator);
-        System.out.println("2");
-        w.setKeepSpawnInMemory(true);
-        System.out.println("3");
-        w.setAutoSave(false);
-        System.out.println("4");
-        w.setPVP(true);
-        System.out.println("5");
-        w.setStorm(false);
-        System.out.println("6");
-        w.setMonsterSpawnLimit(0);
-        System.out.println("7");
-        w.setTime(0L);
-        System.out.println("8");
-        Bukkit.getWorlds().add(w);
-
-        Location spawnLocation = w.getSpawnLocation();
-        spawnLocation.setY(w.getHighestBlockYAt(w.getSpawnLocation()) + 1);
-        spawnLocation.getBlock().setType(Material.PORTAL);
-        spawnLocation.subtract(0, 1, 0);
-        spawnLocation.getBlock().setType(Material.PORTAL);
-
-        //player.teleport(w.getSpawnLocation());
+        Bukkit.createWorld(new WorldCreator(worldName));
         player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "REALMS" + ChatColor.WHITE + "] " + ChatColor.YELLOW + "Your realm is ready! Teleporting you now...");
     }
 
@@ -428,37 +401,31 @@ public class RealmManager implements GenericMechanic {
      * @param realmObject The Realm.
      * @since 1.0
      */
-    public void removeRealm(RealmObject realmObject) {
+    public void removeRealm(RealmObject realmObject, boolean playerLoggingOut) {
+        realmObject.isRealmPortalOpen = false;
         realmObject.getLocation().add(0, 1, 0).getBlock().setType(Material.AIR);
         realmObject.getLocation().add(0, 1, 0).getBlock().setType(Material.AIR);
         realmObject.getRealmHologram().delete();
-        realmObject.getPlayerList().stream().forEach(player -> {
-            if (new GamePlayer(player).isInRealm()) {
-                player.sendMessage(ChatColor.RED + "This Realm has been closed!");
-                player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+        if (playerLoggingOut) {
+            realmObject.getPlayerList().stream().forEach(player -> {
+                if (API.getGamePlayer(player).isInRealm()) {
+                    player.sendMessage(ChatColor.RED + "This Realm has been closed!");
+                    player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+                    player.setFlying(false);
+                }
+            });
+            Bukkit.getWorlds().remove(Bukkit.getWorld(realmObject.getRealmOwner().toString()));
+            Utils.log.info("[REALMS] Removing world: " + realmObject.getRealmOwner().toString() + " from worldList().");
+            Bukkit.unloadWorld(realmObject.getRealmOwner().toString(), false);
+            Utils.log.info("[REALMS] Unloading world: " + realmObject.getRealmOwner().toString() + " in preparation for deletion!");
+            try {
+                FileUtils.deleteDirectory(new File(realmObject.getRealmOwner().toString()));
+                Utils.log.info("[REALMS] Deleted world: " + realmObject.getRealmOwner().toString() + " final stage.");
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-        });
-        Bukkit.getWorlds().remove(Bukkit.getWorld(realmObject.getRealmOwner().toString()));
-        Utils.log.info("[REALMS] Removing world: " + realmObject.getRealmOwner().toString() + " from worldList().");
-        Bukkit.unloadWorld(realmObject.getRealmOwner().toString(), false);
-        Utils.log.info("[REALMS] Unloading world: " + realmObject.getRealmOwner().toString() + " in preparation for deletion!");
-        try {
-            FileUtils.deleteDirectory(new File(realmObject.getRealmOwner().toString()));
-            Utils.log.info("[REALMS] Deleted world: " + realmObject.getRealmOwner().toString() + " final stage.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        CURRENT_REALMS.remove(realmObject);
-    }
-
-    /**
-     * Removes all active realms.
-     *
-     * @since 1.0
-     */
-    public void removeAllActiveRealms() {
-        if (!CURRENT_REALMS.isEmpty()) {
-            CURRENT_REALMS.forEach(this::removeRealm);
+            CURRENT_REALMS.remove(realmObject);
+            uploadRealm(realmObject.getRealmOwner());
         }
     }
 
@@ -467,10 +434,22 @@ public class RealmManager implements GenericMechanic {
      *
      * @since 1.0
      */
-    public RealmObject getPlayerRealmPlayer(Player player) {
+    public RealmObject getPlayerRealm(Player player) {
         if (!CURRENT_REALMS.isEmpty()) {
             for (RealmObject realmObject : CURRENT_REALMS) {
                 if (realmObject.getRealmOwner().equals(player.getUniqueId())) {
+                    return realmObject;
+                }
+            }
+            return null;
+        }
+        return null;
+    }
+
+    public RealmObject getPlayersCurrentRealm(Player player) {
+        if (!CURRENT_REALMS.isEmpty()) {
+            for (RealmObject realmObject : CURRENT_REALMS) {
+                if (realmObject.getRealmOwner().toString().equals(player.getWorld().getName())) {
                     return realmObject;
                 }
             }
@@ -484,9 +463,9 @@ public class RealmManager implements GenericMechanic {
      *
      * @since 1.0
      */
-    public void removePlayerRealm(Player player) {
-        if (getPlayerRealmPlayer(player) != null) {
-            removeRealm(getPlayerRealmPlayer(player));
+    public void removePlayerRealm(Player player, boolean playerLoggingOut) {
+        if (getPlayerRealm(player) != null) {
+            removeRealm(getPlayerRealm(player), playerLoggingOut);
         }
     }
 
@@ -497,36 +476,32 @@ public class RealmManager implements GenericMechanic {
      * @since 1.0
      */
     public void tryToOpenRealm(Player player, Location clickLocation) {
-        if (getPlayerRealmPlayer(player) == null) {
+        if (getPlayerRealm(player) == null || !getPlayerRealm(player).isRealmPortalOpen()) {
             if (CombatLog.isInCombat(player)) {
-                player.sendMessage("Cannot open Realm while in Combat!");
+                player.sendMessage(ChatColor.RED + "Cannot open Realm while in Combat!");
                 return;
             }
             if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
-                player.sendMessage("You can only open a realm portal in the main world!");
+                player.sendMessage(ChatColor.RED + "You can only open a realm portal in the main world!");
                 return;
             }
             final Location portalLocation = clickLocation.clone();
             if (!(portalLocation.clone().add(0, 1, 0).getBlock().getType() == Material.AIR) || !(portalLocation.clone().add(0, 1, 0).getBlock().getType() == Material.AIR)
                     || clickLocation.clone().getBlock().getType() == Material.CHEST || clickLocation.clone().getBlock().getType() == Material.ENDER_CHEST
                     || clickLocation.clone().getBlock().getType() == Material.PORTAL || clickLocation.clone().getBlock().getType() == Material.ANVIL) {
-                player.sendMessage("You cannot open a realm portal here!");
+                player.sendMessage(ChatColor.RED + "You cannot open a realm portal here!");
                 return;
             }
             if (LootManager.checkLocationForLootSpawner(clickLocation.clone())) {
-                player.sendMessage("You cannot place a realm portal this close to a Loot Spawning location");
+                player.sendMessage(ChatColor.RED + "You cannot place a realm portal this close to a Loot Spawning location");
                 return;
             }
-            if (API.isMaterialNearby(clickLocation.clone().getBlock(), 3, Material.LADDER)) {
-                player.sendMessage("You cannot place a realm portal here!");
-                return;
-            }
-            if (API.isMaterialNearby(clickLocation.clone().getBlock(), 10, Material.ENDER_CHEST)) {
-                player.sendMessage("You cannot place a realm portal here!");
+            if (API.isMaterialNearby(clickLocation.clone().getBlock(), 3, Material.LADDER) || API.isMaterialNearby(clickLocation.clone().getBlock(), 10, Material.ENDER_CHEST)) {
+                player.sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
                 return;
             }
             if (isThereARealmPortalNearby(clickLocation.clone().add(0, 1, 0), 6) || API.isMaterialNearby(clickLocation.clone().getBlock(), 6, Material.PORTAL)) {
-                player.sendMessage("You cannot place a portal so close to another! (Min 3 Blocks)");
+                player.sendMessage(ChatColor.RED + "You cannot place a portal so close to another! (Min 3 Blocks)");
                 return;
             }
             for (Player player1 : Bukkit.getWorlds().get(0).getPlayers()) {
@@ -537,24 +512,25 @@ public class RealmManager implements GenericMechanic {
                     continue;
                 }
                 if (player1.getLocation().distanceSquared(player.getLocation()) <= 2) {
-                    player.sendMessage("You cannot place your realm portal near another player");
+                    player.sendMessage(ChatColor.RED + "You cannot place your realm portal near another player");
                     return;
                 }
             }
 
             downloadRealm(player.getUniqueId());
+            //generateBlankRealm(player.getUniqueId());
 
             portalLocation.add(0, 1, 0).getBlock().setType(Material.PORTAL);
             portalLocation.add(0, 1, 0).getBlock().setType(Material.PORTAL);
             Hologram realmHologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), portalLocation.add(0.5, 1.5, 0.5));
-            realmHologram.appendTextLine(ChatColor.WHITE + player.getName() + " REALM");
+            realmHologram.appendTextLine(player.getName() + "(s) REALM");
             realmHologram.getVisibilityManager().setVisibleByDefault(true);
-            RealmObject realmObject = new RealmObject(player.getUniqueId(), clickLocation, new ArrayList<>(), realmHologram);
+            RealmObject realmObject = new RealmObject(player.getUniqueId(), clickLocation, new ArrayList<>(), realmHologram, new ArrayList<>(), true);
+            realmObject.getRealmBuilders().add(player);
+            realmObject.getPlayerList().add(player);
             CURRENT_REALMS.add(realmObject);
 
-            player.sendMessage(ChatColor.AQUA + "Your Portal Has Been Opened!");
-
-            loadInWorld(player.getUniqueId().toString(), player);
+            player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "REALMS" + ChatColor.WHITE + "] " + ChatColor.YELLOW + "Your realm is ready!");
         } else {
             player.sendMessage(ChatColor.RED + "You already have a Realm Portal in the world, please destroy it!");
         }
@@ -638,7 +614,11 @@ public class RealmManager implements GenericMechanic {
      * @since 1.0
      */
     public void removeRealmViaPortalLocation(Location location) {
-        CURRENT_REALMS.stream().filter(realmObject -> location.distanceSquared(realmObject.getLocation()) <= 4).forEach(this::removeRealm);
+        for (RealmObject realmObject : CURRENT_REALMS) {
+            if (location.distanceSquared(realmObject.getLocation()) <= 4) {
+                removeRealm(realmObject, false);
+            }
+        }
     }
 
     /**
@@ -654,5 +634,103 @@ public class RealmManager implements GenericMechanic {
             }
         }
         return false;
+    }
+
+    /**
+     * Will download and extract a players realm zip.
+     *
+     * @param uuid
+     * @since 1.0
+     */
+    public void downloadRealmTemplate(UUID uuid) {
+        if (REALM_STATUS.containsKey(uuid) && REALM_STATUS.get(uuid) == FTPStatus.DOWNLOADED) return;
+        AsyncUtils.pool.submit(() -> {
+            REALM_STATUS.put(uuid, FTPStatus.DOWNLOADING);
+            FTPClient ftpClient = new FTPClient();
+            FileOutputStream fos = null;
+            String REMOTE_FILE = "/" + "realms" + "/" + "REALM_TEMPLATE" + ".zip";
+            try {
+                ftpClient.connect(HOST, port);
+                boolean login = ftpClient.login(USER, PASSWORD);
+                if (login) {
+                    Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString() + " [TEMPLATE]");
+                }
+                ftpClient.enterLocalPassiveMode();
+                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+
+                if (!checkFileExists(ftpClient, REMOTE_FILE)) {
+                    ftpClient.logout();
+                    ftpClient.disconnect();
+                    Utils.log.warning("[REALM] [ASYNC] Realm Template doesn't exist remotely!");
+                    return;
+                }
+
+                Utils.log.info("[REALM] [ASYNC] Downloading Template Realm for player + " + uuid.toString() + " ... STARTING");
+                File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloading/" + uuid.toString() + ".zip");
+                fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
+                ftpClient.retrieveFile(REMOTE_FILE, fos);
+                fos.close();
+                Utils.log.info("[REALM] [ASYNC] Template Realm downloaded for " + uuid.toString());
+
+                REALM_STATUS.put(uuid, FTPStatus.EXTRACTING);
+                ZipFile zipFile = new ZipFile(TEMP_LOCAL_LOCATION);
+                unZip(zipFile, uuid);
+
+
+            } catch (IOException e) {
+                REALM_STATUS.put(uuid, FTPStatus.FAILED);
+                e.printStackTrace();
+            } finally {
+                deleteLocalCache(uuid);
+                if (ftpClient.isConnected()) {
+                    try {
+                        ftpClient.logout();
+                        ftpClient.disconnect();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                REALM_STATUS.put(uuid, FTPStatus.DOWNLOADED);
+            }
+        });
+    }
+
+    public void generateBlankRealm(UUID ownerUUID) {
+        downloadRealmTemplate(ownerUUID);
+
+        WorldCreator worldCreator = new WorldCreator(ownerUUID.toString());
+        worldCreator.type(WorldType.FLAT);
+        worldCreator.generateStructures(false);
+        worldCreator.generatorSettings("3;minecraft:air;2");
+        World world = Bukkit.createWorld(worldCreator);
+        world.setSpawnLocation(24, 130, 24);
+        world.getBlockAt(0, 64, 0).setType(Material.AIR);
+        int x, y = 128, z;
+        Vector vector = new Vector(16, 128, 16);
+
+        for (x = vector.getBlockX(); x < 32; x++) {
+            for (z = vector.getBlockZ(); z < 32; z++) {
+                world.getBlockAt(new Location(world, x, y, z)).setType(Material.GRASS);
+            }
+        }
+        for (x = vector.getBlockX(); x < 32; x++) {
+            for (y = 127; y >= 112; y--) {
+                for (z = vector.getBlockZ(); z < 32; z++) {
+                    world.getBlockAt(new Location(world, x, y, z)).setType(Material.DIRT);
+                }
+            }
+        }
+        for (x = vector.getBlockX(); x < 32; x++) {
+            for (z = vector.getBlockZ(); z < 32; z++) {
+                world.getBlockAt(new Location(world, x, y, z)).setType(Material.BEDROCK);
+            }
+        }
+
+        Location portalLocation = world.getSpawnLocation().clone();
+        portalLocation.getBlock().setType(Material.PORTAL);
+        portalLocation.subtract(0, 1, 0).getBlock().setType(Material.PORTAL);
+        portalLocation.add(0, 1, 0);
+
+        Utils.log.info("[REALMS] Blank Realm generated for player " + ownerUUID.toString());
     }
 }

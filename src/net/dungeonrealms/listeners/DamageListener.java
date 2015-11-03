@@ -537,6 +537,10 @@ public class DamageListener implements Listener {
             event.setDamage(0);
             event.getEntity().setFireTicks(0);
         }
+        if (event.getEntity() instanceof Player && event.getCause() == DamageCause.VOID) {
+            event.setCancelled(true);
+            event.getEntity().teleport(event.getEntity().getWorld().getSpawnLocation());
+        }
     }
 
     /**

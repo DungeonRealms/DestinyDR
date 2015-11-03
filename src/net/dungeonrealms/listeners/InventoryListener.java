@@ -1,33 +1,9 @@
 package net.dungeonrealms.listeners;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
+import ca.thederpygolems.armorequip.ArmorEquipEvent;
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
-
-import ca.thederpygolems.armorequip.ArmorEquipEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
@@ -49,6 +25,24 @@ import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.stats.PlayerStats;
 import net.dungeonrealms.stats.StatsManager;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -269,7 +263,7 @@ public class InventoryListener implements Listener {
 										clicker.getInventory().addItem(CraftItemStack.asBukkitCopy(nms2));
 										ItemStack tempStack = event.getInventory().getItem(event.getRawSlot());
 										tempStack.setAmount(1);
-										BankMechanics.addGemsToPlayerBank(shop.getOwner().getUniqueId(), price);
+										BankMechanics.getInstance().addGemsToPlayerBank(shop.getOwner().getUniqueId(), price);
 										NetworkAPI.getInstance().sendPlayerMessage(shop.getOwner().getDisplayName(), ChatColor.GREEN.toString() + price + "gems added to your bank!");
 										shop.inventory.remove(tempStack);
 									} else {
@@ -530,7 +524,7 @@ public class InventoryListener implements Listener {
 				}
 			}
 		} else if (event.getInventory().getTitle().contains("Storage Chest")) {
-			Storage storage = BankMechanics.getStorage(event.getPlayer().getUniqueId());
+			Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
 			storage.inv.setContents(event.getInventory().getContents());
 		} else if (event.getInventory().getTitle().contains("Loot")) {
 			Player p = (Player) event.getPlayer();

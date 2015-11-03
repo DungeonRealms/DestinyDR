@@ -1,17 +1,5 @@
 package net.dungeonrealms.items;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.Utils;
@@ -19,6 +7,13 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagInt;
 import net.minecraft.server.v1_8_R3.NBTTagList;
 import net.minecraft.server.v1_8_R3.NBTTagString;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.*;
 
 /**
  * Created by Nick on 9/19/2015.
@@ -264,15 +259,15 @@ public class ItemGenerator {
             case VS_PLAYER:
                 return "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
             case CRITICAL_HIT:
-                return "" + ChatColor.RED + i + "% " + ChatColor.YELLOW + aType.getName();
+                return "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
             case LIFE_STEAL:
                 return "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
             case FIRE_DAMAGE:
-                return "" + ChatColor.RED + i + " " + ChatColor.DARK_RED + aType.getName();
+                return "" + ChatColor.RED + i + " " + ChatColor.WHITE + aType.getName();
             case ICE_DAMAGE:
-                return "" + ChatColor.RED + i + " " + ChatColor.BLUE + aType.getName();
+                return "" + ChatColor.RED + i + " " + ChatColor.WHITE + aType.getName();
             case POISON_DAMAGE:
-                return "" + ChatColor.RED + i + " " + ChatColor.DARK_GREEN + aType.getName();
+                return "" + ChatColor.RED + i + " " + ChatColor.WHITE + aType.getName();
             case ACCURACY:
                 return "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
             default:
