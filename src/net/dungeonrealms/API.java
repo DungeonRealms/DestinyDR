@@ -1,18 +1,34 @@
 package net.dungeonrealms;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.rmi.activation.UnknownObjectException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.UUID;
-import java.util.stream.Collectors;
-
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
+import com.sk89q.worldguard.protection.ApplicableRegionSet;
+import com.sk89q.worldguard.protection.flags.DefaultFlag;
+import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+import net.dungeonrealms.banks.BankMechanics;
+import net.dungeonrealms.banks.Storage;
+import net.dungeonrealms.entities.Entities;
+import net.dungeonrealms.entities.types.mounts.EnumMounts;
+import net.dungeonrealms.entities.types.pets.EnumPets;
+import net.dungeonrealms.entities.utils.EntityAPI;
+import net.dungeonrealms.guild.Guild;
+import net.dungeonrealms.handlers.EnergyHandler;
+import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.handlers.KarmaHandler;
+import net.dungeonrealms.handlers.ScoreboardHandler;
+import net.dungeonrealms.mastery.*;
+import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.mechanics.PlayerManager;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.notice.Notice;
+import net.dungeonrealms.party.Party;
+import net.dungeonrealms.rank.Rank;
+import net.dungeonrealms.rank.Subscription;
+import net.dungeonrealms.teleportation.TeleportAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -27,40 +43,18 @@ import org.bukkit.plugin.Plugin;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
-import com.sk89q.worldguard.protection.ApplicableRegionSet;
-import com.sk89q.worldguard.protection.flags.DefaultFlag;
-import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
-import net.dungeonrealms.banks.BankMechanics;
-import net.dungeonrealms.banks.Storage;
-import net.dungeonrealms.entities.Entities;
-import net.dungeonrealms.entities.types.mounts.EnumMounts;
-import net.dungeonrealms.entities.types.pets.EnumPets;
-import net.dungeonrealms.entities.utils.EntityAPI;
-import net.dungeonrealms.guild.Guild;
-import net.dungeonrealms.handlers.EnergyHandler;
-import net.dungeonrealms.handlers.HealthHandler;
-import net.dungeonrealms.handlers.KarmaHandler;
-import net.dungeonrealms.handlers.ScoreboardHandler;
-import net.dungeonrealms.mastery.GamePlayer;
-import net.dungeonrealms.mastery.ItemSerialization;
-import net.dungeonrealms.mastery.NameFetcher;
-import net.dungeonrealms.mastery.RealmManager;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.ParticleAPI;
-import net.dungeonrealms.mechanics.PlayerManager;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.mongo.EnumOperators;
-import net.dungeonrealms.notice.Notice;
-import net.dungeonrealms.party.Party;
-import net.dungeonrealms.rank.Rank;
-import net.dungeonrealms.rank.Subscription;
-import net.dungeonrealms.teleportation.TeleportAPI;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.rmi.activation.UnknownObjectException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -259,12 +253,11 @@ public class API {
         }
         PlayerInventory inv = player.getInventory();
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, ItemSerialization.toString(inv), false);
-        String locationAsString = "-367,84,390,0,0"; //Cyrennica
         if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
-            locationAsString = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + "," + player.getLocation().getYaw() + "," + player.getLocation().getPitch();
+            String locationAsString = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + "," + player.getLocation().getYaw() + "," + player.getLocation().getPitch();
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, false);
         }
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, false);
-        RealmManager.getInstance().removePlayerRealm(player);
+        RealmManager.getInstance().removePlayerRealm(player, true);
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
         KarmaHandler.getInstance().handleLogoutEvents(player);
