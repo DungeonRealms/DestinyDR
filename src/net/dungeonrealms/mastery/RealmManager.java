@@ -18,6 +18,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.ZipEntry;
@@ -134,44 +137,75 @@ public class RealmManager implements GenericMechanic {
 
     }
 
+    public static void pack(String sourceDirPath, String zipFilePath) throws IOException {
+        Path p = Files.createFile(Paths.get(zipFilePath));
+
+        ZipOutputStream zs = new ZipOutputStream(Files.newOutputStream(p));
+        try {
+            Path pp = Paths.get(sourceDirPath);
+            Files.walk(pp)
+                    .filter(path -> !Files.isDirectory(path))
+                    .forEach(path -> {
+                        String sp = path.toAbsolutePath().toString().replace(pp.toAbsolutePath().toString(), "").replace(path.getFileName().toString(), "");
+                        ZipEntry zipEntry = new ZipEntry(sp + "/" + path.getFileName().toString());
+                        try {
+                            zs.putNextEntry(zipEntry);
+                            zs.write(Files.readAllBytes(path));
+                            zs.closeEntry();
+                        } catch (Exception e) {
+                            System.err.println(e);
+                        }
+                    });
+        } finally {
+            zs.close();
+        }
+    }
+
+
     public void uploadRealm(UUID uuid) {
         if (REALM_STATUS.get(uuid) != FTPStatus.DOWNLOADED) return;
-        AsyncUtils.pool.submit(() -> {
-            Utils.log.info("[REALM] [ASYNC] Starting Compression for player realm " + uuid.toString());
-            zipFolder(DungeonRealms.getInstance().getDataFolder() + "/realms/" + uuid.toString(), DungeonRealms.getInstance().getDataFolder() + "/realms/uploading/" + uuid.toString() + ".zip");
-            Utils.log.info("[REALM] [ASYNC] Deleting local cache of unzipped realm " + uuid.toString());
+        //AsyncUtils.pool.submit(() -> {
+        Utils.log.info("[REALM] [ASYNC] Starting Compression for player realm " + uuid.toString());
+
+        try {
+            pack(Bukkit.getWorldContainer().getAbsolutePath().replace(".", "") + uuid.toString(), DungeonRealms.getInstance().getDataFolder() + "/realms/uploading/" + uuid.toString() + ".zip");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        Utils.log.info("[REALM] [ASYNC] Deleting local cache of unzipped realm " + uuid.toString());
+        try {
+            FileUtils.deleteDirectory(new File(Bukkit.getWorldContainer().getAbsolutePath().replace(".", "") + uuid.toString()));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        FTPClient ftpClient = new FTPClient();
+        try {
+            ftpClient.connect(HOST);
+            ftpClient.login(USER, PASSWORD);
+            ftpClient.enterLocalPassiveMode();
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+
+            String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
+            File TEMP_UPLOAD_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/uploading/" + uuid.toString() + ".zip");
+
+            InputStream inputStream = new FileInputStream(TEMP_UPLOAD_LOCATION);
+
+            Utils.log.info("[REALM] [ASYNC] Started upload for player realm " + uuid.toString() + " ... STARTING");
+            ftpClient.storeFile(REMOTE_FILE, inputStream);
+            inputStream.close();
+            Utils.log.info("[REALM] [ASYNC] Successfully uploaded player realm " + uuid.toString());
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            Utils.log.info("[REALM] [ASYNC] Deleting local cache of realm " + uuid.toString());
             try {
-                FileUtils.deleteDirectory(new File(DungeonRealms.getInstance().getDataFolder() + "/realms/" + uuid.toString()));
+                FileUtils.deleteDirectory(new File(DungeonRealms.getInstance().getDataFolder() + "/realms/uploading/" + uuid.toString() + ".zip"));
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            FTPClient ftpClient = new FTPClient();
-            try {
-                ftpClient.connect(HOST);
-                ftpClient.login(USER, PASSWORD);
-                ftpClient.enterLocalPassiveMode();
-                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-
-                String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
-                File TEMP_UPLOAD_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/uploading/" + uuid.toString() + ".zip");
-
-                InputStream inputStream = new FileInputStream(TEMP_UPLOAD_LOCATION);
-
-                Utils.log.info("[REALM] [ASYNC] Started upload for player realm " + uuid.toString() + " ... STARTING");
-                ftpClient.storeFile(REMOTE_FILE, inputStream);
-                inputStream.close();
-                Utils.log.info("[REALM] [ASYNC] Successfully uploaded player realm " + uuid.toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                Utils.log.info("[REALM] [ASYNC] Deleting local cache of realm " + uuid.toString());
-                try {
-                    FileUtils.deleteDirectory(new File(DungeonRealms.getInstance().getDataFolder() + "/realms/uploading/" + uuid.toString() + ".zip"));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        }
+        //});
     }
 
     /**
@@ -182,61 +216,59 @@ public class RealmManager implements GenericMechanic {
      */
     public void downloadRealm(UUID uuid) {
         if (REALM_STATUS.containsKey(uuid) && REALM_STATUS.get(uuid) == FTPStatus.DOWNLOADED) return;
-        AsyncUtils.pool.submit(() -> {
-            //TODO: xFin fix this. It makes it to this line below.
-            REALM_STATUS.put(uuid, FTPStatus.DOWNLOADING);
-            FTPClient ftpClient = new FTPClient();
-            FileOutputStream fos = null;
-            String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
-            //TODO: xFin fix this. But never below here. This line is never shown to console. REALM_STATUS is always "DOWNLOADING".
-            Utils.log.info("Attempting to start Realm Download!");
-            try {
-                ftpClient.connect(HOST, port);
-                boolean login = ftpClient.login(USER, PASSWORD);
-                if (login) {
-                    Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString());
-                }
-                ftpClient.enterLocalPassiveMode();
-                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+        //AsyncUtils.pool.submit(() -> {
+        REALM_STATUS.put(uuid, FTPStatus.DOWNLOADING);
+        FTPClient ftpClient = new FTPClient();
+        FileOutputStream fos = null;
+        String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
+        Utils.log.info("Attempting to start Realm Download!");
+        try {
+            ftpClient.connect(HOST, port);
+            boolean login = ftpClient.login(USER, PASSWORD);
+            if (login) {
+                Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString());
+            }
+            ftpClient.enterLocalPassiveMode();
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 
-                if (!checkFileExists(ftpClient, REMOTE_FILE)) {
+            if (!checkFileExists(ftpClient, REMOTE_FILE)) {
+                ftpClient.logout();
+                ftpClient.disconnect();
+                Utils.log.warning("[REALM] [ASYNC] Player: " + uuid.toString() + " doesn't exist remotely!");
+                generateBlankRealm(uuid);
+                Bukkit.broadcastMessage("GENERATING BLANK REALM!");
+                return;
+            }
+
+            Utils.log.info("[REALM] [ASYNC] Downloading " + uuid.toString() + "'s Realm ... STARTING");
+            File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloading/" + uuid.toString() + ".zip");
+            fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
+            ftpClient.retrieveFile(REMOTE_FILE, fos);
+            fos.close();
+            Utils.log.info("[REALM] [ASYNC] Realm downloaded for " + uuid.toString());
+
+            REALM_STATUS.put(uuid, FTPStatus.EXTRACTING);
+            ZipFile zipFile = new ZipFile(TEMP_LOCAL_LOCATION);
+            unZip(zipFile, uuid);
+
+
+        } catch (IOException e) {
+            REALM_STATUS.put(uuid, FTPStatus.FAILED);
+            e.printStackTrace();
+        } finally {
+            deleteLocalCache(uuid);
+            if (ftpClient.isConnected()) {
+                try {
                     ftpClient.logout();
                     ftpClient.disconnect();
-                    Utils.log.warning("[REALM] [ASYNC] Player: " + uuid.toString() + " doesn't exist remotely!");
-                    generateBlankRealm(uuid);
-                    Bukkit.broadcastMessage("GENERATING BLANK REALM!");
-                    return;
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-
-                Utils.log.info("[REALM] [ASYNC] Downloading " + uuid.toString() + "'s Realm ... STARTING");
-                File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloading/" + uuid.toString() + ".zip");
-                fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
-                ftpClient.retrieveFile(REMOTE_FILE, fos);
-                fos.close();
-                Utils.log.info("[REALM] [ASYNC] Realm downloaded for " + uuid.toString());
-
-                REALM_STATUS.put(uuid, FTPStatus.EXTRACTING);
-                ZipFile zipFile = new ZipFile(TEMP_LOCAL_LOCATION);
-                unZip(zipFile, uuid);
-
-
-            } catch (IOException e) {
-                REALM_STATUS.put(uuid, FTPStatus.FAILED);
-                e.printStackTrace();
-            } finally {
-                deleteLocalCache(uuid);
-                if (ftpClient.isConnected()) {
-                    try {
-                        ftpClient.logout();
-                        ftpClient.disconnect();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                REALM_STATUS.put(uuid, FTPStatus.DOWNLOADED);
-                loadInWorld(uuid.toString(), Bukkit.getPlayer(uuid));
             }
-        });
+            REALM_STATUS.put(uuid, FTPStatus.DOWNLOADED);
+            loadInWorld(uuid.toString(), Bukkit.getPlayer(uuid));
+        }
+        //});
     }
 
     /**
@@ -313,75 +345,6 @@ public class RealmManager implements GenericMechanic {
         }
     }
 
-    /**
-     * The final Zip..
-     *
-     * @param srcFolder
-     * @param destZipFile
-     * @throws Exception
-     * @since 1.0
-     */
-    public void zipFolder(String srcFolder, String destZipFile) {
-        try {
-            ZipOutputStream zip = null;
-            FileOutputStream fileWriter = null;
-
-            fileWriter = new FileOutputStream(destZipFile);
-            zip = new ZipOutputStream(fileWriter);
-
-            addFolderToZip("", srcFolder, zip);
-            zip.flush();
-            zip.close();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    /**
-     * Adds file to zip
-     *
-     * @param path
-     * @param srcFile
-     * @param zip
-     * @throws Exception
-     * @since 1.0
-     */
-    public void addFileToZip(String path, String srcFile, ZipOutputStream zip) throws Exception {
-        File folder = new File(srcFile);
-        if (folder.isDirectory()) {
-            addFolderToZip(path, srcFile, zip);
-        } else {
-            byte[] buf = new byte[1024];
-            int len;
-            FileInputStream in = new FileInputStream(srcFile);
-            zip.putNextEntry(new ZipEntry(path + "/" + folder.getName()));
-            while ((len = in.read(buf)) > 0) {
-                zip.write(buf, 0, len);
-            }
-            in.close();
-        }
-    }
-
-    /**
-     * Add Realm World to Zip
-     *
-     * @param path
-     * @param srcFolder
-     * @param zip
-     * @throws Exception
-     * @since 1.0
-     */
-    public void addFolderToZip(String path, String srcFolder, ZipOutputStream zip) throws Exception {
-        File folder = new File(srcFolder);
-
-        for (String fileName : folder.list()) {
-            if (path.equals("")) {
-                addFileToZip(folder.getName(), srcFolder + "/" + fileName, zip);
-            } else {
-                addFileToZip(path + "/" + folder.getName(), srcFolder + "/" + fileName, zip);
-            }
-        }
-    }
 
     /**
      * Loads a players realm into BUKKIT.
@@ -408,7 +371,7 @@ public class RealmManager implements GenericMechanic {
         realmObject.getRealmHologram().delete();
         if (playerLoggingOut) {
             realmObject.getPlayerList().stream().forEach(player -> {
-                if (API.getGamePlayer(player).isInRealm()) {
+                if (!player.getWorld().getName().contains("DUNGEON") && !player.getWorld().equals(Bukkit.getWorlds().get(0))) {
                     player.sendMessage(ChatColor.RED + "This Realm has been closed!");
                     player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
                     player.setFlying(false);
@@ -463,6 +426,7 @@ public class RealmManager implements GenericMechanic {
      *
      * @since 1.0
      */
+
     public void removePlayerRealm(Player player, boolean playerLoggingOut) {
         if (getPlayerRealm(player) != null) {
             removeRealm(getPlayerRealm(player), playerLoggingOut);
@@ -561,7 +525,7 @@ public class RealmManager implements GenericMechanic {
             if (location.subtract(0, 1, 0).getBlock().getType() == Material.PORTAL) {
                 location.getBlock().setType(Material.AIR);
             }
-            if (location.add(0 , 2, 0).getBlock().getType() == Material.PORTAL) {
+            if (location.add(0, 2, 0).getBlock().getType() == Material.PORTAL) {
                 location.getBlock().setType(Material.AIR);
             }
             return null;
@@ -644,55 +608,55 @@ public class RealmManager implements GenericMechanic {
      */
     public void downloadRealmTemplate(UUID uuid) {
         if (REALM_STATUS.containsKey(uuid) && REALM_STATUS.get(uuid) == FTPStatus.DOWNLOADED) return;
-        AsyncUtils.pool.submit(() -> {
-            REALM_STATUS.put(uuid, FTPStatus.DOWNLOADING);
-            FTPClient ftpClient = new FTPClient();
-            FileOutputStream fos = null;
-            String REMOTE_FILE = "/" + "realms" + "/" + "REALM_TEMPLATE" + ".zip";
-            try {
-                ftpClient.connect(HOST, port);
-                boolean login = ftpClient.login(USER, PASSWORD);
-                if (login) {
-                    Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString() + " [TEMPLATE]");
-                }
-                ftpClient.enterLocalPassiveMode();
-                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+        //AsyncUtils.pool.submit(() -> {
+        REALM_STATUS.put(uuid, FTPStatus.DOWNLOADING);
+        FTPClient ftpClient = new FTPClient();
+        FileOutputStream fos = null;
+        String REMOTE_FILE = "/" + "realms" + "/" + "REALM_TEMPLATE" + ".zip";
+        try {
+            ftpClient.connect(HOST, port);
+            boolean login = ftpClient.login(USER, PASSWORD);
+            if (login) {
+                Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString() + " [TEMPLATE]");
+            }
+            ftpClient.enterLocalPassiveMode();
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 
-                if (!checkFileExists(ftpClient, REMOTE_FILE)) {
+            if (!checkFileExists(ftpClient, REMOTE_FILE)) {
+                ftpClient.logout();
+                ftpClient.disconnect();
+                Utils.log.warning("[REALM] [ASYNC] Realm Template doesn't exist remotely!");
+                return;
+            }
+
+            Utils.log.info("[REALM] [ASYNC] Downloading Template Realm for player + " + uuid.toString() + " ... STARTING");
+            File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloading/" + uuid.toString() + ".zip");
+            fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
+            ftpClient.retrieveFile(REMOTE_FILE, fos);
+            fos.close();
+            Utils.log.info("[REALM] [ASYNC] Template Realm downloaded for " + uuid.toString());
+
+            REALM_STATUS.put(uuid, FTPStatus.EXTRACTING);
+            ZipFile zipFile = new ZipFile(TEMP_LOCAL_LOCATION);
+            unZip(zipFile, uuid);
+
+
+        } catch (IOException e) {
+            REALM_STATUS.put(uuid, FTPStatus.FAILED);
+            e.printStackTrace();
+        } finally {
+            deleteLocalCache(uuid);
+            if (ftpClient.isConnected()) {
+                try {
                     ftpClient.logout();
                     ftpClient.disconnect();
-                    Utils.log.warning("[REALM] [ASYNC] Realm Template doesn't exist remotely!");
-                    return;
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
-
-                Utils.log.info("[REALM] [ASYNC] Downloading Template Realm for player + " + uuid.toString() + " ... STARTING");
-                File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloading/" + uuid.toString() + ".zip");
-                fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
-                ftpClient.retrieveFile(REMOTE_FILE, fos);
-                fos.close();
-                Utils.log.info("[REALM] [ASYNC] Template Realm downloaded for " + uuid.toString());
-
-                REALM_STATUS.put(uuid, FTPStatus.EXTRACTING);
-                ZipFile zipFile = new ZipFile(TEMP_LOCAL_LOCATION);
-                unZip(zipFile, uuid);
-
-
-            } catch (IOException e) {
-                REALM_STATUS.put(uuid, FTPStatus.FAILED);
-                e.printStackTrace();
-            } finally {
-                deleteLocalCache(uuid);
-                if (ftpClient.isConnected()) {
-                    try {
-                        ftpClient.logout();
-                        ftpClient.disconnect();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                REALM_STATUS.put(uuid, FTPStatus.DOWNLOADED);
             }
-        });
+            REALM_STATUS.put(uuid, FTPStatus.DOWNLOADED);
+        }
+        //});
     }
 
     public void generateBlankRealm(UUID ownerUUID) {

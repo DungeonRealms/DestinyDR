@@ -45,6 +45,7 @@ public class Guild {
     /**
      * Handles Guild Logs.
      *
+     *
      * @param player
      * @since 1.0
      */
@@ -52,7 +53,7 @@ public class Guild {
         if (isGuildNull(player.getUniqueId())) return;
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
         DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, EnumGuildData.PLAYER_LOGINS, player.getName() + "," + (System.currentTimeMillis() / 1000l), true);
-        NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + player.getName() + ChatColor.GREEN + " is now online!");
+        NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + player.getName() + ChatColor.GREEN + " is now online.");
     }
 
     /**
@@ -561,6 +562,9 @@ public class Guild {
                                     .append("netLevel", 1)
                                     .append("experience", 0)
                                     .append("invitations", new ArrayList<String>()))
+                            .append("boosters",
+                                    new Document("active", "NONE")
+                                            .append("available", new ArrayList<String>()))
                             .append("logs",
                                     new Document("playerLogin", new ArrayList<String>())
                                             .append("playerInvites", new ArrayList<String>())

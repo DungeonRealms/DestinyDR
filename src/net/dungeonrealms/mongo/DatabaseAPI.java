@@ -262,6 +262,13 @@ public class DatabaseAPI {
                 return ((Document) GUILDS.get(guildName).get("info")).get("netLevel", Integer.class);
             case EXPERIENCE:
                 return ((Document) GUILDS.get(guildName).get("info")).get("experience", Double.class);
+            /*
+            Boosters
+             */
+            case BOOSTERS_ACTIVE:
+                return ((Document) GUILDS.get(guildName).get("boosters")).get("active", String.class);
+            case BOOSTERS_AVAILABLE:
+                return ((Document) GUILDS.get(guildName).get("available")).get("experience", ArrayList.class);
             default:
         }
         return null;
@@ -353,7 +360,7 @@ public class DatabaseAPI {
                                 .append("friends", new ArrayList<>())
                                 .append("alignment", "lawful")
                                 .append("guild", ""))
-                         .append("attributes",
+                        .append("attributes",
                                 new Document("bufferPoints", 6)
                                         .append("strength", 0)
                                         .append("dexterity", 0)

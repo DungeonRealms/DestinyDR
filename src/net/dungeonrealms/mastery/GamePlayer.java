@@ -22,7 +22,7 @@ public class GamePlayer {
 
     private Player T;
     private PlayerStats stats;
-    
+
     public GamePlayer(Player player) {
         T = player;
         stats = new PlayerStats(player.getUniqueId());
@@ -83,7 +83,7 @@ public class GamePlayer {
     public int getLevel() {
         return stats.getLevel();
     }
-    
+
 
     /**
      * Gets the players experience.
@@ -192,12 +192,20 @@ public class GamePlayer {
 
         double futureExperience = experience + experienceToAdd;
 
-        /**
-         * Will only happen if the players should level up!
+        /*
+        m
+        c_i_k = ?  a_i_k * b_k_i
+       k=1
+
+        for (int i=0; i<l; ++i)
+        for (int j=0; j<n; ++j)
+         for (int k=0; k<m; ++k)
+            c[i][k] += a[i][k] * b[k][j]
+
          */
-        //TODO: Fix this formula for levels 1-9
+
         if (futureExperience > (level ^ 2 * 250) + Math.round(level % (64 * 2))) {
-        	getStats().lvlUp();
+            getStats().lvlUp();
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, experienceToAdd - experience, false);
             Utils.log.info("[LEVEL] Leveling " + T.getName() + " to level " + getLevel() + 1 + " with new experience" + String.valueOf(experience - experience));
             T.sendMessage(ChatColor.GREEN + "You have reached level " + ChatColor.AQUA + level + 1 + ChatColor.GREEN + " and have gained 6 Attribute Points!");
@@ -223,19 +231,18 @@ public class GamePlayer {
         return output;
     }
 
-	/**
-	 * @return Player
-	 */
-	public Player getPlayer() {
-		return T;
-	}
+    /**
+     * @return Player
+     */
+    public Player getPlayer() {
+        return T;
+    }
 
-	/**
-	 * @return Player Stats
-	 * 
-	 */
-	public PlayerStats getStats() {
-		return stats;
-	}
+    /**
+     * @return Player Stats
+     */
+    public PlayerStats getStats() {
+        return stats;
+    }
 
 }

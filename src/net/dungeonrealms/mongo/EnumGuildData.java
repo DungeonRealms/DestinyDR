@@ -17,6 +17,9 @@ public enum EnumGuildData {
     CREATION_UNIX_DATA("info.unixCreation"),
     INVITATIONS("info.invitations"),
 
+    BOOSTERS_ACTIVE("boosters.active"),
+    BOOSTERS_AVAILABLE("boosters.available"),
+
     PLAYER_LOGINS("logs.playerLogin"),
     PLAYER_INVITES("logs.playerInvites"),
     BANK_CLICK("logs.bankClicks"),
@@ -25,14 +28,14 @@ public enum EnumGuildData {
 
     LEVEL("info.netLevel"),
     EXPERIENCE("info.experience");
-	
-	public String key;
-	
-	EnumGuildData(String key){
-		this.key = key;
-	}
-	
-	 public String getKey(){
-		return this.key;
-	 }
+
+    public String key;
+
+    EnumGuildData(String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return this.key;
+    }
 }
