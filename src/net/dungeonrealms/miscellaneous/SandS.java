@@ -42,9 +42,9 @@ public class SandS implements GenericMechanic {
             case ENCHANTMENT_SCROLL:
                 switch (tier) {
                     case 1:
-                        return new ShmozoNBT().setItem(new ItemStack(Material.PAPER), ChatColor.GREEN + "", new String[]{
+                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.GREEN + "", new String[]{
                                 "",
-                        }).setNBT("scrollTier", String.valueOf(tier)).setNBT("scrollType", String.valueOf(type.getId())).build();
+                        }).setNBTString("scrollTier", String.valueOf(tier)).setNBTString("scrollType", String.valueOf(type.getId())).build();
                     case 2:
                         break;
                     case 3:

@@ -2,6 +2,7 @@ package net.dungeonrealms.mastery;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+import me.Bogdacutu.VoidGenerator.VoidGeneratorGenerator;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
@@ -664,7 +665,7 @@ public class RealmManager implements GenericMechanic {
         WorldCreator worldCreator = new WorldCreator(ownerUUID.toString());
         worldCreator.type(WorldType.FLAT);
         worldCreator.generateStructures(false);
-        worldCreator.generatorSettings("3;minecraft:air;2");
+        worldCreator.generator(new VoidGeneratorGenerator());
         World world = Bukkit.createWorld(worldCreator);
         world.setSpawnLocation(24, 130, 24);
         world.getBlockAt(0, 64, 0).setType(Material.AIR);
