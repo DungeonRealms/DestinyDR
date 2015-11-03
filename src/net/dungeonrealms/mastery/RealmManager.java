@@ -161,7 +161,6 @@ public class RealmManager implements GenericMechanic {
         }
     }
 
-
     public void uploadRealm(UUID uuid) {
         if (REALM_STATUS.get(uuid) != FTPStatus.DOWNLOADED) return;
         //AsyncUtils.pool.submit(() -> {
