@@ -65,6 +65,7 @@ public enum EnumData {
     VITALITY("attributes.vitality"),
 
     RESETS("attributes.resets"),
+    
     FREERESETS("attributes.freeresets"),
     
     BUFFER_POINTS("attributes.bufferPoints");

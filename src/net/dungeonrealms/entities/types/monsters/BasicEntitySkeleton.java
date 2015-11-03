@@ -64,14 +64,6 @@ public class BasicEntitySkeleton extends DRSkeleton {
     @Override
     protected void getRareDrop() {
         switch (this.random.nextInt(3)) {
-            case 0:
-                this.a(Items.GOLD_NUGGET, 1);
-                break;
-            case 1:
-                this.a(Items.WOODEN_SWORD, 1);
-                break;
-            case 2:
-                this.a(Items.BOAT, 1);
         }
     }
 
