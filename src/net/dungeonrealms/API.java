@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -67,7 +68,7 @@ import net.dungeonrealms.teleportation.TeleportAPI;
  */
 public class API {
 
-	public static ArrayList<GamePlayer> GAMEPLAYERS = new ArrayList<>();
+	public static CopyOnWriteArrayList<GamePlayer> GAMEPLAYERS = new CopyOnWriteArrayList<>();
 	
 	
     /**
