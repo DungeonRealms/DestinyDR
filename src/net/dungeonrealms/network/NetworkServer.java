@@ -1,17 +1,14 @@
 package net.dungeonrealms.network;
 
-import java.util.ArrayList;
-
-import org.bson.Document;
-import org.bukkit.Bukkit;
-
 import com.mongodb.client.model.Filters;
-
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.mongo.Database;
+import org.bson.Document;
+import org.bukkit.Bukkit;
+
+import java.util.ArrayList;
 
 /**
  * Created by Nick on 10/16/2015.
@@ -36,7 +33,7 @@ public class NetworkServer implements GenericMechanic{
 
     public void startInitialization() {
         Utils.log.info("[NetworkServer] Starting up... STARTING");
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), this::refreshDocument, 0, 20 * 8);
+        //Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), this::refreshDocument, 0, 20 * 8);
         Utils.log.info("[NetworkServer] Finished starting up ... OKAY");
     }
 

@@ -1,15 +1,5 @@
 package net.dungeonrealms.items.enchanting;
 
-import java.lang.reflect.Field;
-import java.util.List;
-
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.enchantments.EnchantmentWrapper;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.armor.Armor;
@@ -18,6 +8,15 @@ import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentWrapper;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.lang.reflect.Field;
+import java.util.List;
 
 /**
  * Created by Kieran on 9/20/2015.

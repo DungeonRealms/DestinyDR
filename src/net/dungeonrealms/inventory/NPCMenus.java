@@ -5,7 +5,7 @@ import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.items.ItemBuilder;
+import net.dungeonrealms.miscellaneous.ItemBuilder;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mechanics.ItemManager;
 import org.bukkit.Bukkit;

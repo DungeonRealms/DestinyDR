@@ -1,4 +1,4 @@
-package net.dungeonrealms.items;
+package net.dungeonrealms.miscellaneous;
 
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagInt;
