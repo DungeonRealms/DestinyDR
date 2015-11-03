@@ -12,6 +12,8 @@ import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.profession.Fishing;
 import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.spawning.SpawningMechanics;
+
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -59,9 +61,12 @@ public class CommandSet extends BasicCommand {
 				}
 				int tier = 0;
 				int spawnAmount = 0;
+				String range = "-";
 				try{
 				 tier = Integer.parseInt(args[2]);
 				 spawnAmount = Integer.parseInt(args[3]);
+				 if(args.length == 5)
+					 range = args[4];
 				}catch(Exception exc){
 					return false;
 				}
@@ -79,6 +84,8 @@ public class CommandSet extends BasicCommand {
 					String data = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + ":" + lootTier;
 					LootManager.SPAWNER_CONFIG.add(data);
 					DungeonRealms.getInstance().getConfig().set("loot", LootManager.SPAWNER_CONFIG);
+					player.getWorld().getBlockAt(player.getLocation()).setType(Material.SPONGE);
+					player.sendMessage((LootManager.LOOT_SPAWNERS.size() + 1) + " loot spawner placed");
 				}
 				break;
 			case "kill":

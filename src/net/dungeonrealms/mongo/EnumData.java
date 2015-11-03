@@ -64,7 +64,11 @@ public enum EnumData {
     //Adds Health, hp regen, elemental resistance, and sword damage.
     VITALITY("attributes.vitality"),
 
+    RESETS("attributes.resets"),
+    FREERESETS("attributes.freeresets"),
+    
     BUFFER_POINTS("attributes.bufferPoints");
+
 	
 	private String key;
 	EnumData(String key){

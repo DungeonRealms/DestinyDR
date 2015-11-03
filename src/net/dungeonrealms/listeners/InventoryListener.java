@@ -1,9 +1,34 @@
 package net.dungeonrealms.listeners;
 
-import ca.thederpygolems.armorequip.ArmorEquipEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+
+import ca.thederpygolems.armorequip.ArmorEquipEvent;
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
@@ -21,24 +46,9 @@ import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.network.NetworkAPI;
 import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
+import net.dungeonrealms.stats.PlayerStats;
+import net.dungeonrealms.stats.StatsManager;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -532,6 +542,12 @@ public class InventoryListener implements Listener {
 			if (t != null) {
 				t.handleClose();
 			}
+		}else if(event.getInventory().getTitle().contains("Stat Points")){
+			PlayerStats stat = API.getGamePlayer((Player) event.getPlayer()).getStats();
+			if(stat.reset){
+				stat.resetTemp();
+			}
+			stat.reset = true;
 		}
 	}
 
@@ -671,5 +687,62 @@ public class InventoryListener implements Listener {
 				}
 			}
 		}
+	}
+	
+	@EventHandler(priority = EventPriority.HIGHEST)
+	public void playerClickStatsInventory(InventoryClickEvent event) {
+		if(event.getInventory().getTitle().contains("Stat Points")){
+			//Stat Points Inv
+			event.setCancelled(true);
+			if(event.getCurrentItem() != null){
+				ItemStack clicked = event.getCurrentItem();
+				Player p = (Player) event.getWhoClicked();
+				PlayerStats stats = StatsManager.getPlayerStats(p);
+				int slot = event.getRawSlot();
+				Inventory inv = event.getInventory();
+				switch(slot){
+				case 2:
+					//Strength
+					if(event.isRightClick())
+						stats.removePoint("str", p, inv);
+					if(event.isLeftClick())
+						stats.allocatePoint("str", p, inv);
+					break;
+				case 3:
+					//Dexterity
+					if(event.isRightClick())
+						stats.removePoint("dex", p, inv);
+					if(event.isLeftClick())
+						stats.allocatePoint("dex", p, inv);
+					break;
+				case 4:
+					//Intellect
+					if(event.isRightClick())
+						stats.removePoint("int", p, inv);
+					if(event.isLeftClick())
+						stats.allocatePoint("int", p, inv);
+					break;
+				case 5:
+					//Vitality
+					if(event.isRightClick())
+						stats.removePoint("vit", p, inv);
+					if(event.isLeftClick())
+						stats.allocatePoint("vit", p, inv);
+					break;
+				case 6:
+					stats.dexPoints +=stats.tempdexPoints;
+					stats.vitPoints +=stats.tempvitPoints;
+					stats.strPoints +=stats.tempstrPoints;
+					stats.intPoints +=stats.tempintPoints;
+					stats.dexPoints +=stats.tempdexPoints;
+					stats.freePoints = stats.tempFreePoints;
+					stats.reset = false;
+					stats.resetTemp();
+					p.closeInventory();
+					//Confirm
+				}
+			}
+		}
+		
 	}
 }

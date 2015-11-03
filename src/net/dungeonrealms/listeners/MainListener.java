@@ -15,6 +15,7 @@ import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.TradeHandler;
 import net.dungeonrealms.inventory.GUI;
 import net.dungeonrealms.inventory.NPCMenus;
+import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -117,6 +118,7 @@ public class MainListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public void onJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
+        API.GAMEPLAYERS.add(new GamePlayer(player));
 		if (WebAPI.ANNOUNCEMENTS != null && WebAPI.ANNOUNCEMENTS.size() > 0) {
 			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
 				for (Map.Entry<String, Integer> e : WebAPI.ANNOUNCEMENTS.entrySet()) {

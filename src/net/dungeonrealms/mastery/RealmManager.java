@@ -229,6 +229,7 @@ public class RealmManager implements GenericMechanic {
                         e.printStackTrace();
                     }
                 }
+                loadInWorld(uuid.toString(), Bukkit.getPlayer(uuid));
             }
         });
     }
@@ -385,34 +386,7 @@ public class RealmManager implements GenericMechanic {
      * @since 1.0
      */
     public void loadInWorld(String worldName, Player player) {
-        /*
-        Only creates a world if the contents of a world don't already exist.
-        This method loadInWorld() is called in the actual object load().
-         */
-        WorldCreator worldCreator = new WorldCreator(worldName);
-        System.out.println("1");
-        worldCreator.type(WorldType.FLAT);
-        worldCreator.generateStructures(false);
-        World w = Bukkit.createWorld(worldCreator);
-        System.out.println("2");
-        System.out.println("3");
-        System.out.println("4");
-        w.setPVP(true);
-        System.out.println("5");
-        w.setStorm(false);
-        System.out.println("6");
-        w.setMonsterSpawnLimit(0);
-        System.out.println("7");
-        w.setTime(0L);
-        System.out.println("8");
-        Bukkit.getWorlds().add(w);
-
-        Location spawnLocation = w.getSpawnLocation();
-        spawnLocation.setY(w.getHighestBlockYAt(w.getSpawnLocation()) + 1);
-        spawnLocation.getBlock().setType(Material.PORTAL);
-        spawnLocation.subtract(0, 1, 0);
-        spawnLocation.getBlock().setType(Material.PORTAL);
-
+        Bukkit.createWorld(new WorldCreator(worldName));
         player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "REALMS" + ChatColor.WHITE + "] " + ChatColor.YELLOW + "Your realm is ready! Teleporting you now...");
     }
 
@@ -551,8 +525,6 @@ public class RealmManager implements GenericMechanic {
             CURRENT_REALMS.add(realmObject);
 
             player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "REALMS" + ChatColor.WHITE + "] " + ChatColor.YELLOW + "Your realm is ready!");
-
-            //loadInWorld(player.getUniqueId().toString(), player);
         } else {
             player.sendMessage(ChatColor.RED + "You already have a Realm Portal in the world, please destroy it!");
         }

@@ -50,10 +50,10 @@ import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -61,7 +61,7 @@ import java.util.stream.Collectors;
  */
 public class API {
 
-	public static ArrayList<GamePlayer> GAMEPLAYERS = new ArrayList<>();
+	public static CopyOnWriteArrayList<GamePlayer> GAMEPLAYERS = new CopyOnWriteArrayList<>();
 	
 	
     /**
@@ -273,7 +273,7 @@ public class API {
             mount.dead = true;
             EntityAPI.removePlayerMountList(uuid);
         }
-        
+        if(GAMEPLAYERS.size() > 0)
         for(GamePlayer gPlayer : GAMEPLAYERS){
         	if(gPlayer.getPlayer().getName().equalsIgnoreCase(player.getName())){
         		gPlayer.getStats().onLogOff();
@@ -305,7 +305,6 @@ public class API {
      */
     public static void handleLogin(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
-        GAMEPLAYERS.add(new GamePlayer(player));
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
             ItemStack[] items = ItemSerialization.fromString(playerInv).getContents();
