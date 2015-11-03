@@ -284,7 +284,7 @@ public class API {
         if(GAMEPLAYERS.size() > 0)
         for(GamePlayer gPlayer : GAMEPLAYERS){
         	if(gPlayer.getPlayer().getName().equalsIgnoreCase(player.getName())){
-        		gPlayer.getStats().onLogOff();
+        		gPlayer.getStats().updateDatabase();
         		GAMEPLAYERS.remove(gPlayer);
         	}
         }

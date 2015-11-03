@@ -567,42 +567,6 @@ public class ClickHandler {
                     break;
             }
             return;
-        }else
-        	
-        /*Reset Stats Wizard*/
-        if(name.equalsIgnoreCase("Wizard")){
-        	GamePlayer gp = API.getGamePlayer(player);
-        	if(gp.getLevel() >= 10){
-        		if(gp.getStats().resetAmounts > 0){
-        			player.sendMessage(ChatColor.GREEN + "You have a free stat reset available!");
-        			AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
-						if (e.getSlot() == AnvilSlot.OUTPUT) {
-							if(e.getName().equalsIgnoreCase("Yes") || e.getName().equalsIgnoreCase("y")){
-								gp.getStats().freeResets -= 1;
-							}else{
-								e.destroy();
-							}
-						}
-					});
-					ItemStack stack = new ItemStack(Material.INK_SACK, 1, DyeColor.GREEN.getDyeData());
-					ItemMeta meta = stack.getItemMeta();
-					meta.setDisplayName("Use your ONE stat points reset?");
-					stack.setItemMeta(meta);
-					gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
-					Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-						player.sendMessage("Opening stat reset confirmation");
-					}, 0, 20 * 3);
-					Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-					gui.open();
-					}, 20 * 5);
-        		}else{
-        		player.sendMessage(ChatColor.RED + "You have already used your free stat reset for your character.");
-        		player.sendMessage(ChatColor.YELLOW + "You may purchase more resets from the E-Cash vendor!.");
-        		}
-        	}else{
-        		player.sendMessage(ChatColor.RED + "You need to be level 10 to use your ONE reset.");
-        	}
-        	
         }
         	
         if (name.endsWith("- Officers")) {

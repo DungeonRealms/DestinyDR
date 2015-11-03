@@ -189,8 +189,8 @@ public class DungeonRealms extends JavaPlugin {
 
     public void onDisable() {
         saveConfig();
-        mm.stopInvocation();
         API.logoutAllPlayers();
+        mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
         Database.mongoClient.close();
         AsyncUtils.pool.shutdown();

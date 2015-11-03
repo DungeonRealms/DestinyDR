@@ -115,6 +115,20 @@ public class ItemManager {
         }
         return null;
     }
+    
+    /**
+     * Creates a book for players to reset their allocated stat points
+     * @return Itemstack
+     * @since 1.0
+     */
+    public static ItemStack createStatResetBook(){
+    	ItemStack stack = createItem(Material.ENCHANTED_BOOK, ChatColor.GREEN + "Attribute Reset Book", new String[]{ChatColor.GRAY + "Right click to reset your stat",  ChatColor.GRAY +  "allocated points to free points."} );
+    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+    	nms.getTag().setString("type", "reset");
+    	return CraftItemStack.asBukkitCopy(nms);
+    }
+    
+    
     /**
      * Creates a pickaxe based on
      * given tier

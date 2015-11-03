@@ -30,7 +30,7 @@ public class PlayerStats {
 	 public int intPoints;
 	 public int tempintPoints;
 	 public int tempFreePoints;
-	 public int level;
+	 private int level;
 	 UUID playerUUID;
 	 public int freeResets;
 	 final static int POINTS_PER_LEVEL = 6;
@@ -55,6 +55,12 @@ public class PlayerStats {
 		loadPlayerStats();
 	}
 
+	
+	public void setPlayerLevel(int lvl){
+		level = lvl;
+		updatePoints();
+	}
+	
 	/**
 	 * gets stat points from the database for UUID
 	 * 
@@ -172,7 +178,7 @@ public class PlayerStats {
 		int points = vitPoints;
 		boolean spent = tempvitPoints > 0;
 		
-		return ItemManager.createItem(Material.EMPTY_MAP, ChatColor.DARK_PURPLE + "Vitality", new String[]{ChatColor.GRAY + "Adds health, hp regen, ", ChatColor.GRAY + "elemental resistance, and ", ChatColor.GRAY + "sword damage.",
+		return ItemManager.createItem(Material.EMPTY_MAP, ChatColor.DARK_PURPLE + "Vitality", new String[]{ChatColor.GRAY + "Adds health, hp regen, ", ChatColor.GRAY + " and ", ChatColor.GRAY + "sword damage.",
 				ChatColor.AQUA + "Allocated Points: " + vitPoints + (spent ? ChatColor.GREEN + " [+" + tempvitPoints + "]" : ""),
 				ChatColor.RED + "Free Points: " + tempFreePoints});
 	}
@@ -224,7 +230,6 @@ public class PlayerStats {
 		return  ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.RED + "Intellect Bonuses: " + in + (spent ? ChatColor.GREEN + " [+" + aPoints + "]" : ""), new String[]{
 				ChatColor.GOLD + "ENERGY REGEN: " + ChatColor.AQUA + df.format(in * 0.015) + "%"
 						+ (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.015) + "%]" : ""),
-				ChatColor.GOLD + "ELE DMG: " + ChatColor.AQUA + df.format(in * 0.05) + (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.05) + "%]" : ""),
 				ChatColor.GOLD + "CRIT CHANCE: " + ChatColor.AQUA + df.format(in * 0.025) + "%"
 						+ (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.025) + "%]" : ""),
 				ChatColor.GOLD + "STAFF DMG: " + ChatColor.AQUA + df.format(in * 0.02) + "%" + (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.02) + "%]" : "")});
@@ -246,7 +251,7 @@ public class PlayerStats {
 		int points = intPoints;
 		boolean spent = tempintPoints > 0;
 		
-		return ItemManager.createItem(Material.EMPTY_MAP, ChatColor.DARK_PURPLE + "Intellect", new String[]{ChatColor.GRAY + "Adds energy regeneration,  ", ChatColor.GRAY + "elemental damage, critical ",
+		return ItemManager.createItem(Material.EMPTY_MAP, ChatColor.DARK_PURPLE + "Intellect", new String[]{ChatColor.GRAY + "Adds energy regeneration,  ", ChatColor.GRAY + "critical ",
 				ChatColor.GRAY + "hit chance, and staff damage.",
 				ChatColor.AQUA + "Allocated Points: " + intPoints + (spent ? ChatColor.GREEN + " [+" + tempintPoints + "]" : ""),
 				ChatColor.RED + "Free Points: " + tempFreePoints});
@@ -299,17 +304,35 @@ public class PlayerStats {
 	  	
 	  
 	  	public void lvlUp() {
-			freePoints += PlayerStats.POINTS_PER_LEVEL * level;
-			level += 1;
+	  		int lvl = level + 1;
+	  		if(lvl == 10 || lvl == 50)
+	  			freeResets++;
+	  		setPlayerLevel(lvl);
 		}
+	  	
+	  	public void updatePoints(){
+	  		int allPoints = freePoints;
+	  		allPoints += strPoints += intPoints += dexPoints += vitPoints;
+	  		int shouldHave = POINTS_PER_LEVEL * level;
+	  		int diff = shouldHave - allPoints;
+	  		if(diff > 0){
+	  			freePoints += diff;
+	  		}
+	  	}
 
-		 public void onLogOff() {
+	  	/**
+	  	 * Called to sync database with players server stats
+	  	 */
+	  	 
+		 public void updateDatabase() {
 			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.INTELLECT, intPoints, false);
 			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.STRENGTH, strPoints, false);
 			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.VITALITY, vitPoints, false);
 			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DEXTERITY, dexPoints, false);
 			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BUFFER_POINTS, freePoints, false);
 			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LEVEL, level, false);
+			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.RESETS, resetAmounts, false);
+			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.FREERESETS, freeResets, false);
 		}
 
 		/**
@@ -321,6 +344,27 @@ public class PlayerStats {
 			tempintPoints = 0;
 			tempstrPoints = 0;
 			tempvitPoints = 0;			
+		}
+
+		/**
+		 * Resets the player stats.
+		 * @since 1.0
+		 */
+		public void unallocateAllPoints() {
+			resetTemp();
+			this.freePoints = POINTS_PER_LEVEL * level;
+			this.intPoints = 0;
+			this.dexPoints = 0;
+			this.strPoints = 0;
+			this.vitPoints = 0;
+			updateDatabase();
+		}
+
+		/**
+		 * @return
+		 */
+		public int getLevel() {
+			return level;
 		}
 
 }

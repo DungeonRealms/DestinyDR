@@ -3,6 +3,7 @@
  */
 package net.dungeonrealms.commands;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.mechanics.LootManager;
@@ -42,6 +43,7 @@ public class CommandSet extends BasicCommand {
 			case "level":
 				int lvl = Integer.parseInt(args[1]);
 				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, lvl, true);
+				API.getGamePlayer(player).getStats().setPlayerLevel(lvl);
 				s.sendMessage("Level set to " + lvl);
 				break;
 			case "gems":

@@ -81,8 +81,9 @@ public class GamePlayer {
      * @since 1.0
      */
     public int getLevel() {
-        return (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, T.getUniqueId());
+        return stats.getLevel();
     }
+    
 
     /**
      * Gets the players experience.

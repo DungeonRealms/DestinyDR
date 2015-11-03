@@ -85,6 +85,9 @@ public class CommandAdd extends BasicCommand {
                 		rodTier = Integer.parseInt(args[1]);
                 	player.getInventory().addItem(ItemManager.createFishingPole(rodTier));
                 	break;
+                case "resetbook":
+                	player.getInventory().addItem(ItemManager.createStatResetBook());
+                break;
             }
         }
 

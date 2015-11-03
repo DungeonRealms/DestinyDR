@@ -1,6 +1,7 @@
 package net.dungeonrealms.handlers;
 
-import net.dungeonrealms.mongo.EnumData;
+import java.util.Random;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -28,6 +29,7 @@ import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
@@ -547,8 +549,32 @@ public class HealthHandler implements GenericMechanic{
             if (Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
                 Entities.getInstance().MONSTERS_LEASHED.remove(entity);
             }
-            if(entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile"))
+            if(entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")){
             	((net.dungeonrealms.entities.types.monsters.Monster)entity1).onMonsterDeath();
+            	if(attacker instanceof Player){
+            		double exp  = 0;
+            		int lvl = entity.getMetadata("level").get(0).asInt();
+            		int tier = entity.getMetadata("tier").get(0).asInt();
+            		switch(tier){
+            		case 1:
+            			exp = 100 + new Random().nextInt(25);
+            			break;
+            		case 2:
+            			exp = 150 + new Random().nextInt(25);
+            			break;
+            		case 3:
+            			exp = 200 + new Random().nextInt(25);
+            			break;
+            		case 4:
+            			exp = 250 + new Random().nextInt(25);
+            			break;
+            		case 5:
+            			exp = 300 + new Random().nextInt(25);
+            			break;
+            		}
+            		API.getGamePlayer((Player) attacker).addExperience(exp);
+            	}
+            }
             return;
         }
 

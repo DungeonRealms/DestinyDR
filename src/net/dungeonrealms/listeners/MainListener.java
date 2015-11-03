@@ -461,6 +461,9 @@ public class MainListener implements Listener {
 		if (npcNameStripped.equalsIgnoreCase("Innkeeper")) {
 			NPCMenus.openHearthstoneRelocateMenu(event.getPlayer());
 		}
+		if (npcNameStripped.equalsIgnoreCase("Wizard")){
+			NPCMenus.openWizardMenu(event.getPlayer());
+		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
