@@ -191,6 +191,50 @@ public class ClickHandler {
                     player.spigot().sendMessage(test);
                     return;
                 }
+                if (nmsStack.getTag().hasKey("storageExpansion")) {
+                    if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
+                        //TODO CHASE Whatever you wanna do here.
+                        player.sendMessage(ChatColor.GREEN + "You have purchased a Storage Expansion!");
+                        player.closeInventory();
+                        return;
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash!");
+                        return;
+                    }
+                }
+                if (nmsStack.getTag().hasKey("repairHammer")) {
+                    if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
+                        //TODO CHASE Whatever you wanna do here.
+                        player.sendMessage(ChatColor.GREEN + "You have purchased Five Repair Hammers!");
+                        player.closeInventory();
+                        return;
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash!");
+                        return;
+                    }
+                }
+                if (nmsStack.getTag().hasKey("retrainingBook")) {
+                    if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
+                        //TODO CHASE Whatever you wanna do here.
+                        player.sendMessage(ChatColor.GREEN + "You have purchased a Retraining Book!");
+                        player.closeInventory();
+                        return;
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash!");
+                        return;
+                    }
+                }
+                if (nmsStack.getTag().hasKey("medalOfGathering")) {
+                    if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
+                        //TODO CHASE Whatever you wanna do here.
+                        player.sendMessage(ChatColor.GREEN + "You have purchased a Medal Of Gathering!");
+                        player.closeInventory();
+                        return;
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash!");
+                        return;
+                    }
+                }
             }
             return;
         } else
