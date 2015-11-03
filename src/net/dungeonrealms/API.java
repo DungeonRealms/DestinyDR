@@ -265,7 +265,7 @@ public class API {
             locationAsString = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + "," + player.getLocation().getYaw() + "," + player.getLocation().getPitch();
         }
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, false);
-        RealmManager.getInstance().removePlayerRealm(player);
+        RealmManager.getInstance().removePlayerRealm(player, true);
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
         KarmaHandler.getInstance().handleLogoutEvents(player);
