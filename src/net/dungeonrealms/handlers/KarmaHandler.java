@@ -12,6 +12,7 @@ import net.dungeonrealms.mongo.EnumOperators;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.*;
 
 import java.util.*;
@@ -33,6 +34,7 @@ public class KarmaHandler implements GenericMechanic {
 
     public static HashMap<Player, EnumPlayerAlignments> PLAYER_ALIGNMENTS = new HashMap<>();
     public static ConcurrentHashMap<Player, Integer> PLAYER_ALIGNMENT_TIMES = new ConcurrentHashMap<>();
+    public static HashMap<Player, EnumPlayerAlignments> PLAYER_LOCATIONS = new HashMap<>();
     public static List<Location> CHAOTIC_RESPAWNS = new ArrayList<>();
 
     public enum EnumPlayerAlignments {
@@ -310,4 +312,24 @@ public class KarmaHandler implements GenericMechanic {
         }
     }
 
+
+    public void tellPlayerRegionInfo(Player player) {
+        if (API.isInSafeRegion(player.getLocation()) && !PLAYER_LOCATIONS.get(player).equals(EnumPlayerAlignments.LAWFUL)) {
+            player.sendMessage(ChatColor.GREEN + "                " + ChatColor.BOLD + "*** SAFE ZONE (DMG-OFF) ***");
+            player.playSound(player.getLocation(), Sound.WITHER_SHOOT, 0.25F, 0.30F);
+            PLAYER_LOCATIONS.put(player, EnumPlayerAlignments.LAWFUL);
+            return;
+        }
+        if (!API.isInSafeRegion(player.getLocation()) && API.isNonPvPRegion(player.getLocation()) && !PLAYER_LOCATIONS.get(player).equals(EnumPlayerAlignments.NEUTRAL)) {
+            player.sendMessage(ChatColor.YELLOW + "           " + ChatColor.BOLD + "*** WILDERNESS (MOBS-ON, PVP-OFF) ***");
+            player.playSound(player.getLocation(), Sound.WITHER_SHOOT, 0.25F, 0.30F);
+            PLAYER_LOCATIONS.put(player, EnumPlayerAlignments.NEUTRAL);
+            return;
+        }
+        if (!API.isInSafeRegion(player.getLocation()) && !API.isNonPvPRegion(player.getLocation()) && !PLAYER_LOCATIONS.get(player).equals(EnumPlayerAlignments.CHAOTIC)) {
+            player.sendMessage(ChatColor.RED + "                " + ChatColor.BOLD + "*** CHAOTIC ZONE (PVP-ON) ***");
+            player.playSound(player.getLocation(), Sound.WITHER_SHOOT, 0.25F, 0.30F);
+            PLAYER_LOCATIONS.put(player, EnumPlayerAlignments.CHAOTIC);
+        }
+    }
 }

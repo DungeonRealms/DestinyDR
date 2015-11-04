@@ -3,6 +3,7 @@ package net.dungeonrealms.mongo.achievements;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.events.PlayerEnterRegionEvent;
+import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import org.bukkit.Bukkit;
@@ -49,9 +50,10 @@ public class AchievementManager implements GenericMechanic, Listener {
             if (REGION_TRACKER.containsKey(player.getUniqueId()))
                 if (REGION_TRACKER.get(player.getUniqueId()).equalsIgnoreCase(region))
                     return;
+            KarmaHandler.getInstance().tellPlayerRegionInfo(player);
             Bukkit.getServer().getPluginManager().callEvent(new PlayerEnterRegionEvent(player, region));
             REGION_TRACKER.put(player.getUniqueId(), region);
-        }), 0, 20 * 4l);
+        }), 0, 80L);
     }
 
     @Override
