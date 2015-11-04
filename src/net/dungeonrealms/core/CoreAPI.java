@@ -47,7 +47,7 @@ public class CoreAPI {
     public void findMailTax(Callback<Integer> callback) {
         AsyncUtils.pool.submit(() -> {
             try {
-                URL url = new URL("https://cherryio.com/api/l.php?type=tax");
+                URL url = new URL("http://cherryio.com/api/l.php?type=tax");
                 BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
                 String line = in.readLine();
                 int rbt = Integer.valueOf(line);
@@ -118,7 +118,7 @@ public class CoreAPI {
     public void findBan(String playerName, Callback<BanReply> callback) {
         Future<?> result = AsyncUtils.pool.submit(() -> {
             try {
-                URL url = new URL("https://cherryio.com/api/l.php?type=ban&player=" + playerName);
+                URL url = new URL("http://cherryio.com/api/l.php?type=ban&player=" + playerName);
                 BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
                 return in.readLine();
             } catch (IOException e) {

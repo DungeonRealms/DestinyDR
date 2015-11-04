@@ -9,6 +9,7 @@ import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.miscellaneous.SandS;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Material;
@@ -36,6 +37,9 @@ public class CommandAdd extends BasicCommand {
         Player player = (Player) s;
         if (args.length > 0) {
             switch (args[0]) {
+                case "scroll":
+                    player.getInventory().addItem(SandS.getInstance().getScroll(SandS.ScrollType.getById(Integer.valueOf(args[1])), Integer.valueOf(args[2])));
+                    break;
                 case "guild":
                     Guild.getInstance().createGuild(args[1], args[2], player.getUniqueId());
                     break;
@@ -75,20 +79,20 @@ public class CommandAdd extends BasicCommand {
                     DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAILS.add(player);
                     break;
                 case "pick":
-                	int tier = 1;
-                	if(args.length == 2)
-                		tier = Integer.parseInt(args[1]);
-                	player.getInventory().addItem(ItemManager.createPickaxe(tier));
-                	break;
+                    int tier = 1;
+                    if (args.length == 2)
+                        tier = Integer.parseInt(args[1]);
+                    player.getInventory().addItem(ItemManager.createPickaxe(tier));
+                    break;
                 case "rod":
-                	int rodTier = 1;
-                	if(args.length == 2)
-                		rodTier = Integer.parseInt(args[1]);
-                	player.getInventory().addItem(ItemManager.createFishingPole(rodTier));
-                	break;
+                    int rodTier = 1;
+                    if (args.length == 2)
+                        rodTier = Integer.parseInt(args[1]);
+                    player.getInventory().addItem(ItemManager.createFishingPole(rodTier));
+                    break;
                 case "resetbook":
-                	player.getInventory().addItem(ItemManager.createItem(EnumItem.RetrainingBook));
-                break;
+                    player.getInventory().addItem(ItemManager.createItem(EnumItem.RetrainingBook));
+                    break;
             }
         }
 
