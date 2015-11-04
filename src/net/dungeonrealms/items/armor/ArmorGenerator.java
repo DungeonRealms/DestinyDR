@@ -146,6 +146,12 @@ public class ArmorGenerator {
 		} else {
 			attributeList.add(Armor.ArmorAttributeType.DAMAGE);
 		}
+		attributeList.add(Armor.ArmorAttributeType.HEALTH_POINTS);
+		if (new Random().nextBoolean()) {
+			attributeList.add(Armor.ArmorAttributeType.HEALTH_REGEN);
+		} else {
+			attributeList.add(Armor.ArmorAttributeType.ENERGY_REGEN);
+		}
 		for (int i = 0; i < amountOfAttributes; i++) {
 			int random = new Random().nextInt(Armor.ArmorAttributeType.values().length);
 			if (!attributeList.contains(Armor.ArmorAttributeType.getById(random))
