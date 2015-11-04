@@ -5,6 +5,7 @@ import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.mechanics.ItemManager;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -69,8 +70,10 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
     protected abstract Item getLoot();
 
     @Override
-    protected abstract void getRareDrop();
-
+    protected void getRareDrop(){
+    	this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation().add(0, 1, 0), ItemManager.createRandomTeleportBook("Teleport Book"));
+    }
+    
     protected DRSkeleton(World world) {
         super(world);
     }

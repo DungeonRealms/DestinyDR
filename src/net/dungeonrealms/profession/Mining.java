@@ -155,20 +155,8 @@ public class Mining implements GenericMechanic {
 		nms.getTag().setInt("XP", currentXP);
 		stackInHand = CraftItemStack.asBukkitCopy(nms);
 		p.setItemInHand(stackInHand);
-		double percentDone = 100.0 * currentXP / maxXP;
-		double percentDoneDisplay = (percentDone / 100) * 50.0D;
-		int display = (int) percentDoneDisplay;
-		if (display <= 0) {
-			display = 1;
-		}
-		if (display > 50) {
-			display = 50;
-		}
-		String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
-		String newexpBar = ChatColor.GREEN.toString() + expBar.substring(0, display) + ChatColor.RED.toString()
-		        + expBar.substring(display, expBar.length());
 		ItemMeta meta = stackInHand.getItemMeta();
-		meta.setLore(Collections.singletonList(newexpBar));
+		meta.setLore(Collections.singletonList(ChatColor.GREEN.toString() + currentXP + "/" + maxXP));
 		stackInHand.setItemMeta(meta);
 		p.setItemInHand(stackInHand);
 	}
