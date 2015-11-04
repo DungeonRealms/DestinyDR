@@ -54,7 +54,7 @@ public class SandS implements GenericMechanic {
             case ENCHANTMENT_SCROLL:
                 switch (tier) {
                     case 1:
-                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.WHITE.toString() + ChatColor.BOLD + "Scroll: " + ChatColor.YELLOW + "Enchant Leather Armor", new String[]{
+                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.WHITE.toString() + ChatColor.BOLD + "Scroll: " + ChatColor.WHITE + "Enchant Leather Armor", new String[]{
                                 ChatColor.RED + "+5% HP",
                                 ChatColor.RED + "+5% HP REGEN",
                                 ChatColor.GRAY + "  - OR -",
@@ -62,7 +62,7 @@ public class SandS implements GenericMechanic {
 
                         }).setNBTString("scrollTier", String.valueOf(tier)).setNBTString("scrollType", String.valueOf(type.getId())).build();
                     case 2:
-                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.WHITE.toString() + ChatColor.BOLD + "Scroll: " + ChatColor.YELLOW + "Enchant Iron Armor", new String[]{
+                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.WHITE.toString() + ChatColor.BOLD + "Scroll: " + ChatColor.GREEN + "Enchant Chain Armor", new String[]{
                                 ChatColor.RED + "+5% HP",
                                 ChatColor.RED + "+5% HP REGEN",
                                 ChatColor.GRAY + "  - OR -",
@@ -70,7 +70,7 @@ public class SandS implements GenericMechanic {
 
                         }).setNBTString("scrollTier", String.valueOf(tier)).setNBTString("scrollType", String.valueOf(type.getId())).build();
                     case 3:
-                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.WHITE.toString() + ChatColor.BOLD + "Scroll: " + ChatColor.YELLOW + "Enchant Chain Armor", new String[]{
+                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.WHITE.toString() + ChatColor.BOLD + "Scroll: " + ChatColor.AQUA + "Enchant Iron Armor", new String[]{
                                 ChatColor.RED + "+5% HP",
                                 ChatColor.RED + "+5% HP REGEN",
                                 ChatColor.GRAY + "  - OR -",
@@ -78,7 +78,7 @@ public class SandS implements GenericMechanic {
 
                         }).setNBTString("scrollTier", String.valueOf(tier)).setNBTString("scrollType", String.valueOf(type.getId())).build();
                     case 4:
-                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.WHITE.toString() + ChatColor.BOLD + "Scroll: " + ChatColor.YELLOW + "Enchant Diamond Armor", new String[]{
+                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.WHITE.toString() + ChatColor.BOLD + "Scroll: " + ChatColor.LIGHT_PURPLE + "Enchant Diamond Armor", new String[]{
                                 ChatColor.RED + "+5% HP",
                                 ChatColor.RED + "+5% HP REGEN",
                                 ChatColor.GRAY + "  - OR -",
