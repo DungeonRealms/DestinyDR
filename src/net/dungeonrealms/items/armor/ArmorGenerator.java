@@ -1,6 +1,5 @@
 package net.dungeonrealms.items.armor;
 
-import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.items.DamageMeta;
 import net.dungeonrealms.items.NameGenerator;
 import net.dungeonrealms.items.armor.Armor.ArmorModifier;
@@ -85,6 +84,7 @@ public class ArmorGenerator {
 		tag.set("armorType", new NBTTagInt(type.getId()));
 		tag.set("armorTier", new NBTTagInt(tier.getTierId()));
 		tag.set("armorModifier", new NBTTagInt(modifier.getId()));
+		tag.set("Binded", new NBTTagString(""));
 
 		/*
 		 * The line below removes the weapons attributes. E.g. Diamond Sword
@@ -205,57 +205,6 @@ public class ArmorGenerator {
 		default:
 			return ChatColor.GREEN + "" + ChatColor.RED + i + " " + ChatColor.WHITE + aType.getName();
 		}
-	}
-
-	public static ItemStack updateArmorLore(ItemStack itemStack) {
-		net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-		NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-		if (tag.hasKey("armor")) {
-			ItemMeta meta = itemStack.getItemMeta();
-			List<String> itemLore = new ArrayList<>();
-			if (tag.hasKey("armor")) {
-				itemLore.add(setCorrectArmorLore(Armor.ArmorAttributeType.ARMOR, tag.getInt("armor")));
-			}
-			if (tag.hasKey("healthPoints")) {
-				itemLore.add(setCorrectArmorLore(Armor.ArmorAttributeType.HEALTH_POINTS, tag.getInt("healthPoints")));
-			}
-			if (tag.hasKey("healthRegen")) {
-				itemLore.add(setCorrectArmorLore(Armor.ArmorAttributeType.HEALTH_REGEN, tag.getInt("healthRegen")));
-			}
-			if (tag.hasKey("energyRegen")) {
-				itemLore.add(setCorrectArmorLore(Armor.ArmorAttributeType.ENERGY_REGEN, tag.getInt("energyRegen")));
-			}
-			if (tag.hasKey("intellect")) {
-				itemLore.add(setCorrectArmorLore(Armor.ArmorAttributeType.INTELLECT, tag.getInt("intellect")));
-			}
-			if (tag.hasKey("fireResistance")) {
-				itemLore.add(setCorrectArmorLore(Armor.ArmorAttributeType.FIRE_RESISTANCE, tag.getInt("fireResistance")));
-			}
-			if (tag.hasKey("block")) {
-				itemLore.add(setCorrectArmorLore(Armor.ArmorAttributeType.BLOCK, tag.getInt("block")));
-			}
-			if (tag.hasKey("luck")) {
-				itemLore.add(setCorrectArmorLore(Armor.ArmorAttributeType.LUCK, tag.getInt("luck")));
-			}
-			if (tag.hasKey("thorns")) {
-				itemLore.add(setCorrectArmorLore(Armor.ArmorAttributeType.THORNS, tag.getInt("thorns")));
-			}
-			if (tag.hasKey("strength")) {
-				itemLore.add(setCorrectArmorLore(Armor.ArmorAttributeType.STRENGTH, tag.getInt("strength")));
-			}
-			if (tag.hasKey("vitality")) {
-				itemLore.add(setCorrectArmorLore(Armor.ArmorAttributeType.VITALITY, tag.getInt("vitality")));
-			}
-			if (tag.hasKey("damage")) {
-				itemLore.add(setCorrectArmorLore(Armor.ArmorAttributeType.DAMAGE, tag.getInt("damage")));
-			}
-			if (tag.hasKey("dexterity")) {
-				itemLore.add(setCorrectArmorLore(Armor.ArmorAttributeType.DAMAGE, tag.getInt("dexterity")));
-			}
-			meta.setLore(itemLore);
-			itemStack.setItemMeta(meta);
-		}
-		return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
 	}
 
 	/**

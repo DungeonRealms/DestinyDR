@@ -1,6 +1,5 @@
 package net.dungeonrealms.miscellaneous;
 
-import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
@@ -265,7 +264,7 @@ public class SandS implements GenericMechanic {
         bukkitStack.setItemMeta(meta);
 
         player.getInventory().remove(itemStack);
-        player.getInventory().addItem(ItemGenerator.updateItemLore(bukkitStack));
+        player.getInventory().addItem(bukkitStack);
 
     }
 
