@@ -40,7 +40,8 @@ public class KarmaHandler implements GenericMechanic {
     public enum EnumPlayerAlignments {
         LAWFUL(0, "lawful", ChatColor.WHITE),
         NEUTRAL(1, "neutral", ChatColor.YELLOW),
-        CHAOTIC(2, "chaotic", ChatColor.RED);
+        CHAOTIC(2, "chaotic", ChatColor.RED),
+        NONE(3, "none", ChatColor.GRAY);
 
         private int id;
         private String name;
@@ -314,6 +315,10 @@ public class KarmaHandler implements GenericMechanic {
 
 
     public void tellPlayerRegionInfo(Player player) {
+        if (!PLAYER_LOCATIONS.containsKey(player)) {
+            PLAYER_LOCATIONS.put(player, EnumPlayerAlignments.NONE);
+            return;
+        }
         if (API.isInSafeRegion(player.getLocation()) && !PLAYER_LOCATIONS.get(player).equals(EnumPlayerAlignments.LAWFUL)) {
             player.sendMessage(ChatColor.GREEN + "                " + ChatColor.BOLD + "*** SAFE ZONE (DMG-OFF) ***");
             player.playSound(player.getLocation(), Sound.WITHER_SHOOT, 0.25F, 0.30F);
