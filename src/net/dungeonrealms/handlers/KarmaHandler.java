@@ -50,6 +50,7 @@ public class KarmaHandler implements GenericMechanic {
         EnumPlayerAlignments(int id, String name, ChatColor alignmentColor) {
             this.id = id;
             this.name = name;
+            this.alignmentColor = alignmentColor;
         }
 
         public static EnumPlayerAlignments getByName(String rawName) {

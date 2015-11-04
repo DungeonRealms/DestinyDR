@@ -12,6 +12,7 @@ import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.entities.utils.MountUtils;
 import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.guild.Guild;
+import net.dungeonrealms.inventory.NPCMenus;
 import net.dungeonrealms.inventory.PlayerMenus;
 import net.dungeonrealms.items.EnumItem;
 import net.dungeonrealms.mastery.GamePlayer;
@@ -491,6 +492,9 @@ public class ClickHandler {
                     break;
                 case 8:
                     PlayerMenus.openPlayerPetMenu(player);
+                    break;
+                case 18:
+                    NPCMenus.openECashPurchaseMenu(player);
                     break;
                 case 22:
                     if (!(CombatLog.isInCombat(player))) {
