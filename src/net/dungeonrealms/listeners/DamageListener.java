@@ -703,7 +703,7 @@ public class DamageListener implements Listener {
             return;
         }
         if (event.getPlayer().hasMetadata("last_Staff_Use")) {
-            if (System.currentTimeMillis() - event.getPlayer().getMetadata("last_Staff_Use").get(0).asLong() < 500) return;
+            if (System.currentTimeMillis() - event.getPlayer().getMetadata("last_Staff_Use").get(0).asLong() < 250) return;
         }
         if (event.getPlayer().hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(event.getPlayer().getUniqueId()) <= 0) {
             event.setCancelled(true);

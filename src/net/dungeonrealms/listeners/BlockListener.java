@@ -11,7 +11,6 @@ import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.RealmManager;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -51,7 +50,7 @@ public class BlockListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockPlace(BlockPlaceEvent event) {
         if (event.getItemInHand() == null) return;
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemInHand());
@@ -91,7 +90,7 @@ public class BlockListener implements Listener {
      * @param e
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGH)
     public void breakOre(BlockBreakEvent e) {
         Block block = e.getBlock();	
         if (block == null) return;
@@ -234,7 +233,7 @@ public class BlockListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockDamaged(PlayerInteractEvent event) {
         if (event.getItem() == null) return;
         if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {

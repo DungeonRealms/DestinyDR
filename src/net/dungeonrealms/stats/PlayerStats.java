@@ -1,8 +1,9 @@
 package net.dungeonrealms.stats;
 
-import java.text.DecimalFormat;
-import java.util.UUID;
-
+import net.dungeonrealms.mechanics.ItemManager;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -10,11 +11,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.ItemManager;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.mongo.EnumOperators;
+import java.text.DecimalFormat;
+import java.util.UUID;
 
 /**
  * Created by Chase on Nov 2, 2015
@@ -159,11 +157,11 @@ public class PlayerStats {
 	}
 	
 	public double getVitHP(){
-		return (vitPoints * 0.034);
+		return (vitPoints * 0.034) / 100;
 	}
 	
 	public double getHPRegen(){
-		return (vitPoints * 0.03);
+		return (vitPoints * 0.03) / 100;
 	}
 	
 //	public double getEleResist(){
@@ -173,7 +171,7 @@ public class PlayerStats {
 	
 	//TODO INCORPORATE IN GAME
 	public double getSwordDMG(){
-		return (vitPoints * 0.01);
+		return (vitPoints * 0.01) / 100;
 	}
 	
 	  ItemStack loadVitItem() {
@@ -198,17 +196,17 @@ public class PlayerStats {
 	}
 		//TODO INCORPORATE IN GAME
 	  public double getBlock(){
-		  return strPoints * 0.017;
+		  return (strPoints * 0.017) / 100;
 	  }
 	  
 		//TODO INCORPORATE IN GAME
 	  public double getAxeDMG(){
-		  return strPoints * .015;
+		  return (strPoints * 0.015) / 100;
 	  }
 	  
 		//TODO INCORPORATE IN GAME
 	  public double getPolearmDMG(){
-		  return strPoints * 0.023;
+		  return (strPoints * 0.023) / 100;
 	  }
 
 	  ItemStack loadStrItem() {
@@ -240,16 +238,16 @@ public class PlayerStats {
 	}
 
 	  public double getEnergyRegen(){
-		  return intPoints * 0.015;
+		  return (intPoints * 0.015) / 100;
 	  }
 	  
 		//TODO INCORPORATE IN GAME
 	  public double getCritChance(){
-		  return intPoints * 0.025;
+		  return (intPoints * 0.025) / 100;
 	  }
 		//TODO INCORPORATE IN GAME
 	  public double getStaffDMG(){
-		  return intPoints * 0.02;
+		  return (intPoints * 0.02) / 100;
 	  }
 	  
 	  ItemStack loadIntItem() {
@@ -288,22 +286,22 @@ public class PlayerStats {
 	  
 		//TODO INCORPORATE IN GAME
 	  public double getDPS(){
-		  return dexPoints * 0.03;
+		  return (dexPoints * 0.03) / 100;
 	  }
 	  
 		//TODO INCORPORATE IN GAME
 	  public double getDodge(){
-		  return dexPoints * 0.017;
+		  return (dexPoints * 0.017) / 100;
 	  }
 	  
 		//TODO INCORPORATE IN GAME
 	  public double getArmorPen(){
-		  return dexPoints * 0.02;
+		  return (dexPoints * 0.02) / 100;
 	  }
 	  
 		//TODO INCORPORATE IN GAME
 	  public double getBowDMG(){
-		  return dexPoints * 0.015;
+		  return (dexPoints * 0.015) / 100;
 	  }
 
 	  	ItemStack loadConfirmItem() {

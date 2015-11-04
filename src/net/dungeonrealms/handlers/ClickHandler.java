@@ -187,7 +187,7 @@ public class ClickHandler {
                 if (nmsStack.getTag().hasKey("donationStore")) {
                     player.closeInventory();
                     TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
-                    bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://dungeonrealms.net/shop"));
+                    bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://shop.dungeonrealms.net"));
                     bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Dungeon Realms Store!").create()));
                     TextComponent test = new TextComponent(ChatColor.WHITE + "[" + ChatColor.YELLOW + ChatColor.BOLD + "DONATE" + ChatColor.RESET + ChatColor.WHITE + "] " + ChatColor.RED + "To Purchase E-Cash from our Shop, Click ");
                     test.addExtra(bungeeMessage);
