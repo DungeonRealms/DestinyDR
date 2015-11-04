@@ -11,6 +11,7 @@ import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.RealmManager;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -90,12 +91,13 @@ public class BlockListener implements Listener {
      * @param e
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.MONITOR)
     public void breakOre(BlockBreakEvent e) {
-        Block block = e.getBlock();
+        Block block = e.getBlock();	
         if (block == null) return;
         if (e.getPlayer().getItemInHand() == null || e.getPlayer().getItemInHand().getType() == Material.AIR) return;
         if (block.getType() == Material.COAL_ORE || block.getType() == Material.IRON_ORE || block.getType() == Material.GOLD_ORE || block.getType() == Material.DIAMOND_ORE || block.getType() == Material.EMERALD_ORE) {
+        	e.setCancelled(true);
             ItemStack stackInHand = e.getPlayer().getItemInHand();
             if (Mining.isDRPickaxe(stackInHand)) {
                 Player p = e.getPlayer();
@@ -110,7 +112,6 @@ public class BlockListener implements Listener {
                 int experienceGain = Mining.getExperienceGain(stackInHand, type);
                 Mining.addExperience(stackInHand, experienceGain, p);
                 p.getItemInHand().setDurability((short) (stackInHand.getDurability() + tier));
-                e.setCancelled(true);
                 if (new Random().nextInt(100) <= 75)//TODO INCORPORATE CHANCE INTO PICKS
                     p.getInventory().addItem(new ItemStack(type));
                 e.getBlock().setType(Material.STONE);

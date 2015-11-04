@@ -1,5 +1,6 @@
 package net.dungeonrealms.handlers;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
@@ -107,6 +108,7 @@ public class EnergyHandler implements GenericMechanic {
                     regenAmount = 0.07F;
                 }
                 regenAmount = regenAmount / 6.3F;
+                regenAmount += (int) (regenAmount * API.getGamePlayer(player).getStats().getEnergyRegen());
                 //TODO: FISH SOMETHING GIVES REGEN I DUNNO PROFESSION MECHANICS.
                 addEnergyToPlayerAndUpdate(player.getUniqueId(), regenAmount);
             }

@@ -256,14 +256,8 @@ public class Fishing implements GenericMechanic {
 
 	public void loadFishingLocations() {
 		int count = 0;
-		try {
-			File file = new File(DungeonRealms.getInstance().getDataFolder() + "//fishing_spawns.dat");
-			if (!(file.exists())) {
-				file.createNewFile();
-			}
-			BufferedReader reader = new BufferedReader(new FileReader(file));
-			String line;
-			while ((line = reader.readLine()) != null) {
+        ArrayList<String> CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("fishingspawns");
+			for(String line : CONFIG) {
 				if (line.contains("=")) {
 					String[] cords = line.split("=")[0].split(",");
 					Location loc = new Location(Bukkit.getWorlds().get(0), Double.parseDouble(cords[0]),
@@ -274,10 +268,6 @@ public class Fishing implements GenericMechanic {
 					count++;
 				}
 			}
-			reader.close();
-		} catch (Exception exc) {
-			exc.printStackTrace();
-		}
 		Utils.log.info("[Professions] " + count + " FISHING SPOT locations have been LOADED.");
 	}
 

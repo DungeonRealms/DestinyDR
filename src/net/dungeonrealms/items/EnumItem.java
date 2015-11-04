@@ -8,5 +8,6 @@ public enum EnumItem {
 	StorageExpansion,
 	RepairHammer,
 	RetrainingBook,
-	MedalOfGathering;
+	MedalOfGathering,
+	CharacterJournal;
 }

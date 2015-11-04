@@ -170,6 +170,8 @@ public class PlayerStats {
 //		return vitPoints * 0.04;
 //	}
 	
+	
+	//TODO INCORPORATE IN GAME
 	public double getSwordDMG(){
 		return (vitPoints * 0.01);
 	}
@@ -194,15 +196,17 @@ public class PlayerStats {
 				ChatColor.GOLD + "POLEARM DMG: " + ChatColor.AQUA + df.format(str * 0.023) + "%"
 						+ (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.023) + "%]" : "")});
 	}
-	  
+		//TODO INCORPORATE IN GAME
 	  public double getBlock(){
 		  return strPoints * 0.017;
 	  }
 	  
+		//TODO INCORPORATE IN GAME
 	  public double getAxeDMG(){
 		  return strPoints * .015;
 	  }
 	  
+		//TODO INCORPORATE IN GAME
 	  public double getPolearmDMG(){
 		  return strPoints * 0.023;
 	  }
@@ -239,10 +243,11 @@ public class PlayerStats {
 		  return intPoints * 0.015;
 	  }
 	  
+		//TODO INCORPORATE IN GAME
 	  public double getCritChance(){
 		  return intPoints * 0.025;
 	  }
-	  
+		//TODO INCORPORATE IN GAME
 	  public double getStaffDMG(){
 		  return intPoints * 0.02;
 	  }
@@ -281,18 +286,22 @@ public class PlayerStats {
 		
 	  }
 	  
+		//TODO INCORPORATE IN GAME
 	  public double getDPS(){
 		  return dexPoints * 0.03;
 	  }
 	  
+		//TODO INCORPORATE IN GAME
 	  public double getDodge(){
 		  return dexPoints * 0.017;
 	  }
 	  
+		//TODO INCORPORATE IN GAME
 	  public double getArmorPen(){
 		  return dexPoints * 0.02;
 	  }
 	  
+		//TODO INCORPORATE IN GAME
 	  public double getBowDMG(){
 		  return dexPoints * 0.015;
 	  }

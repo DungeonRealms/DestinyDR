@@ -6,6 +6,7 @@ import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.mastery.GamePlayer;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -296,6 +297,7 @@ public class HealthHandler implements GenericMechanic{
             if (!CombatLog.isInCombat(player)) {
                 double currentHP = getPlayerHPLive(player);
                 double amountToHealPlayer = getPlayerHPRegenLive(player);
+                amountToHealPlayer += amountToHealPlayer * API.getGamePlayer(player).getStats().getHPRegen();
                 double maxHP = getPlayerMaxHPLive(player);
                 if (currentHP + 1 > maxHP) {
                     if (player.getHealth() != 20) {
@@ -595,7 +597,7 @@ public class HealthHandler implements GenericMechanic{
         int level = entity.getMetadata("level").get(0).asInt();
         EntityLiving entity1 = ((CraftLivingEntity)entity).getHandle();	
         String name = entity.getMetadata("customname").get(0).asString();
-        if (entity.getPassenger() != null)
+        if (entity.getPassenger() != null && !entity.hasMetadata("isElite"))
 		entity.getPassenger().setCustomName(entity.getMetadata("currentHP").get(0).asInt() + ChatColor.RED.toString()+ " ❤" + ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
 				+ ChatColor.RESET + name);
         entity.setHealth(convHPToDisplay);

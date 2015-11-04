@@ -3,6 +3,7 @@ package net.dungeonrealms.profession;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 
@@ -198,14 +199,8 @@ public class Mining implements GenericMechanic {
 
 	public void loadOreLocations() {
 		int count = 0;
-		try {
-			File file = new File(DungeonRealms.getInstance().getDataFolder() + "//ore_spawns.dat");
-			if (!(file.exists())) {
-				file.createNewFile();
-			}
-			BufferedReader reader = new BufferedReader(new FileReader(file));
-			String line = "";
-			while ((line = reader.readLine()) != null) {
+        ArrayList<String> CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("orespawns");
+			for(String line : CONFIG) {
 				if (line.contains("=")) {
 					try {
 						String[] cords = line.split("=")[0].split(",");
@@ -224,11 +219,7 @@ public class Mining implements GenericMechanic {
 					}
 				}
 			}
-			reader.close();
 			Utils.log.info("[Profession] " + count + " ORE SPAWN locations have been LOADED.");
-		} catch (Exception exc) {
-			exc.printStackTrace();
-		}
 	}
 
 	private static Mining instance;

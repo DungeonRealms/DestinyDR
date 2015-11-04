@@ -159,7 +159,7 @@ public class ItemManager {
             rawStack.setItemMeta(meta);
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("type", new NBTTagString("pickaxe"));
+            tag.set("type", new NBTTagString("pick"));
             tag.setInt("itemTier", tier);
             tag.setInt("XP", 0);
             tag.setInt("maxXP", Mining.getMaxXP(tier));
@@ -193,6 +193,9 @@ public class ItemManager {
     		stack = createItem(Material.YELLOW_FLOWER, ChatColor.GREEN + "Medal of Gathering", new String[]{ChatColor.GRAY + "Increase storage space by 1 row." +ChatColor.RED + ChatColor.BOLD+ "Max of 6"});
     	    nms = CraftItemStack.asNMSCopy(stack);
     		nms.getTag().setString("type", "gathering");
+    		break;
+    	case CharacterJournal:
+    		
     		break;
     	}
     	return CraftItemStack.asBukkitCopy(nms);

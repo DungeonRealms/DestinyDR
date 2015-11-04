@@ -1,6 +1,5 @@
 package net.dungeonrealms.spawning;
 
-import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
@@ -44,6 +43,7 @@ public class MobSpawner {
     public int timerID;
     public String lvlRange;
     public String eliteName;
+    boolean firstSpawn = true;
     public boolean toSpawn;
     
     public MobSpawner(Location location, String type, int tier, int spawnAmount, int configid, String lvlRange) {
@@ -109,13 +109,15 @@ public class MobSpawner {
             }
             if(spawnType.contains("*")){
             	spawnType = spawnType.replace("*", "");
-         	   isElite = true;
             }
             
             if(isElite){
         		if(SPAWNED_MONSTERS.size() == 0){
             		Location location = new Location(Bukkit.getWorlds().get(0), loc.getBlockX() + new Random().nextInt(10), loc.getWorld().getHighestBlockYAt(loc), loc.getBlockZ() + new Random().nextInt(10));
                     if(location.getBlock().getType() != Material.AIR || location.add(0, 1, 0).getBlock().getType() != Material.AIR) return;
+                    Material type =location.getBlock().getType();
+                    if(type == Material.ACACIA_STAIRS || type == Material.BIRCH_WOOD_STAIRS || type == Material.COBBLESTONE_STAIRS || type == Material.DARK_OAK_STAIRS || type ==Material.JUNGLE_WOOD_STAIRS||type == Material.WOOD_STAIRS || type ==Material.STONE_SLAB2 || type == Material.DOUBLE_STONE_SLAB2 || type == Material.DOUBLE_STEP || type == Material.WOOD_DOUBLE_STEP)
+                    	return;
                 	String mob = spawnType;
                 	World world = armorstand.getWorld();
                 	EnumMonster monsEnum = EnumMonster.getMonsterByString(mob);
@@ -126,10 +128,10 @@ public class MobSpawner {
                     EntityStats.setMonsterRandomStats(entity, level, tier);
                 	
                 	if(entity == null) return;
-            		Utils.log.info("Elite set to spawn");
                     String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "+ChatColor.RESET;
                     String healthName = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt()+ChatColor.RED.toString() + "❤";
-                    String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
+                    String customName = eliteName;
+                    entity.setCustomName(customName);
                     ArmorStand stand = entity.getBukkitEntity().getLocation().getWorld().spawn(entity.getBukkitEntity().getLocation(), ArmorStand.class);
                     stand.setRemoveWhenFarAway(false);
                     stand.setVisible(false);
@@ -139,20 +141,33 @@ public class MobSpawner {
                     stand.setGravity(false);
                     stand.setArms(false);
                     stand.setCustomNameVisible(true);
-                    stand.setCustomName(lvl + customName + healthName);
+                    stand.setCustomName(customName);
                     stand.setRemoveWhenFarAway(false);
                     entity.getBukkitEntity().setPassenger(stand);
-             		EntityStats.setMonsterElite(entity, level, tier);
+             		EntityStats.setMonsterElite(entity, level + 10, tier);
+             		stand.setCustomName(entity.getCustomName());
+             		entity.getBukkitEntity().setMetadata("isElite", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
+            		Utils.log.info(eliteName + " set to spawn");
              		toSpawn = true;
                		NAMETAGS.put(entity.getBukkitEntity(), stand);
+               		if(!firstSpawn){
              		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> {
-             			Utils.log.info("Elite spawned");
+             			Utils.log.info( stand.getCustomName() + " spawned at " + location.toString());
              			entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
              			world.addEntity(entity, SpawnReason.CUSTOM);
                 		entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                 		toSpawn = false;
                     	SPAWNED_MONSTERS.add(entity);
-             		}, 1200 * 5L);
+             		}, 1200 * 2L);
+               	}else{
+         			Utils.log.info( stand.getCustomName() + " spawned at " + location.toString());
+         			entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+         			world.addEntity(entity, SpawnReason.CUSTOM);
+            		entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+            		toSpawn = false;
+            		firstSpawn = false;
+                	SPAWNED_MONSTERS.add(entity);
+               	}
             	}
             }else if (SPAWNED_MONSTERS.size() < spawnAmount) {
                 Location location = new Location(Bukkit.getWorlds().get(0), loc.getBlockX() + new Random().nextInt(10), loc.getBlockY(), loc.getBlockZ() + new Random().nextInt(10));
@@ -172,7 +187,7 @@ public class MobSpawner {
                     EntityStats.setMonsterRandomStats(entity, level, tier);
                 	
                     String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "+ChatColor.RESET;
-                    String healthName = ChatColor.RED.toString() + "❤ " + ChatColor.RESET + entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
+                    String healthName = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt()+  ChatColor.RED.toString() + "❤  ";
                     String customName;
                     try{
                         customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
