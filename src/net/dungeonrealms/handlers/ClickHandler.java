@@ -158,7 +158,7 @@ public class ClickHandler {
                         return;
                     } else {
                         if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.INVENTORY_COLLECTION_BIN, nmsStack.getTag().getString("mountType").toUpperCase(), true);
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, nmsStack.getTag().getString("mountType").toUpperCase(), true);
                             player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("mountType") + " mount!");
                             player.closeInventory();
                             return;

@@ -13,7 +13,6 @@ import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.profession.Fishing;
 import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.spawning.SpawningMechanics;
-
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -54,6 +53,13 @@ public class CommandSet extends BasicCommand {
 			case "invlevel":
 				int invlvl = Integer.parseInt(args[1]);
 				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl, true);
+				break;
+			case "portalKeys":
+				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T1, 1500, false);
+				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T2, 1500, false);
+				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T3, 1500, false);
+				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T4, 1500, false);
+				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T5, 1500, false);
 				break;
 			case "spawner":
 				if (args.length < 4) {
