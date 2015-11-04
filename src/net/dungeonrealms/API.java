@@ -421,6 +421,12 @@ public class API {
         return location.getWorld().getEntities().stream().filter(mons -> mons.getLocation().distance(location) <= radius && mons.hasMetadata("type") && mons.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")).collect(Collectors.toList());
     }
 
+    /**
+     * Returns the players GamePlayer 
+     * @param p
+     * @return
+     */
+    
     public static GamePlayer getGamePlayer(Player p ){
     	for(GamePlayer gPlayer : GAMEPLAYERS){
     		if(gPlayer.getPlayer().getName().equalsIgnoreCase(p.getName()))

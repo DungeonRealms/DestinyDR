@@ -1,5 +1,21 @@
 package net.dungeonrealms.spawning;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.metadata.FixedMetadataValue;
+
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
@@ -11,20 +27,6 @@ import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.World;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.metadata.FixedMetadataValue;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Chase on Sep 25, 2015
@@ -35,7 +37,7 @@ public class MobSpawner {
     public EntityArmorStand armorstand;
     public int tier;
     public List<Entity> SPAWNED_MONSTERS = new CopyOnWriteArrayList<>();
-    public HashMap<org.bukkit.entity.Entity, org.bukkit.entity.Entity> NAMETAGS = new HashMap<>();
+    public static ConcurrentHashMap<org.bukkit.entity.Entity, org.bukkit.entity.Entity> NAMETAGS = new ConcurrentHashMap<>();
     public boolean isElite = false;
     public int spawnAmount;
     public int id;
@@ -193,11 +195,11 @@ public class MobSpawner {
                		NAMETAGS.put(entity.getBukkitEntity(), stand);
                     toSpawn = true;
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-               		entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-               		world.addEntity(entity, SpawnReason.CUSTOM);
-               		entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-               		SPAWNED_MONSTERS.add(entity);
-               		toSpawn = false;
+                    	entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                    	world.addEntity(entity, SpawnReason.CUSTOM);
+                    	entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                    	SPAWNED_MONSTERS.add(entity);
+                    	toSpawn = false;
                     }, 200L);
             	}
     	}else{
@@ -209,15 +211,16 @@ public class MobSpawner {
                 		monster.getBukkitEntity().getPassenger().remove();
                 		((CraftEntity)monster.getBukkitEntity().getPassenger()).getHandle().die();
                 	}
+                	if (NAMETAGS.containsKey(monster.getBukkitEntity())) {
+                		org.bukkit.entity.Entity nameTag = NAMETAGS.get(monster.getBukkitEntity());
+                		((CraftEntity)nameTag).getHandle().die();
+                    }
                     monster.die();
                     monster.dead = true;
                     monster.getBukkitEntity().remove();
                     armorstand.getWorld().kill(monster);
                     SPAWNED_MONSTERS.remove(monster);
-                	if (NAMETAGS.containsKey(monster.getBukkitEntity())) {
-                    	NAMETAGS.get(monster.getBukkitEntity()).remove();
-                        NAMETAGS.remove(monster.getBukkitEntity());
-                    }
+
                 }
             }
     	}
@@ -231,14 +234,15 @@ public class MobSpawner {
             if(spawnedMonster.getBukkitEntity().getPassenger() != null){
             	spawnedMonster.getBukkitEntity().getPassenger().remove();
             }
-            spawnedMonster.getBukkitEntity().remove();
-            spawnedMonster.damageEntity(DamageSource.GENERIC, 20f);
-            spawnedMonster.dead = true;
-            armorstand.getWorld().kill(spawnedMonster);
         	if(NAMETAGS.containsKey(spawnedMonster.getBukkitEntity())){
         	NAMETAGS.get(spawnedMonster.getBukkitEntity()).remove();
             NAMETAGS.remove(spawnedMonster.getBukkitEntity());
         	}
+            spawnedMonster.getBukkitEntity().remove();
+            spawnedMonster.damageEntity(DamageSource.GENERIC, 20f);
+            spawnedMonster.dead = true;
+            armorstand.getWorld().kill(spawnedMonster);
+
         }
     }
     
@@ -283,7 +287,7 @@ public class MobSpawner {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::kill, 5L);
 		}
 		
-		Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), this::checkNameTags,0, 100L);
+		Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), this::checkNameTags,0, 100L);
 	}
 
 	/**
@@ -291,9 +295,11 @@ public class MobSpawner {
 	 */
 	private void checkNameTags() {
 		for(org.bukkit.entity.Entity ent : NAMETAGS.keySet()){
-			if(NAMETAGS.get(ent).isDead() && !toSpawn)
+			if(NAMETAGS.get(ent).getVehicle() == null){
+            	((CraftEntity)ent).getHandle().die();
 				NAMETAGS.get(ent).remove();
 	            NAMETAGS.remove(ent);
+			}
 		}
 	}
 }

@@ -82,6 +82,8 @@ public class MainListener implements Listener {
 					break;
 				case NO:
 					DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
+					Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->
+					API.GAMEPLAYERS.add(new GamePlayer(Bukkit.getPlayer(event.getUniqueId()))), 10l);
 					break;
 				case TEMP_BANNED:
 					event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED,
