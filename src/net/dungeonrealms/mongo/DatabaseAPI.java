@@ -2,12 +2,9 @@ package net.dungeonrealms.mongo;
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
-
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.core.Callback;
 import net.dungeonrealms.guild.Guild;
-import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
@@ -204,6 +201,19 @@ public class DatabaseAPI {
             case TOGGLE_CHAOTIC_PREVENTION:
                 return ((Document) PLAYERS.get(uuid).get("toggles")).get("chaoticPrevention", Boolean.class);
             /*
+            Portal Key Shards
+             */
+            case PORTAL_SHARDS_T1:
+                return ((Document) PLAYERS.get(uuid).get("portalKeyShards")).get("tier1", Integer.class);
+            case PORTAL_SHARDS_T2:
+                return ((Document) PLAYERS.get(uuid).get("portalKeyShards")).get("tier2", Integer.class);
+            case PORTAL_SHARDS_T3:
+                return ((Document) PLAYERS.get(uuid).get("portalKeyShards")).get("tier3", Integer.class);
+            case PORTAL_SHARDS_T4:
+                return ((Document) PLAYERS.get(uuid).get("portalKeyShards")).get("tier4", Integer.class);
+            case PORTAL_SHARDS_T5:
+                return ((Document) PLAYERS.get(uuid).get("portalKeyShards")).get("tier5", Integer.class);
+            /*
             Player Collectibles
              */
             case MOUNTS:
@@ -385,6 +395,12 @@ public class DatabaseAPI {
                                         .append("pvp", false)
                                         .append("duel", false)
                                         .append("chaoticPrevention", false))
+                        .append("portalKeyShards",
+                                new Document("tier1", 0)
+                                        .append("tier2", 0)
+                                        .append("tier3", 0)
+                                        .append("tier4", 0)
+                                        .append("tier5", 0))
                         .append("notices",
                                 new Document("guildInvites", new ArrayList<String>())
                                         .append("friendRequest", new ArrayList<String>())
