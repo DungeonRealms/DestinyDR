@@ -2,8 +2,12 @@ package net.dungeonrealms.listeners;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.inventory.PlayerMenus;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -106,8 +110,9 @@ public class ItemListener implements Listener {
      */
     
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerUseStatResetBook(PlayerInteractEvent event) {
-    	if(event.getItem() != null && event.getItem().getType() == Material.ENCHANTED_BOOK){
+    public void useEcashItem(PlayerInteractEvent event) {
+    	if(event.getItem() != null){
+    	if( event.getItem().getType() == Material.ENCHANTED_BOOK){
     		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
     		if(nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("reset")){
     			AnvilGUIInterface gui = AnvilApi.createNewGUI(event.getPlayer(), e -> {
@@ -136,6 +141,14 @@ public class ItemListener implements Listener {
 				Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
 				gui.open();
 				}, 20 * 5);
+    		}
+    	}else if(event.getItem().getType() == Material.ENDER_CHEST){
+    		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
+    			if(nms.hasTag() && nms.getTag().hasKey("type")){
+    				if(nms.getTag().getString("type").equalsIgnoreCase("upgrade")){
+    					Player player = event.getPlayer();
+    				}
+    			}
     		}
     	}
     }

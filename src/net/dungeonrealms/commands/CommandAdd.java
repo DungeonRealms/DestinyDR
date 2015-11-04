@@ -3,6 +3,7 @@ package net.dungeonrealms.commands;
 import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.guild.Guild;
+import net.dungeonrealms.items.EnumItem;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.RealmManager;
@@ -86,7 +87,7 @@ public class CommandAdd extends BasicCommand {
                 	player.getInventory().addItem(ItemManager.createFishingPole(rodTier));
                 	break;
                 case "resetbook":
-                	player.getInventory().addItem(ItemManager.createStatResetBook());
+                	player.getInventory().addItem(ItemManager.createItem(EnumItem.RetrainingBook));
                 break;
             }
         }

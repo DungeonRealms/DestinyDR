@@ -71,7 +71,7 @@ public class MainListener implements Listener {
 		if(!DungeonRealms.getInstance().hasFinishedSetup()){
 			event.disallow(Result.KICK_OTHER, ChatColor.GREEN + "The server is still setting up reconnect shortly!");
 			return;
-		}
+		}	
 		CoreAPI.getInstance().findBan(event.getName(), new Callback<BanReply>(BanReply.class) {
 			@Override
 			public void callback(Throwable failCause, BanReply result) {
@@ -119,7 +119,6 @@ public class MainListener implements Listener {
 	public void onJoin(PlayerJoinEvent event) {
 		event.setJoinMessage("");
 		Player player = event.getPlayer();
-        API.GAMEPLAYERS.add(new GamePlayer(player));
 		if (WebAPI.ANNOUNCEMENTS != null && WebAPI.ANNOUNCEMENTS.size() > 0) {
 			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
 				for (Map.Entry<String, Integer> e : WebAPI.ANNOUNCEMENTS.entrySet()) {
@@ -127,7 +126,7 @@ public class MainListener implements Listener {
 			                ChatColor.translateAlternateColorCodes('&', e.getKey().split("@")[0]),
 			                ChatColor.translateAlternateColorCodes('&', e.getKey().split("@")[1].split(",")[0]));
 				}
-			} , 5l);
+			} , 10l);
 		}
 		for (String s : WebAPI.JOIN_INFORMATION) {
 			player.sendMessage(ChatColor.translateAlternateColorCodes('&', s));

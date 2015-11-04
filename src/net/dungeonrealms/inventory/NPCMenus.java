@@ -113,7 +113,7 @@ public class NPCMenus {
                 ChatColor.RED + "5x Repair Hammers",
                 ChatColor.RED + "Repair ANY Item!",
                 ChatColor.AQUA + "50 E-Cash"}).setNBTString("repairHammer", "XBRaffle").setNBTInt("ecashCost", 50).build());
-        inv.setItem(10, new ItemBuilder().setItem(new ItemStack(Material.BOOK), ChatColor.GREEN + "Retraining Book", new String[]{
+        inv.setItem(10, new ItemBuilder().setItem(new ItemStack(Material.ENCHANTED_BOOK), ChatColor.GREEN + "Retraining Book", new String[]{
                 ChatColor.RED + "Refund ALL Stat Points!",
                 ChatColor.AQUA + "399 E-Cash"}).setNBTString("retrainingBook", "_Atlassie").setNBTInt("ecashCost", 399).build());
         inv.setItem(11, new ItemBuilder().setItem(new ItemStack(Material.YELLOW_FLOWER), ChatColor.GREEN + "Medal Of Gathering", new String[] {

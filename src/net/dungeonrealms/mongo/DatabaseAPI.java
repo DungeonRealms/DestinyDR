@@ -2,9 +2,12 @@ package net.dungeonrealms.mongo;
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
+
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.core.Callback;
 import net.dungeonrealms.guild.Guild;
+import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
@@ -313,6 +316,10 @@ public class DatabaseAPI {
                 addNewPlayer(uuid);
             }
         });
+        
+		Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+	        API.GAMEPLAYERS.add(new GamePlayer(Bukkit.getPlayer(uuid)));
+			}, 10);
     }
 
     /**

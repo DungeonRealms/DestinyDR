@@ -1,12 +1,15 @@
 package net.dungeonrealms.entities.types.monsters.base;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
+import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -33,7 +36,11 @@ public abstract class DRZombie extends EntityZombie implements Monster{
     protected EnumEntityType entityType;
     protected EnumMonster monsterType;
     public int tier;
-    
+    @Override
+    protected void getRareDrop(){
+    	this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation().add(0, 1, 0), ItemManager.createRandomTeleportBook("Teleport Book"));
+    }
+
     protected DRZombie(World world, EnumMonster monster, int tier, EnumEntityType entityType, boolean setArmor) {
         this(world);
         try {

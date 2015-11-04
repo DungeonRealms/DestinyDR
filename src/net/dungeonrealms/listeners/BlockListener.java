@@ -124,7 +124,7 @@ public class BlockListener implements Listener {
         Block block = event.getClickedBlock();
         if (block == null) return;
         if (block.getType() != Material.ANVIL) return;
-        if (event.getPlayer().getItemInHand() == null || event.getPlayer().getItemInHand().getType() == Material.AIR) return;
+        if (event.getPlayer().getItemInHand() == null || event.getPlayer().getItemInHand().getType() == Material.AIR){ event.setCancelled(true); return;}
         ItemStack item = event.getPlayer().getItemInHand();
         if (RepairAPI.isItemArmorOrWeapon(item)) {
             if (RepairAPI.canItemBeRepaired(item)) {
@@ -150,7 +150,7 @@ public class BlockListener implements Listener {
                 Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
                     ItemMeta meta = stack.getItemMeta();
-                    meta.setDisplayName("Repair for " + cost + "?");
+                    meta.setDisplayName("Repair for " + cost + "g ?");
                     stack.setItemMeta(meta);
                     gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
                     gui.open();
@@ -252,11 +252,15 @@ public class BlockListener implements Listener {
                         return;
                     }*/
                     //ShopMechanics.setupShop(event.getClickedBlock(), event.getPlayer().getUniqueId());
+                	if(event.getPlayer().isOp()){
                     RealmManager.getInstance().tryToOpenRealm(event.getPlayer(), event.getClickedBlock().getLocation());
+                	}else{
+                		event.getPlayer().sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "COMING SOON..");
+                	}
                 }
             } else {
                 if (event.getClickedBlock().getType() == Material.PORTAL) {
-                    if (RealmManager.getInstance().getPlayerRealm(event.getPlayer()) != null) {
+                    if (RealmManager.getInstance().getPlayerRealm(event.getPlayer()).isRealmPortalOpen()) {
                         if (RealmManager.getInstance().getRealmViaLocation(event.getClickedBlock().getLocation()).getRealmOwner().equals(event.getPlayer().getUniqueId())) {
                             RealmManager.getInstance().removeRealm(RealmManager.getInstance().getRealmViaLocation(event.getClickedBlock().getLocation()), false);
                         }

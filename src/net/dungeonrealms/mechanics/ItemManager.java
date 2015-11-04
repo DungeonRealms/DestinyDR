@@ -1,5 +1,6 @@
 package net.dungeonrealms.mechanics;
 
+import net.dungeonrealms.items.EnumItem;
 import net.dungeonrealms.profession.Fishing;
 import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.teleportation.TeleportAPI;
@@ -117,19 +118,6 @@ public class ItemManager {
     }
     
     /**
-     * Creates a book for players to reset their allocated stat points
-     * @return Itemstack
-     * @since 1.0
-     */
-    public static ItemStack createStatResetBook(){
-    	ItemStack stack = createItem(Material.ENCHANTED_BOOK, ChatColor.GREEN + "Attribute Reset Book", new String[]{ChatColor.GRAY + "Right click to reset your stat",  ChatColor.GRAY +  "allocated points to free points."} );
-    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-    	nms.getTag().setString("type", "reset");
-    	return CraftItemStack.asBukkitCopy(nms);
-    }
-    
-    
-    /**
      * Creates a pickaxe based on
      * given tier
      *
@@ -167,8 +155,7 @@ public class ItemManager {
         if (rawStack != null) {
             ItemMeta meta = rawStack.getItemMeta();
             meta.setDisplayName(name);
-    		String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
-            meta.setLore(Collections.singletonList(ChatColor.RED.toString() + expBar));
+            meta.setLore(Collections.singletonList(0 + "/" + Mining.getMaxXP(tier)));
             rawStack.setItemMeta(meta);
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
@@ -181,6 +168,34 @@ public class ItemManager {
             return CraftItemStack.asBukkitCopy(nmsStack);
         }
         return null;
+    }
+    
+    public static ItemStack createItem(EnumItem enumItem){
+    	ItemStack stack = null;
+    	net.minecraft.server.v1_8_R3.ItemStack nms = null;
+    	switch(enumItem){
+    	case StorageExpansion:
+    		stack = createItem(Material.TRAPPED_CHEST, ChatColor.GREEN + "Storage Expansion", new String[]{ChatColor.GRAY + "Increase storage space by 1 row." +ChatColor.RED + ChatColor.BOLD+ "Max of 6"});
+    		nms = CraftItemStack.asNMSCopy(stack);
+    		nms.getTag().setString("type", "upgrade");
+    		break;
+    	case RepairHammer:
+    		stack = createItem(Material.ANVIL, ChatColor.GREEN + "Repair Hammer", new String[]{ChatColor.GRAY + "Increase storage space by 1 row." +ChatColor.RED + ChatColor.BOLD+ "Max of 6"});
+    		nms = CraftItemStack.asNMSCopy(stack);
+    		nms.getTag().setString("type", "repair");
+    		break;
+    	case RetrainingBook:
+    		stack = createItem(Material.ENCHANTED_BOOK, ChatColor.GREEN + "Retraining Book",  new String[]{ChatColor.GRAY + "Right click to reset your stat",  ChatColor.GRAY +  "allocated points to free points."} );
+    	    nms = CraftItemStack.asNMSCopy(stack);
+    		nms.getTag().setString("type", "reset");
+    		break;
+    	case MedalOfGathering:
+    		stack = createItem(Material.YELLOW_FLOWER, ChatColor.GREEN + "Medal of Gathering", new String[]{ChatColor.GRAY + "Increase storage space by 1 row." +ChatColor.RED + ChatColor.BOLD+ "Max of 6"});
+    	    nms = CraftItemStack.asNMSCopy(stack);
+    		nms.getTag().setString("type", "gathering");
+    		break;
+    	}
+    	return CraftItemStack.asBukkitCopy(nms);
     }
     
     
@@ -208,8 +223,7 @@ public class ItemManager {
         }
         ItemMeta meta = rawStack.getItemMeta();
         meta.setDisplayName(name);
-        String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
-        meta.setLore(Collections.singletonList(ChatColor.RED.toString() + expBar));
+        meta.setLore(Collections.singletonList(0 + "/" + Fishing.getMaxXP(tier)));
         rawStack.setItemMeta(meta);
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
