@@ -8,6 +8,7 @@ import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
@@ -131,7 +132,7 @@ public class EnchantmentAPI implements GenericMechanic {
      * @return boolean
      * @since 1.0
      */
-    private static boolean isItemWeapon(ItemStack itemStack) {
+    public static boolean isItemWeapon(ItemStack itemStack) {
         Item.ItemType itemType = new Attribute(itemStack).getItemType();
         return itemType == Item.ItemType.AXE || itemType == Item.ItemType.POLE_ARM || itemType == Item.ItemType.SWORD || itemType == Item.ItemType.STAFF || itemType == Item.ItemType.BOW;
     }
@@ -143,7 +144,7 @@ public class EnchantmentAPI implements GenericMechanic {
      * @return boolean
      * @since 1.0
      */
-    private static boolean isItemArmor(ItemStack itemStack) {
+    public static boolean isItemArmor(ItemStack itemStack) {
         Armor.EquipmentType armorType = new Attribute(itemStack).getArmorType();
         return armorType == Armor.EquipmentType.BOOTS || armorType == Armor.EquipmentType.LEGGINGS || armorType == Armor.EquipmentType.HELMET || armorType == Armor.EquipmentType.CHESTPLATE;
     }
@@ -171,7 +172,7 @@ public class EnchantmentAPI implements GenericMechanic {
     public static boolean isItemProtected(ItemStack itemStack) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
-        return !tag.getString("protected").equalsIgnoreCase("false");
+        return Boolean.valueOf(String.valueOf(tag.getString("protected")).toLowerCase());
     }
 
     /**
@@ -182,20 +183,17 @@ public class EnchantmentAPI implements GenericMechanic {
      * @since 1.0
      */
     public static ItemStack removeItemProtection(ItemStack itemStack) {
-        if (isItemProtected(itemStack)) {
-            ItemMeta meta = itemStack.getItemMeta();
-            List<String> lore = meta.getLore();
-            lore.remove("PROTECTED");
-            meta.setLore(lore);
-            itemStack.setItemMeta(meta);
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-            NBTTagCompound tag = nmsStack.getTag();
-            tag.set("protected", new NBTTagString("false"));
-            nmsStack.setTag(tag);
-            return CraftItemStack.asBukkitCopy(nmsStack);
-        } else {
-            return itemStack;
-        }
+        if (!isItemProtected(itemStack)) return itemStack;
+        ItemMeta meta = itemStack.getItemMeta();
+        List<String> lore = meta.getLore();
+        lore.remove(ChatColor.GOLD + "Protected");
+        meta.setLore(lore);
+        itemStack.setItemMeta(meta);
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+        NBTTagCompound tag = nmsStack.getTag();
+        tag.set("protected", new NBTTagString("false"));
+        nmsStack.setTag(tag);
+        return CraftItemStack.asBukkitCopy(nmsStack);
     }
 
     /**
@@ -204,11 +202,12 @@ public class EnchantmentAPI implements GenericMechanic {
      * @param itemStack
      * @since 1.0
      */
+
     public static ItemStack addItemProtection(ItemStack itemStack) {
         if (!(isItemProtected(itemStack))) {
             ItemMeta meta = itemStack.getItemMeta();
             List<String> lore = meta.getLore();
-            lore.add("PROTECTED");
+            lore.add(ChatColor.GOLD + "Protected");
             meta.setLore(lore);
             itemStack.setItemMeta(meta);
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);

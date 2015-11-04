@@ -8,6 +8,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.miscellaneous.ItemBuilder;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mechanics.ItemManager;
+import net.dungeonrealms.miscellaneous.SandS;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -146,6 +147,23 @@ public class NPCMenus {
                 ChatColor.AQUA + "15000 Gems"}).setNBTString("hearthstoneLocation", "CRESTGUARD").setNBTInt("gemCost", 15000).build());
         inv.setItem(7, new ItemBuilder().setItem(new ItemStack(Material.BEACON), ChatColor.WHITE + "Deadpeaks Mountain", new String[]{
                 ChatColor.AQUA + "25000 Gems"}).setNBTString("hearthstoneLocation", "DEADPEAKS").setNBTInt("gemCost", 25000).build());
+
+        player.openInventory(inv);
+    }
+
+    public static void openDungeoneerMenu(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 9, "Dungeoneer");
+
+        inv.setItem(0, new ItemBuilder().setItem(SandS.getInstance().getScroll(SandS.ScrollType.WHITE_SCROLL, 1)).addLore(ChatColor.AQUA + "1500 Portal Shards [T1]").setNBTInt("shardTier", 1)
+                .setNBTInt("shardCost", 1500).build());
+        inv.setItem(1, new ItemBuilder().setItem(SandS.getInstance().getScroll(SandS.ScrollType.WHITE_SCROLL, 2)).addLore(ChatColor.AQUA + "1500 Portal Shards [T2]").setNBTInt("shardTier", 2)
+                .setNBTInt("shardCost", 1500).build());
+        inv.setItem(2, new ItemBuilder().setItem(SandS.getInstance().getScroll(SandS.ScrollType.WHITE_SCROLL, 3)).addLore(ChatColor.AQUA + "1500 Portal Shards [T3]").setNBTInt("shardTier", 3)
+                .setNBTInt("shardCost", 1500).build());
+        inv.setItem(3, new ItemBuilder().setItem(SandS.getInstance().getScroll(SandS.ScrollType.WHITE_SCROLL, 4)).addLore(ChatColor.AQUA + "1500 Portal Shards [T4]").setNBTInt("shardTier", 4)
+                .setNBTInt("shardCost", 1500).build());
+        inv.setItem(4, new ItemBuilder().setItem(SandS.getInstance().getScroll(SandS.ScrollType.WHITE_SCROLL, 5)).addLore(ChatColor.AQUA + "1500 Portal Shards [T5]").setNBTInt("shardTier", 5)
+                .setNBTInt("shardCost", 1500).build());
 
         player.openInventory(inv);
     }
