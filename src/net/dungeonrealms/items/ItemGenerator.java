@@ -1,6 +1,8 @@
 package net.dungeonrealms.items;
 
 import net.dungeonrealms.anticheat.AntiCheat;
+import net.dungeonrealms.items.armor.Armor;
+import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -273,6 +275,114 @@ public class ItemGenerator {
             default:
                 return "" + ChatColor.RED + i + " " + ChatColor.WHITE + aType.getName();
         }
+    }
+
+    public static ItemStack updateItemLore(ItemStack itemStack) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        Utils.log.info("Finding the lore for the item!");
+        if (tag.hasKey("weapon")) {
+            ItemMeta meta = itemStack.getItemMeta();
+            List<String> itemLore = new ArrayList<>();
+            int itemTier = tag.getInt("itemTier");
+            if (tag.hasKey("damage")) {
+                itemLore.add(setCorrectItemLore(Item.AttributeType.DAMAGE, tag.getInt("damage"), itemTier));
+            }
+            if (tag.hasKey("pureDamage")) {
+                itemLore.add(setCorrectItemLore(Item.AttributeType.PURE_DAMAGE, tag.getInt("pureDamage"), itemTier));
+            }
+            if (tag.hasKey("criticalHit")) {
+                itemLore.add(setCorrectItemLore(Item.AttributeType.CRITICAL_HIT, tag.getInt("criticalHit"), itemTier));
+            }
+            if (tag.hasKey("armorPenetration")) {
+                itemLore.add(setCorrectItemLore(Item.AttributeType.ARMOR_PENETRATION, tag.getInt("armorPenetration"), itemTier));
+            }
+            if (tag.hasKey("vsMonsters")) {
+                itemLore.add(setCorrectItemLore(Item.AttributeType.VS_MONSTERS, tag.getInt("vsMonsters"), itemTier));
+            }
+            if (tag.hasKey("vsPlayers")) {
+                itemLore.add(setCorrectItemLore(Item.AttributeType.VS_PLAYER, tag.getInt("vsPlayers"), itemTier));
+            }
+            if (tag.hasKey("lifesteal")) {
+                itemLore.add(setCorrectItemLore(Item.AttributeType.LIFE_STEAL, tag.getInt("lifesteal"), itemTier));
+            }
+            if (tag.hasKey("vitality")) {
+                itemLore.add(setCorrectItemLore(Item.AttributeType.VITALITY, tag.getInt("vitality"), itemTier));
+            }
+            if (tag.hasKey("dexterity")) {
+                itemLore.add(setCorrectItemLore(Item.AttributeType.DEXTERITY, tag.getInt("dexterity"), itemTier));
+            }
+            if (tag.hasKey("iceDamage")) {
+                itemLore.add(setCorrectItemLore(Item.AttributeType.ICE_DAMAGE, tag.getInt("iceDamage"), itemTier));
+            }
+            if (tag.hasKey("fireDamage")) {
+                itemLore.add(setCorrectItemLore(Item.AttributeType.FIRE_DAMAGE, tag.getInt("fireDamage"), itemTier));
+            }
+            if (tag.hasKey("poisonDamage")) {
+                itemLore.add(setCorrectItemLore(Item.AttributeType.POISON_DAMAGE, tag.getInt("poisonDamage"), itemTier));
+            }
+            if (tag.hasKey("accuracy")) {
+                itemLore.add(setCorrectItemLore(Item.AttributeType.ACCURACY, tag.getInt("accuracy"), itemTier));
+            }
+            if (tag.hasKey("strength")) {
+                itemLore.add(setCorrectItemLore(Item.AttributeType.STRENGTH, tag.getInt("strength"), itemTier));
+            }
+            if (tag.hasKey("intellect")) {
+                itemLore.add(setCorrectItemLore(Item.AttributeType.INTELLECT, tag.getInt("intellect"), itemTier));
+            }
+            meta.setLore(itemLore);
+            itemStack.setItemMeta(meta);
+        }
+        if (tag.hasKey("armor")) {
+            Utils.log.info("Updating Item Lore for Armor Piece");
+            ItemMeta meta = itemStack.getItemMeta();
+            List<String> itemLore = new ArrayList<>();
+            meta.getLore().clear();
+            meta.setLore(meta.getLore());
+            if (tag.hasKey("armor")) {
+                itemLore.add(ArmorGenerator.setCorrectArmorLore(Armor.ArmorAttributeType.ARMOR, tag.getInt("armor")));
+            }
+            if (tag.hasKey("healthPoints")) {
+                Utils.log.info("Tag Has Ket HealthPoints, adding the lore.");
+                itemLore.add(ArmorGenerator.setCorrectArmorLore(Armor.ArmorAttributeType.HEALTH_POINTS, tag.getInt("healthPoints")));
+            }
+            if (tag.hasKey("healthRegen")) {
+                itemLore.add(ArmorGenerator.setCorrectArmorLore(Armor.ArmorAttributeType.HEALTH_REGEN, tag.getInt("healthRegen")));
+            }
+            if (tag.hasKey("energyRegen")) {
+                itemLore.add(ArmorGenerator.setCorrectArmorLore(Armor.ArmorAttributeType.ENERGY_REGEN, tag.getInt("energyRegen")));
+            }
+            if (tag.hasKey("intellect")) {
+                itemLore.add(ArmorGenerator.setCorrectArmorLore(Armor.ArmorAttributeType.INTELLECT, tag.getInt("intellect")));
+            }
+            if (tag.hasKey("fireResistance")) {
+                itemLore.add(ArmorGenerator.setCorrectArmorLore(Armor.ArmorAttributeType.FIRE_RESISTANCE, tag.getInt("fireResistance")));
+            }
+            if (tag.hasKey("block")) {
+                itemLore.add(ArmorGenerator.setCorrectArmorLore(Armor.ArmorAttributeType.BLOCK, tag.getInt("block")));
+            }
+            if (tag.hasKey("luck")) {
+                itemLore.add(ArmorGenerator.setCorrectArmorLore(Armor.ArmorAttributeType.LUCK, tag.getInt("luck")));
+            }
+            if (tag.hasKey("thorns")) {
+                itemLore.add(ArmorGenerator.setCorrectArmorLore(Armor.ArmorAttributeType.THORNS, tag.getInt("thorns")));
+            }
+            if (tag.hasKey("strength")) {
+                itemLore.add(ArmorGenerator.setCorrectArmorLore(Armor.ArmorAttributeType.STRENGTH, tag.getInt("strength")));
+            }
+            if (tag.hasKey("vitality")) {
+                itemLore.add(ArmorGenerator.setCorrectArmorLore(Armor.ArmorAttributeType.VITALITY, tag.getInt("vitality")));
+            }
+            if (tag.hasKey("damage")) {
+                itemLore.add(ArmorGenerator.setCorrectArmorLore(Armor.ArmorAttributeType.DAMAGE, tag.getInt("damage")));
+            }
+            if (tag.hasKey("dexterity")) {
+                itemLore.add(ArmorGenerator.setCorrectArmorLore(Armor.ArmorAttributeType.DAMAGE, tag.getInt("dexterity")));
+            }
+            meta.setLore(itemLore);
+            itemStack.setItemMeta(meta);
+        }
+        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
 
     /**

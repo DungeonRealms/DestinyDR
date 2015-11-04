@@ -1,5 +1,6 @@
 package net.dungeonrealms.miscellaneous;
 
+import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
@@ -215,16 +216,16 @@ public class SandS implements GenericMechanic {
                 if (tag.hasKey("healthPoints")) {
                     System.out.println("PAST HEALTH POINTS " + tag.getInt("healthPoints"));
                     int preHealthPoints = tag.getInt("healthPoints");
-                    int postHealthPoints = (int) Math.round((preHealthPoints * .5) + preHealthPoints);
+                    int postHealthPoints = (int) Math.round((preHealthPoints * .05) + preHealthPoints);
                     System.out.println("CHECK: POST: " + postHealthPoints + " PRE: " + preHealthPoints);
                     tag.set("healthPoints", new NBTTagInt(postHealthPoints));
                 }
                 if (tag.hasKey("healthRegen")) {
                     int preHealthRegen = tag.getInt("healthRegen");
-                    int postHealthRegen = (int) Math.round((preHealthRegen * .5) + preHealthRegen);
+                    int postHealthRegen = (int) Math.round((preHealthRegen * .05) + preHealthRegen);
                     tag.set("healthRegen", new NBTTagInt(postHealthRegen));
                 } else if (tag.hasKey("energyRegen")) {
-                    int energyRegen = (int) Math.round((tag.getInt("energyRegen") * .1) + tag.getInt("energyRegen"));
+                    int energyRegen = (int) Math.round((tag.getInt("energyRegen") * .01) + tag.getInt("energyRegen"));
                     tag.set("healthRegen", new NBTTagInt(energyRegen));
                 }
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPLASH, player.getLocation(), 0, 0, 0, 10, 100);
@@ -236,7 +237,7 @@ public class SandS implements GenericMechanic {
              */
             case 1:
                 if (tag.hasKey("damage")) {
-                    int damage = (int) Math.round((tag.getInt("damage") * .5) + tag.getInt("damage"));
+                    int damage = (int) Math.round((tag.getInt("damage") * .05) + tag.getInt("damage"));
                     tag.set("damage", new NBTTagInt(damage));
                 }
                 break;
@@ -264,8 +265,7 @@ public class SandS implements GenericMechanic {
         bukkitStack.setItemMeta(meta);
 
         player.getInventory().remove(itemStack);
-        player.getInventory().addItem(bukkitStack);
-
+        player.getInventory().addItem(ItemGenerator.updateItemLore(bukkitStack));
 
     }
 

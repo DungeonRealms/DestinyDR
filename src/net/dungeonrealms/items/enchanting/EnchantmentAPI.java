@@ -186,7 +186,7 @@ public class EnchantmentAPI implements GenericMechanic {
         if (!isItemProtected(itemStack)) return itemStack;
         ItemMeta meta = itemStack.getItemMeta();
         List<String> lore = meta.getLore();
-        lore.remove("PROTECTED");
+        lore.remove(ChatColor.GOLD + "Protected");
         meta.setLore(lore);
         itemStack.setItemMeta(meta);
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
