@@ -439,7 +439,8 @@ public class MainListener implements Listener {
 			return;
 		}
 		if (npcNameStripped.equalsIgnoreCase("Dungeoneer")) {
-			// TODO: Open Dungeoneer Menu
+			NPCMenus.openDungeoneerMenu(event.getPlayer());
+			return;
 		}
 		if (npcNameStripped.equalsIgnoreCase("Skill Trainer")) {
 			NPCMenus.openProfessionPurchaseMenu(event.getPlayer());

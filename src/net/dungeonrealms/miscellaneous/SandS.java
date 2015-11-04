@@ -97,38 +97,38 @@ public class SandS implements GenericMechanic {
             case WHITE_SCROLL:
                 switch (tier) {
                     case 1:
-                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.WHITE.toString() + ChatColor.BOLD + "White Scroll: " + ChatColor.AQUA + "Protect Leather Equipment", new String[]{
+                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.WHITE.toString() + ChatColor.BOLD + "White Scroll: " + ChatColor.WHITE + "Protect Leather Equipment", new String[]{
                                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Apply to any T1 item to " + ChatColor.UNDERLINE + "prevent" + ChatColor.GRAY.toString() + ChatColor.ITALIC + " it",
                                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "from being destroyed if the next",
-                                ChatColor.GRAY.toString() + ChatColor.ITALIC + "enchantment scroll."
+                                ChatColor.GRAY.toString() + ChatColor.ITALIC + "enchantment scroll fails."
 
                         }).setNBTString("scrollTier", String.valueOf(tier)).setNBTString("scrollType", String.valueOf(type.getId())).build();
                     case 2:
-                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.WHITE.toString() + ChatColor.BOLD + "White Scroll: " + ChatColor.AQUA + "Protect Iron Equipment", new String[]{
+                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.WHITE.toString() + ChatColor.BOLD + "White Scroll: " + ChatColor.GREEN + "Protect Chain Equipment", new String[]{
                                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Apply to any T2 item to " + ChatColor.UNDERLINE + "prevent" + ChatColor.GRAY.toString() + ChatColor.ITALIC + " it",
                                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "from being destroyed if the next",
-                                ChatColor.GRAY.toString() + ChatColor.ITALIC + "enchantment scroll."
+                                ChatColor.GRAY.toString() + ChatColor.ITALIC + "enchantment scroll fails."
 
                         }).setNBTString("scrollTier", String.valueOf(tier)).setNBTString("scrollType", String.valueOf(type.getId())).build();
                     case 3:
-                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.WHITE.toString() + ChatColor.BOLD + "White Scroll: " + ChatColor.AQUA + "Protect Chain Equipment", new String[]{
+                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.WHITE.toString() + ChatColor.BOLD + "White Scroll: " + ChatColor.AQUA + "Protect Iron Equipment", new String[]{
                                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Apply to any T3 item to " + ChatColor.UNDERLINE + "prevent" + ChatColor.GRAY.toString() + ChatColor.ITALIC + " it",
                                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "from being destroyed if the next",
-                                ChatColor.GRAY.toString() + ChatColor.ITALIC + "enchantment scroll."
+                                ChatColor.GRAY.toString() + ChatColor.ITALIC + "enchantment scroll fails."
 
                         }).setNBTString("scrollTier", String.valueOf(tier)).setNBTString("scrollType", String.valueOf(type.getId())).build();
                     case 4:
-                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.WHITE.toString() + ChatColor.BOLD + "White Scroll: " + ChatColor.AQUA + "Protect Diamond Equipment", new String[]{
+                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.WHITE.toString() + ChatColor.BOLD + "White Scroll: " + ChatColor.LIGHT_PURPLE + "Protect Diamond Equipment", new String[]{
                                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Apply to any T4 item to " + ChatColor.UNDERLINE + "prevent" + ChatColor.GRAY.toString() + ChatColor.ITALIC + " it",
                                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "from being destroyed if the next",
-                                ChatColor.GRAY.toString() + ChatColor.ITALIC + "enchantment scroll."
+                                ChatColor.GRAY.toString() + ChatColor.ITALIC + "enchantment scroll fails."
 
                         }).setNBTString("scrollTier", String.valueOf(tier)).setNBTString("scrollType", String.valueOf(type.getId())).build();
                     case 5:
-                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.WHITE.toString() + ChatColor.BOLD + "White Scroll: " + ChatColor.AQUA + "Protect Gold Equipment", new String[]{
+                        return new ItemBuilder().setItem(new ItemStack(Material.PAPER), ChatColor.WHITE.toString() + ChatColor.BOLD + "White Scroll: " + ChatColor.YELLOW + "Protect Gold Equipment", new String[]{
                                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Apply to any T5 item to " + ChatColor.UNDERLINE + "prevent" + ChatColor.GRAY.toString() + ChatColor.ITALIC + " it",
                                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "from being destroyed if the next",
-                                ChatColor.GRAY.toString() + ChatColor.ITALIC + "enchantment scroll."
+                                ChatColor.GRAY.toString() + ChatColor.ITALIC + "enchantment scroll fails."
 
                         }).setNBTString("scrollTier", String.valueOf(tier)).setNBTString("scrollType", String.valueOf(type.getId())).build();
                 }

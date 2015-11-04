@@ -279,6 +279,13 @@ public class ClickHandler {
         } else
 
         /*
+        Dungeoneer
+         */
+        if (name.equals("Dungeoneer")) {
+            event.setCancelled(true);
+            return;
+        }
+        /*
         Friend Management
          */
         if (name.equals("Friend Management")) {

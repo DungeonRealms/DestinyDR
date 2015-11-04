@@ -9,6 +9,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by Nick on 10/31/2015.
@@ -33,6 +34,22 @@ public class ItemBuilder {
         meta.setLore(Arrays.asList(lore));
         tempItem.setItemMeta(meta);
         this.itemStack = tempItem;
+        return this;
+    }
+
+    public ItemBuilder setItem(ItemStack item) {
+        this.itemStack = item;
+        return this;
+    }
+
+    public ItemBuilder addLore(String lore) {
+        ItemStack item = itemStack;
+        ItemMeta meta = item.getItemMeta();
+        List<String> itemLore = meta.getLore();
+        itemLore.add(lore);
+        meta.setLore(itemLore);
+        item.setItemMeta(meta);
+        this.itemStack = item;
         return this;
     }
 
