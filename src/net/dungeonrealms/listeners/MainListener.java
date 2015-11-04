@@ -117,6 +117,7 @@ public class MainListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
 	public void onJoin(PlayerJoinEvent event) {
+		event.setJoinMessage("");
 		Player player = event.getPlayer();
         API.GAMEPLAYERS.add(new GamePlayer(player));
 		if (WebAPI.ANNOUNCEMENTS != null && WebAPI.ANNOUNCEMENTS.size() > 0) {
@@ -187,6 +188,7 @@ public class MainListener implements Listener {
 	 */
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerQuit(PlayerQuitEvent event) {
+		event.setQuitMessage("");
 		Player player = event.getPlayer();
 		if (EntityAPI.hasPetOut(player.getUniqueId())) {
 			net.minecraft.server.v1_8_R3.Entity playerPet = EntityAPI.getPlayerPet(player.getUniqueId());

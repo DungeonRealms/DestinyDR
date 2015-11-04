@@ -20,6 +20,7 @@ import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.network.NetworkAPI;
+import net.dungeonrealms.stats.StatsManager;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -475,7 +476,8 @@ public class ClickHandler {
         if (name.equals("Profile")) {
             event.setCancelled(true);
             switch (slot) {
-                case 0: //todo: attributes
+                case 0:
+                    player.openInventory(StatsManager.getInventory(player));
                     break;
                 case 1:
                     PlayerMenus.openFriendInventory(player);
