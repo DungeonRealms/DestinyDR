@@ -252,11 +252,12 @@ public class BlockListener implements Listener {
                         return;
                     }*/
                     //ShopMechanics.setupShop(event.getClickedBlock(), event.getPlayer().getUniqueId());
-                	if(event.getPlayer().isOp()){
-                    RealmManager.getInstance().tryToOpenRealm(event.getPlayer(), event.getClickedBlock().getLocation());
-                	}else{
+                	/*if(event.getPlayer().isOp()){
+                        RealmManager.getInstance().tryToOpenRealm(event.getPlayer(), event.getClickedBlock().getLocation());
+                	} else {
                 		event.getPlayer().sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "COMING SOON..");
-                	}
+                	}*/
+                    event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "Coming Soon!");
                 }
             } else {
                 if (event.getClickedBlock().getType() == Material.PORTAL) {

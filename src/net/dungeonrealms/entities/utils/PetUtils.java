@@ -1,9 +1,15 @@
 package net.dungeonrealms.entities.utils;
 
-import java.lang.reflect.Field;
-import java.util.Map;
-import java.util.UUID;
-
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.donate.DonationEffects;
+import net.dungeonrealms.entities.Entities;
+import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.pets.*;
+import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -13,33 +19,9 @@ import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.donate.DonationEffects;
-import net.dungeonrealms.entities.Entities;
-import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.pets.BabyZombie;
-import net.dungeonrealms.entities.types.pets.BabyZombiePig;
-import net.dungeonrealms.entities.types.pets.CaveSpider;
-import net.dungeonrealms.entities.types.pets.Chicken;
-import net.dungeonrealms.entities.types.pets.Endermite;
-import net.dungeonrealms.entities.types.pets.EnumPets;
-import net.dungeonrealms.entities.types.pets.Ocelot;
-import net.dungeonrealms.entities.types.pets.Rabbit;
-import net.dungeonrealms.entities.types.pets.Silverfish;
-import net.dungeonrealms.entities.types.pets.Snowman;
-import net.dungeonrealms.entities.types.pets.Wolf;
-import net.dungeonrealms.mechanics.ParticleAPI;
-import net.dungeonrealms.mechanics.generic.EnumPriority;
-import net.dungeonrealms.mechanics.generic.GenericMechanic;
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.EntityInsentient;
-import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.PathEntity;
-import net.minecraft.server.v1_8_R3.PathfinderGoal;
-import net.minecraft.server.v1_8_R3.PathfinderGoalFloat;
-import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
-import net.minecraft.server.v1_8_R3.World;
+import java.lang.reflect.Field;
+import java.util.Map;
+import java.util.UUID;
 
 /**
  * Created by Kieran on 9/18/2015.
@@ -78,8 +60,8 @@ public class PetUtils implements GenericMechanic{
     }
 
     public void startInitialization() {
-        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            for (Map.Entry<UUID, Entity> entry : Entities.getInstance().PLAYER_PETS.entrySet()) {
+        Bukkit.getServer().getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            for (Map.Entry<UUID, Entity> entry : Entities.PLAYER_PETS.entrySet()) {
                 Entity pet = entry.getValue();
                 Player player = Bukkit.getPlayer(entry.getKey());
                 org.bukkit.World world = pet.getBukkitEntity().getWorld();

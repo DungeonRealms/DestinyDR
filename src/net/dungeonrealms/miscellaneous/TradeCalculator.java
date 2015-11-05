@@ -262,19 +262,16 @@ public class TradeCalculator {
             merchant_offer.add(scrap);
         }
         if (t3_scraps > 0) {
-
             while (t3_scraps >= 110) {
                 t3_scraps -= 110;
                 ItemStack scroll = SandS.getInstance().getScroll(SandS.ScrollType.ENCHANTMENT_SCROLL, 3);
                 merchant_offer.add(scroll);
             }
-
             while (t3_scraps >= 100) {
                 t3_scraps -= 100;
                 ItemStack scroll = SandS.getInstance().getScroll(SandS.ScrollType.ENCHANTMENT_SCROLL, 3);
                 merchant_offer.add(scroll);
             }
-
             int payout = 2 * t3_scraps;
             while (payout > 64) {
                 ItemStack scrap = ItemManager.createArmorScrap(2);
@@ -292,7 +289,6 @@ public class TradeCalculator {
                 ItemStack scroll = SandS.getInstance().getScroll(SandS.ScrollType.ENCHANTMENT_SCROLL, 4);
                 merchant_offer.add(scroll);
             }
-
             while (t4_scraps >= 80) {
                 t4_scraps -= 80;
                 ItemStack scroll = SandS.getInstance().getScroll(SandS.ScrollType.ENCHANTMENT_SCROLL, 4);

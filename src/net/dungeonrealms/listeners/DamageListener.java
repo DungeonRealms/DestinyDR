@@ -705,6 +705,7 @@ public class DamageListener implements Listener {
             return;
         }
         if (event.getPlayer().hasMetadata("last_Staff_Use")) {
+            event.setCancelled(true);
             if (System.currentTimeMillis() - event.getPlayer().getMetadata("last_Staff_Use").get(0).asLong() < 250) return;
         }
         if (event.getPlayer().hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(event.getPlayer().getUniqueId()) <= 0) {
@@ -717,6 +718,7 @@ public class DamageListener implements Listener {
             }
             return;
         }
+        event.setCancelled(true);
         event.getPlayer().setMetadata("last_Staff_Use", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
         DamageAPI.fireStaffProjectile(event.getPlayer(), event.getPlayer().getItemInHand(), nmsItem.getTag());
     }
