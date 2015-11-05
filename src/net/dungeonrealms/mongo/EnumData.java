@@ -48,6 +48,12 @@ public enum EnumData {
     TOGGLE_DUEL("toggles.duel"),
     TOGGLE_CHAOTIC_PREVENTION("toggles.chaoticPrevention"),
 
+    PORTAL_SHARDS_T1("portalKeyShards.tier1"),
+    PORTAL_SHARDS_T2("portalKeyShards.tier2"),
+    PORTAL_SHARDS_T3("portalKeyShards.tier3"),
+    PORTAL_SHARDS_T4("portalKeyShards.tier4"),
+    PORTAL_SHARDS_T5("portalKeyShards.tier5"),
+
 
     MAILBOX("notices.mailbox"),
 

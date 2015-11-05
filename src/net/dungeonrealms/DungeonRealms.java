@@ -31,6 +31,7 @@ import net.dungeonrealms.profession.Fishing;
 import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
+import net.dungeonrealms.spawning.BuffManager;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
 import org.bukkit.Bukkit;
@@ -54,7 +55,7 @@ import org.bukkit.plugin.java.JavaPlugin;
  *
  * (a) Anyone who violates any of the exclusive rights of the copyright owners as
  * provided by sections 106 through 122 or of the author as provided in section 106A(a),
- * or who imports copies or phonorecords into the United States in violation of section 602,
+ * or who imports copies or phone-records into the United States in violation of section 602,
  * is an infringer of the copyright or right of the author, as the case may be. For purposes
  * of this chapter (other than section 506), any reference to copyright shall be deemed to
  * include the rights conferred by section 106A(a). As used in this subsection, the term anyone
@@ -144,6 +145,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(SpawningMechanics.getInstance());
         mm.registerMechanic(SandS.getInstance());
         mm.registerMechanic(AchievementManager.getInstance());
+        mm.registerMechanic(BuffManager.getInstance());
 
         mm.loadMechanics();
 

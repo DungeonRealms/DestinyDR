@@ -18,6 +18,7 @@ import net.dungeonrealms.items.EnumItem;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.miscellaneous.SandS;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
@@ -158,7 +159,7 @@ public class ClickHandler {
                         return;
                     } else {
                         if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.INVENTORY_COLLECTION_BIN, nmsStack.getTag().getString("mountType").toUpperCase(), true);
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, nmsStack.getTag().getString("mountType").toUpperCase(), true);
                             player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("mountType") + " mount!");
                             player.closeInventory();
                             return;
@@ -284,8 +285,25 @@ public class ClickHandler {
          */
         if (name.equals("Dungeoneer")) {
             event.setCancelled(true);
+            if (slot > 9) return;
+            if (event.getCurrentItem().getType() != Material.AIR) {
+                net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                if (nmsStack == null) return;
+                if (nmsStack.getTag() == null) return;
+                if (nmsStack.getTag().hasKey("shardTier") && nmsStack.getTag().hasKey("shardCost")) {
+                    if (API.removePortalShardsFromPlayer(player, nmsStack.getTag().getInt("shardTier"), nmsStack.getTag().getInt("shardCost"))) {
+                        player.sendMessage(ChatColor.GREEN + "You have purchased a Protection Scroll!");
+                        player.closeInventory();
+                        player.getInventory().addItem(SandS.getInstance().getScroll(SandS.ScrollType.WHITE_SCROLL, nmsStack.getTag().getInt("shardTier")));
+                        return;
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You cannot afford this scroll!");
+                        return;
+                    }
+                }
+            }
             return;
-        }
+        } else
         /*
         Friend Management
          */
