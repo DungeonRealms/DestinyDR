@@ -581,6 +581,13 @@ public class PlayerMenus {
                 "",
                 ChatColor.YELLOW + "Click to open Friend Management!"
         }));
+        inv.setItem(2, editItem(new ItemStack(Material.CHEST), ChatColor.GREEN + "Open Shop", new String[]{
+                ChatColor.DARK_GRAY + "Create your own shop",
+                "",
+                ChatColor.GRAY + "Sell low, buy high!",
+                "",
+                ChatColor.YELLOW + "Click to create a shop!"
+        }));
         inv.setItem(4, editItem(Utils.getPlayerHead(player), ChatColor.GREEN + "Player Profile", new String[]{
         }));
         inv.setItem(6, editItem(new ItemStack(Material.EYE_OF_ENDER), ChatColor.GREEN + "Player Trails", new String[]{

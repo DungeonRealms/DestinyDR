@@ -403,4 +403,20 @@ public class BlockListener implements Listener {
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot place blocks in this realm, please ask the owner to add you to the builders list!");
         }
     }
+    
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void playerRightClickBlock(PlayerInteractEvent e) {
+    	if(e.getAction() == Action.RIGHT_CLICK_BLOCK){
+    		if(ShopMechanics.PENDING.contains(e.getPlayer().getUniqueId())){
+    			ShopMechanics.PENDING.remove(e.getPlayer().getUniqueId());
+    			Block b1 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(0,1,0));
+    			Block b2 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(1,1,0));
+    			if(b1.getType() == Material.AIR && b2.getType() == Material.AIR && API.isInSafeRegion(e.getClickedBlock().getLocation())){
+    				ShopMechanics.setupShop(e.getClickedBlock(), e.getPlayer().getUniqueId());
+    			}else{
+    				e.getPlayer().sendMessage(ChatColor.RED + "You can not place a shop here.");
+    			}
+    		}
+    	}
+    }
 }
