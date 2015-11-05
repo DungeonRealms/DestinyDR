@@ -118,6 +118,7 @@ public class Teleportation implements GenericMechanic {
         Location location = TeleportAPI.getLocationFromString(locationName);
 
         assert location != null;
+
         if (location.equals(Cyrennica)) {
             player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to Cyrennica.");
         } else if (location.equals(Harrison_Field)) {
@@ -125,11 +126,11 @@ public class Teleportation implements GenericMechanic {
         } else if (location.equals(Dark_Oak_Tavern)) {
             player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to Dark Oak Tavern.");
         } else if (location.equals(Deadpeaks_Mountain_Camp)) {
-            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to return to DeadPeaks Camp.");
+            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to DeadPeaks Camp.");
         } else if (location.equals(Trollsbane_tavern)) {
             player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to Trollsbane Tavern.");
         } else if (location.equals(Tripoli)) {
-            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to return to Tripoli.");
+            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to Tripoli.");
         } else if (location.equals(Gloomy_Hollows)) {
             player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to Gloomy Hollows.");
         } else if (location.equals(Crestguard_Keep)) {
@@ -154,9 +155,11 @@ public class Teleportation implements GenericMechanic {
                 player.playSound(player.getLocation(), Sound.AMBIENCE_CAVE, 1F, 1F);
                 break;
         }
+
+        Location startingLocation = player.getLocation();
         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
-                if (player.getLocation().getX() == PLAYERS_TELEPORTING.get(player.getUniqueId()).getX() && player.getLocation().getZ() == PLAYERS_TELEPORTING.get(player.getUniqueId()).getZ()) {
+                if (player.getLocation().distanceSquared(startingLocation) <= 2) {
                     player.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + taskTimer[0] + "s...");
                     try {
                         ParticleAPI.sendParticleToLocation(particleEffect[0], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);

@@ -666,7 +666,8 @@ public class ClickHandler {
                     player.closeInventory();
                     return;
                 }
-                MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"));
+                player.sendMessage(ChatColor.GREEN + "Your Mount is being summoned into this world!");
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType")), 80L);
             }
             return;
         } else
@@ -741,7 +742,7 @@ public class ClickHandler {
                             Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.HEARTHSTONE, nmsItem.getTag());
                             break;
                         } else {
-                            player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because of Alignment, World or Cooldown issues!");
+                            player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because of Alignment, World or Cooldown issues!" + " (" + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId())  + "s)");
                             break;
                         }
                     } else {
