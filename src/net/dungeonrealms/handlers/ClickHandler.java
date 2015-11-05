@@ -18,7 +18,9 @@ import net.dungeonrealms.items.EnumItem;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.miscellaneous.ItemBuilder;
 import net.dungeonrealms.miscellaneous.SandS;
+import net.dungeonrealms.miscellaneous.TradeCalculator;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
@@ -32,13 +34,13 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.Entity;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -281,6 +283,198 @@ public class ClickHandler {
         } else
 
         /*
+        Merchant
+         */
+        if (name.equals("Merchant")) {
+            Inventory tradeWindow = event.getInventory();
+            if (!(event.isShiftClick()) || (event.isShiftClick() && slot < 27)) {
+                if (!(event.getSlotType() == InventoryType.SlotType.CONTAINER)) {
+                    return;
+                }
+                if (event.getInventory().getType() == InventoryType.PLAYER) {
+                    return;
+                }
+                if (slot > 26 || slot < 0) {
+                    return;
+                }
+                if (!(slot == 0 || slot == 1 || slot == 2 || slot == 3 || slot == 9 || slot == 10 || slot == 11 || slot == 12 || slot == 18 || slot == 19
+                        || slot == 20 || slot == 21) && !(slot > 27)) {
+                    event.setCancelled(true);
+                    tradeWindow.setItem(slot, tradeWindow.getItem(slot));
+                    player.setItemOnCursor(event.getCursor());
+                    player.updateInventory();
+                } else if (!(event.isShiftClick())) {
+                    if ((event.getCursor() == null || event.getCursor().getType() == Material.AIR && event.getCurrentItem() != null && (!CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")))) {
+                        event.setCancelled(true);
+                        ItemStack slotItem = tradeWindow.getItem(slot);
+                        tradeWindow.setItem(slot, new ItemStack(Material.AIR));
+                        event.setCursor(slotItem);
+                        player.updateInventory();
+                    } else if ((event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR && event.getCursor() != null)) {
+                        event.setCancelled(true);
+                        ItemStack currentItem = event.getCursor();
+                        tradeWindow.setItem(slot, currentItem);
+                        event.setCursor(new ItemStack(Material.AIR));
+                        player.updateInventory();
+                    } else if (event.getCurrentItem() != null && event.getCursor() != null && (!CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton"))) {
+                        event.setCancelled(true);
+                        ItemStack currentItem = event.getCursor();
+                        ItemStack slotItem = event.getCurrentItem();
+                        event.setCursor(slotItem);
+                        event.setCurrentItem(currentItem);
+                        player.updateInventory();
+                    }
+                }
+            }
+            if (event.isShiftClick() && slot < 26) {
+                if (!(slot == 0 || slot == 1 || slot == 2 || slot == 3 || slot == 9 || slot == 10 || slot == 11 || slot == 12 || slot == 18
+                        || slot == 19 || slot == 20 || slot == 21) && !(slot > 27)) {
+                    event.setCancelled(true);
+                    if (tradeWindow.getItem(slot) != null && tradeWindow.getItem(slot).getType() != Material.AIR) {
+                        tradeWindow.setItem(slot, tradeWindow.getItem(slot));
+                        player.updateInventory();
+                    }
+                } else if (CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && !CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")) {
+                    event.setCancelled(true);
+                    ItemStack slotItem = event.getCurrentItem();
+                    if (player.getInventory().firstEmpty() != -1) {
+                        tradeWindow.setItem(slot, new ItemStack(Material.AIR));
+                        player.getInventory().setItem(player.getInventory().firstEmpty(), slotItem);
+                        player.updateInventory();
+                    }
+                }
+            }
+            if (event.isShiftClick() && slot >= 27 && !(event.isCancelled()) && !(event.getCurrentItem().getType() == Material.BOOK)) {
+                event.setCancelled(true);
+                ItemStack slotItem = event.getCurrentItem();
+                int localSlot = event.getSlot();
+                int x = -1;
+                while (x < 26) {
+                    x++;
+                    if (!(x == 0 || x == 1 || x == 2 || x == 3 || x == 9 || x == 10 || x == 11 || x == 12 || x == 18 || x == 19 || x == 20 || x == 21)) {
+                        continue;
+                    }
+                    ItemStack itemStack = tradeWindow.getItem(x);
+                    if (!(itemStack == null)) {
+                        continue;
+                    }
+                    tradeWindow.setItem(x, slotItem);
+                    if (tradeWindow.getItem(x) != null) {
+                        tradeWindow.getItem(x).setAmount(slotItem.getAmount());
+                    }
+                    player.getInventory().setItem(localSlot, new ItemStack(Material.AIR));
+                    player.updateInventory();
+                    break;
+                }
+            }
+            List<ItemStack> player_Offer = new ArrayList<>();
+            int x = -1;
+            while (x < 26) {
+                x++;
+                if (!(x == 0 || x == 1 || x == 2 || x == 3 || x == 9 || x == 10 || x == 11 || x == 12 || x == 18 || x == 19 || x == 20 || x == 21)) {
+                    continue;
+                }
+                ItemStack itemStack = tradeWindow.getItem(x);
+                if (itemStack == null || itemStack.getType() == Material.AIR || CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton")) {
+                    continue;
+                }
+                player_Offer.add(itemStack);
+            }
+            List<ItemStack> new_Offer = TradeCalculator.calculateMerchantOffer(player_Offer);
+            x = -1;
+            while (x < 26) {
+                x++;
+                if ((x == 0 || x == 1 || x == 2 || x == 3 || x == 4 || x == 9 || x == 10 || x == 11 || x == 12 || x == 13 || x == 22 || x == 18 || x == 19
+                        || x == 20 || x == 21)) {
+                    continue;
+                }
+                tradeWindow.setItem(x, new ItemStack(Material.AIR));
+            }
+            x = -1;
+            while (x < 26) {
+                x++;
+                if (new_Offer.size() > 0) {
+                    if ((x == 0 || x == 1 || x == 2 || x == 3 || x == 4 || x == 9 || x == 10 || x == 11 || x == 12 || x == 13 || x == 22 || x == 18 || x == 19
+                            || x == 20 || x == 21)) {
+                        continue;
+                    }
+                    int index = new_Offer.size() - 1;
+                    ItemStack itemStack = new_Offer.get(index);
+                    tradeWindow.setItem(x, itemStack);
+                    new_Offer.remove(index);
+                }
+            }
+            player.updateInventory();
+            if (CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")) {
+                event.setCancelled(true);
+                if (event.getCurrentItem().getDurability() == 8) {
+                    int player_Inv_Available = 0;
+                    int inv_Needed = 0;
+                    event.getCurrentItem().setDurability((short) 10);
+                    event.setCurrentItem(new ItemBuilder().setItem(Material.INK_SACK, (short) 10, ChatColor.GREEN + "Trade ACCEPTED!", new String[]{
+                            ""
+                    }).setNBTString("acceptButton", "whynot").build());
+                    player.playSound(player.getLocation(), Sound.BLAZE_HIT, 1F, 2.F);
+
+                    for (ItemStack itemStack : player.getInventory()) {
+                        if (itemStack == null || itemStack.getType() == Material.AIR) {
+                            player_Inv_Available++;
+                        }
+                    }
+                    int slot_Variable = -1;
+                    while (slot_Variable < 26) {
+                        slot_Variable++;
+                        if (!(slot_Variable == 5 || slot_Variable == 6 || slot_Variable == 7 || slot_Variable == 8 || slot_Variable == 14 || slot_Variable == 15
+                                || slot_Variable == 16 || slot_Variable == 17 || slot_Variable == 23 || slot_Variable == 24 || slot_Variable == 25 || slot_Variable == 26)) {
+                            continue;
+                        }
+                        ItemStack itemStack = tradeWindow.getItem(slot_Variable);
+                        if (itemStack == null || itemStack.getType() == Material.AIR || CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton") || itemStack.getType() == Material.THIN_GLASS) {
+                            continue;
+                        }
+                        inv_Needed++;
+                    }
+                    if (player_Inv_Available < inv_Needed) {
+                        player.sendMessage(ChatColor.RED + "You do not have enough space to complete this trade!");
+                        player.sendMessage(ChatColor.GRAY + "You require " + ChatColor.BOLD + (inv_Needed - player_Inv_Available) + ChatColor.GRAY + " more free slots to complete this trade!");
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                            InventoryCloseEvent closeEvent = new InventoryCloseEvent(player.getOpenInventory());
+                            Bukkit.getServer().getPluginManager().callEvent(closeEvent);
+                        }, 2L);
+                        return;
+                    }
+                    slot_Variable = -1;
+                    while (slot_Variable < 26) {
+                        slot_Variable++;
+                        if (!(slot_Variable == 5 || slot_Variable == 6 || slot_Variable == 7 || slot_Variable == 8 || slot_Variable == 14 || slot_Variable == 15
+                                || slot_Variable == 16 || slot_Variable == 17 || slot_Variable == 23 || slot_Variable == 24 || slot_Variable == 25 || slot_Variable == 26)) {
+                            continue;
+                        }
+                        ItemStack itemStack = tradeWindow.getItem(slot_Variable);
+                        if (itemStack == null || itemStack.getType() == Material.AIR || CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton") || itemStack.getType() == Material.THIN_GLASS) {
+                            continue;
+                        }
+                        if (itemStack.getType() == Material.EMERALD) {
+                            itemStack = BankMechanics.createBankNote(itemStack.getAmount());
+                        }
+                        player.getInventory().setItem(player.getInventory().firstEmpty(), itemStack);
+                    }
+                    player.sendMessage(ChatColor.GREEN + "Trade Accepted!");
+                    player.playSound(player.getLocation(), Sound.BLAZE_HIT, 1F, 1F);
+                    tradeWindow.clear();
+
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                        player.updateInventory();
+                        player.closeInventory();
+                    }, 2L);
+
+                    return;
+                }
+                player.updateInventory();
+            }
+        }
+
+        /*
         Dungeoneer
          */
         if (name.equals("Dungeoneer")) {
@@ -394,6 +588,17 @@ public class ClickHandler {
                     }
                     EntityAPI.removePlayerPetList(player.getUniqueId());
                 }
+                if (EntityAPI.hasMountOut(player.getUniqueId())) {
+                    Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
+                    if (entity.isAlive()) {
+                        entity.getBukkitEntity().remove();
+                    }
+                    if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                        DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
+                    }
+                    EntityAPI.removePlayerMountList(player.getUniqueId());
+                    player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " Your Mount has returned home as you've summoned another companion!");
+                }
                 net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                 if (nmsStack.getTag() == null || nmsStack.getTag().getString("petType") == null) {
                     player.sendMessage("Uh oh... Something went wrong with your pet! Please inform a staff member! [NBTTag]");
@@ -496,7 +701,6 @@ public class ClickHandler {
                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " You have enabled the " + ChatColor.RED + nmsStack.getTag().getString("playerTrailType") + ChatColor.AQUA + " Player trail!");
             }
         } else
-
 
         /*
         Profile PlayerMenus Below
@@ -690,14 +894,14 @@ public class ClickHandler {
 					}, 20 * 5);
         		}else{
         		player.sendMessage(ChatColor.RED + "You have already used your free stat reset for your character.");
-        		player.sendMessage(ChatColor.YELLOW + "You may purchase more resets from the E-Cash vendor!.");
-        		}
+                    player.sendMessage(ChatColor.YELLOW + "You may purchase more resets from the E-Cash vendor!.");
+                }
         	}else{
         		player.sendMessage(ChatColor.RED + "You need to be level 10 to use your ONE reset.");
-        	}
-        	
+            }
+
         }
-        	
+
         if (name.endsWith("- Officers")) {
             event.setCancelled(true);
             if (slot == 0) {

@@ -37,7 +37,32 @@ public class BuffUtils {
             enderCrystal.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0 ,0);
         }
         player.playSound(player.getLocation(), Sound.ENDERDRAGON_DEATH, 1F, 1F);
-        MetadataUtils.registerBuffMetadata(enderCrystal, PotionEffectType.getById(new Random().nextInt(PotionEffectType.values().length) - 1), 10, 600);
+        MetadataUtils.registerBuffMetadata(enderCrystal, getRandomPotionEffect(), 10, 600);
         return enderCrystal;
+    }
+
+    public static PotionEffectType getRandomPotionEffect() {
+        switch (new Random().nextInt(5)) {
+            case 0:
+                return PotionEffectType.DAMAGE_RESISTANCE;
+            case 1:
+                return PotionEffectType.HEAL;
+            case 2:
+                return PotionEffectType.NIGHT_VISION;
+            case 3:
+                return PotionEffectType.HUNGER;
+            case 4:
+                return PotionEffectType.REGENERATION;
+            case 5:
+                return PotionEffectType.WATER_BREATHING;
+            case 6:
+                return PotionEffectType.JUMP;
+            case 7:
+                return PotionEffectType.SPEED;
+            case 8:
+                return PotionEffectType.INCREASE_DAMAGE;
+            default:
+                return PotionEffectType.SPEED;
+        }
     }
 }

@@ -40,11 +40,11 @@ public class Armor {
     }
 
     public enum ArmorTier {
-        TIER_1(0, 1, new Integer[]{1, 10}, 2),
-        TIER_2(1, 2, new Integer[]{10, 20}, 3),
-        TIER_3(2, 3, new Integer[]{20, 30}, 4),
-        TIER_4(3, 4, new Integer[]{30, 40}, 5),
-        TIER_5(4, 5, new Integer[]{40, 50}, 6),;
+        TIER_1(0, 1, new Integer[]{1, 10}, 1),
+        TIER_2(1, 2, new Integer[]{10, 20}, 2),
+        TIER_3(2, 3, new Integer[]{20, 30}, 3),
+        TIER_4(3, 4, new Integer[]{30, 40}, 4),
+        TIER_5(4, 5, new Integer[]{40, 50}, 5),;
 
         private int id;
         private int tierId;
