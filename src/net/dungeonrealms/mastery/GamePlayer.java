@@ -236,7 +236,8 @@ public class GamePlayer {
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(T, getPlayerAlignment().getAlignmentColor(), (level + 1));
         } else {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, futureExperience, true);
-            T.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "+ " + ChatColor.GREEN + Math.round(experienceToAdd) + " EXP");
+            if(Boolean.valueOf((String)DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, T.getUniqueId())))
+            		T.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "+ " + ChatColor.GREEN + Math.round(experienceToAdd) + " EXP");
         }
 
     }

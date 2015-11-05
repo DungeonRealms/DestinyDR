@@ -38,19 +38,21 @@ public class KarmaHandler implements GenericMechanic {
     public static List<Location> CHAOTIC_RESPAWNS = new ArrayList<>();
 
     public enum EnumPlayerAlignments {
-        LAWFUL(0, "lawful", ChatColor.WHITE),
-        NEUTRAL(1, "neutral", ChatColor.YELLOW),
-        CHAOTIC(2, "chaotic", ChatColor.RED),
-        NONE(3, "none", ChatColor.GRAY);
+        LAWFUL(0, "lawful", ChatColor.GREEN, "-30% Durability Arm/Wep on Death"),
+        NEUTRAL(1, "neutral", ChatColor.YELLOW, "25%/50% Arm/Wep LOST on Death"),
+        CHAOTIC(2, "chaotic", ChatColor.RED, "Inventory LOST on Death"),
+        NONE(3, "none", ChatColor.GRAY, "-30% Durability Arm/Wep on Death");
 
         private int id;
         private String name;
         private ChatColor alignmentColor;
-
-        EnumPlayerAlignments(int id, String name, ChatColor alignmentColor) {
+        public String description;
+        
+        EnumPlayerAlignments(int id, String name, ChatColor alignmentColor, String description) {
             this.id = id;
             this.name = name;
             this.alignmentColor = alignmentColor;
+            this.description = description;
         }
 
         public static EnumPlayerAlignments getByName(String rawName) {

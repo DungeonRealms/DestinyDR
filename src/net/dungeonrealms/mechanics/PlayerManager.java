@@ -20,6 +20,7 @@ public class PlayerManager {
      */
     public static void checkInventory(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
+        player.getInventory().setItem(7, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
         player.getInventory().setItem(8, ItemManager.getPlayerProfile(player, "Character Profile", new String[]{
                 ChatColor.GRAY + "(Right-Click) " + ChatColor.AQUA + "Open your profile!"
         }));
