@@ -7,7 +7,6 @@ import net.dungeonrealms.entities.utils.BuffUtils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.Random;
@@ -53,14 +52,17 @@ public class BuffManager implements GenericMechanic {
             if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
                 continue;
             }
+            if (API.getNearbyPlayers(player.getLocation(), 15).size() > 2) {
+                if (new Random().nextInt(21) < 10) {
+                    continue;
+                }
+            }
             if (new Random().nextInt(21) < 4) {
                 if (!CURRENT_BUFFS.isEmpty()) {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         EnderCrystal enderCrystal = CURRENT_BUFFS.get(new Random().nextInt(CURRENT_BUFFS.size()));
                         CURRENT_BUFFS.remove(enderCrystal);
                         enderCrystal.dead = true;
-                        enderCrystal.getBukkitEntity().remove();
-                        enderCrystal.getBukkitEntity().getLocation().getBlock().setType(Material.AIR);
                     }, 0L);
                 }
             }
