@@ -10,9 +10,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Kieran on 11/5/2015.
@@ -20,7 +19,7 @@ import java.util.Random;
 public class BuffManager implements GenericMechanic {
 
     private static BuffManager instance = null;
-    private List<EnderCrystal> CURRENT_BUFFS = new ArrayList<>();
+    public CopyOnWriteArrayList<EnderCrystal> CURRENT_BUFFS = new CopyOnWriteArrayList<>();
 
     public static BuffManager getInstance() {
         if (instance == null)
@@ -67,7 +66,7 @@ public class BuffManager implements GenericMechanic {
             if (CURRENT_BUFFS.size() >= MAX_BUFFS) {
                 continue;
             }
-            if (new Random().nextInt(21) < 6) {
+            if (new Random().nextInt(21) < 21) {
                 if (CURRENT_BUFFS.size() < MAX_BUFFS) {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> CURRENT_BUFFS.add(BuffUtils.spawnBuff(player.getUniqueId())), 0L);
                 }
