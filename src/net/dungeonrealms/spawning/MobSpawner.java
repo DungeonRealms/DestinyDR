@@ -1,20 +1,5 @@
 package net.dungeonrealms.spawning;
 
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.metadata.FixedMetadataValue;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
@@ -25,6 +10,20 @@ import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.World;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.entity.ArmorStand;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Chase on Sep 25, 2015
@@ -263,199 +262,6 @@ public class MobSpawner {
 		}
 	}
 
-	// public void newSpawnIn() {
-	// if (toSpawn)
-	// return;
-	// for (Entity monster : SPAWNED_MONSTERS) {
-	// if (monster.isAlive()) {
-	// if (API.isInSafeRegion(monster.getBukkitEntity().getLocation())) {
-	// monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
-	// }
-	// if (monster.getBukkitEntity().getLocation().distance(loc) > 30) {
-	// monster.setPosition(loc.getX() + 1, loc.getY(), loc.getZ() + 1);
-	// }
-	// } else {
-	// SPAWNED_MONSTERS.remove(monster);
-	// }
-	// }
-	// if (SPAWNED_MONSTERS.size() < (spawnAmount / 2)) {
-	// if (!API.getNearbyPlayers(loc, 40).isEmpty()) {
-	// EnumMonster monsEnum = EnumMonster.getMonsterByString(spawnType);
-	// if (monsEnum == null) {
-	// return;
-	// }
-	// World world = ((CraftWorld) loc.getWorld()).getHandle();
-	// Entity entity = SpawningMechanics.getMob(world, tier, monsEnum);
-	// if (entity == null) {
-	// return;
-	// }
-	// int level = Utils.getRandomFromTier(tier, lvlRange);
-	// MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB,
-	// tier, level);
-	// EntityStats.setMonsterRandomStats(entity, level, tier);
-	// String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " +
-	// ChatColor.RESET;
-	// String healthName =
-	// entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt()
-	// + ChatColor.RED.toString() + "❤ ";
-	// String customName;
-	// try {
-	// customName =
-	// entity.getBukkitEntity().getMetadata("customname").get(0).asString();
-	// } catch (Exception exc) {
-	// Utils.log.info(entity.getCustomName() + " doesn't have metadata
-	// 'customname' ");
-	// customName = monsEnum.name;
-	// }
-	// toSpawn = true;
-	// final String finalName = healthName + lvl + customName;
-	// if (!firstSpawn) {
-	// if (!isElite) {
-	// Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-	// () -> {
-	// toSpawn = false;
-	// ArmorStand stand = entity.getBukkitEntity().getLocation().getWorld()
-	// .spawn(entity.getBukkitEntity().getLocation(), ArmorStand.class);
-	// entity.getBukkitEntity().setMetadata("level",
-	// new FixedMetadataValue(DungeonRealms.getInstance(), level));
-	// stand.setRemoveWhenFarAway(false);
-	// stand.setVisible(false);
-	// stand.setSmall(true);
-	// stand.setBasePlate(false);
-	// stand.setMetadata("type", new
-	// FixedMetadataValue(DungeonRealms.getInstance(), "nametag"));
-	// stand.setGravity(false);
-	// stand.setArms(false);
-	// stand.setCustomNameVisible(true);
-	// stand.setCustomName(finalName);
-	// stand.setRemoveWhenFarAway(false);
-	// entity.setLocation(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), 1,
-	// 1);
-	// world.addEntity(entity, SpawnReason.CUSTOM);
-	// entity.setLocation(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), 1,
-	// 1);
-	// entity.getBukkitEntity().setPassenger(stand);
-	// NAMETAGS.put(entity.getBukkitEntity(), stand);
-	// SPAWNED_MONSTERS.add(entity);
-	// } , 400);
-	// } else {
-	// Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-	// () -> {
-	// toSpawn = false;
-	// ArmorStand stand = entity.getBukkitEntity().getLocation().getWorld()
-	// .spawn(entity.getBukkitEntity().getLocation(), ArmorStand.class);
-	// entity.getBukkitEntity().setMetadata("level",
-	// new FixedMetadataValue(DungeonRealms.getInstance(), level));
-	// stand.setRemoveWhenFarAway(false);
-	// stand.setVisible(false);
-	// stand.setSmall(true);
-	// stand.setBasePlate(false);
-	// stand.setMetadata("type", new
-	// FixedMetadataValue(DungeonRealms.getInstance(), "nametag"));
-	// stand.setGravity(false);
-	// stand.setArms(false);
-	// stand.setCustomNameVisible(true);
-	// stand.setCustomName(eliteName);
-	// stand.setRemoveWhenFarAway(false);
-	// entity.setLocation(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), 1,
-	// 1);
-	// world.addEntity(entity, SpawnReason.CUSTOM);
-	// entity.setLocation(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), 1,
-	// 1);
-	// entity.getBukkitEntity().setPassenger(stand);
-	// NAMETAGS.put(entity.getBukkitEntity(), stand);
-	// SPAWNED_MONSTERS.add(entity);
-	// EntityStats.setMonsterElite(entity, level + 10, tier);
-	// entity.getBukkitEntity().setMetadata("level",
-	// new FixedMetadataValue(DungeonRealms.getInstance(), level + 10));
-	// stand.setCustomName(entity.getCustomName());
-	// entity.getBukkitEntity().setMetadata("isElite",
-	// new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
-	// Utils.log.info("Elite " + eliteName + " Spawned");
-	// } , 1200 * 2);
-	// }
-	// } else {
-	// firstSpawn = true;
-	// if (!isElite) {
-	// Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-	// () -> {
-	// ArmorStand stand = entity.getBukkitEntity().getLocation().getWorld()
-	// .spawn(entity.getBukkitEntity().getLocation(), ArmorStand.class);
-	// stand.setRemoveWhenFarAway(false);
-	// entity.getBukkitEntity().setMetadata("level",
-	// new FixedMetadataValue(DungeonRealms.getInstance(), level));
-	// if (isElite) {
-	// EntityStats.setMonsterElite(entity, level + 10, tier);
-	// entity.getBukkitEntity().setMetadata("level",
-	// new FixedMetadataValue(DungeonRealms.getInstance(), level + 10));
-	// stand.setCustomName(entity.getCustomName());
-	// entity.getBukkitEntity().setMetadata("isElite",
-	// new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
-	// }
-	// toSpawn = false;
-	// stand.setVisible(false);
-	// stand.setSmall(true);
-	// stand.setBasePlate(false);
-	// stand.setMetadata("type", new
-	// FixedMetadataValue(DungeonRealms.getInstance(), "nametag"));
-	// stand.setGravity(false);
-	// stand.setArms(false);
-	// stand.setCustomNameVisible(true);
-	// stand.setCustomName(finalName);
-	// stand.setRemoveWhenFarAway(false);
-	// NAMETAGS.put(entity.getBukkitEntity(), stand);
-	// entity.setLocation(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), 1,
-	// 1);
-	// world.addEntity(entity, SpawnReason.CUSTOM);
-	// entity.setLocation(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), 1,
-	// 1);
-	// entity.getBukkitEntity().setPassenger(stand);
-	// SPAWNED_MONSTERS.add(entity);
-	// });
-	// } else {
-	// Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-	// () -> {
-	// toSpawn = false;
-	// ArmorStand stand = entity.getBukkitEntity().getLocation().getWorld()
-	// .spawn(entity.getBukkitEntity().getLocation(), ArmorStand.class);
-	// entity.getBukkitEntity().setMetadata("level",
-	// new FixedMetadataValue(DungeonRealms.getInstance(), level));
-	// stand.setRemoveWhenFarAway(false);
-	// stand.setVisible(false);
-	// stand.setSmall(true);
-	// stand.setBasePlate(false);
-	// stand.setMetadata("type", new
-	// FixedMetadataValue(DungeonRealms.getInstance(), "nametag"));
-	// stand.setGravity(false);
-	// stand.setArms(false);
-	// stand.setCustomNameVisible(true);
-	// stand.setCustomName(eliteName);
-	// stand.setRemoveWhenFarAway(false);
-	// NAMETAGS.put(entity.getBukkitEntity(), stand);
-	// entity.setLocation(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), 1,
-	// 1);
-	// world.addEntity(entity, SpawnReason.CUSTOM);
-	// entity.setLocation(loc.getBlockX(), loc.getBlockY(), loc.getBlockZ(), 1,
-	// 1);
-	// entity.getBukkitEntity().setPassenger(stand);
-	// SPAWNED_MONSTERS.add(entity);
-	// EntityStats.setMonsterElite(entity, level + 10, tier);
-	// entity.getBukkitEntity().setMetadata("level",
-	// new FixedMetadataValue(DungeonRealms.getInstance(), level + 10));
-	// stand.setCustomName(entity.getCustomName());
-	// entity.getBukkitEntity().setMetadata("isElite",
-	// new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
-	// Utils.log.info("Elite " + eliteName + " Spawned");
-	// });
-	// }
-	// }
-	// } else {
-	// if (SPAWNED_MONSTERS.size() > 0)
-	// kill();
-	// }
-	// }
-	// }
-
 	/**
 	 * Kill all spawnedMonsters for this Mob Spawner
 	 */
@@ -526,12 +332,11 @@ public class MobSpawner {
 	 * Force NameTags to be removed if the owner is dead.
 	 */
 	private void checkNameTags() {
-        NAMETAGS.entrySet().stream().filter(mobNameTags -> !NAMETAGS.isEmpty()).filter(mobNameTags -> mobNameTags.getValue().getVehicle() == null).forEach(mobNameTags -> {
-			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
-            ((CraftEntity) mobNameTags.getValue()).getHandle().die();
-            ((CraftEntity) mobNameTags.getValue()).getHandle().dead = true;
-            NAMETAGS.remove(mobNameTags.getKey());
-			});
-        });
+        NAMETAGS.entrySet().stream().filter(mobNameTags -> !NAMETAGS.isEmpty()).filter(mobNameTags -> mobNameTags.getValue().getVehicle() == null).forEach(mobNameTags ->
+				Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> {
+					((CraftEntity) mobNameTags.getValue()).getHandle().die();
+					((CraftEntity) mobNameTags.getValue()).getHandle().dead = true;
+					NAMETAGS.remove(mobNameTags.getKey());
+				}));
 	}
 }
