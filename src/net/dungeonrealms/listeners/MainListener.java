@@ -3,6 +3,7 @@ package net.dungeonrealms.listeners;
 import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.chat.Chat;
 import net.dungeonrealms.core.Callback;
 import net.dungeonrealms.core.CoreAPI;
@@ -33,6 +34,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerFishEvent.State;
@@ -428,7 +430,8 @@ public class MainListener implements Listener {
 			return;
 		}
 		if (npcNameStripped.equalsIgnoreCase("Merchant")) {
-			// TODO: Open Merchant Menu
+			NPCMenus.openMerchantMenu(event.getPlayer());
+			return;
 		}
 		if (npcNameStripped.equalsIgnoreCase("E-Cash Vendor")) {
 			NPCMenus.openECashPurchaseMenu(event.getPlayer());
@@ -439,7 +442,8 @@ public class MainListener implements Listener {
 			return;
 		}
 		if (npcNameStripped.equalsIgnoreCase("Dungeoneer")) {
-			NPCMenus.openDungeoneerMenu(event.getPlayer());
+			//NPCMenus.openDungeoneerMenu(event.getPlayer());
+			event.getPlayer().sendMessage(ChatColor.RED + "Sorry, I'm restocking my wares!");
 			return;
 		}
 		if (npcNameStripped.equalsIgnoreCase("Skill Trainer")) {
@@ -448,12 +452,18 @@ public class MainListener implements Listener {
 		}
 		if (npcNameStripped.equalsIgnoreCase("Food Vendor")) {
 			// TODO: Open Food Menu
+			event.getPlayer().sendMessage(ChatColor.RED + "Sorry, I'm restocking my wares!");
+			return;
 		}
 		if (npcNameStripped.equalsIgnoreCase("Item Vendor")) {
 			// TODO: Open Item Vendor
+			event.getPlayer().sendMessage(ChatColor.RED + "Sorry, I'm restocking my wares!");
+			return;
 		}
 		if (npcNameStripped.equalsIgnoreCase("Guild Registrar")) {
 			// TODO: Open Guild Registrar
+			event.getPlayer().sendMessage(ChatColor.RED + "Sorry, I've lost my regisry book!");
+			return;
 		}
 		if (npcNameStripped.equalsIgnoreCase("Innkeeper")) {
 			NPCMenus.openHearthstoneRelocateMenu(event.getPlayer());
@@ -490,5 +500,39 @@ public class MainListener implements Listener {
 				}
 			}
 		}
+	}
+
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void onPlayerCloseInventory(InventoryCloseEvent event) {
+		if (!event.getInventory().getName().equalsIgnoreCase("Merchant")) {
+			return;
+		}
+		Player player = (Player) event.getPlayer();
+		if (!API.isPlayer(player)) {
+			return;
+		}
+		int slot_Variable = -1;
+		while (slot_Variable < 26) {
+			slot_Variable++;
+			if (!(slot_Variable == 0 || slot_Variable == 1 || slot_Variable == 2 || slot_Variable == 3 || slot_Variable == 9 || slot_Variable == 10 || slot_Variable == 11
+					|| slot_Variable == 12 || slot_Variable == 18 || slot_Variable == 19 || slot_Variable == 20 || slot_Variable == 21)) {
+				continue;
+			}
+			ItemStack itemStack = event.getInventory().getItem(slot_Variable);
+			if (itemStack == null || itemStack.getType() == Material.AIR || CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton") || itemStack.getType() == Material.THIN_GLASS) {
+				continue;
+			}
+			if (itemStack.getType() == Material.EMERALD) {
+				itemStack = BankMechanics.createBankNote(itemStack.getAmount());
+			}
+			if (player.getInventory().firstEmpty() == -1) {
+				player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
+			} else {
+				player.getInventory().setItem(player.getInventory().firstEmpty(), itemStack);
+			}
+		}
+		player.getOpenInventory().getTopInventory().clear();
+		player.updateInventory();
+		player.sendMessage(ChatColor.YELLOW + "Trade Cancelled!");
 	}
 }

@@ -86,8 +86,9 @@ public class ParticleAPI {
                     return ChatColor.RED;
                 case HAPPY_VILLAGER:
                     return ChatColor.DARK_GREEN;
+                default:
+                    return ChatColor.WHITE;
             }
-            return ChatColor.WHITE;
         }
     }
 

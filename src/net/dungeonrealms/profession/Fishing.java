@@ -15,9 +15,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.util.*;
 import java.util.Map.Entry;
 
@@ -304,13 +301,17 @@ public class Fishing implements GenericMechanic {
                  for (Entry<Location, List<Location>> data : FISHING_PARTICLES.entrySet()) {
                      Location epicenter = data.getKey();
                      try {
-                         ParticleAPI.sendParticleToLocation(ParticleEffect.SPLASH, epicenter, r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.4F, 20);
+						 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+							 ParticleAPI.sendParticleToLocation(ParticleEffect.SPLASH, epicenter, r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.4F, 20);
+						 },0L);
                      } catch (Exception e1) {
                          e1.printStackTrace();
                      }
                      data.getValue().stream().filter(loc -> r.nextInt(chance) == 1).forEach(loc -> {
                          try {
-                             ParticleAPI.sendParticleToLocation(ParticleEffect.SPLASH, loc, r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.4F, 20);
+							 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+								 ParticleAPI.sendParticleToLocation(ParticleEffect.SPLASH, epicenter, r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.4F, 20);
+							 }, 0L);
                          } catch (Exception e1) {
                              e1.printStackTrace();
                          }

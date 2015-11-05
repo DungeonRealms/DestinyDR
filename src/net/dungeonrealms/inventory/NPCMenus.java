@@ -9,10 +9,7 @@ import net.dungeonrealms.miscellaneous.ItemBuilder;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.miscellaneous.SandS;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -164,6 +161,20 @@ public class NPCMenus {
                 .setNBTInt("shardCost", 1500).build());
         inv.setItem(4, new ItemBuilder().setItem(SandS.getInstance().getScroll(SandS.ScrollType.WHITE_SCROLL, 5)).addLore(ChatColor.AQUA + "1500 Portal Shards [T5]").setNBTInt("shardTier", 5)
                 .setNBTInt("shardCost", 1500).build());
+
+        player.openInventory(inv);
+    }
+
+    public static void openMerchantMenu(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 27, "Merchant");
+
+        inv.setItem(4, new ItemStack(Material.THIN_GLASS));
+        inv.setItem(13, new ItemStack(Material.THIN_GLASS));
+        inv.setItem(22, new ItemStack(Material.THIN_GLASS));
+        inv.setItem(0, new ItemBuilder().setItem(Material.INK_SACK, (short) 8, ChatColor.YELLOW + "Click to ACCEPT", new String[] {
+                ""
+        }).setNBTString("acceptButton", "whynot").build());
+        player.playSound(player.getLocation(), Sound.WOOD_CLICK, 1.f, 1.f);
 
         player.openInventory(inv);
     }
