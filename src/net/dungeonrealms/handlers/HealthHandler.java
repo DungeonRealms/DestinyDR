@@ -156,7 +156,7 @@ public class HealthHandler implements GenericMechanic{
         }
         int playerLevel = gamePlayer.getLevel();
         double currentEXP = gamePlayer.getExperience();
-        double expToLevel = (playerLevel ^ 2 * 250) + Math.round(playerLevel % (64 * 2));
+        double expToLevel = gamePlayer.getEXPNeeded(playerLevel);
         String playerLevelInfo = ChatColor.AQUA.toString() + ChatColor.BOLD + "LVL " + ChatColor.AQUA + playerLevel;
         String separator = ChatColor.BLACK.toString() + ChatColor.BOLD + " - ";
         String playerHPInfo = "";

@@ -1,9 +1,8 @@
 package net.dungeonrealms.stats;
 
-import net.dungeonrealms.mechanics.ItemManager;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.mongo.EnumOperators;
+import java.text.DecimalFormat;
+import java.util.UUID;
+
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
@@ -11,8 +10,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.text.DecimalFormat;
-import java.util.UUID;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.ItemManager;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
 
 /**
  * Created by Chase on Nov 2, 2015
@@ -20,14 +22,14 @@ import java.util.UUID;
 public class PlayerStats {
 	public int freePoints;
 	 public int strPoints;
-	 public int tempstrPoints;
+	 public int tempstrPoints = 0;
 	 public int dexPoints;
-	 public int tempdexPoints;
+	 public int tempdexPoints= 0;
 	 public int vitPoints;
-	 public int tempvitPoints;
+	 public int tempvitPoints= 0;
 	 public int intPoints;
-	 public int tempintPoints;
-	 public int tempFreePoints;
+	 public int tempintPoints= 0;
+	 public int tempFreePoints= 0;
 	 private int level;
 	 UUID playerUUID;
 	 public int freeResets;
@@ -37,19 +39,19 @@ public class PlayerStats {
 
 	public PlayerStats(UUID playerUUID) {
 		this.playerUUID = playerUUID;
-		this.freePoints = 0;
-		this.tempFreePoints = 0;
-		this.strPoints = 0;
-		this.dexPoints = 0;
-		this.vitPoints = 0;
-		this.intPoints = 0;
-		this.level = 1;
-		this.tempstrPoints = 0;
-		this.tempdexPoints = 0;
-		this.tempvitPoints = 0;
-		this.tempintPoints = 0;
-		this.resetAmounts = 0;
-		this.freeResets = 0;
+//		this.freePoints = 0;
+//		this.tempFreePoints = 0;
+//		this.strPoints = 0;
+//		this.dexPoints = 0;
+//		this.vitPoints = 0;
+//		this.intPoints = 0;
+//		this.level = 1;
+//		this.tempstrPoints = 0;
+//		this.tempdexPoints = 0;
+//		this.tempvitPoints = 0;
+//		this.tempintPoints = 0;
+//		this.resetAmounts = 0;
+//		this.freeResets = 0;
 		loadPlayerStats();
 	}
 
@@ -71,6 +73,7 @@ public class PlayerStats {
 		this.strPoints = (int) DatabaseAPI.getInstance().getData(EnumData.STRENGTH, playerUUID);
 		this.vitPoints = (int) DatabaseAPI.getInstance().getData(EnumData.VITALITY, playerUUID);
 		this.level = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, playerUUID);
+		Utils.log.info(level + " loaded for level");
 		this.resetAmounts = (int) DatabaseAPI.getInstance().getData(EnumData.RESETS, playerUUID);
 		this.freeResets = (int) DatabaseAPI.getInstance().getData(EnumData.FREERESETS, playerUUID);
 	}
@@ -332,14 +335,15 @@ public class PlayerStats {
 	  	 */
 	  	 
 		 public void updateDatabase() {
-			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.INTELLECT, intPoints, false);
-			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.STRENGTH, strPoints, false);
-			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.VITALITY, vitPoints, false);
-			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DEXTERITY, dexPoints, false);
-			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BUFFER_POINTS, freePoints, false);
-			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LEVEL, level, false);
-			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.RESETS, resetAmounts, false);
-			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.FREERESETS, freeResets, false);
+			 Utils.log.info(level + " player level");
+			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LEVEL, level, true);
+			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.INTELLECT, intPoints, true);
+			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.STRENGTH, strPoints, true);
+			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.VITALITY, vitPoints, true);
+			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DEXTERITY, dexPoints, true);
+			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BUFFER_POINTS, freePoints, true);
+			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.RESETS, resetAmounts, true);
+			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.FREERESETS, freeResets, true);
 		}
 
 		/**

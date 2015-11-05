@@ -178,6 +178,28 @@ public class GamePlayer {
         T.setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), hp));
     }
 
+    
+    public int getEXPNeeded(int level) {
+		if (level < 4) {
+			return (int) ((100 * Math.pow(level, 2)) * 1.3) + 1000;
+		}
+		if (level >= 101) {
+			return 0;
+		}
+		double difficulty = 1;
+		if (level >= 3 && level < 40) {
+			difficulty = 1.3;
+		} else if (level >= 40 && level < 60) {
+			difficulty = 1.6;
+		} else if (level >= 60 && level < 80) {
+			difficulty = 2.2;
+		} else if (level >= 80) {
+			difficulty = 2.6;
+		}
+		return (int) ((100 * Math.pow(level, 2)) * difficulty);
+	}
+    
+    
     /**
      * Add experience to the player
      *
@@ -192,7 +214,8 @@ public class GamePlayer {
         if (level >= 64) return;
 
         double futureExperience = experience + experienceToAdd;
-
+        int xpNeeded = getEXPNeeded(level);
+        getPlayer().sendMessage(experience + "/" + xpNeeded);
         /*
         m
         c_i_k = ?  a_i_k * b_k_i
@@ -204,15 +227,15 @@ public class GamePlayer {
             c[i][k] += a[i][k] * b[k][j]
 
          */
-
-        if (futureExperience > (level ^ 2 * 250) + Math.round(level % (64 * 2))) {
+        	
+        if (futureExperience >= xpNeeded) {
+            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, 0, true);
+            Utils.log.info("[LEVEL] Leveling " + T.getName() + " to level " + (getLevel() + 1));
             getStats().lvlUp();
-            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.EXPERIENCE, experienceToAdd, true);
-            Utils.log.info("[LEVEL] Leveling " + T.getName() + " to level " + (getLevel() + 1) + " with new experience" + String.valueOf(experience - experience));
             T.sendMessage(ChatColor.GREEN + "You have reached level " + ChatColor.AQUA + (level + 1) + ChatColor.GREEN + " and have gained 6 Attribute Points!");
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(T, getPlayerAlignment().getAlignmentColor(), (level + 1));
         } else {
-            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.EXPERIENCE, experienceToAdd, true);
+            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, futureExperience, true);
             T.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "+ " + ChatColor.GREEN + Math.round(experienceToAdd) + " EXP");
         }
 
