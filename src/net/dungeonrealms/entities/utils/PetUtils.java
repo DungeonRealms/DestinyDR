@@ -68,7 +68,7 @@ public class PetUtils implements GenericMechanic{
                 Location location = new Location(world, pet.lastX, pet.lastY, pet.lastZ);
                 if (player.getLocation().distance(location) > 20) {
                     if (!(player.isFlying())) {
-                        pet.getBukkitEntity().teleport(player);
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> pet.getBukkitEntity().teleport(player), 0L);
                     }
                 }
             }
