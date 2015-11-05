@@ -304,7 +304,7 @@ public class ClickHandler {
                     player.setItemOnCursor(event.getCursor());
                     player.updateInventory();
                 } else if (!(event.isShiftClick())) {
-                    if ((event.getCursor() == null || event.getCursor().getType() == Material.AIR && event.getCurrentItem() != null && (!CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")))) {
+                    if ((event.getCursor() == null || event.getCursor().getType() == Material.AIR && event.getCurrentItem() != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && (!CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")))) {
                         event.setCancelled(true);
                         ItemStack slotItem = tradeWindow.getItem(slot);
                         tradeWindow.setItem(slot, new ItemStack(Material.AIR));
@@ -316,7 +316,7 @@ public class ClickHandler {
                         tradeWindow.setItem(slot, currentItem);
                         event.setCursor(new ItemStack(Material.AIR));
                         player.updateInventory();
-                    } else if (event.getCurrentItem() != null && event.getCursor() != null && (!CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton"))) {
+                    } else if (event.getCurrentItem() != null && event.getCursor() != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && (!CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton"))) {
                         event.setCancelled(true);
                         ItemStack currentItem = event.getCursor();
                         ItemStack slotItem = event.getCurrentItem();
@@ -334,7 +334,7 @@ public class ClickHandler {
                         tradeWindow.setItem(slot, tradeWindow.getItem(slot));
                         player.updateInventory();
                     }
-                } else if (CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && !CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")) {
+                } else if (CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && !CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")) {
                     event.setCancelled(true);
                     ItemStack slotItem = event.getCurrentItem();
                     if (player.getInventory().firstEmpty() != -1) {
@@ -375,7 +375,7 @@ public class ClickHandler {
                     continue;
                 }
                 ItemStack itemStack = tradeWindow.getItem(x);
-                if (itemStack == null || itemStack.getType() == Material.AIR || CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton")) {
+                if (itemStack == null || itemStack.getType() == Material.AIR || CraftItemStack.asNMSCopy(itemStack) != null && CraftItemStack.asNMSCopy(itemStack).getTag() != null && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton")) {
                     continue;
                 }
                 player_Offer.add(itemStack);
@@ -405,12 +405,11 @@ public class ClickHandler {
                 }
             }
             player.updateInventory();
-            if (CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")) {
+            if (CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")) {
                 event.setCancelled(true);
                 if (event.getCurrentItem().getDurability() == 8) {
                     int player_Inv_Available = 0;
                     int inv_Needed = 0;
-                    event.getCurrentItem().setDurability((short) 10);
                     event.setCurrentItem(new ItemBuilder().setItem(Material.INK_SACK, (short) 10, ChatColor.GREEN + "Trade ACCEPTED!", new String[]{
                             ""
                     }).setNBTString("acceptButton", "whynot").build());
@@ -429,7 +428,7 @@ public class ClickHandler {
                             continue;
                         }
                         ItemStack itemStack = tradeWindow.getItem(slot_Variable);
-                        if (itemStack == null || itemStack.getType() == Material.AIR || CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton") || itemStack.getType() == Material.THIN_GLASS) {
+                        if (itemStack == null || itemStack.getType() == Material.AIR || (CraftItemStack.asNMSCopy(itemStack) != null && CraftItemStack.asNMSCopy(itemStack).getTag() != null && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton")) || itemStack.getType() == Material.THIN_GLASS) {
                             continue;
                         }
                         inv_Needed++;
@@ -451,7 +450,7 @@ public class ClickHandler {
                             continue;
                         }
                         ItemStack itemStack = tradeWindow.getItem(slot_Variable);
-                        if (itemStack == null || itemStack.getType() == Material.AIR || CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton") || itemStack.getType() == Material.THIN_GLASS) {
+                        if (itemStack == null || itemStack.getType() == Material.AIR || (CraftItemStack.asNMSCopy(itemStack) != null && CraftItemStack.asNMSCopy(itemStack).getTag() != null && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton")) || itemStack.getType() == Material.THIN_GLASS) {
                             continue;
                         }
                         if (itemStack.getType() == Material.EMERALD) {
