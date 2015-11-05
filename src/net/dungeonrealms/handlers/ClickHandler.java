@@ -23,6 +23,7 @@ import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.network.NetworkAPI;
+import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.stats.StatsManager;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.dungeonrealms.teleportation.Teleportation;
@@ -509,6 +510,11 @@ public class ClickHandler {
                 case 1:
                     PlayerMenus.openFriendInventory(player);
                     break;
+                case 2:
+                	ShopMechanics.addPendingPlacement(player.getUniqueId());
+                	player.sendMessage(ChatColor.YELLOW + "Right click a block to place your shop!");
+                	player.closeInventory();
+                	break;
                 case 6:
                     PlayerMenus.openPlayerParticleMenu(player);
                     break;
