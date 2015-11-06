@@ -1,8 +1,26 @@
 package net.dungeonrealms;
 
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.commands.*;
+import net.dungeonrealms.commands.CommandAccept;
+import net.dungeonrealms.commands.CommandAdd;
+import net.dungeonrealms.commands.CommandEss;
+import net.dungeonrealms.commands.CommandGlobalChat;
+import net.dungeonrealms.commands.CommandGuild;
+import net.dungeonrealms.commands.CommandInvoke;
+import net.dungeonrealms.commands.CommandLag;
+import net.dungeonrealms.commands.CommandList;
+import net.dungeonrealms.commands.CommandMail;
+import net.dungeonrealms.commands.CommandParty;
+import net.dungeonrealms.commands.CommandRank;
+import net.dungeonrealms.commands.CommandSet;
+import net.dungeonrealms.commands.CommandSpawn;
+import net.dungeonrealms.commands.CommandStats;
+import net.dungeonrealms.commands.CommandStop;
 import net.dungeonrealms.commands.generic.CommandManager;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.entities.Entities;
@@ -12,7 +30,15 @@ import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
-import net.dungeonrealms.listeners.*;
+import net.dungeonrealms.listeners.AntiCheatListener;
+import net.dungeonrealms.listeners.BankListener;
+import net.dungeonrealms.listeners.BlockListener;
+import net.dungeonrealms.listeners.BossListener;
+import net.dungeonrealms.listeners.DamageListener;
+import net.dungeonrealms.listeners.EnergyListener;
+import net.dungeonrealms.listeners.InventoryListener;
+import net.dungeonrealms.listeners.ItemListener;
+import net.dungeonrealms.listeners.MainListener;
 import net.dungeonrealms.mastery.AsyncUtils;
 import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mastery.Utils;
@@ -34,9 +60,6 @@ import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.spawning.BuffManager;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
 
 /* Copyright (C) 2015 CherryIO, LLC - All Rights Reserved http://cherryio.com
 
@@ -93,6 +116,10 @@ public class DungeonRealms extends JavaPlugin {
 
     public boolean hasFinishedSetup(){
     	return hasFinishedSetup;
+    }
+    
+    public void setFinishedSetup(boolean bool){
+    	hasFinishedSetup = bool;
     }
     
     public void onEnable() {
@@ -165,18 +192,19 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
         cm.registerCommand(new CommandGlobalChat("g", "/<command> [args]", "The invoke command."));
         cm.registerCommand(new CommandStats("stats", "/<command> [args]", "The stats command."));
+        cm.registerCommand(new CommandStop("drstop", "/<command> [args]", "The stop command."));
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         getInstance().hasFinishedSetup = true;
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
     }
 
     public void onDisable() {
-        saveConfig();
-        API.logoutAllPlayers();
-        mm.stopInvocation();
-        Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
-        Database.mongoClient.close();
-        AsyncUtils.pool.shutdown();
+//        saveConfig();
+//        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> API.logoutAllPlayers());
+//        mm.stopInvocation();
+//        Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
+//        Database.mongoClient.close();
+//        AsyncUtils.pool.shutdown();
     }
 
 }

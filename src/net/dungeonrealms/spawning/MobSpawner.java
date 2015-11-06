@@ -188,6 +188,14 @@ public class MobSpawner {
 				if (location.getBlock().getType() != Material.AIR
 				        || location.add(0, 1, 0).getBlock().getType() != Material.AIR)
 					return;
+				
+				Material mat = location.getBlock().getType();
+				if (mat == Material.ACACIA_STAIRS || mat == Material.BIRCH_WOOD_STAIRS
+				        || mat == Material.COBBLESTONE_STAIRS || mat == Material.DARK_OAK_STAIRS
+				        || mat == Material.JUNGLE_WOOD_STAIRS || mat == Material.WOOD_STAIRS
+				        || mat == Material.STONE_SLAB2 || mat == Material.DOUBLE_STONE_SLAB2
+				        || mat == Material.DOUBLE_STEP || mat == Material.WOOD_DOUBLE_STEP)
+					return;
 				String mob = spawnType;
 				World world = armorstand.getWorld();
 				EnumEntityType type = EnumEntityType.HOSTILE_MOB;

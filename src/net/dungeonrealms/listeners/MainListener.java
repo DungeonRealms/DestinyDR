@@ -84,8 +84,6 @@ public class MainListener implements Listener {
 					break;
 				case NO:
 					DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
-					Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->
-					API.GAMEPLAYERS.add(new GamePlayer(Bukkit.getPlayer(event.getUniqueId()))), 10l);
 					break;
 				case TEMP_BANNED:
 					event.disallow(AsyncPlayerPreLoginEvent.Result.KICK_BANNED,
@@ -132,6 +130,15 @@ public class MainListener implements Listener {
 				}
 			} , 10l);
 		}
+		
+			GamePlayer gp = new GamePlayer(Bukkit.getPlayer(event.getPlayer().getUniqueId()));
+			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
+				if(gp == null){
+					event.getPlayer().kickPlayer("Rejoin shortly!");
+					return;
+				}
+				API.GAMEPLAYERS.add(gp);
+				}, 10l);
 		for (String s : WebAPI.JOIN_INFORMATION) {
 			player.sendMessage(ChatColor.translateAlternateColorCodes('&', s));
 		}

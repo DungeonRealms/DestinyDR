@@ -32,7 +32,7 @@ public class PlayerStats {
 	 private int level;
 	 UUID playerUUID;
 	 public int freeResets;
-	 final static int POINTS_PER_LEVEL = 6;
+	 final static int POINTS_PER_LEVEL = 3;
 	 public int resetAmounts;
 	 public boolean reset = true;
 

@@ -413,6 +413,10 @@ public class BlockListener implements Listener {
     			Block b1 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(0,1,0));
     			Block b2 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(1,1,0));
     			if(b1.getType() == Material.AIR && b2.getType() == Material.AIR && API.isInSafeRegion(e.getClickedBlock().getLocation())){
+    				if(ShopMechanics.PLAYER_SHOPS.containsKey(e.getPlayer().getUniqueId())){
+    					e.getPlayer().sendMessage(ChatColor.RED + "You already have an open shop!");
+    					return;
+    				}
     				ShopMechanics.setupShop(e.getClickedBlock(), e.getPlayer().getUniqueId());
     			}else{
     				e.getPlayer().sendMessage(ChatColor.RED + "You can not place a shop here.");
