@@ -662,10 +662,10 @@ public class HealthHandler implements GenericMechanic{
     private int getVitalityValueOfArmor(ItemStack itemStack, double hpTotal) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
         if (nmsItem == null || nmsItem.getTag() == null) {
-            return 0;
+            return (int) hpTotal;
         }
         if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor"))) {
-            return 0;
+            return (int) hpTotal;
         }
         if (nmsItem.getTag().getInt("vitality") > 0) {
             hpTotal += hpTotal * ((nmsItem.getTag().getInt("vitality") * 0.034D) / 100.0D);
