@@ -1,5 +1,6 @@
 package net.dungeonrealms.miscellaneous;
 
+import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.profession.Mining;
@@ -21,6 +22,7 @@ public class TradeCalculator {
         List<ItemStack> to_remove = new ArrayList<>();
         int t1_scraps = 0, t2_scraps = 0, t3_scraps = 0, t4_scraps = 0, t5_scraps = 0;
         int t1_ore = 0, t2_ore = 0, t3_ore = 0, t4_ore = 0, t5_ore = 0;
+        int t1_pot = 0, t2_pot = 0, t3_pot = 0, t4_pot = 0 , t5_pot = 0;
 
 
         //TODO: Skill Scrolls (Professions)
@@ -29,6 +31,30 @@ public class TradeCalculator {
         for (ItemStack is : player_Offer) {
             if (is == null || is.getType() == Material.AIR) {
                 continue;
+            }
+
+            if (is.getType() == Material.POTION) {
+                net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(is);
+                if (nmsStack != null && nmsStack.getTag() != null && nmsStack.getTag().hasKey("itemTier")) {
+                    switch (nmsStack.getTag().getInt("itemTier")) {
+                        case 1:
+                            t1_pot += is.getAmount();
+                            break;
+                        case 2:
+                            t2_pot += is.getAmount();
+                            break;
+                        case 3:
+                            t3_pot += is.getAmount();
+                            break;
+                        case 4:
+                            t4_pot += is.getAmount();
+                            break;
+                        case 5:
+                            t5_pot += is.getAmount();
+                            break;
+                    }
+                    to_remove.add(is);
+                }
             }
             if (is.getType() == Material.COAL_ORE || is.getType() == Material.EMERALD_ORE || is.getType() == Material.IRON_ORE
                     || is.getType() == Material.DIAMOND_ORE || is.getType() == Material.GOLD_ORE) {
@@ -132,6 +158,43 @@ public class TradeCalculator {
 
         //TODO: Tiered Pots
         //TODO: Gem Pouches
+        if (t1_pot > 0) {
+            while (t1_pot >= 8) {
+                t1_pot -= 8;
+                ItemStack pot = ItemManager.createHealthPotion(2, true);
+                merchant_offer.add(pot);
+            }
+        }
+        if (t2_pot > 0) {
+            while (t2_pot >= 8) {
+                t2_pot -= 8;
+                ItemStack pot = ItemManager.createHealthPotion(3, true);
+                merchant_offer.add(pot);
+            }
+        }
+        if (t3_pot > 0) {
+            while (t3_pot >= 5) {
+                t3_pot -= 5;
+                ItemStack pot = ItemManager.createHealthPotion(4, true);
+                merchant_offer.add(pot);
+            }
+        }
+        if (t4_pot > 0) {
+            while (t4_pot >= 5) {
+                t4_pot -= 5;
+                ItemStack pot = ItemManager.createHealthPotion(5, true);
+                merchant_offer.add(pot);
+            }
+        }
+        if (t5_pot > 0) {
+            while (t5_pot >= 2) {
+                t5_pot -= 2;
+                ItemStack pot = ItemManager.createHealthPotion(5, false);
+                merchant_offer.add(pot);
+                ItemStack gems = BankMechanics.createBankNote(100);
+                merchant_offer.add(gems);
+            }
+        }
 
         if (t1_ore > 0) {
             int payout = t1_ore * 2;
