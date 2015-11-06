@@ -304,7 +304,7 @@ public class ClickHandler {
                     player.setItemOnCursor(event.getCursor());
                     player.updateInventory();
                 } else if (!(event.isShiftClick())) {
-                    if ((event.getCursor() == null || event.getCursor().getType() == Material.AIR && event.getCurrentItem() != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && (!CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")))) {
+                    if ((event.getCursor() == null || event.getCursor().getType() == Material.AIR && event.getCurrentItem() != null && CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && (!CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")))) {
                         event.setCancelled(true);
                         ItemStack slotItem = tradeWindow.getItem(slot);
                         tradeWindow.setItem(slot, new ItemStack(Material.AIR));
@@ -316,7 +316,7 @@ public class ClickHandler {
                         tradeWindow.setItem(slot, currentItem);
                         event.setCursor(new ItemStack(Material.AIR));
                         player.updateInventory();
-                    } else if (event.getCurrentItem() != null && event.getCursor() != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && (!CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton"))) {
+                    } else if (event.getCurrentItem() != null && event.getCursor() != null && CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && (!CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton"))) {
                         event.setCancelled(true);
                         ItemStack currentItem = event.getCursor();
                         ItemStack slotItem = event.getCurrentItem();
@@ -660,6 +660,10 @@ public class ClickHandler {
                     EntityAPI.removePlayerPetList(player.getUniqueId());
                     player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " Your Pet has returned home as you've summoned another companion!");
                 }
+                if (CombatLog.isInCombat(player)) {
+                    player.sendMessage(ChatColor.RED + "You cannot summon a mount while in Combat!");
+                    return;
+                }
                 net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                 if (nmsStack.getTag() == null || nmsStack.getTag().getString("mountType") == null) {
                     player.sendMessage("Uh oh... Something went wrong with your mount! Please inform a staff member! [NBTTag]");
@@ -667,7 +671,7 @@ public class ClickHandler {
                     return;
                 }
                 player.sendMessage(ChatColor.GREEN + "Your Mount is being summoned into this world!");
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType")), 80L);
+                MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"));
             }
             return;
         } else

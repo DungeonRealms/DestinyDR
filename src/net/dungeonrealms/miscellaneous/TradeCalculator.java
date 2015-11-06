@@ -1,8 +1,5 @@
 package net.dungeonrealms.miscellaneous;
 
-import net.dungeonrealms.items.Attribute;
-import net.dungeonrealms.items.Item;
-import net.dungeonrealms.items.armor.Armor;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.profession.Mining;
@@ -97,30 +94,11 @@ public class TradeCalculator {
                 NBTTagCompound tag = nmsItem.getTag();
                 if (tag.hasKey("type")) {
                     if (tag.getString("type").equalsIgnoreCase("weapon")) {
-                        Item.ItemType itemType = new Attribute(is).getItemType();
-                        if (itemType.equals(Item.ItemType.AXE) || itemType.equals(Item.ItemType.SWORD) || itemType.equals(Item.ItemType.POLE_ARM) || itemType.equals(Item.ItemType.BOW)
-                                || itemType.equals(Item.ItemType.STAFF)) {
-                            payout = 2;
-                        }
-                    } else if (tag.getString("type").equalsIgnoreCase("armor")) {
-                        Armor.EquipmentType armorType = new Attribute(is).getArmorType();
-
-                        switch (armorType) {
-                            case BOOTS:
-                                payout = 1;
-                                break;
-                            case HELMET:
-                                payout = 1;
-                                break;
-                            case LEGGINGS:
-                                payout = 2;
-                                break;
-                            case CHESTPLATE:
-                                payout = 3;
-                                break;
-                        }
+                        payout = 2;
                     }
-
+                    if (tag.getString("type").equalsIgnoreCase("armor")) {
+                        payout = 2;
+                    }
                     switch (tier) {
                         case 1:
                             ItemStack scrap1 = ItemManager.createArmorScrap(1);
