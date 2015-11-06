@@ -38,19 +38,19 @@ public class PlayerStats {
 
 	public PlayerStats(UUID playerUUID) {
 		this.playerUUID = playerUUID;
-//		this.freePoints = 0;
-//		this.tempFreePoints = 0;
-//		this.strPoints = 0;
-//		this.dexPoints = 0;
-//		this.vitPoints = 0;
-//		this.intPoints = 0;
-//		this.level = 1;
-//		this.tempstrPoints = 0;
-//		this.tempdexPoints = 0;
-//		this.tempvitPoints = 0;
-//		this.tempintPoints = 0;
-//		this.resetAmounts = 0;
-//		this.freeResets = 0;
+		this.freePoints = 6;
+		this.tempFreePoints = 0;
+		this.strPoints = 0;
+		this.dexPoints = 0;
+		this.vitPoints = 0;
+		this.intPoints = 0;
+		this.level = 1;
+		this.tempstrPoints = 0;
+		this.tempdexPoints = 0;
+		this.tempvitPoints = 0;
+		this.tempintPoints = 0;
+		this.resetAmounts = 0;
+		this.freeResets = 0;
 		loadPlayerStats();
 	}
 
@@ -72,7 +72,6 @@ public class PlayerStats {
 		this.strPoints = (int) DatabaseAPI.getInstance().getData(EnumData.STRENGTH, playerUUID);
 		this.vitPoints = (int) DatabaseAPI.getInstance().getData(EnumData.VITALITY, playerUUID);
 		this.level = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, playerUUID);
-		Utils.log.info(level + " loaded for level");
 		this.resetAmounts = (int) DatabaseAPI.getInstance().getData(EnumData.RESETS, playerUUID);
 		this.freeResets = (int) DatabaseAPI.getInstance().getData(EnumData.FREERESETS, playerUUID);
 	}
@@ -334,7 +333,6 @@ public class PlayerStats {
 	  	 */
 	  	 
 		 public void updateDatabase() {
-			 Utils.log.info(level + " player level");
 			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LEVEL, level, false);
 			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.INTELLECT, intPoints, false);
 			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.STRENGTH, strPoints, false);

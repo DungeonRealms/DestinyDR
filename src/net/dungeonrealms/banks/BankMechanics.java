@@ -319,4 +319,28 @@ public class BankMechanics implements GenericMechanic {
         return storage.get(uniqueId);
     }
 
+	/**
+	 * @param invLvl
+	 * @return integer
+	 */
+	public static int getPrice(int invLvl) {
+		//100, 250, 1000, 3000, 7000, 15000
+		switch(invLvl){
+		case 1:
+			return 100;
+		case 2:
+			return 250;
+		case 3:
+			return 1000;
+		case 4:
+			return 3000;
+		case 5:
+			return 7000;
+		case 6:
+			return 15000;
+		default:
+			return 15000;
+		}
+	}
+
 }

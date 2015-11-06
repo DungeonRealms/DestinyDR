@@ -41,8 +41,8 @@ public class CommandSet extends BasicCommand {
 			switch (args[0]) {
 			case "level":
 				int lvl = Integer.parseInt(args[1]);
-				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, lvl, true);
 				API.getGamePlayer(player).getStats().setPlayerLevel(lvl);
+				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, lvl, true);
 				s.sendMessage("Level set to " + lvl);
 				break;
 			case "gems":

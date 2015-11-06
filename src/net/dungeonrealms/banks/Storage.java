@@ -62,12 +62,4 @@ public class Storage {
 		inventory.setContents(inv.getContents());
 		this.inv = inventory;
 	}
-
-	/**
-	 * 
-	 */
-	public void upgrade() {
-		// TODO Auto-generated method stub
-		
-	}
 }
