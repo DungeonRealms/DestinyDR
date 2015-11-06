@@ -13,7 +13,6 @@ import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
 import net.dungeonrealms.listeners.*;
-import net.dungeonrealms.mastery.AsyncUtils;
 import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.DungeonManager;
@@ -95,6 +94,10 @@ public class DungeonRealms extends JavaPlugin {
     	return hasFinishedSetup;
     }
     
+    public void setFinishedSetup(boolean bool){
+    	hasFinishedSetup = bool;
+    }
+    
     public void onEnable() {
         long START_TIME = System.currentTimeMillis() / 1000L;
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
@@ -165,18 +168,21 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
         cm.registerCommand(new CommandGlobalChat("g", "/<command> [args]", "The invoke command."));
         cm.registerCommand(new CommandStats("stats", "/<command> [args]", "The stats command."));
+        cm.registerCommand(new CommandStop("stop", "/<command> [args]", "The stop command."));
+
+
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         getInstance().hasFinishedSetup = true;
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
     }
 
     public void onDisable() {
-        saveConfig();
-        API.logoutAllPlayers();
-        mm.stopInvocation();
-        Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
-        Database.mongoClient.close();
-        AsyncUtils.pool.shutdown();
+//        saveConfig();
+//        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> API.logoutAllPlayers());
+//        mm.stopInvocation();
+//        Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
+//        Database.mongoClient.close();
+//        AsyncUtils.pool.shutdown();
     }
 
 }

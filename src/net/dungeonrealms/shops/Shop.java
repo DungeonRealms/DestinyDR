@@ -1,13 +1,14 @@
 package net.dungeonrealms.shops;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mastery.ItemSerialization;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.mongo.EnumOperators;
-import org.bukkit.*;
+import java.util.List;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -15,8 +16,15 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.List;
-import java.util.UUID;
+import com.gmail.filoghost.holographicdisplays.api.Hologram;
+import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
 
 /**
  * Created by Chase on Sep 23, 2015
@@ -131,7 +139,7 @@ public class Shop {
             if (getOwner() != null) {
                 getOwner().getInventory().addItem(current);
             } else {
-                // Collection Bin
+               saveCollectionBin();
             }
         }
         Block chest = getBlock();
@@ -185,13 +193,19 @@ public class Shop {
 	 */
 	public void saveCollectionBin() {
 		Inventory inv = getInv();
+		Inventory newInv = Bukkit.createInventory(null, 54, "Collection Bin");
 		String invString = "";
 		for(ItemStack stack : inv.getContents()){
-			if(stack != null && stack.getType() != Material.AIR){
-				invString = ItemSerialization.toString(inv);
-				break;
+			if(stack != null && stack.getType() != Material.AIR && !CraftItemStack.asNMSCopy(stack).getTag().hasKey("status")){
+				Utils.log.info(stack.getType().name() + "SAVED");
+				newInv.addItem(stack);
 			}
 		}
-		DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, invString, false);
+		for(ItemStack stacks : newInv.getContents()){
+			if(stacks != null && stacks.getType() != Material.AIR)
+				invString = ItemSerialization.toString(inv);
+		}
+		if(!invString.equalsIgnoreCase(""))
+			DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, invString, true);
 	}
 }

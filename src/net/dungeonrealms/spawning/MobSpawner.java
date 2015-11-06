@@ -5,6 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.minecraft.server.v1_8_R3.Entity;
@@ -137,7 +138,7 @@ public class MobSpawner {
 					int level = Utils.getRandomFromTier(tier, lvlRange);
 					MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
 					EntityStats.setMonsterRandomStats(entity, level, tier);
-
+					
 					if (entity == null)
 						return;
 					String customName = eliteName;
@@ -159,7 +160,6 @@ public class MobSpawner {
 						stand.setCustomName(entity.getCustomName());
 						entity.getBukkitEntity().setMetadata("isElite",
 					            new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
-						Utils.log.info(eliteName + " spawning soon.");
 						toSpawn = true;
 						if (!firstSpawn) {
 							Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -188,6 +188,14 @@ public class MobSpawner {
 				if (location.getBlock().getType() != Material.AIR
 				        || location.add(0, 1, 0).getBlock().getType() != Material.AIR)
 					return;
+				
+				Material mat = location.getBlock().getType();
+				if (mat == Material.ACACIA_STAIRS || mat == Material.BIRCH_WOOD_STAIRS
+				        || mat == Material.COBBLESTONE_STAIRS || mat == Material.DARK_OAK_STAIRS
+				        || mat == Material.JUNGLE_WOOD_STAIRS || mat == Material.WOOD_STAIRS
+				        || mat == Material.STONE_SLAB2 || mat == Material.DOUBLE_STONE_SLAB2
+				        || mat == Material.DOUBLE_STEP || mat == Material.WOOD_DOUBLE_STEP)
+					return;
 				String mob = spawnType;
 				World world = armorstand.getWorld();
 				EnumEntityType type = EnumEntityType.HOSTILE_MOB;
@@ -196,11 +204,12 @@ public class MobSpawner {
 					return;
 				}
 				Entity entity = SpawningMechanics.getMob(world, tier, monsEnum);
-
+				
 				int level = Utils.getRandomFromTier(tier, lvlRange);
 				MetadataUtils.registerEntityMetadata(entity, type, tier, level);
 				EntityStats.setMonsterRandomStats(entity, level, tier);
-
+				
+				
 				String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET;
 				String healthName = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt()
 				        + ChatColor.RED.toString() + "❤ ";

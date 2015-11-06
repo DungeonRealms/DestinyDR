@@ -206,6 +206,15 @@ public class Armor {
             }
             return null;
         }
+
+        public static ArmorAttributeType getByString(String name) {
+            for (ArmorAttributeType at : values()) {
+                if (at.getNBTName().equals(name)) {
+                    return at;
+                }
+            }
+            return null;
+        }
     }
 
 }

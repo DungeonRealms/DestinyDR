@@ -6,6 +6,7 @@ import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.miscellaneous.RandomHelper;
 import net.dungeonrealms.spawning.LootSpawner;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -44,44 +45,60 @@ public class LootManager implements GenericMechanic{
         ItemStack weapon = null;
 
         // Tier 1 Loot
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 2; i++) {
             weapon = new ItemGenerator().next(ItemTier.TIER_1);
             tier1Loot.add(weapon);
         }
         moneyT1.setAmount(10);
         tier1Loot.add(moneyT1);
-
+        for(int i = 0;i < 5; i++){
+        	ItemStack t1Potion = ItemManager.createHealthPotion(1, false, new Random().nextBoolean());
+        	tier1Loot.add(t1Potion);
+        }
         // Tier 2 Loot
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 2; i++) {
             weapon = new ItemGenerator().next(ItemTier.TIER_2);
             tier2Loot.add(weapon);
         }
         moneyT2.setAmount(20);
         tier2Loot.add(moneyT2);
-
+        for(int i = 0;i < 5; i++){
+        	ItemStack t2Potion = ItemManager.createHealthPotion(2, false, new Random().nextBoolean());
+        	tier2Loot.add(t2Potion);
+        }
         // Tier 3 Loot
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 2; i++) {
             weapon = new ItemGenerator().next(ItemTier.TIER_3);
             tier3Loot.add(weapon);
         }
         moneyT3.setAmount(30);
         tier3Loot.add(moneyT3);
-
+        for(int i = 0;i < 5; i++){
+        	ItemStack t3Potion = ItemManager.createHealthPotion(3, false, new Random().nextBoolean());
+        	tier3Loot.add(t3Potion);
+        }
         // Tier 4 Loot
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 2; i++) {
             weapon = new ItemGenerator().next(ItemTier.TIER_4);
             tier4Loot.add(weapon);
         }
         moneyT4.setAmount(40);
         tier4Loot.add(moneyT4);
-
+        for(int i = 0;i < 5; i++){
+        	ItemStack t4Potion = ItemManager.createHealthPotion(4, false, new Random().nextBoolean());
+        	tier4Loot.add(t4Potion);
+        }
         // Tier 5 Loot
-        for (int i = 0; i < 10; i++) {
+        for (int i = 0; i < 2; i++) {
             weapon = new ItemGenerator().next(ItemTier.TIER_5);
             tier5Loot.add(weapon);
         }
         moneyT5.setAmount(50);
         tier5Loot.add(moneyT5);
+        for(int i = 0;i < 5; i++){
+        	ItemStack t5Potion = ItemManager.createHealthPotion(5, false, new Random().nextBoolean());
+        	tier5Loot.add(t5Potion);
+        }
     }
 
     /**
@@ -91,7 +108,7 @@ public class LootManager implements GenericMechanic{
      * @return
      */
     public static ItemStack[] getLoot(int tier) {
-        int num = new Random().nextInt(3 - 1) + 1;
+        int num = RandomHelper.getRandomNumberBetween(1, 2);
         ItemStack[] items = new ItemStack[num];
         switch (tier) {
             case 1:
@@ -125,7 +142,21 @@ public class LootManager implements GenericMechanic{
         loadLootItems();
         SPAWNER_CONFIG = DungeonRealms.getInstance().getConfig().getStringList("loot");
         for (String line : SPAWNER_CONFIG) {
-            int tier = Integer.parseInt(line.split(":")[1]);
+//            int tier = Integer.parseInt(line.split(":")[1]);
+        	int tier = 1;
+        	int num = RandomHelper.getRandomNumberBetween(1, 100);
+        	if(num <= 10){
+        		tier = 5;
+        	}else if(num <= 25 && num > 10){
+        		tier = 4;
+        	}else if(num <=40 && num > 25){
+        		tier = 3;
+        	}else if(num  <= 65 && num > 40){
+        		tier = 2;
+        	}else{
+        		tier = 1;
+        	}
+        		
             double x, y, z;
             String[] location = line.split(":")[0].split(",");
             x = Double.parseDouble(location[0]);

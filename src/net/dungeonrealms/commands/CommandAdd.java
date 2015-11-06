@@ -9,7 +9,7 @@ import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
-import net.dungeonrealms.miscellaneous.SandS;
+import net.dungeonrealms.miscellaneous.Glyph;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Material;
@@ -37,8 +37,11 @@ public class CommandAdd extends BasicCommand {
         Player player = (Player) s;
         if (args.length > 0) {
             switch (args[0]) {
-                case "scroll":
-                    player.getInventory().addItem(SandS.getInstance().getScroll(SandS.ScrollType.getById(Integer.valueOf(args[1])), Integer.valueOf(args[2])));
+                case "glypharmor":
+                    player.getInventory().addItem(Glyph.getInstance().nextArmorGlyph(args[1], Integer.valueOf(args[2])));
+                    break;
+                case "glyphweapon":
+                    player.getInventory().addItem(Glyph.getInstance().nextWeaponGlyph(args[1], Integer.valueOf(args[2])));
                     break;
                 case "guild":
                     Guild.getInstance().createGuild(args[1], args[2], player.getUniqueId());
@@ -89,8 +92,8 @@ public class CommandAdd extends BasicCommand {
                     player.getInventory().addItem(ItemManager.createItem(EnumItem.RetrainingBook));
                     break;
                 case "journal":
-                	player.getInventory().addItem(ItemManager.createCharacterJournal(player));
-                	break;
+                    player.getInventory().addItem(ItemManager.createCharacterJournal(player));
+                    break;
                 case "scrap":
                     player.getInventory().addItem(ItemManager.createArmorScrap(1));
                     player.getInventory().addItem(ItemManager.createArmorScrap(2));

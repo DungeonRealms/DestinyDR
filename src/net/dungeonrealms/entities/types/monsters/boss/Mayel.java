@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -19,6 +20,8 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+
+import com.sk89q.worldguard.bukkit.util.Entities;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
@@ -32,7 +35,10 @@ import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.items.armor.Armor.ArmorModifier;
 import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
+import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityArrow;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityLiving;
@@ -169,15 +175,38 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 		LivingEntity en = (LivingEntity) event.getEntity();
 		if (canSpawn) {
 			for (int i = 0; i < 5; i++) {
-				EntityPirate pirate = new EntityPirate(this.getWorld(), EnumMonster.MayelPirate, 1);
-				pirate.setLocation(locX + 1, locY, locZ + 1, 1, 1);
+				Entity entity = SpawningMechanics.getMob(world, 1, EnumMonster.MayelPirate);
+				int level = Utils.getRandomFromTier(1, "high");
+				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, level);
+				EntityStats.setMonsterRandomStats(entity, level, 1);
+				
+				if (entity == null)
+					return;
+				entity.setCustomName("Mayel Pirate");
+					ArmorStand stand = entity.getBukkitEntity().getLocation().getWorld()
+				            .spawn(entity.getBukkitEntity().getLocation(), ArmorStand.class);
+					stand.setRemoveWhenFarAway(false);
+					stand.setVisible(false);
+					stand.setSmall(true);
+					stand.setBasePlate(false);
+					stand.setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "nametag"));
+					stand.setGravity(false);
+					stand.setArms(false);
+					stand.setCustomNameVisible(true);
+					stand.setCustomName("Mayel Pirate");
+					stand.setRemoveWhenFarAway(false);
+					entity.getBukkitEntity().setPassenger(stand);
+					EntityStats.setMonsterElite(entity, level + 10, 1);
+					stand.setCustomName(entity.getCustomName());
+					entity.getBukkitEntity().setMetadata("isElite",
+				            new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
 				Location location = new Location(world.getWorld(),
 				        this.getBukkitEntity().getLocation().getX() + new Random().nextInt(3),
 				        this.getBukkitEntity().getLocation().getY(),
 				        this.getBukkitEntity().getLocation().getZ() + new Random().nextInt(3));
-				pirate.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-				world.addEntity(pirate, SpawnReason.CUSTOM);
-				pirate.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+				entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+				world.addEntity(entity, SpawnReason.CUSTOM);
+				entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 				canSpawn = false;
 			}
 			say(this.getBukkitEntity(), "Come to my call, brothers!");
