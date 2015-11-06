@@ -24,11 +24,16 @@ import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 
 import java.text.DecimalFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -136,13 +141,12 @@ public class ItemManager {
      * @return ItemStack
      * @since 1.0
      */
-    public static ItemStack createHealthPotion(int tier, boolean fromShop) {
+    public static ItemStack createHealthPotion(int tier, boolean fromShop, boolean isSplashPotion) {
         String name = "";
         int healAmount = 0;
-        ItemStack rawStack = new ItemStack(Material.POTION, 1, (short) 0);
         switch (tier) {
             case 1:
-                name = "Poor Elixer of Healing";
+                name = ChatColor.WHITE + "Poor Elixer of Healing";
                 if (!fromShop) {
                     healAmount = RandomHelper.getRandomNumberBetween(30, 100);
                 } else {
@@ -187,18 +191,36 @@ public class ItemManager {
         if (!fromShop) {
             healAmount = (((healAmount + 5) / 10) * 10);
         }
-        PotionMeta potionMeta = (PotionMeta) rawStack.getItemMeta();
-        potionMeta.addCustomEffect(new PotionEffect(PotionEffectType.REGENERATION, 100, 1, false), true);
-        potionMeta.setDisplayName(name);
-        potionMeta.setLore(Collections.singletonList(ChatColor.GRAY + "An Elixer that heals for " + ChatColor.RED + ChatColor.BOLD + healAmount + ChatColor.GRAY + "HP."));
-        rawStack.setItemMeta(potionMeta);
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
-        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-        tag.set("type", new NBTTagString("healthPotion"));
-        tag.setInt("itemTier", tier);
-        tag.setInt("healAmount", healAmount);
-        nmsStack.setTag(tag);
-        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+        if (!isSplashPotion) {
+            ItemStack rawStack = new ItemStack(Material.POTION, 1, (short) 0);
+            PotionMeta potionMeta = (PotionMeta) rawStack.getItemMeta();
+            potionMeta.addCustomEffect(new PotionEffect(PotionEffectType.REGENERATION, 100, 1, false), true);
+            potionMeta.setDisplayName(name);
+            potionMeta.setLore(Collections.singletonList(ChatColor.GRAY + "An Elixer that heals for " + ChatColor.RED + ChatColor.BOLD + healAmount + ChatColor.GRAY + "HP."));
+            rawStack.setItemMeta(potionMeta);
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+            tag.set("type", new NBTTagString("healthPotion"));
+            tag.setInt("itemTier", tier);
+            tag.setInt("healAmount", healAmount);
+            nmsStack.setTag(tag);
+            return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+        } else {
+            Potion potion = new Potion(PotionType.INSTANT_HEAL, 1);
+            potion.setSplash(true);
+            ItemStack rawStack = potion.toItemStack(1);
+            PotionMeta potionMeta = (PotionMeta) rawStack.getItemMeta();
+            potionMeta.setDisplayName(name);
+            potionMeta.setLore(Collections.singletonList(ChatColor.GRAY + "An Elixer that heals for " + ChatColor.RED + ChatColor.BOLD + healAmount + ChatColor.GRAY + "HP in a " + ChatColor.RED + ChatColor.BOLD + "4x4" + ChatColor.GRAY + " Area."));
+            rawStack.setItemMeta(potionMeta);
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+            tag.set("type", new NBTTagString("splashHealthPotion"));
+            tag.setInt("itemTier", tier);
+            tag.setInt("healAmount", healAmount);
+            nmsStack.setTag(tag);
+            return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+        }
     }
     
     /**

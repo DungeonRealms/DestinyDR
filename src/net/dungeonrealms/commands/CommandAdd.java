@@ -99,11 +99,16 @@ public class CommandAdd extends BasicCommand {
                     player.getInventory().addItem(ItemManager.createArmorScrap(5));
                     break;
                 case "potion":
-                    player.getInventory().addItem(ItemManager.createHealthPotion(1, false));
-                    player.getInventory().addItem(ItemManager.createHealthPotion(2, false));
-                    player.getInventory().addItem(ItemManager.createHealthPotion(3, false));
-                    player.getInventory().addItem(ItemManager.createHealthPotion(4, false));
-                    player.getInventory().addItem(ItemManager.createHealthPotion(5, false));
+                    player.getInventory().addItem(ItemManager.createHealthPotion(1, false, false));
+                    player.getInventory().addItem(ItemManager.createHealthPotion(2, false, false));
+                    player.getInventory().addItem(ItemManager.createHealthPotion(3, false, false));
+                    player.getInventory().addItem(ItemManager.createHealthPotion(4, false, false));
+                    player.getInventory().addItem(ItemManager.createHealthPotion(5, false, false));
+                    player.getInventory().addItem(ItemManager.createHealthPotion(1, false, true));
+                    player.getInventory().addItem(ItemManager.createHealthPotion(2, false, true));
+                    player.getInventory().addItem(ItemManager.createHealthPotion(3, false, true));
+                    player.getInventory().addItem(ItemManager.createHealthPotion(4, false, true));
+                    player.getInventory().addItem(ItemManager.createHealthPotion(5, false, true));
                     break;
             }
         }

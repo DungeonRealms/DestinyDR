@@ -457,7 +457,7 @@ public class DamageListener implements Listener {
         if (nmsItem == null || nmsItem.getTag() == null) return;
         //Get the NBT of the item the player is holding.
         if (!(API.isPlayer(shooter))) return;
-        if (API.isInSafeRegion(shooter.getLocation())) {
+        if (API.isInSafeRegion(shooter.getLocation()) && event.getEntity().getType() != EntityType.SPLASH_POTION) {
             event.setCancelled(true);
             return;
         }

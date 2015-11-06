@@ -9,6 +9,7 @@ import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.inventory.PlayerMenus;
 import net.dungeonrealms.mastery.GamePlayer;
+import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.stats.PlayerStats;
@@ -20,11 +21,13 @@ import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
@@ -250,6 +253,24 @@ public class ItemListener implements Listener {
                     event.getPlayer().sendMessage(ChatColor.GREEN + "Healed for " + ChatColor.BOLD + nmsItem.getTag().getInt("healAmount") + ChatColor.GREEN + "HP.");
                 } else {
                     event.getPlayer().sendMessage(ChatColor.RED + "You are already at full HP!");
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPotionSplash(PotionSplashEvent event) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getPotion().getItem()));
+        if (nmsItem != null && nmsItem.getTag() != null) {
+            if (nmsItem.getTag().hasKey("type") && nmsItem.getTag().getString("type").equalsIgnoreCase("splashHealthPotion")) {
+                event.setCancelled(true);
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.WITCH_MAGIC, event.getEntity().getLocation(), 0, 0, 0, 4, 50);
+                for (LivingEntity entity : event.getAffectedEntities()) {
+                    if (!API.isPlayer(entity)) {
+                        continue;
+                    }
+                    HealthHandler.getInstance().healPlayerByAmount((Player) entity, nmsItem.getTag().getInt("healAmount"));
+                    entity.sendMessage(ChatColor.GREEN + "Healed for " + ChatColor.BOLD + nmsItem.getTag().getInt("healAmount") + ChatColor.GREEN + "HP.");
                 }
             }
         }

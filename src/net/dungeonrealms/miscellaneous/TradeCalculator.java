@@ -23,6 +23,7 @@ public class TradeCalculator {
         int t1_scraps = 0, t2_scraps = 0, t3_scraps = 0, t4_scraps = 0, t5_scraps = 0;
         int t1_ore = 0, t2_ore = 0, t3_ore = 0, t4_ore = 0, t5_ore = 0;
         int t1_pot = 0, t2_pot = 0, t3_pot = 0, t4_pot = 0 , t5_pot = 0;
+        int t1_Splash_pot = 0, t2_Splash_pot = 0, t3_Splash_pot = 0, t4_Splash_pot = 0 , t5_Splash_pot = 0;
 
 
         //TODO: Skill Scrolls (Professions)
@@ -38,19 +39,39 @@ public class TradeCalculator {
                 if (nmsStack != null && nmsStack.getTag() != null && nmsStack.getTag().hasKey("itemTier")) {
                     switch (nmsStack.getTag().getInt("itemTier")) {
                         case 1:
-                            t1_pot += is.getAmount();
+                            if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                                t1_pot += is.getAmount();
+                            } else {
+                                t1_Splash_pot += is.getAmount();
+                            }
                             break;
                         case 2:
-                            t2_pot += is.getAmount();
+                            if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                                t2_pot += is.getAmount();
+                            } else {
+                                t2_Splash_pot += is.getAmount();
+                            }
                             break;
                         case 3:
-                            t3_pot += is.getAmount();
+                            if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                                t3_pot += is.getAmount();
+                            } else {
+                                t3_Splash_pot += is.getAmount();
+                            }
                             break;
                         case 4:
-                            t4_pot += is.getAmount();
+                            if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                                t4_pot += is.getAmount();
+                            } else {
+                                t4_Splash_pot += is.getAmount();
+                            }
                             break;
                         case 5:
-                            t5_pot += is.getAmount();
+                            if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                                t5_pot += is.getAmount();
+                            } else {
+                                t5_Splash_pot += is.getAmount();
+                            }
                             break;
                     }
                     to_remove.add(is);
@@ -156,42 +177,79 @@ public class TradeCalculator {
             }
         }
 
-        //TODO: Tiered Pots
         //TODO: Gem Pouches
         if (t1_pot > 0) {
-            while (t1_pot >= 8) {
-                t1_pot -= 8;
-                ItemStack pot = ItemManager.createHealthPotion(2, true);
+            while (t1_pot >= 6) {
+                t1_pot -= 6;
+                ItemStack pot = ItemManager.createHealthPotion(2, true, false);
                 merchant_offer.add(pot);
             }
         }
         if (t2_pot > 0) {
-            while (t2_pot >= 8) {
-                t2_pot -= 8;
-                ItemStack pot = ItemManager.createHealthPotion(3, true);
+            while (t2_pot >= 5) {
+                t2_pot -= 5;
+                ItemStack pot = ItemManager.createHealthPotion(3, true, false);
                 merchant_offer.add(pot);
             }
         }
         if (t3_pot > 0) {
-            while (t3_pot >= 5) {
-                t3_pot -= 5;
-                ItemStack pot = ItemManager.createHealthPotion(4, true);
+            while (t3_pot >= 3) {
+                t3_pot -= 3;
+                ItemStack pot = ItemManager.createHealthPotion(4, true, false);
                 merchant_offer.add(pot);
             }
         }
         if (t4_pot > 0) {
-            while (t4_pot >= 5) {
-                t4_pot -= 5;
-                ItemStack pot = ItemManager.createHealthPotion(5, true);
+            while (t4_pot >= 3) {
+                t4_pot -= 3;
+                ItemStack pot = ItemManager.createHealthPotion(5, true, false);
                 merchant_offer.add(pot);
             }
         }
         if (t5_pot > 0) {
             while (t5_pot >= 2) {
                 t5_pot -= 2;
-                ItemStack pot = ItemManager.createHealthPotion(5, false);
+                ItemStack pot = ItemManager.createHealthPotion(5, false, false);
                 merchant_offer.add(pot);
                 ItemStack gems = BankMechanics.createBankNote(100);
+                merchant_offer.add(gems);
+            }
+        }
+
+        if (t1_Splash_pot > 0) {
+            while (t1_Splash_pot >= 6) {
+                t1_Splash_pot -= 6;
+                ItemStack pot = ItemManager.createHealthPotion(2, true, true);
+                merchant_offer.add(pot);
+            }
+        }
+        if (t2_Splash_pot > 0) {
+            while (t2_Splash_pot >= 5) {
+                t2_Splash_pot -= 5;
+                ItemStack pot = ItemManager.createHealthPotion(3, true, true);
+                merchant_offer.add(pot);
+            }
+        }
+        if (t3_Splash_pot > 0) {
+            while (t3_Splash_pot >= 3) {
+                t3_Splash_pot -= 3;
+                ItemStack pot = ItemManager.createHealthPotion(4, true, true);
+                merchant_offer.add(pot);
+            }
+        }
+        if (t4_Splash_pot > 0) {
+            while (t4_Splash_pot >= 3) {
+                t4_Splash_pot -= 3;
+                ItemStack pot = ItemManager.createHealthPotion(5, true, true);
+                merchant_offer.add(pot);
+            }
+        }
+        if (t5_Splash_pot > 0) {
+            while (t5_Splash_pot >= 2) {
+                t5_Splash_pot -= 2;
+                ItemStack pot = ItemManager.createHealthPotion(5, false, true);
+                merchant_offer.add(pot);
+                ItemStack gems = BankMechanics.createBankNote(200);
                 merchant_offer.add(gems);
             }
         }
