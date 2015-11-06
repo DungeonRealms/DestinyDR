@@ -404,8 +404,8 @@ public class ItemManager {
 				+ " E-CASH";
 		
 		page2_string = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "  ** LEVEL/EXP **\n\n" + ChatColor.BLACK + ChatColor.BOLD
-				+ "       LEVEL\n\n" + "          " + ChatColor.BLACK + gp.getLevel() + "\n\n" + ChatColor.BLACK + ChatColor.BOLD
-				+ "          XP" + "\n" + ChatColor.BLACK + "       " + gp.getExperience() + " / "
+				+ "       LEVEL\n" + "          " + ChatColor.BLACK + gp.getLevel() + "\n\n" + ChatColor.BLACK + ChatColor.BOLD
+				+ "          XP" + "\n" + ChatColor.BLACK + "       " + (int) gp.getExperience() + "/"
 				+ gp.getEXPNeeded(gp.getLevel());
 		
         page3_string = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + stats.strPoints  + " Strength"
