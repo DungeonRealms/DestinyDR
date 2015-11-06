@@ -23,7 +23,7 @@ public class EntityAPI {
     }
 
     public static Entity getPlayerMount(UUID uuid) {
-        return Entities.PLAYER_PETS.get(uuid);
+        return Entities.PLAYER_MOUNTS.get(uuid);
     }
 
     public static void removePlayerPetList(UUID uuid) {
