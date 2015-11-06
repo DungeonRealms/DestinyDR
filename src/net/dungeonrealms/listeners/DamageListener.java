@@ -101,8 +101,6 @@ public class DamageListener implements Listener {
             if (DuelMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
                 event.setCancelled(true);
             }
-        }else{
-        	event.setCancelled(false);
         }
     }
 
@@ -742,11 +740,6 @@ public class DamageListener implements Listener {
     public void onEliteDeath(EntityDeathEvent event){
         if (event.getEntity() instanceof Player) return;
         if (!(event.getEntity() instanceof CraftLivingEntity)) return;
-        if(event.getEntity().getPassenger() != null)
-        	event.getEntity().getPassenger().remove();
-        if (!(event.getEntity().hasMetadata("elite"))) return;
-        if (event.getEntity().hasMetadata("elite")){
-            //Monster is Elite.
-        }
+        event.getDrops().clear();
     }
 }

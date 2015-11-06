@@ -112,8 +112,9 @@ public class DRPigman extends EntityPigZombie implements Monster {
 	@Override
 	public void onMonsterDeath() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-		this.getLoot();
-		this.getRareDrop();
+		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), enumMonster, this.getBukkitEntity().getLocation());
+		if(this.random.nextInt(100) < 33)
+			this.getRareDrop();
 		});
 	}
 

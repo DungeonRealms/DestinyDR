@@ -2,6 +2,7 @@ package net.dungeonrealms.entities.types.monsters.base;
 
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -84,8 +85,11 @@ public class DRMagma extends EntityMagmaCube implements Monster{
 
 	@Override
 	public void onMonsterDeath() {
-		
-	}
+		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
+		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity().getLocation());
+		if(this.random.nextInt(100) < 33)
+			this.getRareDrop();
+		});	}
 
 	@Override
 	public EnumMonster getEnum() {

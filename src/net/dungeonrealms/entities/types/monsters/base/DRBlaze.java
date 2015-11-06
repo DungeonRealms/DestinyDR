@@ -1,6 +1,7 @@
 package net.dungeonrealms.entities.types.monsters.base;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
@@ -42,10 +43,7 @@ public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze i
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
 		setStats();
 	}
-
-	@Override
-	protected abstract Item getLoot();
-
+	
 	@Override
 	protected abstract void getRareDrop();
 
@@ -134,7 +132,7 @@ public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze i
 	@Override
 	public void onMonsterDeath() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-		this.getLoot();
+			this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity().getLocation());
 			if (new Random().nextInt(99) < 3) {
 				this.getRareDrop();
 			}

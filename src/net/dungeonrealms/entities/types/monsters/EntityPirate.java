@@ -37,14 +37,6 @@ public class EntityPirate extends DRZombie{
     }
 
     @Override
-    public Item getLoot() {
-        ItemStack item = BankMechanics.gem.clone();
-        item.setAmount(this.random.nextInt(5));
-        this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation().add(0, 1, 0), item);
-        return null;
-    }
-
-    @Override
     protected void getRareDrop() {
     }
 
