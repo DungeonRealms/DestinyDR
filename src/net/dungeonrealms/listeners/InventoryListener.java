@@ -25,9 +25,14 @@ import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.stats.PlayerStats;
 import net.dungeonrealms.stats.StatsManager;
+import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.Packet;
+import net.minecraft.server.v1_8_R3.PacketPlayOutWorldEvent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -680,9 +685,32 @@ public class InventoryListener implements Listener {
                     RepairAPI.setCustomItemDurability(slotItem, (itemDurability + 45.0D));
                     player.updateInventory();
                 }
-
                 player.updateInventory();
                 double newPercent = RepairAPI.getCustomDurability(slotItem);
+
+                int particleID = 1;
+                switch (RepairAPI.getArmorOrWeaponTier(slotItem)) {
+                    case 1:
+                        particleID = 25;
+                        break;
+                    case 2:
+                        particleID = 30;
+                        break;
+                    case 3:
+                        particleID = 42;
+                        break;
+                    case 4:
+                        particleID = 57;
+                        break;
+                    case 5:
+                        particleID = 41;
+                        break;
+                }
+                if(slotItem.getType() == Material.BOW) {
+                    particleID = 5;
+                }
+                Packet particles = new PacketPlayOutWorldEvent(2001, new BlockPosition((int) Math.round(player.getLocation().getX()), (int) Math.round(player.getLocation().getY() + 2), (int) Math.round(player.getLocation().getZ())), particleID, false);
+                ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, particles);
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
                     player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + newPercent + "/1500");
                 }
