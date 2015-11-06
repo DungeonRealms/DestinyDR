@@ -25,8 +25,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.Potion;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.potion.PotionType;
 
 import java.text.DecimalFormat;
@@ -146,7 +144,11 @@ public class ItemManager {
         int healAmount = 0;
         switch (tier) {
             case 1:
-                name = ChatColor.WHITE + "Poor Elixer of Healing";
+                if (!isSplashPotion) {
+                    name = ChatColor.WHITE + "Poor Elixir of Singular Healing";
+                } else {
+                    name = ChatColor.WHITE + "Poor Elixir of Splash Healing";
+                }
                 if (!fromShop) {
                     healAmount = RandomHelper.getRandomNumberBetween(30, 100);
                 } else {
@@ -154,7 +156,11 @@ public class ItemManager {
                 }
                 break;
             case 2:
-                name = ChatColor.GREEN + "Inferior Elixer of Healing";
+                if (!isSplashPotion) {
+                    name = ChatColor.GREEN + "Inferior Elixir of Singular Healing";
+                } else {
+                    name = ChatColor.GREEN + "Inferior Elixir of Splash Healing";
+                }
                 if (!fromShop) {
                     healAmount = RandomHelper.getRandomNumberBetween(270, 375);
                 } else {
@@ -162,7 +168,11 @@ public class ItemManager {
                 }
                 break;
             case 3:
-                name = ChatColor.AQUA + "Modest Elixer of Healing";
+                if (!isSplashPotion) {
+                    name = ChatColor.AQUA + "Modest Elixir of Singular Healing";
+                } else {
+                    name = ChatColor.AQUA + "Modest Elixir of Splash Healing";
+                }
                 if (!fromShop) {
                     healAmount = RandomHelper.getRandomNumberBetween(800, 1000);
                 } else {
@@ -170,7 +180,11 @@ public class ItemManager {
                 }
                 break;
             case 4:
-                name = ChatColor.LIGHT_PURPLE + "Superior Elixer of Healing";
+                if (!isSplashPotion) {
+                    name = ChatColor.LIGHT_PURPLE + "Superior Elixir of Singular Healing";
+                } else {
+                    name = ChatColor.LIGHT_PURPLE + "Superior Elixir of Splash Healing";
+                }
                 if (!fromShop) {
                     healAmount = RandomHelper.getRandomNumberBetween(2000, 2400);
                 } else {
@@ -178,7 +192,11 @@ public class ItemManager {
                 }
                 break;
             case 5:
-                name = ChatColor.YELLOW + "Legendary Elixer of Healing";
+                if (!isSplashPotion) {
+                    name = ChatColor.YELLOW + "Legendary Elixir of Singular Healing";
+                } else {
+                    name = ChatColor.YELLOW + "Legendary Elixir of Splash Healing";
+                }
                 if (!fromShop) {
                     healAmount = RandomHelper.getRandomNumberBetween(3700, 4300);
                 } else {
@@ -192,11 +210,10 @@ public class ItemManager {
             healAmount = (((healAmount + 5) / 10) * 10);
         }
         if (!isSplashPotion) {
-            ItemStack rawStack = new ItemStack(Material.POTION, 1, (short) 0);
+            ItemStack rawStack = new ItemStack(Material.POTION, 1, (short) 5);
             PotionMeta potionMeta = (PotionMeta) rawStack.getItemMeta();
-            potionMeta.addCustomEffect(new PotionEffect(PotionEffectType.REGENERATION, 100, 1, false), true);
             potionMeta.setDisplayName(name);
-            potionMeta.setLore(Collections.singletonList(ChatColor.GRAY + "An Elixer that heals for " + ChatColor.RED + ChatColor.BOLD + healAmount + ChatColor.GRAY + "HP."));
+            potionMeta.setLore(Collections.singletonList(ChatColor.GRAY + "An Elixir that heals for " + ChatColor.RED + ChatColor.BOLD + healAmount + ChatColor.GRAY + "HP."));
             rawStack.setItemMeta(potionMeta);
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
@@ -211,7 +228,7 @@ public class ItemManager {
             ItemStack rawStack = potion.toItemStack(1);
             PotionMeta potionMeta = (PotionMeta) rawStack.getItemMeta();
             potionMeta.setDisplayName(name);
-            potionMeta.setLore(Collections.singletonList(ChatColor.GRAY + "An Elixer that heals for " + ChatColor.RED + ChatColor.BOLD + healAmount + ChatColor.GRAY + "HP in a " + ChatColor.RED + ChatColor.BOLD + "4x4" + ChatColor.GRAY + " Area."));
+            potionMeta.setLore(Collections.singletonList(ChatColor.GRAY + "An Elixir that heals for " + ChatColor.RED + ChatColor.BOLD + healAmount + ChatColor.GRAY + "HP in a " + ChatColor.RED + ChatColor.BOLD + "4x4" + ChatColor.GRAY + " Area."));
             rawStack.setItemMeta(potionMeta);
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
