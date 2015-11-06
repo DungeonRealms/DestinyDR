@@ -319,12 +319,12 @@ public class TradeCalculator {
         if (t1_scraps > 0) {
             while (t1_scraps >= 80) {
                 t1_scraps -= 80;
-                ItemStack scroll = SandS.getInstance().getScroll(SandS.ScrollType.ENCHANTMENT_SCROLL, 1);
+                ItemStack scroll = Glyph.getInstance().getWeaponGlyph("Bobs Glyph", 1);
                 merchant_offer.add(scroll);
             }
             while (t1_scraps >= 70) {
                 t1_scraps -= 70;
-                ItemStack scroll = SandS.getInstance().getScroll(SandS.ScrollType.ENCHANTMENT_SCROLL, 1);
+                ItemStack scroll = Glyph.getInstance().getArmorGylph("Bobs Glyph", 1);
                 merchant_offer.add(scroll);
             }
             int payout = t1_scraps / 2;
@@ -341,12 +341,12 @@ public class TradeCalculator {
         if (t2_scraps > 0) {
             while (t2_scraps >= 140) {
                 t2_scraps -= 140;
-                ItemStack scroll = SandS.getInstance().getScroll(SandS.ScrollType.ENCHANTMENT_SCROLL, 2);
+                ItemStack scroll = Glyph.getInstance().getWeaponGlyph("Bobs Glyph", 2);
                 merchant_offer.add(scroll);
             }
             while (t2_scraps >= 125) {
                 t2_scraps -= 125;
-                ItemStack scroll = SandS.getInstance().getScroll(SandS.ScrollType.ENCHANTMENT_SCROLL, 2);
+                ItemStack scroll = Glyph.getInstance().getArmorGylph("Bobs Glyph", 2);
                 merchant_offer.add(scroll);
             }
             int payout = 2 * t2_scraps;
@@ -363,12 +363,12 @@ public class TradeCalculator {
         if (t3_scraps > 0) {
             while (t3_scraps >= 110) {
                 t3_scraps -= 110;
-                ItemStack scroll = SandS.getInstance().getScroll(SandS.ScrollType.ENCHANTMENT_SCROLL, 3);
+                ItemStack scroll = Glyph.getInstance().getWeaponGlyph("Bobs Glyph", 3);
                 merchant_offer.add(scroll);
             }
             while (t3_scraps >= 100) {
                 t3_scraps -= 100;
-                ItemStack scroll = SandS.getInstance().getScroll(SandS.ScrollType.ENCHANTMENT_SCROLL, 3);
+                ItemStack scroll = Glyph.getInstance().getArmorGylph("Bobs Glyph", 3);
                 merchant_offer.add(scroll);
             }
             int payout = 2 * t3_scraps;
@@ -385,12 +385,12 @@ public class TradeCalculator {
         if (t4_scraps > 0) {
             while (t4_scraps >= 88) {
                 t4_scraps -= 88;
-                ItemStack scroll = SandS.getInstance().getScroll(SandS.ScrollType.ENCHANTMENT_SCROLL, 4);
+                ItemStack scroll = Glyph.getInstance().getWeaponGlyph("Bobs Glyph", 4);
                 merchant_offer.add(scroll);
             }
             while (t4_scraps >= 80) {
                 t4_scraps -= 80;
-                ItemStack scroll = SandS.getInstance().getScroll(SandS.ScrollType.ENCHANTMENT_SCROLL, 4);
+                ItemStack scroll = Glyph.getInstance().getArmorGylph("Bobs Glyph", 4);
                 merchant_offer.add(scroll);
             }
             int payout = 2 * t4_scraps;
@@ -407,12 +407,12 @@ public class TradeCalculator {
         if (t5_scraps > 0) {
             while (t5_scraps >= 33) {
                 t5_scraps -= 33;
-                ItemStack scroll = SandS.getInstance().getScroll(SandS.ScrollType.ENCHANTMENT_SCROLL, 5);
+                ItemStack scroll = Glyph.getInstance().getWeaponGlyph("Bobs Glyph", 5);
                 merchant_offer.add(scroll);
             }
             while (t5_scraps >= 30) {
                 t5_scraps -= 30;
-                ItemStack scroll = SandS.getInstance().getScroll(SandS.ScrollType.ENCHANTMENT_SCROLL, 5);
+                ItemStack scroll = Glyph.getInstance().getArmorGylph("Bobs Glyph", 5);
                 merchant_offer.add(scroll);
             }
             int payout = 3 * t5_scraps;
