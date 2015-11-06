@@ -157,7 +157,7 @@ public class DamageListener implements Listener {
                 if (!event.getEntity().hasMetadata("type")) return;
             }
         }
-        if (API.isInSafeRegion(event.getDamager().getLocation()) || API.isInSafeRegion(event.getEntity().getLocation())) {
+        if (API.isNonPvPRegion(event.getDamager().getLocation()) || API.isNonPvPRegion(event.getEntity().getLocation())) {
             if (API.isPlayer(event.getEntity())) {
                 if (DuelMechanics.isDueling(event.getEntity().getUniqueId()) && DuelMechanics.isDueling(event.getDamager().getUniqueId())) {
                     if (!DuelMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
@@ -170,10 +170,6 @@ public class DamageListener implements Listener {
                     event.setDamage(0);
                     return;
                 }
-            } else {
-                event.setCancelled(true);
-                event.setDamage(0);
-                return;
             }
         }
         //Make sure the player is HOLDING something!
