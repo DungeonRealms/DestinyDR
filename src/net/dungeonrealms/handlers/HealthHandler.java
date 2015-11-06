@@ -350,6 +350,10 @@ public class HealthHandler implements GenericMechanic {
             }
         }
 
+        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+            player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " -> " + ChatColor.GREEN + " [" + (currentHP + amount) + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+        }
+
         if ((currentHP + (double) amount) >= maxHP) {
             player.setHealth(20);
             setPlayerHPLive(player, (int) maxHP);
@@ -439,6 +443,16 @@ public class HealthHandler implements GenericMechanic {
             }
         }
 
+        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+            player.sendMessage(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.RED + " -> " + ChatColor.GREEN + " [" + newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+        }
+
+        if (API.isPlayer(damager)) {
+            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, damager.getUniqueId()).toString())) {
+                damager.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + "[" + newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
+            }
+        }
+
         if (newHP <= 0) {
             if (player.hasMetadata("last_death_time")) {
                 if (player.getMetadata("last_death_time").get(0).asLong() > 100) {
@@ -474,15 +488,6 @@ public class HealthHandler implements GenericMechanic {
         }
         player.setHealth(convHPToDisplay);
         LivingEntity leAttacker = null;
-        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-            player.sendMessage(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.RED + " -> " + ChatColor.GREEN + " [" + newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
-        }
-        if (API.isPlayer(damager)) {
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, damager.getUniqueId()).toString())) {
-                damager.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + "[" + newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
-            }
-            return;
-        }
         if (damager instanceof CraftLivingEntity) {
             if (damager.hasMetadata("type")) {
                 leAttacker = (LivingEntity) damager;
@@ -530,8 +535,14 @@ public class HealthHandler implements GenericMechanic {
         double maxHP = getMonsterMaxHPLive(entity);
         double currentHP = getMonsterHPLive(entity);
         double newHP = currentHP - damage;
-        if (entity instanceof EntityArmorStand)
-            return;
+        if (entity instanceof EntityArmorStand) return;
+
+        if (API.isPlayer(attacker)) {
+            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
+                String customNameAppended = entity.getCustomName().trim();
+                attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + customNameAppended + ChatColor.BOLD + " [" + newHP + "]");
+            }
+        }
 
         if (newHP <= 0) {
             setMonsterHPLive(entity, 0);
@@ -586,17 +597,6 @@ public class HealthHandler implements GenericMechanic {
             convHPToDisplay = 20;
         }
 
-        if (API.isPlayer(attacker)) {
-            //Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())
-            if (1 == 1) {
-                if (entity.getPassenger() != null) {
-                    String customNameAppended = entity.getCustomName();
-                    attacker.sendMessage(ChatColor.RED + "" + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + customNameAppended + ChatColor.BOLD + " [" + newHP + "]");
-                } else {
-                    attacker.sendMessage(ChatColor.RED + "" + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + "MOB" + ChatColor.BOLD + " [" + newHP + "]");
-                }
-            }
-        }
         int level = entity.getMetadata("level").get(0).asInt();
         EntityLiving entity1 = ((CraftLivingEntity) entity).getHandle();
         String name = entity.getMetadata("customname").get(0).asString();
