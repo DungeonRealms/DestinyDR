@@ -45,9 +45,8 @@ public class NPCMenus {
         Inventory inv = Bukkit.createInventory(null, 9, "Profession Vendor");
         ItemStack pickAxe = ItemManager.createPickaxe(1);
         ItemStack fishingRod = ItemManager.createFishingPole(1);
-		String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
-    	inv.addItem(editItem(pickAxe, pickAxe.getItemMeta().getDisplayName(), new String[]{expBar, ChatColor.AQUA + "100 Gems"}));
-    	inv.addItem(editItem(fishingRod, fishingRod.getItemMeta().getDisplayName(), new String[]{expBar, ChatColor.AQUA + "100 Gems"}));
+    	inv.addItem(editItem(pickAxe, pickAxe.getItemMeta().getDisplayName(), new String[]{ChatColor.AQUA + "100 Gems"}));
+    	inv.addItem(editItem(fishingRod, fishingRod.getItemMeta().getDisplayName(), new String[]{ChatColor.AQUA + "100 Gems"}));
 
         player.openInventory(inv);
     }

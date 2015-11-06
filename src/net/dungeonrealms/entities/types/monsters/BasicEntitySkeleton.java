@@ -1,5 +1,7 @@
 package net.dungeonrealms.entities.types.monsters;
 
+import java.util.Random;
+
 import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
 
@@ -51,14 +53,6 @@ public class BasicEntitySkeleton extends DRSkeleton {
     @Override
     public void setStats() {
 
-    }
-
-    @Override
-    protected Item getLoot() {
-        ItemStack item = BankMechanics.gem.clone();
-        item.setAmount(this.random.nextInt(5));
-        this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation().add(0, 1, 0), item);
-        return null;
     }
 
     @Override

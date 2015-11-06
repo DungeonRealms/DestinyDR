@@ -25,11 +25,6 @@ public class BasicEntityBlaze extends DRBlaze {
 	}
 
 	@Override
-	protected Item getLoot() {
-		return null;
-	}
-	
-	@Override
 	public EnumMonster getEnum() {
 		return this.monsterType;
 	}

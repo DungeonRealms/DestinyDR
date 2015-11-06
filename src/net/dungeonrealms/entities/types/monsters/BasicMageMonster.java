@@ -1,5 +1,7 @@
 package net.dungeonrealms.entities.types.monsters;
 
+import java.util.Random;
+
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Projectile;
 import org.bukkit.inventory.ItemStack;
@@ -40,14 +42,6 @@ public class BasicMageMonster extends DRSkeleton {
 
     public BasicMageMonster(World world) {
         super(world);
-    }
-
-    @Override
-    protected Item getLoot() {
-        ItemStack item = BankMechanics.gem.clone();
-        item.setAmount(this.random.nextInt(5));
-        this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation().add(0, 1, 0), item);
-        return null;
     }
 
     @Override

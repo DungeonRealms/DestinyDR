@@ -40,7 +40,7 @@ public abstract class DRZombie extends EntityZombie implements Monster{
     protected void getRareDrop(){
     	this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation().add(0, 1, 0), ItemManager.createRandomTeleportBook("Teleport Book"));
     }
-
+    
     protected DRZombie(World world, EnumMonster monster, int tier, EnumEntityType entityType, boolean setArmor) {
         this(world);
         try {
@@ -220,10 +220,9 @@ public abstract class DRZombie extends EntityZombie implements Monster{
 	@Override
 	public void onMonsterDeath() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-		this.getLoot();
-            if (new Random().nextInt(99) < 3) {
-                this.getRareDrop();
-            }
+		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity().getLocation());
+		if(this.random.nextInt(100) < 33)
+			this.getRareDrop();
 		});
 	}
 }

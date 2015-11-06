@@ -60,16 +60,6 @@ public class EntityBandit extends DRZombie{
         String[] list = new String[]{"Spy", "Demoman"};
         return list[Utils.randInt(0, list.length - 1)];
     }
-
-    @Override
-    protected Item getLoot() {
-    	if(this.random.nextInt(100) < 33){
-        ItemStack item = BankMechanics.gem.clone();
-        item.setAmount(new Random().nextInt(5));
-        this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation().add(0, 1, 0), item);
-    	}
-        return null;
-    }
     
 	@Override
 	public EnumMonster getEnum() {

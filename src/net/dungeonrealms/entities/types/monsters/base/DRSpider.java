@@ -63,10 +63,9 @@ public class DRSpider extends DRZombie implements Monster{
 	@Override
 	public void onMonsterDeath() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-		this.getLoot();
-            if (new Random().nextInt(99) < 3) {
-                this.getRareDrop();
-            }
+		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity().getLocation());
+		if(this.random.nextInt(100) < 33)
+			this.getRareDrop();
 		});
 	}
 
