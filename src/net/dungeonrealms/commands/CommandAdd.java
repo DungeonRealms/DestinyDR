@@ -65,11 +65,6 @@ public class CommandAdd extends BasicCommand {
                     Banktag.set("type", new NBTTagString("bank"));
                     nmsBank.setTag(Banktag);
                     player.getInventory().addItem(CraftItemStack.asBukkitCopy(nmsBank));
-                    player.getInventory().addItem(ItemManager.createArmorScrap(1));
-                    player.getInventory().addItem(ItemManager.createArmorScrap(2));
-                    player.getInventory().addItem(ItemManager.createArmorScrap(3));
-                    player.getInventory().addItem(ItemManager.createArmorScrap(4));
-                    player.getInventory().addItem(ItemManager.createArmorScrap(5));
                     break;
                 case "trail":
                     if (args[1] != null)
@@ -96,6 +91,20 @@ public class CommandAdd extends BasicCommand {
                 case "journal":
                 	player.getInventory().addItem(ItemManager.createCharacterJournal(player));
                 	break;
+                case "scrap":
+                    player.getInventory().addItem(ItemManager.createArmorScrap(1));
+                    player.getInventory().addItem(ItemManager.createArmorScrap(2));
+                    player.getInventory().addItem(ItemManager.createArmorScrap(3));
+                    player.getInventory().addItem(ItemManager.createArmorScrap(4));
+                    player.getInventory().addItem(ItemManager.createArmorScrap(5));
+                    break;
+                case "potion":
+                    player.getInventory().addItem(ItemManager.createHealthPotion(1));
+                    player.getInventory().addItem(ItemManager.createHealthPotion(2));
+                    player.getInventory().addItem(ItemManager.createHealthPotion(3));
+                    player.getInventory().addItem(ItemManager.createHealthPotion(4));
+                    player.getInventory().addItem(ItemManager.createHealthPotion(5));
+                    break;
             }
         }
 

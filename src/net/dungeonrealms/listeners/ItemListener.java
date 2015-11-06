@@ -1,24 +1,20 @@
 package net.dungeonrealms.listeners;
 
+import com.minebone.anvilapi.core.AnvilApi;
+import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
+import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.inventory.PlayerMenus;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.stats.PlayerStats;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -31,13 +27,14 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import com.minebone.anvilapi.core.AnvilApi;
-import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
-import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Kieran on 9/18/2015.
@@ -199,23 +196,23 @@ public class ItemListener implements Listener {
     
     @EventHandler(priority = EventPriority.MONITOR)
     public void useEcashItem(PlayerInteractEvent event) {
-    	if(event.getItem() != null){
-    	if( event.getItem().getType() == Material.ENCHANTED_BOOK){
+    	if (event.getItem() != null) {
+    	if (event.getItem().getType() == Material.ENCHANTED_BOOK) {
     		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
-    		if(nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("reset")){
+    		if (nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("reset")) {
     			AnvilGUIInterface gui = AnvilApi.createNewGUI(event.getPlayer(), e -> {
 					if (e.getSlot() == AnvilSlot.OUTPUT) {
-						if(e.getName().equalsIgnoreCase("Yes") || e.getName().equalsIgnoreCase("y")){
-							if(event.getItem().getAmount() > 1){
+						if (e.getName().equalsIgnoreCase("Yes") || e.getName().equalsIgnoreCase("y")) {
+							if (event.getItem().getAmount() > 1) {
 								event.getItem().setAmount(event.getItem().getAmount() - 1);
-								
-							}else
-								event.getPlayer().getInventory().remove(event.getItem());
-							API.getGamePlayer(event.getPlayer()).getStats().unallocateAllPoints();
-							event.getPlayer().sendMessage(ChatColor.YELLOW + "All Stat Points have been unallocated!");
-							e.destroy();
-						}else{
-							e.setWillClose(true);
+							} else {
+                                event.getPlayer().getInventory().remove(event.getItem());
+                                API.getGamePlayer(event.getPlayer()).getStats().unallocateAllPoints();
+                                event.getPlayer().sendMessage(ChatColor.YELLOW + "All Stat Points have been unallocated!");
+                                e.destroy();
+                            }
+						} else {
+                            e.setWillClose(true);
 							e.destroy();
 						}
 					}
@@ -226,18 +223,35 @@ public class ItemListener implements Listener {
 				stack.setItemMeta(meta);
 				gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
 				event.getPlayer().sendMessage("Opening stat reset confirmation...");
-				Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-				gui.open();
-				}, 20 * 5);
+				Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> gui.open(), 100L);
     		}
-    	}else if(event.getItem().getType() == Material.ENDER_CHEST){
+    	} else if (event.getItem().getType() == Material.ENDER_CHEST ){
     		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
-    			if(nms.hasTag() && nms.getTag().hasKey("type")){
-    				if(nms.getTag().getString("type").equalsIgnoreCase("upgrade")){
+    			if (nms.hasTag() && nms.getTag().hasKey("type")) {
+    				if (nms.getTag().getString("type").equalsIgnoreCase("upgrade")) {
     					Player player = event.getPlayer();
     				}
     			}
     		}
     	}
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onplayerDrinkPotion(PlayerItemConsumeEvent event) {
+        if (!(event.getItem().getType() == Material.POTION)) return;
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getItem()));
+        if (nmsItem != null && nmsItem.getTag() != null) {
+            if (nmsItem.getTag().hasKey("type") && nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                event.setCancelled(true);
+                if (HealthHandler.getInstance().getPlayerHPLive(event.getPlayer()) < HealthHandler.getInstance().getPlayerMaxHPLive(event.getPlayer())) {
+                    event.setItem(new ItemStack(Material.AIR));
+                    event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
+                    HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
+                    event.getPlayer().sendMessage(ChatColor.GREEN + "Healed for " + ChatColor.BOLD + nmsItem.getTag().getInt("healAmount") + ChatColor.GREEN + "HP.");
+                } else {
+                    event.getPlayer().sendMessage(ChatColor.RED + "You are already at full HP!");
+                }
+            }
+        }
     }
 }

@@ -1,20 +1,5 @@
 package net.dungeonrealms.mechanics;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BookMeta;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.SkullMeta;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.items.EnumItem;
@@ -28,6 +13,23 @@ import net.dungeonrealms.teleportation.TeleportAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagList;
 import net.minecraft.server.v1_8_R3.NBTTagString;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.BookMeta;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.PotionMeta;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -125,6 +127,57 @@ public class ItemManager {
             return CraftItemStack.asBukkitCopy(nmsStack);
         }
         return null;
+    }
+
+    /**
+     * Creates a potion based on the
+     * given tier
+     *
+     * @param tier
+     * @return ItemStack
+     * @since 1.0
+     */
+    public static ItemStack createHealthPotion(int tier) {
+        String name = "";
+        int healAmount = 0;
+        ItemStack rawStack = new ItemStack(Material.POTION, 1, (short) 0);
+        switch (tier) {
+            case 1:
+                name = "Poor Elixer of Healing";
+                healAmount = 75;
+                break;
+            case 2:
+                name = ChatColor.GREEN + "Inferior Elixer of Healing";
+                healAmount = 325;
+                break;
+            case 3:
+                name = ChatColor.AQUA + "Modest Elixer of Healing";
+                healAmount = 900;
+                break;
+            case 4:
+                name = ChatColor.LIGHT_PURPLE + "Superior Elixer of Healing";
+                healAmount = 2250;
+                break;
+            case 5:
+                name = ChatColor.YELLOW + "Legendary Elixer of Healing";
+                healAmount = 4000;
+                break;
+            default:
+                break;
+        }
+        PotionMeta potionMeta = (PotionMeta) rawStack.getItemMeta();
+        potionMeta.addCustomEffect(new PotionEffect(PotionEffectType.REGENERATION, 100, 1, false), true);
+        potionMeta.setDisplayName(name);
+        potionMeta.setLore(Collections.singletonList(ChatColor.GRAY + "An Elixer that heals for " + ChatColor.RED + ChatColor.BOLD + healAmount + ChatColor.GRAY + "HP."));
+        rawStack.setItemMeta(potionMeta);
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set("type", new NBTTagString("healthPotion"));
+        tag.setInt("itemTier", tier);
+        tag.setInt("healAmount", healAmount);
+        tag.set("AttributeModifiers", new NBTTagList());
+        nmsStack.setTag(tag);
+        return CraftItemStack.asBukkitCopy(nmsStack);
     }
     
     /**
