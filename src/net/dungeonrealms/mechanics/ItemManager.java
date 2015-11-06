@@ -1,9 +1,11 @@
 package net.dungeonrealms.mechanics;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.items.EnumItem;
 import net.dungeonrealms.mastery.GamePlayer;
+import net.dungeonrealms.miscellaneous.RandomHelper;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.profession.Fishing;
@@ -26,10 +28,7 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -137,33 +136,56 @@ public class ItemManager {
      * @return ItemStack
      * @since 1.0
      */
-    public static ItemStack createHealthPotion(int tier) {
+    public static ItemStack createHealthPotion(int tier, boolean fromShop) {
         String name = "";
         int healAmount = 0;
         ItemStack rawStack = new ItemStack(Material.POTION, 1, (short) 0);
         switch (tier) {
             case 1:
                 name = "Poor Elixer of Healing";
-                healAmount = 75;
+                if (!fromShop) {
+                    healAmount = RandomHelper.getRandomNumberBetween(30, 100);
+                } else {
+                    healAmount = 75;
+                }
                 break;
             case 2:
                 name = ChatColor.GREEN + "Inferior Elixer of Healing";
-                healAmount = 325;
+                if (!fromShop) {
+                    healAmount = RandomHelper.getRandomNumberBetween(270, 375);
+                } else {
+                    healAmount = 325;
+                }
                 break;
             case 3:
                 name = ChatColor.AQUA + "Modest Elixer of Healing";
-                healAmount = 900;
+                if (!fromShop) {
+                    healAmount = RandomHelper.getRandomNumberBetween(800, 1000);
+                } else {
+                    healAmount = 900;
+                }
                 break;
             case 4:
                 name = ChatColor.LIGHT_PURPLE + "Superior Elixer of Healing";
-                healAmount = 2250;
+                if (!fromShop) {
+                    healAmount = RandomHelper.getRandomNumberBetween(2000, 2400);
+                } else {
+                    healAmount = 2250;
+                }
                 break;
             case 5:
                 name = ChatColor.YELLOW + "Legendary Elixer of Healing";
-                healAmount = 4000;
+                if (!fromShop) {
+                    healAmount = RandomHelper.getRandomNumberBetween(3700, 4300);
+                } else {
+                    healAmount = 4000;
+                }
                 break;
             default:
                 break;
+        }
+        if (!fromShop) {
+            healAmount = (((healAmount + 5) / 10) * 10);
         }
         PotionMeta potionMeta = (PotionMeta) rawStack.getItemMeta();
         potionMeta.addCustomEffect(new PotionEffect(PotionEffectType.REGENERATION, 100, 1, false), true);
@@ -175,9 +197,8 @@ public class ItemManager {
         tag.set("type", new NBTTagString("healthPotion"));
         tag.setInt("itemTier", tier);
         tag.setInt("healAmount", healAmount);
-        tag.set("AttributeModifiers", new NBTTagList());
         nmsStack.setTag(tag);
-        return CraftItemStack.asBukkitCopy(nmsStack);
+        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
     
     /**
@@ -228,7 +249,7 @@ public class ItemManager {
             tag.setInt("maxXP", Mining.getMaxXP(tier));
             tag.set("AttributeModifiers", new NBTTagList());
             nmsStack.setTag(tag);
-            return CraftItemStack.asBukkitCopy(nmsStack);
+            return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
         }
         return null;
     }
@@ -261,7 +282,7 @@ public class ItemManager {
     		
     		break;
     	}
-    	return CraftItemStack.asBukkitCopy(nms);
+        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
     
     
@@ -298,7 +319,7 @@ public class ItemManager {
         tag.setInt("XP", 0);
         tag.setInt("maxXP", Fishing.getMaxXP(tier));
         nmsStack.setTag(tag);
-        return CraftItemStack.asBukkitCopy(nmsStack);
+        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
     
     /**
