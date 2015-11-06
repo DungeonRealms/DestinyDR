@@ -17,7 +17,7 @@ import net.dungeonrealms.handlers.TradeHandler.TradeManager;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.LootManager;
-import net.dungeonrealms.miscellaneous.SandS;
+import net.dungeonrealms.miscellaneous.Glyph;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.network.NetworkAPI;
@@ -60,7 +60,9 @@ public class InventoryListener implements Listener {
     public void onImportantInventoryClick(InventoryClickEvent event) {
 
         if (event.getCurrentItem() != null && !event.getCurrentItem().getType().equals(Material.AIR) && event.getCursor() != null && !event.getCursor().getType().equals(Material.AIR)) {
-            SandS.getInstance().applyScroll(event, (Player) event.getWhoClicked(), event.getCurrentItem(), event.getCursor());
+            if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
+            if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
+            Glyph.getInstance().applyGlyph((Player) event.getWhoClicked(), event.getCursor(), event.getCurrentItem());
         }
 
         ClickHandler.getInstance().doClick(event);

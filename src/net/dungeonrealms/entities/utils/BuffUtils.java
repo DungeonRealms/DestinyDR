@@ -7,6 +7,7 @@ import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -34,7 +35,8 @@ public class BuffUtils {
         world.addEntity(enderCrystal, CreatureSpawnEvent.SpawnReason.CUSTOM);
         enderCrystal.setLocation(player.getLocation().getX() + new Random().nextInt(10), player.getLocation().getY() + 1, player.getLocation().getZ() + new Random().nextInt(10), 0, 0);
         if (enderCrystal.getBukkitEntity().getLocation().subtract(0, 1, 0).getBlock().getType() == Material.AIR) {
-            enderCrystal.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0 ,0);
+            Block b = Bukkit.getWorlds().get(0).getHighestBlockAt((int) player.getLocation().getX(), (int) player.getLocation().getY());
+            enderCrystal.setLocation(b.getX(), b.getY(), b.getZ(), 0, 0);
         }
         player.playSound(player.getLocation(), Sound.ENDERDRAGON_DEATH, 1F, 1F);
         MetadataUtils.registerBuffMetadata(enderCrystal, getRandomPotionEffect(), 10, 600);

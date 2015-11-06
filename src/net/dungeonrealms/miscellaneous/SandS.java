@@ -277,8 +277,8 @@ public class SandS implements GenericMechanic {
 
         double number = new Random().nextInt(101);
 
-        event.getCursor().setType(Material.AIR);
-        event.getCurrentItem().setType(Material.AIR);
+        event.setCursor(new ItemStack(Material.AIR));
+        event.setCurrentItem(new ItemStack(Material.AIR));
 
         switch (scrollType) {
             case ENCHANTMENT_SCROLL:

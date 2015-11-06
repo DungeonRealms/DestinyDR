@@ -1,24 +1,5 @@
 package net.dungeonrealms.commands;
 
-import java.util.Random;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.block.CommandBlock;
-import org.bukkit.command.BlockCommandSender;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Wolf;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.metadata.FixedMetadataValue;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.entities.EnumEntityType;
@@ -37,6 +18,19 @@ import net.dungeonrealms.spawning.MobSpawner;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.World;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.command.BlockCommandSender;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.entity.*;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -49,52 +43,52 @@ public class CommandSpawn extends BasicCommand {
 
     @Override
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
-        if (s instanceof ConsoleCommandSender){
-        	return false;
+        if (s instanceof ConsoleCommandSender) {
+            return false;
         }
-        
-        if(s instanceof BlockCommandSender){
-        	if(args.length > 0)
-        	switch(args[0]){
-            case "boss":
-            	if(args.length < 5){
-            		s.sendMessage("/spawn boss (monster name) (x) (y) (z)");
-            		return false;
-            	}
-            	String bossName = args[1];
-            	int x = Integer.parseInt(args[2]);
-            	int y = Integer.parseInt(args[3]);
-            	int z = Integer.parseInt(args[4]);
-            	Entity entity = null;
-            	BlockCommandSender block = (BlockCommandSender)s;
-                World world = ((CraftWorld)block.getBlock().getWorld()).getHandle();
-            	Location loc = new Location(block.getBlock().getWorld(), x, y, z, 1, 1);
-                EnumBoss boss = EnumBoss.getByID(bossName);
-            	switch(boss){
-            		case Mayel :
-            			entity = new Mayel(world, loc);
-            			break;
-            		case Burick:
-            			entity = new Burick(world, loc);
-            			break;
-            		case Pyromancer:
-            			entity = new Pyromancer(world, loc);
-            			break;
-            		case InfernalAbyss:
-            			entity = new InfernalAbyss(world,loc);
-            			break;
+
+        if (s instanceof BlockCommandSender) {
+            if (args.length > 0)
+                switch (args[0]) {
+                    case "boss":
+                        if (args.length < 5) {
+                            s.sendMessage("/spawn boss (monster name) (x) (y) (z)");
+                            return false;
+                        }
+                        String bossName = args[1];
+                        int x = Integer.parseInt(args[2]);
+                        int y = Integer.parseInt(args[3]);
+                        int z = Integer.parseInt(args[4]);
+                        Entity entity = null;
+                        BlockCommandSender block = (BlockCommandSender) s;
+                        World world = ((CraftWorld) block.getBlock().getWorld()).getHandle();
+                        Location loc = new Location(block.getBlock().getWorld(), x, y, z, 1, 1);
+                        EnumBoss boss = EnumBoss.getByID(bossName);
+                        switch (boss) {
+                            case Mayel:
+                                entity = new Mayel(world, loc);
+                                break;
+                            case Burick:
+                                entity = new Burick(world, loc);
+                                break;
+                            case Pyromancer:
+                                entity = new Pyromancer(world, loc);
+                                break;
+                            case InfernalAbyss:
+                                entity = new InfernalAbyss(world, loc);
+                                break;
 //            		case LordsGuard:
 //            			entity = new InfernalLordsGuard(world, loc);
 //            			break;
-            		default: 
-            			entity = null;
-            	}
-            	if(entity == null)
-            		return false;
-            	
-            	int level = entity.getBukkitEntity().getMetadata("level").get(0).asInt();
-                String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "+ChatColor.RESET;
-                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), entity.getCustomName()));
+                            default:
+                                entity = null;
+                        }
+                        if (entity == null)
+                            return false;
+
+                        int level = entity.getBukkitEntity().getMetadata("level").get(0).asInt();
+                        String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET;
+                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), entity.getCustomName()));
 //                String healthName = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt()+ChatColor.RED.toString() + "❤";
 //                String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
 //                ArmorStand stand = entity.getBukkitEntity().getLocation().getWorld().spawn(entity.getBukkitEntity().getLocation(), ArmorStand.class);
@@ -111,13 +105,13 @@ public class CommandSpawn extends BasicCommand {
 //                ent.setRemoveWhenFarAway(false);
 //                entity.getBukkitEntity().setPassenger(stand);
 
-            	
-                Location location = loc;
-                entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                world.addEntity(entity, SpawnReason.CUSTOM);
-                entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-        	}
-        	return false;
+
+                        Location location = loc;
+                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                        world.addEntity(entity, SpawnReason.CUSTOM);
+                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                }
+            return false;
         }
         Player player = (Player) s;
         if (args.length > 0) {
@@ -139,24 +133,24 @@ public class CommandSpawn extends BasicCommand {
                         boolean elite = false;
                         String lvlRange = "low";
                         if (args.length == 4) {
-                            if (args[3].equalsIgnoreCase("*")){
+                            if (args[3].equalsIgnoreCase("*")) {
                                 elite = true;
-                            }else if(args[3].equalsIgnoreCase("+")){
-                            	lvlRange = "high";
-                            }else if(args[3].equalsIgnoreCase("-")){
-                            	lvlRange = "low";
+                            } else if (args[3].equalsIgnoreCase("+")) {
+                                lvlRange = "high";
+                            } else if (args[3].equalsIgnoreCase("-")) {
+                                lvlRange = "low";
                             }
                         }
                         EnumMonster monsEnum = EnumMonster.getMonsterByString(args[1]);
                         EnumEntityType type = EnumEntityType.HOSTILE_MOB;
-                        Entity entity = SpawningMechanics.getMob(((CraftWorld)player.getWorld()).getHandle(), tier, monsEnum);
-                        
+                        Entity entity = SpawningMechanics.getMob(((CraftWorld) player.getWorld()).getHandle(), tier, monsEnum);
+
                         int level = Utils.getRandomFromTier(tier, lvlRange);
                         MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
                         EntityStats.setMonsterRandomStats(entity, level, tier);
 
-                        String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "+ChatColor.RESET;
-                        String healthName = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt()+ChatColor.RED.toString() + "❤";
+                        String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET;
+                        String healthName = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt() + ChatColor.RED.toString() + "❤";
                         String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
                         ArmorStand stand = entity.getBukkitEntity().getLocation().getWorld().spawn(entity.getBukkitEntity().getLocation(), ArmorStand.class);
                         stand.setRemoveWhenFarAway(false);
@@ -172,11 +166,10 @@ public class CommandSpawn extends BasicCommand {
                         ent.setRemoveWhenFarAway(false);
                         entity.getBukkitEntity().setPassenger(stand);
 
-                        
-                        
+
                         World world = ((CraftWorld) player.getWorld()).getHandle();
-                        if(elite){
-                          EntityStats.setMonsterElite(entity, level, tier);
+                        if (elite) {
+                            EntityStats.setMonsterElite(entity, level, tier);
                         }
                         Location location = new Location(world.getWorld(), player.getLocation().getX() + new Random().nextInt(3), player.getLocation().getY(), player.getLocation().getZ() + new Random().nextInt(3));
                         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
@@ -191,42 +184,42 @@ public class CommandSpawn extends BasicCommand {
                     if (args.length == 3)
                         tier = Integer.parseInt(args[2]);
                     MobSpawner spawner = new MobSpawner(player.getLocation(), monster, tier, 4, SpawningMechanics.getSpawners().size(), "high");
-    				String text = (player.getLocation().getX() + "," + player.getLocation().getY() + ","
-    				        + player.getLocation().getZ() + "=" + args[1] + ":" + tier);
-    				SpawningMechanics.SPAWNER_CONFIG.add(text);
-    				DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
+                    String text = (player.getLocation().getX() + "," + player.getLocation().getY() + ","
+                            + player.getLocation().getZ() + "=" + args[1] + ":" + tier);
+                    SpawningMechanics.SPAWNER_CONFIG.add(text);
+                    DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
                     SpawningMechanics.add(spawner);
                     break;
                 case "boss":
-                	String bossName = args[1];
-                	Entity entity = null;
+                    String bossName = args[1];
+                    Entity entity = null;
                     World world = ((CraftWorld) player.getWorld()).getHandle();
                     EnumBoss boss = EnumBoss.getByID(bossName);
-                	switch(boss){
-                		case Mayel :
-                			entity = new Mayel(world, player.getLocation());
-                			break;
-                		case Burick:
-                			entity = new Burick(world, player.getLocation());
-                			break;
-                		case Pyromancer:
-                			entity = new Pyromancer(world, player.getLocation());
-                			break;
-                		case InfernalAbyss:
-                			entity = new InfernalAbyss(world,player.getLocation());
-                			break;
+                    switch (boss) {
+                        case Mayel:
+                            entity = new Mayel(world, player.getLocation());
+                            break;
+                        case Burick:
+                            entity = new Burick(world, player.getLocation());
+                            break;
+                        case Pyromancer:
+                            entity = new Pyromancer(world, player.getLocation());
+                            break;
+                        case InfernalAbyss:
+                            entity = new InfernalAbyss(world, player.getLocation());
+                            break;
 //                		case LordsGuard:
 //                			entity = new InfernalLordsGuard(world, player.getLocation());
 //                			break;
-                		default: 
-                			entity = null;
-                	}
-                	if(entity == null)
-                		return false;
-                	
-                	int level = entity.getBukkitEntity().getMetadata("level").get(0).asInt();
-                    String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "+ChatColor.RESET;
-                    String healthName = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt()+ChatColor.RED.toString() + "❤";
+                        default:
+                            entity = null;
+                    }
+                    if (entity == null)
+                        return false;
+
+                    int level = entity.getBukkitEntity().getMetadata("level").get(0).asInt();
+                    String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET;
+                    String healthName = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt() + ChatColor.RED.toString() + "❤";
                     String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
                     ArmorStand stand = entity.getBukkitEntity().getLocation().getWorld().spawn(entity.getBukkitEntity().getLocation(), ArmorStand.class);
                     stand.setRemoveWhenFarAway(false);
@@ -242,7 +235,7 @@ public class CommandSpawn extends BasicCommand {
                     ent.setRemoveWhenFarAway(false);
                     entity.getBukkitEntity().setPassenger(stand);
 
-                	
+
                     Location location = new Location(world.getWorld(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
                     entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                     world.addEntity(entity, SpawnReason.CUSTOM);

@@ -210,5 +210,14 @@ public class Item {
             }
             return null;
         }
+
+        public static AttributeType getByString(String name) {
+            for (AttributeType at : values()) {
+                if (at.getNBTName().equals(name)) {
+                    return at;
+                }
+            }
+            return null;
+        }
     }
 }
