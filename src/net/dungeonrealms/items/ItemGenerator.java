@@ -118,7 +118,7 @@ public class ItemGenerator {
         tag.set("itemType", new NBTTagInt(type.getId()));
         tag.set("itemTier", new NBTTagInt(tier.getTierId()));
         tag.set("itemModifier", new NBTTagInt(modifier.getId()));
-        tag.set("Binded", new NBTTagString(""));
+        tag.set("bound", new NBTTagString("false"));
 
         /*
         The line below removes the weapons attributes.
@@ -163,6 +163,16 @@ public class ItemGenerator {
      */
     public static Item.ItemModifier getRandomItemModifier() {
         return Item.ItemModifier.getById(new Random().nextInt(Item.ItemModifier.values().length));
+    }
+
+    /**
+     * Gets a random ItemModifier
+     *
+     * @return Item.ItemModifier
+     * @since 1.0
+     */
+    public static Item.AttributeType getRandomItemAttribute() {
+        return Item.AttributeType.getById(new Random().nextInt(Item.AttributeType.values().length));
     }
 
     /**

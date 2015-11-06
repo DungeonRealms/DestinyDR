@@ -6,7 +6,6 @@ import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.mastery.GamePlayer;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -32,7 +31,7 @@ import java.util.Random;
 /**
  * Created by Kieran on 10/3/2015.
  */
-public class HealthHandler implements GenericMechanic{
+public class HealthHandler implements GenericMechanic {
 
     private static HealthHandler instance = null;
 
@@ -150,9 +149,9 @@ public class HealthHandler implements GenericMechanic{
         }
         float healthToDisplay = (float) (healthPercentage * 100.F);
         GamePlayer gamePlayer = API.getGamePlayer(player);
-        if(gamePlayer == null){
-        	//Utils.log.info("NULL GAME PLAYER");
-        	return;
+        if (gamePlayer == null) {
+            //Utils.log.info("NULL GAME PLAYER");
+            return;
         }
         int playerLevel = gamePlayer.getLevel();
         double currentEXP = gamePlayer.getExperience();
@@ -298,8 +297,8 @@ public class HealthHandler implements GenericMechanic{
                 double currentHP = getPlayerHPLive(player);
                 double amountToHealPlayer = getPlayerHPRegenLive(player);
                 GamePlayer gp = API.getGamePlayer(player);
-                if(gp == null || gp.getStats() == null)
-                	return;
+                if (gp == null || gp.getStats() == null)
+                    return;
                 amountToHealPlayer += amountToHealPlayer * gp.getStats().getHPRegen();
                 double maxHP = getPlayerMaxHPLive(player);
                 if (currentHP + 1 > maxHP) {
@@ -349,6 +348,10 @@ public class HealthHandler implements GenericMechanic{
             if (player.getHealth() != 20) {
                 player.setHealth(20);
             }
+        }
+
+        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+            player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " -> " + ChatColor.GREEN + " [" + (currentHP + amount) + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
         }
 
         if ((currentHP + (double) amount) >= maxHP) {
@@ -440,6 +443,16 @@ public class HealthHandler implements GenericMechanic{
             }
         }
 
+        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+            player.sendMessage(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.RED + " -> " + ChatColor.GREEN + " [" + newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+        }
+
+        if (API.isPlayer(damager)) {
+            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, damager.getUniqueId()).toString())) {
+                damager.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + "[" + newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
+            }
+        }
+
         if (newHP <= 0) {
             if (player.hasMetadata("last_death_time")) {
                 if (player.getMetadata("last_death_time").get(0).asLong() > 100) {
@@ -475,15 +488,6 @@ public class HealthHandler implements GenericMechanic{
         }
         player.setHealth(convHPToDisplay);
         LivingEntity leAttacker = null;
-        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-            player.sendMessage(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.RED + " -> " + ChatColor.GREEN + " [" + newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
-        }
-        if (API.isPlayer(damager)) {
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, damager.getUniqueId()).toString())) {
-                damager.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + "[" + newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
-            }
-            return;
-        }
         if (damager instanceof CraftLivingEntity) {
             if (damager.hasMetadata("type")) {
                 leAttacker = (LivingEntity) damager;
@@ -531,8 +535,14 @@ public class HealthHandler implements GenericMechanic{
         double maxHP = getMonsterMaxHPLive(entity);
         double currentHP = getMonsterHPLive(entity);
         double newHP = currentHP - damage;
-        if(entity instanceof EntityArmorStand)
-        	return;
+        if (entity instanceof EntityArmorStand) return;
+
+        if (API.isPlayer(attacker)) {
+            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
+                String customNameAppended = entity.getCustomName().trim();
+                attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + customNameAppended + ChatColor.BOLD + " [" + newHP + "]");
+            }
+        }
 
         if (newHP <= 0) {
             setMonsterHPLive(entity, 0);
@@ -547,31 +557,31 @@ public class HealthHandler implements GenericMechanic{
             if (Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
                 Entities.getInstance().MONSTERS_LEASHED.remove(entity);
             }
-            if(entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")){
-            	((net.dungeonrealms.entities.types.monsters.Monster)entity1).onMonsterDeath();
-            	if(attacker instanceof Player){
-            		double exp  = 0;
-            		int lvl = entity.getMetadata("level").get(0).asInt();
-            		int tier = entity.getMetadata("tier").get(0).asInt();
-            		switch(tier){
-            		case 1:
-            			exp = 100 + new Random().nextInt(25);
-            			break;
-            		case 2:
-            			exp = 150 + new Random().nextInt(25);
-            			break;
-            		case 3:
-            			exp = 200 + new Random().nextInt(25);
-            			break;
-            		case 4:
-            			exp = 250 + new Random().nextInt(25);
-            			break;
-            		case 5:
-            			exp = 300 + new Random().nextInt(25);
-            			break;
-            		}
-            		API.getGamePlayer((Player) attacker).addExperience(exp);
-            	}
+            if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+                ((net.dungeonrealms.entities.types.monsters.Monster) entity1).onMonsterDeath();
+                if (attacker instanceof Player) {
+                    double exp = 0;
+                    int lvl = entity.getMetadata("level").get(0).asInt();
+                    int tier = entity.getMetadata("tier").get(0).asInt();
+                    switch (tier) {
+                        case 1:
+                            exp = 100 + new Random().nextInt(25);
+                            break;
+                        case 2:
+                            exp = 150 + new Random().nextInt(25);
+                            break;
+                        case 3:
+                            exp = 200 + new Random().nextInt(25);
+                            break;
+                        case 4:
+                            exp = 250 + new Random().nextInt(25);
+                            break;
+                        case 5:
+                            exp = 300 + new Random().nextInt(25);
+                            break;
+                    }
+                    API.getGamePlayer((Player) attacker).addExperience(exp);
+                }
             }
             return;
         }
@@ -587,22 +597,12 @@ public class HealthHandler implements GenericMechanic{
             convHPToDisplay = 20;
         }
 
-        if (API.isPlayer(attacker)) {
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
-                if (entity.getPassenger() != null) {
-                    String customNameAppended = entity.getPassenger().getCustomName().split("]")[1];
-                    attacker.sendMessage(ChatColor.RED + "" + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + customNameAppended + ChatColor.BOLD + " [" + newHP + "]");
-                } else {
-                    attacker.sendMessage(ChatColor.RED + "" + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + "MOB" + ChatColor.BOLD + " [" + newHP + "]");
-                }
-            }
-        }
         int level = entity.getMetadata("level").get(0).asInt();
-        EntityLiving entity1 = ((CraftLivingEntity)entity).getHandle();	
+        EntityLiving entity1 = ((CraftLivingEntity) entity).getHandle();
         String name = entity.getMetadata("customname").get(0).asString();
         if (entity.getPassenger() != null && !entity.hasMetadata("isElite"))
-		entity.getPassenger().setCustomName(entity.getMetadata("currentHP").get(0).asInt() + ChatColor.RED.toString()+ " ❤" + ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
-				+ ChatColor.RESET + name);
+            entity.getPassenger().setCustomName(entity.getMetadata("currentHP").get(0).asInt() + ChatColor.RED.toString() + " ❤" + ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
+                    + ChatColor.RESET + name);
         entity.setHealth(convHPToDisplay);
         if (!Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
             Entities.getInstance().MONSTERS_LEASHED.add(entity);

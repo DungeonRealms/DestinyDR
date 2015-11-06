@@ -84,7 +84,7 @@ public class ArmorGenerator {
 		tag.set("armorType", new NBTTagInt(type.getId()));
 		tag.set("armorTier", new NBTTagInt(tier.getTierId()));
 		tag.set("armorModifier", new NBTTagInt(modifier.getId()));
-		tag.set("Binded", new NBTTagString(""));
+		tag.set("bound", new NBTTagString("false"));
 
 		/*
 		 * The line below removes the weapons attributes. E.g. Diamond Sword
@@ -130,6 +130,17 @@ public class ArmorGenerator {
 	public static Armor.ArmorModifier getRandomItemModifier() {
 		return Armor.ArmorModifier.getById(new Random().nextInt(Armor.ArmorModifier.values().length));
 	}
+
+	/**
+	 * Gets a random ItemModifier
+	 *
+	 * @return Item.ItemModifier
+	 * @since 1.0
+	 */
+	public static Armor.ArmorAttributeType getRandomItemAttribute() {
+		return Armor.ArmorAttributeType.getById(new Random().nextInt(Armor.ArmorAttributeType.values().length));
+	}
+
 
 	/**
 	 * Returns a list of itemAttributes based on the param.

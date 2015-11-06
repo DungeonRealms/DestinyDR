@@ -16,27 +16,25 @@ import net.dungeonrealms.shops.ShopMechanics;
  * Created by Chase on Nov 6, 2015
  */
 public class CommandStop extends BasicCommand {
-	public CommandStop(String command, String usage, String description) {
-		super(command, usage, description);
-	}
+    public CommandStop(String command, String usage, String description) {
+        super(command, usage, description);
+    }
 
-	@Override
-	public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
-		DungeonRealms.getInstance().setFinishedSetup(false);
+    @Override
+    public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
+        DungeonRealms.getInstance().setFinishedSetup(false);
         DungeonRealms.getInstance().saveConfig();
         ShopMechanics.deleteAllShops();
         API.logoutAllPlayers();
-        
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () ->{
-        	DungeonRealms.getInstance().mm.stopInvocation();
-        	Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
-        	Database.mongoClient.close();
-        	AsyncUtils.pool.shutdown();
-        	Bukkit.getWorlds().get(0).save();
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            DungeonRealms.getInstance().mm.stopInvocation();
+            Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
+            Database.mongoClient.close();
+            AsyncUtils.pool.shutdown();
+            Bukkit.getWorlds().get(0).save();
         }, 10);
-        	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () ->{
-        	Bukkit.shutdown();
-        	}, 40);
-		return false;
-	}
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 40);
+        return false;
+    }
 }
