@@ -251,26 +251,36 @@ public class ItemManager {
     public static ItemStack createPickaxe(int tier) {
         ItemStack rawStack = null;
         String name = "";
+        ArrayList<String> lore = new ArrayList<>();
+        
+        String expBar = ChatColor.RED + "||||||||||" + "||||||||||" + "||||||||||";
+        lore.add(0 + "/" + Mining.getMaxXP(tier));
+        lore.add(expBar);
         switch (tier) {
             case 1:
                 rawStack = new ItemStack(Material.WOOD_PICKAXE);
                 name = ChatColor.BOLD + "Weak Pick";
+                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Wood");
                 break;
             case 2:
                 rawStack = new ItemStack(Material.STONE_PICKAXE);
                 name = ChatColor.GREEN.toString() + ChatColor.BOLD + "Basic Pick";
+                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Stone");
                 break;
             case 3:
                 rawStack = new ItemStack(Material.IRON_PICKAXE);
                 name = ChatColor.AQUA.toString() + ChatColor.BOLD + "Intermediate Pick";
+                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Iron");
                 break;
             case 4:
                 rawStack = new ItemStack(Material.DIAMOND_PICKAXE);
                 name = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Strong Pick";
+                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Diamond");
                 break;
             case 5:
                 rawStack = new ItemStack(Material.GOLD_PICKAXE);
                 name = ChatColor.YELLOW.toString() + ChatColor.BOLD + "Master Pick";
+                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Gold");
                 break;
             default:
                 break;
@@ -278,7 +288,7 @@ public class ItemManager {
         if (rawStack != null) {
             ItemMeta meta = rawStack.getItemMeta();
             meta.setDisplayName(name);
-            meta.setLore(Collections.singletonList(0 + "/" + Mining.getMaxXP(tier)));
+            meta.setLore(lore);
             rawStack.setItemMeta(meta);
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
@@ -328,9 +338,15 @@ public class ItemManager {
     public static ItemStack createFishingPole(int tier) {
         ItemStack rawStack = new ItemStack(Material.FISHING_ROD);
         String name = "";
+        ItemMeta meta = rawStack.getItemMeta();
+        ArrayList<String> lore = new ArrayList<String>();
+        String expBar = "||||||||||" + "||||||||||" + "||||||||||";
         switch (tier) {
             case 1:
                 name = ChatColor.BOLD + "Weak Rod";
+                lore.add(0 + "/" + Fishing.getMaxXP(tier));
+                lore.add(expBar);
+                lore.add(ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "A pick made out of Wood");
                 break;
             case 2:
                 name = ChatColor.GREEN.toString() + ChatColor.BOLD + "Basic Rod";
@@ -347,9 +363,8 @@ public class ItemManager {
             default:
                 break;
         }
-        ItemMeta meta = rawStack.getItemMeta();
         meta.setDisplayName(name);
-        meta.setLore(Collections.singletonList(0 + "/" + Fishing.getMaxXP(tier)));
+        meta.setLore(lore);
         rawStack.setItemMeta(meta);
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();

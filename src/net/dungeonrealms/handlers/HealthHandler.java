@@ -570,26 +570,7 @@ public class HealthHandler implements GenericMechanic {
             if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                 ((net.dungeonrealms.entities.types.monsters.Monster) entity1).onMonsterDeath();
                 if (attacker instanceof Player) {
-                    double exp = 0;
-                    int lvl = entity.getMetadata("level").get(0).asInt();
-                    int tier = entity.getMetadata("tier").get(0).asInt();
-                    switch (tier) {
-                        case 1:
-                            exp = 100 + new Random().nextInt(25);
-                            break;
-                        case 2:
-                            exp = 150 + new Random().nextInt(25);
-                            break;
-                        case 3:
-                            exp = 200 + new Random().nextInt(25);
-                            break;
-                        case 4:
-                            exp = 250 + new Random().nextInt(25);
-                            break;
-                        case 5:
-                            exp = 300 + new Random().nextInt(25);
-                            break;
-                    }
+                    int exp = API.getMonsterExp((Player) attacker, entity);
                     API.getGamePlayer((Player) attacker).addExperience(exp);
                 }
             }

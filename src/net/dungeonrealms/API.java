@@ -68,6 +68,66 @@ import net.dungeonrealms.teleportation.TeleportAPI;
 public class API {
 
 	public static CopyOnWriteArrayList<GamePlayer> GAMEPLAYERS = new CopyOnWriteArrayList<>();
+	
+	public static int getMonsterExp(Player player, org.bukkit.entity.Entity kill){
+		int level = API.getGamePlayer(player).getStats().getLevel();
+		int mob_level = kill.getMetadata("level").get(0).asInt();
+		int xp = 0;
+        if (mob_level > level + 10) {  // limit mob xp calculation to 10 levels above player level
+            xp = calculateXP(player, kill, level + 10);
+        } else {
+            xp = calculateXP(player, kill, mob_level);
+        }
+        return xp;
+	}
+	
+	/**
+	 * @param player
+	 * @param mob
+	 * @param level
+	 * @return
+	 */
+	private static int calculateXP(Player player, Entity kill, int mob_level) {
+		        int mob_tier = 1;
+		        if (mob_level < 19) {
+		            mob_tier = 1;
+		        } else if (mob_level >= 19 && mob_level < 39) {
+		            mob_tier = 2;
+		        } else if (mob_level >= 39 && mob_level < 59) {
+		            mob_tier = 3;
+		        } else if (mob_level >= 59 && mob_level < 79) {
+		            mob_tier = 4;
+		        } else if (mob_level >= 79) {
+		            mob_tier = 5;
+		        }
+		        int pLevel = API.getGamePlayer(player).getStats().getLevel();
+		        int pTier = 0;
+		        if (pLevel < 10) {
+		            pTier = 1;
+		        } else if (pLevel >= 10 && pLevel < 20) {
+		            pTier = 2;
+		        } else if (pLevel >= 20 && pLevel < 30) {
+		            pTier = 3;
+		        } else if (pLevel >= 30 && pLevel < 40) {
+		            pTier = 4;
+		        } else if (pLevel >= 40) {
+		            pTier = 5;
+		        }
+		        int xp = (int) (((pLevel * 5) + 45) * (1 + 0.05 * (pLevel + (mob_level - pLevel)))); // patch 1.9 exp formula
+//		        ItemStack weapon = kill.getEquipment().getItemInHand();
+
+		        if (pTier == mob_tier) {
+		            xp *= 1.5;
+		        } else if (pTier < mob_tier) {
+		            xp *= 1.5;
+		        } else if (pTier == mob_tier) {
+		            xp *= 0.95;
+		        }
+//		        if (weapon.getEnchantments().containsKey(Enchantment.KNOCKBACK)) {
+//		            xp *= 1.5;
+//		        }
+		        return xp;
+		    }
 
 	/**
 	 * To get the players region.

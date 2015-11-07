@@ -215,18 +215,6 @@ public class GamePlayer {
 
         double futureExperience = experience + experienceToAdd;
         int xpNeeded = getEXPNeeded(level);
-        /*
-        m
-        c_i_k = ?  a_i_k * b_k_i
-       k=1
-
-        for (int i=0; i<l; ++i)
-        for (int j=0; j<n; ++j)
-         for (int k=0; k<m; ++k)
-            c[i][k] += a[i][k] * b[k][j]
-
-         */
-        	
         if (futureExperience >= xpNeeded) {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, 0, true);
             Utils.log.info("[LEVEL] Leveling " + T.getName() + " to level " + (getLevel() + 1));

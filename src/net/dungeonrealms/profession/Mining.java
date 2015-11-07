@@ -154,7 +154,41 @@ public class Mining implements GenericMechanic {
 		stackInHand = CraftItemStack.asBukkitCopy(nms);
 		p.setItemInHand(stackInHand);
 		ItemMeta meta = stackInHand.getItemMeta();
-		meta.setLore(Collections.singletonList(ChatColor.GREEN.toString() + currentXP + "/" + maxXP));
+		ArrayList<String> lore = new ArrayList<>();
+        lore.add(currentXP + "/" + Mining.getMaxXP(tier));
+        String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
+        double percentDone = 100.0 * currentXP / maxXP;
+        double percentDoneDisplay = (percentDone / 100) * 50.0D;
+        int display = (int) percentDoneDisplay;
+        if (display <= 0) {
+        	display = 1;
+        }
+        if (display > 50) {
+        	display = 50;
+        }
+        String newexpBar = ChatColor.GREEN.toString() + expBar.substring(0, display) + ChatColor.RED.toString()
+        	        + expBar.substring(display, expBar.length());
+        lore.add(newexpBar);
+        switch (tier) {
+        case 1:
+            lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Wood");
+            break;
+        case 2:
+            lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Stone");
+            break;
+        case 3:
+            lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Iron");
+            break;
+        case 4:
+            lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Diamond");
+            break;
+        case 5:
+            lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Gold");
+            break;
+        default:
+            break;
+    }
+        meta.setLore(lore);
 		stackInHand.setItemMeta(meta);
 		p.setItemInHand(stackInHand);
 	}
