@@ -1,30 +1,12 @@
 package net.dungeonrealms.handlers;
 
-import java.util.Random;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
-import org.bukkit.entity.WitherSkull;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.inventivetalent.bossbar.BossBarAPI;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.mastery.GamePlayer;
+import net.dungeonrealms.mechanics.SoundAPI;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -33,6 +15,22 @@ import net.dungeonrealms.mongo.EnumOperators;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.EntityLiving;
+import net.minecraft.server.v1_8_R3.PacketPlayOutEntityStatus;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.*;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.inventivetalent.bossbar.BossBarAPI;
+
+import java.util.Random;
 
 /**
  * Created by Kieran on 10/3/2015.
@@ -53,8 +51,7 @@ public class HealthHandler implements GenericMechanic {
         return EnumPriority.CARDINALS;
     }
 
-    @Override
-	public void startInitialization() {
+    public void startInitialization() {
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::updatePlayerHPBars, 40, 5L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40, 20L);
     }
@@ -150,7 +147,7 @@ public class HealthHandler implements GenericMechanic {
             return;
         }
         double maxHP = getPlayerMaxHPLive(player);
-        double healthPercentage = (hp / maxHP);
+        double healthPercentage = ((double) hp / maxHP);
         if (healthPercentage * 100.0F > 100.0F) {
             healthPercentage = 1.0;
         }
@@ -304,9 +301,9 @@ public class HealthHandler implements GenericMechanic {
                 double currentHP = getPlayerHPLive(player);
                 double amountToHealPlayer = getPlayerHPRegenLive(player);
                 GamePlayer gp = API.getGamePlayer(player);
-                if (gp == null || gp.getStats() == null)
-                    return;
-                amountToHealPlayer += amountToHealPlayer * gp.getStats().getHPRegen();
+                if (gp != null || gp.getStats() != null) {
+                    amountToHealPlayer += amountToHealPlayer * gp.getStats().getHPRegen();
+                }
                 double maxHP = getPlayerMaxHPLive(player);
                 if (currentHP + 1 > maxHP) {
                     if (player.getHealth() != 20) {
@@ -361,10 +358,10 @@ public class HealthHandler implements GenericMechanic {
             player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " -> " + ChatColor.GREEN + " [" + (currentHP + amount) + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
         }
 
-        if ((currentHP + amount) >= maxHP) {
+        if ((currentHP + (double) amount) >= maxHP) {
             player.setHealth(20);
             setPlayerHPLive(player, (int) maxHP);
-        } else if (player.getHealth() <= 19 && ((currentHP + amount) < maxHP)) {
+        } else if (player.getHealth() <= 19 && ((currentHP + (double) amount) < maxHP)) {
             setPlayerHPLive(player, (int) (getPlayerHPLive(player) + (double) amount));
             double playerHPPercent = (getPlayerHPLive(player) + (double) amount) / maxHP;
             double newPlayerHP = playerHPPercent * 20;
@@ -401,10 +398,10 @@ public class HealthHandler implements GenericMechanic {
             }
         }
 
-        if ((currentHP + amount) >= maxHP) {
+        if ((currentHP + (double) amount) >= maxHP) {
             entity.setHealth(20);
             setMonsterHPLive(entity, (int) maxHP);
-        } else if (entity.getHealth() <= 19 && ((currentHP + amount) < maxHP)) {
+        } else if (entity.getHealth() <= 19 && ((currentHP + (double) amount) < maxHP)) {
             setMonsterHPLive(entity, (int) (getMonsterHPLive(entity) + (double) amount));
             double monsterHPPercent = (getMonsterHPLive(entity) + (double) amount) / maxHP;
             double newMonsterHP = monsterHPPercent * 20;
@@ -520,6 +517,12 @@ public class HealthHandler implements GenericMechanic {
                     break;
             }
         }
+        if (leAttacker instanceof Player) {
+            PacketPlayOutEntityStatus status = new PacketPlayOutEntityStatus(((CraftEntity)player).getHandle(), (byte) 2);
+            ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, status);
+            SoundAPI.getInstance().playSoundAtLocation("damage.hit", player.getLocation(), 6);
+            return;
+        }
         if (!(leAttacker == null) && !(API.isPlayer(leAttacker))) {
             Entities.getInstance().MONSTER_LAST_ATTACK.put(leAttacker, 15);
             if (!Entities.getInstance().MONSTERS_LEASHED.contains(leAttacker)) {
@@ -607,16 +610,9 @@ public class HealthHandler implements GenericMechanic {
         int level = entity.getMetadata("level").get(0).asInt();
         EntityLiving entity1 = ((CraftLivingEntity) entity).getHandle();
         String name = entity.getMetadata("customname").get(0).asString();
-        if (entity.getPassenger() != null && !entity.hasMetadata("isElite")){
-//        	Hologram holo = Hologram.getHologram(entity1.getBukkitEntity());
-//        	if(holo != null){
-//				String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET;
-//				String healthName = entity1.getBukkitEntity().getMetadata("currentHP").get(0).asInt()
-//				        + ChatColor.RED.toString() + "❤ ";
-//        		holo.setLines(new String[] {lvl + name, healthName});
-//        	}
-        		
-        }
+        if (entity.getPassenger() != null && !entity.hasMetadata("isElite"))
+            entity.getPassenger().setCustomName(entity.getMetadata("currentHP").get(0).asInt() + ChatColor.RED.toString() + " ❤" + ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
+                    + ChatColor.RESET + name);
         entity.setHealth(convHPToDisplay);
         if (!Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
             Entities.getInstance().MONSTERS_LEASHED.add(entity);
@@ -740,10 +736,10 @@ public class HealthHandler implements GenericMechanic {
     private int getHealthRegenVitalityFromArmor(ItemStack itemStack, double totalRegen) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
         if (nmsItem == null || nmsItem.getTag() == null) {
-            return 0;
+            return (int) totalRegen;
         }
         if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor"))) {
-            return 0;
+            return (int) totalRegen;
         }
         if (nmsItem.getTag().getInt("vitality") > 0) {
             totalRegen += totalRegen * ((nmsItem.getTag().getInt("vitality") * 0.3D) / 100.0D);

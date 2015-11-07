@@ -129,6 +129,7 @@ public class DamageListener implements Listener {
                         }
                     }
                 } else {
+
                     event.setDamage(0);
                     event.setCancelled(true);
                 }
