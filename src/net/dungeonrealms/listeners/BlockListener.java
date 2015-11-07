@@ -408,10 +408,10 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void shiftRightClickJournal(PlayerInteractEvent e) {
     	if(e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getPlayer().isSneaking()){
-    		e.setCancelled(true);
-    		ItemStack stack  = e.getItem();
+            ItemStack stack  = e.getItem();
     		if(stack == null) return;
     		if(stack.getType() != Material.WRITTEN_BOOK) return;
+            e.setCancelled(true);
     		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
     		if(!nms.hasTag() && !nms.getTag().hasKey("journal")) return;
 //    			ShopMechanics.PENDING.remove(e.getPlayer().getUniqueId());
