@@ -103,6 +103,7 @@ public class RiftPortal implements GenericMechanic, Listener {
                                 for (int i = 0; i < 10; i++) {
                                     portal.getLocation().getWorld().dropItem(portal.getLocation().add(1, 1, 1), new ItemStack(Material.DIAMOND));
                                 }
+                                portal.unloadRift();
                             });
                         }
                     } else {
@@ -228,7 +229,7 @@ public class RiftPortal implements GenericMechanic, Listener {
                         }
                     });
                 }
-            }, 0, 10);
+            }, 0, 35);
         }
 
         public void invokeParticles() {

@@ -23,7 +23,7 @@ import java.util.UUID;
 /**
  * Created by Nick on 9/24/2015.
  */
-public class Subscription implements GenericMechanic{
+public class Subscription implements GenericMechanic {
 
     static Subscription instance = null;
 
@@ -36,17 +36,13 @@ public class Subscription implements GenericMechanic{
 
     public static ArrayList<UUID> PLAYER_SUBSCRIPTION = new ArrayList<>();
 
-    public void doAdd(UUID uuid) {
-        PLAYER_SUBSCRIPTION.add(uuid);
-    }
-
     @Override
     public EnumPriority startPriority() {
         return EnumPriority.PRIESTS;
     }
 
     @Override
-	public void startInitialization() {
+    public void startInitialization() {
         Utils.log.info("[DUNGEON_REALMS] Starting up Subscription() ... STARTING");
         TimeZone.setDefault(TimeZone.getTimeZone("American/New_York"));
         startTimer();
@@ -110,32 +106,32 @@ public class Subscription implements GenericMechanic{
      * @since 1.0
      */
     public void handleJoin(Player player) {
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            if (player == null) return;
-            long currentTime = System.currentTimeMillis() / 1000l;
-            long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId())));
-            int hoursLeft = (int) ((endTime - currentTime) / 1000l);
+        if(!PLAYER_SUBSCRIPTION.contains(player)) {
+            PLAYER_SUBSCRIPTION.add(player.getUniqueId());
+        }
+        long currentTime = System.currentTimeMillis() / 1000l;
+        long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId())));
+        int hoursLeft = (int) ((endTime - currentTime) / 1000l);
 
-            if (hoursLeft > 10) {
-                TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
-                bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "profile"));
-                bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to view Profile!").create()));
-                TextComponent test = new TextComponent(ChatColor.WHITE + "[" + ChatColor.YELLOW + ChatColor.BOLD + "SUB" + ChatColor.RESET + ChatColor.WHITE + "] " + ChatColor.RED + "Your subscription is active!! Click ");
-                test.addExtra(bungeeMessage);
-                test.addExtra(ChatColor.RED + " for more information!");
-                player.spigot().sendMessage(test);
-            } else if (hoursLeft <= 9 && hoursLeft >= 3) {
-                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.YELLOW.toString() + ChatColor.BOLD + "SUB" + ChatColor.WHITE + "] " + ChatColor.RED + "Your subscription will end in " + ChatColor.AQUA + hoursLeft + ChatColor.RED + " hours. :-(");
-            } else if (hoursLeft <= 0) {
-                TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
-                bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://shop.dungeonrealms.net"));
-                bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Dungeon Realms Store!").create()));
-                TextComponent test = new TextComponent(ChatColor.WHITE + "[" + ChatColor.YELLOW + ChatColor.BOLD + "SUB" + ChatColor.RESET + ChatColor.WHITE + "] " + ChatColor.RED + "Your subscription has ended! Click ");
-                test.addExtra(bungeeMessage);
-                test.addExtra(ChatColor.RED + " to learn more!");
-                player.spigot().sendMessage(test);
-            }
-        }, 20 * 5);
+        if (hoursLeft > 10) {
+            TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
+            bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "profile"));
+            bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to view Profile!").create()));
+            TextComponent test = new TextComponent(ChatColor.WHITE + "[" + ChatColor.YELLOW + ChatColor.BOLD + "SUB" + ChatColor.RESET + ChatColor.WHITE + "] " + ChatColor.RED + "Your subscription is active!! Click ");
+            test.addExtra(bungeeMessage);
+            test.addExtra(ChatColor.RED + " for more information!");
+            player.spigot().sendMessage(test);
+        } else if (hoursLeft <= 9 && hoursLeft >= 3) {
+            player.sendMessage(ChatColor.WHITE + "[" + ChatColor.YELLOW.toString() + ChatColor.BOLD + "SUB" + ChatColor.WHITE + "] " + ChatColor.RED + "Your subscription will end in " + ChatColor.AQUA + hoursLeft + ChatColor.RED + " hours. :-(");
+        } else if (hoursLeft <= 0) {
+            TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
+            bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://shop.dungeonrealms.net"));
+            bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Dungeon Realms Store!").create()));
+            TextComponent test = new TextComponent(ChatColor.WHITE + "[" + ChatColor.YELLOW + ChatColor.BOLD + "SUB" + ChatColor.RESET + ChatColor.WHITE + "] " + ChatColor.RED + "Your subscription has ended! Click ");
+            test.addExtra(bungeeMessage);
+            test.addExtra(ChatColor.RED + " to learn more!");
+            player.spigot().sendMessage(test);
+        }
     }
 
 }
