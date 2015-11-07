@@ -207,13 +207,15 @@ public class ItemListener implements Listener {
             }
             event.getPlayer().updateInventory();
             event.getPlayer().setFoodLevel(event.getPlayer().getFoodLevel() + 6);
-            event.getPlayer().sendMessage(ChatColor.GREEN + "Healing " + ChatColor.BOLD + nmsItem.getTag().getInt("healAmount") + ChatColor.GREEN + "HP for 15 Seconds!");
+            event.getPlayer().sendMessage(ChatColor.GREEN + "Healing " + ChatColor.BOLD + nmsItem.getTag().getInt("healAmount") + ChatColor.GREEN + "HP/s for 15 Seconds!");
             event.getPlayer().setMetadata("FoodRegen", new FixedMetadataValue(DungeonRealms.getInstance(), "True"));
             int taskID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
                 if (!event.getPlayer().isSprinting() && HealthHandler.getInstance().getPlayerHPLive(event.getPlayer()) < HealthHandler.getInstance().getPlayerMaxHPLive(event.getPlayer())) {
                     HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
                 } else {
-                    event.getPlayer().removeMetadata("FoodRegen", DungeonRealms.getInstance());
+                    if (event.getPlayer().hasMetadata("FoodRegen")) {
+                        event.getPlayer().removeMetadata("FoodRegen", DungeonRealms.getInstance());
+                    }
                 }
             },0L, 20L);
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
