@@ -33,6 +33,7 @@ import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.spawning.BuffManager;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
+import net.dungeonrealms.world.Mercenary;
 import net.dungeonrealms.world.RiftPortal;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -150,6 +151,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(AchievementManager.getInstance());
         mm.registerMechanic(BuffManager.getInstance());
         mm.registerMechanic(RiftPortal.getInstance());
+        mm.registerMechanic(Mercenary.getInstance());
 
         mm.loadMechanics();
 
@@ -179,7 +181,7 @@ public class DungeonRealms extends JavaPlugin {
 
     public void onDisable() {
         saveConfig();
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), API::logoutAllPlayers);
+        API.logoutAllPlayers();
         mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
         Database.mongoClient.close();

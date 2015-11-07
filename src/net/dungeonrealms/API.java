@@ -30,10 +30,7 @@ import net.dungeonrealms.party.Party;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.teleportation.TeleportAPI;
-import org.bukkit.Bukkit;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Entity;
@@ -252,6 +249,7 @@ public class API {
      */
     public static void handleLogout(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, false);
         if (BankMechanics.storage.containsKey(uuid)) {
             Inventory inv = BankMechanics.storage.get(uuid).inv;
             if (inv != null) {
@@ -318,6 +316,13 @@ public class API {
     public static void handleLogin(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
 
+        player.sendMessage(ChatColor.GREEN + "Successfully received your data.. loading now...");
+
+        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
+            player.kickPlayer(ChatColor.RED + "Your data failed to load! Try rejoining.. ?");
+            return;
+        }
+
         GamePlayer gp = new GamePlayer(Bukkit.getPlayer(player.getUniqueId()));
         API.GAMEPLAYERS.add(gp);
 
@@ -362,6 +367,8 @@ public class API {
         ScoreboardHandler.getInstance().matchMainScoreboard(player);
 
         player.setGameMode(GameMode.SURVIVAL);
+
+        player.sendMessage(ChatColor.GREEN + "Character loaded, have fun. ;-)");
     }
 
     /**

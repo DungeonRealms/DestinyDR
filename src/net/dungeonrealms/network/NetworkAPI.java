@@ -124,6 +124,11 @@ public class NetworkAPI implements PluginMessageListener {
     public void sendAllGuildMessage(String guildName, String message) {
         ArrayList<String> members = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, guildName);
         ArrayList<String> officers = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, guildName);
+
+        if (members.isEmpty() && officers.isEmpty()) {
+            return;
+        }
+
         members.addAll(officers);
         members.add((String) DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, guildName));
         members.add((String) DatabaseAPI.getInstance().getData(EnumGuildData.CO_OWNER, guildName));

@@ -77,9 +77,11 @@ public class MainListener implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
         Player player = event.getPlayer();
+        player.getInventory().clear();
         player.setGameMode(GameMode.ADVENTURE);
 
-        player.getInventory().clear();
+        player.sendMessage(ChatColor.GREEN + "Loading your data.. This will only take a moment!");
+
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
                 () -> API.handleLogin(player.getUniqueId()), 20L * 3);
     }
@@ -134,7 +136,7 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
-        event.setQuitMessage("");
+        event.setQuitMessage(null);
         Player player = event.getPlayer();
         if (EntityAPI.hasPetOut(player.getUniqueId())) {
             net.minecraft.server.v1_8_R3.Entity playerPet = EntityAPI.getPlayerPet(player.getUniqueId());

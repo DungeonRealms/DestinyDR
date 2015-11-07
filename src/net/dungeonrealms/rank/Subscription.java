@@ -106,7 +106,7 @@ public class Subscription implements GenericMechanic {
      * @since 1.0
      */
     public void handleJoin(Player player) {
-        if(!PLAYER_SUBSCRIPTION.contains(player)) {
+        if (!PLAYER_SUBSCRIPTION.contains(player.getUniqueId())) {
             PLAYER_SUBSCRIPTION.add(player.getUniqueId());
         }
         long currentTime = System.currentTimeMillis() / 1000l;
