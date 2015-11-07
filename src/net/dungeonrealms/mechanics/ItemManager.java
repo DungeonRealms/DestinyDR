@@ -399,7 +399,7 @@ public class ItemManager {
      * @return ItemStack
      */
     public static ItemStack createCharacterJournal(Player p) {
-        ItemStack stack = createItem(Material.WRITTEN_BOOK, ChatColor.YELLOW.toString() + "Character Journal", new String[]{"Right Click to see stuff"});
+        ItemStack stack = createItem(Material.WRITTEN_BOOK, ChatColor.YELLOW.toString() + "Character Journal", new String[]{ChatColor.YELLOW + "Right click to view your character stats.", ChatColor.YELLOW + "Shift right click to setup a shop!"});
         BookMeta bm = (BookMeta) stack.getItemMeta();
         List<String> pages = new ArrayList<String>();
         String page1_string = "";

@@ -25,7 +25,6 @@ import net.dungeonrealms.mechanics.generic.GenericMechanic;
  */
 public class ShopMechanics implements GenericMechanic{
     public static HashMap<UUID, Shop> PLAYER_SHOPS = new HashMap<>();
-    public static ArrayList<UUID> PENDING = new ArrayList<>();
     /**
      * setup new shop for player
      *
@@ -126,12 +125,4 @@ public class ShopMechanics implements GenericMechanic{
     public void stopInvocation() {
         deleteAllShops();
     }
-
-	/**
-	 * @param uniqueId
-	 */
-	public static void addPendingPlacement(UUID uniqueId) {
-		PENDING.add(uniqueId);
-		Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () ->{ if(PENDING.contains(uniqueId)) PENDING.remove(uniqueId);}, 220);
-	}
 }

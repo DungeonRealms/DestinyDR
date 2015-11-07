@@ -718,11 +718,6 @@ public class ClickHandler {
                 case 1:
                     PlayerMenus.openFriendInventory(player);
                     break;
-                case 2:
-                	ShopMechanics.addPendingPlacement(player.getUniqueId());
-                	player.sendMessage(ChatColor.YELLOW + "Right click a block to place your shop!");
-                	player.closeInventory();
-                	break;
                 case 6:
                     PlayerMenus.openPlayerParticleMenu(player);
                     break;

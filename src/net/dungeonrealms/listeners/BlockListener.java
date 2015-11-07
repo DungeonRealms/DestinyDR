@@ -406,10 +406,15 @@ public class BlockListener implements Listener {
     }
     
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void playerRightClickBlock(PlayerInteractEvent e) {
-    	if(e.getAction() == Action.RIGHT_CLICK_BLOCK){
-    		if(ShopMechanics.PENDING.contains(e.getPlayer().getUniqueId())){
-    			ShopMechanics.PENDING.remove(e.getPlayer().getUniqueId());
+    public void shiftRightClickJournal(PlayerInteractEvent e) {
+    	if(e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getPlayer().isSneaking()){
+    		e.setCancelled(true);
+    		ItemStack stack  = e.getItem();
+    		if(stack == null) return;
+    		if(stack.getType() != Material.WRITTEN_BOOK) return;
+    		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+    		if(!nms.hasTag() && !nms.getTag().hasKey("journal")) return;
+//    			ShopMechanics.PENDING.remove(e.getPlayer().getUniqueId());
     			Block b1 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(0,1,0));
     			Block b2 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(1,1,0));
     			if(b1.getType() == Material.AIR && b2.getType() == Material.AIR && API.isInSafeRegion(e.getClickedBlock().getLocation())){
@@ -417,11 +422,15 @@ public class BlockListener implements Listener {
     					e.getPlayer().sendMessage(ChatColor.RED + "You already have an open shop!");
     					return;
     				}
-    				ShopMechanics.setupShop(e.getClickedBlock(), e.getPlayer().getUniqueId());
+    				if(API.isInSafeRegion(b1.getLocation())){
+    					Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(),()->
+    				ShopMechanics.setupShop(e.getClickedBlock(), e.getPlayer().getUniqueId()));
+    				}else{
+        				e.getPlayer().sendMessage(ChatColor.RED + "You can not place a shop here.");
+    				}
     			}else{
     				e.getPlayer().sendMessage(ChatColor.RED + "You can not place a shop here.");
     			}
-    		}
     	}
     }
 }
