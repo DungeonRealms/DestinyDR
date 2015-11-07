@@ -31,7 +31,8 @@ public class BuffManager implements GenericMechanic {
         return EnumPriority.CARDINALS;
     }
 
-    public void startInitialization() {
+    @Override
+	public void startInitialization() {
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::spawnSomeBuffs, 40L, 1800L);
     }
 

@@ -1,13 +1,11 @@
 package net.dungeonrealms.entities.types.monsters.base;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
-import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -127,6 +125,7 @@ public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze i
     	
     }
     
+	@Override
 	public abstract EnumMonster getEnum();
 
 	@Override

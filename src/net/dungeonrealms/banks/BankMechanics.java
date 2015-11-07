@@ -44,7 +44,8 @@ public class BankMechanics implements GenericMechanic {
         return EnumPriority.CARDINALS;
     }
 
-    public void startInitialization() {
+    @Override
+	public void startInitialization() {
         loadCurrency();
     }
 

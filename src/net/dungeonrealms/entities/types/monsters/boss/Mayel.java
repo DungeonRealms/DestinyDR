@@ -21,13 +21,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import com.sk89q.worldguard.bukkit.util.Entities;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.BasicEntitySkeleton;
-import net.dungeonrealms.entities.types.monsters.EntityPirate;
 import net.dungeonrealms.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.utils.EntityStats;
@@ -107,6 +104,7 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 
 	}
 
+	@Override
 	protected void setArmor(int tier) {
 		ItemStack[] armor = getArmor();
 		// weapon, boots, legs, chest, helmet/head
@@ -132,8 +130,8 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 	 */
 	@Override
 	public void a(EntityLiving entityliving, float f) {
-		EntityArrow entityarrow = new EntityArrow(this.world, this, entityliving, 1.6F, (float) (14 - 2 * 4));
-		entityarrow.b((double) (f * 2.0F) + this.random.nextGaussian() * 0.25D + (double) ((float) 2 * 0.11F));
+		EntityArrow entityarrow = new EntityArrow(this.world, this, entityliving, 1.6F, 14 - 2 * 4);
+		entityarrow.b(f * 2.0F + this.random.nextGaussian() * 0.25D + 2 * 0.11F);
 		Projectile arrowProjectile = (Projectile) entityarrow.getBukkitEntity();
 		net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
 		NBTTagCompound tag = nmsItem.getTag();
@@ -143,6 +141,7 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 
 	}
 
+	@Override
 	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
 		ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 		SkullMeta meta = (SkullMeta) head.getItemMeta();

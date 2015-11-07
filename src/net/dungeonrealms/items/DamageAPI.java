@@ -69,7 +69,7 @@ public class DamageAPI {
         }
         int weaponTier = tag.getInt("itemTier");
         int damageRandomizer = ItemGenerator.getRandomDamageVariable(weaponTier);
-        damage = (double) Utils.randInt((int) Math.round(tag.getDouble("damage") - (tag.getDouble("damage") / damageRandomizer)), (int) Math.round(tag.getDouble("damage") + (tag.getDouble("damage") / (damageRandomizer - 1))));
+        damage = Utils.randInt((int) Math.round(tag.getDouble("damage") - (tag.getDouble("damage") / damageRandomizer)), (int) Math.round(tag.getDouble("damage") + (tag.getDouble("damage") / (damageRandomizer - 1))));
         boolean isHitCrit = false;
         if (API.isPlayer(receiver)) {
             if (tag.getDouble("vsPlayers") != 0) {
@@ -226,7 +226,7 @@ public class DamageAPI {
             }
         }
         int damageRandomizer = ItemGenerator.getRandomDamageVariable(projectile.getMetadata("itemTier").get(0).asInt());
-        damage = (double) Utils.randInt(((int) Math.round(projectile.getMetadata("damage").get(0).asDouble() - projectile.getMetadata("damage").get(0).asDouble() / damageRandomizer)),
+        damage = Utils.randInt(((int) Math.round(projectile.getMetadata("damage").get(0).asDouble() - projectile.getMetadata("damage").get(0).asDouble() / damageRandomizer)),
                 (int) Math.round(projectile.getMetadata("damage").get(0).asDouble() + projectile.getMetadata("damage").get(0).asDouble() / (damageRandomizer - 1)));
         boolean isHitCrit = false;
         if (API.isPlayer(receiver)) {

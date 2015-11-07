@@ -57,7 +57,8 @@ public class CombatLog implements GenericMechanic{
         return EnumPriority.CATHOLICS;
     }
 
-    public void startInitialization() {
+    @Override
+	public void startInitialization() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for (Map.Entry<Player, Integer> e : COMBAT.entrySet()) {
                 if (e.getValue() <= 0) {

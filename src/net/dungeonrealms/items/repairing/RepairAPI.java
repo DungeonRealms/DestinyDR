@@ -143,7 +143,7 @@ public class RepairAPI {
         if (percentDurability == 1500) {
             percentDurability = 1500 - 1;
         }
-        return (double) Math.round(percentDurability);
+        return Math.round(percentDurability);
     }
 
     /**

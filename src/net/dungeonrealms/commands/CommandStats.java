@@ -6,9 +6,6 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import net.dungeonrealms.commands.generic.BasicCommand;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.stats.StatsManager;
 
 /**

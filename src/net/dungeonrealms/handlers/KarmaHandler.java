@@ -74,7 +74,8 @@ public class KarmaHandler implements GenericMechanic {
         return EnumPriority.POPE;
     }
 
-    public void startInitialization() {
+    @Override
+	public void startInitialization() {
         CHAOTIC_RESPAWNS.add(new Location(Bukkit.getWorlds().get(0), -382, 68, 867));
         CHAOTIC_RESPAWNS.add(new Location(Bukkit.getWorlds().get(0), -350, 67, 883));
         CHAOTIC_RESPAWNS.add(new Location(Bukkit.getWorlds().get(0), -330, 65, 898));

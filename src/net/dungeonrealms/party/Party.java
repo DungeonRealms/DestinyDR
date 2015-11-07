@@ -38,7 +38,8 @@ public class Party implements GenericMechanic {
         return EnumPriority.CATHOLICS;
     }
 
-    public void startInitialization() {
+    @Override
+	public void startInitialization() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), this::updateParties, 0, 5L);
     }
 

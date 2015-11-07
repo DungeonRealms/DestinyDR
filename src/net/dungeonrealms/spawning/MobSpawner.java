@@ -1,30 +1,28 @@
 package net.dungeonrealms.spawning;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.entities.utils.EntityStats;
-import net.dungeonrealms.handlers.HealthHandler;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.EntityArmorStand;
-import net.minecraft.server.v1_8_R3.World;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.Utils;
+import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.EntityArmorStand;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Sep 25, 2015
@@ -35,7 +33,6 @@ public class MobSpawner {
 	public EntityArmorStand armorstand;
 	public int tier;
 	public List<Entity> SPAWNED_MONSTERS = new CopyOnWriteArrayList<>();
-	public static ConcurrentHashMap<org.bukkit.entity.Entity, org.bukkit.entity.Entity> NAMETAGS = new ConcurrentHashMap<>();
 	public boolean isElite = false;
 	public int spawnAmount;
 	public int id;
@@ -143,30 +140,14 @@ public class MobSpawner {
 						return;
 					String customName = eliteName;
 					entity.setCustomName(customName);
-						ArmorStand stand = entity.getBukkitEntity().getLocation().getWorld()
-					            .spawn(entity.getBukkitEntity().getLocation(), ArmorStand.class);
-						stand.setRemoveWhenFarAway(false);
-						stand.setVisible(false);
-						stand.setSmall(true);
-						stand.setBasePlate(false);
-						stand.setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "nametag"));
-						stand.setGravity(false);
-						stand.setArms(false);
-						stand.setCustomNameVisible(true);
-						stand.setCustomName(customName);
-						stand.setRemoveWhenFarAway(false);
-						entity.getBukkitEntity().setPassenger(stand);
-						EntityStats.setMonsterElite(entity, level + 10, tier);
-						stand.setCustomName(entity.getCustomName());
-						entity.getBukkitEntity().setMetadata("isElite",
-					            new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
 						toSpawn = true;
 						if (!firstSpawn) {
 							Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 								entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 								world.addEntity(entity, SpawnReason.CUSTOM);
 								entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-								NAMETAGS.put(entity.getBukkitEntity(), stand);
+//								Hologram holo = new Hologram(entity.getBukkitEntity().getLocation(), new String[]{eliteName}, DungeonRealms.getInstance());
+//    							holo.followEntity(entity.getBukkitEntity());
 								toSpawn = false;
 								SPAWNED_MONSTERS.add(entity);
 							} , 1200 * 2L);
@@ -175,7 +156,8 @@ public class MobSpawner {
 								entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 								world.addEntity(entity, SpawnReason.CUSTOM);
 								entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-								NAMETAGS.put(entity.getBukkitEntity(), stand);
+//								Hologram holo = new Hologram(entity.getBukkitEntity().getLocation(), new String[]{eliteName}, DungeonRealms.getInstance());
+//    							holo.followEntity(entity.getBukkitEntity());
 								toSpawn = false;
 								firstSpawn = false;
 								SPAWNED_MONSTERS.add(entity);
@@ -220,50 +202,26 @@ public class MobSpawner {
 					Utils.log.info(entity.getCustomName() + " doesn't have metadata 'customname' ");
 					customName = monsEnum.name;
 				}
-				final String finalName = healthName + lvl + customName;
+				final String finalName = lvl + customName;
 				toSpawn = true;
 				if(!firstSpawn){
 					Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-					ArmorStand stand = entity.getBukkitEntity().getLocation().getWorld()
-				            .spawn(entity.getBukkitEntity().getLocation(), ArmorStand.class);
-					stand.setRemoveWhenFarAway(false);
-					stand.setVisible(false);
-					stand.setSmall(true);
-					stand.setBasePlate(false);
-					stand.setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "nametag"));
-					stand.setGravity(false);
-					stand.setArms(false);
-					stand.setCustomNameVisible(true);
-					stand.setCustomName(finalName);
-					stand.setRemoveWhenFarAway(false);
-					entity.getBukkitEntity().setPassenger(stand);
 					entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 					world.addEntity(entity, SpawnReason.CUSTOM);
 					entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-					NAMETAGS.put(entity.getBukkitEntity(), stand);
+//					Hologram holo = new Hologram(entity.getBukkitEntity().getLocation(), new String[]{finalName, healthName}, DungeonRealms.getInstance());
+//					holo.followEntity(entity.getBukkitEntity());
 					SPAWNED_MONSTERS.add(entity);
 					toSpawn = false;
 					} , 200L);
 				}else{
 					Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-					ArmorStand stand = entity.getBukkitEntity().getLocation().getWorld()
-				            .spawn(entity.getBukkitEntity().getLocation(), ArmorStand.class);
-					stand.setRemoveWhenFarAway(false);
-					stand.setVisible(false);
-					stand.setSmall(true);
-					stand.setBasePlate(false);
-					stand.setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "nametag"));
-					stand.setGravity(false);
-					stand.setArms(false);
-					firstSpawn = false;
-					stand.setCustomNameVisible(true);
-					stand.setCustomName(finalName);
-					stand.setRemoveWhenFarAway(false);
-					entity.getBukkitEntity().setPassenger(stand);
 					entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 					world.addEntity(entity, SpawnReason.CUSTOM);
 					entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-					NAMETAGS.put(entity.getBukkitEntity(), stand);
+//					Hologram holo = new Hologram(entity.getBukkitEntity().getLocation(), new String[]{finalName, healthName}, DungeonRealms.getInstance());
+//					holo.followEntity(entity.getBukkitEntity());
+					firstSpawn = false;
 					SPAWNED_MONSTERS.add(entity);
 					toSpawn = false;
 					});
@@ -283,16 +241,6 @@ public class MobSpawner {
 	public void kill() {
 		if (SPAWNED_MONSTERS.size() > 0)
 			for (Entity spawnedMonster : SPAWNED_MONSTERS) {
-					if (spawnedMonster.getBukkitEntity().getPassenger() != null) {
-						spawnedMonster.getBukkitEntity().getPassenger().remove();
-					}
-					if (NAMETAGS.containsKey(spawnedMonster.getBukkitEntity())) {
-						org.bukkit.entity.Entity ent = NAMETAGS.get(spawnedMonster.getBukkitEntity());
-						((CraftEntity) ent).getHandle().die();
-						armorstand.getWorld().kill(((CraftEntity) ent).getHandle());
-						ent.remove();
-						NAMETAGS.remove(spawnedMonster.getBukkitEntity());
-					}
 					spawnedMonster.getBukkitEntity().remove();
 					spawnedMonster.dead = true;
 					armorstand.getWorld().kill(spawnedMonster);
@@ -341,18 +289,5 @@ public class MobSpawner {
 		} else {
 			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::kill, 5L);
 		}
-		Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), this::checkNameTags, 0, 200L);
-	}
-
-	/**
-	 * Force NameTags to be removed if the owner is dead.
-	 */
-	private void checkNameTags() {
-        NAMETAGS.entrySet().stream().filter(mobNameTags -> !NAMETAGS.isEmpty()).filter(mobNameTags -> mobNameTags.getValue().getVehicle() == null).forEach(mobNameTags ->
-				Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> {
-					((CraftEntity) mobNameTags.getValue()).getHandle().die();
-					((CraftEntity) mobNameTags.getValue()).getHandle().dead = true;
-					NAMETAGS.remove(mobNameTags.getKey());
-				}));
 	}
 }

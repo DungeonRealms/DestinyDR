@@ -33,7 +33,8 @@ public class PlayerEnterRegionEvent extends Event {
         return region;
     }
 
-    public HandlerList getHandlers() {
+    @Override
+	public HandlerList getHandlers() {
         return handlers;
     }
 

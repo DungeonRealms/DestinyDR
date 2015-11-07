@@ -78,7 +78,8 @@ public class RealmManager implements GenericMechanic {
      *
      * @since 1.0
      */
-    public void startInitialization() {
+    @Override
+	public void startInitialization() {
         Utils.log.info("DungeonRealms Registering FTP() ... STARTING ...");
         File coreDirectory = DungeonRealms.getInstance().getDataFolder();
         try {

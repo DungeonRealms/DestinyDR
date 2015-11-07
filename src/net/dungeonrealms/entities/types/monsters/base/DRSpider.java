@@ -1,7 +1,5 @@
 package net.dungeonrealms.entities.types.monsters.base;
 
-import java.util.Random;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;

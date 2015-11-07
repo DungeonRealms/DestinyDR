@@ -65,7 +65,8 @@ public class Teleportation implements GenericMechanic {
         return EnumPriority.CATHOLICS;
     }
 
-    public void startInitialization() {
+    @Override
+	public void startInitialization() {
         Cyrennica = new Location(Bukkit.getWorlds().get(0), -378, 83, 362);
         Harrison_Field = new Location(Bukkit.getWorlds().get(0), -594, 58, 687, 92.0F, 1F);
         Dark_Oak_Tavern = new Location(Bukkit.getWorlds().get(0), 280, 58, 1132, 2.0F, 1F);

@@ -1,17 +1,12 @@
 package net.dungeonrealms.entities.types.monsters;
 
-import java.util.Random;
-
 import org.bukkit.ChatColor;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.base.DRZombie;
 import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
 
 /**

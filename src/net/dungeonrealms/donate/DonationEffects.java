@@ -47,7 +47,8 @@ public class DonationEffects implements GenericMechanic {
         return EnumPriority.CATHOLICS;
     }
 
-    public void startInitialization() {
+    @Override
+	public void startInitialization() {
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnPlayerParticleEffects, 40L, 1L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::spawnEntityParticleEffects, 40L, 1L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::removeGoldBlockTrails, 40L, 3L);

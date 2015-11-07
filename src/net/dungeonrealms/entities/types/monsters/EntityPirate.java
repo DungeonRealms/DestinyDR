@@ -1,13 +1,8 @@
 package net.dungeonrealms.entities.types.monsters;
 
-import org.bukkit.inventory.ItemStack;
-
-import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.base.DRZombie;
 import net.dungeonrealms.mastery.Utils;
-import net.minecraft.server.v1_8_R3.Item;
-import net.minecraft.server.v1_8_R3.Items;
 import net.minecraft.server.v1_8_R3.World;
 
 /**

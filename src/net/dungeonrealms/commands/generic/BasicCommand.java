@@ -150,9 +150,11 @@ public abstract class BasicCommand implements CommandExecutor, TabExecutor {
         }
     }
 
-    public abstract boolean onCommand(CommandSender sender, Command cmd, String label, String[] args);
+    @Override
+	public abstract boolean onCommand(CommandSender sender, Command cmd, String label, String[] args);
 
-    public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
+    @Override
+	public List<String> onTabComplete(CommandSender sender, Command cmd, String label, String[] args) {
         return null;
     }
 }

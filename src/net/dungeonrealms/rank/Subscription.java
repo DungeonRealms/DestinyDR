@@ -45,7 +45,8 @@ public class Subscription implements GenericMechanic{
         return EnumPriority.PRIESTS;
     }
 
-    public void startInitialization() {
+    @Override
+	public void startInitialization() {
         Utils.log.info("[DUNGEON_REALMS] Starting up Subscription() ... STARTING");
         TimeZone.setDefault(TimeZone.getTimeZone("American/New_York"));
         startTimer();

@@ -23,7 +23,6 @@ import com.connorlinfoot.bountifulapi.BountifulAPI;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
@@ -49,7 +48,8 @@ public class DungeonManager implements GenericMechanic{
         return EnumPriority.ARCHBISHOPS;
     }
 
-    public void startInitialization() {
+    @Override
+	public void startInitialization() {
         Utils.log.info("[DUNGEONS] Loading Dungeon Mechanics ... STARTING");
         try {
             FileUtils.forceMkdir(new File(DungeonRealms.getInstance().getDataFolder() + File.separator + "/dungeons/"));

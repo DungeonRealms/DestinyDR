@@ -58,7 +58,8 @@ public class Rank implements GenericMechanic{
         return EnumPriority.ARCHBISHOPS;
     }
 
-    public void startInitialization() {
+    @Override
+	public void startInitialization() {
         Database.ranks.find().forEach(printDocumentBlock, (aVoid, throwable) -> Utils.log.warning("[RANK] [ASYNC] Successfully grabbed all existing ranks!"));
     }
 

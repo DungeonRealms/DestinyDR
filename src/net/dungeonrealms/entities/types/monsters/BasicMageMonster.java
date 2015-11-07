@@ -1,12 +1,7 @@
 package net.dungeonrealms.entities.types.monsters;
 
-import java.util.Random;
-
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Projectile;
-import org.bukkit.inventory.ItemStack;
-
-import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.base.DRSkeleton;
 import net.dungeonrealms.items.Item.ItemTier;
@@ -15,7 +10,6 @@ import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.EntityLiving;
 import net.minecraft.server.v1_8_R3.EntityWitherSkull;
-import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.MathHelper;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.World;
@@ -61,10 +55,10 @@ public class BasicMageMonster extends DRSkeleton {
     public void a(EntityLiving entity, float f) {
         double d0 = entity.locX - this.locX;
         float f1 = MathHelper.c(f) * 0.5F;
-        double d1 = entity.getBoundingBox().b + (double) (entity.length / 2.0F) - (this.locY + (double) (this.length / 2.0F));
+        double d1 = entity.getBoundingBox().b + entity.length / 2.0F - (this.locY + this.length / 2.0F);
         double d2 = entity.locZ - this.locZ;
-        EntityWitherSkull entityWitherSkull = new EntityWitherSkull(this.world, this,d0 + this.random.nextGaussian() * (double) f1, d1, d2 + this.random.nextGaussian() * (double) f1);
-        entityWitherSkull.locY = this.locY + (double) (this.length / 2.0F) + 0.5D;
+        EntityWitherSkull entityWitherSkull = new EntityWitherSkull(this.world, this,d0 + this.random.nextGaussian() * f1, d1, d2 + this.random.nextGaussian() * f1);
+        entityWitherSkull.locY = this.locY + this.length / 2.0F + 0.5D;
         Projectile projectileWitherSkull = (Projectile) entityWitherSkull.getBukkitEntity();
         projectileWitherSkull.setVelocity(projectileWitherSkull.getVelocity().multiply(1.35));
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);

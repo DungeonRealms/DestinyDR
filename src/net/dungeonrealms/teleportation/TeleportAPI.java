@@ -2,7 +2,6 @@ package net.dungeonrealms.teleportation;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.handlers.KarmaHandler;
-import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.achievements.Achievements;

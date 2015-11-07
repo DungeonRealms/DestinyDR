@@ -1,5 +1,24 @@
 package net.dungeonrealms.handlers;
 
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
+import org.bukkit.entity.WitherSkull;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.inventivetalent.bossbar.BossBarAPI;
+
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
@@ -14,19 +33,6 @@ import net.dungeonrealms.mongo.EnumOperators;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.EntityLiving;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.*;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.inventivetalent.bossbar.BossBarAPI;
-
-import java.util.Random;
 
 /**
  * Created by Kieran on 10/3/2015.
@@ -47,7 +53,8 @@ public class HealthHandler implements GenericMechanic {
         return EnumPriority.CARDINALS;
     }
 
-    public void startInitialization() {
+    @Override
+	public void startInitialization() {
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::updatePlayerHPBars, 40, 5L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40, 20L);
     }
@@ -143,7 +150,7 @@ public class HealthHandler implements GenericMechanic {
             return;
         }
         double maxHP = getPlayerMaxHPLive(player);
-        double healthPercentage = ((double) hp / maxHP);
+        double healthPercentage = (hp / maxHP);
         if (healthPercentage * 100.0F > 100.0F) {
             healthPercentage = 1.0;
         }
@@ -354,10 +361,10 @@ public class HealthHandler implements GenericMechanic {
             player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " -> " + ChatColor.GREEN + " [" + (currentHP + amount) + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
         }
 
-        if ((currentHP + (double) amount) >= maxHP) {
+        if ((currentHP + amount) >= maxHP) {
             player.setHealth(20);
             setPlayerHPLive(player, (int) maxHP);
-        } else if (player.getHealth() <= 19 && ((currentHP + (double) amount) < maxHP)) {
+        } else if (player.getHealth() <= 19 && ((currentHP + amount) < maxHP)) {
             setPlayerHPLive(player, (int) (getPlayerHPLive(player) + (double) amount));
             double playerHPPercent = (getPlayerHPLive(player) + (double) amount) / maxHP;
             double newPlayerHP = playerHPPercent * 20;
@@ -394,10 +401,10 @@ public class HealthHandler implements GenericMechanic {
             }
         }
 
-        if ((currentHP + (double) amount) >= maxHP) {
+        if ((currentHP + amount) >= maxHP) {
             entity.setHealth(20);
             setMonsterHPLive(entity, (int) maxHP);
-        } else if (entity.getHealth() <= 19 && ((currentHP + (double) amount) < maxHP)) {
+        } else if (entity.getHealth() <= 19 && ((currentHP + amount) < maxHP)) {
             setMonsterHPLive(entity, (int) (getMonsterHPLive(entity) + (double) amount));
             double monsterHPPercent = (getMonsterHPLive(entity) + (double) amount) / maxHP;
             double newMonsterHP = monsterHPPercent * 20;
@@ -600,9 +607,16 @@ public class HealthHandler implements GenericMechanic {
         int level = entity.getMetadata("level").get(0).asInt();
         EntityLiving entity1 = ((CraftLivingEntity) entity).getHandle();
         String name = entity.getMetadata("customname").get(0).asString();
-        if (entity.getPassenger() != null && !entity.hasMetadata("isElite"))
-            entity.getPassenger().setCustomName(entity.getMetadata("currentHP").get(0).asInt() + ChatColor.RED.toString() + " ❤" + ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
-                    + ChatColor.RESET + name);
+        if (entity.getPassenger() != null && !entity.hasMetadata("isElite")){
+//        	Hologram holo = Hologram.getHologram(entity1.getBukkitEntity());
+//        	if(holo != null){
+//				String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET;
+//				String healthName = entity1.getBukkitEntity().getMetadata("currentHP").get(0).asInt()
+//				        + ChatColor.RED.toString() + "❤ ";
+//        		holo.setLines(new String[] {lvl + name, healthName});
+//        	}
+        		
+        }
         entity.setHealth(convHPToDisplay);
         if (!Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
             Entities.getInstance().MONSTERS_LEASHED.add(entity);

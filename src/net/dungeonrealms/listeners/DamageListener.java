@@ -110,7 +110,7 @@ public class DamageListener implements Listener {
         if (!(API.isPlayer(event.getDamager()))) return;
         if (((Player) event.getDamager()).getGameMode() != GameMode.CREATIVE) return;
         //Armor Stand Spawner check.
-        if (event.getEntity().getType() == EntityType.ARMOR_STAND) {
+        if (event.getEntity().getType() != EntityType.ARMOR_STAND) return;
             if (!event.getEntity().hasMetadata("type")) {
                 event.setCancelled(false);
                 event.getEntity().remove();
@@ -136,7 +136,6 @@ public class DamageListener implements Listener {
                 event.setDamage(0);
                 event.setCancelled(true);
             }
-        }
     }
 
     /**
@@ -150,8 +149,10 @@ public class DamageListener implements Listener {
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
         if ((!(API.isPlayer(event.getDamager()))) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL))) return;
         if (!(event.getEntity() instanceof CraftLivingEntity) && !(API.isPlayer(event.getEntity()))) return;
-        if (Entities.getInstance().PLAYER_PETS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
-        if (Entities.getInstance().PLAYER_MOUNTS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
+        Entities.getInstance();
+		if (Entities.PLAYER_PETS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
+        Entities.getInstance();
+		if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
         if (event.getEntity() instanceof CraftLivingEntity) {
             if (!(event.getEntity() instanceof Player)) {
                 if (!event.getEntity().hasMetadata("type")) return;
@@ -330,8 +331,10 @@ public class DamageListener implements Listener {
         if ((!(event.getDamager() instanceof LivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
             return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
-        if (Entities.getInstance().PLAYER_PETS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
-        if (Entities.getInstance().PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
+        Entities.getInstance();
+		if (Entities.PLAYER_PETS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
+        Entities.getInstance();
+		if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         double armourReducedDamage = 0;
         LivingEntity defender = (LivingEntity) event.getEntity();
         EntityEquipment defenderEquipment = defender.getEquipment();

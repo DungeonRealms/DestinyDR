@@ -18,7 +18,8 @@ public class CommandMail extends BasicCommand {
         super(command, usage, description);
     }
 
-    public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
+    @Override
+	public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
         if (s instanceof ConsoleCommandSender) return false;
 
         Player player = (Player) s;

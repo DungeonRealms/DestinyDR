@@ -14,7 +14,6 @@ import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.items.Item.ItemType;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.Armor.ArmorModifier;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.Entity;

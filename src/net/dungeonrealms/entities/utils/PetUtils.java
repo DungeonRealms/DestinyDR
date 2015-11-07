@@ -59,7 +59,8 @@ public class PetUtils implements GenericMechanic{
         return EnumPriority.CATHOLICS;
     }
 
-    public void startInitialization() {
+    @Override
+	public void startInitialization() {
         Bukkit.getServer().getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for (Map.Entry<UUID, Entity> entry : Entities.PLAYER_PETS.entrySet()) {
                 Entity pet = entry.getValue();

@@ -39,7 +39,8 @@ public class EnchantmentAPI implements GenericMechanic {
         return EnumPriority.BISHOPS;
     }
 
-    public void startInitialization() {
+    @Override
+	public void startInitialization() {
         registerCustomEnchantment();
     }
 
@@ -77,7 +78,7 @@ public class EnchantmentAPI implements GenericMechanic {
             ex.printStackTrace();
         }
         try {
-            EnchantmentWrapper.registerEnchantment(fakeEnchant);
+            Enchantment.registerEnchantment(fakeEnchant);
         } catch (IllegalArgumentException iaex) {
             Utils.log.info("Could not register our custom enchant. Uh oh.");
         }

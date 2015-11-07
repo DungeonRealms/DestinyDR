@@ -111,9 +111,9 @@ public class Pyromancer extends EntitySkeleton implements Boss {
 	 */
 	@Override
 	public void a(EntityLiving entityliving, float f) {
-		EntityArrow entityarrow = new EntityArrow(this.world, this, entityliving, 1.6F, (float) (14 - 2 * 4));
+		EntityArrow entityarrow = new EntityArrow(this.world, this, entityliving, 1.6F, 14 - 2 * 4);
 		entityarrow.setOnFire(10);
-		entityarrow.b((double) (f * 2.0F) + this.random.nextGaussian() * 0.25D + (double) ((float) 2 * 0.11F));
+		entityarrow.b(f * 2.0F + this.random.nextGaussian() * 0.25D + 2 * 0.11F);
 		Projectile arrowProjectile = (Projectile) entityarrow.getBukkitEntity();
 		net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
 		NBTTagCompound tag = nmsItem.getTag();

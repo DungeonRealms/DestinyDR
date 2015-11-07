@@ -31,7 +31,8 @@ public class NetworkServer implements GenericMechanic{
         return EnumPriority.POPE;
     }
 
-    public void startInitialization() {
+    @Override
+	public void startInitialization() {
         Utils.log.info("[NetworkServer] Starting up... STARTING");
         //Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), this::refreshDocument, 0, 20 * 8);
         Utils.log.info("[NetworkServer] Finished starting up ... OKAY");

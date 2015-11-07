@@ -17,7 +17,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.lang.reflect.Field;
-import java.util.Random;
 
 /**
  * Created by Chase on Sep 19, 2015
@@ -136,6 +135,7 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
     	
     }
     
+	@Override
 	public abstract EnumMonster getEnum();
 
 	@Override

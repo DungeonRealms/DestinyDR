@@ -1,18 +1,11 @@
 package net.dungeonrealms.entities.types.monsters;
 
-import java.util.Random;
-
 import org.bukkit.entity.Projectile;
-import org.bukkit.inventory.ItemStack;
-
-import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.base.DRSkeleton;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.EntityArrow;
 import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.Item;
-import net.minecraft.server.v1_8_R3.Items;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.World;
 
@@ -40,8 +33,8 @@ public class BasicEntitySkeleton extends DRSkeleton {
 
     @Override
     public void a(EntityLiving entityliving, float f) {
-        EntityArrow entityarrow = new EntityArrow(this.world, this, entityliving, 1.6F, (float) (14 - 2 * 4));
-        entityarrow.b((double) (f * 2.0F) + this.random.nextGaussian() * 0.25D + (double) ((float) 2 * 0.11F));
+        EntityArrow entityarrow = new EntityArrow(this.world, this, entityliving, 1.6F, 14 - 2 * 4);
+        entityarrow.b(f * 2.0F + this.random.nextGaussian() * 0.25D + 2 * 0.11F);
         Projectile arrowProjectile = (Projectile) entityarrow.getBukkitEntity();
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
         NBTTagCompound tag = nmsItem.getTag();

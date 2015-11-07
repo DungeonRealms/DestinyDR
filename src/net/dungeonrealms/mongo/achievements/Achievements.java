@@ -4,7 +4,6 @@ import com.mongodb.client.result.UpdateResult;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.core.Callback;
-import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;

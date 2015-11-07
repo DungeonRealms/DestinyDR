@@ -1,7 +1,6 @@
 package net.dungeonrealms.entities.types.monsters.base;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
@@ -9,7 +8,6 @@ import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
-import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -215,6 +213,7 @@ public abstract class DRZombie extends EntityZombie implements Monster{
 			}
 	}
 	
+	@Override
 	public abstract EnumMonster getEnum();
 	
 	@Override
