@@ -67,7 +67,8 @@ public class InventoryListener implements Listener {
         if (event.getCurrentItem() != null && !event.getCurrentItem().getType().equals(Material.AIR) && event.getCursor() != null && !event.getCursor().getType().equals(Material.AIR)) {
             if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
             if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
-            Glyph.getInstance().applyGlyph((Player) event.getWhoClicked(), event.getCursor(), event.getCurrentItem());
+            Glyph.getInstance().applyGlyph(event, (Player) event.getWhoClicked(), event.getCursor(), event.getCurrentItem());
+            Glyph.getInstance().starGlyph(event, (Player) event.getWhoClicked(), event.getCursor(), event.getCurrentItem());
         }
 
         ClickHandler.getInstance().doClick(event);

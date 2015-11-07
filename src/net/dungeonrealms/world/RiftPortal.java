@@ -68,6 +68,7 @@ public class RiftPortal implements GenericMechanic, Listener {
              */
             Bukkit.getOnlinePlayers().stream().forEach(player -> {
                 _riftPortals.stream().forEach(portal -> {
+                    if (!portal.getLocation().getWorld().equals(player.getLocation().getWorld())) return;
                     if (portal.getLocation().distanceSquared(player.getLocation()) < 175) {
                         portal.addParticipating(player);
                         portal.loadRift();

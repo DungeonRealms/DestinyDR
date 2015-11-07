@@ -9,8 +9,11 @@ import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -54,25 +57,81 @@ public class Glyph {
         return getWeaponGlyph(name, tier);
     }
 
-    public void applyGlyph(Player player, ItemStack scroll, ItemStack item) {
+    public ItemStack nextStarGlyph() {
+        return new ItemBuilder().setItem(new ItemStack(Material.NETHER_STAR), ChatColor.GREEN + "Star Unbinding Glyph", new String[]{
+                ChatColor.GRAY + "Left click while holding to",
+                ChatColor.GRAY + "unbind the current glyph!"
+        }).setNBTString("star", "true").build();
+    }
+
+    public void starGlyph(InventoryClickEvent event, Player player, ItemStack item, ItemStack star) {
+        if (!isStar(star)) return;
+
+        event.setCancelled(true);
+
+        event.getCurrentItem().setType(Material.AIR);
+
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+
+        NBTTagCompound itemTag = nmsStack.getTag();
+
+        String glyphAttributes = itemTag.getString("glyphAttributes");
+
+        String[] rawAttributeList = glyphAttributes.split(",");
+
+
+        for (String ra : rawAttributeList) {
+            if (ra.split("@")[0] == null) continue;
+            if (ra.split("@")[1] == null) continue;
+            String NBTName = ra.split("@")[0];
+            Integer NBTValue = Integer.valueOf(ra.split("@")[1]);
+            System.out.println("Removed: " + NBTName + " with " + NBTValue);
+            itemTag.set(NBTName, new NBTTagInt(itemTag.getInt(NBTName) - NBTValue));
+        }
+
+        nmsStack.setTag(itemTag);
+
+        ItemStack bukkitItem = CraftItemStack.asBukkitCopy(nmsStack);
+        ItemMeta meta = bukkitItem.getItemMeta();
+
+        // Glyph •
+
+
+        //TODO: Xwaffle please fix this, make everything under ALSO make sure to remove the glyph after its done.
+
+        bukkitItem.setItemMeta(meta);
+
+        player.getInventory().addItem(bukkitItem);
+
+    }
+
+    public void applyGlyph(InventoryClickEvent event, Player player, ItemStack scroll, ItemStack item) {
         if (!isGlyph(scroll)) return;
+
+        event.setCancelled(true);
 
         NBTTagCompound itemTag = CraftItemStack.asNMSCopy(item).getTag();
         NBTTagCompound scrollTag = CraftItemStack.asNMSCopy(scroll).getTag();
 
         int scrollLevel = scrollTag.getInt("tier");
 
+        /**
+         * APPLY GLYPH TO WEAPON! -----------------------------------------------------------------------------
+         */
+
         if (itemTag.hasKey("itemTier")) {
 
             int itemLevel = RepairAPI.getArmorOrWeaponTier(item);
 
-            if (itemLevel != scrollLevel) {
-                player.sendMessage(ChatColor.RED + "Tier mismatch! You cannot apply a tier: " + scrollLevel + " scroll to a tier: " + itemLevel + " item!");
+            if (itemLevel <= scrollLevel) {
+                player.sendMessage(ChatColor.RED + "Your scroll level is lower than your item level.");
+                player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 1f, 63f);
                 return;
             }
 
             if (Boolean.valueOf(itemTag.getString("bound"))) {
-                player.sendMessage(ChatColor.RED + "This weapon is already bound! You must acquire a unbinding scroll before applying another scroll!");
+                player.sendMessage(ChatColor.RED + "This weapon is already bound! You must acquire a unbinding star before applying another scroll!");
+                player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 1f, 63f);
                 return;
             }
 
@@ -81,6 +140,7 @@ public class Glyph {
             for (String ra : rawAttributeList) {
                 if (!itemTag.hasKey(ra.split("@")[0])) {
                     player.sendMessage(ChatColor.RED + "Attribute mismatch, your item appears to be missing some attributes that the scroll offers! You cannot scroll this item!");
+                    player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 1f, 63f);
                     return;
                 }
             }
@@ -98,6 +158,8 @@ public class Glyph {
                 itemTag.set(NBTName, new NBTTagInt(itemTag.getInt(NBTName) + NBTValue));
             }
 
+            itemTag.set("glyphAttributes", new NBTTagString(scrollTag.getString("attributes")));
+
             itemTag.set("bound", new NBTTagString("true"));
 
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
@@ -107,6 +169,8 @@ public class Glyph {
             List<String> lore = meta.getLore();
             lore.add(" ");
             lore.add(ChatColor.BLUE + "Glyph Attributes -");
+
+            String glyphAttributes = "";
 
             for (String ra : rawAttributeList) {
                 String NBTName = ra.split("@")[0];
@@ -123,27 +187,38 @@ public class Glyph {
                         NBTValue = 13;
                     }
                 }
+                glyphAttributes += NBTName + "@" + NBTValue + ",";
 
                 itemTag.set(NBTName, new NBTTagInt(itemTag.getInt(NBTName) + NBTValue));
                 lore.add(ChatColor.GREEN + "  • " + ChatColor.RED + NBTValue + " " + ChatColor.GOLD + Item.AttributeType.getByString(NBTName).getName());
             }
+
+            itemTag.set("glyph", new NBTTagString(glyphAttributes));
 
             meta.setLore(lore);
             armorItem.setItemMeta(meta);
 
             player.getInventory().addItem(armorItem);
 
-        } else if (itemTag.hasKey("armorTier")) {
+        }
+
+        /**
+         * APPLY GLYPH TO ARMOR! -----------------------------------------------------------------------------
+         */
+
+        else if (itemTag.hasKey("armorTier")) {
 
             int armorLevel = RepairAPI.getArmorOrWeaponTier(item);
 
             if (Boolean.valueOf(itemTag.getString("bound"))) {
-                player.sendMessage(ChatColor.RED + "You cannot bind two glyphs to a singular armor piece.");
+                player.sendMessage(ChatColor.RED + "This armor is already bound! You must apply an unbinding star to remove it's current glyph!");
+                player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 1f, 63f);
                 return;
             }
 
-            if (armorLevel != scrollLevel) {
-                player.sendMessage(ChatColor.RED + "Tier mismatch! You cannot apply a tier: " + scrollLevel + " glyph to a tier: " + armorLevel + " armor!");
+            if (armorLevel <= scrollLevel) {
+                player.sendMessage(ChatColor.RED + "Tier mismatch, your scroll tier is lower than your armor tier!");
+                player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 1f, 63f);
                 return;
             }
 
@@ -152,12 +227,15 @@ public class Glyph {
             for (String ra : rawAttributeList) {
                 if (!itemTag.hasKey(ra.split("@")[0])) {
                     player.sendMessage(ChatColor.RED + "AttributeMismatchException! Your glyph and the armor set contain different attributes!");
+                    player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 1f, 63f);
                     return;
                 }
             }
 
             player.getInventory().remove(item);
             player.getInventory().remove(scroll);
+
+            itemTag.set("glyphAttributes", new NBTTagString(scrollTag.getString("attributes")));
 
             itemTag.set("bound", new NBTTagString("true"));
 
@@ -206,6 +284,11 @@ public class Glyph {
     boolean isGlyph(ItemStack item) {
         net.minecraft.server.v1_8_R3.ItemStack nmsGlyph = CraftItemStack.asNMSCopy(item);
         return nmsGlyph.hasTag() && nmsGlyph.getTag().hasKey("glyph");
+    }
+
+    boolean isStar(ItemStack item) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsGlyph = CraftItemStack.asNMSCopy(item);
+        return nmsGlyph.hasTag() && nmsGlyph.getTag().hasKey("star");
     }
 
     public ItemStack getArmorGylph(String name, int tier) {
