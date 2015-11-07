@@ -1,26 +1,8 @@
 package net.dungeonrealms;
 
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.commands.CommandAccept;
-import net.dungeonrealms.commands.CommandAdd;
-import net.dungeonrealms.commands.CommandEss;
-import net.dungeonrealms.commands.CommandGlobalChat;
-import net.dungeonrealms.commands.CommandGuild;
-import net.dungeonrealms.commands.CommandInvoke;
-import net.dungeonrealms.commands.CommandLag;
-import net.dungeonrealms.commands.CommandList;
-import net.dungeonrealms.commands.CommandMail;
-import net.dungeonrealms.commands.CommandParty;
-import net.dungeonrealms.commands.CommandRank;
-import net.dungeonrealms.commands.CommandSet;
-import net.dungeonrealms.commands.CommandSpawn;
-import net.dungeonrealms.commands.CommandStats;
-import net.dungeonrealms.commands.CommandStop;
+import net.dungeonrealms.commands.*;
 import net.dungeonrealms.commands.generic.CommandManager;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.entities.Entities;
@@ -30,15 +12,7 @@ import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
-import net.dungeonrealms.listeners.AntiCheatListener;
-import net.dungeonrealms.listeners.BankListener;
-import net.dungeonrealms.listeners.BlockListener;
-import net.dungeonrealms.listeners.BossListener;
-import net.dungeonrealms.listeners.DamageListener;
-import net.dungeonrealms.listeners.EnergyListener;
-import net.dungeonrealms.listeners.InventoryListener;
-import net.dungeonrealms.listeners.ItemListener;
-import net.dungeonrealms.listeners.MainListener;
+import net.dungeonrealms.listeners.*;
 import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.DungeonManager;
@@ -59,6 +33,10 @@ import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.spawning.BuffManager;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
+import net.dungeonrealms.world.RiftPortal;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
 
 /* Copyright (C) 2015 CherryIO, LLC - All Rights Reserved http://cherryio.com
 
@@ -99,117 +77,115 @@ import net.dungeonrealms.teleportation.Teleportation;
  */
 public class DungeonRealms extends JavaPlugin {
 
-	private static DungeonRealms instance = null;
+    private static DungeonRealms instance = null;
 
-	public static DungeonRealms getInstance() {
-		return instance;
-	}
+    public static DungeonRealms getInstance() {
+        return instance;
+    }
 
-	@Override
-	public void onLoad() {
-		Utils.log.info("DungeonRealms onLoad() ... STARTING UP");
-		instance = this;
-	}
+    public void onLoad() {
+        Utils.log.info("DungeonRealms onLoad() ... STARTING UP");
+        instance = this;
+    }
 
-	public MechanicManager mm = null;
-	boolean hasFinishedSetup = false;
+    public MechanicManager mm = null;
+    boolean hasFinishedSetup = false;
 
-	public boolean hasFinishedSetup() {
-		return hasFinishedSetup;
-	}
+    public boolean hasFinishedSetup(){
+    	return hasFinishedSetup;
+    }
+    
+    public void setFinishedSetup(boolean bool){
+    	hasFinishedSetup = bool;
+    }
+    
+    public void onEnable() {
+        long START_TIME = System.currentTimeMillis() / 1000L;
+        Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
+        saveDefaultConfig();
 
-	public void setFinishedSetup(boolean bool) {
-		hasFinishedSetup = bool;
-	}
+        Database.getInstance().startInitialization();
+        DatabaseAPI.getInstance().startInitialization();
+        NetworkAPI.getInstance().startInitialization();
 
-	@Override
-	public void onEnable() {
-		long START_TIME = System.currentTimeMillis() / 1000L;
-		Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
-		saveDefaultConfig();
+        PluginManager pm = Bukkit.getPluginManager();
+        Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
+        pm.registerEvents(new MainListener(), this);
+        pm.registerEvents(new DamageListener(), this);
+        pm.registerEvents(new ItemListener(), this);
+        pm.registerEvents(new InventoryListener(), this);
+        pm.registerEvents(new BlockListener(), this);
+        pm.registerEvents(new BankListener(), this);
+        pm.registerEvents(new EnergyListener(), this);
+        pm.registerEvents(new AntiCheatListener(), this);
+        pm.registerEvents(new BossListener(), this);
+        pm.registerEvents(new AchievementManager(), this);
+        pm.registerEvents(new RiftPortal(), this);
+        Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
 
-		Database.getInstance().startInitialization();
-		DatabaseAPI.getInstance().startInitialization();
-		NetworkAPI.getInstance().startInitialization();
+        WebAPI.fetchPrerequisites();
 
-		PluginManager pm = Bukkit.getPluginManager();
-		Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
-		pm.registerEvents(new MainListener(), this);
-		pm.registerEvents(new DamageListener(), this);
-		pm.registerEvents(new ItemListener(), this);
-		pm.registerEvents(new InventoryListener(), this);
-		pm.registerEvents(new BlockListener(), this);
-		pm.registerEvents(new BankListener(), this);
-		pm.registerEvents(new EnergyListener(), this);
-		pm.registerEvents(new AntiCheatListener(), this);
-		pm.registerEvents(new BossListener(), this);
-		pm.registerEvents(new AchievementManager(), this);
-		Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
+        mm = new MechanicManager();
 
-		WebAPI.fetchPrerequisites();
+        mm.registerMechanic(PetUtils.getInstance());
+        mm.registerMechanic(Teleportation.getInstance());
+        mm.registerMechanic(CombatLog.getInstance());
+        mm.registerMechanic(Party.getInstance());
+        mm.registerMechanic(EnergyHandler.getInstance());
+        mm.registerMechanic(EnchantmentAPI.getInstance());
+        mm.registerMechanic(Subscription.getInstance());
+        mm.registerMechanic(Rank.getInstance());
+        mm.registerMechanic(DonationEffects.getInstance());
+        mm.registerMechanic(HealthHandler.getInstance());
+        mm.registerMechanic(KarmaHandler.getInstance());
+        mm.registerMechanic(BankMechanics.getInstance());
+        mm.registerMechanic(NetworkServer.getInstance());
+        mm.registerMechanic(DungeonManager.getInstance());
+        mm.registerMechanic(new LootManager());
+        mm.registerMechanic(Entities.getInstance());
+        mm.registerMechanic(ScoreboardHandler.getInstance());
+        mm.registerMechanic(RealmManager.getInstance());
+        mm.registerMechanic(Mining.getInstance());
+        mm.registerMechanic(Fishing.getInstance());
+        mm.registerMechanic(SpawningMechanics.getInstance());
+        mm.registerMechanic(SandS.getInstance());
+        mm.registerMechanic(AchievementManager.getInstance());
+        mm.registerMechanic(BuffManager.getInstance());
+        mm.registerMechanic(RiftPortal.getInstance());
 
-		mm = new MechanicManager();
+        mm.loadMechanics();
 
-		mm.registerMechanic(PetUtils.getInstance());
-		mm.registerMechanic(Teleportation.getInstance());
-		mm.registerMechanic(CombatLog.getInstance());
-		mm.registerMechanic(Party.getInstance());
-		mm.registerMechanic(EnergyHandler.getInstance());
-		mm.registerMechanic(EnchantmentAPI.getInstance());
-		mm.registerMechanic(Subscription.getInstance());
-		mm.registerMechanic(Rank.getInstance());
-		mm.registerMechanic(DonationEffects.getInstance());
-		mm.registerMechanic(HealthHandler.getInstance());
-		mm.registerMechanic(KarmaHandler.getInstance());
-		mm.registerMechanic(BankMechanics.getInstance());
-		mm.registerMechanic(NetworkServer.getInstance());
-		mm.registerMechanic(DungeonManager.getInstance());
-		mm.registerMechanic(new LootManager());
-		mm.registerMechanic(Entities.getInstance());
-		mm.registerMechanic(ScoreboardHandler.getInstance());
-		mm.registerMechanic(RealmManager.getInstance());
-		mm.registerMechanic(Mining.getInstance());
-		mm.registerMechanic(Fishing.getInstance());
-		mm.registerMechanic(SpawningMechanics.getInstance());
-		mm.registerMechanic(SandS.getInstance());
-		mm.registerMechanic(AchievementManager.getInstance());
-		mm.registerMechanic(BuffManager.getInstance());
+        CommandManager cm = new CommandManager();
 
-		mm.loadMechanics();
+        cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menu!"));
+        cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "Spawns a mob? idk chase"));
+        cm.registerCommand(new CommandAdd("add", "/<command> [args]", "Adds shit"));
+        cm.registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
+        cm.registerCommand(new CommandParty("party", "/<command> [args]", "Does this and that."));
+        cm.registerCommand(new CommandSet("set", "/<command> [args]", "SETS THE YEAH."));
+        cm.registerCommand(new CommandList("list", "/<command> [args]", "THE LIST"));
+        cm.registerCommand(new CommandRank("rank", "/<command> [args]", "The rank command!"));
+        cm.registerCommand(new CommandEss("essentials", "/<command> [args]", "The essentials command."));
+        cm.registerCommand(new CommandMail("mailbox", "/<command> [args]", "The mail command."));
+        cm.registerCommand(new CommandAccept("accept", "/<command> [args]", "The accept command."));
+        cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
+        cm.registerCommand(new CommandGlobalChat("g", "/<command> [args]", "The invoke command."));
+        cm.registerCommand(new CommandStats("stats", "/<command> [args]", "The stats command."));
+        cm.registerCommand(new CommandStop("stop", "/<command> [args]", "The stop command."));
 
-		CommandManager cm = new CommandManager();
 
-		cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menu!"));
-		cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "Spawns a mob? idk chase"));
-		cm.registerCommand(new CommandAdd("add", "/<command> [args]", "Adds shit"));
-		cm.registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
-		cm.registerCommand(new CommandParty("party", "/<command> [args]", "Does this and that."));
-		cm.registerCommand(new CommandSet("set", "/<command> [args]", "SETS THE YEAH."));
-		cm.registerCommand(new CommandList("list", "/<command> [args]", "THE LIST"));
-		cm.registerCommand(new CommandRank("rank", "/<command> [args]", "The rank command!"));
-		cm.registerCommand(new CommandEss("essentials", "/<command> [args]", "The essentials command."));
-		cm.registerCommand(new CommandMail("mailbox", "/<command> [args]", "The mail command."));
-		cm.registerCommand(new CommandAccept("accept", "/<command> [args]", "The accept command."));
-		cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
-		cm.registerCommand(new CommandGlobalChat("g", "/<command> [args]", "The invoke command."));
-		cm.registerCommand(new CommandStats("stats", "/<command> [args]", "The stats command."));
-		cm.registerCommand(new CommandStop("stop", "/<command> [args]", "The stop command."));
+        Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
+        getInstance().hasFinishedSetup = true;
+        Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
+    }
 
-		Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
-		getInstance().hasFinishedSetup = true;
-		Utils.log.info(
-		        "DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
-	}
-
-	@Override
-	public void onDisable() {
-		// saveConfig();
-		// Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(),
-		// () -> API.logoutAllPlayers());
-		// mm.stopInvocation();
-		// Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
-		// Database.mongoClient.close();
-		// AsyncUtils.pool.shutdown();
-	}
+    public void onDisable() {
+//        saveConfig();
+//        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> API.logoutAllPlayers());
+//        mm.stopInvocation();
+//        Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
+//        Database.mongoClient.close();
+//        AsyncUtils.pool.shutdown();
+    }
 
 }

@@ -94,23 +94,23 @@ public class ItemManager {
         String name = "";
         switch (tier) {
             case 1:
-                rawStack = new ItemStack(Material.LEATHER);
+                rawStack = new ItemStack(Material.LEATHER, 64);
                 name = ChatColor.BOLD + "Leather";
                 break;
             case 2:
-                rawStack = new ItemStack(Material.IRON_FENCE);
+                rawStack = new ItemStack(Material.IRON_FENCE, 64);
                 name = ChatColor.GREEN.toString() + ChatColor.BOLD + "Chain";
                 break;
             case 3:
-                rawStack = new ItemStack(Material.IRON_INGOT);
+                rawStack = new ItemStack(Material.IRON_INGOT, 64);
                 name = ChatColor.AQUA.toString() + ChatColor.BOLD + "Iron";
                 break;
             case 4:
-                rawStack = new ItemStack(Material.DIAMOND);
+                rawStack = new ItemStack(Material.DIAMOND, 64);
                 name = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Diamond";
                 break;
             case 5:
-                rawStack = new ItemStack(Material.GOLD_INGOT);
+                rawStack = new ItemStack(Material.GOLD_INGOT, 64);
                 name = ChatColor.YELLOW.toString() + ChatColor.BOLD + "Gold";
                 break;
             default:
@@ -239,7 +239,7 @@ public class ItemManager {
             return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
         }
     }
-    
+
     /**
      * Creates a pickaxe based on
      * given tier
@@ -248,7 +248,7 @@ public class ItemManager {
      * @return ItemStack
      * @since 1.0
      */
-    public static ItemStack createPickaxe(int tier){
+    public static ItemStack createPickaxe(int tier) {
         ItemStack rawStack = null;
         String name = "";
         switch (tier) {
@@ -292,40 +292,40 @@ public class ItemManager {
         }
         return null;
     }
-    
-    public static ItemStack createItem(EnumItem enumItem){
-    	ItemStack stack = null;
-    	net.minecraft.server.v1_8_R3.ItemStack nms = null;
-    	switch(enumItem){
-    	case StorageExpansion:
-    		stack = createItem(Material.TRAPPED_CHEST, ChatColor.GREEN + "Storage Expansion", new String[]{ChatColor.GRAY + "Increase storage space by 1 row." +ChatColor.RED + ChatColor.BOLD+ "Max of 6"});
-    		nms = CraftItemStack.asNMSCopy(stack);
-    		nms.getTag().setString("type", "upgrade");
-    		break;
-    	case RepairHammer:
-    		stack = createItem(Material.ANVIL, ChatColor.GREEN + "Repair Hammer", new String[]{ChatColor.GRAY + "Increase storage space by 1 row." +ChatColor.RED + ChatColor.BOLD+ "Max of 6"});
-    		nms = CraftItemStack.asNMSCopy(stack);
-    		nms.getTag().setString("type", "repair");
-    		break;
-    	case RetrainingBook:
-    		stack = createItem(Material.ENCHANTED_BOOK, ChatColor.GREEN + "Retraining Book",  new String[]{ChatColor.GRAY + "Right click to reset your stat",  ChatColor.GRAY +  "allocated points to free points."} );
-    	    nms = CraftItemStack.asNMSCopy(stack);
-    		nms.getTag().setString("type", "reset");
-    		break;
-    	case MedalOfGathering:
-    		stack = createItem(Material.YELLOW_FLOWER, ChatColor.GREEN + "Medal of Gathering", new String[]{ChatColor.GRAY + "Increase storage space by 1 row." +ChatColor.RED + ChatColor.BOLD+ "Max of 6"});
-    	    nms = CraftItemStack.asNMSCopy(stack);
-    		nms.getTag().setString("type", "gathering");
-    		break;
-    	case CharacterJournal:
-    		
-    		break;
-    	}
+
+    public static ItemStack createItem(EnumItem enumItem) {
+        ItemStack stack = null;
+        net.minecraft.server.v1_8_R3.ItemStack nms = null;
+        switch (enumItem) {
+            case StorageExpansion:
+                stack = createItem(Material.TRAPPED_CHEST, ChatColor.GREEN + "Storage Expansion", new String[]{ChatColor.GRAY + "Increase storage space by 1 row." + ChatColor.RED + ChatColor.BOLD + "Max of 6"});
+                nms = CraftItemStack.asNMSCopy(stack);
+                nms.getTag().setString("type", "upgrade");
+                break;
+            case RepairHammer:
+                stack = createItem(Material.ANVIL, ChatColor.GREEN + "Repair Hammer", new String[]{ChatColor.GRAY + "Increase storage space by 1 row." + ChatColor.RED + ChatColor.BOLD + "Max of 6"});
+                nms = CraftItemStack.asNMSCopy(stack);
+                nms.getTag().setString("type", "repair");
+                break;
+            case RetrainingBook:
+                stack = createItem(Material.ENCHANTED_BOOK, ChatColor.GREEN + "Retraining Book", new String[]{ChatColor.GRAY + "Right click to reset your stat", ChatColor.GRAY + "allocated points to free points."});
+                nms = CraftItemStack.asNMSCopy(stack);
+                nms.getTag().setString("type", "reset");
+                break;
+            case MedalOfGathering:
+                stack = createItem(Material.YELLOW_FLOWER, ChatColor.GREEN + "Medal of Gathering", new String[]{ChatColor.GRAY + "Increase storage space by 1 row." + ChatColor.RED + ChatColor.BOLD + "Max of 6"});
+                nms = CraftItemStack.asNMSCopy(stack);
+                nms.getTag().setString("type", "gathering");
+                break;
+            case CharacterJournal:
+
+                break;
+        }
         return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
-    
-    
-    public static ItemStack createFishingPole(int tier){
+
+
+    public static ItemStack createFishingPole(int tier) {
         ItemStack rawStack = new ItemStack(Material.FISHING_ROD);
         String name = "";
         switch (tier) {
@@ -360,7 +360,7 @@ public class ItemManager {
         nmsStack.setTag(tag);
         return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
-    
+
     /**
      * @param m
      * @param name
@@ -392,62 +392,64 @@ public class ItemManager {
         is.setItemMeta(meta);
         return is;
     }
+
     /**
      * Creates a Character Journal for p
+     *
      * @return ItemStack
      */
-    public static ItemStack createCharacterJournal(Player p){
-    	ItemStack stack = createItem(Material.WRITTEN_BOOK, ChatColor.YELLOW.toString() + "Character Journal",new String[] {"Right Click to see stuff"});
-    	BookMeta bm = (BookMeta) stack.getItemMeta();
-		List<String> pages = new ArrayList<String>();
-		String page1_string = "";
-		String page2_string = "";
-		String page3_string = "";
-		String page4_string = "";
-		String new_line = "\n" + ChatColor.WHITE.toString() + "`" + "\n";
-		GamePlayer gp = API.getGamePlayer(p);
-		String pretty_align = gp.getPlayerAlignment().getAlignmentColor() + gp.getPlayerAlignment().name();
-		DecimalFormat df = new DecimalFormat("#.##");
-		PlayerStats stats = gp.getStats();
+    public static ItemStack createCharacterJournal(Player p) {
+        ItemStack stack = createItem(Material.WRITTEN_BOOK, ChatColor.YELLOW.toString() + "Character Journal", new String[]{"Right Click to see stuff"});
+        BookMeta bm = (BookMeta) stack.getItemMeta();
+        List<String> pages = new ArrayList<String>();
+        String page1_string = "";
+        String page2_string = "";
+        String page3_string = "";
+        String page4_string = "";
+        String new_line = "\n" + ChatColor.WHITE.toString() + "`" + "\n";
+        GamePlayer gp = API.getGamePlayer(p);
+        String pretty_align = gp.getPlayerAlignment().getAlignmentColor() + gp.getPlayerAlignment().name();
+        DecimalFormat df = new DecimalFormat("#.##");
+        PlayerStats stats = gp.getStats();
 
-		page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character" + "\n"+ new_line
-				+ ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + "\n"
-				+ ChatColor.BLACK.toString() + gp.getPlayerAlignment().description + new_line + ChatColor.BLACK.toString() + "   " + gp.getPlayerCurrentHP()
-				+ " / " + gp.getPlayerMaxHP() + "" + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK.toString()
-				+ "   " + gp.getStats().getDPS() + "% " +  ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
-				+ "   " + (HealthHandler.getInstance().getPlayerHPRegenLive(p)) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n"
-				+ ChatColor.BLACK.toString() + "   " + "0.00"
-				+ "% " + ChatColor.BOLD.toString() + "Energy" + "\n" + ChatColor.BLACK.toString() + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString()
-				+ " E-CASH";
-		
-		page2_string = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "  ** LEVEL/EXP **\n\n" + ChatColor.BLACK + ChatColor.BOLD
-				+ "       LEVEL\n" + "          " + ChatColor.BLACK + gp.getLevel() + "\n\n" + ChatColor.BLACK + ChatColor.BOLD
-				+ "          XP" + "\n" + ChatColor.BLACK + "       " + (int) gp.getExperience() + "/"
-				+ gp.getEXPNeeded(gp.getLevel());
-		
-        page3_string = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + stats.strPoints  + " Strength"
-                + "\n" + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Warrior'"+ "\n"
+        page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character" + "\n" + new_line
+                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + "\n"
+                + ChatColor.BLACK.toString() + gp.getPlayerAlignment().description + new_line + ChatColor.BLACK.toString() + "   " + gp.getPlayerCurrentHP()
+                + " / " + gp.getPlayerMaxHP() + "" + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK.toString()
+                + "   " + gp.getStats().getDPS() + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
+                + "   " + (HealthHandler.getInstance().getPlayerHPRegenLive(p)) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n"
+                + ChatColor.BLACK.toString() + "   " + "0.00"
+                + "% " + ChatColor.BOLD.toString() + "Energy" + "\n" + ChatColor.BLACK.toString() + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString()
+                + " E-CASH";
+
+        page2_string = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "  ** LEVEL/EXP **\n\n" + ChatColor.BLACK + ChatColor.BOLD
+                + "       LEVEL\n" + "          " + ChatColor.BLACK + gp.getLevel() + "\n\n" + ChatColor.BLACK + ChatColor.BOLD
+                + "          XP" + "\n" + ChatColor.BLACK + "       " + (int) gp.getExperience() + "/"
+                + gp.getEXPNeeded(gp.getLevel());
+
+        page3_string = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + stats.strPoints + " Strength"
+                + "\n" + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Warrior'" + "\n"
 //                + ChatColor.BLACK.toString() + "+" + df.format("STR * 0.03") + "% Armor" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(stats.getBlock()* 100) + "% Block" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(stats.getAxeDMG()* 100) + "% Axe DMG" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(stats.getPolearmDMG()* 100) + "% Polearm DMG" + "\n" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(stats.getBlock() * 100) + "% Block" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(stats.getAxeDMG() * 100) + "% Axe DMG" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(stats.getPolearmDMG() * 100) + "% Polearm DMG" + "\n" + "\n"
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + stats.dexPoints + " Dexterity" + "\n"
-                + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Archer'"+ "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(stats.getDodge()* 100) + "% Dodge" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(stats.getBowDMG()* 100) + "% Bow DMG" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(stats.getCritChance()* 100) + "% Critical Hit" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(stats.getArmorPen()* 100) + "% Armor Pen.";
+                + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Archer'" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(stats.getDodge() * 100) + "% Dodge" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(stats.getBowDMG() * 100) + "% Bow DMG" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(stats.getCritChance() * 100) + "% Critical Hit" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(stats.getArmorPen() * 100) + "% Armor Pen.";
 
         page4_string = ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + stats.vitPoints + " Vitality"
-                + "\n" + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Defender'"+ "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(stats.getVitHP()* 100) + "% Health" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(stats.getHPRegen()* 100) + "   HP/s" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(stats.getSwordDMG()* 100) + "% Sword DMG" + "\n" + "\n"
+                + "\n" + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Defender'" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(stats.getVitHP() * 100) + "% Health" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(stats.getHPRegen() * 100) + "   HP/s" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(stats.getSwordDMG() * 100) + "% Sword DMG" + "\n" + "\n"
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "+ " + stats.intPoints + " Intellect" + "\n"
-                + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Mage'"+ "\n" 
-                + ChatColor.BLACK.toString() + "+" + df.format(stats.getEnergyRegen()* 100) + "% Energy" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(stats.getCritChance()* 100) + "% Critical Hit" + "\n"
-                + ChatColor.BLACK.toString() + "+" + df.format(stats.getStaffDMG()* 100) + "% Staff DMG";
+                + ChatColor.BLACK.toString() + "   " + ChatColor.UNDERLINE.toString() + "'The Mage'" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(stats.getEnergyRegen() * 100) + "% Energy" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(stats.getCritChance() * 100) + "% Critical Hit" + "\n"
+                + ChatColor.BLACK.toString() + "+" + df.format(stats.getStaffDMG() * 100) + "% Staff DMG";
 
 
         bm.setAuthor("");
@@ -462,7 +464,7 @@ public class ItemManager {
         nms.getTag().setString("journal", "true");
         return CraftItemStack.asBukkitCopy(nms);
     }
-    
+
 
     /**
      * returns playerProfile
@@ -487,27 +489,27 @@ public class ItemManager {
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
-    
+
     /**
      * Remove the cost of gems from itemstacks lore.
-     * 
+     *
      * @param stack
      */
-    public static ItemStack removePrice(ItemStack stack){
-    	ItemStack item = stack.clone();
-    	ItemMeta meta = stack.getItemMeta();
-    	if(meta != null && meta.hasLore()){
-    		List<String> lore = meta.getLore();
-    		for(int i =0; i < lore.size(); i++){
-    			String line = lore.get(i);
-    			if(line.contains("Price") || line.contains("Gems")){
-    				lore.remove(i);
-    				break;
-    			}
-    		}
-    		meta.setLore(lore);
-    		item.setItemMeta(meta);
-    	}
-    	return item;
+    public static ItemStack removePrice(ItemStack stack) {
+        ItemStack item = stack.clone();
+        ItemMeta meta = stack.getItemMeta();
+        if (meta != null && meta.hasLore()) {
+            List<String> lore = meta.getLore();
+            for (int i = 0; i < lore.size(); i++) {
+                String line = lore.get(i);
+                if (line.contains("Price") || line.contains("Gems")) {
+                    lore.remove(i);
+                    break;
+                }
+            }
+            meta.setLore(lore);
+            item.setItemMeta(meta);
+        }
+        return item;
     }
 }
