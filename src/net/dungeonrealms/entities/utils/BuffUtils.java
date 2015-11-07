@@ -35,7 +35,7 @@ public class BuffUtils {
         world.addEntity(enderCrystal, CreatureSpawnEvent.SpawnReason.CUSTOM);
         enderCrystal.setLocation(player.getLocation().getX() + new Random().nextInt(10), player.getLocation().getY() + 1, player.getLocation().getZ() + new Random().nextInt(10), 0, 0);
         if (enderCrystal.getBukkitEntity().getLocation().subtract(0, 1, 0).getBlock().getType() == Material.AIR) {
-            Block b = Bukkit.getWorlds().get(0).getHighestBlockAt((int) player.getLocation().getX(), (int) player.getLocation().getY());
+            Block b = Bukkit.getWorlds().get(0).getHighestBlockAt((int) player.getLocation().getX(), (int) player.getLocation().getZ());
             enderCrystal.setLocation(b.getX(), b.getY(), b.getZ(), 0, 0);
         }
         player.playSound(player.getLocation(), Sound.ENDERDRAGON_DEATH, 1F, 1F);

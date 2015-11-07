@@ -197,7 +197,7 @@ public class KarmaHandler implements GenericMechanic {
                                 ""
                         });
                     }
-                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, API.getGamePlayer(player).getLevel());
+                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.GREEN, API.getGamePlayer(player).getLevel());
                     /*if (RealmManager.getInstance().getPlayerRealm(player) != null) {
                         RealmManager.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + "(s) REALM");
                     }*/

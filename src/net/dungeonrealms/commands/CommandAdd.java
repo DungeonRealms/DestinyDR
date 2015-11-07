@@ -4,6 +4,7 @@ import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.items.EnumItem;
+import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.RealmManager;
@@ -116,6 +117,24 @@ public class CommandAdd extends BasicCommand {
                     player.getInventory().addItem(ItemManager.createHealthPotion(3, false, true));
                     player.getInventory().addItem(ItemManager.createHealthPotion(4, false, true));
                     player.getInventory().addItem(ItemManager.createHealthPotion(5, false, true));
+                    break;
+                case "food":
+                    player.setFoodLevel(1);
+                    player.getInventory().addItem(ItemManager.createHealingFood(1, Item.ItemModifier.COMMON));
+                    player.getInventory().addItem(ItemManager.createHealingFood(1, Item.ItemModifier.RARE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(1, Item.ItemModifier.LEGENDARY));
+                    player.getInventory().addItem(ItemManager.createHealingFood(2, Item.ItemModifier.COMMON));
+                    player.getInventory().addItem(ItemManager.createHealingFood(2, Item.ItemModifier.RARE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(2, Item.ItemModifier.LEGENDARY));
+                    player.getInventory().addItem(ItemManager.createHealingFood(3, Item.ItemModifier.COMMON));
+                    player.getInventory().addItem(ItemManager.createHealingFood(3, Item.ItemModifier.RARE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(3, Item.ItemModifier.LEGENDARY));
+                    player.getInventory().addItem(ItemManager.createHealingFood(4, Item.ItemModifier.COMMON));
+                    player.getInventory().addItem(ItemManager.createHealingFood(4, Item.ItemModifier.RARE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(4, Item.ItemModifier.LEGENDARY));
+                    player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemModifier.COMMON));
+                    player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemModifier.RARE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemModifier.LEGENDARY));
                     break;
             }
         }

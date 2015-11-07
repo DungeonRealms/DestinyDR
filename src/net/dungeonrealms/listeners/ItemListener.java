@@ -10,6 +10,8 @@ import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.inventory.PlayerMenus;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -30,6 +32,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * Created by Kieran on 9/18/2015.
@@ -172,21 +175,53 @@ public class ItemListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
-    public void onplayerDrinkPotion(PlayerItemConsumeEvent event) {
-        if (!(event.getItem().getType() == Material.POTION)) return;
+    public void onPlayerConsumeItem(PlayerItemConsumeEvent event) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getItem()));
-        if (nmsItem != null && nmsItem.getTag() != null) {
-            if (nmsItem.getTag().hasKey("type") && nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
-                event.setCancelled(true);
-                if (HealthHandler.getInstance().getPlayerHPLive(event.getPlayer()) < HealthHandler.getInstance().getPlayerMaxHPLive(event.getPlayer())) {
-                    event.setItem(new ItemStack(Material.AIR));
-                    event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
-                    HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
-                    event.getPlayer().sendMessage(ChatColor.GREEN + "Healed for " + ChatColor.BOLD + nmsItem.getTag().getInt("healAmount") + ChatColor.GREEN + "HP.");
-                } else {
-                    event.getPlayer().sendMessage(ChatColor.RED + "You are already at full HP!");
-                }
+        if (nmsItem == null || nmsItem.getTag() == null) return;
+        if (!nmsItem.getTag().hasKey("type")) return;
+        if (nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+            event.setCancelled(true);
+            if (HealthHandler.getInstance().getPlayerHPLive(event.getPlayer()) < HealthHandler.getInstance().getPlayerMaxHPLive(event.getPlayer())) {
+                event.setItem(new ItemStack(Material.AIR));
+                event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
+                HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
+                event.getPlayer().sendMessage(ChatColor.GREEN + "Healed for " + ChatColor.BOLD + nmsItem.getTag().getInt("healAmount") + ChatColor.GREEN + "HP.");
+            } else {
+                event.getPlayer().sendMessage(ChatColor.RED + "You are already at full HP!");
             }
+        } else if (nmsItem.getTag().getString("type").equalsIgnoreCase("healingFood")) {
+            event.setCancelled(true);
+            if (CombatLog.isInCombat(event.getPlayer())) {
+                event.getPlayer().sendMessage(ChatColor.RED + "You cannot eat this while in Combat!");
+                event.getPlayer().updateInventory();
+                return;
+            }
+            if (event.getPlayer().hasMetadata("FoodRegen")) {
+                event.getPlayer().sendMessage(ChatColor.RED + "You cannot eat this while you have another food bonus active!");
+                event.getPlayer().updateInventory();
+                return;
+            }
+            ItemStack foodItem = event.getItem();
+            if (foodItem.getAmount() > 1) {
+                foodItem.setAmount(foodItem.getAmount() - 1);
+                event.getPlayer().setItemInHand(foodItem);
+            } else {
+                event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
+            }
+            event.getPlayer().updateInventory();
+            event.getPlayer().setFoodLevel(event.getPlayer().getFoodLevel() + 6);
+            event.getPlayer().sendMessage(ChatColor.GREEN + "Healing " + ChatColor.BOLD + nmsItem.getTag().getInt("healAmount") + ChatColor.GREEN + "HP for 15 Seconds!");
+            boolean toggleDebug = Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getPlayer().getUniqueId()).toString());
+            event.getPlayer().setMetadata("FoodRegen", new FixedMetadataValue(DungeonRealms.getInstance(), "True"));
+            int taskID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+                if (!event.getPlayer().isSprinting() && HealthHandler.getInstance().getPlayerHPLive(event.getPlayer()) < HealthHandler.getInstance().getPlayerMaxHPLive(event.getPlayer())) {
+                    HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
+                    if (toggleDebug) {
+                        event.getPlayer().sendMessage(ChatColor.GREEN + "Healed for " + ChatColor.BOLD + nmsItem.getTag().getInt("healAmount") + ChatColor.GREEN + "HP.");
+                    }
+                }
+            },0L, 20L);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 300L);
         }
     }
 
