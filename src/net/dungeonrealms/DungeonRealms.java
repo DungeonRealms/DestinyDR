@@ -33,8 +33,8 @@ import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.spawning.BuffManager;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
-import net.dungeonrealms.world.Mercenary;
 import net.dungeonrealms.world.RiftPortal;
+import net.dungeonrealms.world.Runes;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -122,6 +122,7 @@ public class DungeonRealms extends JavaPlugin {
         pm.registerEvents(new BossListener(), this);
         pm.registerEvents(new AchievementManager(), this);
         pm.registerEvents(new RiftPortal(), this);
+        pm.registerEvents(new Runes(), this);
         Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
 
         mm = new MechanicManager();
@@ -151,7 +152,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(AchievementManager.getInstance());
         mm.registerMechanic(BuffManager.getInstance());
         mm.registerMechanic(RiftPortal.getInstance());
-        mm.registerMechanic(Mercenary.getInstance());
+        mm.registerMechanic(Runes.getInstance());
 
         mm.loadMechanics();
 

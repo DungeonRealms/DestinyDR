@@ -189,12 +189,17 @@ public class ItemListener implements Listener {
         } else if (nmsItem.getTag().getString("type").equalsIgnoreCase("healingFood")) {
             event.setCancelled(true);
             if (CombatLog.isInCombat(event.getPlayer())) {
-                event.getPlayer().sendMessage(ChatColor.RED + "You cannot eat this while in Combat!");
+                event.getPlayer().sendMessage(ChatColor.RED + "You cannot eat this while in combat!");
                 event.getPlayer().updateInventory();
                 return;
             }
             if (event.getPlayer().hasMetadata("FoodRegen")) {
                 event.getPlayer().sendMessage(ChatColor.RED + "You cannot eat this while you have another food bonus active!");
+                event.getPlayer().updateInventory();
+                return;
+            }
+            if (event.getPlayer().isSprinting()) {
+                event.getPlayer().sendMessage(ChatColor.RED + "You cannot eat this while sprinting!");
                 event.getPlayer().updateInventory();
                 return;
             }

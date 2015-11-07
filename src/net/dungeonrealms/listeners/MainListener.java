@@ -412,7 +412,7 @@ public class MainListener implements Listener {
         }
         if (npcNameStripped.equalsIgnoreCase("Guild Registrar")) {
             // TODO: Open Guild Registrar
-            event.getPlayer().sendMessage(ChatColor.RED + "Sorry, I've lost my regisry book!");
+            event.getPlayer().sendMessage(ChatColor.RED + "Sorry, I've lost my registry book!");
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Innkeeper")) {

@@ -118,7 +118,7 @@ public class NPCMenus {
                 ChatColor.AQUA + "249 E-Cash"}).setNBTString("medalOfGathering", "myBoyTux2").setNBTInt("ecashCost", 249).build());
         inv.setItem(18, new ItemBuilder().setItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Our Store", new String[]{
                 ChatColor.AQUA + "Click here to visit our store!"}).setNBTString("donationStore", "ProxyIsAwesome").build());
-        inv.setItem(26, new ItemBuilder().setItem(new ItemStack(Material.APPLE), ChatColor.GREEN + "Current E-Cash", new String[]{
+        inv.setItem(26, new ItemBuilder().setItem(new ItemStack(Material.GOLDEN_APPLE), ChatColor.GREEN + "Current E-Cash", new String[]{
                 ChatColor.AQUA + "Your E-Cash Balance is: " + ChatColor.YELLOW.toString() + ChatColor.BOLD + API.getGamePlayer(player).getEcashBalance()}).build());
 
         player.openInventory(inv);
