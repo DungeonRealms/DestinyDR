@@ -435,12 +435,6 @@ public class HealthHandler implements GenericMechanic {
         double currentHP = getPlayerHPLive(player);
         double newHP = currentHP - damage;
 
-        if (damager instanceof Player) {
-            PacketPlayOutEntityStatus status = new PacketPlayOutEntityStatus(((CraftEntity)player).getHandle(), (byte) 2);
-            ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, status);
-            SoundAPI.getInstance().playSoundAtLocation("damage.hit", player.getLocation(), 6);
-        }
-
         if (newHP <= 0 && DuelMechanics.isDueling(player.getUniqueId())) {
             newHP = 1;
         }
@@ -522,6 +516,12 @@ public class HealthHandler implements GenericMechanic {
                 default:
                     break;
             }
+        }
+        if (leAttacker instanceof Player) {
+            PacketPlayOutEntityStatus status = new PacketPlayOutEntityStatus(((CraftEntity)player).getHandle(), (byte) 2);
+            ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, status);
+            SoundAPI.getInstance().playSoundAtLocation("damage.hit", player.getLocation(), 6);
+            return;
         }
         if (!(leAttacker == null) && !(API.isPlayer(leAttacker))) {
             Entities.getInstance().MONSTER_LAST_ATTACK.put(leAttacker, 15);
