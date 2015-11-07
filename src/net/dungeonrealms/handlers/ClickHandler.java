@@ -753,6 +753,9 @@ public class ClickHandler {
                         player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "TELEPORT " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player) + "s" + ChatColor.RED + ")");
                         break;
                     }
+                case 26:
+                	PlayerMenus.openToggleMenu(player);
+                	break;
                 default:
                     break;
             }
@@ -973,6 +976,48 @@ public class ClickHandler {
                     PlayerMenus.openGuildMembers(player);
                     break;
             }
+        }else if(name.equalsIgnoreCase("Toggles")){
+        	event.setCancelled(true);
+        	if(slot > 9 )return;
+        	switch(slot){
+        	case 0:
+        		boolean bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, player.getUniqueId());
+        		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_CHAOTIC_PREVENTION, !bool, true);
+        		break;
+        	case 1:
+        		bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId());
+        		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_DEBUG, !bool, true);
+        		break;
+        	case 2:
+        	    bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DUEL, player.getUniqueId());
+        		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_DUEL, !bool, true);
+        		break;
+        	case 3:
+        		bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
+        		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_GLOBAL_CHAT, !bool, true);
+        		break;
+        	case 4:
+        		bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, player.getUniqueId());
+        		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_PVP, !bool, true);
+        		break;
+        	case 5:
+        		bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, player.getUniqueId());
+        		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_RECEIVE_MESSAGE, !bool, true);
+        		break;
+        	case 6:
+        		bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, player.getUniqueId());
+        		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_TRADE, !bool, true);
+        		break;
+        	case 7:
+        	    bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, player.getUniqueId());
+        		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_TRADE_CHAT, !bool, true);
+        		break;
+        	case 8:
+        		PlayerMenus.openPlayerProfileMenu(player);
+        		break;
+        	}
+        	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->
+        	PlayerMenus.openToggleMenu(player), 10l);
         }
     }
 }
