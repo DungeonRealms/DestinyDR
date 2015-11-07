@@ -59,7 +59,7 @@ import java.util.stream.Collectors;
  * Created by Nick on 9/17/2015.
  */
 public class API {
-
+	
     public static CopyOnWriteArrayList<GamePlayer> GAMEPLAYERS = new CopyOnWriteArrayList<>();
 
     /**
@@ -95,6 +95,36 @@ public class API {
         }
         return "";
     }
+    /**
+     * 
+     * @param player
+     * @param kill
+     * @return Integer
+      */
+    public static int getMonsterExp(Player player, org.bukkit.entity.Entity kill){
+		int level = API.getGamePlayer(player).getStats().getLevel();
+		int mob_level = kill.getMetadata("level").get(0).asInt();
+		int xp = 0;
+        if (mob_level > level + 10) {  // limit mob xp calculation to 10 levels above player level
+            xp = calculateXP(player, kill, level + 10);
+        } else {
+            xp = calculateXP(player, kill, mob_level);
+        }
+        return xp;
+	}
+	
+	/**
+	 * @param player
+	 * @param mob
+	 * @param level
+	 * @return integer
+	 */
+	private static int calculateXP(Player player, Entity kill, int mob_level) {
+		 int pLevel = API.getGamePlayer(player).getStats().getLevel();
+		 int xp = (int) (((pLevel * 5) + 45) * (1 + 0.05 * (pLevel + (mob_level - pLevel)))); // patch 1.9 exp formula
+		 return xp;
+	}
+    
 
     /**
      * Will return the players

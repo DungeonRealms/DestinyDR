@@ -6,6 +6,7 @@ import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.mastery.GamePlayer;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.SoundAPI;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
@@ -555,7 +556,8 @@ public class HealthHandler implements GenericMechanic {
 
         if (API.isPlayer(attacker)) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
-                String customNameAppended = entity.getCustomName().trim();
+                String customNameAppended = entity.getCustomName();
+                customNameAppended = ChatColor.stripColor(customNameAppended.substring(customNameAppended.indexOf("]") + 1, customNameAppended.indexOf("❤")).trim());
                 attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + customNameAppended + ChatColor.BOLD + " [" + newHP + "]");
             }
         }
@@ -593,13 +595,15 @@ public class HealthHandler implements GenericMechanic {
         if (convHPToDisplay > 20) {
             convHPToDisplay = 20;
         }
-
-        int level = entity.getMetadata("level").get(0).asInt();
         EntityLiving entity1 = ((CraftLivingEntity) entity).getHandle();
+        int level = entity.getMetadata("level").get(0).asInt();
+        String lvlName =  ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
         String name = entity.getMetadata("customname").get(0).asString();
-        if (entity.getPassenger() != null && !entity.hasMetadata("isElite"))
-            entity.getPassenger().setCustomName(entity.getMetadata("currentHP").get(0).asInt() + ChatColor.RED.toString() + " ❤" + ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
-                    + ChatColor.RESET + name);
+        int hp = entity.getMetadata("currentHP").get(0).asInt();
+
+        
+        if (!entity.hasMetadata("isElite"))
+			entity.setCustomName(lvlName + ChatColor.RESET + name + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
         entity.setHealth(convHPToDisplay);
         if (!Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
             Entities.getInstance().MONSTERS_LEASHED.add(entity);

@@ -124,17 +124,12 @@ public class Entities implements GenericMechanic {
 						MONSTER_LAST_ATTACK.remove(entity);
 						tryToReturnMobToBase(((CraftEntity) entity).getHandle());
 						Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-							int level = entity.getMetadata("level").get(0).asInt();
-							String name = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
-						            + ((net.dungeonrealms.entities.types.monsters.Monster) entity).getEnum().name;
+					        int level = entity.getMetadata("level").get(0).asInt();
+					        String lvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+					        String name = entity.getMetadata("customname").get(0).asString();
+					        int currentHP = entity.getMetadata("currentHP").get(0).asInt();
 							if (!entity.isDead()) {
-								net.dungeonrealms.entities.types.monsters.Monster enumMonster = (net.dungeonrealms.entities.types.monsters.Monster) entity;
-								entity.getPassenger()
-						                .setCustomName(ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] "
-						                        + ChatColor.RESET + enumMonster.getEnum().getPrefix() + " " + name + " "
-						                        + enumMonster.getEnum().getSuffix() + " "
-						                        + entity.getMetadata("currentHP").get(0).asInt()
-						                        + ChatColor.RED.toString() + "❤");
+								entity.setCustomName(currentHP + ChatColor.RED.toString() + " ❤ " + ChatColor.LIGHT_PURPLE.toString() + "[" + ChatColor.RESET + level + ChatColor.LIGHT_PURPLE + "] " + ChatColor.RESET + name);
 							}
 
 						} , 100);

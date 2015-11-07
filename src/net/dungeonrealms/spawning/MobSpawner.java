@@ -146,8 +146,6 @@ public class MobSpawner {
 								entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 								world.addEntity(entity, SpawnReason.CUSTOM);
 								entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-//								Hologram holo = new Hologram(entity.getBukkitEntity().getLocation(), new String[]{eliteName}, DungeonRealms.getInstance());
-//    							holo.followEntity(entity.getBukkitEntity());
 								toSpawn = false;
 								SPAWNED_MONSTERS.add(entity);
 							} , 1200 * 2L);
@@ -156,8 +154,6 @@ public class MobSpawner {
 								entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 								world.addEntity(entity, SpawnReason.CUSTOM);
 								entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-//								Hologram holo = new Hologram(entity.getBukkitEntity().getLocation(), new String[]{eliteName}, DungeonRealms.getInstance());
-//    							holo.followEntity(entity.getBukkitEntity());
 								toSpawn = false;
 								firstSpawn = false;
 								SPAWNED_MONSTERS.add(entity);
@@ -186,31 +182,29 @@ public class MobSpawner {
 					return;
 				}
 				Entity entity = SpawningMechanics.getMob(world, tier, monsEnum);
-				
 				int level = Utils.getRandomFromTier(tier, lvlRange);
 				MetadataUtils.registerEntityMetadata(entity, type, tier, level);
 				EntityStats.setMonsterRandomStats(entity, level, tier);
 				
-				
-				String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET;
-				String healthName = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt()
-				        + ChatColor.RED.toString() + "❤ ";
-				String customName;
+		        String lvlName =  ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+		        int hp = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
+		        
+				String customName = "";
 				try {
 					customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
 				} catch (Exception exc) {
 					Utils.log.info(entity.getCustomName() + " doesn't have metadata 'customname' ");
 					customName = monsEnum.name;
 				}
-				final String finalName = lvl + customName;
+				
+		        if (!entity.getBukkitEntity().hasMetadata("isElite"))
+					entity.setCustomName(lvlName + ChatColor.RESET + customName + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
 				toSpawn = true;
 				if(!firstSpawn){
 					Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 					entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 					world.addEntity(entity, SpawnReason.CUSTOM);
 					entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-//					Hologram holo = new Hologram(entity.getBukkitEntity().getLocation(), new String[]{finalName, healthName}, DungeonRealms.getInstance());
-//					holo.followEntity(entity.getBukkitEntity());
 					SPAWNED_MONSTERS.add(entity);
 					toSpawn = false;
 					} , 200L);
@@ -219,8 +213,6 @@ public class MobSpawner {
 					entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 					world.addEntity(entity, SpawnReason.CUSTOM);
 					entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-//					Hologram holo = new Hologram(entity.getBukkitEntity().getLocation(), new String[]{finalName, healthName}, DungeonRealms.getInstance());
-//					holo.followEntity(entity.getBukkitEntity());
 					firstSpawn = false;
 					SPAWNED_MONSTERS.add(entity);
 					toSpawn = false;
