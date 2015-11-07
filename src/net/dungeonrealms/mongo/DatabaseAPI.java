@@ -4,10 +4,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.core.Callback;
-import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.rank.Rank;
-import net.dungeonrealms.rank.Subscription;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 
@@ -307,21 +304,11 @@ public class DatabaseAPI {
     public void requestPlayer(UUID uuid) {
         Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first((document, throwable) -> {
             if (document != null) {
+                Utils.log.info("Fetched information for uuid: " + uuid.toString());
                 PLAYERS.put(uuid, document);
                 if (REQUEST_NEW_PLAYER_DOCUMENT.contains(uuid)) {
                     REQUEST_NEW_PLAYER_DOCUMENT.remove(uuid);
-                    return;
                 }
-
-                /**
-                 * Things below here are ESSENTIAL.
-                 * THIS IS THE MOTHERPOINT OF THE ENTIRE
-                 * PLUGIN.
-                 */
-                //TODO: Make sure this isn't called regularly!!! Remember the return above.
-                Subscription.getInstance().doAdd(uuid);
-                Rank.getInstance().doGet(uuid);
-                Guild.getInstance().doGet(uuid);
             } else {
                 addNewPlayer(uuid);
             }

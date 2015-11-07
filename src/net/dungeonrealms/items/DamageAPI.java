@@ -449,11 +449,13 @@ public class DamageAPI {
                         }
                         if (API.isPlayer(attacker)) {
                             net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
-                            NBTTagCompound tag = nmsItem.getTag();
-                            if (tag.getInt("accuracy") != 0) {
-                                blockChance -= tag.getInt("accuracy");
-                                if (blockChance < 0) {
-                                    blockChance = 0;
+                            if (nmsItem != null && nmsItem.getTag() != null) {
+                                NBTTagCompound tag = nmsItem.getTag();
+                                if (tag.getInt("accuracy") != 0) {
+                                    blockChance -= tag.getInt("accuracy");
+                                    if (blockChance < 0) {
+                                        blockChance = 0;
+                                    }
                                 }
                             }
                         }

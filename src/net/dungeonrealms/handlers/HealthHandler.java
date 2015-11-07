@@ -301,9 +301,11 @@ public class HealthHandler implements GenericMechanic {
                 double currentHP = getPlayerHPLive(player);
                 double amountToHealPlayer = getPlayerHPRegenLive(player);
                 GamePlayer gp = API.getGamePlayer(player);
-                if (gp != null || gp.getStats() != null) {
-                    amountToHealPlayer += amountToHealPlayer * gp.getStats().getHPRegen();
-                }
+
+                if (gp == null || gp.getStats() == null) return;
+
+                amountToHealPlayer += amountToHealPlayer * gp.getStats().getHPRegen();
+
                 double maxHP = getPlayerMaxHPLive(player);
                 if (currentHP + 1 > maxHP) {
                     if (player.getHealth() != 20) {
@@ -355,7 +357,11 @@ public class HealthHandler implements GenericMechanic {
         }
 
         if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-            player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " -> " + ChatColor.GREEN + " [" + (currentHP + amount) + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+            double newHealth = currentHP + amount;
+            if (newHealth <= maxHP) {
+                newHealth = maxHP;
+            }
+            player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " -> " + ChatColor.GREEN + " [" + newHealth + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
         }
 
         if ((currentHP + (double) amount) >= maxHP) {
@@ -518,7 +524,7 @@ public class HealthHandler implements GenericMechanic {
             }
         }
         if (leAttacker instanceof Player) {
-            PacketPlayOutEntityStatus status = new PacketPlayOutEntityStatus(((CraftEntity)player).getHandle(), (byte) 2);
+            PacketPlayOutEntityStatus status = new PacketPlayOutEntityStatus(((CraftEntity) player).getHandle(), (byte) 2);
             ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, status);
             SoundAPI.getInstance().playSoundAtLocation("damage.hit", player.getLocation(), 6);
             return;

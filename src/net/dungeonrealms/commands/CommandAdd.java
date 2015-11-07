@@ -4,12 +4,14 @@ import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.items.EnumItem;
+import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.miscellaneous.Glyph;
+import net.dungeonrealms.world.Mercenary;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Material;
@@ -37,6 +39,9 @@ public class CommandAdd extends BasicCommand {
         Player player = (Player) s;
         if (args.length > 0) {
             switch (args[0]) {
+                case "mercenary":
+                    Mercenary.getInstance().invokeMercenary(player, 3);
+                    break;
                 case "glypharmor":
                     player.getInventory().addItem(Glyph.getInstance().nextArmorGlyph(args[1], Integer.valueOf(args[2])));
                     break;
@@ -112,6 +117,24 @@ public class CommandAdd extends BasicCommand {
                     player.getInventory().addItem(ItemManager.createHealthPotion(3, false, true));
                     player.getInventory().addItem(ItemManager.createHealthPotion(4, false, true));
                     player.getInventory().addItem(ItemManager.createHealthPotion(5, false, true));
+                    break;
+                case "food":
+                    player.setFoodLevel(1);
+                    player.getInventory().addItem(ItemManager.createHealingFood(1, Item.ItemModifier.COMMON));
+                    player.getInventory().addItem(ItemManager.createHealingFood(1, Item.ItemModifier.RARE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(1, Item.ItemModifier.LEGENDARY));
+                    player.getInventory().addItem(ItemManager.createHealingFood(2, Item.ItemModifier.COMMON));
+                    player.getInventory().addItem(ItemManager.createHealingFood(2, Item.ItemModifier.RARE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(2, Item.ItemModifier.LEGENDARY));
+                    player.getInventory().addItem(ItemManager.createHealingFood(3, Item.ItemModifier.COMMON));
+                    player.getInventory().addItem(ItemManager.createHealingFood(3, Item.ItemModifier.RARE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(3, Item.ItemModifier.LEGENDARY));
+                    player.getInventory().addItem(ItemManager.createHealingFood(4, Item.ItemModifier.COMMON));
+                    player.getInventory().addItem(ItemManager.createHealingFood(4, Item.ItemModifier.RARE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(4, Item.ItemModifier.LEGENDARY));
+                    player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemModifier.COMMON));
+                    player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemModifier.RARE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemModifier.LEGENDARY));
                     break;
             }
         }

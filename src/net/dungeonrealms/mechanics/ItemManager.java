@@ -4,6 +4,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.items.EnumItem;
+import net.dungeonrealms.items.Item;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.miscellaneous.RandomHelper;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -13,6 +14,7 @@ import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.stats.PlayerStats;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.NBTTagInt;
 import net.minecraft.server.v1_8_R3.NBTTagList;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.ChatColor;
@@ -209,6 +211,9 @@ public class ItemManager {
         if (!fromShop) {
             healAmount = (((healAmount + 5) / 10) * 10);
         }
+        if (isSplashPotion) {
+            healAmount *= 0.75;
+        }
         if (!isSplashPotion) {
             ItemStack rawStack = new ItemStack(Material.POTION, 1, (short) 5);
             PotionMeta potionMeta = (PotionMeta) rawStack.getItemMeta();
@@ -238,6 +243,145 @@ public class ItemManager {
             nmsStack.setTag(tag);
             return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
         }
+    }
+
+    public static ItemStack createHealingFood(int tier, Item.ItemModifier modifier) {
+        ItemStack rawStack = null;
+        String name = "";
+        String description = "";
+        int healAmount = 0;
+        switch (tier) {
+            case 1:
+                switch (modifier) {
+                    case COMMON:
+                        name = ChatColor.WHITE + "Plowed Potato";
+                        description = ChatColor.GRAY + "The staple crop of Andulucia." + ChatColor.WHITE + " Common";
+                        healAmount = 9;
+                        rawStack = new ItemStack(Material.POTATO_ITEM, 1);
+                        break;
+                    case RARE:
+                        name = ChatColor.WHITE + "Loaded Potato Skin";
+                        description = ChatColor.GRAY + "Extremely Tasty." + ChatColor.AQUA + " Rare";
+                        healAmount = 16;
+                        rawStack = new ItemStack(Material.BAKED_POTATO, 1);
+                        break;
+                    case LEGENDARY:
+                        name = ChatColor.WHITE + "Fresh Apple";
+                        description = ChatColor.GRAY + "Fresh from the local Apple Tree." + ChatColor.DARK_PURPLE + " Legendary";
+                        healAmount = 25;
+                        rawStack = new ItemStack(Material.APPLE, 1);
+                        break;
+                }
+                break;
+            case 2:
+                switch (modifier) {
+                    case COMMON:
+                        name = ChatColor.GREEN + "Uncooked Chicken";
+                        description = ChatColor.GRAY + "This may or may not be safe to eat..." + ChatColor.WHITE + " Common";
+                        healAmount = 42;
+                        rawStack = new ItemStack(Material.RAW_CHICKEN, 1);
+                        break;
+                    case RARE:
+                        name = ChatColor.GREEN + "Roast Chicken";
+                        description = ChatColor.GRAY + "Warm and toasty. Delicious too." + ChatColor.AQUA + " Rare";
+                        healAmount = 55;
+                        rawStack = new ItemStack(Material.COOKED_CHICKEN, 1);
+                        break;
+                    case LEGENDARY:
+                        name = ChatColor.GREEN + "Pumpkin Pie";
+                        description = ChatColor.GRAY + "The spookiest meal you'll ever eat." + ChatColor.DARK_PURPLE + " Legendary";
+                        healAmount = 70;
+                        rawStack = new ItemStack(Material.PUMPKIN_PIE, 1);
+                        break;
+                }
+                break;
+            case 3:
+                switch (modifier) {
+                    case COMMON:
+                        name = ChatColor.AQUA + "Salted Pork";
+                        description = ChatColor.GRAY + "Bringing in the bacon." + ChatColor.WHITE + " Common";
+                        healAmount = 90;
+                        rawStack = new ItemStack(Material.PORK, 1);
+                        break;
+                    case RARE:
+                        name = ChatColor.AQUA + "Seasoned Pork";
+                        description = ChatColor.GRAY + "Bacon. Except tastier (is that possible?)." + ChatColor.AQUA + " Rare";
+                        healAmount = 150;
+                        rawStack = new ItemStack(Material.GRILLED_PORK, 1);
+                        break;
+                    case LEGENDARY:
+                        name = ChatColor.AQUA + "Mushroom Soup";
+                        description = ChatColor.GRAY + "I hope these are the correct mushrooms." + ChatColor.DARK_PURPLE + " Legendary";
+                        healAmount = 190;
+                        rawStack = new ItemStack(Material.MUSHROOM_SOUP, 1);
+                        break;
+                }
+                break;
+            case 4:
+                switch (modifier) {
+                    case COMMON:
+                        name = ChatColor.LIGHT_PURPLE + "Frozen Steak";
+                        description = ChatColor.GRAY + "Stop complaining. Your dog would love to eat this." + ChatColor.WHITE + " Common";
+                        healAmount = 300;
+                        rawStack = new ItemStack(Material.RAW_BEEF, 1);
+                        break;
+                    case RARE:
+                        name = ChatColor.LIGHT_PURPLE + "Rare Sizzling Steak";
+                        description = ChatColor.GRAY + "Real men take their steaks rare." + ChatColor.AQUA + " Rare";
+                        healAmount = 400;
+                        rawStack = new ItemStack(Material.COOKED_BEEF, 1);
+                        break;
+                    case LEGENDARY:
+                        name = ChatColor.LIGHT_PURPLE + "Grilled Rabbit";
+                        description = ChatColor.GRAY + "Aww, look at the cute little bunny." + ChatColor.DARK_PURPLE + " Legendary";
+                        healAmount = 500;
+                        rawStack = new ItemStack(Material.COOKED_MUTTON, 1);
+                        break;
+                }
+                break;
+            case 5:
+                switch (modifier) {
+                    case COMMON:
+                        name = ChatColor.YELLOW + "King's Apple";
+                        description = ChatColor.GRAY + "A meal fit for a King." + ChatColor.WHITE + " Common";
+                        healAmount = 700;
+                        rawStack = new ItemStack(Material.GOLDEN_APPLE, 1, (short) 0);
+                        break;
+                    case RARE:
+                        name = ChatColor.YELLOW + "Enchanted King's Apple";
+                        description = ChatColor.GRAY + "A powerful King's battle snack." + ChatColor.AQUA + "Rare";
+                        healAmount = 1000;
+                        rawStack = new ItemStack(Material.GOLDEN_APPLE, 1, (short) 1);
+                        break;
+                    case LEGENDARY:
+                        name = ChatColor.YELLOW + "Golden Carrot";
+                        description = ChatColor.GRAY + "Now this is just a waste of useful gold ore." + ChatColor.DARK_PURPLE + " Legendary";
+                        healAmount = 1350;
+                        rawStack = new ItemStack(Material.GOLDEN_CARROT, 1, (short) 0);
+                        break;
+                }
+                break;
+        }
+        if (rawStack != null) {
+            ItemMeta meta = rawStack.getItemMeta();
+            meta.setDisplayName(name);
+            List<String> itemLore = new ArrayList<>();
+            itemLore.add(ChatColor.RED + "+" + ChatColor.BOLD + healAmount + "HP/s" + ChatColor.RED + " for " + ChatColor.BOLD + "15 " + ChatColor.RED + "Seconds.");
+            itemLore.add(ChatColor.RED.toString() + ChatColor.BOLD + "Sprinting will cancel the effect!");
+            itemLore.add(description);
+            meta.setLore(itemLore);
+            rawStack.setItemMeta(meta);
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+            tag.set("type", new NBTTagString("healingFood"));
+            tag.setInt("itemTier", tier);
+            tag.set("itemModifier", new NBTTagInt(modifier.getId()));
+            tag.setInt("healAmount", healAmount);
+            tag.set("AttributeModifiers", new NBTTagList());
+            nmsStack.setTag(tag);
+            return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+        }
+        return null;
     }
 
     /**

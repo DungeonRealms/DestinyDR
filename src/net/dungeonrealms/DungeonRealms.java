@@ -13,11 +13,11 @@ import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
 import net.dungeonrealms.listeners.*;
+import net.dungeonrealms.mastery.AsyncUtils;
 import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.DungeonManager;
 import net.dungeonrealms.mechanics.LootManager;
-import net.dungeonrealms.mechanics.WebAPI;
 import net.dungeonrealms.mechanics.generic.MechanicManager;
 import net.dungeonrealms.miscellaneous.SandS;
 import net.dungeonrealms.mongo.Database;
@@ -33,6 +33,7 @@ import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.spawning.BuffManager;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
+import net.dungeonrealms.world.Mercenary;
 import net.dungeonrealms.world.RiftPortal;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -91,14 +92,14 @@ public class DungeonRealms extends JavaPlugin {
     public MechanicManager mm = null;
     boolean hasFinishedSetup = false;
 
-    public boolean hasFinishedSetup(){
-    	return hasFinishedSetup;
+    public boolean hasFinishedSetup() {
+        return hasFinishedSetup;
     }
-    
-    public void setFinishedSetup(boolean bool){
-    	hasFinishedSetup = bool;
+
+    public void setFinishedSetup(boolean bool) {
+        hasFinishedSetup = bool;
     }
-    
+
     public void onEnable() {
         long START_TIME = System.currentTimeMillis() / 1000L;
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
@@ -122,8 +123,6 @@ public class DungeonRealms extends JavaPlugin {
         pm.registerEvents(new AchievementManager(), this);
         pm.registerEvents(new RiftPortal(), this);
         Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
-
-        WebAPI.fetchPrerequisites();
 
         mm = new MechanicManager();
 
@@ -152,6 +151,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(AchievementManager.getInstance());
         mm.registerMechanic(BuffManager.getInstance());
         mm.registerMechanic(RiftPortal.getInstance());
+        mm.registerMechanic(Mercenary.getInstance());
 
         mm.loadMechanics();
 
@@ -180,12 +180,12 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     public void onDisable() {
-//        saveConfig();
-//        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> API.logoutAllPlayers());
-//        mm.stopInvocation();
-//        Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
-//        Database.mongoClient.close();
-//        AsyncUtils.pool.shutdown();
+        saveConfig();
+        API.logoutAllPlayers();
+        mm.stopInvocation();
+        Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
+        Database.mongoClient.close();
+        AsyncUtils.pool.shutdown();
     }
 
 }

@@ -100,7 +100,6 @@ public class CommandSet extends BasicCommand {
 				player.getWorld().getLivingEntities().forEach(org.bukkit.entity.Entity::remove);
 				getSpawners().forEach(net.dungeonrealms.spawning.MobSpawner::kill);
 				break;
-				
 			case "pick":
 				ItemStack stack = player.getItemInHand();
 				if(stack != null){

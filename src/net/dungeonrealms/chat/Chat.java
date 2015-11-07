@@ -67,8 +67,13 @@ public class Chat {
                 ChatColor.GREEN + "<" + ChatColor.BOLD + "L" + ChatColor.GREEN + ">" + ChatColor.RESET + " ");
 
         Rank.RankBlob r = Rank.getInstance().getRank(uuid);
-        if (r != null || !r.getPrefix().equals("null")) {
-            prefix.append(ChatColor.translateAlternateColorCodes('&', "[" + r.getPrefix() + ChatColor.RESET + "]"));
+        if (r != null && !r.getPrefix().equals("null")) {
+            if (r.getName().equalsIgnoreCase("default")) {
+                prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.GRAY + ""));
+            } else {
+                prefix.append(ChatColor.translateAlternateColorCodes('&', "[" + r.getPrefix() + ChatColor.RESET + "]"));
+            }
+
         }
 
         if (!Guild.getInstance().isGuildNull(uuid)) {
