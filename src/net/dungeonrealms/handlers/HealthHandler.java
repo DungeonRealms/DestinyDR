@@ -357,7 +357,11 @@ public class HealthHandler implements GenericMechanic {
         }
 
         if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-            player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " -> " + ChatColor.GREEN + " [" + (currentHP + amount) + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+            double newHealth = currentHP + amount;
+            if (newHealth <= maxHP) {
+                newHealth = maxHP;
+            }
+            player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " -> " + ChatColor.GREEN + " [" + newHealth + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
         }
 
         if ((currentHP + (double) amount) >= maxHP) {

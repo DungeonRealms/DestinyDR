@@ -255,7 +255,7 @@ public class ItemManager {
                 switch (modifier) {
                     case COMMON:
                         name = ChatColor.WHITE + "Plowed Potato";
-                        description = ChatColor.GRAY + "The staple crop of Andulucia. Definately not rotten." + ChatColor.WHITE + " Common";
+                        description = ChatColor.GRAY + "The staple crop of Andulucia." + ChatColor.WHITE + " Common";
                         healAmount = 9;
                         rawStack = new ItemStack(Material.POTATO_ITEM, 1);
                         break;
@@ -355,7 +355,7 @@ public class ItemManager {
                         break;
                     case LEGENDARY:
                         name = ChatColor.YELLOW + "Golden Carrot";
-                        description = ChatColor.GRAY + "Now this is just a waste of useful gold ore." + ChatColor.DARK_PURPLE + "Legendary";
+                        description = ChatColor.GRAY + "Now this is just a waste of useful gold ore." + ChatColor.DARK_PURPLE + " Legendary";
                         healAmount = 1350;
                         rawStack = new ItemStack(Material.GOLDEN_CARROT, 1, (short) 0);
                         break;
