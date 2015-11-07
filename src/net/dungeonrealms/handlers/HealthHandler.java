@@ -6,6 +6,7 @@ import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.mastery.GamePlayer;
+import net.dungeonrealms.mechanics.SoundAPI;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -14,9 +15,12 @@ import net.dungeonrealms.mongo.EnumOperators;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.EntityLiving;
+import net.minecraft.server.v1_8_R3.PacketPlayOutEntityStatus;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -297,9 +301,9 @@ public class HealthHandler implements GenericMechanic {
                 double currentHP = getPlayerHPLive(player);
                 double amountToHealPlayer = getPlayerHPRegenLive(player);
                 GamePlayer gp = API.getGamePlayer(player);
-                if (gp == null || gp.getStats() == null)
-                    return;
-                amountToHealPlayer += amountToHealPlayer * gp.getStats().getHPRegen();
+                if (gp != null || gp.getStats() != null) {
+                    amountToHealPlayer += amountToHealPlayer * gp.getStats().getHPRegen();
+                }
                 double maxHP = getPlayerMaxHPLive(player);
                 if (currentHP + 1 > maxHP) {
                     if (player.getHealth() != 20) {
@@ -430,6 +434,12 @@ public class HealthHandler implements GenericMechanic {
         double maxHP = getPlayerMaxHPLive(player);
         double currentHP = getPlayerHPLive(player);
         double newHP = currentHP - damage;
+
+        if (damager instanceof Player) {
+            PacketPlayOutEntityStatus status = new PacketPlayOutEntityStatus(((CraftEntity)player).getHandle(), (byte) 2);
+            ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, status);
+            SoundAPI.getInstance().playSoundAtLocation("damage.hit", player.getLocation(), 6);
+        }
 
         if (newHP <= 0 && DuelMechanics.isDueling(player.getUniqueId())) {
             newHP = 1;
@@ -726,10 +736,10 @@ public class HealthHandler implements GenericMechanic {
     private int getHealthRegenVitalityFromArmor(ItemStack itemStack, double totalRegen) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
         if (nmsItem == null || nmsItem.getTag() == null) {
-            return 0;
+            return (int) totalRegen;
         }
         if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor"))) {
-            return 0;
+            return (int) totalRegen;
         }
         if (nmsItem.getTag().getInt("vitality") > 0) {
             totalRegen += totalRegen * ((nmsItem.getTag().getInt("vitality") * 0.3D) / 100.0D);
