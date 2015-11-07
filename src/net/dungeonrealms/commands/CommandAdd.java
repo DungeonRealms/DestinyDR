@@ -11,7 +11,6 @@ import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.miscellaneous.Glyph;
-import net.dungeonrealms.world.Mercenary;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Material;
@@ -39,8 +38,8 @@ public class CommandAdd extends BasicCommand {
         Player player = (Player) s;
         if (args.length > 0) {
             switch (args[0]) {
-                case "mercenary":
-                    Mercenary.getInstance().invokeMercenary(player, 3);
+                case "star":
+                    player.getInventory().addItem(Glyph.getInstance().nextStarGlyph());
                     break;
                 case "glypharmor":
                     player.getInventory().addItem(Glyph.getInstance().nextArmorGlyph(args[1], Integer.valueOf(args[2])));

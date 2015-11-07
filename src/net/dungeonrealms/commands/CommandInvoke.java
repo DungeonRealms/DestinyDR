@@ -1,16 +1,15 @@
 package net.dungeonrealms.commands;
 
-import java.util.Collections;
-import java.util.List;
-
+import net.dungeonrealms.commands.generic.BasicCommand;
+import net.dungeonrealms.mechanics.DungeonManager;
+import net.dungeonrealms.party.Party;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import net.dungeonrealms.commands.generic.BasicCommand;
-import net.dungeonrealms.mechanics.DungeonManager;
-import net.dungeonrealms.party.Party;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Nick on 10/20/2015.
@@ -36,6 +35,14 @@ public class CommandInvoke extends BasicCommand {
                     return true;
                 }
                 DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, Collections.singletonList(player));
+            } else if (args[0].equalsIgnoreCase("varenglade")) {
+                if (Party.getInstance().isInParty(player)) {
+                    List<Player> MEMBERS = Party.getInstance().getPlayerParty(player).getMembers();
+                    MEMBERS.add(Party.getInstance().getPlayerParty(player).getOwner());
+                    DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, MEMBERS);
+                    return true;
+                }
+                DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, Collections.singletonList(player));
             }
         }
 

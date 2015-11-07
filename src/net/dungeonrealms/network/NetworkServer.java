@@ -1,10 +1,8 @@
 package net.dungeonrealms.network;
 
-import com.mongodb.client.model.Filters;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.mongo.Database;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 
@@ -49,6 +47,7 @@ public class NetworkServer implements GenericMechanic{
      * @since 1.0
      */
     private void refreshDocument() {
+        /*
         Database.servers.find(Filters.eq("info.server", Bukkit.getMotd())).limit(1).first((document, throwable) -> {
             if (document != null) {
                 SERVER_DOCUMENT = document;
@@ -57,6 +56,7 @@ public class NetworkServer implements GenericMechanic{
                 createNewNetworkDocument();
             }
         });
+         */
     }
 
     /**
@@ -72,10 +72,12 @@ public class NetworkServer implements GenericMechanic{
                                 .append("stimulationPacks", new ArrayList<>())
 
                 );
+        /*
         Database.servers.insertOne(newPlayerDocument, (aVoid, throwable) -> {
             Utils.log.info("[NetworkServer] [ASYNC] Created a SERVER Document to fill VOID!");
             refreshDocument();
         });
+         */
     }
 
 }

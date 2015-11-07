@@ -316,7 +316,10 @@ public class API {
     public static void handleLogin(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
 
-        player.sendMessage(ChatColor.GREEN + "Successfully received your data.. loading now...");
+        if (player != null) {
+            player.sendMessage(ChatColor.GREEN + "Successfully received your data.. loading now...");
+            player.teleport(new Location(Bukkit.getWorlds().get(0), -350.5, 77.5, 373.5, 0f, 0f));
+        }
 
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
             player.kickPlayer(ChatColor.RED + "Your data failed to load! Try rejoining.. ?");
