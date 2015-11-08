@@ -101,7 +101,6 @@ public class ScoreboardHandler implements GenericMechanic {
      */
     public void setPlayerHeadScoreboard(Player player, ChatColor chatColor, int playerLevel) {
         String suffix = "";
-
         if (!Guild.getInstance().isGuildNull(player.getUniqueId())) {
             String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()));
             suffix = ChatColor.translateAlternateColorCodes('&', " [" + clanTag + ChatColor.RESET + "]");

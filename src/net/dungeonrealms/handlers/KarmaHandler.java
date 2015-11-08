@@ -3,6 +3,7 @@ package net.dungeonrealms.handlers;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
+import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
@@ -143,7 +144,11 @@ public class KarmaHandler implements GenericMechanic {
      * @since 1.0
      */
     public void handleLoginEvents(Player player) {
-        setPlayerAlignment(player, getAlignmentOnLogin(player.getUniqueId()));
+        if (!Guild.getInstance().isGuildNull(player.getUniqueId())) {
+            setPlayerAlignment(player, getAlignmentOnLogin(player.getUniqueId()));
+        } else {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> setPlayerAlignment(player, getAlignmentOnLogin(player.getUniqueId())), 40L);
+        }
     }
 
     /**
