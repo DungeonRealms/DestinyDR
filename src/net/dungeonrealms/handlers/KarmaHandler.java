@@ -183,7 +183,6 @@ public class KarmaHandler implements GenericMechanic {
     public int getSecondsPassed(Player player) {
         long currentTime = System.currentTimeMillis() / 1000l;
         long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, player.getUniqueId())));
-        player.sendMessage(String.valueOf(currentTime - endTime));
         return (int) (currentTime - endTime);
     }
 
