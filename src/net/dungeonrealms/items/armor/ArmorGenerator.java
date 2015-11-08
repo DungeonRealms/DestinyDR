@@ -165,6 +165,11 @@ public class ArmorGenerator {
 	 */
 	private ArrayList<Armor.ArmorAttributeType> getRandomAttributes(int amountOfAttributes) {
 		ArrayList<Armor.ArmorAttributeType> attributeList = new ArrayList<>();
+		if (new Random().nextBoolean()) {
+			attributeList.add(Armor.ArmorAttributeType.ARMOR);
+		} else {
+			attributeList.add(Armor.ArmorAttributeType.DAMAGE);
+		}
 		attributeList.add(Armor.ArmorAttributeType.HEALTH_POINTS);
 		if (new Random().nextBoolean()) {
 			attributeList.add(Armor.ArmorAttributeType.HEALTH_REGEN);
