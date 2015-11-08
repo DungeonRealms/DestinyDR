@@ -19,6 +19,9 @@ import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
 
 /**
  * Created by Chase on Sep 23, 2015
@@ -62,6 +65,7 @@ public class ShopMechanics implements GenericMechanic{
                     block2.setType(Material.CHEST);
                     b.setType(Material.CHEST);
                     Shop shop = new Shop(uniqueId, shopName, b);
+                	DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$SET, EnumData.HASSHOP, true, true);
                     PLAYER_SHOPS.put(uniqueId, shop);
                     event.setWillClose(true);
                     event.setWillDestroy(true);

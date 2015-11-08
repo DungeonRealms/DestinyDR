@@ -115,6 +115,7 @@ public class Shop {
      * @since 1.0
      */
     public void deleteShop() {
+    	DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, EnumData.HASSHOP, false, true);
         hologram.delete();
         for (int i = 0; i < inventory.getSize(); i++) {
             ItemStack current = inventory.getItem(i);
