@@ -917,40 +917,7 @@ public class ClickHandler {
             if (slot == 0) {
                 PlayerMenus.openPlayerGuildInventory(player);
             }
-        } else if (name.endsWith(" - (Bank Logs)")) {
-            event.setCancelled(true);
-            if (slot == 0) {
-                PlayerMenus.openPlayerGuildLog(player);
-            }
-        } else if (name.endsWith("- (Invite Logs)")) {
-            event.setCancelled(true);
-            if (slot == 0) {
-                PlayerMenus.openPlayerGuildLog(player);
-            }
-        } else if (name.endsWith(" - (Login Logs)")) {
-            event.setCancelled(true);
-            if (slot == 0) {
-                PlayerMenus.openPlayerGuildLog(player);
-            }
-        } else if (name.endsWith("- (Logs)")) {
-            event.setCancelled(true);
-            if (slot > 18) return;
-            switch (slot) {
-                case 0:
-                    PlayerMenus.openPlayerGuildInventory(player);
-                    break;
-                case 12:
-                    PlayerMenus.openPlayerGuildLogLogins(player);
-                    break;
-                case 13:
-                    PlayerMenus.openPlayerGuildLogInvitations(player);
-                    break;
-                case 14:
-                    PlayerMenus.openPlayerGuildLogBankClicks(player);
-                    break;
-
-            }
-        } else if (name.equals("Top Guilds")) {
+        }  else if (name.equals("Top Guilds")) {
             event.setCancelled(true);
         } else if (name.equals("Guild Management")) {
             event.setCancelled(true);
@@ -958,9 +925,6 @@ public class ClickHandler {
             event.setCancelled(true);
             if (slot > 54) return;
             switch (slot) {
-                case 0:
-                    PlayerMenus.openPlayerGuildLog(player);
-                    break;
                 case 1:
                     PlayerMenus.openGuildManagement(player);
                     break;

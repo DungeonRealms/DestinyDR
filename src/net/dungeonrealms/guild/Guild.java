@@ -52,7 +52,6 @@ public class Guild {
     public void doLogin(Player player) {
         if (isGuildNull(player.getUniqueId())) return;
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
-        DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, EnumGuildData.PLAYER_LOGINS, player.getName() + "," + (System.currentTimeMillis() / 1000l), true);
         NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + player.getName() + ChatColor.GREEN + " is now online.");
     }
 
@@ -565,10 +564,6 @@ public class Guild {
                             .append("boosters",
                                     new Document("active", "NONE")
                                             .append("available", new ArrayList<String>()))
-                            .append("logs",
-                                    new Document("playerLogin", new ArrayList<String>())
-                                            .append("playerInvites", new ArrayList<String>())
-                                            .append("bankClicks", new ArrayList<String>()))
                     , (aVoid, throwable1) -> {
                         DatabaseAPI.getInstance().requestGuild(name);
                         DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, EnumData.GUILD, name.toUpperCase(), true);

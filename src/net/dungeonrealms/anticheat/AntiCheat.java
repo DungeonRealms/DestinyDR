@@ -1,12 +1,12 @@
 package net.dungeonrealms.anticheat;
 
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.inventory.ItemStack;
-
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by Nick on 10/1/2015.
@@ -37,7 +37,10 @@ public class AntiCheat {
         String check = getUniqueEpochIdentifier(checkItem);
         for (ItemStack item : event.getInventory().getContents()) {
             if (item == null || item.getType() == null || item.getType().equals(Material.AIR)) continue;
-            if (check.equals(getUniqueEpochIdentifier(item))) return true;
+            if (check.equals(getUniqueEpochIdentifier(item))) {
+                ((Player) event.getWhoClicked()).getInventory().remove(checkItem);
+                return true;
+            }
         }
         return false;
     }

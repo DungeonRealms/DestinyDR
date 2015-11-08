@@ -257,15 +257,6 @@ public class DatabaseAPI {
             case ICON:
                 return ((Document) GUILDS.get(guildName).get("info")).get("icon", String.class);
             /*
-            Guild Logs
-             */
-            case PLAYER_LOGINS:
-                return ((Document) GUILDS.get(guildName).get("logs")).get("playerLogin", ArrayList.class);
-            case PLAYER_INVITES:
-                return ((Document) GUILDS.get(guildName).get("logs")).get("playerInvites", ArrayList.class);
-            case BANK_CLICK:
-                return ((Document) GUILDS.get(guildName).get("logs")).get("bankClicks", ArrayList.class);
-            /*
              * Levels
              */
             case LEVEL:
@@ -374,7 +365,7 @@ public class DatabaseAPI {
                                         .append("pets", new ArrayList<String>())
                                         .append("particles", new ArrayList<String>()))
                         .append("toggles",
-                                new Document("debug", false)
+                                new Document("debug", true)
                                         .append("trade", false)
                                         .append("tradeChat", false)
                                         .append("globalChat", false)

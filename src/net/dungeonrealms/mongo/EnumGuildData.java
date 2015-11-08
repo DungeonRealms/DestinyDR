@@ -20,10 +20,6 @@ public enum EnumGuildData {
     BOOSTERS_ACTIVE("boosters.active"),
     BOOSTERS_AVAILABLE("boosters.available"),
 
-    PLAYER_LOGINS("logs.playerLogin"),
-    PLAYER_INVITES("logs.playerInvites"),
-    BANK_CLICK("logs.bankClicks"),
-
     ICON("logs.icon"),
 
     LEVEL("info.netLevel"),

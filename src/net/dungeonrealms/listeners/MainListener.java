@@ -1,5 +1,6 @@
 package net.dungeonrealms.listeners;
 
+import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
@@ -79,6 +80,8 @@ public class MainListener implements Listener {
         Player player = event.getPlayer();
         player.getInventory().clear();
         player.setGameMode(GameMode.ADVENTURE);
+        player.teleport(new Location(Bukkit.getWorlds().get(0), -350.5, 77.5, 373.5, 0f, 0f));
+        BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.GREEN.toString() + ChatColor.BOLD + "Fetching Data...");
 
         player.sendMessage(ChatColor.GREEN + "Loading your data.. This will only take a moment!");
 
