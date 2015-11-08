@@ -310,49 +310,49 @@ public class EnergyHandler implements GenericMechanic {
 
         switch (material) {
             case AIR:
-                return 0.045F;
+                return 0.043F;
             case WOOD_SWORD:
-                return 0.054F;
+                return 0.052F;
             case STONE_SWORD:
-                return 0.064F;
+                return 0.062F;
             case IRON_SWORD:
-                return 0.075F;
+                return 0.073F;
             case DIAMOND_SWORD:
-                return 0.113F;
+                return 0.111F;
             case GOLD_SWORD:
-                return 0.123F;
+                return 0.121F;
             case WOOD_AXE:
-                return 0.07062F;
+                return 0.07060F;
             case STONE_AXE:
-                return 0.08393F;
+                return 0.08391F;
             case IRON_AXE:
-                return 0.099F;
+                return 0.097F;
             case DIAMOND_AXE:
                 return 0.1243F;
             case GOLD_AXE:
-                return 0.1353F;
+                return 0.1351F;
             case WOOD_SPADE:
-                return 0.0642F;
+                return 0.0640F;
             case STONE_SPADE:
-                return 0.0763F;
+                return 0.0761F;
             case IRON_SPADE:
-                return 0.09F;
+                return 0.088F;
             case DIAMOND_SPADE:
-                return 0.113F;
+                return 0.111F;
             case GOLD_SPADE:
-                return 0.123F;
+                return 0.121F;
             case WOOD_HOE:
-                return 0.12F;
+                return 0.118F;
             case STONE_HOE:
-                return 0.13F;
+                return 0.128F;
             case IRON_HOE:
-                return 0.14F;
+                return 0.138F;
             case DIAMOND_HOE:
-                return 0.15F;
+                return 0.148F;
             case GOLD_HOE:
-                return 0.16F;
+                return 0.158F;
             case BOW:
-                return 0.093F;
+                return 0.091F;
             default:
                 return 0.1F;
         }
