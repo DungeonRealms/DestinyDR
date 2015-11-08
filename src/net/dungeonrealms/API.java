@@ -304,9 +304,9 @@ public class API {
         PlayerInventory inv = player.getInventory();
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, ItemSerialization.toString(inv),
                 false);
-        String locationAsString = "-367,84,390,0,0"; // Cyrennica
+        String locationAsString = "-367,86,390,0,0"; // Cyrennica
         if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
-            locationAsString = player.getLocation().getX() + "," + player.getLocation().getY() + ","
+            locationAsString = player.getLocation().getX() + "," + (player.getLocation().getY() + 0.5) + ","
                     + player.getLocation().getZ() + "," + player.getLocation().getYaw() + ","
                     + player.getLocation().getPitch();
         }
@@ -411,8 +411,8 @@ public class API {
             player.getInventory().addItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.CHESTPLATE, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON));
             player.getInventory().addItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.LEGGINGS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON));
             player.getInventory().addItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.BOOTS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON));
-            
-            player.getInventory().addItem(new ItemStack(Material.BREAD, 15));
+
+            player.getInventory().addItem(new ItemStack(Material.BREAD, 10));
 
             player.teleport(new Location(Bukkit.getWorlds().get(0), -367 + new Random().nextInt(4), 86, 390 + new Random().nextInt(4), 0f, 0f));
 
