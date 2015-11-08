@@ -1,9 +1,36 @@
 package net.dungeonrealms.listeners;
 
-import ca.thederpygolems.armorequip.ArmorEquipEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+
+import ca.thederpygolems.armorequip.ArmorEquipEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
@@ -29,26 +56,6 @@ import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldEvent;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -107,14 +114,18 @@ public class InventoryListener implements Listener {
                 return;
             }
             String owner = event.getInventory().getTitle().split("@")[1];
-            Player shopOwner = Bukkit.getPlayer(owner);
+            UUID shopOwner = API.getUUIDFromName(owner);
             Player clicker = (Player) event.getWhoClicked();
-            Shop shop = ShopMechanics.PLAYER_SHOPS.get(shopOwner.getUniqueId());
+            Shop shop = ShopMechanics.PLAYER_SHOPS.get(shopOwner);
+            if(shop == null){
+            	event.setCancelled(true);
+            	return;
+            }
             ItemStack item = event.getCurrentItem();
             if (item != null && item.getType() != Material.AIR) {
                 net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
                 if (nms != null) {
-                    if (clicker.getUniqueId() == shopOwner.getUniqueId()) {
+                    if (clicker.getUniqueId() == shopOwner) {
                         // Is OWner Clicking
                         if (nms.hasTag() && nms.getTag().hasKey("status")) {
                             // Clicking status off and on.
@@ -294,7 +305,7 @@ public class InventoryListener implements Listener {
                     }
                 }
             } else { // Setting new item to shop
-                if (clicker.getUniqueId() == shopOwner.getUniqueId()) {
+                if (clicker.getUniqueId() == shopOwner) {
                     if (event.getRawSlot() < shop.inventory.getSize()) {
                         ItemStack itemHeld = event.getCursor();
                         if (itemHeld.getType() == Material.AIR)
