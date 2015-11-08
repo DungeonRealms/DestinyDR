@@ -298,8 +298,7 @@ public class MainListener implements Listener {
                     p1.sendMessage("That's not you're dueling partner!");
             } else {
                 event.setDamage(0);
-                event.setCancelled(true);
-                return;
+                //event.setCancelled(true);
             }
         }
 

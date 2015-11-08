@@ -72,7 +72,7 @@ public class Party implements GenericMechanic {
                 if (objective == null) {
                     objective = ScoreboardHandler.getInstance().getPlayerScoreboardObject(rp.getOwner()).registerNewObjective("party", "scoreboard");
                     objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-                    objective.setDisplayName(ChatColor.WHITE + "(" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + ")");
+                    objective.setDisplayName(ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY");
                 }
                 ScoreboardHandler.getInstance().getPlayerScoreboardObject(rp.getOwner()).resetScores(rp.getOwner().getName());
                 Score score = objective.getScore(rp.getOwner().getName());
@@ -87,7 +87,7 @@ public class Party implements GenericMechanic {
                 if (objective == null) {
                     objective = ScoreboardHandler.getInstance().getPlayerScoreboardObject(rp.getOwner()).registerNewObjective("party", "scoreboard");
                     objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-                    objective.setDisplayName(ChatColor.WHITE + "(" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + ")");
+                    objective.setDisplayName(ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY");
                 }
                 ScoreboardHandler.getInstance().getPlayerScoreboardObject(rp.getOwner()).resetScores(rp.getOwner().getName());
                 Score score = objective.getScore(rp.getOwner().getName());

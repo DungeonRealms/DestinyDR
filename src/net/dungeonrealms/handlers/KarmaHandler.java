@@ -197,6 +197,9 @@ public class KarmaHandler implements GenericMechanic {
      * @since 1.0
      */
     public void setPlayerAlignment(Player player, String alignmentRawName) {
+        if (API.getGamePlayer(player) == null) {
+            return;
+        }
         EnumPlayerAlignments alignment = EnumPlayerAlignments.getByName(alignmentRawName);
         String playerAlignment = getPlayerRawAlignment(player);
         int seconds = 0;
