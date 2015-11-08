@@ -123,7 +123,7 @@ public class LootManager implements GenericMechanic{
         		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 5){
         			loot.add(new ItemGenerator().next(ItemTier.TIER_1));
         		}
-        		if(RandomHelper.getRandomNumberBetween(1, 100) <= 5){
+        		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 5){
         			loot.add(new ArmorGenerator().nextTier(1)[RandomHelper.getRandomNumberBetween(0, 2)]);
         		}
         		
@@ -145,7 +145,7 @@ public class LootManager implements GenericMechanic{
     		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 4){
     			loot.add(new ItemGenerator().next(ItemTier.TIER_2));
     		}
-    		if(RandomHelper.getRandomNumberBetween(1, 100) <= 5){
+    		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 4){
     			loot.add(new ArmorGenerator().nextTier(2)[RandomHelper.getRandomNumberBetween(0, 2)]);
     		}
     		
@@ -167,7 +167,7 @@ public class LootManager implements GenericMechanic{
     		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 3){
     			loot.add(new ItemGenerator().next(ItemTier.TIER_3));
     		}
-    		if(RandomHelper.getRandomNumberBetween(1, 100) <= 5){
+    		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 3){
     			loot.add(new ArmorGenerator().nextTier(3)[RandomHelper.getRandomNumberBetween(0, 2)]);
     		}
     		
@@ -189,7 +189,7 @@ public class LootManager implements GenericMechanic{
     		if(RandomHelper.getRandomNumberBetween(1, 1000) <=  2){
     			loot.add(new ItemGenerator().next(ItemTier.TIER_4));
     		}
-    		if(RandomHelper.getRandomNumberBetween(1, 100) <= 5){
+    		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 2){
     			loot.add(new ArmorGenerator().nextTier(4)[RandomHelper.getRandomNumberBetween(0, 2)]);
     		}
     		
@@ -211,7 +211,7 @@ public class LootManager implements GenericMechanic{
     		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 1){
     			loot.add(new ItemGenerator().next(ItemTier.TIER_5));
     		}
-    		if(RandomHelper.getRandomNumberBetween(1, 100) <= 5){
+    		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 1){
     			loot.add(new ArmorGenerator().nextTier(5)[RandomHelper.getRandomNumberBetween(0, 2)]);
     		}
     		
