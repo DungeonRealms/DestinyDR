@@ -33,7 +33,7 @@ public class ShopListener implements Listener {
         Action actionType = event.getAction();
         switch (actionType) {
             case RIGHT_CLICK_BLOCK:
-                if (shop.isopen || shop.getOwner().getUniqueId() == event.getPlayer().getUniqueId()) {
+                if (shop.isopen || shop.getUUID() == event.getPlayer().getUniqueId()) {
                     event.setCancelled(true);
                     event.getPlayer().openInventory(shop.getInv());
                 } else if (!shop.isopen) {
@@ -42,7 +42,7 @@ public class ShopListener implements Listener {
                 }
                 break;
             case LEFT_CLICK_BLOCK:
-                if (shop.getOwner().getUniqueId() == event.getPlayer().getUniqueId()) {
+                if (shop.getUUID()== event.getPlayer().getUniqueId()) {
                     event.setCancelled(true);
                     shop.deleteShop();
                 }

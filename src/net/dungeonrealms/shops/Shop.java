@@ -105,10 +105,12 @@ public class Shop {
      *
      * @since 1.0
      */
-    public Player getOwner() {
-        return Bukkit.getPlayer(owner);
+    public UUID getUUID() {
+//        return Bukkit.getPlayer(owner);
+    	return owner;
     }
 
+    
     /**
      * Deletes block, and unregisters all things for shop.
      *
@@ -137,8 +139,8 @@ public class Shop {
             nms.getTag().remove("worth");
             meta.setLore(lore);
             current.setItemMeta(meta);
-            if (getOwner() != null) {
-                getOwner().getInventory().addItem(current);
+            if (Bukkit.getPlayer(getUUID()) != null) {
+            	Bukkit.getPlayer(getUUID()).getInventory().addItem(current);
             } else {
                saveCollectionBin();
             }

@@ -313,7 +313,7 @@ public class BlockListener implements Listener {
         Action actionType = e.getAction();
         switch (actionType) {
             case RIGHT_CLICK_BLOCK:
-                if (shop.isopen || shop.getOwner().getUniqueId() == e.getPlayer().getUniqueId()) {
+                if (shop.isopen || shop.getUUID().toString().equalsIgnoreCase(e.getPlayer().getUniqueId().toString())) {
                     e.setCancelled(true);
                     e.getPlayer().openInventory(shop.getInv());
                 } else {
@@ -322,7 +322,7 @@ public class BlockListener implements Listener {
                 }
                 break;
             case LEFT_CLICK_BLOCK:
-                if (shop.getOwner().getUniqueId() == e.getPlayer().getUniqueId()) {
+                if (shop.getUUID() == e.getPlayer().getUniqueId()) {
                     e.setCancelled(true);
                     shop.deleteShop();
                 }

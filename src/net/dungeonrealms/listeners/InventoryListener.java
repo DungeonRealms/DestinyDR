@@ -295,9 +295,12 @@ public class InventoryListener implements Listener {
                                         clicker.getInventory().addItem(CraftItemStack.asBukkitCopy(nms2));
                                         ItemStack tempStack = event.getInventory().getItem(event.getRawSlot());
                                         tempStack.setAmount(1);
-                                        BankMechanics.getInstance().addGemsToPlayerBank(shop.getOwner().getUniqueId(), price);
+                                        BankMechanics.getInstance().addGemsToPlayerBank(shopOwner, price);
                                         NetworkAPI.getInstance().sendPlayerMessage(clicker.getDisplayName(), ChatColor.GREEN.toString() +"Bought a " + stack.getItemMeta().getDisplayName() + " for "+ ChatColor.BOLD + price + " Gems");
-                                        NetworkAPI.getInstance().sendPlayerMessage(shop.getOwner().getDisplayName(), ChatColor.GREEN.toString() + ChatColor.BOLD + price + " Gems" + ChatColor.GREEN + " added to your bank!");
+                                        
+                                        Player shopowner = Bukkit.getPlayer(shopOwner);
+                                        if(shopowner != null)
+                                        NetworkAPI.getInstance().sendPlayerMessage(shopowner.getDisplayName(), ChatColor.GREEN.toString() + ChatColor.BOLD + price + " Gems" + ChatColor.GREEN + " added to your bank!");
                                         shop.inventory.remove(tempStack);
                                     } else {
                                         clicker.sendMessage(ChatColor.RED + "Not enough " + ChatColor.RED.toString() + ChatColor.BOLD + "gems!");
