@@ -10,10 +10,6 @@ import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -149,15 +145,6 @@ public class Rank implements GenericMechanic {
      * @param uuid
      */
     public void doGet(UUID uuid) {
-        if (RAW_RANKS.get(DatabaseAPI.getInstance().getData(EnumData.RANK, uuid)).getName().contains("default")) {
-            TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
-            bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://shop.dungeonrealms.net"));
-            bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Dungeon Realms Store!").create()));
-            TextComponent test = new TextComponent(ChatColor.WHITE + "[" + ChatColor.YELLOW + ChatColor.BOLD + "SUB" + ChatColor.RESET + ChatColor.WHITE + "] " + ChatColor.RED + "Your subscription has ended! Click ");
-            test.addExtra(bungeeMessage);
-            test.addExtra(ChatColor.RED + " to learn more!");
-            Bukkit.getPlayer(uuid).spigot().sendMessage(test);
-        }
         PLAYER_RANKS.put(uuid, RAW_RANKS.get(DatabaseAPI.getInstance().getData(EnumData.RANK, uuid)));
     }
 

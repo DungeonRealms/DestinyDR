@@ -75,20 +75,20 @@ public class Glyph {
 
         switch (tier) {
             case 1:
-                return new ItemBuilder().setItem(new ItemStack(Material.NETHER_STAR), ChatColor.WHITE + "Unknown Glyph", new String[]{
-                }).build();
+                return new ItemBuilder().setItem(new ItemStack(381), ChatColor.WHITE + "Unknown Glyph", new String[]{
+                }).setNBTString("glyph", "true").build();
             case 2:
-                return new ItemBuilder().setItem(new ItemStack(Material.NETHER_STAR), ChatColor.GREEN + "Unknown Glyph", new String[]{
-                }).build();
+                return new ItemBuilder().setItem(new ItemStack(381), ChatColor.GREEN + "Unknown Glyph", new String[]{
+                }).setNBTString("glyph", "true").build();
             case 3:
-                return new ItemBuilder().setItem(new ItemStack(Material.NETHER_STAR), ChatColor.AQUA + "Unknown Glyph", new String[]{
-                }).build();
+                return new ItemBuilder().setItem(new ItemStack(381), ChatColor.AQUA + "Unknown Glyph", new String[]{
+                }).setNBTString("glyph", "true").build();
             case 4:
-                return new ItemBuilder().setItem(new ItemStack(Material.NETHER_STAR), ChatColor.LIGHT_PURPLE + "Unknown Glyph", new String[]{
-                }).build();
+                return new ItemBuilder().setItem(new ItemStack(381), ChatColor.LIGHT_PURPLE + "Unknown Glyph", new String[]{
+                }).setNBTString("glyph", "true").build();
             case 5:
-                return new ItemBuilder().setItem(new ItemStack(Material.NETHER_STAR), ChatColor.YELLOW + "Unknown Glyph", new String[]{
-                }).build();
+                return new ItemBuilder().setItem(new ItemStack(381), ChatColor.YELLOW + "Unknown Glyph", new String[]{
+                }).setNBTString("glyph", "true").build();
             default:
                 return null;
         }
@@ -316,12 +316,12 @@ public class Glyph {
 
     }
 
-    boolean isGlyph(ItemStack item) {
+    public boolean isGlyph(ItemStack item) {
         net.minecraft.server.v1_8_R3.ItemStack nmsGlyph = CraftItemStack.asNMSCopy(item);
         return nmsGlyph.getTag() != null && nmsGlyph.hasTag() && nmsGlyph.getTag().hasKey("glyph");
     }
 
-    boolean isStar(ItemStack item) {
+    public boolean isStar(ItemStack item) {
         net.minecraft.server.v1_8_R3.ItemStack nmsStar = CraftItemStack.asNMSCopy(item);
         return nmsStar.getTag() != null && nmsStar.hasTag() && nmsStar.getTag().hasKey("star");
     }
