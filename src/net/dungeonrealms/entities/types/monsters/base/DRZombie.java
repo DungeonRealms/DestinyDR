@@ -1,13 +1,16 @@
 package net.dungeonrealms.entities.types.monsters.base;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.items.armor.Armor.ArmorModifier;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.miscellaneous.RandomHelper;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -104,7 +107,7 @@ public abstract class DRZombie extends EntityZombie implements Monster{
     }
 
     private void setArmor(int tier) {
-        ItemStack[] armor = getTierArmor(tier);
+        ItemStack[] armor = API.getTierArmor(tier);
         // weapon, boots, legs, chest, helmet/head
         ItemStack weapon = getTierWeapon(tier);
         this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
@@ -117,10 +120,6 @@ public abstract class DRZombie extends EntityZombie implements Monster{
     private ItemStack getTierWeapon(int tier) {
         return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.getById(new Random().nextInt(net.dungeonrealms.items.Item.ItemType.values().length - 2)), net.dungeonrealms.items.Item.ItemTier.getByTier(tier));
     }
-
-	private ItemStack[] getTierArmor(int tier) {
-		return new ArmorGenerator().nextTier(tier);
-	}
 
     @Override
     protected String z() {
@@ -219,7 +218,7 @@ public abstract class DRZombie extends EntityZombie implements Monster{
 	@Override
 	public void onMonsterDeath() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity().getLocation());
+		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity());
 		if(this.random.nextInt(100) < 33)
 			this.getRareDrop();
 		});

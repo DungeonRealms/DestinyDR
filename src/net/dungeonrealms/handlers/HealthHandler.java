@@ -1,4 +1,4 @@
-package net.dungeonrealms.handlers;
+	package net.dungeonrealms.handlers;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
@@ -228,11 +228,7 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public int getMonsterMaxHPOnSpawn(LivingEntity entity) {
-        if (entity.hasMetadata("maxHP")) {
-            return (entity.getMetadata("maxHP").get(0).asInt() + calculateMaxHPFromItems(entity));
-        } else {
-            return 100 + calculateMaxHPFromItems(entity);
-        }
+           return calculateMaxHPFromItems(entity);
     }
 
     /**
@@ -620,6 +616,7 @@ public class HealthHandler implements GenericMechanic {
      */
     public int calculateMaxHPFromItems(LivingEntity entity) {
         double totalHP = 50;
+        Utils.log.info("New Monster");
         for (ItemStack itemStack : entity.getEquipment().getArmorContents()) {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
                 continue;
@@ -633,7 +630,6 @@ public class HealthHandler implements GenericMechanic {
             }
             totalHP = getVitalityValueOfArmor(itemStack, totalHP);
         }
-
         return (int) totalHP;
     }
 

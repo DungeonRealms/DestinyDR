@@ -49,6 +49,8 @@ import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.ScoreboardHandler;
+import net.dungeonrealms.items.armor.ArmorGenerator;
+import net.dungeonrealms.items.armor.Armor.ArmorModifier;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mastery.NameFetcher;
@@ -56,6 +58,7 @@ import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
+import net.dungeonrealms.miscellaneous.RandomHelper;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
@@ -106,6 +109,18 @@ public class API {
         }
         return "";
     }
+    
+	public static ItemStack[] getTierArmor(int tier) {
+//		int chance = RandomHelper.getRandomNumberBetween(1, 100);
+//		if(chance <= 3)
+//			return new ArmorGenerator().nextArmor(tier, ArmorModifier.RARE);
+//		else if(chance > 5 && chance <= 20)
+//			return new ArmorGenerator().nextArmor(tier, ArmorModifier.UNCOMMON);
+//		else
+		return new ArmorGenerator().nextArmor(tier, ArmorModifier.COMMON);
+	}
+    
+    
     /**
      * 
      * @param player

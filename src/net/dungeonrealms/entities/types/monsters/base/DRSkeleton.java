@@ -1,5 +1,6 @@
 package net.dungeonrealms.entities.types.monsters.base;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
@@ -79,7 +80,7 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
     protected abstract void setStats();
 
     protected void setArmor(int tier) {
-        ItemStack[] armor = getTierArmor(tier);
+        ItemStack[] armor = API.getTierArmor(tier);
         // weapon, boots, legs, chest, helmet/head
         ItemStack weapon = getTierWeapon(tier);
         this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
@@ -105,29 +106,6 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
         return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.BOW, net.dungeonrealms.items.Item.ItemTier.getByTier(tier));
     }
 
-    private ItemStack[] getTierArmor(int tier) {
-        if (tier == 1) {
-            return new ItemStack[]{new ItemStack(Material.LEATHER_BOOTS, 1),
-                    new ItemStack(Material.LEATHER_LEGGINGS, 1), new ItemStack(Material.LEATHER_CHESTPLATE, 1),
-                    new ItemStack(Material.LEATHER_HELMET, 1)};
-        } else if (tier == 2) {
-            return new ItemStack[]{new ItemStack(Material.CHAINMAIL_BOOTS, 1),
-                    new ItemStack(Material.CHAINMAIL_LEGGINGS, 1), new ItemStack(Material.CHAINMAIL_CHESTPLATE, 1),
-                    new ItemStack(Material.CHAINMAIL_HELMET, 1)};
-        } else if (tier == 3) {
-            return new ItemStack[]{new ItemStack(Material.IRON_BOOTS, 1), new ItemStack(Material.IRON_LEGGINGS, 1),
-                    new ItemStack(Material.IRON_CHESTPLATE, 1), new ItemStack(Material.IRON_HELMET, 1)};
-        } else if (tier == 4) {
-            return new ItemStack[]{new ItemStack(Material.DIAMOND_BOOTS, 1),
-                    new ItemStack(Material.DIAMOND_LEGGINGS, 1), new ItemStack(Material.DIAMOND_CHESTPLATE, 1),
-                    new ItemStack(Material.DIAMOND_HELMET, 1)};
-
-        } else if (tier == 5) {
-            return new ItemStack[]{new ItemStack(Material.GOLD_BOOTS, 1), new ItemStack(Material.GOLD_LEGGINGS, 1),
-                    new ItemStack(Material.GOLD_CHESTPLATE, 1), new ItemStack(Material.GOLD_HELMET, 1)};
-        }
-        return null;
-    }
     
     @Override
 	public void onMonsterAttack(Player p) {
@@ -141,7 +119,7 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
 	@Override
 	public void onMonsterDeath() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity().getLocation());
+		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity());
 		if(this.random.nextInt(100) < 33)
 			this.getRareDrop();
 		});

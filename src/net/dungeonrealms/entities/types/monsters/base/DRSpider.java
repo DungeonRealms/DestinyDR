@@ -26,7 +26,6 @@ public class DRSpider extends DRZombie implements Monster{
         String customName = monsterType.getPrefix() + " " + monsterType.name + " " + monsterType.getSuffix() + " ";
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
-
 	}
 
 	public DRSpider(World world) {
@@ -61,7 +60,7 @@ public class DRSpider extends DRZombie implements Monster{
 	@Override
 	public void onMonsterDeath() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity().getLocation());
+		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity());
 		if(this.random.nextInt(100) < 33)
 			this.getRareDrop();
 		});

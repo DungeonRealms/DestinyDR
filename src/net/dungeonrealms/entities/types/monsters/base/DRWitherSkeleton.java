@@ -8,11 +8,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.items.ItemGenerator;
-import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.minecraft.server.v1_8_R3.EntitySkeleton;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
@@ -50,7 +50,7 @@ public class DRWitherSkeleton extends EntitySkeleton implements Monster{
 	}
 
 	protected void setArmor(int tier) {
-		ItemStack[] armor = getTierArmor(tier);
+		ItemStack[] armor = API.getTierArmor(tier);
 		// weapon, boots, legs, chest, helmet/head
 		ItemStack weapon = getTierWeapon(tier);
 		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
@@ -77,10 +77,6 @@ public class DRWitherSkeleton extends EntitySkeleton implements Monster{
 		        net.dungeonrealms.items.Item.ItemTier.getByTier(tier));
 	}
 
-	private ItemStack[] getTierArmor(int tier) {
-		return new ArmorGenerator().nextTier(tier);
-	}
-
 	@Override
 	public void onMonsterAttack(Player p) {
 		// TODO Auto-generated method stub
@@ -90,7 +86,7 @@ public class DRWitherSkeleton extends EntitySkeleton implements Monster{
 	@Override
 	public void onMonsterDeath() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), enumMonster, this.getBukkitEntity().getLocation());
+		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), enumMonster, this.getBukkitEntity());
 		if(this.random.nextInt(100) < 33)
 			this.getRareDrop();
 		});

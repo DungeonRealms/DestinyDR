@@ -1,5 +1,6 @@
 package net.dungeonrealms.entities.types.monsters.base;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
@@ -78,7 +79,7 @@ public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze i
 	 * @param tier
 	 */
 	private void setArmor(int tier) {
-		ItemStack[] armor = getTierArmor(tier);
+		ItemStack[] armor = API.getTierArmor(tier);
 		// weapon, boots, legs, chest, helmet/head
 		ItemStack weapon = getTierWeapon(tier);
 		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
@@ -90,17 +91,6 @@ public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze i
 
 	private ItemStack getTierWeapon(int tier) {
 		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.STAFF, net.dungeonrealms.items.Item.ItemTier.getByTier(tier));
-	}
-
-
-	/**
-	 * get monster tier Armor as ItemsStack array
-	 * 
-	 * @param tier
-	 * @return
-	 */
-	private ItemStack[] getTierArmor(int tier) {
-		return new ArmorGenerator().nextTier(tier);
 	}
 
 	@Override
@@ -131,7 +121,7 @@ public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze i
 	@Override
 	public void onMonsterDeath() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-			this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity().getLocation());
+			this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity());
 			if (new Random().nextInt(99) < 3) {
 				this.getRareDrop();
 			}

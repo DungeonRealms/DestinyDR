@@ -8,6 +8,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
@@ -46,7 +47,7 @@ public class DRMagma extends EntityMagmaCube implements Monster{
 
 	}
     private void setArmor(int tier) {
-        ItemStack[] armor = getTierArmor(tier);
+        ItemStack[] armor = API.getTierArmor(tier);
         // weapon, boots, legs, chest, helmet/head
         ItemStack weapon = getTierWeapon(tier);
         this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
@@ -58,10 +59,6 @@ public class DRMagma extends EntityMagmaCube implements Monster{
     private ItemStack getTierWeapon(int tier) {
         return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.getById(new Random().nextInt(net.dungeonrealms.items.Item.ItemType.values().length - 2)), net.dungeonrealms.items.Item.ItemTier.getByTier(tier));
     }
-
-	private ItemStack[] getTierArmor(int tier) {
-		return new ArmorGenerator().nextTier(tier);
-	}
 
     @Override
     protected String z() {
@@ -86,7 +83,7 @@ public class DRMagma extends EntityMagmaCube implements Monster{
 	@Override
 	public void onMonsterDeath() {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity().getLocation());
+		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity());
 		if(this.random.nextInt(100) < 33)
 			this.getRareDrop();
 		});	}
