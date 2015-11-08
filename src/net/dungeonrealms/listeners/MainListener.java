@@ -280,7 +280,7 @@ public class MainListener implements Listener {
             return;
         Player p1 = (Player) event.getDamager();
         Player p2 = (Player) event.getEntity();
-        if (API.isNonPvPRegion(p1.getLocation()) && API.isNonPvPRegion(p2.getLocation())) {
+        if (API.isInSafeRegion(p1.getLocation()) && API.isInSafeRegion(p2.getLocation())) {
             if (DuelMechanics.isDueling(p2.getUniqueId())) {
                 // If player they're punching is their duel partner
                 if (DuelMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {

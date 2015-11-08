@@ -158,7 +158,7 @@ public class DamageListener implements Listener {
                 if (!event.getEntity().hasMetadata("type")) return;
             }
         }
-        if (API.isNonPvPRegion(event.getDamager().getLocation()) || API.isNonPvPRegion(event.getEntity().getLocation())) {
+        if (API.isInSafeRegion(event.getDamager().getLocation()) || API.isInSafeRegion(event.getEntity().getLocation())) {
             if (API.isPlayer(event.getEntity()) && API.isPlayer(event.getDamager())) {
                 if (DuelMechanics.isDueling(event.getEntity().getUniqueId()) && DuelMechanics.isDueling(event.getDamager().getUniqueId())) {
                     if (!DuelMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
