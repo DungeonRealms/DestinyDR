@@ -413,7 +413,7 @@ public class API {
 
             player.getInventory().addItem(new ItemStack(Material.BREAD, 15));
 
-            player.teleport(new Location(Bukkit.getWorlds().get(0), -367, 84, 390, 0f, 0f));
+            player.teleport(new Location(Bukkit.getWorlds().get(0), -367, 85, 390, 0f, 0f));
 
         }
         PlayerManager.checkInventory(uuid);

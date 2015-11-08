@@ -14,6 +14,9 @@ import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.Item;
+import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.items.armor.Armor;
+import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mechanics.ParticleAPI;
@@ -635,6 +638,12 @@ public class DamageListener implements Listener {
         final boolean finalSavedArmorContents = savedArmorContents;
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             PlayerManager.checkInventory(player.getUniqueId());
+            player.getInventory().addItem(new ItemGenerator().getDefinedStack(Item.ItemType.AXE, Item.ItemTier.TIER_1, Item.ItemModifier.COMMON));
+            player.getInventory().addItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.HELMET, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON));
+            player.getInventory().addItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.CHESTPLATE, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON));
+            player.getInventory().addItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.LEGGINGS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON));
+            player.getInventory().addItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.BOOTS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON));
+            player.getInventory().addItem(new ItemStack(Material.BREAD, 15));
             if (finalSavedArmorContents) {
                 for (ItemStack itemStack : armorToSave) {
                     if (itemStack != null && itemStack.getType() != Material.AIR) {
