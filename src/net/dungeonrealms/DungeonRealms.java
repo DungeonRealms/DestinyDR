@@ -140,7 +140,6 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(BankMechanics.getInstance());
         mm.registerMechanic(NetworkServer.getInstance());
         mm.registerMechanic(DungeonManager.getInstance());
-        mm.registerMechanic(new LootManager());
         mm.registerMechanic(Entities.getInstance());
         mm.registerMechanic(ScoreboardHandler.getInstance());
         mm.registerMechanic(RealmManager.getInstance());
@@ -149,6 +148,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(SpawningMechanics.getInstance());
         mm.registerMechanic(AchievementManager.getInstance());
         mm.registerMechanic(BuffManager.getInstance());
+        mm.registerMechanic(new LootManager());
 
         /*
         In development
@@ -172,7 +172,9 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandMail("mailbox", "/<command> [args]", "The mail command."));
         cm.registerCommand(new CommandAccept("accept", "/<command> [args]", "The accept command."));
         cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
-        cm.registerCommand(new CommandGlobalChat("g", "/<command> [args]", "The invoke command."));
+
+        cm.registerCommand(new CommandGlobalChat("gl", "/<command> [args]", "The invoke command."));
+
         cm.registerCommand(new CommandStats("stats", "/<command> [args]", "The stats command."));
         cm.registerCommand(new CommandStop("stop", "/<command> [args]", "The stop command."));
 

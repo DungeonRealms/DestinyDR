@@ -1,16 +1,19 @@
 package net.dungeonrealms.commands;
 
-import com.mongodb.client.result.UpdateResult;
 import net.dungeonrealms.commands.generic.BasicCommand;
-import net.dungeonrealms.core.Callback;
+import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.mongo.EnumGuildData;
+import net.dungeonrealms.rank.Rank;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.UUID;
 
 /**
  * Created by Nick on 10/31/2015.
@@ -26,24 +29,42 @@ public class CommandGlobalChat extends BasicCommand {
 
         if (sender instanceof ConsoleCommandSender) return false;
 
-        Player player = (Player) sender;
-        if (!player.isOp()) {
-            player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
-            return false;
+        if (args.length <= 0) {
+            sender.sendMessage(ChatColor.RED + "/gl <message>");
+            return true;
         }
-        boolean gChat = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
 
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_GLOBAL_CHAT, !gChat, true, new Callback<UpdateResult>(UpdateResult.class) {
-            @Override
-            public void callback(Throwable failCause, UpdateResult result) {
-                if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId())) {
-                    player.sendMessage(ChatColor.RED + "You have disabled global chat!");
-                } else {
-                    player.sendMessage(ChatColor.GREEN + "You have enabled global chat!");
-                }
+        StringBuilder chatMessage = new StringBuilder();
+
+        for (int i = 0; i < args.length; i++) {
+            chatMessage.append(args[i] + " ");
+        }
+
+        Player player = (Player) sender;
+
+        UUID uuid = player.getUniqueId();
+
+        StringBuilder prefix = new StringBuilder();
+
+        prefix.append(ChatColor.GREEN + "<" + ChatColor.BOLD + "G" + ChatColor.GREEN + ">" + ChatColor.RESET + "");
+
+        Rank.RankBlob r = Rank.getInstance().getRank(uuid);
+        if (r != null && !r.getPrefix().equals("null")) {
+            if (r.getName().equalsIgnoreCase("default")) {
+                prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.GRAY + ""));
+            } else {
+                prefix.append(ChatColor.translateAlternateColorCodes('&', " " + r.getPrefix() + ChatColor.RESET));
             }
-        });
 
-        return false;
+        }
+
+        if (!Guild.getInstance().isGuildNull(uuid)) {
+            String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
+            prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.WHITE + " [" + clanTag + ChatColor.RESET + "]"));
+        }
+
+        Bukkit.broadcastMessage(prefix.toString().trim() + " " + player.getName() + ChatColor.GRAY + ": " + chatMessage.toString());
+
+        return true;
     }
 }
