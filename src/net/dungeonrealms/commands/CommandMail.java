@@ -3,6 +3,8 @@ package net.dungeonrealms.commands;
 import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.handlers.MailHandler;
 import net.dungeonrealms.inventory.PlayerMenus;
+
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -23,7 +25,10 @@ public class CommandMail extends BasicCommand {
         if (s instanceof ConsoleCommandSender) return false;
 
         Player player = (Player) s;
-
+        if (!player.isOp()) {
+            player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
+            return false;
+        }
         if (args.length > 0) {
             if (args[0].equals("send")) {
                 assert args[1] != null : "args[1] is null!?";

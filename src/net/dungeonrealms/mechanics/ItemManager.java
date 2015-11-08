@@ -6,6 +6,7 @@ import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.items.EnumItem;
 import net.dungeonrealms.items.Item;
 import net.dungeonrealms.mastery.GamePlayer;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.miscellaneous.RandomHelper;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -612,7 +613,7 @@ public class ItemManager {
                 + ChatColor.BLACK.toString() + "+" + df.format(stats.getStaffDMG() * 100) + "% Staff DMG";
 
 
-        bm.setAuthor("");
+        bm.setAuthor("Xwaffle");
         pages.add(page1_string);
         pages.add(page2_string);
         pages.add(page3_string);

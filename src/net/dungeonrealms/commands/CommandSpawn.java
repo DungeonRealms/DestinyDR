@@ -114,6 +114,10 @@ public class CommandSpawn extends BasicCommand {
             return false;
         }
         Player player = (Player) s;
+        if (!player.isOp()) {
+            player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
+            return false;
+        }
         if (args.length > 0) {
             switch (args[0]) {
                 case "wolf":

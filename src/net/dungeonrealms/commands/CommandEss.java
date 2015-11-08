@@ -32,6 +32,16 @@ public class CommandEss extends BasicCommand {
             commandSender.sendMessage(ChatColor.RED + "You are not OP/Console!");
             return false;
         }
+        
+        if(commandSender instanceof Player){
+        	Player player = (Player)commandSender;
+            if (!player.isOp()) {
+                player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
+                return false;
+            }
+        }
+        
+        
         if (args.length > 0) {
             switch (args[0]) {
                 case "hearthstone":

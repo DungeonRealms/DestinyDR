@@ -27,7 +27,10 @@ public class CommandGlobalChat extends BasicCommand {
         if (sender instanceof ConsoleCommandSender) return false;
 
         Player player = (Player) sender;
-
+        if (!player.isOp()) {
+            player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
+            return false;
+        }
         boolean gChat = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
 
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_GLOBAL_CHAT, !gChat, true, new Callback<UpdateResult>(UpdateResult.class) {

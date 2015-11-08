@@ -3,6 +3,8 @@ package net.dungeonrealms.commands;
 import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.mechanics.DungeonManager;
 import net.dungeonrealms.party.Party;
+
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -25,7 +27,10 @@ public class CommandInvoke extends BasicCommand {
         if (s instanceof ConsoleCommandSender) return false;
 
         Player player = (Player) s;
-
+        if (!player.isOp()) {
+            player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
+            return false;
+        }
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("bandittrove")) {
                 if (Party.getInstance().isInParty(player)) {

@@ -24,7 +24,10 @@ public class CommandGuild extends BasicCommand {
         if (s instanceof ConsoleCommandSender) return false;
 
         Player player = (Player) s;
-
+        if (!player.isOp()) {
+            player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
+            return false;
+        }
         if (Guild.getInstance().isGuildNull(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "You are not in a guild, or we're having trouble finding it.");
             return true;
