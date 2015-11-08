@@ -58,10 +58,40 @@ public class Glyph {
     }
 
     public ItemStack nextStarGlyph() {
-        return new ItemBuilder().setItem(new ItemStack(Material.NETHER_STAR), ChatColor.GREEN + "Star Unbinding Glyph", new String[]{
+        return new ItemBuilder().setItem(new ItemStack(381), ChatColor.GREEN + "Star Unbinding Glyph", new String[]{
                 ChatColor.GRAY + "Left click while holding to",
                 ChatColor.GRAY + "unbind the current glyph!"
         }).setNBTString("star", "true").build();
+    }
+
+    public ItemStack nextBlankGlyph(int tier) {
+        /*
+        t1 white x
+        t2 green x
+        t3 aqua x
+        t4 light_purple x
+        t5 yellow
+         */
+
+        switch (tier) {
+            case 1:
+                return new ItemBuilder().setItem(new ItemStack(Material.NETHER_STAR), ChatColor.WHITE + "Unknown Glyph", new String[]{
+                }).build();
+            case 2:
+                return new ItemBuilder().setItem(new ItemStack(Material.NETHER_STAR), ChatColor.GREEN + "Unknown Glyph", new String[]{
+                }).build();
+            case 3:
+                return new ItemBuilder().setItem(new ItemStack(Material.NETHER_STAR), ChatColor.AQUA + "Unknown Glyph", new String[]{
+                }).build();
+            case 4:
+                return new ItemBuilder().setItem(new ItemStack(Material.NETHER_STAR), ChatColor.LIGHT_PURPLE + "Unknown Glyph", new String[]{
+                }).build();
+            case 5:
+                return new ItemBuilder().setItem(new ItemStack(Material.NETHER_STAR), ChatColor.YELLOW + "Unknown Glyph", new String[]{
+                }).build();
+            default:
+                return null;
+        }
     }
 
     public void starGlyph(InventoryClickEvent event, Player player, ItemStack item, ItemStack star) {
@@ -69,7 +99,7 @@ public class Glyph {
 
         event.setCancelled(true);
 
-        event.getCurrentItem().setType(Material.AIR);
+        event.setCursor(new ItemStack(Material.AIR));
 
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
 
@@ -109,6 +139,7 @@ public class Glyph {
         if (!isGlyph(scroll)) return;
 
         event.setCancelled(true);
+        event.setCursor(new ItemStack(Material.AIR));
 
         NBTTagCompound itemTag = CraftItemStack.asNMSCopy(item).getTag();
         NBTTagCompound scrollTag = CraftItemStack.asNMSCopy(scroll).getTag();
@@ -185,12 +216,15 @@ public class Glyph {
                 }).contains(NBTValue)) {
                     if (NBTValue > 10) {
                         NBTValue = 13;
+                        lore.add(ChatColor.GREEN + "  • " + ChatColor.RED + NBTValue + "%" + " " + ChatColor.GOLD + Item.AttributeType.getByString(NBTName).getName());
                     }
+                } else {
+                    lore.add(ChatColor.GREEN + "  • " + ChatColor.RED + NBTValue + " " + ChatColor.GOLD + Item.AttributeType.getByString(NBTName).getName());
                 }
-                glyphAttributes += NBTName + "@" + NBTValue + ",";
 
+                glyphAttributes += NBTName + "@" + NBTValue + ",";
                 itemTag.set(NBTName, new NBTTagInt(itemTag.getInt(NBTName) + NBTValue));
-                lore.add(ChatColor.GREEN + "  • " + ChatColor.RED + NBTValue + " " + ChatColor.GOLD + Item.AttributeType.getByString(NBTName).getName());
+
             }
 
             itemTag.set("glyph", new NBTTagString(glyphAttributes));
@@ -262,11 +296,12 @@ public class Glyph {
                 }).contains(NBTValue)) {
                     if (NBTValue > 10) {
                         NBTValue = 13;
+                        lore.add(ChatColor.GREEN + "  • " + ChatColor.RED + NBTValue + "%" + " " + ChatColor.GOLD + Armor.ArmorAttributeType.getByString(NBTName).getName());
                     }
+                } else {
+                    lore.add(ChatColor.GREEN + "  • " + ChatColor.RED + NBTValue + " " + ChatColor.GOLD + Armor.ArmorAttributeType.getByString(NBTName).getName());
                 }
-
                 itemTag.set(NBTName, new NBTTagInt(itemTag.getInt(NBTName) + NBTValue));
-                lore.add(ChatColor.GREEN + "  • " + ChatColor.RED + NBTValue + " " + ChatColor.GOLD + Armor.ArmorAttributeType.getByString(NBTName).getName());
             }
 
             meta.setLore(lore);
@@ -283,12 +318,12 @@ public class Glyph {
 
     boolean isGlyph(ItemStack item) {
         net.minecraft.server.v1_8_R3.ItemStack nmsGlyph = CraftItemStack.asNMSCopy(item);
-        return nmsGlyph.hasTag() && nmsGlyph.getTag().hasKey("glyph");
+        return nmsGlyph.getTag() != null && nmsGlyph.hasTag() && nmsGlyph.getTag().hasKey("glyph");
     }
 
     boolean isStar(ItemStack item) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsGlyph = CraftItemStack.asNMSCopy(item);
-        return nmsGlyph.hasTag() && nmsGlyph.getTag().hasKey("star");
+        net.minecraft.server.v1_8_R3.ItemStack nmsStar = CraftItemStack.asNMSCopy(item);
+        return nmsStar.getTag() != null && nmsStar.hasTag() && nmsStar.getTag().hasKey("star");
     }
 
     public ItemStack getArmorGylph(String name, int tier) {

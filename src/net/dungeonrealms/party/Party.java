@@ -39,7 +39,7 @@ public class Party implements GenericMechanic {
     }
 
     @Override
-	public void startInitialization() {
+    public void startInitialization() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), this::updateParties, 0, 5L);
     }
 
@@ -56,7 +56,7 @@ public class Party implements GenericMechanic {
                 if (objective == null) {
                     objective = ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).registerNewObjective("party", "scoreboard");
                     objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-                    objective.setDisplayName(ChatColor.WHITE + "(" + ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY" + ChatColor.WHITE + ")");
+                    objective.setDisplayName(ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY");
                 }
                 ScoreboardHandler.getInstance().getPlayerScoreboardObject(player).resetScores(player.getName());
                 Score score = objective.getScore(player.getName());

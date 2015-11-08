@@ -51,6 +51,7 @@ public class CommandParty extends BasicCommand {
                             }
                         }
                         Party.getInstance().invitePlayer(Bukkit.getPlayer(args[1]), Party.getInstance().getPlayerParty(player));
+                        player.sendMessage(ChatColor.GREEN + "You have invited " + ChatColor.GOLD + ChatColor.GREEN + " to your party!");
                     } else {
                         player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.RED + "You do not own a party!");
                     }

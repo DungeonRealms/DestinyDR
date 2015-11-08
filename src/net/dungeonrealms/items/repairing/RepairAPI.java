@@ -139,7 +139,7 @@ public class RepairAPI {
         if (tag == null) return 0;
         if (tag.getInt("itemTier") == 0 && tag.getInt("armorTier") == 0) return 0;
         double durabilityHitsLeft = durability / 1500;
-        double percentDurability = 1500 - (1500 * durabilityHitsLeft);
+        double percentDurability = itemStack.getType().getMaxDurability() - (1500 * durabilityHitsLeft);
         if (percentDurability == 1500) {
             percentDurability = 1500 - 1;
         }

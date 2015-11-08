@@ -187,6 +187,10 @@ public class ItemListener implements Listener {
                 event.getPlayer().sendMessage(ChatColor.RED + "You are already at full HP!");
             }
         } else if (nmsItem.getTag().getString("type").equalsIgnoreCase("healingFood")) {
+            if (event.getPlayer().getFoodLevel() >= 20) {
+                event.setCancelled(true);
+                return;
+            }
             event.setCancelled(true);
             if (CombatLog.isInCombat(event.getPlayer())) {
                 event.getPlayer().sendMessage(ChatColor.RED + "You cannot eat this while in combat!");
