@@ -42,6 +42,7 @@ import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.TradeHandler;
 import net.dungeonrealms.handlers.TradeHandler.TradeManager;
 import net.dungeonrealms.items.repairing.RepairAPI;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.miscellaneous.Glyph;
@@ -115,7 +116,11 @@ public class InventoryListener implements Listener {
             }
             String owner = event.getInventory().getTitle().split("@")[1];
             UUID shopOwner = API.getUUIDFromName(owner);
+            
+            
             Player clicker = (Player) event.getWhoClicked();
+            
+            
             Shop shop = ShopMechanics.PLAYER_SHOPS.get(shopOwner);
             if(shop == null){
             	event.setCancelled(true);
@@ -125,7 +130,7 @@ public class InventoryListener implements Listener {
             if (item != null && item.getType() != Material.AIR) {
                 net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
                 if (nms != null) {
-                    if (clicker.getUniqueId() == shopOwner) {
+                    if (clicker.getUniqueId().toString().equalsIgnoreCase(shopOwner.toString())) {
                         // Is OWner Clicking
                         if (nms.hasTag() && nms.getTag().hasKey("status")) {
                             // Clicking status off and on.
@@ -305,7 +310,7 @@ public class InventoryListener implements Listener {
                     }
                 }
             } else { // Setting new item to shop
-                if (clicker.getUniqueId() == shopOwner) {
+                if (clicker.getUniqueId().toString().equalsIgnoreCase(shopOwner.toString())) {
                     if (event.getRawSlot() < shop.inventory.getSize()) {
                         ItemStack itemHeld = event.getCursor();
                         if (itemHeld.getType() == Material.AIR)
