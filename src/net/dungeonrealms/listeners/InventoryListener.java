@@ -128,6 +128,7 @@ public class InventoryListener implements Listener {
                                 meta.setDisplayName(ChatColor.RED.toString() + "Close Shop");
                                 button.setItemMeta(meta);
                                 net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
+                                clicker.playSound(clicker.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
                                 nmsButton.getTag().setString("status", "on");
                                 shop.inventory.setItem(slot, CraftItemStack.asBukkitCopy(nmsButton));
                             } else {
@@ -137,6 +138,7 @@ public class InventoryListener implements Listener {
                                 ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.GRAY.getDyeData());
                                 ItemMeta meta = button.getItemMeta();
                                 meta.setDisplayName(ChatColor.YELLOW.toString() + "Open Shop");
+                                clicker.playSound(clicker.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
                                 button.setItemMeta(meta);
                                 net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
                                 nmsButton.getTag().setString("status", "off");
