@@ -65,8 +65,10 @@ public class DamageListener implements Listener {
     public void onBuffExplode(EntityExplodeEvent event) {
         if (!(event.getEntity().hasMetadata("type"))) return;
         event.blockList().clear();
+        event.setCancelled(true);
         if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("buff")) {
             event.setCancelled(true);
+            event.blockList().clear();
             int radius = event.getEntity().getMetadata("radius").get(0).asInt();
             int duration = event.getEntity().getMetadata("duration").get(0).asInt();
             PotionEffectType effectType = PotionEffectType.getByName(event.getEntity().getMetadata("effectType").get(0).asString());
