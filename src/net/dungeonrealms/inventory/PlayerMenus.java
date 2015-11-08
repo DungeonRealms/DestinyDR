@@ -497,7 +497,7 @@ public class PlayerMenus {
                 ChatColor.GRAY + "Teleport home to your saved location of",
                 ChatColor.YELLOW + TeleportAPI.getLocationFromDatabase(player.getUniqueId()),
                 "",
-                ChatColor.YELLOW + "Click to use your Hearhtstone!"
+                ChatColor.YELLOW + "Click to use your Hearthstone!"
         }));
         inv.setItem(26, editItem(new ItemStack(Material.REDSTONE_COMPARATOR), ChatColor.GREEN + "Settings & Preferences", new String[]{
                 ChatColor.DARK_GRAY + "Settings & Preferences",
