@@ -171,10 +171,6 @@ public class DamageListener implements Listener {
                     event.setDamage(0);
                     return;
                 }
-            } else {
-                event.setCancelled(true);
-                event.setDamage(0);
-                return;
             }
         }
         //Make sure the player is HOLDING something!
