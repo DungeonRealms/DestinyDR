@@ -45,6 +45,7 @@ public class EnergyHandler implements GenericMechanic {
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::regenerateAllPlayerEnergy, 40, 3L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::removePlayerEnergySprint, 40, 10L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::addStarvingPotionEffect, 40, 15L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::regenerateFoodInSafezones, 40, 40L);
     }
 
     @Override
@@ -85,6 +86,18 @@ public class EnergyHandler implements GenericMechanic {
                 player.setMetadata("starving", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "**STARVING**"), 20L);
             }
+        }
+    }
+
+    private void regenerateFoodInSafezones() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!API.isInSafeRegion(player.getLocation())) {
+                continue;
+            }
+            if (player.getFoodLevel() >= 20) {
+                continue;
+            }
+            player.setFoodLevel(player.getFoodLevel() + 8);
         }
     }
 
@@ -236,14 +249,11 @@ public class EnergyHandler implements GenericMechanic {
                     if (player.getFoodLevel() > 1) {
                         player.setFoodLevel(1);
                     }
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20, 150)), 0L);
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "**EXHAUSTED**");
                     if (foodLevel > 1) {
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.setFoodLevel(foodLevel), 60L);
                     }
                 }
-                //TODO: THIS IS A SUPER SKETCHY WAY OF PREVENTING LEFT-CONTROL SPRINTING FROM OVERRIDING. As its CLIENTSIDE setSprinting(false) only cancels it for one tick
-                //TODO: Since this is a plugin and not a mod, we can't toggle keypresses clientside. RIP.
             }
         });
     }
