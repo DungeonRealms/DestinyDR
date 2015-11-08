@@ -8,6 +8,7 @@ public enum EnumData {
     HEALTH("info.health"),
     FIRST_LOGIN("info.firstLogin"),
     LAST_LOGIN("info.lastLogin"),
+    LAST_LOGOUT("info.lastLogout"),
     LEVEL("info.netLevel"),
     IS_PLAYING("info.isPlaying"),
     EXPERIENCE("info.experience"),

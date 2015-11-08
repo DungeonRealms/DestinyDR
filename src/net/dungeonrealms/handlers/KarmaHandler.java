@@ -174,6 +174,20 @@ public class KarmaHandler implements GenericMechanic {
     }
 
     /**
+     * Returns the seconds passed since last login
+     *
+     * @param player
+     * @return int
+     * @since 1.0
+     */
+    public int getSecondsPassed(Player player) {
+        long currentTime = System.currentTimeMillis() / 1000l;
+        long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, player.getUniqueId())));
+        player.sendMessage(String.valueOf(currentTime - endTime));
+        return (int) (currentTime - endTime);
+    }
+
+    /**
      * Sets the alignment of a specific player
      * adds them to hashmap with cooldown
      * if applicable and sends them a message
@@ -186,6 +200,20 @@ public class KarmaHandler implements GenericMechanic {
     public void setPlayerAlignment(Player player, String alignmentRawName) {
         EnumPlayerAlignments alignment = EnumPlayerAlignments.getByName(alignmentRawName);
         String playerAlignment = getPlayerRawAlignment(player);
+        int seconds = 0;
+        if (alignment == EnumPlayerAlignments.CHAOTIC) {
+            if (getSecondsPassed(player) >= 1200) {
+                alignment = EnumPlayerAlignments.LAWFUL;
+            } else {
+                seconds = getSecondsPassed(player);
+            }
+        } else if (alignment == EnumPlayerAlignments.NEUTRAL) {
+            if (getSecondsPassed(player) >= 120) {
+                alignment = EnumPlayerAlignments.LAWFUL;
+            } else {
+                seconds = getSecondsPassed(player);
+            }
+        }
         if (alignment != null) {
             switch (alignment) {
                 case LAWFUL:
@@ -216,7 +244,7 @@ public class KarmaHandler implements GenericMechanic {
                     /*if (RealmManager.getInstance().getPlayerRealm(player) != null) {
                         RealmManager.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.YELLOW + player.getName() + "(s) REALM");
                     }*/
-                    PLAYER_ALIGNMENT_TIMES.put(player, 120);
+                    PLAYER_ALIGNMENT_TIMES.put(player, seconds);
                     PLAYER_ALIGNMENTS.put(player, alignment);
                     break;
                 case CHAOTIC:
@@ -232,7 +260,7 @@ public class KarmaHandler implements GenericMechanic {
                     /*if (RealmManager.getInstance().getPlayerRealm(player) != null) {
                         RealmManager.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.RED + player.getName() + "(s) REALM");
                     }*/
-                    PLAYER_ALIGNMENT_TIMES.put(player, 1200);
+                    PLAYER_ALIGNMENT_TIMES.put(player, seconds);
                     PLAYER_ALIGNMENTS.put(player, alignment);
                     break;
                 default:
