@@ -134,7 +134,7 @@ public abstract class DRZombie extends EntityZombie implements Monster{
 
     @Override
     protected String bp() {
-        return "mob.ghast.scream";
+        return "";
     }
     
 	@Override

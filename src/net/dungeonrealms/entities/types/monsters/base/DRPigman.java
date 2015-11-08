@@ -100,7 +100,7 @@ public class DRPigman extends EntityPigZombie implements Monster {
 
 	@Override
 	protected String bp() {
-		return "mob.ghast.scream";
+		return "";
 	}
 
 	@Override
