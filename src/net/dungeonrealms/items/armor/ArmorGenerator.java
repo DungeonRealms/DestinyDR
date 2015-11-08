@@ -1,5 +1,6 @@
 package net.dungeonrealms.items.armor;
 
+import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.items.DamageMeta;
 import net.dungeonrealms.items.NameGenerator;
 import net.dungeonrealms.items.armor.Armor.ArmorModifier;
@@ -111,7 +112,7 @@ public class ArmorGenerator {
 
 		nmsStack.setTag(tag);
 
-		return CraftItemStack.asBukkitCopy(nmsStack);
+		return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
 	}
 
 	/**

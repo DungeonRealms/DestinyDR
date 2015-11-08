@@ -12,6 +12,7 @@ import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.TradeHandler;
 import net.dungeonrealms.inventory.GUI;
 import net.dungeonrealms.inventory.NPCMenus;
+import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.profession.Fishing;
@@ -484,5 +485,13 @@ public class MainListener implements Listener {
         player.getOpenInventory().getTopInventory().clear();
         player.updateInventory();
         player.sendMessage(ChatColor.YELLOW + "Trade Cancelled!");
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onItemBreak(PlayerItemBreakEvent event) {
+        if (RepairAPI.getCustomDurability(event.getBrokenItem()) > 1) {
+            event.getBrokenItem().setAmount(1);
+            event.getBrokenItem().setDurability(event.getBrokenItem().getType().getMaxDurability());
+        }
     }
 }

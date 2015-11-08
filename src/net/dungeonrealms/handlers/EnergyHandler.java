@@ -2,6 +2,7 @@ package net.dungeonrealms.handlers;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -109,7 +110,9 @@ public class EnergyHandler implements GenericMechanic {
                     regenAmount = 0.07F;
                 }
                 regenAmount = regenAmount / 6.3F;
-                regenAmount += (int) (regenAmount * API.getGamePlayer(player).getStats().getEnergyRegen());
+                GamePlayer gp = API.getGamePlayer(player);
+                if (gp == null || gp.getStats() == null) return;
+                regenAmount += (int) (regenAmount * gp.getStats().getEnergyRegen());
                 //TODO: FISH SOMETHING GIVES REGEN I DUNNO PROFESSION MECHANICS.
                 addEnergyToPlayerAndUpdate(player.getUniqueId(), regenAmount);
             }

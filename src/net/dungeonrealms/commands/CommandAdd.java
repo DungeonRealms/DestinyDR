@@ -7,6 +7,7 @@ import net.dungeonrealms.items.EnumItem;
 import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
+import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
@@ -14,6 +15,7 @@ import net.dungeonrealms.miscellaneous.Glyph;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -140,6 +142,9 @@ public class CommandAdd extends BasicCommand {
                     player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemModifier.COMMON));
                     player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemModifier.RARE));
                     player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemModifier.LEGENDARY));
+                    break;
+                case "test":
+                    Bukkit.broadcastMessage("Get2" + String.valueOf(RepairAPI.getCustomDurability(player.getItemInHand())));
                     break;
             }
         }
