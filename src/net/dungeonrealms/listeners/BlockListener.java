@@ -513,7 +513,7 @@ public class BlockListener implements Listener {
                     e.getPlayer().sendMessage(ChatColor.RED + "You already have an open shop!");
                     return;
                 }
-                if (API.isInSafeRegion(b1.getLocation())) {
+                if (API.isInSafeRegion(b1.getLocation()) || API.isMaterialNearby(b1, 3, Material.CHEST) || API.isMaterialNearby(b1, 3, Material.ENDER_CHEST)) {
                 	if(!API.getGamePlayer(e.getPlayer()).hasShopOpen()){
                     Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () ->
                             ShopMechanics.setupShop(e.getClickedBlock(), e.getPlayer().getUniqueId()));

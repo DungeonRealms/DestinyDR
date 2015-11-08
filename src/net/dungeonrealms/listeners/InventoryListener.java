@@ -49,6 +49,8 @@ import net.dungeonrealms.miscellaneous.Glyph;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.network.NetworkAPI;
+import net.dungeonrealms.profession.Fishing;
+import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.stats.PlayerStats;
@@ -688,11 +690,15 @@ public class InventoryListener implements Listener {
         ItemStack cursorItem = event.getCursor();
         ItemStack slotItem = event.getCurrentItem();
         Player player = (Player) event.getWhoClicked();
-        //TODO: Chase check if its a profession item too some shit about not being able to repair level 100 profession items
-        if (RepairAPI.isItemArmorScrap(cursorItem) && (RepairAPI.isItemArmorOrWeapon(slotItem))) {
+        if(!RepairAPI.isItemArmorScrap(cursorItem))return;
+        if ((RepairAPI.isItemArmorOrWeapon(slotItem)) || Mining.isDRPickaxe(slotItem) || Fishing.isDRFishingPole(slotItem)) {
             if (RepairAPI.canItemBeRepaired(slotItem)) {
                 int scrapTier = RepairAPI.getScrapTier(cursorItem);
-                int slotTier = RepairAPI.getArmorOrWeaponTier(slotItem);
+                int slotTier = 0;
+                if(RepairAPI.isItemArmorOrWeapon(slotItem)){
+                	slotTier = RepairAPI.getArmorOrWeaponTier(slotItem);
+            	}else
+            		slotTier = CraftItemStack.asNMSCopy(slotItem).getTag().getInt("itemTier");
                 if (scrapTier != slotTier) return;
                 if (slotItem.getDurability() == 0) return;
                 if (cursorItem.getAmount() == 1) {
