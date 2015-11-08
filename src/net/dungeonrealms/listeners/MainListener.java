@@ -20,12 +20,14 @@ import net.dungeonrealms.profession.Fishing;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
@@ -430,6 +432,12 @@ public class MainListener implements Listener {
         }
     }
 
+    /**
+     * Handle players catching fish, gives them exp/fish
+     *
+     * @param event
+     * @since 1.0
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void catchFish(PlayerFishEvent event) {
         if (event.getState().equals(State.FISHING)) {
@@ -462,6 +470,12 @@ public class MainListener implements Listener {
         }
     }
 
+    /**
+     * Checks for players quitting the merchant NPC
+     *
+     * @param event
+     * @since 1.0
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerCloseInventory(InventoryCloseEvent event) {
         if (!event.getInventory().getName().equalsIgnoreCase("Merchant")) {
@@ -496,11 +510,55 @@ public class MainListener implements Listener {
         player.sendMessage(ChatColor.YELLOW + "Trade Cancelled!");
     }
 
+    /**
+     * Handles a players item breaking, cancels
+     * if it shouldn't break.
+     *
+     * @param event
+     * @since 1.0
+     */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onItemBreak(PlayerItemBreakEvent event) {
         if (RepairAPI.getCustomDurability(event.getBrokenItem()) > 1) {
             event.getBrokenItem().setAmount(1);
             event.getBrokenItem().setDurability(event.getBrokenItem().getType().getMaxDurability());
         }
+    }
+
+    /**
+     * Checks for player punching a map on a wall
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerHitMap(HangingBreakByEntityEvent event) {
+        if (event.getRemover() instanceof Player && event.getEntity() instanceof ItemFrame) {
+            Player player = (Player) event.getRemover();
+            ItemFrame itemFrame = (ItemFrame) event.getEntity();
+            if (player.getInventory().firstEmpty() != -1 && (itemFrame.getItem().getType() == Material.MAP)) {
+                ItemStack map = itemFrame.getItem();
+                if (!(player.getInventory().contains(map))) {
+                    player.getInventory().addItem(map);
+                    player.updateInventory();
+                    player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1F, 0.8F);
+                }
+            }
+        }
+        event.setCancelled(true);
+    }
+
+    /**
+     * Prevents players from shearing sheep etc.
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerShearEntityEvent(PlayerShearEntityEvent event) {
+        if (event.getPlayer().isOp()) {
+            return;
+        }
+        event.setCancelled(true);
     }
 }
