@@ -42,7 +42,7 @@ public class SpawningMechanics implements GenericMechanic {
 
 
     public static void initSpawners() {
-        ALLSPAWNERS.forEach(spawner -> Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), spawner::init, 20l));
+        ALLSPAWNERS.forEach(spawner -> spawner.init());
     }
 
     public static ArrayList<MobSpawner> getSpawners() {

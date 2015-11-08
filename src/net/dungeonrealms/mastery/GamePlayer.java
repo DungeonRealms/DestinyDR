@@ -248,6 +248,14 @@ public class GamePlayer {
     public Player getPlayer() {
         return T;
     }
+    /**
+     * Checks Document for boolean value
+     * 
+     * @return boolean
+     */
+    public boolean hasShopOpen(){
+    	return (boolean) DatabaseAPI.getInstance().getData(EnumData.HASSHOP, T.getUniqueId());
+    }
 
     /**
      * @return Player Stats

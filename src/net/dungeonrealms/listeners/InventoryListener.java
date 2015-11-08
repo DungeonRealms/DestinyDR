@@ -280,6 +280,7 @@ public class InventoryListener implements Listener {
                                         ItemStack tempStack = event.getInventory().getItem(event.getRawSlot());
                                         tempStack.setAmount(1);
                                         BankMechanics.getInstance().addGemsToPlayerBank(shop.getOwner().getUniqueId(), price);
+                                        NetworkAPI.getInstance().sendPlayerMessage(clicker.getDisplayName(), ChatColor.GREEN.toString() +"Bought a " + stack.getItemMeta().getDisplayName() + " for "+ ChatColor.BOLD + price + " Gems");
                                         NetworkAPI.getInstance().sendPlayerMessage(shop.getOwner().getDisplayName(), ChatColor.GREEN.toString() + ChatColor.BOLD + price + " Gems" + ChatColor.GREEN + " added to your bank!");
                                         shop.inventory.remove(tempStack);
                                     } else {

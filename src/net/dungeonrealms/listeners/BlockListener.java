@@ -527,8 +527,12 @@ public class BlockListener implements Listener {
                     return;
                 }
                 if (API.isInSafeRegion(b1.getLocation())) {
+                	if(!API.getGamePlayer(e.getPlayer()).hasShopOpen()){
                     Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () ->
                             ShopMechanics.setupShop(e.getClickedBlock(), e.getPlayer().getUniqueId()));
+                	}else{
+                		e.getPlayer().sendMessage(ChatColor.RED + " You have a shop open already! It may be on another shard.");
+                	}
                 } else {
                     e.getPlayer().sendMessage(ChatColor.RED + "You can not place a shop here.");
                 }

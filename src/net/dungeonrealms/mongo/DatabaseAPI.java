@@ -180,6 +180,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("inventory")).get("storage", String.class);
             case INVENTORY:
                 return ((Document) PLAYERS.get(uuid).get("inventory")).get("player", String.class);
+            case HASSHOP:
+            	return ((Document)PLAYERS.get(uuid).get("info")).get("shopOpen", Boolean.class);
             /*
             Toggles
              */
@@ -353,7 +355,8 @@ public class DatabaseAPI {
                                 .append("isPlaying", true)
                                 .append("friends", new ArrayList<>())
                                 .append("alignment", "lawful")
-                                .append("guild", ""))
+                                .append("guild", "")
+                                .append("shopOpen", false))
                         .append("attributes",
                                 new Document("bufferPoints", 6)
                                         .append("strength", 0)

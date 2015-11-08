@@ -18,6 +18,7 @@ public enum EnumData {
     FRIENDS("info.friends"),
     ALIGNMENT("info.alignment"),
     CURRENT_LOCATION("info.currentLocation"),
+    HASSHOP("info.shopOpen"),
 
     ACHIEVEMENTS("collectibles.achievements"),
 
