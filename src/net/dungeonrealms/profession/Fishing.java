@@ -324,17 +324,13 @@ public class Fishing implements GenericMechanic {
                  for (Entry<Location, List<Location>> data : FISHING_PARTICLES.entrySet()) {
                      Location epicenter = data.getKey();
                      try {
-						 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-							 ParticleAPI.sendParticleToLocation(ParticleEffect.SPLASH, epicenter, r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.4F, 20);
-						 },0L);
+						 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> ParticleAPI.sendParticleToLocation(ParticleEffect.SPLASH, epicenter, r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.4F, 20),0L);
                      } catch (Exception e1) {
                          e1.printStackTrace();
                      }
                      data.getValue().stream().filter(loc -> r.nextInt(chance) == 1).forEach(loc -> {
                          try {
-							 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-								 ParticleAPI.sendParticleToLocation(ParticleEffect.SPLASH, epicenter, r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.4F, 20);
-							 }, 0L);
+							 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> ParticleAPI.sendParticleToLocation(ParticleEffect.SPLASH, epicenter, r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.4F, 20), 0L);
                          } catch (Exception e1) {
                              e1.printStackTrace();
                          }
