@@ -36,7 +36,7 @@ public interface Monster {
 
 		if (RandomHelper.getRandomNumberBetween(1, 100) < 10) {
 			ItemStack[] armor = ((LivingEntity) ent).getEquipment().getArmorContents();
-			armor[4] = null;
+			armor[3] = null;
 			int number = RandomHelper.getRandomNumberBetween(0, 2);
 			ItemStack armorToDrop = armor[number];
 			world.getWorld().dropItemNaturally(loc.add(0, 1, 0), armorToDrop);
