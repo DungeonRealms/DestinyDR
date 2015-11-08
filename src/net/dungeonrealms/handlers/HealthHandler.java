@@ -1,35 +1,33 @@
 	package net.dungeonrealms.handlers;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.duel.DuelMechanics;
-import net.dungeonrealms.entities.Entities;
-import net.dungeonrealms.mastery.GamePlayer;
-import net.dungeonrealms.mechanics.SoundAPI;
-import net.dungeonrealms.mechanics.generic.EnumPriority;
-import net.dungeonrealms.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.mongo.EnumOperators;
-import net.dungeonrealms.profession.Fishing;
-import net.minecraft.server.v1_8_R3.DamageSource;
-import net.minecraft.server.v1_8_R3.EntityArmorStand;
-import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.PacketPlayOutEntityStatus;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.*;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.inventivetalent.bossbar.BossBarAPI;
+    import net.dungeonrealms.API;
+    import net.dungeonrealms.DungeonRealms;
+    import net.dungeonrealms.combat.CombatLog;
+    import net.dungeonrealms.duel.DuelMechanics;
+    import net.dungeonrealms.entities.Entities;
+    import net.dungeonrealms.mastery.GamePlayer;
+    import net.dungeonrealms.mechanics.SoundAPI;
+    import net.dungeonrealms.mechanics.generic.EnumPriority;
+    import net.dungeonrealms.mechanics.generic.GenericMechanic;
+    import net.dungeonrealms.mongo.DatabaseAPI;
+    import net.dungeonrealms.mongo.EnumData;
+    import net.dungeonrealms.mongo.EnumOperators;
+    import net.dungeonrealms.profession.Fishing;
+    import net.minecraft.server.v1_8_R3.DamageSource;
+    import net.minecraft.server.v1_8_R3.EntityArmorStand;
+    import net.minecraft.server.v1_8_R3.EntityLiving;
+    import org.bukkit.Bukkit;
+    import org.bukkit.ChatColor;
+    import org.bukkit.EntityEffect;
+    import org.bukkit.Material;
+    import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+    import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
+    import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+    import org.bukkit.entity.*;
+    import org.bukkit.inventory.ItemStack;
+    import org.bukkit.metadata.FixedMetadataValue;
+    import org.bukkit.potion.PotionEffect;
+    import org.inventivetalent.bossbar.BossBarAPI;
 
 /**
  * Created by Kieran on 10/3/2015.
@@ -356,7 +354,7 @@ public class HealthHandler implements GenericMechanic {
 
         if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
             double newHealth = currentHP + amount;
-            if (newHealth <= maxHP) {
+            if (newHealth >= maxHP) {
                 newHealth = maxHP;
             }
             player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " -> " + ChatColor.GREEN + " [" + newHealth + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
@@ -439,6 +437,11 @@ public class HealthHandler implements GenericMechanic {
         double currentHP = getPlayerHPLive(player);
         double newHP = currentHP - damage;
 
+        CombatLog.addToCombat(player);
+        if (damager instanceof Player) {
+            player.playEffect(EntityEffect.HURT);
+            SoundAPI.getInstance().playSoundAtLocation("damage.hit", player.getLocation(), 6);
+        }
         if (newHP <= 0 && DuelMechanics.isDueling(player.getUniqueId())) {
             newHP = 1;
         }
@@ -520,12 +523,6 @@ public class HealthHandler implements GenericMechanic {
                 default:
                     break;
             }
-        }
-        if (leAttacker instanceof Player) {
-            PacketPlayOutEntityStatus status = new PacketPlayOutEntityStatus(((CraftEntity) player).getHandle(), (byte) 2);
-            ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, status);
-            SoundAPI.getInstance().playSoundAtLocation("damage.hit", player.getLocation(), 6);
-            return;
         }
         if (!(leAttacker == null) && !(API.isPlayer(leAttacker))) {
             Entities.getInstance().MONSTER_LAST_ATTACK.put(leAttacker, 15);
