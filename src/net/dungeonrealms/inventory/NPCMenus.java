@@ -8,7 +8,6 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.miscellaneous.ItemBuilder;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mechanics.ItemManager;
-import net.dungeonrealms.miscellaneous.SandS;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -150,6 +149,7 @@ public class NPCMenus {
     public static void openDungeoneerMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 9, "Dungeoneer");
 
+       /*
         inv.setItem(0, new ItemBuilder().setItem(SandS.getInstance().getScroll(SandS.ScrollType.WHITE_SCROLL, 1)).addLore(ChatColor.AQUA + "1500 Portal Shards [T1]").setNBTInt("shardTier", 1)
                 .setNBTInt("shardCost", 1500).build());
         inv.setItem(1, new ItemBuilder().setItem(SandS.getInstance().getScroll(SandS.ScrollType.WHITE_SCROLL, 2)).addLore(ChatColor.AQUA + "1500 Portal Shards [T2]").setNBTInt("shardTier", 2)
@@ -160,6 +160,7 @@ public class NPCMenus {
                 .setNBTInt("shardCost", 1500).build());
         inv.setItem(4, new ItemBuilder().setItem(SandS.getInstance().getScroll(SandS.ScrollType.WHITE_SCROLL, 5)).addLore(ChatColor.AQUA + "1500 Portal Shards [T5]").setNBTInt("shardTier", 5)
                 .setNBTInt("shardCost", 1500).build());
+        */
 
         player.openInventory(inv);
     }

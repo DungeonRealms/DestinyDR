@@ -38,7 +38,7 @@ public class BuffUtils {
             Block b = Bukkit.getWorlds().get(0).getHighestBlockAt((int) player.getLocation().getX(), (int) player.getLocation().getZ());
             enderCrystal.setLocation(b.getX(), b.getY(), b.getZ(), 0, 0);
         }
-        player.playSound(player.getLocation(), Sound.ENDERDRAGON_DEATH, 1F, 1F);
+        player.playSound(player.getLocation(), Sound.ENDERDRAGON_WINGS, 1f, 63f);
         MetadataUtils.registerBuffMetadata(enderCrystal, getRandomPotionEffect(), 10, 600);
         return enderCrystal;
     }

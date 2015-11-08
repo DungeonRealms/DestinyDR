@@ -1,17 +1,15 @@
 package net.dungeonrealms.commands;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
-
 import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.rank.Rank;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
 
 /**
  * Created by Nick on 9/27/2015.
@@ -25,12 +23,7 @@ public class CommandRank extends BasicCommand {
     @Override
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
 
-        if (s instanceof ConsoleCommandSender) return false;
-        Player player = (Player) s;
-        if (!player.isOp()) {
-            player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
-            return false;
-        }
+        if (!(s instanceof ConsoleCommandSender)) return false;
 
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("set")) {
@@ -42,17 +35,17 @@ public class CommandRank extends BasicCommand {
                 if (args[1] == null || args[2] == null || args[3] == null) return false;
                 boolean didCreate = Rank.getInstance().createNewRank(args[1], args[2], args[3]);
                 if (didCreate) {
-                    player.sendMessage(ChatColor.GREEN + "[RANK] " + ChatColor.YELLOW + "Created a new rank " + args[1]);
+                    s.sendMessage(ChatColor.GREEN + "[RANK] " + ChatColor.YELLOW + "Created a new rank " + args[1]);
                 } else {
-                    player.sendMessage(ChatColor.RED + "[RANK] " + ChatColor.YELLOW + "That rank already exist!?");
+                    s.sendMessage(ChatColor.RED + "[RANK] " + ChatColor.YELLOW + "That rank already exist!?");
                 }
             } else if (args[0].equalsIgnoreCase("addpermission") || args[0].equalsIgnoreCase("addp")) {
                 if (args[1] == null || args[2] == null) return false;
                 Rank.getInstance().addPermission(args[1], args[2]);
-                player.sendMessage(ChatColor.GREEN + "[RANK] " + ChatColor.YELLOW + "Added permission " + args[2] + " for rank " + args[1]);
+                s.sendMessage(ChatColor.GREEN + "[RANK] " + ChatColor.YELLOW + "Added permission " + args[2] + " for rank " + args[1]);
             }
         } else {
-            player.sendMessage(ChatColor.RED + "[ERROR] " + ChatColor.YELLOW + "Arguments not long enough.");
+            s.sendMessage(ChatColor.RED + "[ERROR] " + ChatColor.YELLOW + "Arguments not long enough.");
         }
 
         return false;

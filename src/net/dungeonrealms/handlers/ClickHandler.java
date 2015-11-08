@@ -18,7 +18,6 @@ import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.miscellaneous.ItemBuilder;
-import net.dungeonrealms.miscellaneous.SandS;
 import net.dungeonrealms.miscellaneous.TradeCalculator;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -490,7 +489,7 @@ public class ClickHandler {
                     if (API.removePortalShardsFromPlayer(player, nmsStack.getTag().getInt("shardTier"), nmsStack.getTag().getInt("shardCost"))) {
                         player.sendMessage(ChatColor.GREEN + "You have purchased a Protection Scroll!");
                         player.closeInventory();
-                        player.getInventory().addItem(SandS.getInstance().getScroll(SandS.ScrollType.WHITE_SCROLL, nmsStack.getTag().getInt("shardTier")));
+                        //player.getInventory().addItem(SandS.getInstance().getScroll(SandS.ScrollType.WHITE_SCROLL, nmsStack.getTag().getInt("shardTier")));
                         return;
                     } else {
                         player.sendMessage(ChatColor.RED + "You cannot afford this scroll!");
@@ -925,7 +924,7 @@ public class ClickHandler {
             event.setCancelled(true);
             if (slot > 54) return;
             switch (slot) {
-                case 1:
+                case 0:
                     PlayerMenus.openGuildManagement(player);
                     break;
                 case 17:

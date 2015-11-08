@@ -1,7 +1,9 @@
 package net.dungeonrealms.guild;
 
 import com.mongodb.client.model.Filters;
+import com.mongodb.client.result.UpdateResult;
 import net.dungeonrealms.API;
+import net.dungeonrealms.core.Callback;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.*;
 import net.dungeonrealms.network.NetworkAPI;
@@ -44,7 +46,6 @@ public class Guild {
 
     /**
      * Handles Guild Logs.
-     *
      *
      * @param player
      * @since 1.0
@@ -566,7 +567,14 @@ public class Guild {
                                             .append("available", new ArrayList<String>()))
                     , (aVoid, throwable1) -> {
                         DatabaseAPI.getInstance().requestGuild(name);
-                        DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, EnumData.GUILD, name.toUpperCase(), true);
+                        DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, EnumData.GUILD, name.toUpperCase(), true, new Callback<UpdateResult>(UpdateResult.class) {
+                            @Override
+                            public void callback(Throwable failCause, UpdateResult result) {
+                                if (result.wasAcknowledged()) {
+                                    doGet(owner);
+                                }
+                            }
+                        });
                     });
         });
 

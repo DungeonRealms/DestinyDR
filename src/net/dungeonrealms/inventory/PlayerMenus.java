@@ -304,11 +304,7 @@ public class PlayerMenus {
 
         Inventory inv = Bukkit.createInventory(null, 54, "Guild - " + ChatColor.translateAlternateColorCodes('&', clanTag));
 
-        inv.setItem(0, editItem("PC", ChatColor.GREEN + "Guild Logs", new String[]{
-                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click" + ChatColor.GRAY + " to view Guild Logs!",
-        }));
-
-        inv.setItem(1, editItem("MHF_WSkeleton ", ChatColor.GREEN + "Guild Management", new String[]{
+        inv.setItem(0, editItem("MHF_WSkeleton ", ChatColor.GREEN + "Guild Management", new String[]{
                 ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click" + ChatColor.GRAY + " for guild Management.",
                 "",
                 ChatColor.RED + "You must " + ChatColor.GREEN + "Officer " + ChatColor.RED + "or higher!"
