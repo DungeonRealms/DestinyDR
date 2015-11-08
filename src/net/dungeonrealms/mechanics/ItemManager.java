@@ -6,7 +6,6 @@ import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.items.EnumItem;
 import net.dungeonrealms.items.Item;
 import net.dungeonrealms.mastery.GamePlayer;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.miscellaneous.RandomHelper;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -574,7 +573,7 @@ public class ItemManager {
         String page4_string = "";
         String new_line = "\n" + ChatColor.WHITE.toString() + "`" + "\n";
         GamePlayer gp = API.getGamePlayer(p);
-        String pretty_align = gp.getPlayerAlignment().getAlignmentColor() + gp.getPlayerAlignment().name();
+        String pretty_align = ChatColor.AQUA + gp.getPlayerAlignment().name();
         DecimalFormat df = new DecimalFormat("#.##");
         PlayerStats stats = gp.getStats();
 
