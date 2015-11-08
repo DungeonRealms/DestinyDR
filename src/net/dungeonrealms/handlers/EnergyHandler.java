@@ -261,6 +261,7 @@ public class EnergyHandler implements GenericMechanic {
         Player player = Bukkit.getPlayer(uuid);
         if (player.isOp()) return;
         if (player.getGameMode() == GameMode.CREATIVE) return;
+        if (API.isInSafeRegion(player.getLocation())) return;
         if (player.hasMetadata("last_energy_remove")) {
             if ((System.currentTimeMillis() - player.getMetadata("last_energy_remove").get(0).asLong()) < 100) {
                 return;

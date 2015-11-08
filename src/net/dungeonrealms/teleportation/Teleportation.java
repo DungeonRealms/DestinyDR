@@ -67,15 +67,15 @@ public class Teleportation implements GenericMechanic {
 
     @Override
 	public void startInitialization() {
-        Cyrennica = new Location(Bukkit.getWorlds().get(0), -378, 83, 362);
-        Harrison_Field = new Location(Bukkit.getWorlds().get(0), -594, 58, 687, 92.0F, 1F);
-        Dark_Oak_Tavern = new Location(Bukkit.getWorlds().get(0), 280, 58, 1132, 2.0F, 1F);
-        Deadpeaks_Mountain_Camp = new Location(Bukkit.getWorlds().get(0), -1173, 105, 1030, -88.0F, 1F);
-        Trollsbane_tavern = new Location(Bukkit.getWorlds().get(0), 962, 94, 1069, -153.0F, 1F);
-        Tripoli = new Location(Bukkit.getWorlds().get(0), -1320, 90, 370, 153F, 1F);
-        Gloomy_Hollows = new Location(Bukkit.getWorlds().get(0), -590, 43, 0, 144F, 1F);
-        Crestguard_Keep = new Location(Bukkit.getWorlds().get(0), -1428, 115, -489, 95F, 1F);
-        Tutorial = new Location(Bukkit.getWorlds().get(0), 824, 48, -103, 124F, 1F);
+        Cyrennica = new Location(Bukkit.getWorlds().get(0), -378, 85, 362);
+        Harrison_Field = new Location(Bukkit.getWorlds().get(0), -594, 59, 687, 92.0F, 1F);
+        Dark_Oak_Tavern = new Location(Bukkit.getWorlds().get(0), 280, 59, 1132, 2.0F, 1F);
+        Deadpeaks_Mountain_Camp = new Location(Bukkit.getWorlds().get(0), -1173, 106, 1030, -88.0F, 1F);
+        Trollsbane_tavern = new Location(Bukkit.getWorlds().get(0), 962, 95, 1069, -153.0F, 1F);
+        Tripoli = new Location(Bukkit.getWorlds().get(0), -1320, 91, 370, 153F, 1F);
+        Gloomy_Hollows = new Location(Bukkit.getWorlds().get(0), -590, 44, 0, 144F, 1F);
+        Crestguard_Keep = new Location(Bukkit.getWorlds().get(0), -1428, 116, -489, 95F, 1F);
+        Tutorial = new Location(Bukkit.getWorlds().get(0), 824, 49, -103, 124F, 1F);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for (Map.Entry<UUID, Integer> e : PLAYER_TELEPORT_COOLDOWNS.entrySet()) {

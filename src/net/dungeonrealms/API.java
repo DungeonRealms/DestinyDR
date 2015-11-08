@@ -52,6 +52,7 @@ import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -410,10 +411,10 @@ public class API {
             player.getInventory().addItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.CHESTPLATE, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON));
             player.getInventory().addItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.LEGGINGS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON));
             player.getInventory().addItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.BOOTS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON));
-
+            
             player.getInventory().addItem(new ItemStack(Material.BREAD, 15));
 
-            player.teleport(new Location(Bukkit.getWorlds().get(0), -367, 85, 390, 0f, 0f));
+            player.teleport(new Location(Bukkit.getWorlds().get(0), -367 + new Random().nextInt(4), 86, 390 + new Random().nextInt(4), 0f, 0f));
 
         }
         PlayerManager.checkInventory(uuid);
