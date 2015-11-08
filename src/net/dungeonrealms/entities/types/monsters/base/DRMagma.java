@@ -75,7 +75,7 @@ public class DRMagma extends EntityMagmaCube implements Monster{
 
     @Override
     protected String bp() {
-        return "mob.ghast.scream";
+        return "";
     }
 
 	@Override

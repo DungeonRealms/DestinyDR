@@ -115,7 +115,7 @@ public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze i
 
 	@Override
 	protected String bp() {
-		return "mob.ghast.scream";
+		return "";
 	}
 	
     
