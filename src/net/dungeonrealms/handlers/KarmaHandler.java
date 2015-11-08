@@ -247,6 +247,8 @@ public class KarmaHandler implements GenericMechanic {
                     }*/
                     if (seconds == 0) {
                         seconds = 120;
+                    } else {
+                        seconds = 120 - seconds;
                     }
                     PLAYER_ALIGNMENT_TIMES.put(player, seconds);
                     PLAYER_ALIGNMENTS.put(player, alignment);
@@ -266,6 +268,8 @@ public class KarmaHandler implements GenericMechanic {
                     }*/
                     if (seconds == 0) {
                         seconds = 1200;
+                    } else {
+                        seconds = 1200 - seconds;
                     }
                     PLAYER_ALIGNMENT_TIMES.put(player, seconds);
                     PLAYER_ALIGNMENTS.put(player, alignment);
