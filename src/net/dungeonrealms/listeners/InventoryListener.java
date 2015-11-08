@@ -278,10 +278,10 @@ public class InventoryListener implements Listener {
                                         ItemStack tempStack = event.getInventory().getItem(event.getRawSlot());
                                         tempStack.setAmount(1);
                                         BankMechanics.getInstance().addGemsToPlayerBank(shop.getOwner().getUniqueId(), price);
-                                        NetworkAPI.getInstance().sendPlayerMessage(shop.getOwner().getDisplayName(), ChatColor.GREEN.toString() + price + "gems added to your bank!");
+                                        NetworkAPI.getInstance().sendPlayerMessage(shop.getOwner().getDisplayName(), ChatColor.GREEN.toString() + ChatColor.BOLD + price + " Gems" + ChatColor.GREEN + " added to your bank!");
                                         shop.inventory.remove(tempStack);
                                     } else {
-                                        clicker.sendMessage("not enought money");
+                                        clicker.sendMessage(ChatColor.RED + "Not enough " + ChatColor.RED.toString() + ChatColor.BOLD + "gems!");
                                     }
                                 }
                             }
@@ -336,9 +336,12 @@ public class InventoryListener implements Listener {
                                     if (shop.inventory.firstEmpty() >= 0) {
                                         shop.inventory.addItem(CraftItemStack.asBukkitCopy(nms));
                                         player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
-                                        player.sendMessage(
-                                                ChatColor.YELLOW.toString() + "Right click the item to edit price");
-                                        player.sendMessage(ChatColor.RED.toString() + "Left click the item to remove");
+
+                                        player.sendMessage(new String[]{
+                                                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right click" + ChatColor.GREEN + " the item to edit price!",
+                                                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left Click" + ChatColor.GREEN + " the item to remove!",
+                                        });
+
                                         player.getInventory().remove(itemHeld);
                                     } else {
                                         player.getInventory().addItem(itemHeld);
@@ -709,7 +712,7 @@ public class InventoryListener implements Listener {
                         particleID = 41;
                         break;
                 }
-                if(slotItem.getType() == Material.BOW) {
+                if (slotItem.getType() == Material.BOW) {
                     particleID = 5;
                 }
                 Packet particles = new PacketPlayOutWorldEvent(2001, new BlockPosition((int) Math.round(player.getLocation().getX()), (int) Math.round(player.getLocation().getY() + 2), (int) Math.round(player.getLocation().getZ())), particleID, false);
