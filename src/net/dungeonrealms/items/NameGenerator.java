@@ -1,11 +1,11 @@
 package net.dungeonrealms.items;
 
+import net.dungeonrealms.items.armor.Armor;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
-
-import net.dungeonrealms.items.armor.Armor;
 
 /**
  * Created by Nick on 9/19/2015.
@@ -84,9 +84,6 @@ public class NameGenerator {
             "Basilisk",
             "Bean Sidh",
             "Blemiyh",
-            "Xwaffle",
-            "Proxying",
-            "xFinityPro",
             "Centaur",
             "Cerberus",
             "Ch`i Lin",

@@ -1,8 +1,11 @@
 package net.dungeonrealms.handlers;
 
-import java.util.HashMap;
-import java.util.UUID;
-
+import net.dungeonrealms.guild.Guild;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumGuildData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -11,8 +14,8 @@ import org.bukkit.scoreboard.Objective;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.scoreboard.Team;
 
-import net.dungeonrealms.mechanics.generic.EnumPriority;
-import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Created by Kieran on 10/21/2015.
@@ -97,15 +100,22 @@ public class ScoreboardHandler implements GenericMechanic {
      * @since 1.0
      */
     public void setPlayerHeadScoreboard(Player player, ChatColor chatColor, int playerLevel) {
+        String suffix = "";
+        if (!Guild.getInstance().isGuildNull(player.getUniqueId())) {
+            String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()));
+            suffix = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + " [" + clanTag + ChatColor.RESET + "]");
+        }
         for (Player player1 : Bukkit.getOnlinePlayers()) {
             Team team = getPlayerTeam(getPlayerScoreboardObject(player1), player);
             team.setPrefix(ChatColor.LIGHT_PURPLE + "[" + playerLevel + "] " + chatColor);
+            team.setSuffix(suffix);
             if (!team.hasEntry(player.getName())) {
                 team.addEntry(player.getName());
             }
         }
         Team team = getPlayerTeam(mainScoreboard, player);
         team.setPrefix(ChatColor.LIGHT_PURPLE + "[" + playerLevel + "] " + chatColor);
+        team.setSuffix(suffix);
         if (!team.hasEntry(player.getName())) {
             team.addEntry(player.getName());
         }
@@ -163,6 +173,7 @@ public class ScoreboardHandler implements GenericMechanic {
             currentTeam.setCanSeeFriendlyInvisibles(team.canSeeFriendlyInvisibles());
             currentTeam.setDisplayName(team.getDisplayName());
             currentTeam.setPrefix(team.getPrefix());
+            currentTeam.setSuffix(team.getSuffix());
             team.getEntries().forEach(currentTeam::addEntry);
         }
     }

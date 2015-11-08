@@ -8,7 +8,6 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.miscellaneous.ItemBuilder;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mechanics.ItemManager;
-import net.dungeonrealms.miscellaneous.SandS;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -106,7 +105,7 @@ public class NPCMenus {
         inv.setItem(8, new ItemBuilder().setItem(new ItemStack(Material.ENDER_CHEST), ChatColor.GREEN + "Storage Expansion", new String[] {
                 ChatColor.RED + "Expand Your Bank!",
                 ChatColor.AQUA + "999 E-Cash"}).setNBTString("storageExpansion", "xFiniTEAPro").setNBTInt("ecashCost", 999).build());
-        inv.setItem(9, new ItemBuilder().setItem(new ItemStack(Material.ANVIL), ChatColor.GREEN + "Repair Hammer (5)", new String[] {
+        /*inv.setItem(9, new ItemBuilder().setItem(new ItemStack(Material.ANVIL), ChatColor.GREEN + "Repair Hammer (5)", new String[] {
                 ChatColor.RED + "5x Repair Hammers",
                 ChatColor.RED + "Repair ANY Item!",
                 ChatColor.AQUA + "50 E-Cash"}).setNBTString("repairHammer", "XBRaffle").setNBTInt("ecashCost", 50).build());
@@ -115,7 +114,7 @@ public class NPCMenus {
                 ChatColor.AQUA + "399 E-Cash"}).setNBTString("retrainingBook", "_Atlassie").setNBTInt("ecashCost", 399).build());
         inv.setItem(11, new ItemBuilder().setItem(new ItemStack(Material.YELLOW_FLOWER), ChatColor.GREEN + "Medal Of Gathering", new String[] {
                 ChatColor.RED + "10% Extra EXP Gain Via Professions! (1 Hour)",
-                ChatColor.AQUA + "249 E-Cash"}).setNBTString("medalOfGathering", "myBoyTux2").setNBTInt("ecashCost", 249).build());
+                ChatColor.AQUA + "249 E-Cash"}).setNBTString("medalOfGathering", "myBoyTux2").setNBTInt("ecashCost", 249).build());*/
         inv.setItem(18, new ItemBuilder().setItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Our Store", new String[]{
                 ChatColor.AQUA + "Click here to visit our store!"}).setNBTString("donationStore", "ProxyIsAwesome").build());
         inv.setItem(26, new ItemBuilder().setItem(new ItemStack(Material.GOLDEN_APPLE), ChatColor.GREEN + "Current E-Cash", new String[]{
@@ -150,6 +149,7 @@ public class NPCMenus {
     public static void openDungeoneerMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 9, "Dungeoneer");
 
+       /*
         inv.setItem(0, new ItemBuilder().setItem(SandS.getInstance().getScroll(SandS.ScrollType.WHITE_SCROLL, 1)).addLore(ChatColor.AQUA + "1500 Portal Shards [T1]").setNBTInt("shardTier", 1)
                 .setNBTInt("shardCost", 1500).build());
         inv.setItem(1, new ItemBuilder().setItem(SandS.getInstance().getScroll(SandS.ScrollType.WHITE_SCROLL, 2)).addLore(ChatColor.AQUA + "1500 Portal Shards [T2]").setNBTInt("shardTier", 2)
@@ -160,6 +160,7 @@ public class NPCMenus {
                 .setNBTInt("shardCost", 1500).build());
         inv.setItem(4, new ItemBuilder().setItem(SandS.getInstance().getScroll(SandS.ScrollType.WHITE_SCROLL, 5)).addLore(ChatColor.AQUA + "1500 Portal Shards [T5]").setNBTInt("shardTier", 5)
                 .setNBTInt("shardCost", 1500).build());
+        */
 
         player.openInventory(inv);
     }

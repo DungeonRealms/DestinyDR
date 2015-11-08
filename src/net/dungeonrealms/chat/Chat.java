@@ -62,23 +62,23 @@ public class Chat {
         boolean gChat = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, uuid);
 
         prefix.append(gChat ?
-                ChatColor.GREEN + "<" + ChatColor.BOLD + "G" + ChatColor.GREEN + ">" + ChatColor.RESET + " "
+                ChatColor.GREEN + "<" + ChatColor.BOLD + "G" + ChatColor.GREEN + ">" + ChatColor.RESET + ""
                 :
-                ChatColor.GREEN + "<" + ChatColor.BOLD + "L" + ChatColor.GREEN + ">" + ChatColor.RESET + " ");
+                ChatColor.GREEN + "<" + ChatColor.BOLD + "L" + ChatColor.GREEN + ">" + ChatColor.RESET + "");
 
         Rank.RankBlob r = Rank.getInstance().getRank(uuid);
         if (r != null && !r.getPrefix().equals("null")) {
             if (r.getName().equalsIgnoreCase("default")) {
                 prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.GRAY + ""));
             } else {
-                prefix.append(ChatColor.translateAlternateColorCodes('&', r.getPrefix() + ChatColor.RESET));
+                prefix.append(ChatColor.translateAlternateColorCodes('&', " " + r.getPrefix() + ChatColor.RESET));
             }
 
         }
 
         if (!Guild.getInstance().isGuildNull(uuid)) {
             String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-            prefix.append(ChatColor.translateAlternateColorCodes('&', " [" + clanTag + ChatColor.RESET + "]"));
+            prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.WHITE + " [" + clanTag + ChatColor.RESET + "]"));
         }
 
         if (gChat) {

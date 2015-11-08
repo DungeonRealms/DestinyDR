@@ -47,7 +47,7 @@ public class KarmaHandler implements GenericMechanic {
         private String name;
         private ChatColor alignmentColor;
         public String description;
-        
+
         EnumPlayerAlignments(int id, String name, ChatColor alignmentColor, String description) {
             this.id = id;
             this.name = name;
@@ -75,7 +75,7 @@ public class KarmaHandler implements GenericMechanic {
     }
 
     @Override
-	public void startInitialization() {
+    public void startInitialization() {
         CHAOTIC_RESPAWNS.add(new Location(Bukkit.getWorlds().get(0), -382, 68, 867));
         CHAOTIC_RESPAWNS.add(new Location(Bukkit.getWorlds().get(0), -350, 67, 883));
         CHAOTIC_RESPAWNS.add(new Location(Bukkit.getWorlds().get(0), -330, 65, 898));
@@ -143,7 +143,7 @@ public class KarmaHandler implements GenericMechanic {
      * @since 1.0
      */
     public void handleLoginEvents(Player player) {
-        setPlayerAlignment(player, getAlignmentOnLogin(player.getUniqueId()));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> setPlayerAlignment(player, getAlignmentOnLogin(player.getUniqueId())), 40L);
     }
 
     /**
@@ -174,6 +174,19 @@ public class KarmaHandler implements GenericMechanic {
     }
 
     /**
+     * Returns the seconds passed since last login
+     *
+     * @param player
+     * @return int
+     * @since 1.0
+     */
+    public int getSecondsPassed(Player player) {
+        long currentTime = System.currentTimeMillis() / 1000l;
+        long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, player.getUniqueId())));
+        return (int) (currentTime - endTime);
+    }
+
+    /**
      * Sets the alignment of a specific player
      * adds them to hashmap with cooldown
      * if applicable and sends them a message
@@ -186,6 +199,20 @@ public class KarmaHandler implements GenericMechanic {
     public void setPlayerAlignment(Player player, String alignmentRawName) {
         EnumPlayerAlignments alignment = EnumPlayerAlignments.getByName(alignmentRawName);
         String playerAlignment = getPlayerRawAlignment(player);
+        int seconds = 0;
+        if (alignment == EnumPlayerAlignments.CHAOTIC) {
+            if (getSecondsPassed(player) >= 1200) {
+                alignment = EnumPlayerAlignments.LAWFUL;
+            } else {
+                seconds = getSecondsPassed(player);
+            }
+        } else if (alignment == EnumPlayerAlignments.NEUTRAL) {
+            if (getSecondsPassed(player) >= 120) {
+                alignment = EnumPlayerAlignments.LAWFUL;
+            } else {
+                seconds = getSecondsPassed(player);
+            }
+        }
         if (alignment != null) {
             switch (alignment) {
                 case LAWFUL:
@@ -216,7 +243,7 @@ public class KarmaHandler implements GenericMechanic {
                     /*if (RealmManager.getInstance().getPlayerRealm(player) != null) {
                         RealmManager.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.YELLOW + player.getName() + "(s) REALM");
                     }*/
-                    PLAYER_ALIGNMENT_TIMES.put(player, 120);
+                    PLAYER_ALIGNMENT_TIMES.put(player, seconds);
                     PLAYER_ALIGNMENTS.put(player, alignment);
                     break;
                 case CHAOTIC:
@@ -232,7 +259,7 @@ public class KarmaHandler implements GenericMechanic {
                     /*if (RealmManager.getInstance().getPlayerRealm(player) != null) {
                         RealmManager.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.RED + player.getName() + "(s) REALM");
                     }*/
-                    PLAYER_ALIGNMENT_TIMES.put(player, 1200);
+                    PLAYER_ALIGNMENT_TIMES.put(player, seconds);
                     PLAYER_ALIGNMENTS.put(player, alignment);
                     break;
                 default:

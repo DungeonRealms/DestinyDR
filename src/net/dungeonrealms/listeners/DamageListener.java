@@ -60,8 +60,8 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBuffExplode(EntityExplodeEvent event) {
-        event.blockList().clear();
         if (!(event.getEntity().hasMetadata("type"))) return;
+        event.blockList().clear();
         if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("buff")) {
             event.setCancelled(true);
             int radius = event.getEntity().getMetadata("radius").get(0).asInt();
@@ -75,7 +75,7 @@ public class DamageListener implements Listener {
                 }
                 if (effectType.equals(PotionEffectType.REGENERATION)) {
                     int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> HealthHandler.getInstance().healPlayerByAmount((Player) e, (HealthHandler.getInstance().getPlayerMaxHPLive((Player) e) / 10))
-                    , 0 , 20L);
+                            , 0, 20L);
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 90L);
                 }
                 e.sendMessage(new String[]{
@@ -111,32 +111,32 @@ public class DamageListener implements Listener {
         if (((Player) event.getDamager()).getGameMode() != GameMode.CREATIVE) return;
         //Armor Stand Spawner check.
         if (event.getEntity().getType() != EntityType.ARMOR_STAND) return;
-            if (!event.getEntity().hasMetadata("type")) {
-                event.setCancelled(false);
-                event.getEntity().remove();
-                return;
-            }
-            if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("spawner")) {
-                Player attacker = (Player) event.getDamager();
-                if (attacker.isOp() || attacker.getGameMode() == GameMode.CREATIVE) {
-                    ArrayList<MobSpawner> list = SpawningMechanics.getSpawners();
-                    for (MobSpawner current : list) {
-                        if (current.loc.getBlockX() == event.getEntity().getLocation().getBlockX() && current.loc.getBlockY() == event.getEntity().getLocation().getBlockY() &&
-                                current.loc.getBlockZ() == event.getEntity().getLocation().getBlockZ()) {
-                        	current.remove();
-                            current.kill();
-                            break;
-                        }
+        if (!event.getEntity().hasMetadata("type")) {
+            event.setCancelled(false);
+            event.getEntity().remove();
+            return;
+        }
+        if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("spawner")) {
+            Player attacker = (Player) event.getDamager();
+            if (attacker.isOp() || attacker.getGameMode() == GameMode.CREATIVE) {
+                ArrayList<MobSpawner> list = SpawningMechanics.getSpawners();
+                for (MobSpawner current : list) {
+                    if (current.loc.getBlockX() == event.getEntity().getLocation().getBlockX() && current.loc.getBlockY() == event.getEntity().getLocation().getBlockY() &&
+                            current.loc.getBlockZ() == event.getEntity().getLocation().getBlockZ()) {
+                        current.remove();
+                        current.kill();
+                        break;
                     }
-                } else {
-
-                    event.setDamage(0);
-                    event.setCancelled(true);
                 }
             } else {
+
                 event.setDamage(0);
                 event.setCancelled(true);
             }
+        } else {
+            event.setDamage(0);
+            event.setCancelled(true);
+        }
     }
 
     /**
@@ -148,10 +148,11 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
-        if ((!(API.isPlayer(event.getDamager()))) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL))) return;
+        if ((!(API.isPlayer(event.getDamager()))) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL)))
+            return;
         if (!(event.getEntity() instanceof CraftLivingEntity) && !(API.isPlayer(event.getEntity()))) return;
-        if (Entities.PLAYER_PETS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
-		if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
+        if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
+        if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         if (event.getEntity() instanceof CraftLivingEntity) {
             if (!(event.getEntity() instanceof Player)) {
                 if (!event.getEntity().hasMetadata("type")) return;
@@ -230,12 +231,12 @@ public class DamageListener implements Listener {
             }
         }
         event.setDamage(finalDamage);
-    	if (event.getEntity().hasMetadata("boss")) {
-			if (event.getEntity() instanceof CraftLivingEntity) {
-				Boss b = (Boss) ((CraftLivingEntity) event.getEntity()).getHandle();
-				b.onBossHit(event);
-			}
-		}
+        if (event.getEntity().hasMetadata("boss")) {
+            if (event.getEntity() instanceof CraftLivingEntity) {
+                Boss b = (Boss) ((CraftLivingEntity) event.getEntity()).getHandle();
+                b.onBossHit(event);
+            }
+        }
     }
 
     /**
@@ -247,7 +248,8 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
-        if ((!(event.getDamager() instanceof CraftLivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL))) return;
+        if ((!(event.getDamager() instanceof CraftLivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
+            return;
         if (!(API.isPlayer(event.getEntity()))) return;
         if (!event.getDamager().hasMetadata("type")) return;
         if (API.isInSafeRegion(event.getDamager().getLocation()) || API.isInSafeRegion(event.getEntity().getLocation())) {
@@ -316,8 +318,8 @@ public class DamageListener implements Listener {
         if ((!(event.getDamager() instanceof LivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
             return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
-		if (Entities.PLAYER_PETS.containsValue(((CraftEntity)event.getEntity()).getHandle())) return;
-		if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
+        if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
+        if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         double armourReducedDamage = 0;
         LivingEntity defender = (LivingEntity) event.getEntity();
         EntityEquipment defenderEquipment = defender.getEquipment();
@@ -364,7 +366,7 @@ public class DamageListener implements Listener {
             attacker = (LivingEntity) staffProjectile.getShooter();
             armourReducedDamage = DamageAPI.calculateArmorReduction(staffProjectile, defender, defenderArmor);
         } else if (event.getDamager().getType() == EntityType.WITHER_SKULL) {
-            WitherSkull witherSkull =  (WitherSkull) event.getDamager();
+            WitherSkull witherSkull = (WitherSkull) event.getDamager();
             if (!(witherSkull.getShooter() instanceof LivingEntity)) return;
             attacker = (LivingEntity) witherSkull.getShooter();
             if (witherSkull.getShooter() instanceof CraftLivingEntity) {
@@ -428,7 +430,8 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onLivingEntityFireProjectile(ProjectileLaunchEvent event) {
-        if ((!(event.getEntity().getShooter() instanceof Player)) && ((event.getEntityType() != EntityType.ARROW) && (event.getEntityType() != EntityType.SNOWBALL))) return;
+        if ((!(event.getEntity().getShooter() instanceof Player)) && ((event.getEntityType() != EntityType.ARROW) && (event.getEntityType() != EntityType.SNOWBALL)))
+            return;
         LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
         EntityEquipment entityEquipment = shooter.getEquipment();
         if (entityEquipment.getItemInHand() == null) return;
@@ -560,7 +563,7 @@ public class DamageListener implements Listener {
         }
         if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.LAWFUL.name())) {
             if (player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR) {
-                armorToSave[4] =  player.getItemInHand();
+                armorToSave[4] = player.getItemInHand();
             }
             armorToSave[0] = player.getEquipment().getBoots();
             armorToSave[1] = player.getEquipment().getLeggings();
@@ -577,7 +580,7 @@ public class DamageListener implements Listener {
         } else if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.NEUTRAL.name())) {
             if (new Random().nextInt(99) <= 50) {
                 if (player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR) {
-                    armorToSave[4] =  player.getItemInHand();
+                    armorToSave[4] = player.getItemInHand();
                 }
             }
             if (new Random().nextInt(99) <= 25) {
@@ -686,7 +689,8 @@ public class DamageListener implements Listener {
         }
         if (event.getPlayer().hasMetadata("last_Staff_Use")) {
             event.setCancelled(true);
-            if (System.currentTimeMillis() - event.getPlayer().getMetadata("last_Staff_Use").get(0).asLong() < 400) return;
+            if (System.currentTimeMillis() - event.getPlayer().getMetadata("last_Staff_Use").get(0).asLong() < 400)
+                return;
         }
         if (event.getPlayer().hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(event.getPlayer().getUniqueId()) <= 0) {
             event.setCancelled(true);
@@ -719,7 +723,7 @@ public class DamageListener implements Listener {
      * @since 1.0
      */
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
-    public void onEliteDeath(EntityDeathEvent event){
+    public void onEliteDeath(EntityDeathEvent event) {
         if (event.getEntity() instanceof Player) return;
         if (!(event.getEntity() instanceof CraftLivingEntity)) return;
         event.getDrops().clear();

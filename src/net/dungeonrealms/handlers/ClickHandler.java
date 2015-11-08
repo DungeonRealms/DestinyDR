@@ -17,8 +17,8 @@ import net.dungeonrealms.inventory.PlayerMenus;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
+import net.dungeonrealms.miscellaneous.Glyph;
 import net.dungeonrealms.miscellaneous.ItemBuilder;
-import net.dungeonrealms.miscellaneous.SandS;
 import net.dungeonrealms.miscellaneous.TradeCalculator;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -44,6 +44,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Nick on 10/2/2015.
@@ -459,6 +460,14 @@ public class ClickHandler {
                         if (itemStack.getType() == Material.EMERALD) {
                             itemStack = BankMechanics.createBankNote(itemStack.getAmount());
                         }
+                        if (Glyph.getInstance().isGlyph(itemStack)) {
+                            int tier = Glyph.getInstance().getGlyphTier(itemStack);
+                            if (new Random().nextBoolean()) {
+                                itemStack = Glyph.getInstance().getWeaponGlyph("Weapon Glyph", tier);
+                            } else {
+                                itemStack = Glyph.getInstance().getArmorGylph("Armor Glyph", tier);
+                            }
+                        }
                         player.getInventory().setItem(player.getInventory().firstEmpty(), itemStack);
                     }
                     player.sendMessage(ChatColor.GREEN + "Trade Accepted!");
@@ -490,7 +499,7 @@ public class ClickHandler {
                     if (API.removePortalShardsFromPlayer(player, nmsStack.getTag().getInt("shardTier"), nmsStack.getTag().getInt("shardCost"))) {
                         player.sendMessage(ChatColor.GREEN + "You have purchased a Protection Scroll!");
                         player.closeInventory();
-                        player.getInventory().addItem(SandS.getInstance().getScroll(SandS.ScrollType.WHITE_SCROLL, nmsStack.getTag().getInt("shardTier")));
+                        //player.getInventory().addItem(SandS.getInstance().getScroll(SandS.ScrollType.WHITE_SCROLL, nmsStack.getTag().getInt("shardTier")));
                         return;
                     } else {
                         player.sendMessage(ChatColor.RED + "You cannot afford this scroll!");
@@ -925,7 +934,7 @@ public class ClickHandler {
             event.setCancelled(true);
             if (slot > 54) return;
             switch (slot) {
-                case 1:
+                case 0:
                     PlayerMenus.openGuildManagement(player);
                     break;
                 case 17:

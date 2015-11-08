@@ -19,7 +19,6 @@ import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.DungeonManager;
 import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mechanics.generic.MechanicManager;
-import net.dungeonrealms.miscellaneous.SandS;
 import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.achievements.AchievementManager;
@@ -29,12 +28,9 @@ import net.dungeonrealms.party.Party;
 import net.dungeonrealms.profession.Fishing;
 import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.rank.Rank;
-import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.spawning.BuffManager;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
-import net.dungeonrealms.world.RiftPortal;
-import net.dungeonrealms.world.Runes;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -121,8 +117,11 @@ public class DungeonRealms extends JavaPlugin {
         pm.registerEvents(new AntiCheatListener(), this);
         pm.registerEvents(new BossListener(), this);
         pm.registerEvents(new AchievementManager(), this);
+        /*
+        In development
         pm.registerEvents(new RiftPortal(), this);
         pm.registerEvents(new Runes(), this);
+         */
         Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
 
         mm = new MechanicManager();
@@ -133,7 +132,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(Party.getInstance());
         mm.registerMechanic(EnergyHandler.getInstance());
         mm.registerMechanic(EnchantmentAPI.getInstance());
-        mm.registerMechanic(Subscription.getInstance());
+        //mm.registerMechanic(Subscription.getInstance());
         mm.registerMechanic(Rank.getInstance());
         mm.registerMechanic(DonationEffects.getInstance());
         mm.registerMechanic(HealthHandler.getInstance());
@@ -148,11 +147,14 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(Mining.getInstance());
         mm.registerMechanic(Fishing.getInstance());
         mm.registerMechanic(SpawningMechanics.getInstance());
-        mm.registerMechanic(SandS.getInstance());
         mm.registerMechanic(AchievementManager.getInstance());
         mm.registerMechanic(BuffManager.getInstance());
+
+        /*
+        In development
         mm.registerMechanic(RiftPortal.getInstance());
         mm.registerMechanic(Runes.getInstance());
+         */
 
         mm.loadMechanics();
 

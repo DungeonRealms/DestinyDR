@@ -1,20 +1,7 @@
 package net.dungeonrealms.rank;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-
-import org.bson.Document;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
-import org.bukkit.entity.Player;
-import org.bukkit.permissions.PermissionAttachment;
-
 import com.mongodb.Block;
 import com.mongodb.client.model.Filters;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
@@ -23,11 +10,22 @@ import net.dungeonrealms.mongo.Database;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
+import org.bson.Document;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
+import org.bukkit.entity.Player;
+import org.bukkit.permissions.PermissionAttachment;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Nick on 9/27/2015.
  */
-public class Rank implements GenericMechanic{
+public class Rank implements GenericMechanic {
 
     static Rank instance = null;
 
@@ -59,7 +57,7 @@ public class Rank implements GenericMechanic{
     }
 
     @Override
-	public void startInitialization() {
+    public void startInitialization() {
         Database.ranks.find().forEach(printDocumentBlock, (aVoid, throwable) -> Utils.log.warning("[RANK] [ASYNC] Successfully grabbed all existing ranks!"));
     }
 

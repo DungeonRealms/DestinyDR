@@ -113,6 +113,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("firstLogin", Long.class);
             case LAST_LOGIN:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("lastLogin", Long.class);
+            case LAST_LOGOUT:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("lastLogout", Long.class);
             case IS_PLAYING:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("isPlaying", Boolean.class);
             case LEVEL:
@@ -343,6 +345,7 @@ public class DatabaseAPI {
                                 .append("ecash", 0)
                                 .append("firstLogin", System.currentTimeMillis() / 1000L)
                                 .append("lastLogin", 0l)
+                                .append("lastLogout", 0l)
                                 .append("netLevel", 1)
                                 .append("experience", 0d)
                                 .append("hearthstone", "Cyrennica")

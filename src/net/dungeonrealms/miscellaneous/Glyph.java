@@ -39,7 +39,7 @@ public class Glyph {
      * @apiNote returns a random scroll.
      */
     public ItemStack nextWeaponGlyph() {
-        return getWeaponGlyph("Glyph of Burick", ((new Random().nextInt(5)) + 1));
+        return getWeaponGlyph("Glyph of Burick", ((new Random().nextInt(4)) + 1));
     }
 
     /**
@@ -75,20 +75,20 @@ public class Glyph {
 
         switch (tier) {
             case 1:
-                return new ItemBuilder().setItem(new ItemStack(Material.NETHER_STAR), ChatColor.WHITE + "Unknown Glyph", new String[]{
-                }).build();
+                return new ItemBuilder().setItem(new ItemStack(381), ChatColor.WHITE + "Unknown Glyph", new String[]{
+                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
             case 2:
-                return new ItemBuilder().setItem(new ItemStack(Material.NETHER_STAR), ChatColor.GREEN + "Unknown Glyph", new String[]{
-                }).build();
+                return new ItemBuilder().setItem(new ItemStack(381), ChatColor.GREEN + "Unknown Glyph", new String[]{
+                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
             case 3:
-                return new ItemBuilder().setItem(new ItemStack(Material.NETHER_STAR), ChatColor.AQUA + "Unknown Glyph", new String[]{
-                }).build();
+                return new ItemBuilder().setItem(new ItemStack(381), ChatColor.AQUA + "Unknown Glyph", new String[]{
+                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
             case 4:
-                return new ItemBuilder().setItem(new ItemStack(Material.NETHER_STAR), ChatColor.LIGHT_PURPLE + "Unknown Glyph", new String[]{
-                }).build();
+                return new ItemBuilder().setItem(new ItemStack(381), ChatColor.LIGHT_PURPLE + "Unknown Glyph", new String[]{
+                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
             case 5:
-                return new ItemBuilder().setItem(new ItemStack(Material.NETHER_STAR), ChatColor.YELLOW + "Unknown Glyph", new String[]{
-                }).build();
+                return new ItemBuilder().setItem(new ItemStack(381), ChatColor.YELLOW + "Unknown Glyph", new String[]{
+                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
             default:
                 return null;
         }
@@ -176,8 +176,9 @@ public class Glyph {
                 }
             }
 
+            event.setCursor(new ItemStack(Material.AIR));
+
             player.getInventory().remove(item);
-            player.getInventory().remove(scroll);
 
             for (String ra : rawAttributeList) {
                 String NBTName = ra.split("@")[0];
@@ -267,7 +268,7 @@ public class Glyph {
             }
 
             player.getInventory().remove(item);
-            player.getInventory().remove(scroll);
+            event.setCursor(new ItemStack(Material.AIR));
 
             itemTag.set("glyphAttributes", new NBTTagString(scrollTag.getString("attributes")));
 
@@ -316,14 +317,25 @@ public class Glyph {
 
     }
 
-    boolean isGlyph(ItemStack item) {
+    public boolean isGlyph(ItemStack item) {
         net.minecraft.server.v1_8_R3.ItemStack nmsGlyph = CraftItemStack.asNMSCopy(item);
         return nmsGlyph.getTag() != null && nmsGlyph.hasTag() && nmsGlyph.getTag().hasKey("glyph");
     }
 
-    boolean isStar(ItemStack item) {
+    public boolean isStar(ItemStack item) {
         net.minecraft.server.v1_8_R3.ItemStack nmsStar = CraftItemStack.asNMSCopy(item);
         return nmsStar.getTag() != null && nmsStar.hasTag() && nmsStar.getTag().hasKey("star");
+    }
+
+    public int getGlyphTier(ItemStack item) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsGlyph = CraftItemStack.asNMSCopy(item);
+        if (nmsGlyph.getTag() == null) {
+            return 0;
+        }
+        if (!(nmsGlyph.getTag().hasKey("tier"))) {
+            return 0;
+        }
+        return nmsGlyph.getTag().getInt("tier");
     }
 
     public ItemStack getArmorGylph(String name, int tier) {
@@ -361,11 +373,11 @@ public class Glyph {
                 meta.setDisplayName(ChatColor.LIGHT_PURPLE + name);
                 break;
             case 5:
-                attributes = getArmorGlyphAttributes(tier, (new Random().nextInt(4) + 1));
+                attributes = getArmorGlyphAttributes(tier, (new Random().nextInt(3) + 1));
                 meta.setDisplayName(ChatColor.YELLOW + name);
                 break;
             default:
-                attributes = getArmorGlyphAttributes(tier, (new Random().nextInt(4) + 1));
+                attributes = getArmorGlyphAttributes(tier, (new Random().nextInt(3) + 1));
                 meta.setDisplayName(ChatColor.RED + "ERROR " + name);
         }
 
@@ -438,11 +450,11 @@ public class Glyph {
                 meta.setDisplayName(ChatColor.LIGHT_PURPLE + name);
                 break;
             case 5:
-                attributes = getWeaponGlyphAttributes(tier, (new Random().nextInt(4) + 1));
+                attributes = getWeaponGlyphAttributes(tier, (new Random().nextInt(3) + 1));
                 meta.setDisplayName(ChatColor.YELLOW + name);
                 break;
             default:
-                attributes = getWeaponGlyphAttributes(tier, (new Random().nextInt(4) + 1));
+                attributes = getWeaponGlyphAttributes(tier, (new Random().nextInt(3) + 1));
                 meta.setDisplayName(ChatColor.RED + "ERROR " + name);
         }
 
@@ -484,8 +496,8 @@ public class Glyph {
         Map<Armor.ArmorAttributeType, Integer> _temp = new HashMap<>();
 
 
-        Armor.ArmorTier armorTier = Armor.ArmorTier.getById(tier);
-        Armor.ArmorModifier armorModifier = Armor.ArmorModifier.getById(tier);
+        Armor.ArmorTier armorTier = Armor.ArmorTier.getByTier(tier);
+        Armor.ArmorModifier armorModifier = Armor.ArmorModifier.getById(tier - 1);
 
         for (int i = 0; i < amount; i++) {
             Armor.ArmorAttributeType armorAttribute = ArmorGenerator.getRandomItemAttribute();
@@ -507,8 +519,8 @@ public class Glyph {
         Map<Item.AttributeType, Integer> _temp = new HashMap<>();
 
 
-        Item.ItemTier itemTier = Item.ItemTier.getById(tier);
-        Item.ItemModifier itemModifier = Item.ItemModifier.getById(tier);
+        Item.ItemTier itemTier = Item.ItemTier.getByTier(tier - 1);
+        Item.ItemModifier itemModifier = Item.ItemModifier.getById(tier - 1);
 
         for (int i = 0; i < amount; i++) {
             Item.AttributeType itemAttribute = ItemGenerator.getRandomItemAttribute();

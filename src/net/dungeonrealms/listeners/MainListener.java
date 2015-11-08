@@ -49,6 +49,13 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onChat(AsyncPlayerChatEvent event) {
+        if (event.getMessage().contains("@")) {
+            String split = event.getMessage().split("@")[0];
+            Bukkit.getOnlinePlayers().stream().filter(player -> player.getName().startsWith(split)).forEach(player1 -> {
+                event.setCancelled(true);
+                player1.sendMessage(ChatColor.GRAY + "From " + event.getPlayer().getDisplayName() + ": " + event.getMessage());
+            });
+        }
         Chat.getInstance().doChat(event);
     }
 
@@ -417,6 +424,10 @@ public class MainListener implements Listener {
         if (npcNameStripped.equalsIgnoreCase("Guild Registrar")) {
             // TODO: Open Guild Registrar
             event.getPlayer().sendMessage(ChatColor.RED + "Sorry, I've lost my registry book!");
+            return;
+        }
+        if(npcNameStripped.equalsIgnoreCase("Guild Registrar")) {
+
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Innkeeper")) {
