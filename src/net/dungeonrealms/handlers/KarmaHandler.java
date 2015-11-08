@@ -229,6 +229,9 @@ public class KarmaHandler implements GenericMechanic {
                                 ""
                         });
                     }
+                    if(API.getGamePlayer(player) == null) {
+                        Bukkit.broadcastMessage("player is null!");
+                    }
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.GREEN, API.getGamePlayer(player).getLevel());
                     /*if (RealmManager.getInstance().getPlayerRealm(player) != null) {
                         RealmManager.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + "(s) REALM");
