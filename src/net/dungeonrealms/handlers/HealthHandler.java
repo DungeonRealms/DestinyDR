@@ -6,7 +6,6 @@ import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.mastery.GamePlayer;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.SoundAPI;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
@@ -614,7 +613,6 @@ public class HealthHandler implements GenericMechanic {
      */
     public int calculateMaxHPFromItems(LivingEntity entity) {
         double totalHP = 50;
-        Utils.log.info("New Monster");
         for (ItemStack itemStack : entity.getEquipment().getArmorContents()) {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
                 continue;

@@ -39,7 +39,7 @@ public class Glyph {
      * @apiNote returns a random scroll.
      */
     public ItemStack nextWeaponGlyph() {
-        return getWeaponGlyph("Glyph of Burick", ((new Random().nextInt(5)) + 1));
+        return getWeaponGlyph("Glyph of Burick", ((new Random().nextInt(4)) + 1));
     }
 
     /**
@@ -176,8 +176,9 @@ public class Glyph {
                 }
             }
 
+            event.setCursor(new ItemStack(Material.AIR));
+
             player.getInventory().remove(item);
-            player.getInventory().remove(scroll);
 
             for (String ra : rawAttributeList) {
                 String NBTName = ra.split("@")[0];
@@ -267,7 +268,7 @@ public class Glyph {
             }
 
             player.getInventory().remove(item);
-            player.getInventory().remove(scroll);
+            event.setCursor(new ItemStack(Material.AIR));
 
             itemTag.set("glyphAttributes", new NBTTagString(scrollTag.getString("attributes")));
 
@@ -372,11 +373,11 @@ public class Glyph {
                 meta.setDisplayName(ChatColor.LIGHT_PURPLE + name);
                 break;
             case 5:
-                attributes = getArmorGlyphAttributes(tier, (new Random().nextInt(4) + 1));
+                attributes = getArmorGlyphAttributes(tier, (new Random().nextInt(3) + 1));
                 meta.setDisplayName(ChatColor.YELLOW + name);
                 break;
             default:
-                attributes = getArmorGlyphAttributes(tier, (new Random().nextInt(4) + 1));
+                attributes = getArmorGlyphAttributes(tier, (new Random().nextInt(3) + 1));
                 meta.setDisplayName(ChatColor.RED + "ERROR " + name);
         }
 
@@ -449,11 +450,11 @@ public class Glyph {
                 meta.setDisplayName(ChatColor.LIGHT_PURPLE + name);
                 break;
             case 5:
-                attributes = getWeaponGlyphAttributes(tier, (new Random().nextInt(4) + 1));
+                attributes = getWeaponGlyphAttributes(tier, (new Random().nextInt(3) + 1));
                 meta.setDisplayName(ChatColor.YELLOW + name);
                 break;
             default:
-                attributes = getWeaponGlyphAttributes(tier, (new Random().nextInt(4) + 1));
+                attributes = getWeaponGlyphAttributes(tier, (new Random().nextInt(3) + 1));
                 meta.setDisplayName(ChatColor.RED + "ERROR " + name);
         }
 
@@ -495,8 +496,8 @@ public class Glyph {
         Map<Armor.ArmorAttributeType, Integer> _temp = new HashMap<>();
 
 
-        Armor.ArmorTier armorTier = Armor.ArmorTier.getById(tier);
-        Armor.ArmorModifier armorModifier = Armor.ArmorModifier.getById(tier);
+        Armor.ArmorTier armorTier = Armor.ArmorTier.getByTier(tier);
+        Armor.ArmorModifier armorModifier = Armor.ArmorModifier.getById(tier - 1);
 
         for (int i = 0; i < amount; i++) {
             Armor.ArmorAttributeType armorAttribute = ArmorGenerator.getRandomItemAttribute();
@@ -518,8 +519,8 @@ public class Glyph {
         Map<Item.AttributeType, Integer> _temp = new HashMap<>();
 
 
-        Item.ItemTier itemTier = Item.ItemTier.getById(tier);
-        Item.ItemModifier itemModifier = Item.ItemModifier.getById(tier);
+        Item.ItemTier itemTier = Item.ItemTier.getByTier(tier - 1);
+        Item.ItemModifier itemModifier = Item.ItemModifier.getById(tier - 1);
 
         for (int i = 0; i < amount; i++) {
             Item.AttributeType itemAttribute = ItemGenerator.getRandomItemAttribute();

@@ -78,7 +78,7 @@ public class Chat {
 
         if (!Guild.getInstance().isGuildNull(uuid)) {
             String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-            prefix.append(ChatColor.translateAlternateColorCodes('&', " [" + clanTag + ChatColor.RESET + "]"));
+            prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.WHITE + " [" + clanTag + ChatColor.RESET + "]"));
         }
 
         if (gChat) {

@@ -60,8 +60,8 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBuffExplode(EntityExplodeEvent event) {
-        event.blockList().clear();
         if (!(event.getEntity().hasMetadata("type"))) return;
+        event.blockList().clear();
         if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("buff")) {
             event.setCancelled(true);
             int radius = event.getEntity().getMetadata("radius").get(0).asInt();

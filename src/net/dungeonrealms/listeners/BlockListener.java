@@ -92,11 +92,11 @@ public class BlockListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGH)
     public void breakOre(BlockBreakEvent e) {
-        Block block = e.getBlock();	
+        Block block = e.getBlock();
         if (block == null) return;
         if (e.getPlayer().getItemInHand() == null || e.getPlayer().getItemInHand().getType() == Material.AIR) return;
         if (block.getType() == Material.COAL_ORE || block.getType() == Material.IRON_ORE || block.getType() == Material.GOLD_ORE || block.getType() == Material.DIAMOND_ORE || block.getType() == Material.EMERALD_ORE) {
-        	e.setCancelled(true);
+            e.setCancelled(true);
             ItemStack stackInHand = e.getPlayer().getItemInHand();
             if (Mining.isDRPickaxe(stackInHand)) {
                 Player p = e.getPlayer();
@@ -124,7 +124,10 @@ public class BlockListener implements Listener {
         Block block = event.getClickedBlock();
         if (block == null) return;
         if (block.getType() != Material.ANVIL) return;
-        if (event.getPlayer().getItemInHand() == null || event.getPlayer().getItemInHand().getType() == Material.AIR){ event.setCancelled(true); return;}
+        if (event.getPlayer().getItemInHand() == null || event.getPlayer().getItemInHand().getType() == Material.AIR) {
+            event.setCancelled(true);
+            return;
+        }
         ItemStack item = event.getPlayer().getItemInHand();
         if (RepairAPI.isItemArmorOrWeapon(item)) {
             if (RepairAPI.canItemBeRepaired(item)) {
@@ -134,7 +137,7 @@ public class BlockListener implements Listener {
                     if (e.getSlot() == AnvilSlot.OUTPUT) {
                         String text = e.getName();
                         if (text.equalsIgnoreCase("yes") || text.equalsIgnoreCase("y")) {
-                        	boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(cost, player);
+                            boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(cost, player);
                             if (tookGems) {
                                 RepairAPI.setCustomItemDurability(player.getItemInHand(), 1499);
                                 player.updateInventory();
@@ -156,6 +159,7 @@ public class BlockListener implements Listener {
                     gui.open();
                 });
             } else {
+                event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED + "This item is already repaired all the way!");
             }
         } else {
@@ -252,7 +256,7 @@ public class BlockListener implements Listener {
                         return;
                     }*/
                     //ShopMechanics.setupShop(event.getClickedBlock(), event.getPlayer().getUniqueId());
-                	/*if(event.getPlayer().isOp()){
+                    /*if(event.getPlayer().isOp()){
                         RealmManager.getInstance().tryToOpenRealm(event.getPlayer(), event.getClickedBlock().getLocation());
                 	} else {
                 		event.getPlayer().sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "COMING SOON..");
@@ -370,7 +374,7 @@ public class BlockListener implements Listener {
         if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         if (event.getBlock().getType() == Material.PORTAL) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(ChatColor.RED +  "You cannot break Portal blocks!");
+            event.getPlayer().sendMessage(ChatColor.RED + "You cannot break Portal blocks!");
         }
         if (!RealmManager.getInstance().getPlayersCurrentRealm(event.getPlayer()).getRealmBuilders().contains(event.getPlayer())) {
             event.setCancelled(true);
@@ -393,44 +397,44 @@ public class BlockListener implements Listener {
         if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         if (event.getBlockPlaced().getType() == Material.PORTAL) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(ChatColor.RED +  "You cannot place Portal blocks!");
+            event.getPlayer().sendMessage(ChatColor.RED + "You cannot place Portal blocks!");
         }
         if (event.getBlockAgainst().getType() == Material.PORTAL) {
             event.setCancelled(true);
-            event.getPlayer().sendMessage(ChatColor.RED +  "You cannot place blocks ontop of Portal blocks!");
+            event.getPlayer().sendMessage(ChatColor.RED + "You cannot place blocks ontop of Portal blocks!");
         }
         if (!RealmManager.getInstance().getPlayersCurrentRealm(event.getPlayer()).getRealmBuilders().contains(event.getPlayer())) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot place blocks in this realm, please ask the owner to add you to the builders list!");
         }
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void shiftRightClickJournal(PlayerInteractEvent e) {
-    	if(e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getPlayer().isSneaking()){
-            ItemStack stack  = e.getItem();
-    		if(stack == null) return;
-    		if(stack.getType() != Material.WRITTEN_BOOK) return;
+        if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getPlayer().isSneaking()) {
+            ItemStack stack = e.getItem();
+            if (stack == null) return;
+            if (stack.getType() != Material.WRITTEN_BOOK) return;
             e.setCancelled(true);
-    		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-    		if(!nms.hasTag() && !nms.getTag().hasKey("journal")) return;
+            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+            if (!nms.hasTag() && !nms.getTag().hasKey("journal")) return;
 //    			ShopMechanics.PENDING.remove(e.getPlayer().getUniqueId());
-    			Block b1 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(0,1,0));
-    			Block b2 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(1,1,0));
-    			if(b1.getType() == Material.AIR && b2.getType() == Material.AIR && API.isInSafeRegion(e.getClickedBlock().getLocation())){
-    				if(ShopMechanics.PLAYER_SHOPS.containsKey(e.getPlayer().getUniqueId())){
-    					e.getPlayer().sendMessage(ChatColor.RED + "You already have an open shop!");
-    					return;
-    				}
-    				if(API.isInSafeRegion(b1.getLocation())){
-    					Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(),()->
-    				ShopMechanics.setupShop(e.getClickedBlock(), e.getPlayer().getUniqueId()));
-    				}else{
-        				e.getPlayer().sendMessage(ChatColor.RED + "You can not place a shop here.");
-    				}
-    			}else{
-    				e.getPlayer().sendMessage(ChatColor.RED + "You can not place a shop here.");
-    			}
-    	}
+            Block b1 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(0, 1, 0));
+            Block b2 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(1, 1, 0));
+            if (b1.getType() == Material.AIR && b2.getType() == Material.AIR && API.isInSafeRegion(e.getClickedBlock().getLocation())) {
+                if (ShopMechanics.PLAYER_SHOPS.containsKey(e.getPlayer().getUniqueId())) {
+                    e.getPlayer().sendMessage(ChatColor.RED + "You already have an open shop!");
+                    return;
+                }
+                if (API.isInSafeRegion(b1.getLocation())) {
+                    Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () ->
+                            ShopMechanics.setupShop(e.getClickedBlock(), e.getPlayer().getUniqueId()));
+                } else {
+                    e.getPlayer().sendMessage(ChatColor.RED + "You can not place a shop here.");
+                }
+            } else {
+                e.getPlayer().sendMessage(ChatColor.RED + "You can not place a shop here.");
+            }
+        }
     }
 }
