@@ -426,6 +426,10 @@ public class MainListener implements Listener {
             event.getPlayer().sendMessage(ChatColor.RED + "Sorry, I've lost my registry book!");
             return;
         }
+        if(npcNameStripped.equalsIgnoreCase("Guild Registrar")) {
+
+            return;
+        }
         if (npcNameStripped.equalsIgnoreCase("Innkeeper")) {
             NPCMenus.openHearthstoneRelocateMenu(event.getPlayer());
         }

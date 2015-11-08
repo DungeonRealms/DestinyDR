@@ -71,7 +71,7 @@ public class Chat {
             if (r.getName().equalsIgnoreCase("default")) {
                 prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.GRAY + ""));
             } else {
-                prefix.append(ChatColor.translateAlternateColorCodes('&', r.getPrefix() + ChatColor.RESET));
+                prefix.append(ChatColor.translateAlternateColorCodes('&', " " + r.getPrefix() + ChatColor.RESET));
             }
 
         }

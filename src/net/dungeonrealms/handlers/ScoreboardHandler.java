@@ -103,7 +103,7 @@ public class ScoreboardHandler implements GenericMechanic {
         String suffix = "";
         if (!Guild.getInstance().isGuildNull(player.getUniqueId())) {
             String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()));
-            suffix = ChatColor.translateAlternateColorCodes('&', " [" + clanTag + ChatColor.RESET + "]");
+            suffix = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + " [" + clanTag + ChatColor.RESET + "]");
         }
         for (Player player1 : Bukkit.getOnlinePlayers()) {
             Team team = getPlayerTeam(getPlayerScoreboardObject(player1), player);
@@ -173,6 +173,7 @@ public class ScoreboardHandler implements GenericMechanic {
             currentTeam.setCanSeeFriendlyInvisibles(team.canSeeFriendlyInvisibles());
             currentTeam.setDisplayName(team.getDisplayName());
             currentTeam.setPrefix(team.getPrefix());
+            currentTeam.setSuffix(team.getSuffix());
             team.getEntries().forEach(currentTeam::addEntry);
         }
     }

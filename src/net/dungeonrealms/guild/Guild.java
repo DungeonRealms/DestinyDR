@@ -4,6 +4,7 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
 import net.dungeonrealms.API;
 import net.dungeonrealms.core.Callback;
+import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.*;
 import net.dungeonrealms.network.NetworkAPI;
@@ -56,6 +57,13 @@ public class Guild {
         NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + player.getName() + ChatColor.GREEN + " is now online.");
     }
 
+    public void guiGuildCreate(Player player) {
+        if (!isGuildNull(player.getUniqueId())) {
+            player.sendMessage(ChatColor.RED + "Wow Jeff.. You are already in a guild..?");
+            return;
+        }
+    }
+
     /**
      * @param player    The player wanting to remove the Guild.
      * @param guildName Name of the guild.
@@ -101,7 +109,6 @@ public class Guild {
     public void demotePlayer(Player player, String playerName) {
         if (player.getName().equalsIgnoreCase(playerName)) return;
         UUID uuid = API.getUUIDFromName(playerName);
-        assert uuid != null;
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
 
         if (!isOwner(player.getUniqueId(), guildName)) {
@@ -142,7 +149,6 @@ public class Guild {
     public void promotePlayer(Player player, String playerName) {
         if (player.getName().equalsIgnoreCase(playerName)) return;
         UUID uuid = API.getUUIDFromName(playerName);
-        assert uuid != null;
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
 
         if (!isOwner(player.getUniqueId(), guildName)) {
@@ -157,6 +163,7 @@ public class Guild {
         if (isOfficer(guildName, uuid)) {
             if (DatabaseAPI.getInstance().getData(EnumGuildData.CO_OWNER, guildName).equals("")) {
                 DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, EnumGuildData.CO_OWNER, uuid.toString(), true);
+                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.OFFICERS, uuid.toString(), true);
                 NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + API.getNameFromUUID(uuid.toString()) + " " + ChatColor.GREEN + "has been promoted to CoOwner!");
             } else {
                 player.sendMessage(ChatColor.RED + "You already have someone as an CoOwner!");
@@ -183,7 +190,6 @@ public class Guild {
     public void removePlayer(Player player, String playerName) {
         if (player.getName().equalsIgnoreCase(playerName)) return;
         UUID uuid = API.getUUIDFromName(playerName);
-        assert uuid != null;
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
         if (API.isOnline(uuid)) {
             if (Guild.getInstance().isInvited(guildName, uuid)) {
@@ -201,8 +207,13 @@ public class Guild {
                     DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.OFFICERS, uuid.toString(), true);
                     player.sendMessage(ChatColor.GREEN + "You have successfully remove officer " + playerName);
                     NetworkAPI.getInstance().sendAllGuildMessage(guildName, player.getName() + " has removed Officer " + playerName + "!");
+                } else if (Guild.getInstance().isCoOwner(uuid, guildName)) {
+                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.CO_OWNER, uuid.toString(), true);
+                    player.sendMessage(ChatColor.GREEN + "You have successfully remove coOwner " + playerName);
+                    NetworkAPI.getInstance().sendAllGuildMessage(guildName, player.getName() + " has removed Officer " + playerName + "!");
                 }
             }
+            ScoreboardHandler.getInstance().matchMainScoreboard(Bukkit.getPlayer(uuid));
         } else {
             Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first((document, throwable) -> {
                 if (document == null) {

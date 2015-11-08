@@ -7,7 +7,6 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import com.sun.deploy.util.ReflectionUtil;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
 import net.dungeonrealms.entities.Entities;
@@ -34,7 +33,6 @@ import net.dungeonrealms.mongo.achievements.AchievementManager;
 import net.dungeonrealms.notice.Notice;
 import net.dungeonrealms.party.Party;
 import net.dungeonrealms.rank.Rank;
-import net.dungeonrealms.rank.Subscription;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -49,7 +47,6 @@ import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
 import java.io.*;
-import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
@@ -57,7 +54,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 /**
@@ -117,15 +113,17 @@ public class API {
         }
         return xp;
     }
-	public static ItemStack[] getTierArmor(int tier) {
+
+    public static ItemStack[] getTierArmor(int tier) {
 //		int chance = RandomHelper.getRandomNumberBetween(1, 100);
 //		if(chance <= 3)
 //			return new ArmorGenerator().nextArmor(tier, ArmorModifier.RARE);
 //		else if(chance > 5 && chance <= 20)
 //			return new ArmorGenerator().nextArmor(tier, ArmorModifier.UNCOMMON);
 //		else
-		return new ArmorGenerator().nextArmor(tier, ArmorModifier.COMMON);
-	}
+        return new ArmorGenerator().nextArmor(tier, ArmorModifier.COMMON);
+    }
+
     /**
      * @param player
      * @param kill
@@ -173,7 +171,7 @@ public class API {
     public static UUID getUUIDFromName(String name) {
         try {
             URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + name + "?at="
-                    + System.currentTimeMillis() / 1000l);
+                    + (System.currentTimeMillis() / 1000l));
 
             Reader in = new InputStreamReader(url.openStream());
             Object json = JSONValue.parse(in);
@@ -422,7 +420,7 @@ public class API {
         HealthHandler.getInstance().handleLoginEvents(player);
         KarmaHandler.getInstance().handleLoginEvents(player);
         // Essentials
-        Subscription.getInstance().handleJoin(player);
+        //Subscription.getInstance().handleJoin(player);
         Rank.getInstance().doGet(uuid);
         // Guilds
         Guild.getInstance().doGet(uuid);
