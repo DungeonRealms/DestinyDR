@@ -110,7 +110,7 @@ public class EnergyHandler implements GenericMechanic {
                 if (player.hasMetadata("starving")) {
                     regenAmount = 0.07F;
                 }
-                regenAmount = regenAmount / 6.3F;
+                regenAmount = regenAmount / 6.2F;
                 GamePlayer gp = API.getGamePlayer(player);
                 if (gp == null || gp.getStats() == null) return;
                 regenAmount += (int) (regenAmount * gp.getStats().getEnergyRegen());
@@ -227,7 +227,7 @@ public class EnergyHandler implements GenericMechanic {
      */
     private void removePlayerEnergySprint() {
         Bukkit.getOnlinePlayers().stream().filter(player -> player.isSprinting() || player.hasMetadata("sprinting")).forEach(player -> {
-            removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 0.135F);
+            removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 0.125F);
             if (getPlayerCurrentEnergy(player.getUniqueId()) <= 0 || player.hasMetadata("starving")) {
                 player.setSprinting(false);
                 player.removeMetadata("sprinting", DungeonRealms.getInstance());
@@ -310,33 +310,33 @@ public class EnergyHandler implements GenericMechanic {
 
         switch (material) {
             case AIR:
-                return 0.043F;
+                return 0.041F;
             case WOOD_SWORD:
-                return 0.052F;
+                return 0.05F;
             case STONE_SWORD:
-                return 0.062F;
+                return 0.06F;
             case IRON_SWORD:
-                return 0.073F;
+                return 0.071F;
             case DIAMOND_SWORD:
-                return 0.111F;
+                return 0.109F;
             case GOLD_SWORD:
-                return 0.121F;
+                return 0.119F;
             case WOOD_AXE:
-                return 0.07060F;
+                return 0.07F;
             case STONE_AXE:
-                return 0.08391F;
+                return 0.083F;
             case IRON_AXE:
-                return 0.097F;
+                return 0.09F;
             case DIAMOND_AXE:
-                return 0.1243F;
+                return 0.123F;
             case GOLD_AXE:
-                return 0.1351F;
+                return 0.134F;
             case WOOD_SPADE:
-                return 0.0640F;
+                return 0.063F;
             case STONE_SPADE:
-                return 0.0761F;
+                return 0.075F;
             case IRON_SPADE:
-                return 0.088F;
+                return 0.087F;
             case DIAMOND_SPADE:
                 return 0.111F;
             case GOLD_SPADE:
