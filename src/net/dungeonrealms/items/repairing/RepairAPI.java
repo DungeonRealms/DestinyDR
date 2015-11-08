@@ -117,11 +117,9 @@ public class RepairAPI {
         if (tag.getInt("itemTier") == 0 && tag.getInt("armorTier") == 0) return 0;
         double percentDurability = ((itemStack.getType().getMaxDurability() - itemStack.getDurability()) / itemStack.getType().getMaxDurability());
         if (tag.getString("type").equalsIgnoreCase("weapon")) {
-            Bukkit.broadcastMessage(String.valueOf(Math.round(percentDurability * (1450 / 15))));
             return Math.round(percentDurability * (1450 / 15));
         }
         if (tag.getString("type").equalsIgnoreCase("armor")) {
-            Bukkit.broadcastMessage(String.valueOf(Math.round(percentDurability * (1450 / 15))));
             return Math.round(percentDurability * (1550 / 15));
         }
         return 0;
