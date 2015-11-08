@@ -76,19 +76,19 @@ public class Glyph {
         switch (tier) {
             case 1:
                 return new ItemBuilder().setItem(new ItemStack(381), ChatColor.WHITE + "Unknown Glyph", new String[]{
-                }).setNBTString("glyph", "true").build();
+                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
             case 2:
                 return new ItemBuilder().setItem(new ItemStack(381), ChatColor.GREEN + "Unknown Glyph", new String[]{
-                }).setNBTString("glyph", "true").build();
+                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
             case 3:
                 return new ItemBuilder().setItem(new ItemStack(381), ChatColor.AQUA + "Unknown Glyph", new String[]{
-                }).setNBTString("glyph", "true").build();
+                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
             case 4:
                 return new ItemBuilder().setItem(new ItemStack(381), ChatColor.LIGHT_PURPLE + "Unknown Glyph", new String[]{
-                }).setNBTString("glyph", "true").build();
+                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
             case 5:
                 return new ItemBuilder().setItem(new ItemStack(381), ChatColor.YELLOW + "Unknown Glyph", new String[]{
-                }).setNBTString("glyph", "true").build();
+                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
             default:
                 return null;
         }
@@ -324,6 +324,17 @@ public class Glyph {
     public boolean isStar(ItemStack item) {
         net.minecraft.server.v1_8_R3.ItemStack nmsStar = CraftItemStack.asNMSCopy(item);
         return nmsStar.getTag() != null && nmsStar.hasTag() && nmsStar.getTag().hasKey("star");
+    }
+
+    public int getGlyphTier(ItemStack item) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsGlyph = CraftItemStack.asNMSCopy(item);
+        if (nmsGlyph.getTag() == null) {
+            return 0;
+        }
+        if (!(nmsGlyph.getTag().hasKey("tier"))) {
+            return 0;
+        }
+        return nmsGlyph.getTag().getInt("tier");
     }
 
     public ItemStack getArmorGylph(String name, int tier) {
