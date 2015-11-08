@@ -180,16 +180,6 @@ public class DamageListener implements Listener {
         double finalDamage = 0;
         if (API.isPlayer(event.getDamager())) {
             Player attacker = (Player) event.getDamager();
-            if (attacker.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(attacker.getUniqueId()) <= 0) {
-                event.setCancelled(true);
-                attacker.playSound(attacker.getLocation(), Sound.WOLF_PANT, 12F, 1.5F);
-                try {
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, event.getEntity().getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                return;
-            }
             if (attacker.getItemInHand() == null) return;
             //Check if the item has NBT, all our custom weapons will have NBT.
             net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attacker.getItemInHand()));
@@ -198,12 +188,23 @@ public class DamageListener implements Listener {
             NBTTagCompound tag = nmsItem.getTag();
             //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
             if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
+            if (attacker.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(attacker.getUniqueId()) <= 0) {
+                event.setCancelled(true);
+                event.setDamage(0);
+                attacker.playSound(attacker.getLocation(), Sound.WOLF_PANT, 12F, 1.5F);
+                try {
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, event.getEntity().getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
+                } catch (Exception ex) {
+                    ex.printStackTrace();
+                }
+                return;
+            }
             if (CombatLog.isInCombat(attacker)) {
                 CombatLog.updateCombat(attacker);
             } else {
                 CombatLog.addToCombat(attacker);
             }
-            if (API.isPlayer(event.getEntity())) {
+            if (API.isPlayer(event.getEntity()) && !DuelMechanics.isDueling(event.getEntity().getUniqueId())) {
                 KarmaHandler.getInstance().handleAlignmentChanges(attacker);
             }
             EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getItemInHand()));
@@ -212,7 +213,7 @@ public class DamageListener implements Listener {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof Player)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((Player) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
-            if (API.isPlayer(event.getEntity())) {
+            if (API.isPlayer(event.getEntity()) && !DuelMechanics.isDueling(event.getEntity().getUniqueId())) {
                 KarmaHandler.getInstance().handleAlignmentChanges((Player) attackingArrow.getShooter());
             }
             if (CombatLog.isInCombat(((Player) attackingArrow.getShooter()))) {
@@ -224,7 +225,7 @@ public class DamageListener implements Listener {
             Snowball staffProjectile = (Snowball) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof Player)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((Player) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
-            if (API.isPlayer(event.getEntity())) {
+            if (API.isPlayer(event.getEntity()) && !DuelMechanics.isDueling(event.getEntity().getUniqueId())) {
                 KarmaHandler.getInstance().handleAlignmentChanges((Player) staffProjectile.getShooter());
             }
             if (CombatLog.isInCombat(((Player) staffProjectile.getShooter()))) {
