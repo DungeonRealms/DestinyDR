@@ -400,8 +400,10 @@ public class ItemManager {
         ArrayList<String> lore = new ArrayList<>();
         
         String expBar = ChatColor.RED + "||||||||||" + "||||||||||" + "||||||||||";
-        lore.add(0 + "/" + Mining.getMaxXP(tier));
+        lore.add(ChatColor.GREEN.toString() + 0 + "/" + Mining.getMaxXP(tier));
+        lore.add(" ");
         lore.add(expBar);
+        lore.add(" ");
         switch (tier) {
             case 1:
                 rawStack = new ItemStack(Material.WOOD_PICKAXE);
@@ -487,12 +489,15 @@ public class ItemManager {
         ItemMeta meta = rawStack.getItemMeta();
         ArrayList<String> lore = new ArrayList<String>();
         String expBar = "||||||||||" + "||||||||||" + "||||||||||";
+        
+        lore.add(ChatColor.GREEN.toString() + 0 + "/" + Fishing.getMaxXP(tier));
+        lore.add(" ");
+        lore.add(expBar);
+        lore.add(" ");
+
         switch (tier) {
             case 1:
                 name = ChatColor.BOLD + "Weak Rod";
-                lore.add(0 + "/" + Fishing.getMaxXP(tier));
-                lore.add(expBar);
-                lore.add(ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "A pick made out of Wood");
                 break;
             case 2:
                 name = ChatColor.GREEN.toString() + ChatColor.BOLD + "Basic Rod";

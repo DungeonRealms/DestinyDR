@@ -169,6 +169,12 @@ public class Mining implements GenericMechanic {
         String newexpBar = ChatColor.GREEN.toString() + expBar.substring(0, display) + ChatColor.RED.toString()
         	        + expBar.substring(display, expBar.length());
         lore.add(newexpBar);
+        
+        lore.add(ChatColor.GREEN.toString() + currentXP + "/" + maxXP);
+        lore.add(" ");
+        lore.add(newexpBar);
+        lore.add(" ");
+        
         switch (tier) {
         case 1:
             lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Wood");
