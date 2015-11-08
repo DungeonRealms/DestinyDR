@@ -153,28 +153,17 @@ public class CommandSpawn extends BasicCommand {
                         MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
                         EntityStats.setMonsterRandomStats(entity, level, tier);
 
-                        String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET;
-                        String healthName = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt() + ChatColor.RED.toString() + "❤";
-                        String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
-                        ArmorStand stand = entity.getBukkitEntity().getLocation().getWorld().spawn(entity.getBukkitEntity().getLocation(), ArmorStand.class);
-                        stand.setRemoveWhenFarAway(false);
-                        stand.setVisible(false);
-                        stand.setSmall(true);
-                        stand.setBasePlate(false);
-                        stand.setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "nametag"));
-                        stand.setGravity(false);
-                        stand.setArms(false);
-                        stand.setCustomNameVisible(true);
-                        stand.setCustomName(lvl + customName + healthName);
-                        LivingEntity ent = stand;
-                        ent.setRemoveWhenFarAway(false);
-                        entity.getBukkitEntity().setPassenger(stand);
-
-
                         World world = ((CraftWorld) player.getWorld()).getHandle();
                         if (elite) {
                             EntityStats.setMonsterElite(entity, level, tier);
                         }
+                        
+                        String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET;
+                        String healthName = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt() + ChatColor.RED.toString() + "❤";
+                        String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
+                        
+                        entity.setCustomName(lvl + customName + healthName);
+                        
                         Location location = new Location(world.getWorld(), player.getLocation().getX() + new Random().nextInt(3), player.getLocation().getY(), player.getLocation().getZ() + new Random().nextInt(3));
                         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                         world.addEntity(entity, SpawnReason.CUSTOM);
@@ -225,20 +214,6 @@ public class CommandSpawn extends BasicCommand {
                     String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET;
                     String healthName = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt() + ChatColor.RED.toString() + "❤";
                     String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
-                    ArmorStand stand = entity.getBukkitEntity().getLocation().getWorld().spawn(entity.getBukkitEntity().getLocation(), ArmorStand.class);
-                    stand.setRemoveWhenFarAway(false);
-                    stand.setVisible(false);
-                    stand.setSmall(true);
-                    stand.setBasePlate(false);
-                    stand.setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "nametag"));
-                    stand.setGravity(false);
-                    stand.setArms(false);
-                    stand.setCustomNameVisible(true);
-                    stand.setCustomName(lvl + customName + healthName);
-                    LivingEntity ent = stand;
-                    ent.setRemoveWhenFarAway(false);
-                    entity.getBukkitEntity().setPassenger(stand);
-
 
                     Location location = new Location(world.getWorld(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
                     entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);

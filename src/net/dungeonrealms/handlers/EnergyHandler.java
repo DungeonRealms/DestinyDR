@@ -3,8 +3,10 @@ package net.dungeonrealms.handlers;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.GamePlayer;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.profession.Fishing;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -113,7 +115,9 @@ public class EnergyHandler implements GenericMechanic {
                 GamePlayer gp = API.getGamePlayer(player);
                 if (gp == null || gp.getStats() == null) return;
                 regenAmount += (int) (regenAmount * gp.getStats().getEnergyRegen());
-                //TODO: FISH SOMETHING GIVES REGEN I DUNNO PROFESSION MECHANICS.
+                if(Fishing.fishBuffs.containsKey(player.getUniqueId()) && Fishing.fishBuffs.get(player.getUniqueId()).equalsIgnoreCase("Energy Regen")){
+                	regenAmount += .15;
+                }
                 addEnergyToPlayerAndUpdate(player.getUniqueId(), regenAmount);
             }
         }

@@ -1,5 +1,7 @@
 package net.dungeonrealms.spawning;
 
+import java.util.ArrayList;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -34,8 +36,9 @@ public class LootSpawner {
 	 * Sets the loot in the chest based on tier.
 	 */
 	private void setContents() {
-		ItemStack[] loot = LootManager.getLoot(tier);
-		inv.setContents(loot);
+		ArrayList<ItemStack> loot = LootManager.getLoot(tier);
+		for(int i = 0; i < loot.size(); i++)
+			inv.addItem(loot.get(i));
 	}
 
 	/**
@@ -54,7 +57,7 @@ public class LootSpawner {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 			setContents();
 			block.setType(Material.CHEST);
-		} , 20 * 10l);
+		} , 20 * 60l);
 	}
 
 }

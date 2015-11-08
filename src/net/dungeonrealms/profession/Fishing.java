@@ -6,6 +6,8 @@ import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.miscellaneous.RandomHelper;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -150,6 +152,9 @@ public class Fishing implements GenericMechanic {
 		return list[new Random().nextInt(list.length - 1)];
 	}
 
+	
+	public static HashMap<UUID, String> fishBuffs = new HashMap<>();
+	
 	/**
 	 * Return new Fish caught by stack(fishing pole)
 	 * 
@@ -166,10 +171,21 @@ public class Fishing implements GenericMechanic {
 		int size = Fishing.getSize(tier);
 		String type = Fishing.getFish(tier);
 		meta.setDisplayName(size + "in. " + type);
+		String buff = "none";
+		if(RandomHelper.getRandomNumberBetween(1, 100) <= 30){
+			String[] list = new String[]{"HP Regen", "Energy Regen"};
+	    	buff = list[RandomHelper.getRandomNumberBetween(0, list.length - 1)];
+			ArrayList<String> lore = new ArrayList<String>();
+			lore.add(ChatColor.GREEN + "+ " + ChatColor.RED + buff);
+			meta.setLore(lore);
+		}
 		fish.setItemMeta(meta);
 		nms = CraftItemStack.asNMSCopy(fish);
 		nms.getTag().setInt("size", size);
-		nms.getTag().setString("type", type);
+		nms.getTag().setString("fishType", type);
+		nms.getTag().setString("type", "fishBuff");
+		if(!buff.equalsIgnoreCase("none"))
+			nms.getTag().setString("buff", buff);
 		return CraftItemStack.asBukkitCopy(nms);
 	}
 
@@ -186,7 +202,14 @@ public class Fishing implements GenericMechanic {
 		nms.getTag().setInt("XP", xp);
 
 		ItemMeta meta = stack.getItemMeta();
-		meta.setLore(Collections.singletonList(ChatColor.GREEN.toString() + xp + "/" + maxXP));
+		
+        ArrayList<String> lore = new ArrayList<String>();
+        String expBar = "||||||||||" + "||||||||||" + "||||||||||";
+        lore.add(ChatColor.GREEN.toString() + xp + "/" + maxXP);
+        lore.add(" ");
+        lore.add(expBar);
+        lore.add(" ");
+		meta.setLore(lore);
 		stack.setItemMeta(meta);
 		p.setItemInHand(stack);
 	}

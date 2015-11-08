@@ -12,6 +12,7 @@ import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.profession.Fishing;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.EntityLiving;
@@ -312,6 +313,9 @@ public class HealthHandler implements GenericMechanic {
                     player.setHealth(20);
                     setPlayerHPLive(player, (int) maxHP);
                 } else if (player.getHealth() <= 19 && ((currentHP + amountToHealPlayer) < maxHP)) {
+                    if(Fishing.fishBuffs.containsKey(player.getUniqueId()) && Fishing.fishBuffs.get(player.getUniqueId()).equalsIgnoreCase("HP Regen")){
+                    	amountToHealPlayer += (maxHP * 0.10);
+                    }
                     setPlayerHPLive(player, (int) (getPlayerHPLive(player) + amountToHealPlayer));
                     double playerHPPercent = (getPlayerHPLive(player) + amountToHealPlayer) / maxHP;
                     double newPlayerHP = playerHPPercent * 20;
