@@ -31,8 +31,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.inventivetalent.bossbar.BossBarAPI;
 
-import java.util.Random;
-
 /**
  * Created by Kieran on 10/3/2015.
  */
@@ -228,7 +226,7 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public int getMonsterMaxHPOnSpawn(LivingEntity entity) {
-           return calculateMaxHPFromItems(entity);
+           return calculateMaxHPFromItems(entity) - 50;
     }
 
     /**
