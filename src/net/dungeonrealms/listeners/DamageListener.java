@@ -65,6 +65,7 @@ public class DamageListener implements Listener {
     public void onBuffExplode(EntityExplodeEvent event) {
         if (!(event.getEntity().hasMetadata("type"))) return;
         event.blockList().clear();
+        event.setYield(0.1F);
         event.setCancelled(true);
         if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("buff")) {
             event.setCancelled(true);
