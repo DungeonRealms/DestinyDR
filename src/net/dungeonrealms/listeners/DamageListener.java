@@ -180,14 +180,6 @@ public class DamageListener implements Listener {
         double finalDamage = 0;
         if (API.isPlayer(event.getDamager())) {
             Player attacker = (Player) event.getDamager();
-            if (attacker.getItemInHand() == null) return;
-            //Check if the item has NBT, all our custom weapons will have NBT.
-            net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attacker.getItemInHand()));
-            if (nmsItem == null || nmsItem.getTag() == null) return;
-            //Get the NBT of the item the player is holding.
-            NBTTagCompound tag = nmsItem.getTag();
-            //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
-            if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
             if (attacker.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(attacker.getUniqueId()) <= 0) {
                 event.setCancelled(true);
                 attacker.playSound(attacker.getLocation(), Sound.WOLF_PANT, 12F, 1.5F);
@@ -198,6 +190,14 @@ public class DamageListener implements Listener {
                 }
                 return;
             }
+            if (attacker.getItemInHand() == null) return;
+            //Check if the item has NBT, all our custom weapons will have NBT.
+            net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attacker.getItemInHand()));
+            if (nmsItem == null || nmsItem.getTag() == null) return;
+            //Get the NBT of the item the player is holding.
+            NBTTagCompound tag = nmsItem.getTag();
+            //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
+            if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
             if (CombatLog.isInCombat(attacker)) {
                 CombatLog.updateCombat(attacker);
             } else {
