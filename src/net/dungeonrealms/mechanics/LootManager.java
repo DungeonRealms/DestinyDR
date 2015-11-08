@@ -120,7 +120,7 @@ public class LootManager implements GenericMechanic{
         		if(RandomHelper.getRandomNumberBetween(1, 100) <= 10){
         			loot.add(ItemManager.createRandomTeleportBook("Teleport Book"));
         		}
-        		if(RandomHelper.getRandomNumberBetween(1, 100) <= 5){
+        		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 5){
         			loot.add(new ItemGenerator().next(ItemTier.TIER_1));
         		}
         		if(RandomHelper.getRandomNumberBetween(1, 100) <= 5){
@@ -142,7 +142,7 @@ public class LootManager implements GenericMechanic{
     		if(RandomHelper.getRandomNumberBetween(1, 100) <= 10){
     			loot.add(ItemManager.createRandomTeleportBook("Teleport Book"));
     		}
-    		if(RandomHelper.getRandomNumberBetween(1, 100) <= 5){
+    		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 4){
     			loot.add(new ItemGenerator().next(ItemTier.TIER_2));
     		}
     		if(RandomHelper.getRandomNumberBetween(1, 100) <= 5){
@@ -164,7 +164,7 @@ public class LootManager implements GenericMechanic{
     		if(RandomHelper.getRandomNumberBetween(1, 100) <= 10){
     			loot.add(ItemManager.createRandomTeleportBook("Teleport Book"));
     		}
-    		if(RandomHelper.getRandomNumberBetween(1, 100) <= 5){
+    		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 3){
     			loot.add(new ItemGenerator().next(ItemTier.TIER_3));
     		}
     		if(RandomHelper.getRandomNumberBetween(1, 100) <= 5){
@@ -186,7 +186,7 @@ public class LootManager implements GenericMechanic{
     		if(RandomHelper.getRandomNumberBetween(1, 100) <= 10){
     			loot.add(ItemManager.createRandomTeleportBook("Teleport Book"));
     		}
-    		if(RandomHelper.getRandomNumberBetween(1, 100) <= 5){
+    		if(RandomHelper.getRandomNumberBetween(1, 1000) <=  2){
     			loot.add(new ItemGenerator().next(ItemTier.TIER_4));
     		}
     		if(RandomHelper.getRandomNumberBetween(1, 100) <= 5){
@@ -208,7 +208,7 @@ public class LootManager implements GenericMechanic{
     		if(RandomHelper.getRandomNumberBetween(1, 100) <= 10){
     			loot.add(ItemManager.createRandomTeleportBook("Teleport Book"));
     		}
-    		if(RandomHelper.getRandomNumberBetween(1, 100) <= 5){
+    		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 1){
     			loot.add(new ItemGenerator().next(ItemTier.TIER_5));
     		}
     		if(RandomHelper.getRandomNumberBetween(1, 100) <= 5){
