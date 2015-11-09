@@ -545,7 +545,7 @@ public class InventoryListener implements Listener {
                 HealthHandler.getInstance().setPlayerMaxHPLive(event.getPlayer(), HealthHandler.getInstance().calculateMaxHPFromItems(event.getPlayer()));
                 HealthHandler.getInstance().setPlayerHPRegenLive(event.getPlayer(), HealthHandler.getInstance().calculateHealthRegenFromItems(event.getPlayer()));
 
-                
+
             }, 10L);
         } else {
             event.getPlayer().sendMessage(ChatColor.RED + "Equipping armor while in combat will not change your stats! Please re-equip out of combat!");

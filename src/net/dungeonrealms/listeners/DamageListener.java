@@ -371,9 +371,9 @@ public class DamageListener implements Listener {
                 if (nmsItem != null && nmsItem.getTag() != null) {
                     if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.POLE_ARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
                         DamageAPI.polearmAOEProcessing.add(attacker);
-                        for (Entity entityNear : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
+                        for (Entity entityNear : event.getEntity().getNearbyEntities(3.5, 3.5, 3.5)) {
                             if (entityNear instanceof LivingEntity && entityNear != event.getEntity() && entityNear != event.getDamager()) {
-                                if (event.getDamager().hasMetadata("type") && event.getDamager().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+                                if (!event.getDamager().hasMetadata("type") && !event.getDamager().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                                     if (!(API.isPlayer(entityNear))) {
                                         break;
                                     } else {
