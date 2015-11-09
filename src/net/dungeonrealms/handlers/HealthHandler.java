@@ -675,7 +675,7 @@ public class HealthHandler implements GenericMechanic {
      * @return int
      * @since 1.0
      */
-    private int calculateHealthRegenFromItems(Player player) {
+    public int calculateHealthRegenFromItems(Player player) {
         double totalHPRegen = 5;
         for (ItemStack itemStack : player.getEquipment().getArmorContents()) {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
