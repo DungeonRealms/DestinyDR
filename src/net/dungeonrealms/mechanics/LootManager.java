@@ -1,9 +1,14 @@
 package net.dungeonrealms.mechanics;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.items.Item.ItemTier;
+import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.items.armor.ArmorGenerator;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.miscellaneous.RandomHelper;
+import net.dungeonrealms.spawning.LootSpawner;
+import net.dungeonrealms.world.glyph.Glyph;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -11,15 +16,9 @@ import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.items.Item.ItemTier;
-import net.dungeonrealms.items.ItemGenerator;
-import net.dungeonrealms.items.armor.ArmorGenerator;
-import net.dungeonrealms.mechanics.generic.EnumPriority;
-import net.dungeonrealms.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.miscellaneous.Glyph;
-import net.dungeonrealms.miscellaneous.RandomHelper;
-import net.dungeonrealms.spawning.LootSpawner;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Chase on Oct 9, 2015
@@ -128,7 +127,7 @@ public class LootManager implements GenericMechanic{
         		}
         		
         		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 2){
-        			loot.add(Glyph.getInstance().nextWeaponGlyph("Lucky Glyph", 1));
+        			loot.add(Glyph.getInstance().getBaseGlyph("Lucky Glyph", 1, Glyph.GlyphType.WEAPON));
         		}
         	break;
         case 2:
@@ -150,7 +149,7 @@ public class LootManager implements GenericMechanic{
     		}
     		
     		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 2){
-    			loot.add(Glyph.getInstance().nextWeaponGlyph("Lucky Glyph", 2));
+				loot.add(Glyph.getInstance().getBaseGlyph("Lucky Glyph", 2, Glyph.GlyphType.WEAPON));
     		}
     	break;
         case 3:
@@ -172,7 +171,7 @@ public class LootManager implements GenericMechanic{
     		}
     		
     		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 2){
-    			loot.add(Glyph.getInstance().nextWeaponGlyph("Lucky Glyph", 3));
+				loot.add(Glyph.getInstance().getBaseGlyph("Lucky Glyph", 3, Glyph.GlyphType.WEAPON));
     		}
     	break;
         case 4:
@@ -194,7 +193,7 @@ public class LootManager implements GenericMechanic{
     		}
     		
     		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 2){
-    			loot.add(Glyph.getInstance().nextWeaponGlyph("Lucky Glyph", 4));
+				loot.add(Glyph.getInstance().getBaseGlyph("Lucky Glyph", 4, Glyph.GlyphType.WEAPON));
     		}
     	break;
         case 5:
@@ -216,7 +215,7 @@ public class LootManager implements GenericMechanic{
     		}
     		
     		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 2){
-    			loot.add(Glyph.getInstance().nextWeaponGlyph("Lucky Glyph", 5));
+				loot.add(Glyph.getInstance().getBaseGlyph("Lucky Glyph", 5, Glyph.GlyphType.WEAPON));
     		}
     	break;
         }

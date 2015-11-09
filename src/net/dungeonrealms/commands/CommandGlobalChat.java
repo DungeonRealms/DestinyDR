@@ -36,8 +36,8 @@ public class CommandGlobalChat extends BasicCommand {
 
         StringBuilder chatMessage = new StringBuilder();
 
-        for (int i = 0; i < args.length; i++) {
-            chatMessage.append(args[i] + " ");
+        for (String arg : args) {
+            chatMessage.append(arg + " ");
         }
 
         Player player = (Player) sender;

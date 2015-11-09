@@ -11,10 +11,9 @@ import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
-import net.dungeonrealms.miscellaneous.Glyph;
+import net.dungeonrealms.world.glyph.Glyph;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -46,14 +45,11 @@ public class CommandAdd extends BasicCommand {
         }
         if (args.length > 0) {
             switch (args[0]) {
-                case "star":
-                    player.getInventory().addItem(Glyph.getInstance().nextStarGlyph());
+                case "ga":
+                    player.getInventory().addItem(Glyph.getInstance().getBaseGlyph(args[1], Integer.valueOf(args[2]), Glyph.GlyphType.ARMOR));
                     break;
-                case "glypharmor":
-                    player.getInventory().addItem(Glyph.getInstance().nextArmorGlyph(args[1], Integer.valueOf(args[2])));
-                    break;
-                case "glyphweapon":
-                    player.getInventory().addItem(Glyph.getInstance().nextWeaponGlyph(args[1], Integer.valueOf(args[2])));
+                case "gw":
+                    player.getInventory().addItem(Glyph.getInstance().getBaseGlyph(args[1], Integer.valueOf(args[2]), Glyph.GlyphType.WEAPON));
                     break;
                 case "guild":
                     Guild.getInstance().createGuild(args[1], args[2], player.getUniqueId());
