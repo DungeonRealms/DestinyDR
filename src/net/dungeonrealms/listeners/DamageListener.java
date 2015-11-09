@@ -21,6 +21,7 @@ import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
+import net.dungeonrealms.miscellaneous.ItemBuilder;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.spawning.BuffManager;
@@ -55,6 +56,15 @@ import java.util.Random;
  * Created by Nick on 9/17/2015.
  */
 public class DamageListener implements Listener {
+
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
+    public void onSufficate(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player) {
+            if (event.getCause() == DamageCause.SUFFOCATION) {
+                event.setCancelled(true);
+            }
+        }
+    }
 
     /**
      * This event listens for EnderCrystal explosions.
@@ -361,9 +371,9 @@ public class DamageListener implements Listener {
                 if (nmsItem != null && nmsItem.getTag() != null) {
                     if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.POLE_ARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
                         DamageAPI.polearmAOEProcessing.add(attacker);
-                        for (Entity entityNear : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
+                        for (Entity entityNear : event.getEntity().getNearbyEntities(3.5, 3.5, 3.5)) {
                             if (entityNear instanceof LivingEntity && entityNear != event.getEntity() && entityNear != event.getDamager()) {
-                                if (event.getDamager().hasMetadata("type") && event.getDamager().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+                                if (!event.getDamager().hasMetadata("type") && !event.getDamager().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                                     if (!(API.isPlayer(entityNear))) {
                                         break;
                                     } else {
@@ -662,12 +672,17 @@ public class DamageListener implements Listener {
         final boolean finalSavedArmorContents = savedArmorContents;
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             PlayerManager.checkInventory(player.getUniqueId());
-            player.getInventory().addItem(new ItemGenerator().getDefinedStack(Item.ItemType.AXE, Item.ItemTier.TIER_1, Item.ItemModifier.COMMON));
-            player.getInventory().addItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.HELMET, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON));
-            player.getInventory().addItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.CHESTPLATE, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON));
-            player.getInventory().addItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.LEGGINGS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON));
-            player.getInventory().addItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.BOOTS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON));
-            player.getInventory().addItem(new ItemStack(Material.BREAD, 15));
+            player.getInventory().addItem(new ItemBuilder().setItem(new ItemGenerator().getDefinedStack(Item.ItemType.AXE, Item.ItemTier.TIER_1, Item.ItemModifier.COMMON))
+                    .setNBTString("subtype", "starter").build());
+            player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.HELMET, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON))
+                    .setNBTString("subtype", "starter").build());
+            player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.CHESTPLATE, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON))
+                    .setNBTString("subtype", "starter").build());
+            player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.LEGGINGS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON))
+                    .setNBTString("subtype", "starter").build());
+            player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.BOOTS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON))
+                    .setNBTString("subtype", "starter").build());
+            player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 10)).setNBTString("subtype", "starter").build());
             if (finalSavedArmorContents) {
                 for (ItemStack itemStack : armorToSave) {
                     if (itemStack != null && itemStack.getType() != Material.AIR) {

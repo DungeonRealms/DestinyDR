@@ -310,10 +310,11 @@ public class HealthHandler implements GenericMechanic {
                 if ((currentHP + amountToHealPlayer) >= maxHP) {
                     player.setHealth(20);
                     setPlayerHPLive(player, (int) maxHP);
-                } else if (player.getHealth() <= 19 && ((currentHP + amountToHealPlayer) < maxHP)) {
+                } else if ((currentHP + amountToHealPlayer) < maxHP) {
                     if(Fishing.fishBuffs.containsKey(player.getUniqueId()) && Fishing.fishBuffs.get(player.getUniqueId()).equalsIgnoreCase("HP Regen")){
                     	amountToHealPlayer += (maxHP * 0.10);
                     }
+                    
                     setPlayerHPLive(player, (int) (getPlayerHPLive(player) + amountToHealPlayer));
                     double playerHPPercent = (getPlayerHPLive(player) + amountToHealPlayer) / maxHP;
                     double newPlayerHP = playerHPPercent * 20;
@@ -675,7 +676,7 @@ public class HealthHandler implements GenericMechanic {
      * @return int
      * @since 1.0
      */
-    private int calculateHealthRegenFromItems(Player player) {
+    public int calculateHealthRegenFromItems(Player player) {
         double totalHPRegen = 5;
         for (ItemStack itemStack : player.getEquipment().getArmorContents()) {
             if (itemStack == null || itemStack.getType() == Material.AIR) {

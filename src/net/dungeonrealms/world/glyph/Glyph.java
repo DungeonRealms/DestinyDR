@@ -1,11 +1,11 @@
 package net.dungeonrealms.world.glyph;
 
+import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.items.DamageMeta;
 import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.Armor;
 import net.dungeonrealms.items.armor.ArmorGenerator;
-import net.dungeonrealms.items.enchanting.EnchantmentAPI;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.miscellaneous.ItemBuilder;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -47,6 +47,10 @@ public class Glyph {
 
      */
 
+    /*
+    Glyph
+     */
+
     public enum GlyphType {
         WEAPON("weapon"),
         ARMOR("armor"),;
@@ -83,19 +87,19 @@ public class Glyph {
         switch (tier) {
             case 1:
                 return new ItemBuilder().setItem(new ItemStack(381), ChatColor.WHITE + "Unknown Glyph", new String[]{
-                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
+                }).setNBTString("glyph", "true").setNBTInt("glyphTier", tier).build();
             case 2:
                 return new ItemBuilder().setItem(new ItemStack(381), ChatColor.GREEN + "Unknown Glyph", new String[]{
-                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
+                }).setNBTString("glyph", "true").setNBTInt("glyphTier", tier).build();
             case 3:
                 return new ItemBuilder().setItem(new ItemStack(381), ChatColor.AQUA + "Unknown Glyph", new String[]{
-                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
+                }).setNBTString("glyph", "true").setNBTInt("glyphTier", tier).build();
             case 4:
                 return new ItemBuilder().setItem(new ItemStack(381), ChatColor.LIGHT_PURPLE + "Unknown Glyph", new String[]{
-                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
+                }).setNBTString("glyph", "true").setNBTInt("glyphTier", tier).build();
             case 5:
                 return new ItemBuilder().setItem(new ItemStack(381), ChatColor.YELLOW + "Unknown Glyph", new String[]{
-                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
+                }).setNBTString("glyph", "true").setNBTInt("glyphTier", tier).build();
             default:
                 return null;
         }
@@ -111,7 +115,7 @@ public class Glyph {
         tag.set("glyphType", new NBTTagString(glyphType.getName()));
 
 
-        int randomizedTier = 0;
+        int randomizedTier;
 
         switch (tier) {
             case 1:
@@ -156,17 +160,19 @@ public class Glyph {
                         if (value > 10) {
                             value = 8;
                         }
+                        lore.add("  • " + ChatColor.RED + String.valueOf(value) + "% " + ChatColor.RESET + type.getName());
+                    } else {
+                        lore.add("  • " + ChatColor.RED + String.valueOf(value) + " " + ChatColor.RESET + type.getName());
                     }
 
-                    lore.add("  • " + ChatColor.RED + String.valueOf(value) + " " + ChatColor.RESET + type.getName());
                 }
                 tag.set("glyphAttributes", new NBTTagString(armorAttribute.toString()));
                 break;
             case WEAPON:
                 StringBuilder weaponAttribute = new StringBuilder();
                 for (Item.AttributeType weaponAttributeType : getGlyphWeaponAttributes(randomizedTier)) {
-                    if (((Item.AttributeType) weaponAttributeType) == null) continue;
-                    Item.AttributeType type = ((Item.AttributeType) weaponAttributeType);
+                    if ((weaponAttributeType) == null) continue;
+                    Item.AttributeType type = (weaponAttributeType);
                     //Get the value
                     int value = new DamageMeta().nextWeapon(Item.ItemTier.getByTier(randomizedTier), Item.ItemModifier.getById((randomizedTier - 1)), Item.AttributeType.getByString(type.getNBTName()));
                     weaponAttribute.append(type.getNBTName()).append("@").append(value).append(",");
@@ -182,9 +188,11 @@ public class Glyph {
                         if (value > 10) {
                             value = 8;
                         }
+                        lore.add("  • " + ChatColor.RED + String.valueOf(value) + "% " + ChatColor.RESET + type.getName());
+                    } else {
+                        lore.add("  • " + ChatColor.RED + String.valueOf(value) + " " + ChatColor.RESET + type.getName());
                     }
 
-                    lore.add("  • " + ChatColor.RED + String.valueOf(value) + " " + ChatColor.RESET + type.getName());
                 }
                 tag.set("glyphAttributes", new NBTTagString(weaponAttribute.toString()));
                 break;
@@ -195,7 +203,23 @@ public class Glyph {
         ItemStack item = CraftItemStack.asBukkitCopy(nmsStack);
         ItemMeta meta = item.getItemMeta();
 
-        meta.setDisplayName(name);
+        switch (tier) {
+            case 1:
+                meta.setDisplayName(ChatColor.WHITE + name);
+                break;
+            case 2:
+                meta.setDisplayName(ChatColor.GREEN + name);
+                break;
+            case 3:
+                meta.setDisplayName(ChatColor.AQUA + name);
+                break;
+            case 4:
+                meta.setDisplayName(ChatColor.LIGHT_PURPLE + name);
+                break;
+            case 5:
+                meta.setDisplayName(ChatColor.YELLOW + name);
+                break;
+        }
 
         lore.add(ChatColor.BLUE + "Caution -");
         lore.add(ChatColor.RED + "  • " + ChatColor.GOLD + "Binds when equip");
@@ -204,7 +228,7 @@ public class Glyph {
         meta.setLore(lore);
         item.setItemMeta(meta);
 
-        return item;
+        return AntiCheat.getInstance().applyAntiDupe(item);
     }
 
     ArrayList<Item.AttributeType> getGlyphWeaponAttributes(int amountOfAttributes) {
@@ -282,7 +306,7 @@ public class Glyph {
         String[] attributeList = glyphTag.getString("glyphAttributes").split(",");
 
 
-        if (EnchantmentAPI.isItemWeapon(item)) {
+        if (itemTag.hasKey("itemTier")) {
             /*
             Item is Weapon.
              */
@@ -303,7 +327,7 @@ public class Glyph {
                     itemTag.setInt(attribute, value);
                 }
             }
-        } else {
+        } else if (itemTag.hasKey("armorTier")) {
             /*
             Item is Armor
              */
@@ -326,7 +350,7 @@ public class Glyph {
             }
         }
 
-
+        itemTag.set("bound", new NBTTagString("true"));
         nmsStack.setTag(itemTag);
 
         ItemStack stack = CraftItemStack.asBukkitCopy(nmsStack);

@@ -320,7 +320,7 @@ public class InventoryListener implements Listener {
                         }
                         event.setCancelled(true);
                         event.setCursor(null);
-                        if(CraftItemStack.asNMSCopy(itemHeld).getTag().hasKey("type") && CraftItemStack.asNMSCopy(itemHeld).getTag().getString("type").equalsIgnoreCase("starter")){
+                        if(CraftItemStack.asNMSCopy(itemHeld).getTag().hasKey("subtype")){
                         	event.setCancelled(true);
                         	player.sendMessage("Can't sell starter Items!");
                         	return;
@@ -543,8 +543,9 @@ public class InventoryListener implements Listener {
         if (!CombatLog.isInCombat(event.getPlayer())) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 HealthHandler.getInstance().setPlayerMaxHPLive(event.getPlayer(), HealthHandler.getInstance().calculateMaxHPFromItems(event.getPlayer()));
-                HealthHandler.getInstance().setPlayerHPLive(event.getPlayer(), HealthHandler.getInstance().calculateMaxHPFromItems(event.getPlayer()));
-                event.getPlayer().damage(0.2);
+                HealthHandler.getInstance().setPlayerHPRegenLive(event.getPlayer(), HealthHandler.getInstance().calculateHealthRegenFromItems(event.getPlayer()));
+
+
             }, 10L);
         } else {
             event.getPlayer().sendMessage(ChatColor.RED + "Equipping armor while in combat will not change your stats! Please re-equip out of combat!");
