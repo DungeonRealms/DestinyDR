@@ -1,13 +1,11 @@
 package net.dungeonrealms.commands;
 
-import org.bukkit.ChatColor;
+import net.dungeonrealms.commands.generic.BasicCommand;
+import net.dungeonrealms.stats.StatsManager;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
-
-import net.dungeonrealms.commands.generic.BasicCommand;
-import net.dungeonrealms.stats.StatsManager;
 
 /**
  * Created by Chase on Nov 1, 2015
@@ -23,10 +21,6 @@ public class CommandStats extends BasicCommand {
 		if (s instanceof ConsoleCommandSender)
 			return false;
 		Player player = (Player) s;
-        if (!player.isOp()) {
-            player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
-            return false;
-        }
 //		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.STRENGTH, 0, true);
 //		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.DEXTERITY, 0, true);
 //		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.VITALITY, 0, true);
