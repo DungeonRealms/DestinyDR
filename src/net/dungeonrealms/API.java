@@ -402,18 +402,18 @@ public class API {
              */
 
             player.getInventory().addItem(new ItemBuilder().setItem(new ItemGenerator().getDefinedStack(Item.ItemType.AXE, Item.ItemTier.TIER_1, Item.ItemModifier.COMMON))
-                    .setNBTString("type", "starter").build());
+                    .setNBTString("subtype", "starter").build());
 
             player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.HELMET, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON))
-                    .setNBTString("type", "starter").build());
+                    .setNBTString("subtype", "starter").build());
             player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.CHESTPLATE, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON))
-                    .setNBTString("type", "starter").build());
+                    .setNBTString("subtype", "starter").build());
             player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.LEGGINGS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON))
-                    .setNBTString("type", "starter").build());
+                    .setNBTString("subtype", "starter").build());
             player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.BOOTS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON))
-                    .setNBTString("type", "starter").build());
+                    .setNBTString("subtype", "starter").build());
 
-            player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 10)).setNBTString("type", "starter").build());
+            player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 10)).setNBTString("subtype", "starter").build());
 
             player.teleport(new Location(Bukkit.getWorlds().get(0), -367 + new Random().nextInt(4), 86, 390 + new Random().nextInt(4), 0f, 0f));
 
