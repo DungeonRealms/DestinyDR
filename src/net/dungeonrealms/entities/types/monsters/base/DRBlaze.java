@@ -6,7 +6,6 @@ import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.items.ItemGenerator;
-import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
@@ -32,8 +31,8 @@ public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze i
 	public DRBlaze(World world, EnumMonster monster, int tier, EnumEntityType entityType, boolean setArmor) {
 		this(world);
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(10d);
-        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.3333D);
-        this.getAttributeInstance(GenericAttributes.c).setValue(0.4d);
+        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
+        this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
 		monsterType = monster;
 		this.name = monster.name;
 		this.mobHead = monster.mobHead;

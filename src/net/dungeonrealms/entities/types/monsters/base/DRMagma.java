@@ -1,22 +1,20 @@
 package net.dungeonrealms.entities.types.monsters.base;
 
-import java.util.Random;
-
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.types.monsters.Monster;
+import net.dungeonrealms.items.ItemGenerator;
+import net.minecraft.server.v1_8_R3.EntityMagmaCube;
+import net.minecraft.server.v1_8_R3.GenericAttributes;
+import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.entities.types.monsters.Monster;
-import net.dungeonrealms.items.ItemGenerator;
-import net.dungeonrealms.items.armor.ArmorGenerator;
-import net.minecraft.server.v1_8_R3.EntityMagmaCube;
-import net.minecraft.server.v1_8_R3.GenericAttributes;
-import net.minecraft.server.v1_8_R3.World;
+import java.util.Random;
 
 /**
  * Created by Chase on Oct 17, 2015
@@ -41,8 +39,8 @@ public class DRMagma extends EntityMagmaCube implements Monster{
 	public DRMagma(World world, int tier) {
 		super(world);
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(10d);
-        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.3333D);
-        this.getAttributeInstance(GenericAttributes.c).setValue(0.4d);
+        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
+        this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
         monsterType = EnumMonster.MagmaCube;
         setArmor(tier);
         String customName = monsterType.getPrefix() + " " + monsterType.name + " " + monsterType.getSuffix() + " ";
