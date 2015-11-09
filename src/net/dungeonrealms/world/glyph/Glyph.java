@@ -6,7 +6,6 @@ import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.Armor;
 import net.dungeonrealms.items.armor.ArmorGenerator;
-import net.dungeonrealms.items.enchanting.EnchantmentAPI;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.miscellaneous.ItemBuilder;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -46,6 +45,10 @@ public class Glyph {
     glyphType: "weapon" or "armor"
     glyphAttributes: "attribute@value,attribute@value,attribute@value,"
 
+     */
+
+    /*
+    Glyph
      */
 
     public enum GlyphType {
@@ -157,9 +160,11 @@ public class Glyph {
                         if (value > 10) {
                             value = 8;
                         }
+                        lore.add("  • " + ChatColor.RED + String.valueOf(value) + "% " + ChatColor.RESET + type.getName());
+                    } else {
+                        lore.add("  • " + ChatColor.RED + String.valueOf(value) + " " + ChatColor.RESET + type.getName());
                     }
 
-                    lore.add("  • " + ChatColor.RED + String.valueOf(value) + " " + ChatColor.RESET + type.getName());
                 }
                 tag.set("glyphAttributes", new NBTTagString(armorAttribute.toString()));
                 break;
@@ -183,9 +188,11 @@ public class Glyph {
                         if (value > 10) {
                             value = 8;
                         }
+                        lore.add("  • " + ChatColor.RED + String.valueOf(value) + "% " + ChatColor.RESET + type.getName());
+                    } else {
+                        lore.add("  • " + ChatColor.RED + String.valueOf(value) + " " + ChatColor.RESET + type.getName());
                     }
 
-                    lore.add("  • " + ChatColor.RED + String.valueOf(value) + " " + ChatColor.RESET + type.getName());
                 }
                 tag.set("glyphAttributes", new NBTTagString(weaponAttribute.toString()));
                 break;
@@ -196,7 +203,23 @@ public class Glyph {
         ItemStack item = CraftItemStack.asBukkitCopy(nmsStack);
         ItemMeta meta = item.getItemMeta();
 
-        meta.setDisplayName(name);
+        switch (tier) {
+            case 1:
+                meta.setDisplayName(ChatColor.WHITE + name);
+                break;
+            case 2:
+                meta.setDisplayName(ChatColor.GREEN + name);
+                break;
+            case 3:
+                meta.setDisplayName(ChatColor.AQUA + name);
+                break;
+            case 4:
+                meta.setDisplayName(ChatColor.LIGHT_PURPLE + name);
+                break;
+            case 5:
+                meta.setDisplayName(ChatColor.YELLOW + name);
+                break;
+        }
 
         lore.add(ChatColor.BLUE + "Caution -");
         lore.add(ChatColor.RED + "  • " + ChatColor.GOLD + "Binds when equip");
@@ -283,7 +306,7 @@ public class Glyph {
         String[] attributeList = glyphTag.getString("glyphAttributes").split(",");
 
 
-        if (EnchantmentAPI.isItemWeapon(item)) {
+        if (itemTag.hasKey("itemTier")) {
             /*
             Item is Weapon.
              */
@@ -304,7 +327,7 @@ public class Glyph {
                     itemTag.setInt(attribute, value);
                 }
             }
-        } else {
+        } else if (itemTag.hasKey("armorTier")) {
             /*
             Item is Armor
              */
