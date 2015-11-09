@@ -57,7 +57,7 @@ import java.util.Random;
  */
 public class DamageListener implements Listener {
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onSufficate(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             if (event.getCause() == DamageCause.SUFFOCATION) {
@@ -123,7 +123,7 @@ public class DamageListener implements Listener {
     }
 
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
     public void playerBreakArmorStand(EntityDamageByEntityEvent event) {
         if (!(API.isPlayer(event.getDamager()))) return;
         if (((Player) event.getDamager()).getGameMode() != GameMode.CREATIVE) return;
@@ -326,7 +326,6 @@ public class DamageListener implements Listener {
                     return;
                 }
                 finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
-                attackingArrow.remove();
             }
             if (CombatLog.isInCombat(player)) {
                 CombatLog.updateCombat(player);
@@ -344,7 +343,6 @@ public class DamageListener implements Listener {
                     return;
                 }
                 finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
-                staffProjectile.remove();
             }
             if (CombatLog.isInCombat(player)) {
                 CombatLog.updateCombat(player);
@@ -389,14 +387,18 @@ public class DamageListener implements Listener {
                                     if (!(API.isPlayer(entityNear))) {
                                         break;
                                     } else {
-                                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entityNear, event.getDamager(), (event.getDamage() - armourReducedDamage));
+                                        if (entityNear != null) {
+                                            HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entityNear, event.getDamager(), (event.getDamage() - armourReducedDamage));
+                                            Vector unitVector = entityNear.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
+                                            entityNear.setVelocity(unitVector.multiply(0.15D));
+                                        }
+                                    }
+                                } else {
+                                    if (entityNear != null) {
+                                        HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entityNear, attacker, (event.getDamage() - armourReducedDamage));
                                         Vector unitVector = entityNear.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
                                         entityNear.setVelocity(unitVector.multiply(0.15D));
                                     }
-                                } else {
-                                    HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entityNear, attacker, (event.getDamage() - armourReducedDamage));
-                                    Vector unitVector = entityNear.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
-                                    entityNear.setVelocity(unitVector.multiply(0.15D));
                                 }
                             }
                         }

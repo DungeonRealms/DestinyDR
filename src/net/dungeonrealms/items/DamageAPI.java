@@ -140,10 +140,10 @@ public class DamageAPI {
         if (tag.getDouble("lifesteal") != 0) {
             double lifeToHeal = ((tag.getDouble("lifesteal") / 100) * damage);
             if (API.isPlayer(attacker)) {
-                HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal);
+                HealthHandler.getInstance().healPlayerByAmount((Player) attacker, (int) lifeToHeal + 1);
             } else if (attacker instanceof CraftLivingEntity) {
                 if (attacker.hasMetadata("type")) {
-                    HealthHandler.getInstance().healMonsterByAmount(attacker, (int) lifeToHeal);
+                    HealthHandler.getInstance().healMonsterByAmount(attacker, (int) lifeToHeal + 1);
                 }
             }
         }
