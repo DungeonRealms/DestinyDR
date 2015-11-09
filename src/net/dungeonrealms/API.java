@@ -1,5 +1,40 @@
 package net.dungeonrealms;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.rmi.activation.UnknownObjectException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.plugin.Plugin;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -7,12 +42,15 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
 import net.dungeonrealms.entities.Entities;
+import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.entities.types.pets.EnumPets;
 import net.dungeonrealms.entities.utils.EntityAPI;
+import net.dungeonrealms.entities.utils.EntityStats;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
@@ -23,7 +61,12 @@ import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.Armor;
 import net.dungeonrealms.items.armor.Armor.ArmorModifier;
 import net.dungeonrealms.items.armor.ArmorGenerator;
-import net.dungeonrealms.mastery.*;
+import net.dungeonrealms.mastery.GamePlayer;
+import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.NameFetcher;
+import net.dungeonrealms.mastery.RealmManager;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.miscellaneous.ItemBuilder;
@@ -35,29 +78,6 @@ import net.dungeonrealms.notice.Notice;
 import net.dungeonrealms.party.Party;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.teleportation.TeleportAPI;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.plugin.Plugin;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.rmi.activation.UnknownObjectException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -629,4 +649,29 @@ public class API {
             return false;
         }
     }
+    /**
+     * Spawn our Entity at Location
+     * 
+     * Use SpawningMechanics.getMob for Entity
+     * lvlRange = "high" or "low"
+     * @param location
+     * @param entity
+     * @param tier
+     * @param lvlRange
+     */
+    public void spawnMonsterAt(Location location, net.minecraft.server.v1_8_R3.Entity entity, int tier, String lvlRange){
+    	net.minecraft.server.v1_8_R3.World world = ((CraftWorld)location.getWorld()).getHandle();
+		int level = Utils.getRandomFromTier(tier, "low");
+		MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
+		EntityStats.setMonsterRandomStats(entity, level, tier);
+        String lvlName =  ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+        int hp = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
+		String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
+		entity.setCustomName(lvlName + ChatColor.RESET + customName + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
+		entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+		world.addEntity(entity, SpawnReason.CUSTOM);
+		entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+    	
+    }
+    
 }
