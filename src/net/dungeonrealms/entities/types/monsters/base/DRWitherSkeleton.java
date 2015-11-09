@@ -14,6 +14,7 @@ import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.items.ItemGenerator;
 import net.minecraft.server.v1_8_R3.EntitySkeleton;
+import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
 
@@ -31,6 +32,9 @@ public class DRWitherSkeleton extends EntitySkeleton implements Monster{
 	public DRWitherSkeleton(World world, EnumMonster mon, int tier) {
 		super(world);
 		enumMonster = mon;
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(10d);
+        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.3333D);
+        this.getAttributeInstance(GenericAttributes.c).setValue(0.4d);
 		this.setSkeletonType(1);
 
 		setArmor(tier);

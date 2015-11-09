@@ -1,6 +1,48 @@
 package net.dungeonrealms.listeners;
 
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Rotation;
+import org.bukkit.Sound;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerFishEvent.State;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerShearEntityEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+
 import com.connorlinfoot.bountifulapi.BountifulAPI;
+
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
@@ -17,26 +59,6 @@ import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.profession.Fishing;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
-import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.ItemFrame;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.hanging.HangingBreakByEntityEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.*;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
-import org.bukkit.event.player.PlayerFishEvent.State;
-import org.bukkit.event.vehicle.VehicleExitEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-
-import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -503,6 +525,24 @@ public class MainListener implements Listener {
         player.sendMessage(ChatColor.YELLOW + "Trade Cancelled!");
     }
 
+    
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void onCraft(CraftItemEvent event){
+     event.setCancelled(true);
+    }
+    
+    @EventHandler
+    public void onEntityImmunityAfterHit(EntityDamageByEntityEvent e) {
+        if (e.getCause() == DamageCause.PROJECTILE) {
+            return;
+        }
+        // MC patch 1.8 added a 0.5 second (10 tick) mob immunity after each hit.  Cancel it here!
+        if (e.getEntity() instanceof LivingEntity && !(e.getEntity() instanceof Player)) {
+            LivingEntity ent = (LivingEntity) e.getEntity();
+            ent.setMaximumNoDamageTicks(0);
+            ent.setNoDamageTicks(0);
+        }
+    }
     /**
      * Checks for player punching a map on a wall
      *
@@ -571,6 +611,9 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMapDrop(PlayerDropItemEvent event) {
+    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
+    	if(nms == null)
+    		return;
         if (!(event.isCancelled())) {
             Player pl = event.getPlayer();
             // The maps gonna drop! DESTROY IT!
@@ -584,7 +627,31 @@ public class MainListener implements Listener {
 
                 pl.playSound(pl.getLocation(), Sound.BAT_TAKEOFF, 1F, 2F);
                 pl.updateInventory();
+            }else if(nms.getTag().hasKey("starter")){
+            	pl.setItemInHand(new ItemStack(Material.AIR));
+            	pl.sendMessage("Can't drop starter items!");
+            	return;
             }
         }
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void chunkUNload(ChunkUnloadEvent event) {
+     if(event.getChunk().getEntities().length > 0){
+      for(Entity ent : event.getChunk().getEntities()){
+    	  if(!(ent instanceof Player))
+    		  ent.remove();
+      }
+     }
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void chunkLoad(ChunkLoadEvent event) {
+     if(event.getChunk().getEntities().length > 0){
+      for(Entity ent : event.getChunk().getEntities()){
+    	  if(!(ent instanceof Player))
+    		  ent.remove();
+      }
+     }
     }
 }

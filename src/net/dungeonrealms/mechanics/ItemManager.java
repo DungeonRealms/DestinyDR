@@ -5,6 +5,7 @@ import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.items.EnumItem;
 import net.dungeonrealms.items.Item;
+import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.miscellaneous.RandomHelper;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -437,6 +438,8 @@ public class ItemManager {
             meta.setDisplayName(name);
             meta.setLore(lore);
             rawStack.setItemMeta(meta);
+            RepairAPI.setCustomItemDurability(rawStack, 1500);
+
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("type", new NBTTagString("pick"));
@@ -516,6 +519,7 @@ public class ItemManager {
         meta.setDisplayName(name);
         meta.setLore(lore);
         rawStack.setItemMeta(meta);
+        RepairAPI.setCustomItemDurability(rawStack, 1500);
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("rod"));
