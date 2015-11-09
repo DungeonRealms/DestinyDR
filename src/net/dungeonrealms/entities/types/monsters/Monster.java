@@ -1,7 +1,11 @@
 package net.dungeonrealms.entities.types.monsters;
 
-import java.util.Random;
-
+import net.dungeonrealms.banks.BankMechanics;
+import net.dungeonrealms.items.armor.Armor.ArmorTier;
+import net.dungeonrealms.items.armor.Armor.EquipmentType;
+import net.dungeonrealms.items.armor.ArmorGenerator;
+import net.dungeonrealms.miscellaneous.RandomHelper;
+import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.Entity;
@@ -9,12 +13,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import net.dungeonrealms.banks.BankMechanics;
-import net.dungeonrealms.items.armor.Armor.ArmorTier;
-import net.dungeonrealms.items.armor.Armor.EquipmentType;
-import net.dungeonrealms.items.armor.ArmorGenerator;
-import net.dungeonrealms.miscellaneous.RandomHelper;
-import net.minecraft.server.v1_8_R3.World;
+import java.util.Random;
 
 /**
  * Created by Chase on Oct 21, 2015
@@ -32,31 +31,11 @@ public interface Monster {
 		World world = ((CraftWorld) loc.getWorld()).getHandle();
 		if (world.random.nextInt(100) <= 25) {
 			ItemStack item = BankMechanics.gem.clone();
-			int amount = 1;
-			
-			switch(tier){
-			case 1:
-				amount = RandomHelper.getRandomNumberBetween(1, 2);
-				break;
-			case 2:
-				amount = RandomHelper.getRandomNumberBetween(2, 4);
-				break;
-			case 3:
-				amount = RandomHelper.getRandomNumberBetween(2, 8);
-				break;
-			case 4:
-				amount = RandomHelper.getRandomNumberBetween(4, 8);
-				break;
-			case 5:
-				amount = RandomHelper.getRandomNumberBetween(6, 10);
-				break;
-			}
-			
-			item.setAmount(amount);
-			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), item);
+			item.setAmount(((tier * 10) - 8) + new Random().nextInt(5));
+			world.getWorld().dropItemNaturally(loc.add(0, 1, 0), item);
 		}
 
-		if (RandomHelper.getRandomNumberBetween(1, 100) <= 5) {
+		if (RandomHelper.getRandomNumberBetween(1, 100) <= 10) {
 			ItemStack[] loot = new ItemStack[5];
 			ItemStack[] armor = ((LivingEntity) ent).getEquipment().getArmorContents();
 			ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
@@ -64,7 +43,7 @@ public interface Monster {
 			loot = new ItemStack[]{armor[0], armor[1], armor[2], armor[3], weapon};
 			int number = RandomHelper.getRandomNumberBetween(0, 4);
 			ItemStack armorToDrop = loot[number];
-			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), armorToDrop);
+			world.getWorld().dropItemNaturally(loc.add(0, 1, 0), armorToDrop);
 		}
 	}
 }

@@ -1,15 +1,5 @@
 package net.dungeonrealms.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
-
 import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -18,6 +8,15 @@ import net.dungeonrealms.mongo.EnumGuildData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.network.NetworkAPI;
 import net.dungeonrealms.party.Party;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Nick on 10/15/2015.
@@ -33,10 +32,6 @@ public class CommandAccept extends BasicCommand {
         if (s instanceof ConsoleCommandSender) return false;
 
         Player player = (Player) s;
-        if (!player.isOp()) {
-            player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
-            return false;
-        }
         if (args.length > 0) {
             switch (args[0]) {
                 case "guild":
