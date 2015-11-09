@@ -537,6 +537,7 @@ public class InventoryListener implements Listener {
         if (!CombatLog.isInCombat(event.getPlayer())) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 HealthHandler.getInstance().setPlayerMaxHPLive(event.getPlayer(), HealthHandler.getInstance().calculateMaxHPFromItems(event.getPlayer()));
+                HealthHandler.getInstance().setPlayerHPLive(event.getPlayer(), HealthHandler.getInstance().calculateMaxHPFromItems(event.getPlayer()));
                 event.getPlayer().damage(0.2);
             }, 10L);
         } else {
