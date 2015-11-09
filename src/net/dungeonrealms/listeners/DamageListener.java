@@ -176,24 +176,24 @@ public class DamageListener implements Listener {
                 if (!event.getEntity().hasMetadata("type")) return;
             }
         }
-        if (API.isNonPvPRegion(event.getDamager().getLocation()) || API.isNonPvPRegion(event.getEntity().getLocation())) {
-            if (API.isPlayer(event.getEntity()) && API.isPlayer(event.getDamager())) {
-                if (DuelMechanics.isDueling(event.getEntity().getUniqueId()) && DuelMechanics.isDueling(event.getDamager().getUniqueId())) {
-                    if (!DuelMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
+        //Make sure the player is HOLDING something!
+        double finalDamage = 0;
+        if (API.isPlayer(event.getDamager())) {
+            if (API.isNonPvPRegion(event.getDamager().getLocation()) || API.isNonPvPRegion(event.getEntity().getLocation())) {
+                if (API.isPlayer(event.getEntity()) && API.isPlayer(event.getDamager())) {
+                    if (DuelMechanics.isDueling(event.getEntity().getUniqueId()) && DuelMechanics.isDueling(event.getDamager().getUniqueId())) {
+                        if (!DuelMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
+                            event.setCancelled(true);
+                            event.setDamage(0);
+                            return;
+                        }
+                    } else {
                         event.setCancelled(true);
                         event.setDamage(0);
                         return;
                     }
-                } else {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
                 }
             }
-        }
-        //Make sure the player is HOLDING something!
-        double finalDamage = 0;
-        if (API.isPlayer(event.getDamager())) {
             Player attacker = (Player) event.getDamager();
             if (attacker.getItemInHand() == null) return;
             //Check if the item has NBT, all our custom weapons will have NBT.
@@ -367,6 +367,21 @@ public class DamageListener implements Listener {
         if (!(event.getEntity() instanceof LivingEntity)) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
+        if (API.isNonPvPRegion(event.getDamager().getLocation()) || API.isNonPvPRegion(event.getEntity().getLocation())) {
+            if (API.isPlayer(event.getEntity()) && API.isPlayer(event.getDamager())) {
+                if (DuelMechanics.isDueling(event.getEntity().getUniqueId()) && DuelMechanics.isDueling(event.getDamager().getUniqueId())) {
+                    if (!DuelMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
+                        event.setCancelled(true);
+                        event.setDamage(0);
+                        return;
+                    }
+                } else {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
+                }
+            }
+        }
         double armourReducedDamage = 0;
         LivingEntity defender = (LivingEntity) event.getEntity();
         EntityEquipment defenderEquipment = defender.getEquipment();

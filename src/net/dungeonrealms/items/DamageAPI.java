@@ -75,19 +75,21 @@ public class DamageAPI {
             if (tag.getDouble("vsPlayers") != 0) {
                 damage += ((tag.getDouble("vsPlayers") / 100) * damage);
             }
-            if(attacker.hasMetadata("type")){
-			if(attacker.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")){
-				EntityMonster nms = ((CraftMonster)attacker).getHandle();
-				if(nms instanceof net.dungeonrealms.entities.types.monsters.Monster){
-					net.dungeonrealms.entities.types.monsters.Monster mons = (net.dungeonrealms.entities.types.monsters.Monster)nms;
-					mons.onMonsterAttack((Player) receiver);
-				}
-			}
+            if(attacker.hasMetadata("type")) {
+                if(attacker.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+                    EntityMonster nms = ((CraftMonster)attacker).getHandle();
+                    if(nms instanceof net.dungeonrealms.entities.types.monsters.Monster){
+                        net.dungeonrealms.entities.types.monsters.Monster mons = (net.dungeonrealms.entities.types.monsters.Monster)nms;
+                        mons.onMonsterAttack((Player) receiver);
+                    }
+                }
             }
         } else {
-            if (receiver.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-                if (tag.getDouble("vsMonsters") != 0) {
-                    damage += ((tag.getDouble("vsMonsters") / 100) * damage);
+            if (receiver.hasMetadata("type")) {
+                if (receiver.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+                    if (tag.getDouble("vsMonsters") != 0) {
+                        damage += ((tag.getDouble("vsMonsters") / 100) * damage);
+                    }
                 }
             }
         }
