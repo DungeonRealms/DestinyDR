@@ -1,30 +1,29 @@
 	package net.dungeonrealms.handlers;
 
     import net.dungeonrealms.API;
-    import net.dungeonrealms.DungeonRealms;
-    import net.dungeonrealms.combat.CombatLog;
-    import net.dungeonrealms.duel.DuelMechanics;
-    import net.dungeonrealms.entities.Entities;
-    import net.dungeonrealms.mastery.GamePlayer;
-    import net.dungeonrealms.mechanics.SoundAPI;
-    import net.dungeonrealms.mechanics.generic.EnumPriority;
-    import net.dungeonrealms.mechanics.generic.GenericMechanic;
-    import net.dungeonrealms.mongo.DatabaseAPI;
-    import net.dungeonrealms.mongo.EnumData;
-    import net.dungeonrealms.mongo.EnumOperators;
-    import net.dungeonrealms.profession.Fishing;
-    import net.minecraft.server.v1_8_R3.DamageSource;
-    import net.minecraft.server.v1_8_R3.EntityArmorStand;
-    import net.minecraft.server.v1_8_R3.EntityLiving;
-    import org.bukkit.*;
-    import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-    import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-    import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-    import org.bukkit.entity.*;
-    import org.bukkit.inventory.ItemStack;
-    import org.bukkit.metadata.FixedMetadataValue;
-    import org.bukkit.potion.PotionEffect;
-    import org.inventivetalent.bossbar.BossBarAPI;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.combat.CombatLog;
+import net.dungeonrealms.duel.DuelMechanics;
+import net.dungeonrealms.entities.Entities;
+import net.dungeonrealms.mastery.GamePlayer;
+import net.dungeonrealms.mechanics.SoundAPI;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.profession.Fishing;
+import net.minecraft.server.v1_8_R3.DamageSource;
+import net.minecraft.server.v1_8_R3.EntityArmorStand;
+import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.*;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.inventivetalent.bossbar.BossBarAPI;
 
 /**
  * Created by Kieran on 10/3/2015.
@@ -462,6 +461,9 @@ public class HealthHandler implements GenericMechanic {
             }
         }
 
+        if (damager instanceof Player) {
+            KarmaHandler.getInstance().handleAlignmentChanges((Player) damager);
+        }
         if (newHP <= 0) {
             player.playSound(player.getLocation(), Sound.WITHER_SPAWN, 1f, 1f);
             if (player.hasMetadata("last_death_time")) {
@@ -558,10 +560,8 @@ public class HealthHandler implements GenericMechanic {
         if (newHP <= 0) {
             setMonsterHPLive(entity, 0);
             net.minecraft.server.v1_8_R3.Entity entity1 = ((CraftEntity) entity).getHandle();
-            entity1.damageEntity(DamageSource.GENERIC, 20F);
-            if (!entity1.dead) {
-                entity1.dead = true;
-            }
+            entity.playEffect(EntityEffect.DEATH);
+            entity1.damageEntity(DamageSource.GENERIC, 50F);
             if (Entities.getInstance().MONSTER_LAST_ATTACK.containsKey(entity)) {
                 Entities.getInstance().MONSTER_LAST_ATTACK.remove(entity);
             }
@@ -578,28 +578,29 @@ public class HealthHandler implements GenericMechanic {
             return;
         }
 
-        setMonsterHPLive(entity, (int) newHP);
-        double monsterHPPercent = (newHP / maxHP);
-        double newMonsterHPToDisplay = monsterHPPercent * 20.0D;
-        int convHPToDisplay = (int) newMonsterHPToDisplay;
-        if (convHPToDisplay <= 0) {
-            convHPToDisplay = 1;
-        }
-        if (convHPToDisplay > 20) {
-            convHPToDisplay = 20;
-        }
-        EntityLiving entity1 = ((CraftLivingEntity) entity).getHandle();
-        int level = entity.getMetadata("level").get(0).asInt();
-        String lvlName =  ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
-        String name = entity.getMetadata("customname").get(0).asString();
-        int hp = entity.getMetadata("currentHP").get(0).asInt();
-
-        
-        if (!entity.hasMetadata("isElite"))
-			entity.setCustomName(lvlName + ChatColor.RESET + name + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
-        entity.setHealth(convHPToDisplay);
-        if (!Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
-            Entities.getInstance().MONSTERS_LEASHED.add(entity);
+        if (entity != null) {
+            setMonsterHPLive(entity, (int) newHP);
+            double monsterHPPercent = (newHP / maxHP);
+            double newMonsterHPToDisplay = monsterHPPercent * 20.0D;
+            int convHPToDisplay = (int) newMonsterHPToDisplay;
+            if (convHPToDisplay <= 0) {
+                convHPToDisplay = 1;
+            }
+            if (convHPToDisplay > 20) {
+                convHPToDisplay = 20;
+            }
+            if (entity.hasMetadata("type") && entity.hasMetadata("level")) {
+                int level = entity.getMetadata("level").get(0).asInt();
+                String lvlName = ChatColor.LIGHT_PURPLE + "[" + level + "] ";
+                String name = entity.getMetadata("customname").get(0).asString();
+                int hp = entity.getMetadata("currentHP").get(0).asInt();
+                if (!entity.hasMetadata("isElite"))
+                    entity.setCustomName(lvlName + ChatColor.RESET + name + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
+                entity.setHealth(convHPToDisplay);
+                if (!Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
+                    Entities.getInstance().MONSTERS_LEASHED.add(entity);
+                }
+            }
         }
     }
 

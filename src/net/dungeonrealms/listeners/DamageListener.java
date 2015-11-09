@@ -57,7 +57,7 @@ import java.util.Random;
  */
 public class DamageListener implements Listener {
 
-    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onSufficate(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             if (event.getCause() == DamageCause.SUFFOCATION) {
@@ -123,7 +123,7 @@ public class DamageListener implements Listener {
     }
 
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
     public void playerBreakArmorStand(EntityDamageByEntityEvent event) {
         if (!(API.isPlayer(event.getDamager()))) return;
         if (((Player) event.getDamager()).getGameMode() != GameMode.CREATIVE) return;
@@ -176,24 +176,24 @@ public class DamageListener implements Listener {
                 if (!event.getEntity().hasMetadata("type")) return;
             }
         }
-        if (API.isNonPvPRegion(event.getDamager().getLocation()) || API.isNonPvPRegion(event.getEntity().getLocation())) {
-            if (API.isPlayer(event.getEntity()) && API.isPlayer(event.getDamager())) {
-                if (DuelMechanics.isDueling(event.getEntity().getUniqueId()) && DuelMechanics.isDueling(event.getDamager().getUniqueId())) {
-                    if (!DuelMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
+        //Make sure the player is HOLDING something!
+        double finalDamage = 0;
+        if (API.isPlayer(event.getDamager())) {
+            if (API.isNonPvPRegion(event.getDamager().getLocation()) || API.isNonPvPRegion(event.getEntity().getLocation())) {
+                if (API.isPlayer(event.getEntity()) && API.isPlayer(event.getDamager())) {
+                    if (DuelMechanics.isDueling(event.getEntity().getUniqueId()) && DuelMechanics.isDueling(event.getDamager().getUniqueId())) {
+                        if (!DuelMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
+                            event.setCancelled(true);
+                            event.setDamage(0);
+                            return;
+                        }
+                    } else {
                         event.setCancelled(true);
                         event.setDamage(0);
                         return;
                     }
-                } else {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
                 }
             }
-        }
-        //Make sure the player is HOLDING something!
-        double finalDamage = 0;
-        if (API.isPlayer(event.getDamager())) {
             Player attacker = (Player) event.getDamager();
             if (attacker.getItemInHand() == null) return;
             //Check if the item has NBT, all our custom weapons will have NBT.
@@ -303,7 +303,6 @@ public class DamageListener implements Listener {
             //Check if the item has NBT, all our custom weapons will have NBT.
             net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attackerEquipment.getItemInHand()));
             if (nmsItem == null || nmsItem.getTag() == null) {
-                Bukkit.broadcastMessage("MOB " + event.getDamager() + " does not have one of our custom weapons. CHASE!!!!!!");
                 return;
             }
             //Get the NBT of the item the mob is holding.
@@ -327,7 +326,6 @@ public class DamageListener implements Listener {
                     return;
                 }
                 finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
-                attackingArrow.remove();
             }
             if (CombatLog.isInCombat(player)) {
                 CombatLog.updateCombat(player);
@@ -345,7 +343,6 @@ public class DamageListener implements Listener {
                     return;
                 }
                 finalDamage = DamageAPI.calculateProjectileDamage((LivingEntity) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
-                staffProjectile.remove();
             }
             if (CombatLog.isInCombat(player)) {
                 CombatLog.updateCombat(player);
@@ -370,6 +367,21 @@ public class DamageListener implements Listener {
         if (!(event.getEntity() instanceof LivingEntity)) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
+        if (API.isNonPvPRegion(event.getDamager().getLocation()) || API.isNonPvPRegion(event.getEntity().getLocation())) {
+            if (API.isPlayer(event.getEntity()) && API.isPlayer(event.getDamager())) {
+                if (DuelMechanics.isDueling(event.getEntity().getUniqueId()) && DuelMechanics.isDueling(event.getDamager().getUniqueId())) {
+                    if (!DuelMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
+                        event.setCancelled(true);
+                        event.setDamage(0);
+                        return;
+                    }
+                } else {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
+                }
+            }
+        }
         double armourReducedDamage = 0;
         LivingEntity defender = (LivingEntity) event.getEntity();
         EntityEquipment defenderEquipment = defender.getEquipment();
@@ -390,14 +402,18 @@ public class DamageListener implements Listener {
                                     if (!(API.isPlayer(entityNear))) {
                                         break;
                                     } else {
-                                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entityNear, event.getDamager(), (event.getDamage() - armourReducedDamage));
+                                        if (entityNear != null) {
+                                            HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entityNear, event.getDamager(), (event.getDamage() - armourReducedDamage));
+                                            Vector unitVector = entityNear.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
+                                            entityNear.setVelocity(unitVector.multiply(0.15D));
+                                        }
+                                    }
+                                } else {
+                                    if (entityNear != null) {
+                                        HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entityNear, attacker, (event.getDamage() - armourReducedDamage));
                                         Vector unitVector = entityNear.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
                                         entityNear.setVelocity(unitVector.multiply(0.15D));
                                     }
-                                } else {
-                                    HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entityNear, attacker, (event.getDamage() - armourReducedDamage));
-                                    Vector unitVector = entityNear.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
-                                    entityNear.setVelocity(unitVector.multiply(0.15D));
                                 }
                             }
                         }
@@ -652,7 +668,7 @@ public class DamageListener implements Listener {
                 }
                 net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
                 if (nms.hasTag()) {
-                    if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")) {
+                    if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important") || nms.getTag().hasKey("subtype")) {
                         break;
                     } else {
                         player.getWorld().dropItemNaturally(player.getLocation(), itemStack);

@@ -532,7 +532,7 @@ public class MainListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerHitMap(HangingBreakByEntityEvent event) {
         if (event.getRemover() instanceof Player && event.getEntity() instanceof ItemFrame) {
             Player player = (Player) event.getRemover();
@@ -554,7 +554,7 @@ public class MainListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerHitMapItemFrame(EntityDamageByEntityEvent event) {
         if (event.getEntity().getType() == EntityType.ITEM_FRAME) {
             ItemFrame is = (ItemFrame) event.getEntity();

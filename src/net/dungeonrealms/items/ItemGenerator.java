@@ -63,6 +63,10 @@ public class ItemGenerator {
         return getWeapon(type, tier, getRandomItemModifier());
     }
 
+    public ItemStack next(Item.ItemType type, Item.ItemTier tier, Item.ItemModifier itemModifier) {
+        return getWeapon(type, tier, itemModifier);
+    }
+
     /**
      * Used for the next() method above.
      *

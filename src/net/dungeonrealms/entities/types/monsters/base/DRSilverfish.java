@@ -1,5 +1,6 @@
 package net.dungeonrealms.entities.types.monsters.base;
 
+import net.dungeonrealms.items.Item;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -67,7 +68,7 @@ public class DRSilverfish extends EntitySilverfish implements Monster{
 
 	private ItemStack getTierWeapon(int tier) {
 		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.SWORD,
-		        net.dungeonrealms.items.Item.ItemTier.getByTier(tier));
+		        net.dungeonrealms.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);
 	}
 
 	@Override

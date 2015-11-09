@@ -5,7 +5,8 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
-import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.items.*;
+import net.dungeonrealms.items.Item;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
@@ -106,7 +107,7 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
     }
 
     private ItemStack getTierWeapon(int tier) {
-        return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.BOW, net.dungeonrealms.items.Item.ItemTier.getByTier(tier));
+        return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.BOW, net.dungeonrealms.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);
     }
 
     
