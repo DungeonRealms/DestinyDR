@@ -954,41 +954,47 @@ public class ClickHandler {
         	case 0:
         		boolean bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, player.getUniqueId());
         		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_CHAOTIC_PREVENTION, !bool, true);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> PlayerMenus.openToggleMenu(player), 10l);
         		break;
         	case 1:
         		bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId());
         		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_DEBUG, !bool, true);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> PlayerMenus.openToggleMenu(player), 10l);
         		break;
         	case 2:
         	    bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DUEL, player.getUniqueId());
         		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_DUEL, !bool, true);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> PlayerMenus.openToggleMenu(player), 10l);
         		break;
         	case 3:
         		bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
         		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_GLOBAL_CHAT, !bool, true);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> PlayerMenus.openToggleMenu(player), 10l);
         		break;
         	case 4:
         		bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, player.getUniqueId());
         		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_PVP, !bool, true);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> PlayerMenus.openToggleMenu(player), 10l);
         		break;
         	case 5:
         		bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, player.getUniqueId());
         		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_RECEIVE_MESSAGE, !bool, true);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> PlayerMenus.openToggleMenu(player), 10l);
         		break;
         	case 6:
         		bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, player.getUniqueId());
         		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_TRADE, !bool, true);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> PlayerMenus.openToggleMenu(player), 10l);
         		break;
         	case 7:
         	    bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, player.getUniqueId());
         		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_TRADE_CHAT, !bool, true);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> PlayerMenus.openToggleMenu(player), 10l);
         		break;
         	case 8:
         		PlayerMenus.openPlayerProfileMenu(player);
         		break;
         	}
-        	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->
-        	PlayerMenus.openToggleMenu(player), 10l);
         }
     }
 }
