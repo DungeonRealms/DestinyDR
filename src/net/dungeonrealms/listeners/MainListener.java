@@ -84,6 +84,11 @@ public class MainListener implements Listener {
         event.setJoinMessage(null);
         Player player = event.getPlayer();
         player.getInventory().clear();
+        ItemStack[] armor = player.getInventory().getArmorContents();
+        for(int i = 0; i <armor.length; i++){
+        	armor[i] = new ItemStack(Material.AIR);
+        }
+        player.getInventory().setArmorContents(armor);
         player.setGameMode(GameMode.ADVENTURE);
         player.teleport(new Location(Bukkit.getWorlds().get(0), -350.5, 77.5, 373.5, 0f, 0f));
         BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.GREEN.toString() + ChatColor.BOLD + "Fetching Data...");
@@ -606,7 +611,7 @@ public class MainListener implements Listener {
 
                 pl.playSound(pl.getLocation(), Sound.BAT_TAKEOFF, 1F, 2F);
                 pl.updateInventory();
-            }else if(nms.getTag().hasKey("starter")){
+            }else if(nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("starter")){
             	event.getItemDrop().getItemStack().setType(Material.AIR);
 //            	event.setCancelled(true);
             	return;

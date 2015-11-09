@@ -51,6 +51,7 @@ import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Random;
@@ -303,6 +304,17 @@ public class API {
             }
         }
         PlayerInventory inv = player.getInventory();
+        
+        ArrayList<String> armor = new ArrayList<String>();
+        for(int i = 0; i < inv.getArmorContents().length; i++){
+        	if(inv.getArmorContents()[i] == null || inv.getArmorContents()[i].getType() == Material.AIR){
+        		armor.add("null");
+        	}else{
+        		armor.add(ItemSerialization.itemStackToBase64(inv.getArmorContents()[i]));
+        	}
+        }
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, false);
+        
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, ItemSerialization.toString(inv),
                 false);
         String locationAsString = "-367,86,390,0,0"; // Cyrennica
@@ -373,6 +385,14 @@ public class API {
 
         GamePlayer gp = new GamePlayer(Bukkit.getPlayer(player.getUniqueId()));
         API.GAMEPLAYERS.add(gp);
+        
+        List<String> playerArmor = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ARMOR, player.getUniqueId());
+        for(int i = 0; i <playerArmor.size(); i++){
+        	String armorStr = playerArmor.get(i);
+        	if(armorStr.equalsIgnoreCase("null") || armorStr == null)
+        		continue;
+        	player.getInventory().getArmorContents()[i] = ItemSerialization.itemStackFromBase64(armorStr);
+        }
 
         AchievementManager.getInstance().handleLogin(player);
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);

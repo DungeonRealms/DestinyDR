@@ -31,6 +31,7 @@ public enum EnumData {
     INVENTORY_STORAGE("inventory.storage"),
     INVENTORY("inventory.player"),
     INVENTORY_LEVEL("inventory.level"),
+    ARMOR("inventory.armor"),
 
     GUILD("info.guild"),
 

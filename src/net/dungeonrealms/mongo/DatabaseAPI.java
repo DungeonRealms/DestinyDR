@@ -182,6 +182,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("inventory")).get("player", String.class);
             case HASSHOP:
             	return ((Document)PLAYERS.get(uuid).get("info")).get("shopOpen", Boolean.class);
+            case ARMOR:
+                return ((Document) PLAYERS.get(uuid).get("inventory")).get("player", ArrayList.class);
             /*
             Toggles
              */
@@ -398,7 +400,8 @@ public class DatabaseAPI {
                                         .append("mule", "")
                                         .append("storage", "")
                                         .append("level", 1)
-                                        .append("player", ""));
+                                        .append("player", "")
+                                        .append("armor", new ArrayList<String>()));
         Database.collection.insertOne(newPlayerDocument, (aVoid, throwable) -> {
             REQUEST_NEW_PLAYER_DOCUMENT.add(uuid);
             Utils.log.info("Requesting new data for : " + uuid);

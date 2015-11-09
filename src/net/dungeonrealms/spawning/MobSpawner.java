@@ -36,7 +36,7 @@ public class MobSpawner {
 	public boolean isElite = false;
 	public int spawnAmount;
 	public int id;
-	public int timerID;
+	public int timerID = -1;
 	public String lvlRange;
 	public String eliteName;
 	boolean firstSpawn = true;
@@ -264,11 +264,22 @@ public class MobSpawner {
 	 * Initialize spawner
 	 */
 	public void init() {
+		if(!API.getNearbyPlayers(loc, 35).isEmpty()){
 			timerID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
 				if (isRemoved) {
+					Utils.log.info("Cancelled Task");
 					Bukkit.getScheduler().cancelTask(timerID);
 				} else
 					Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::spawnIn);
 			} , 0, 100L);
+		}else{
+			if(timerID != -1){
+				Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
+				Utils.log.info("Cancelled Task");
+				Bukkit.getScheduler().cancelTask(timerID);
+				timerID = -1;
+				},20);
+			}
+		}
 	}
 }
