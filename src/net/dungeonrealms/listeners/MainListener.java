@@ -19,6 +19,7 @@ import net.dungeonrealms.profession.Fishing;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -522,7 +523,30 @@ public class MainListener implements Listener {
                 }
             }
         }
-        event.setCancelled(true);
+    }
+
+    /**
+     * Checks for player punching a map on a wall
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerHitMapItemFrame(EntityDamageByEntityEvent event) {
+        if (event.getEntity().getType() == EntityType.ITEM_FRAME) {
+            ItemFrame is = (ItemFrame) event.getEntity();
+            is.setItem(is.getItem());
+            is.setRotation(Rotation.NONE);
+            event.setCancelled(true);
+            if (event.getDamager() instanceof Player) {
+                if (is.getItem().getType() != Material.MAP) return;
+                Player plr = (Player) event.getDamager();
+                if (plr.getInventory().contains(is.getItem())) {
+                    return;
+                }
+                plr.getInventory().addItem(is.getItem());
+            }
+        }
     }
 
     /**
@@ -537,5 +561,30 @@ public class MainListener implements Listener {
             return;
         }
         event.setCancelled(true);
+    }
+
+    /**
+     * Prevents players from dropping maps
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onMapDrop(PlayerDropItemEvent event) {
+        if (!(event.isCancelled())) {
+            Player pl = event.getPlayer();
+            // The maps gonna drop! DESTROY IT!
+            if (event.getItemDrop().getItemStack().getType() == Material.MAP) {
+                event.getItemDrop().remove();
+                if (pl.getItemInHand().getType() == Material.MAP) {
+                    pl.setItemInHand(new ItemStack(Material.AIR));
+                } else if (pl.getItemOnCursor().getType() == Material.MAP) {
+                    pl.setItemOnCursor(new ItemStack(Material.AIR));
+                }
+
+                pl.playSound(pl.getLocation(), Sound.BAT_TAKEOFF, 1F, 2F);
+                pl.updateInventory();
+            }
+        }
     }
 }
