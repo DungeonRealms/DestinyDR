@@ -303,7 +303,6 @@ public class DamageListener implements Listener {
             //Check if the item has NBT, all our custom weapons will have NBT.
             net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attackerEquipment.getItemInHand()));
             if (nmsItem == null || nmsItem.getTag() == null) {
-                Bukkit.broadcastMessage("MOB " + event.getDamager() + " does not have one of our custom weapons. CHASE!!!!!!");
                 return;
             }
             //Get the NBT of the item the mob is holding.

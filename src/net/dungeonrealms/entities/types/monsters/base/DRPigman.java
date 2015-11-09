@@ -86,7 +86,7 @@ public class DRPigman extends EntityPigZombie implements Monster {
 
 	private ItemStack getTierWeapon(int tier) {
 		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.SWORD,
-		        net.dungeonrealms.items.Item.ItemTier.getByTier(tier));
+		        net.dungeonrealms.items.Item.ItemTier.getByTier(tier), net.dungeonrealms.items.Item.ItemModifier.COMMON);
 	}
 
 	@Override
