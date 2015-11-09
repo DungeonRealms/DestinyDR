@@ -3,6 +3,8 @@ package net.dungeonrealms.listeners;
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+import com.mysql.jdbc.Util;
+
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
@@ -11,7 +13,9 @@ import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.RealmManager;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.LootManager;
+import net.dungeonrealms.miscellaneous.RandomHelper;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
@@ -110,7 +114,9 @@ public class BlockListener implements Listener {
                 }
                 int experienceGain = Mining.getExperienceGain(stackInHand, type);
                 Mining.addExperience(stackInHand, experienceGain, p);
-                p.getItemInHand().setDurability((short) (stackInHand.getDurability() + tier));
+                Utils.log.info(RepairAPI.getCustomDurability(stackInHand) + " durrab");
+                RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInHand(), RandomHelper.getRandomNumberBetween(2, 5));
+                Utils.log.info(RepairAPI.getCustomDurability(stackInHand) + " durrab");
                 if (new Random().nextInt(100) <= 75)//TODO INCORPORATE CHANCE INTO PICKS
                     p.getInventory().addItem(new ItemStack(type));
                 e.getBlock().setType(Material.STONE);
@@ -295,8 +301,10 @@ public class BlockListener implements Listener {
         }
 
         Shop shop = ShopMechanics.getShop(block);
-        if (shop == null)
+        if (shop == null){
+        	e.setCancelled(true);
             return;
+        }
         Action actionType = e.getAction();
         switch (actionType) {
             case RIGHT_CLICK_BLOCK:
@@ -513,7 +521,7 @@ public class BlockListener implements Listener {
                     e.getPlayer().sendMessage(ChatColor.RED + "You already have an open shop!");
                     return;
                 }
-                if (API.isInSafeRegion(b1.getLocation()) || API.isMaterialNearby(b1, 3, Material.CHEST) || API.isMaterialNearby(b1, 3, Material.ENDER_CHEST)) {
+                if (API.isInSafeRegion(b1.getLocation()) || API.isMaterialNearby(b1, 4, Material.CHEST) || API.isMaterialNearby(b1, 4, Material.ENDER_CHEST)) {
                 	if(!API.getGamePlayer(e.getPlayer()).hasShopOpen()){
                     Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () ->
                             ShopMechanics.setupShop(e.getClickedBlock(), e.getPlayer().getUniqueId()));

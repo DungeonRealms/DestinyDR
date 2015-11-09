@@ -15,6 +15,8 @@ import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.SoundAPI;
+import net.dungeonrealms.profession.Fishing;
+import net.dungeonrealms.profession.Mining;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
@@ -317,6 +319,10 @@ public class RepairAPI {
         }
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return false;
+        if(Mining.isDRPickaxe(itemStack)|| Fishing.isDRFishingPole(itemStack)){
+            if (getCustomDurability(itemStack) < 1500) 
+        	return true;
+        }
         if (tag.getInt("itemTier") == 0 && tag.getInt("armorTier") == 0) return false;
         if (tag.getString("type").equalsIgnoreCase("weapon") || tag.getString("type").equalsIgnoreCase("armor")) {
             if (getCustomDurability(itemStack) < 1500) {

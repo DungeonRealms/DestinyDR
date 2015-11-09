@@ -15,6 +15,7 @@ import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.minecraft.server.v1_8_R3.EntityPigZombie;
+import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
 
@@ -40,6 +41,8 @@ public class DRPigman extends EntityPigZombie implements Monster {
 	public DRPigman(World world, EnumMonster mon, int tier) {
 		super(world);
 		enumMonster = mon;
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(7d);
+        this.getAttributeInstance(GenericAttributes.c).setValue(0.6d);
 
 		setArmor(tier);
         String customName = enumMonster.getPrefix() + " " + enumMonster.name + " " + enumMonster.getSuffix() + " ";

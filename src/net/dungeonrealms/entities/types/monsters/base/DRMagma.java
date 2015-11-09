@@ -15,6 +15,7 @@ import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.minecraft.server.v1_8_R3.EntityMagmaCube;
+import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.World;
 
 /**
@@ -39,6 +40,8 @@ public class DRMagma extends EntityMagmaCube implements Monster{
 	 */
 	public DRMagma(World world, int tier) {
 		super(world);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(7d);
+        this.getAttributeInstance(GenericAttributes.c).setValue(0.6d);
         monsterType = EnumMonster.MagmaCube;
         setArmor(tier);
         String customName = monsterType.getPrefix() + " " + monsterType.name + " " + monsterType.getSuffix() + " ";

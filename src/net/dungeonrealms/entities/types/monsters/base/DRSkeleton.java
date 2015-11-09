@@ -1,13 +1,7 @@
 package net.dungeonrealms.entities.types.monsters.base;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.entities.types.monsters.Monster;
-import net.dungeonrealms.items.ItemGenerator;
-import net.dungeonrealms.mechanics.ItemManager;
-import net.minecraft.server.v1_8_R3.*;
+import java.lang.reflect.Field;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -17,7 +11,26 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.lang.reflect.Field;
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.types.monsters.Monster;
+import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.mechanics.ItemManager;
+import net.minecraft.server.v1_8_R3.EntityHuman;
+import net.minecraft.server.v1_8_R3.EntityLiving;
+import net.minecraft.server.v1_8_R3.EntitySkeleton;
+import net.minecraft.server.v1_8_R3.GenericAttributes;
+import net.minecraft.server.v1_8_R3.PathfinderGoalArrowAttack;
+import net.minecraft.server.v1_8_R3.PathfinderGoalFloat;
+import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
+import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
+import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
+import net.minecraft.server.v1_8_R3.PathfinderGoalRandomLookaround;
+import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
+import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Sep 19, 2015
@@ -53,6 +66,8 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
         this.goalSelector.a(7, new PathfinderGoalRandomLookaround(this));
         this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
         this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(7d);
+        this.getAttributeInstance(GenericAttributes.c).setValue(0.6d);
         monsterType = monster;
         this.name = monster.name;
         this.mobHead = monster.mobHead;

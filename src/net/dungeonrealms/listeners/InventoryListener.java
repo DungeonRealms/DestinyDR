@@ -327,6 +327,11 @@ public class InventoryListener implements Listener {
                         }
                         event.setCancelled(true);
                         event.setCursor(null);
+                        if(CraftItemStack.asNMSCopy(itemHeld).getTag().hasKey("starter")){
+                        	event.setCancelled(true);
+                        	player.sendMessage("Can't sell starter Items!");
+                        	return;
+                        }
                         // player.getInventory().addItem(itemHeld);
                         player.getInventory().setItem(player.getInventory().firstEmpty(), itemHeld);
                         AnvilGUIInterface gui = AnvilApi.createNewGUI(player, event1 -> {
@@ -689,16 +694,67 @@ public class InventoryListener implements Listener {
         if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
         ItemStack cursorItem = event.getCursor();
         ItemStack slotItem = event.getCurrentItem();
+        if(slotItem == null || slotItem.getType() == Material.AIR) return;
         Player player = (Player) event.getWhoClicked();
         if(!RepairAPI.isItemArmorScrap(cursorItem))return;
         if ((RepairAPI.isItemArmorOrWeapon(slotItem)) || Mining.isDRPickaxe(slotItem) || Fishing.isDRFishingPole(slotItem)) {
             if (RepairAPI.canItemBeRepaired(slotItem)) {
                 int scrapTier = RepairAPI.getScrapTier(cursorItem);
                 int slotTier = 0;
-                if(RepairAPI.isItemArmorOrWeapon(slotItem)){
-                	slotTier = RepairAPI.getArmorOrWeaponTier(slotItem);
-            	}else
+                if(Mining.isDRPickaxe(slotItem) || Fishing.isDRFishingPole(slotItem)){
             		slotTier = CraftItemStack.asNMSCopy(slotItem).getTag().getInt("itemTier");
+                    if (scrapTier != slotTier) return;
+                    if (cursorItem.getAmount() == 1) {
+                        event.setCancelled(true);
+                        event.setCursor(new ItemStack(Material.AIR));
+                    } else if (cursorItem.getAmount() > 1) {
+                        event.setCancelled(true);
+                        cursorItem.setAmount(cursorItem.getAmount() - 1);
+                        event.setCursor(cursorItem);
+                    }
+
+                    double itemDurability = RepairAPI.getCustomDurability(slotItem);
+
+                    if (itemDurability + 45.0D >= 1500.0D) {
+                        RepairAPI.setCustomItemDurability(slotItem, 1500);
+                        player.updateInventory();
+                    } else if (itemDurability + 45.0D < 1500.0D) {
+                        RepairAPI.setCustomItemDurability(slotItem, (itemDurability + 45.0D));
+                        player.updateInventory();
+                    }
+                    player.updateInventory();
+                    double newPercent = RepairAPI.getCustomDurability(slotItem);
+
+                    int particleID = 1;
+                    switch (scrapTier) {
+                        case 1:
+                            particleID = 25;
+                            break;
+                        case 2:
+                            particleID = 30;
+                            break;
+                        case 3:
+                            particleID = 42;
+                            break;
+                        case 4:
+                            particleID = 57;
+                            break;
+                        case 5:
+                            particleID = 41;
+                            break;
+                    }
+                    if (slotItem.getType() == Material.BOW) {
+                        particleID = 5;
+                    }
+                    Packet particles = new PacketPlayOutWorldEvent(2001, new BlockPosition((int) Math.round(player.getLocation().getX()), (int) Math.round(player.getLocation().getY() + 2), (int) Math.round(player.getLocation().getZ())), particleID, false);
+                    ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, particles);
+                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+                        player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + newPercent + "/1500");
+                    }
+                }
+                
+                if(RepairAPI.isItemArmorOrWeapon(slotItem)){
+                slotTier = RepairAPI.getArmorOrWeaponTier(slotItem);
                 if (scrapTier != slotTier) return;
                 if (slotItem.getDurability() == 0) return;
                 if (cursorItem.getAmount() == 1) {
@@ -713,7 +769,7 @@ public class InventoryListener implements Listener {
                 double itemDurability = RepairAPI.getCustomDurability(slotItem);
 
                 if (itemDurability + 45.0D >= 1500.0D) {
-                    RepairAPI.setCustomItemDurability(slotItem, 1499);
+                    RepairAPI.setCustomItemDurability(slotItem, 1500);
                     player.updateInventory();
                 } else if (itemDurability + 45.0D < 1500.0D) {
                     RepairAPI.setCustomItemDurability(slotItem, (itemDurability + 45.0D));
@@ -723,7 +779,7 @@ public class InventoryListener implements Listener {
                 double newPercent = RepairAPI.getCustomDurability(slotItem);
 
                 int particleID = 1;
-                switch (RepairAPI.getArmorOrWeaponTier(slotItem)) {
+                switch (scrapTier) {
                     case 1:
                         particleID = 25;
                         break;
@@ -747,6 +803,7 @@ public class InventoryListener implements Listener {
                 ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, particles);
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
                     player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + newPercent + "/1500");
+                }
                 }
             }
         }

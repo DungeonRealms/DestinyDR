@@ -31,6 +31,7 @@ import net.dungeonrealms.items.armor.Armor.ArmorModifier;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.EntityHuman;
+import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
 import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
@@ -68,6 +69,7 @@ public class Burick extends BasicEntitySkeleton implements Boss {
 		this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
 		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true));
 		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<>(this, EntityHuman.class, true));
+        this.getAttributeInstance(GenericAttributes.c).setValue(1d);
 		this.setSkeletonType(1);
 		setArmor(getEnumBoss().tier);
 		this.getBukkitEntity().setCustomNameVisible(true);

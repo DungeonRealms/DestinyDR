@@ -1,6 +1,42 @@
 package net.dungeonrealms.listeners;
 
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerFishEvent;
+import org.bukkit.event.player.PlayerFishEvent.State;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerItemBreakEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+
 import com.connorlinfoot.bountifulapi.BountifulAPI;
+
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
@@ -18,24 +54,6 @@ import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.profession.Fishing;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
-import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.entity.CreatureSpawnEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.*;
-import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
-import org.bukkit.event.player.PlayerFishEvent.State;
-import org.bukkit.event.vehicle.VehicleExitEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-
-import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -64,7 +82,19 @@ public class MainListener implements Listener {
     public void onCraft(CraftItemEvent event){
     	event.setCancelled(true);
     }
-
+    
+    @EventHandler
+    public void onEntityImmunityAfterHit(EntityDamageByEntityEvent e) {
+        if (e.getCause() == DamageCause.PROJECTILE) {
+            return;
+        }
+        // MC patch 1.8 added a 0.5 second (10 tick) mob immunity after each hit.  Cancel it here!
+        if (e.getEntity() instanceof LivingEntity && !(e.getEntity() instanceof Player)) {
+            LivingEntity ent = (LivingEntity) e.getEntity();
+            ent.setMaximumNoDamageTicks(0);
+            ent.setNoDamageTicks(0);
+        }
+    }
     /**
      * This event is used for the Database.
      *
@@ -79,6 +109,17 @@ public class MainListener implements Listener {
         }
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
     }
+    
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void onAsyncJoin(ChunkUnloadEvent event) {
+    	if(event.getChunk().getEntities().length > 0){
+    		for(Entity ent : event.getChunk().getEntities()){
+    			ent.remove();
+    		}
+    	}
+    }
+    
+    
 
     /**
      * This event is the main event once the player has actually entered the
@@ -448,7 +489,7 @@ public class MainListener implements Listener {
             Player p = event.getPlayer();
             ItemStack stack = p.getItemInHand();
             if (stack != null && stack.getType() == Material.FISHING_ROD) {
-                p.getItemInHand().setDurability((short) (stack.getDurability() + 1));
+                RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInHand(), 1);
                 if (event.getState() == State.CAUGHT_FISH) {
                     if (Fishing.isDRFishingPole(stack)) {
                         event.getCaught().remove();
@@ -507,6 +548,13 @@ public class MainListener implements Listener {
         if (RepairAPI.getCustomDurability(event.getBrokenItem()) > 1) {
             event.getBrokenItem().setAmount(1);
             event.getBrokenItem().setDurability(event.getBrokenItem().getType().getMaxDurability());
+        }
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void playerDropItem(PlayerDropItemEvent event){
+        if(CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack()).getTag().hasKey("starter")){
+        	event.getItemDrop().remove();
         }
     }
 }

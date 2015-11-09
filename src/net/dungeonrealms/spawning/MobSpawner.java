@@ -93,7 +93,7 @@ public class MobSpawner {
 	public void spawnIn() {
 		if (toSpawn)
 			return;
-		if (loc.getChunk().isLoaded()) {
+		if (!API.getNearbyPlayers(loc, 35).isEmpty()) {
 			if (!SPAWNED_MONSTERS.isEmpty()) {
 				for (Entity monster : SPAWNED_MONSTERS) {
 					if (monster.isAlive()) {
@@ -261,25 +261,14 @@ public class MobSpawner {
 	}
 
 	/**
-	 * @return
-	 */
-	public boolean isSpawning() {
-		return !API.getNearbyPlayers(loc, 50).isEmpty();
-	}
-
-	/**
 	 * Initialize spawner
 	 */
 	public void init() {
-		if (isSpawning()) {
 			timerID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
 				if (isRemoved) {
 					Bukkit.getScheduler().cancelTask(timerID);
 				} else
 					Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::spawnIn);
 			} , 0, 100L);
-		} else {
-			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::kill, 5L);
-		}
 	}
 }
