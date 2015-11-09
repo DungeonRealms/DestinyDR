@@ -127,6 +127,24 @@ public class API {
         return new ArmorGenerator().nextArmor(tier, ArmorModifier.COMMON);
     }
 
+    public static ChatColor getTierColor(int tier) {
+        if (tier == 1) {
+            return ChatColor.WHITE;
+        }
+        if (tier == 2) {
+            return ChatColor.GREEN;
+        }
+        if (tier == 3) {
+            return ChatColor.AQUA;
+        }
+        if (tier == 4) {
+            return ChatColor.LIGHT_PURPLE;
+        }
+        if (tier == 5) {
+            return ChatColor.YELLOW;
+        }
+        return ChatColor.WHITE;
+    }
     /**
      * @param player
      * @param kill

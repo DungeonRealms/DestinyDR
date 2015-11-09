@@ -401,7 +401,9 @@ public class ItemManager {
         ArrayList<String> lore = new ArrayList<>();
         
         String expBar = ChatColor.RED + "||||||||||" + "||||||||||" + "||||||||||";
-        lore.add(ChatColor.GREEN.toString() + 0 + "/" + Mining.getMaxXP(tier));
+        int lvl = Mining.getTierLvl(tier);
+        lore.add(ChatColor.GRAY.toString() + "Level: " + ChatColor.WHITE.toString() + lvl);
+        lore.add(ChatColor.GRAY.toString() + "EXP: " + ChatColor.WHITE+ + 0 + ChatColor.GRAY + "/" + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
         lore.add(" ");
         lore.add(expBar);
         lore.add(" ");
@@ -440,13 +442,13 @@ public class ItemManager {
             meta.setLore(lore);
             rawStack.setItemMeta(meta);
             RepairAPI.setCustomItemDurability(rawStack, 1500);
-
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("type", new NBTTagString("pick"));
             tag.setInt("itemTier", tier);
             tag.setInt("XP", 0);
-            tag.setInt("maxXP", Mining.getMaxXP(tier));
+            tag.setInt("maxXP", Mining.getEXPNeeded(lvl));
+            tag.setInt("level", lvl);
             tag.set("AttributeModifiers", new NBTTagList());
             nmsStack.setTag(tag);
             return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));

@@ -128,7 +128,7 @@ public class BlockListener implements Listener {
                     e.setCancelled(true);
                     return;
                 }
-                int experienceGain = Mining.getExperienceGain(stackInHand, type);
+                int experienceGain = Mining.getOreEXP(stackInHand, type);
                 Mining.addExperience(stackInHand, experienceGain, p);
                 Utils.log.info(RepairAPI.getCustomDurability(stackInHand) + " durrab");
                 RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInHand(), RandomHelper.getRandomNumberBetween(2, 5));

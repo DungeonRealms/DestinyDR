@@ -155,6 +155,7 @@ public class SpawningMechanics implements GenericMechanic {
             case Naga:
                 entity = new BasicMageMonster(world, EnumMonster.Naga, tier);
                 break;
+            case Tripoli1:
             case Tripoli:
                 entity = new BasicMeleeMonster(world, EnumMonster.Tripoli, tier);
                 break;
