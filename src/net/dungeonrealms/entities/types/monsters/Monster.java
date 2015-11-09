@@ -32,10 +32,10 @@ public interface Monster {
 		if (world.random.nextInt(100) <= 25) {
 			ItemStack item = BankMechanics.gem.clone();
 			item.setAmount(((tier * 10) - 8) + new Random().nextInt(5));
-			world.getWorld().dropItemNaturally(loc.add(0, 1, 0), item);
+			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), item);
 		}
 
-		if (RandomHelper.getRandomNumberBetween(1, 100) <= 10) {
+		if (RandomHelper.getRandomNumberBetween(1, 100) <= 5) {
 			ItemStack[] loot = new ItemStack[5];
 			ItemStack[] armor = ((LivingEntity) ent).getEquipment().getArmorContents();
 			ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
@@ -43,7 +43,7 @@ public interface Monster {
 			loot = new ItemStack[]{armor[0], armor[1], armor[2], armor[3], weapon};
 			int number = RandomHelper.getRandomNumberBetween(0, 4);
 			ItemStack armorToDrop = loot[number];
-			world.getWorld().dropItemNaturally(loc.add(0, 1, 0), armorToDrop);
+			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), armorToDrop);
 		}
 	}
 }
