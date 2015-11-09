@@ -3,7 +3,6 @@ package net.dungeonrealms.listeners;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.handlers.EnergyHandler;
-import net.dungeonrealms.profession.Fishing;
 import net.dungeonrealms.profession.Mining;
 import net.minecraft.server.v1_8_R3.EntityExperienceOrb;
 import org.bukkit.Bukkit;
@@ -86,7 +85,7 @@ public class EnergyListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if (Mining.isDRPickaxe(weapon) || Fishing.isDRFishingPole(weapon)) {
+        if (weapon.getType() != Material.AIR && Mining.isDRPickaxe(weapon)) {
             return;
         }
         if (player.hasMetadata("last_Attack")) {
