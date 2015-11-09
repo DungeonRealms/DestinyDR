@@ -177,6 +177,7 @@ public class DungeonRealms extends JavaPlugin {
 
         cm.registerCommand(new CommandStats("stats", "/<command> [args]", "The stats command."));
         cm.registerCommand(new CommandStop("stop", "/<command> [args]", "The stop command."));
+        cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "The roll command."));
 
 
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
