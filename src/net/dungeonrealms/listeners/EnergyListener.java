@@ -163,7 +163,6 @@ public class EnergyListener implements Listener {
 
         if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player.getUniqueId()) <= 0) {
             event.setCancelled(true);
-            return;
         }
 
         EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), energyToRemove);
