@@ -135,6 +135,7 @@ public class SpawningMechanics implements GenericMechanic {
             case FireImp:
                 entity = new EntityFireImp(world, tier, type);
                 break;
+            case Troll1:
             case Troll:
                 entity = new BasicMeleeMonster(world, EnumMonster.Troll, tier);
                 break;
@@ -160,6 +161,7 @@ public class SpawningMechanics implements GenericMechanic {
             case Blaze:
                 entity = new BasicEntityBlaze(world, EnumMonster.Blaze, tier);
                 break;
+            case Skeleton1:
             case Skeleton:
                 entity = new BasicEntitySkeleton(world, tier);
                 break;
@@ -171,6 +173,9 @@ public class SpawningMechanics implements GenericMechanic {
                 break;
             case Daemon:
                 entity = new DRPigman(world, EnumMonster.Daemon, tier);
+                break;
+            case Silverfish:
+                entity = new DRSilverfish(world, EnumMonster.Silverfish, tier);
                 break;
             case SpawnOfInferno:
                 entity = new DRMagma(world, EnumMonster.SpawnOfInferno, tier);

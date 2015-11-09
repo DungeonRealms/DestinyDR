@@ -55,9 +55,12 @@ public class Mining implements GenericMechanic {
 	 * @since 1.0
 	 */
 	public static boolean isDRPickaxe(ItemStack stack) {
+		if(stack.getType() == Material.WOOD_PICKAXE || stack.getType() == Material.STONE_PICKAXE || stack.getType() == Material.IRON_PICKAXE || stack.getType() == Material.GOLD_PICKAXE || stack.getType() == Material.DIAMOND_PICKAXE){
 		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
 		return !(nms == null || nms.getTag() == null) && nms.getTag().hasKey("type")
 		        && nms.getTag().getString("type").equalsIgnoreCase("pick");
+		}
+		return false;
 	}
 
 	/**
