@@ -544,7 +544,6 @@ public class InventoryListener implements Listener {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 HealthHandler.getInstance().setPlayerMaxHPLive(event.getPlayer(), HealthHandler.getInstance().calculateMaxHPFromItems(event.getPlayer()));
                 HealthHandler.getInstance().setPlayerHPLive(event.getPlayer(), HealthHandler.getInstance().calculateMaxHPFromItems(event.getPlayer()));
-                event.getPlayer().damage(0.2);
             }, 10L);
         } else {
             event.getPlayer().sendMessage(ChatColor.RED + "Equipping armor while in combat will not change your stats! Please re-equip out of combat!");

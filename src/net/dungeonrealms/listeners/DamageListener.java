@@ -57,6 +57,15 @@ import java.util.Random;
  */
 public class DamageListener implements Listener {
 
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
+    public void onSufficate(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player) {
+            if (event.getCause() == DamageCause.SUFFOCATION) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
     /**
      * This event listens for EnderCrystal explosions.
      * Which are buffs.. with the correct nbt at least.

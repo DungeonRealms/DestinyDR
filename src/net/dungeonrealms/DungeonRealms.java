@@ -186,6 +186,7 @@ public class DungeonRealms extends JavaPlugin {
 
         try {
             FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));
+            //TODO: remove stats
         } catch (IOException e) {
             e.printStackTrace();
         }

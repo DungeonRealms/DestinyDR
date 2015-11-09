@@ -24,10 +24,6 @@ public class CommandParty extends BasicCommand {
         }
 
         Player player = (Player) s;
-        if (!player.isOp()) {
-            player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
-            return false;
-        }
         if (args.length > 0) {
             String command = args[0].toLowerCase();
             switch (command) {

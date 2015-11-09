@@ -367,8 +367,12 @@ public class API {
     public static void handleLogin(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
 
-        if (player != null) {
-            player.sendMessage(ChatColor.GREEN + "Successfully received your data.. loading now...");
+        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
+            player.kickPlayer(ChatColor.RED + "Unable to grab your data.. rejoin!");
+        } else {
+            if (player != null) {
+                player.sendMessage(ChatColor.GREEN + "Successfully received your data.. loading now...");
+            }
         }
 
         GamePlayer gp = new GamePlayer(player);
