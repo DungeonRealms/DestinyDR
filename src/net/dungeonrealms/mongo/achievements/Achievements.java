@@ -58,7 +58,6 @@ public class Achievements {
                     Player player = Bukkit.getPlayer(uuid);
                     player.sendMessage(ChatColor.GREEN + "[Achievement Earned] " + ChatColor.YELLOW + achievement.getMessage()[0]);
                     API.getGamePlayer(player).addExperience(achievement.getReward());
-
                     switch (((ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid)).size()) {
                         case 10:
                             giveAchievement(uuid, EnumAchievements.NOVICE);

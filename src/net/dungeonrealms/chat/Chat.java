@@ -7,6 +7,7 @@ import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumGuildData;
 import net.dungeonrealms.rank.Rank;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
@@ -51,6 +52,15 @@ public class Chat {
      * @since 1.0
      */
     public void doChat(AsyncPlayerChatEvent event) {
+
+        if (event.getMessage().startsWith("@")) {
+            String playerName = event.getMessage().replace("@", "").split(" ")[0];
+            Bukkit.getOnlinePlayers().stream().filter(player -> player.getName().equalsIgnoreCase(playerName)).forEach(player1 -> {
+                player1.sendMessage(ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage().replace("@" + playerName, ""));
+            });
+            event.setCancelled(true);
+            return;
+        }
 
         TERRIBLE_WORDS.stream().filter(s -> event.getMessage().contains(s.toLowerCase())).forEach(s1 -> {
             event.setCancelled(true);

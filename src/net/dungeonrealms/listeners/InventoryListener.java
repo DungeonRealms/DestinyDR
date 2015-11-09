@@ -18,7 +18,6 @@ import net.dungeonrealms.handlers.TradeHandler.TradeManager;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.LootManager;
-import net.dungeonrealms.miscellaneous.Glyph;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.network.NetworkAPI;
@@ -28,6 +27,7 @@ import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.stats.PlayerStats;
 import net.dungeonrealms.stats.StatsManager;
+import net.dungeonrealms.world.glyph.Glyph;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.Packet;
@@ -71,8 +71,7 @@ public class InventoryListener implements Listener {
         if (event.getCurrentItem() != null && !event.getCurrentItem().getType().equals(Material.AIR) && event.getCursor() != null && !event.getCursor().getType().equals(Material.AIR)) {
             if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
             if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
-            Glyph.getInstance().applyGlyph(event, (Player) event.getWhoClicked(), event.getCursor(), event.getCurrentItem());
-            Glyph.getInstance().starGlyph(event, (Player) event.getWhoClicked(), event.getCursor(), event.getCurrentItem());
+            Glyph.getInstance().applyGlyph(((Player)event.getWhoClicked()), event, event.getCursor(), event.getCurrentItem());
         }
 
         ClickHandler.getInstance().doClick(event);

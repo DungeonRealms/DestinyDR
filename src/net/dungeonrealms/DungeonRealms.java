@@ -31,9 +31,13 @@ import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.spawning.BuffManager;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
 
 /* Copyright (C) 2015 CherryIO, LLC - All Rights Reserved http://cherryio.com
 
@@ -162,7 +166,7 @@ public class DungeonRealms extends JavaPlugin {
 
         cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menu!"));
         cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "Spawns a mob? idk chase"));
-        cm.registerCommand(new CommandAdd("add", "/<command> [args]", "Adds shit"));
+        cm.registerCommand(new CommandAdd("ad", "/<command> [args]", "Adds shit"));
         cm.registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
         cm.registerCommand(new CommandParty("party", "/<command> [args]", "Does this and that."));
         cm.registerCommand(new CommandSet("set", "/<command> [args]", "SETS THE YEAH."));
@@ -178,6 +182,13 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandStats("stats", "/<command> [args]", "The stats command."));
         cm.registerCommand(new CommandStop("stop", "/<command> [args]", "The stop command."));
         cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "The roll command."));
+        cm.registerCommand(new CommandStuck("stuck", "/<command> [args]", "The stuck command."));
+
+        try {
+            FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");

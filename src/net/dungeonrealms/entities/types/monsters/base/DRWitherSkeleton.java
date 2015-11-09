@@ -33,8 +33,8 @@ public class DRWitherSkeleton extends EntitySkeleton implements Monster{
 		super(world);
 		enumMonster = mon;
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(10d);
-        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.3333D);
-        this.getAttributeInstance(GenericAttributes.c).setValue(0.4d);
+        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
+        this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
 		this.setSkeletonType(1);
 
 		setArmor(tier);

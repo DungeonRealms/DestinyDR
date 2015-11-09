@@ -113,7 +113,7 @@ public class DamageListener implements Listener {
     }
 
 
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void playerBreakArmorStand(EntityDamageByEntityEvent event) {
         if (!(API.isPlayer(event.getDamager()))) return;
         if (((Player) event.getDamager()).getGameMode() != GameMode.CREATIVE) return;

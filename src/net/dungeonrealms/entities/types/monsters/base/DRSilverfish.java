@@ -33,8 +33,8 @@ public class DRSilverfish extends EntitySilverfish implements Monster{
         this.goalSelector.a(5, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.0D, false));
 		this.enumMonster = type;
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(10d);
-        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.3333D);
-        this.getAttributeInstance(GenericAttributes.c).setValue(0.4d);
+        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
+        this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
 		setArmor(tier);
         String customName = enumMonster.getPrefix() + " " + enumMonster.name + " " + enumMonster.getSuffix() + " ";
         this.setCustomName(customName);
