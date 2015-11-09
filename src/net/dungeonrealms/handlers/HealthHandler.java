@@ -16,10 +16,7 @@
     import net.minecraft.server.v1_8_R3.DamageSource;
     import net.minecraft.server.v1_8_R3.EntityArmorStand;
     import net.minecraft.server.v1_8_R3.EntityLiving;
-    import org.bukkit.Bukkit;
-    import org.bukkit.ChatColor;
-    import org.bukkit.EntityEffect;
-    import org.bukkit.Material;
+    import org.bukkit.*;
     import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
     import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
     import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -466,6 +463,7 @@ public class HealthHandler implements GenericMechanic {
         }
 
         if (newHP <= 0) {
+            player.playSound(player.getLocation(), Sound.WITHER_SPAWN, 1f, 1f);
             if (player.hasMetadata("last_death_time")) {
                 if (player.getMetadata("last_death_time").get(0).asLong() > 100) {
                     player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));

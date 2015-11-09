@@ -306,12 +306,12 @@ public class API {
         PlayerInventory inv = player.getInventory();
         
         ArrayList<String> armor = new ArrayList<String>();
-        for(int i = 0; i < inv.getArmorContents().length; i++){
-        	if(inv.getArmorContents()[i] == null || inv.getArmorContents()[i].getType() == Material.AIR){
-        		armor.add("null");
-        	}else{
-        		armor.add(ItemSerialization.itemStackToBase64(inv.getArmorContents()[i]));
-        	}
+        for (ItemStack itemStack : player.getInventory().getArmorContents()) {
+            if (itemStack == null || itemStack.getType() == Material.AIR) {
+                armor.add("null");
+            } else {
+                armor.add(ItemSerialization.itemStackToBase64(itemStack));
+            }
         }
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, false);
         
@@ -391,18 +391,28 @@ public class API {
         API.GAMEPLAYERS.add(gp);
         
        List<String> playerArmor = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ARMOR, player.getUniqueId());
-        for(int i = 0; i <playerArmor.size(); i++){
+        int i = -1;
+        ItemStack[] armorContents = new ItemStack[4];
+        for (String armor : playerArmor) {
+            i++;
+            if (armor.equals("null") || armor.equals("")) {
+                armorContents[i] = new ItemStack(Material.AIR);
+            }
+            armorContents[i] = ItemSerialization.itemStackFromBase64(armor);
+        }
+        player.getInventory().setArmorContents(armorContents);
+        /*for(int i = 0; i  < playerArmor.size(); i++){
         	String armorStr = playerArmor.get(i);
         	if(armorStr.equalsIgnoreCase("null") || armorStr == null)
         		continue;
         	player.getInventory().getArmorContents()[i] = ItemSerialization.itemStackFromBase64(armorStr);
-        }
+        }*/
 
         AchievementManager.getInstance().handleLogin(player);
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
             ItemStack[] items = ItemSerialization.fromString(playerInv).getContents();
-            Bukkit.getPlayer(uuid).getInventory().setContents(items);
+            player.getInventory().setContents(items);
         }
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
         if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {

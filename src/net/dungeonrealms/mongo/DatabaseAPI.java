@@ -183,7 +183,7 @@ public class DatabaseAPI {
             case HASSHOP:
             	return ((Document)PLAYERS.get(uuid).get("info")).get("shopOpen", Boolean.class);
             case ARMOR:
-                return ((Document) PLAYERS.get(uuid).get("inventory")).get("player", ArrayList.class);
+                return ((Document) PLAYERS.get(uuid).get("inventory")).get("armor", ArrayList.class);
             /*
             Toggles
              */
