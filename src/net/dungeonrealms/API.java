@@ -390,13 +390,13 @@ public class API {
         GamePlayer gp = new GamePlayer(player);
         API.GAMEPLAYERS.add(gp);
         
-       /* List<String> playerArmor = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ARMOR, player.getUniqueId());
+       List<String> playerArmor = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ARMOR, player.getUniqueId());
         for(int i = 0; i <playerArmor.size(); i++){
         	String armorStr = playerArmor.get(i);
         	if(armorStr.equalsIgnoreCase("null") || armorStr == null)
         		continue;
         	player.getInventory().getArmorContents()[i] = ItemSerialization.itemStackFromBase64(armorStr);
-        }*/
+        }
 
         AchievementManager.getInstance().handleLogin(player);
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
