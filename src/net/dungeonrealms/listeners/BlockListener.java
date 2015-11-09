@@ -1,9 +1,40 @@
 package net.dungeonrealms.listeners;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockDamageEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.EntityBlockFormEvent;
+import org.bukkit.event.player.PlayerAnimationEvent;
+import org.bukkit.event.player.PlayerAnimationType;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
-import com.mysql.jdbc.Util;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
@@ -25,22 +56,6 @@ import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.spawning.LootSpawner;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.*;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.Collection;
-import java.util.Random;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -56,6 +71,7 @@ public class BlockListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockPlace(BlockPlaceEvent event) {
+    	if(event.getPlayer().isOp()) return;
         if (event.getItemInHand() == null) return;
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemInHand());
         if (nmsItem == null) return;
@@ -139,77 +155,72 @@ public class BlockListener implements Listener {
         }
         }
     }
-    
-
-//    @EventHandler(priority = EventPriority.HIGHEST)
-    public void handleMiningFatigue(BlockDamageEvent e){
-        Block block = e.getBlock();	
-        if (block == null) return;
-        if (e.getPlayer().getItemInHand() == null || e.getPlayer().getItemInHand().getType() == Material.AIR) return;
-//        if (block.getType() == Material.COAL_ORE || block.getType() == Material.IRON_ORE || block.getType() == Material.GOLD_ORE || block.getType() == Material.DIAMOND_ORE || block.getType() == Material.EMERALD_ORE) {
-//        	e.setCancelled(true);
-//            ItemStack stackInHand = e.getPlayer().getItemInHand();
-//            if (Mining.isDRPickaxe(stackInHand)) {
-//                Player p = e.getPlayer();
-//                Material type = block.getType();
-//                int tier = Mining.getBlockTier(type);
-//                int pickTier = Mining.getPickTier(stackInHand);
-//                if (pickTier < tier) {
-//                    // Cannot mine. Too low level of pickaxe.
-//                    p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, Integer.MAX_VALUE, 4));
-//                    return;
-//                }
-//                
-//                int diff = pickTier - tier;
-//                
-//                if (diff >= 3) {
-//                    if (pickTier == 5) {
-//                        p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, Integer.MAX_VALUE, 1));
-//                    } else {
-//                        p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, Integer.MAX_VALUE, 0));
-//                    }
-//                    return;
-//                }
-//                
-//                if (pickTier == 4 || pickTier == 5) {
-//                    if (pickTier == 4) {
-//                        if (diff == 0) { // Diamond ore.
-//                            p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, Integer.MAX_VALUE, 3));
-//                        }
-//                        if (diff == 1) { // Iron ore.
-//                            p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, Integer.MAX_VALUE, 3));
-//                        }
-//                    }
-//                    if (pickTier == 5) {
-//                        if (diff == 0) { // Gold ore.
-//                            p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, Integer.MAX_VALUE, 3));
-//                        }
-//                        if (diff == 1) { // Diamond ore.
-//                            p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, Integer.MAX_VALUE, 2));
-//                        }
-//                    }
-//                } else {
-//                    if (diff == 0) {
-//                        // Lvl 2 debuff
-//                        if (pickTier == 2) {
-//                            p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, Integer.MAX_VALUE, 1));
-//                        } else {
-//                            p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, Integer.MAX_VALUE, 1));
-//                        }
-//                    }
-//                    if (diff == 1) {
-//                        // Lvl 1 debuff
-//                        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, Integer.MAX_VALUE, 1));
-//                    }
-//                    if (diff == 2) {
-//                        // Lvl 0 debuff
-//                        p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, Integer.MAX_VALUE, 0));
-//                    }
-//                }
-//                
-//                
-//            }
-//        }
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void handleMiningFatigue(PlayerAnimationEvent event){
+    	if(event.getAnimationType() != PlayerAnimationType.ARM_SWING) return;
+        if (event.getPlayer().getItemInHand() == null || event.getPlayer().getItemInHand().getType() == Material.AIR) return;
+    	if(!Mining.isDRPickaxe(event.getPlayer().getItemInHand())) return;
+    	ItemStack stackInHand = event.getPlayer().getItemInHand();
+        Block block = event.getPlayer().getTargetBlock((HashSet<Byte>) null, 100);	
+        if (block == null || block.getType() == Material.AIR) return;
+        if (block.getType() == Material.COAL_ORE || block.getType() == Material.IRON_ORE || block.getType() == Material.GOLD_ORE || block.getType() == Material.DIAMOND_ORE || block.getType() == Material.EMERALD_ORE) {
+          Player p = event.getPlayer();
+          Material type = block.getType();
+          int tier = Mining.getBlockTier(type);
+          int pickTier = Mining.getPickTier(stackInHand);
+          if (pickTier < tier) {
+              // Cannot mine. Too low level of pickaxe.
+              p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 30, 4));
+              return;
+          }
+          
+          int diff = pickTier - tier;
+          
+          if (diff >= 3) {
+              if (pickTier == 5) {
+                  p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 30, 1));
+              } else {
+                  p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 30, 0));
+              }
+              return;
+          }
+          
+          if (pickTier == 4 || pickTier == 5) {
+              if (pickTier == 4) {
+                  if (diff == 0) { // Diamond ore.
+                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 30, 3));
+                  }
+                  if (diff == 1) { // Iron ore.
+                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 30, 3));
+                  }
+              }
+              if (pickTier == 5) {
+                  if (diff == 0) { // Gold ore.
+                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 30, 3));
+                  }
+                  if (diff == 1) { // Diamond ore.
+                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 30, 2));
+                  }
+              }
+          } else {
+              if (diff == 0) {
+                  // Lvl 2 debuff
+                  if (pickTier == 2) {
+                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 30, 1));
+                  } else {
+                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 30, 1));
+                  }
+              }
+              if (diff == 1) {
+                  // Lvl 1 debuff
+                  p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 30, 1));
+              }
+              if (diff == 2) {
+                  // Lvl 0 debuff
+                  p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 30, 0));
+              }
+          }
+        }
     }
     	
     @EventHandler(priority = EventPriority.HIGHEST)

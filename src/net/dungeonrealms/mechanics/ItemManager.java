@@ -2,6 +2,7 @@ package net.dungeonrealms.mechanics;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.anticheat.AntiCheat;
+import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.items.EnumItem;
 import net.dungeonrealms.items.Item;
@@ -585,10 +586,10 @@ public class ItemManager {
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + "\n"
                 + ChatColor.BLACK.toString() + gp.getPlayerAlignment().description + new_line + ChatColor.BLACK.toString() + "   " + gp.getPlayerCurrentHP()
                 + " / " + gp.getPlayerMaxHP() + "" + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK.toString()
-                + "   " + gp.getStats().getDPS() + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
+//                + "   " + gp.getStats().getDPS() + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
                 + "   " + (HealthHandler.getInstance().getPlayerHPRegenLive(p)) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n"
-                + ChatColor.BLACK.toString() + "   " + "0.00"
-                + "% " + ChatColor.BOLD.toString() + "Energy" + "\n" + ChatColor.BLACK.toString() + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString()
+                + ChatColor.BLACK.toString() + "   " + EnergyHandler.getInstance().getPlayerEnergyRegenerationAmount(p.getUniqueId())
+                + " " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString() + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString()
                 + " E-CASH";
 
         page2_string = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "  ** LEVEL/EXP **\n\n" + ChatColor.BLACK + ChatColor.BOLD

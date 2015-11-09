@@ -10,6 +10,7 @@ import java.util.List;
 public enum EnumMonster {
 
     Troll("troll", "Troll", "Steve", new String[]{"Strong", "Smelly"}, new String[]{"Warrior", "Rebel"}),
+    Troll1("troll1", "Troll", "Steve", new String[]{"Strong", "Smelly"}, new String[]{"Warrior", "Rebel"}),
     Goblin("goblin", "Goblin", "Shrek", new String[]{"Short", "Ugly", "Smelly"}, new String[]{""}),
     Bandit("bandit", "Bandit", "Steve", new String[]{"Clumsy", "Lazy", "Old", "Ugly", "Pretty", "Dumb", "Friendly", "Sleepy", "Majestic", "Intrigued", "Dignified", "Courageous", "Timid", "Gloomy", "Noble", "Naive"}, new String[]{""}),
     Pirate("pirate", "Pirate", "samsamsam1234", new String[]{""}, new String[]{""}),
@@ -17,16 +18,19 @@ public enum EnumMonster {
     MayelPirate("mayelpirate", "Pirate", "samsamsam1234", new String[]{"Mayel"}, new String[]{""}),
     Naga("naga","Naga", "Das_Doktor", new String[]{"Weak"}, new String[]{"Shaman", "Mage"}),
     Tripoli("tripoli","Tripoli", "Xmattpt", new String[]{" "}, new String[]{"Soldier", "Commander"}),
+    Tripoli1("tripoli1","Tripoli", "Xmattpt", new String[]{" "}, new String[]{"Soldier", "Commander"}),
     Golem("golem","Golem", "Steve", new String[]{"Enchanted", "Ironclad", "Enchanted Ironclad", "Ice"}, new String[]{" "}),
     Spider("spider1", "Spider", "Steve", new String[]{"Scary", "Spooky", "Hairy"}, new String[]{""}),
     Spider1("spider2", "Spider", "Steve", new String[]{"Scary", "Spooky", "Hairy"}, new String[]{""}),
     FireImp("imp", "Fire Imp", "Devil", new String[]{""}, new String[]{""}),
     Blaze("blaze", "Blaze", "Blaze", new String[]{""}, new String[]{""}),
     Mage("mage", "Mage", "Mage", new String[]{""}, new String[]{""}),
-    Skeleton("skeleton1", "Skeleton", "Steve", new String[]{"Scary", "Spooky", "Spooky Scary"}, new String[]{"Archer", "Ranger"}),
+    Skeleton("skeleton", "Skeleton", "Steve", new String[]{"Scary", "Spooky", "Spooky Scary"}, new String[]{"Archer", "Ranger"}),
+    Skeleton1("skeleton1", "Skeleton", "Steve", new String[]{"Scary", "Spooky", "Spooky Scary"}, new String[]{"Archer", "Ranger"}),
     MagmaCube("magmacube", "Magma Cube", "Steve", new String[]{"Weak"}, new String[]{""}),
     Wither("skeleton2", "Chaos Skeleton", "Wither", new String[]{""}, new String[]{""}),
     Daemon("daemon", "Daemon", "Steve", new String[]{""}, new String[]{""}),
+    Silverfish("silverfish", "Silverfish", "Steve", new String[]{""}, new String[]{""}),
 	SpawnOfInferno("spawnofinferno", "Spawn of Inferno", "Steve", new String[]{""},new String[]{""} ),
 	GreaterAbyssalDemon("demon", "Greater Abyssal Demon", "Steve", new String[]{""}, new String[] {""});
 
