@@ -610,10 +610,8 @@ public class MainListener implements Listener {
 
                 pl.playSound(pl.getLocation(), Sound.BAT_TAKEOFF, 1F, 2F);
                 pl.updateInventory();
-            }else if(nms.getTag().hasKey("subtype")){
-            	event.getItemDrop().getItemStack().setType(Material.AIR);
-//            	event.setCancelled(true);
-            	return;
+            } else if (nms.getTag().hasKey("subtype")) {
+            	event.getItemDrop().remove();
             }
         }
     }
