@@ -560,10 +560,8 @@ public class HealthHandler implements GenericMechanic {
         if (newHP <= 0) {
             setMonsterHPLive(entity, 0);
             net.minecraft.server.v1_8_R3.Entity entity1 = ((CraftEntity) entity).getHandle();
-            entity1.damageEntity(DamageSource.GENERIC, 20F);
-            if (!entity1.dead) {
-                entity1.dead = true;
-            }
+            entity.playEffect(EntityEffect.DEATH);
+            entity1.damageEntity(DamageSource.GENERIC, 50F);
             if (Entities.getInstance().MONSTER_LAST_ATTACK.containsKey(entity)) {
                 Entities.getInstance().MONSTER_LAST_ATTACK.remove(entity);
             }
