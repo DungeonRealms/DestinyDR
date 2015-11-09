@@ -160,7 +160,7 @@ public class Teleportation implements GenericMechanic {
         Location startingLocation = player.getLocation();
         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
-                if (player.getLocation().distanceSquared(startingLocation) <= 2) {
+                if (player.getLocation().distanceSquared(startingLocation) <= 2 && !CombatLog.isInCombat(player)) {
                     player.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + taskTimer[0] + "s...");
                     try {
                         ParticleAPI.sendParticleToLocation(particleEffect[0], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
@@ -189,7 +189,7 @@ public class Teleportation implements GenericMechanic {
                         player.removePotionEffect(PotionEffectType.BLINDNESS);
                         player.removePotionEffect(PotionEffectType.CONFUSION);
                     }
-                    player.sendMessage(ChatColor.RED + "Your teleport was canceled due to moving!");
+                    player.sendMessage(ChatColor.RED + "Your teleport was canceled!");
                     if (teleportType == EnumTeleportType.HEARTHSTONE) {
                         TeleportAPI.addPlayerHearthstoneCD(uuid, 300);
                     }
