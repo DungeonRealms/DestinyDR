@@ -32,7 +32,27 @@ public interface Monster {
 		World world = ((CraftWorld) loc.getWorld()).getHandle();
 		if (world.random.nextInt(100) <= 25) {
 			ItemStack item = BankMechanics.gem.clone();
-			item.setAmount(new Random().nextInt(5));
+			int amount = 1;
+			
+			switch(tier){
+			case 1:
+				amount = RandomHelper.getRandomNumberBetween(1, 2);
+				break;
+			case 2:
+				amount = RandomHelper.getRandomNumberBetween(2, 4);
+				break;
+			case 3:
+				amount = RandomHelper.getRandomNumberBetween(2, 8);
+				break;
+			case 4:
+				amount = RandomHelper.getRandomNumberBetween(4, 8);
+				break;
+			case 5:
+				amount = RandomHelper.getRandomNumberBetween(6, 10);
+				break;
+			}
+			
+			item.setAmount(amount);
 			world.getWorld().dropItemNaturally(loc.add(0, 1, 0), item);
 		}
 
