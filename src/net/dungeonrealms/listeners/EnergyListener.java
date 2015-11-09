@@ -4,21 +4,21 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.minecraft.server.v1_8_R3.EntityExperienceOrb;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.event.entity.FoodLevelChangeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerExpChangeEvent;
-import org.bukkit.event.player.PlayerPickupItemEvent;
-import org.bukkit.event.player.PlayerToggleSprintEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -53,6 +53,50 @@ public class EnergyListener implements Listener {
                 player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "**STARVING**");
             }
         }
+    }
+
+    /**
+     * Checks for players starving
+     * adds hunger potion effect and metadata
+     * to be used at a later time
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerDoSomething(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        ItemStack weapon = event.getItem();
+
+        if (weapon == null || !event.hasItem()) {
+            weapon = new ItemStack(Material.AIR);
+        }
+        if (!(event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
+            return;
+        }
+        if (player.getWorld().equals(Bukkit.getWorlds().get(0)) && event.hasBlock() && (event.getClickedBlock().getType() == Material.LONG_GRASS)) {
+            event.setUseItemInHand(Event.Result.DENY);
+            event.setCancelled(true);
+            return;
+        }
+        if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player.getUniqueId()) <= 0) {
+            event.setUseItemInHand(Event.Result.DENY);
+            event.setCancelled(true);
+            return;
+        }
+        if (player.hasMetadata("last_Attack")) {
+            if (System.currentTimeMillis() - player.getMetadata("last_Attack").get(0).asLong() < 100){
+                event.setUseItemInHand(Event.Result.DENY);
+                event.setCancelled(true);
+                return;
+            }
+        }
+        float energyToRemove = EnergyHandler.getWeaponSwingEnergyCost(weapon);
+        if (weapon.getType() == Material.BOW) {
+            energyToRemove += 0.15F;
+        }
+        player.setMetadata("last_Attack", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), energyToRemove);
     }
 
     /**
@@ -150,22 +194,9 @@ public class EnergyListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerAnimation(PlayerAnimationEvent event) {
-        Player player = event.getPlayer();
-        ItemStack playerWeapon = player.getItemInHand();
-
-        if (playerWeapon == null) {
-            playerWeapon = new ItemStack(Material.AIR);
-        }
-        float energyToRemove = EnergyHandler.getWeaponSwingEnergyCost(playerWeapon);
-        if (playerWeapon.getType() == Material.BOW) {
-            energyToRemove += 0.15F;
-        }
-
-        if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player.getUniqueId()) <= 0) {
-            event.setCancelled(true);
-        }
-
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), energyToRemove);
+        return;
+        //Player player = event.getPlayer();
+        //ItemStack playerWeapon = player.getItemInHand();
     }
 
     /**
