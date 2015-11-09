@@ -397,8 +397,9 @@ public class API {
             i++;
             if (armor.equals("null") || armor.equals("")) {
                 armorContents[i] = new ItemStack(Material.AIR);
+            } else {
+                armorContents[i] = ItemSerialization.itemStackFromBase64(armor);
             }
-            armorContents[i] = ItemSerialization.itemStackFromBase64(armor);
         }
         player.getInventory().setArmorContents(armorContents);
         /*for(int i = 0; i  < playerArmor.size(); i++){
