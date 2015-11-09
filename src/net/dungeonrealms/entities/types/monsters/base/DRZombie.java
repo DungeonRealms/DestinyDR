@@ -63,8 +63,9 @@ public abstract class DRZombie extends EntityZombie implements Monster{
         this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
         this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true));
         this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(7d);
-        this.getAttributeInstance(GenericAttributes.c).setValue(0.6d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(10d);
+        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.3333D);
+        this.getAttributeInstance(GenericAttributes.c).setValue(0.4d);
         monsterType = monster;
         this.name = monster.name;
         this.mobHead = monster.mobHead;

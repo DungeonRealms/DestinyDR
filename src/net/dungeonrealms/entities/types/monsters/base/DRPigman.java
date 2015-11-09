@@ -41,8 +41,9 @@ public class DRPigman extends EntityPigZombie implements Monster {
 	public DRPigman(World world, EnumMonster mon, int tier) {
 		super(world);
 		enumMonster = mon;
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(7d);
-        this.getAttributeInstance(GenericAttributes.c).setValue(0.6d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(10d);
+        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.3333D);
+        this.getAttributeInstance(GenericAttributes.c).setValue(0.4d);
 
 		setArmor(tier);
         String customName = enumMonster.getPrefix() + " " + enumMonster.name + " " + enumMonster.getSuffix() + " ";

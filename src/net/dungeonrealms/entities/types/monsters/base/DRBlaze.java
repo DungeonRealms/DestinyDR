@@ -31,8 +31,9 @@ public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze i
 	protected EnumMonster monsterType;
 	public DRBlaze(World world, EnumMonster monster, int tier, EnumEntityType entityType, boolean setArmor) {
 		this(world);
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(7d);
-        this.getAttributeInstance(GenericAttributes.c).setValue(0.6d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(10d);
+        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.3333D);
+        this.getAttributeInstance(GenericAttributes.c).setValue(0.4d);
 		monsterType = monster;
 		this.name = monster.name;
 		this.mobHead = monster.mobHead;

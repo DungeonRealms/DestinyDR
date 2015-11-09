@@ -10,6 +10,7 @@ import org.bukkit.Material;
 import org.bukkit.Rotation;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
@@ -35,6 +36,8 @@ import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
+import org.bukkit.event.world.ChunkLoadEvent;
+import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -608,6 +611,9 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMapDrop(PlayerDropItemEvent event) {
+    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
+    	if(nms == null)
+    		return;
         if (!(event.isCancelled())) {
             Player pl = event.getPlayer();
             // The maps gonna drop! DESTROY IT!
@@ -621,11 +627,31 @@ public class MainListener implements Listener {
 
                 pl.playSound(pl.getLocation(), Sound.BAT_TAKEOFF, 1F, 2F);
                 pl.updateInventory();
-            }else if(CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack()).getTag().hasKey("starter")){
+            }else if(nms.getTag().hasKey("starter")){
             	pl.setItemInHand(new ItemStack(Material.AIR));
             	pl.sendMessage("Can't drop starter items!");
             	return;
             }
         }
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void chunkUNload(ChunkUnloadEvent event) {
+     if(event.getChunk().getEntities().length > 0){
+      for(Entity ent : event.getChunk().getEntities()){
+    	  if(!(ent instanceof Player))
+    		  ent.remove();
+      }
+     }
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void chunkLoad(ChunkLoadEvent event) {
+     if(event.getChunk().getEntities().length > 0){
+      for(Entity ent : event.getChunk().getEntities()){
+    	  if(!(ent instanceof Player))
+    		  ent.remove();
+      }
+     }
     }
 }
