@@ -54,7 +54,7 @@ public class ArmorGenerator {
 	 * @return
 	 * @since 1.0
 	 */
-	private ItemStack getArmor(Armor.EquipmentType type, Armor.ArmorTier tier, Armor.ArmorModifier modifier) {
+	public ItemStack getArmor(Armor.EquipmentType type, Armor.ArmorTier tier, Armor.ArmorModifier modifier) {
 		ItemStack item = getBaseItem(type, tier);
 		ArrayList<Armor.ArmorAttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(tier.getAttributeRange()));
 		ItemMeta meta = item.getItemMeta();

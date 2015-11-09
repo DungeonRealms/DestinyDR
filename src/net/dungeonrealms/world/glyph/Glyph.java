@@ -327,7 +327,7 @@ public class Glyph {
             }
         }
 
-
+        itemTag.set("bound", new NBTTagString("true"));
         nmsStack.setTag(itemTag);
 
         ItemStack stack = CraftItemStack.asBukkitCopy(nmsStack);

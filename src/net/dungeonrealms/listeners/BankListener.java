@@ -77,8 +77,10 @@ public class BankListener implements Listener {
     public void onBankClicked(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
         if (e.getInventory().getTitle().equalsIgnoreCase("Bank Chest")) {
+        	e.setCancelled(true);
             if (e.getCursor() != null) {
                 net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(e.getCursor());
+                e.setCancelled(true);
                 if (e.getRawSlot() < 9) {
                     if (e.getRawSlot() == 8) {
                         e.setCancelled(true);
@@ -252,6 +254,8 @@ public class BankListener implements Listener {
                         else if (e.getCurrentItem().getType() == Material.PAPER) {
                             size = e.getCurrentItem().getAmount() * nms.getTag().getInt("worth");
                         }
+                        if(!nms.hasTag())
+                        	return;
                         if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                             e.setCancelled(true);
                             BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);

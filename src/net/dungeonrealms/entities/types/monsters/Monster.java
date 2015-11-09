@@ -7,10 +7,12 @@ import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.banks.BankMechanics;
+import net.dungeonrealms.items.armor.Armor.ArmorTier;
+import net.dungeonrealms.items.armor.Armor.EquipmentType;
+import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.miscellaneous.RandomHelper;
 import net.minecraft.server.v1_8_R3.World;
 
@@ -35,10 +37,13 @@ public interface Monster {
 		}
 
 		if (RandomHelper.getRandomNumberBetween(1, 100) < 10) {
+			ItemStack[] loot = new ItemStack[5];
 			ItemStack[] armor = ((LivingEntity) ent).getEquipment().getArmorContents();
-			armor[3] = null;
-			int number = RandomHelper.getRandomNumberBetween(0, 2);
-			ItemStack armorToDrop = armor[number];
+			ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
+			armor[3] = new ArmorGenerator().getArmor(EquipmentType.HELMET, ArmorTier.getByTier(tier), ArmorGenerator.getRandomItemModifier());
+			loot = new ItemStack[]{armor[0], armor[1], armor[2], armor[3], weapon};
+			int number = RandomHelper.getRandomNumberBetween(0, 4);
+			ItemStack armorToDrop = loot[number];
 			world.getWorld().dropItemNaturally(loc.add(0, 1, 0), armorToDrop);
 		}
 	}
