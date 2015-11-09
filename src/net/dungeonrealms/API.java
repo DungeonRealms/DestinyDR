@@ -371,7 +371,7 @@ public class API {
             player.sendMessage(ChatColor.GREEN + "Successfully received your data.. loading now...");
         }
 
-        GamePlayer gp = new GamePlayer(Bukkit.getPlayer(player.getUniqueId()));
+        GamePlayer gp = new GamePlayer(player);
         API.GAMEPLAYERS.add(gp);
 
         AchievementManager.getInstance().handleLogin(player);

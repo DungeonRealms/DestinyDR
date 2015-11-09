@@ -905,6 +905,7 @@ public class ClickHandler {
                                                         }, 0, 20 * 3);
                                                         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
                                                             gui.open();
+                                                            gui.open();
                                                         }, 20 * 5);
                                                     } else {
                                                         player.sendMessage(ChatColor.RED + "You have already used your free stat reset for your character.");

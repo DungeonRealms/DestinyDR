@@ -1,5 +1,6 @@
 package net.dungeonrealms.world.glyph;
 
+import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.items.DamageMeta;
 import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.ItemGenerator;
@@ -83,19 +84,19 @@ public class Glyph {
         switch (tier) {
             case 1:
                 return new ItemBuilder().setItem(new ItemStack(381), ChatColor.WHITE + "Unknown Glyph", new String[]{
-                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
+                }).setNBTString("glyph", "true").setNBTInt("glyphTier", tier).build();
             case 2:
                 return new ItemBuilder().setItem(new ItemStack(381), ChatColor.GREEN + "Unknown Glyph", new String[]{
-                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
+                }).setNBTString("glyph", "true").setNBTInt("glyphTier", tier).build();
             case 3:
                 return new ItemBuilder().setItem(new ItemStack(381), ChatColor.AQUA + "Unknown Glyph", new String[]{
-                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
+                }).setNBTString("glyph", "true").setNBTInt("glyphTier", tier).build();
             case 4:
                 return new ItemBuilder().setItem(new ItemStack(381), ChatColor.LIGHT_PURPLE + "Unknown Glyph", new String[]{
-                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
+                }).setNBTString("glyph", "true").setNBTInt("glyphTier", tier).build();
             case 5:
                 return new ItemBuilder().setItem(new ItemStack(381), ChatColor.YELLOW + "Unknown Glyph", new String[]{
-                }).setNBTString("glyph", "true").setNBTInt("tier", tier).build();
+                }).setNBTString("glyph", "true").setNBTInt("glyphTier", tier).build();
             default:
                 return null;
         }
@@ -111,7 +112,7 @@ public class Glyph {
         tag.set("glyphType", new NBTTagString(glyphType.getName()));
 
 
-        int randomizedTier = 0;
+        int randomizedTier;
 
         switch (tier) {
             case 1:
@@ -165,8 +166,8 @@ public class Glyph {
             case WEAPON:
                 StringBuilder weaponAttribute = new StringBuilder();
                 for (Item.AttributeType weaponAttributeType : getGlyphWeaponAttributes(randomizedTier)) {
-                    if (((Item.AttributeType) weaponAttributeType) == null) continue;
-                    Item.AttributeType type = ((Item.AttributeType) weaponAttributeType);
+                    if ((weaponAttributeType) == null) continue;
+                    Item.AttributeType type = (weaponAttributeType);
                     //Get the value
                     int value = new DamageMeta().nextWeapon(Item.ItemTier.getByTier(randomizedTier), Item.ItemModifier.getById((randomizedTier - 1)), Item.AttributeType.getByString(type.getNBTName()));
                     weaponAttribute.append(type.getNBTName()).append("@").append(value).append(",");
@@ -204,7 +205,7 @@ public class Glyph {
         meta.setLore(lore);
         item.setItemMeta(meta);
 
-        return item;
+        return AntiCheat.getInstance().applyAntiDupe(item);
     }
 
     ArrayList<Item.AttributeType> getGlyphWeaponAttributes(int amountOfAttributes) {
