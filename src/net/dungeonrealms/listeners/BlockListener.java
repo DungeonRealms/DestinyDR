@@ -59,8 +59,8 @@ public class BlockListener implements Listener {
         if (event.getItemInHand() == null) return;
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemInHand());
         if (nmsItem == null) return;
+        if (!event.getBlockPlaced().getWorld().equals(Bukkit.getWorlds().get(0))) return;
         NBTTagCompound tag = nmsItem.getTag();
-        if (tag == null || !tag.getString("type").equalsIgnoreCase("important")) return;
         event.setCancelled(true);
     }
 

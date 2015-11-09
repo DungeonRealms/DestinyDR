@@ -2,6 +2,7 @@ package net.dungeonrealms.chat;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.guild.Guild;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumGuildData;
@@ -68,12 +69,15 @@ public class Chat {
 
         Rank.RankBlob r = Rank.getInstance().getRank(uuid);
         if (r != null && !r.getPrefix().equals("null")) {
-            if (r.getName().equalsIgnoreCase("default")) {
+            if (r.getName().equalsIgnoreCase("DEFAULT")) {
+                System.out.println("RNAK IS DEFAULT");
                 prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.GRAY + ""));
-            } else {
+            } else if (!r.getName().equalsIgnoreCase("DEFAULT")) {
+                System.out.println("RANK IS NOT DEFAULT");
                 prefix.append(ChatColor.translateAlternateColorCodes('&', " " + r.getPrefix() + ChatColor.RESET));
             }
-
+        } else {
+            Utils.log.warning("Rank is null for player: " + event.getPlayer().getName());
         }
 
         if (!Guild.getInstance().isGuildNull(uuid)) {
@@ -82,7 +86,9 @@ public class Chat {
         }
 
         if (gChat) {
-            event.setFormat(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage());
+            if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, event.getPlayer().getUniqueId())) {
+                event.setFormat(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage());
+            }
         } else {
             event.setCancelled(true);
             API.getNearbyPlayers(event.getPlayer().getLocation(), 100).stream().forEach(player -> player.sendMessage(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage()));

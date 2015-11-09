@@ -141,9 +141,9 @@ public class RepairAPI {
         if (tag == null) return 0;
         if (tag.getInt("itemTier") == 0 && tag.getInt("armorTier") == 0) return 0;
         double durabilityHitsLeft = durability / 1500;
-        double percentDurability = itemStack.getType().getMaxDurability() - (1500 * durabilityHitsLeft);
-        if (percentDurability == 1500) {
-            percentDurability = 1500 - 1;
+        double percentDurability = itemStack.getType().getMaxDurability() - (itemStack.getType().getMaxDurability() * durabilityHitsLeft);
+        if (percentDurability == itemStack.getType().getMaxDurability()) {
+            percentDurability = itemStack.getType().getMaxDurability() - 1;
         }
         return Math.round(percentDurability);
     }
@@ -465,7 +465,5 @@ public class RepairAPI {
         if (newItemDurability > 0.1D) {
             setCustomItemDurability(itemStack, newItemDurability);
         }
-
-        player.updateInventory();
     }
 }

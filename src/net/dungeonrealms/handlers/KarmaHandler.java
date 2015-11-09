@@ -38,7 +38,7 @@ public class KarmaHandler implements GenericMechanic {
     public static List<Location> CHAOTIC_RESPAWNS = new ArrayList<>();
 
     public enum EnumPlayerAlignments {
-        LAWFUL(0, "lawful", ChatColor.GREEN, "-30% Durability Arm/Wep on Death"),
+        LAWFUL(0, "lawful", ChatColor.WHITE, "-30% Durability Arm/Wep on Death"),
         NEUTRAL(1, "neutral", ChatColor.YELLOW, "25%/50% Arm/Wep LOST on Death"),
         CHAOTIC(2, "chaotic", ChatColor.RED, "Inventory LOST on Death"),
         NONE(3, "none", ChatColor.GRAY, "-30% Durability Arm/Wep on Death");
@@ -229,7 +229,10 @@ public class KarmaHandler implements GenericMechanic {
                                 ""
                         });
                     }
-                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.GREEN, API.getGamePlayer(player).getLevel());
+                    if(API.getGamePlayer(player) == null) {
+                        Bukkit.broadcastMessage("player is null!");
+                    }
+                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, API.getGamePlayer(player).getLevel());
                     /*if (RealmManager.getInstance().getPlayerRealm(player) != null) {
                         RealmManager.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + "(s) REALM");
                     }*/

@@ -49,7 +49,7 @@ public class HealthHandler implements GenericMechanic {
     }
 
     public void startInitialization() {
-        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::updatePlayerHPBars, 40, 5L);
+        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::updatePlayerHPBars, 40, 6L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40, 20L);
     }
 
@@ -473,7 +473,7 @@ public class HealthHandler implements GenericMechanic {
                     //player.setHealth(0);
                     KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, damager);
                     CombatLog.removeFromCombat(player);
-                    Bukkit.broadcastMessage(player.getName() + " has died.");
+                    API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(player.getName() + " has died!"));
                     return;
                 }
             } else {
@@ -482,7 +482,7 @@ public class HealthHandler implements GenericMechanic {
                 //TODO: WATCH THIS
                 //player.setHealth(0);
                 KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, damager);
-                Bukkit.broadcastMessage(player.getName() + " has died.");
+                API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(player.getName() + " has died!"));
                 return;
             }
         }

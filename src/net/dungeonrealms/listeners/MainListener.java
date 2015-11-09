@@ -7,8 +7,11 @@ import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Rotation;
+import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -17,6 +20,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -26,12 +30,11 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerFishEvent.State;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
-import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -49,7 +52,6 @@ import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.TradeHandler;
 import net.dungeonrealms.inventory.GUI;
 import net.dungeonrealms.inventory.NPCMenus;
-import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.profession.Fishing;
@@ -68,33 +70,9 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onChat(AsyncPlayerChatEvent event) {
-        if (event.getMessage().contains("@")) {
-            String split = event.getMessage().split("@")[0];
-            Bukkit.getOnlinePlayers().stream().filter(player -> player.getName().startsWith(split)).forEach(player1 -> {
-                event.setCancelled(true);
-                player1.sendMessage(ChatColor.GRAY + "From " + event.getPlayer().getDisplayName() + ": " + event.getMessage());
-            });
-        }
         Chat.getInstance().doChat(event);
     }
-    
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void onCraft(CraftItemEvent event){
-    	event.setCancelled(true);
-    }
-    
-    @EventHandler
-    public void onEntityImmunityAfterHit(EntityDamageByEntityEvent e) {
-        if (e.getCause() == DamageCause.PROJECTILE) {
-            return;
-        }
-        // MC patch 1.8 added a 0.5 second (10 tick) mob immunity after each hit.  Cancel it here!
-        if (e.getEntity() instanceof LivingEntity && !(e.getEntity() instanceof Player)) {
-            LivingEntity ent = (LivingEntity) e.getEntity();
-            ent.setMaximumNoDamageTicks(0);
-            ent.setNoDamageTicks(0);
-        }
-    }
+
     /**
      * This event is used for the Database.
      *
@@ -109,17 +87,6 @@ public class MainListener implements Listener {
         }
         DatabaseAPI.getInstance().requestPlayer(event.getUniqueId());
     }
-    
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void onAsyncJoin(ChunkUnloadEvent event) {
-    	if(event.getChunk().getEntities().length > 0){
-    		for(Entity ent : event.getChunk().getEntities()){
-    			ent.remove();
-    		}
-    	}
-    }
-    
-    
 
     /**
      * This event is the main event once the player has actually entered the
@@ -477,6 +444,12 @@ public class MainListener implements Listener {
         }
     }
 
+    /**
+     * Handle players catching fish, gives them exp/fish
+     *
+     * @param event
+     * @since 1.0
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void catchFish(PlayerFishEvent event) {
         if (event.getState().equals(State.FISHING)) {
@@ -489,7 +462,7 @@ public class MainListener implements Listener {
             Player p = event.getPlayer();
             ItemStack stack = p.getItemInHand();
             if (stack != null && stack.getType() == Material.FISHING_ROD) {
-                RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInHand(), 1);
+                p.getItemInHand().setDurability((short) (stack.getDurability() + 1));
                 if (event.getState() == State.CAUGHT_FISH) {
                     if (Fishing.isDRFishingPole(stack)) {
                         event.getCaught().remove();
@@ -509,6 +482,12 @@ public class MainListener implements Listener {
         }
     }
 
+    /**
+     * Checks for players quitting the merchant NPC
+     *
+     * @param event
+     * @since 1.0
+     */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerCloseInventory(InventoryCloseEvent event) {
         if (!event.getInventory().getName().equalsIgnoreCase("Merchant")) {
@@ -543,18 +522,110 @@ public class MainListener implements Listener {
         player.sendMessage(ChatColor.YELLOW + "Trade Cancelled!");
     }
 
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onItemBreak(PlayerItemBreakEvent event) {
-        if (RepairAPI.getCustomDurability(event.getBrokenItem()) > 1) {
-            event.getBrokenItem().setAmount(1);
-            event.getBrokenItem().setDurability(event.getBrokenItem().getType().getMaxDurability());
-        }
+    
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void onCraft(CraftItemEvent event){
+     event.setCancelled(true);
     }
     
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void playerDropItem(PlayerDropItemEvent event){
-        if(CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack()).getTag().hasKey("starter")){
-        	event.getItemDrop().remove();
+    @EventHandler
+    public void onEntityImmunityAfterHit(EntityDamageByEntityEvent e) {
+        if (e.getCause() == DamageCause.PROJECTILE) {
+            return;
+        }
+        // MC patch 1.8 added a 0.5 second (10 tick) mob immunity after each hit.  Cancel it here!
+        if (e.getEntity() instanceof LivingEntity && !(e.getEntity() instanceof Player)) {
+            LivingEntity ent = (LivingEntity) e.getEntity();
+            ent.setMaximumNoDamageTicks(0);
+            ent.setNoDamageTicks(0);
+        }
+    }
+    /**
+     * Checks for player punching a map on a wall
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerHitMap(HangingBreakByEntityEvent event) {
+        if (event.getRemover() instanceof Player && event.getEntity() instanceof ItemFrame) {
+            Player player = (Player) event.getRemover();
+            ItemFrame itemFrame = (ItemFrame) event.getEntity();
+            if (player.getInventory().firstEmpty() != -1 && (itemFrame.getItem().getType() == Material.MAP)) {
+                ItemStack map = itemFrame.getItem();
+                if (!(player.getInventory().contains(map))) {
+                    player.getInventory().addItem(map);
+                    player.updateInventory();
+                    player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1F, 0.8F);
+                }
+            }
+        }
+    }
+
+    /**
+     * Checks for player punching a map on a wall
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerHitMapItemFrame(EntityDamageByEntityEvent event) {
+        if (event.getEntity().getType() == EntityType.ITEM_FRAME) {
+            ItemFrame is = (ItemFrame) event.getEntity();
+            is.setItem(is.getItem());
+            is.setRotation(Rotation.NONE);
+            event.setCancelled(true);
+            if (event.getDamager() instanceof Player) {
+                if (is.getItem().getType() != Material.MAP) return;
+                Player plr = (Player) event.getDamager();
+                if (plr.getInventory().contains(is.getItem())) {
+                    return;
+                }
+                plr.getInventory().addItem(is.getItem());
+            }
+        }
+    }
+
+    /**
+     * Prevents players from shearing sheep etc.
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerShearEntityEvent(PlayerShearEntityEvent event) {
+        if (event.getPlayer().isOp()) {
+            return;
+        }
+        event.setCancelled(true);
+    }
+
+    /**
+     * Prevents players from dropping maps
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onMapDrop(PlayerDropItemEvent event) {
+        if (!(event.isCancelled())) {
+            Player pl = event.getPlayer();
+            // The maps gonna drop! DESTROY IT!
+            if (event.getItemDrop().getItemStack().getType() == Material.MAP) {
+                event.getItemDrop().remove();
+                if (pl.getItemInHand().getType() == Material.MAP) {
+                    pl.setItemInHand(new ItemStack(Material.AIR));
+                } else if (pl.getItemOnCursor().getType() == Material.MAP) {
+                    pl.setItemOnCursor(new ItemStack(Material.AIR));
+                }
+
+                pl.playSound(pl.getLocation(), Sound.BAT_TAKEOFF, 1F, 2F);
+                pl.updateInventory();
+            }else if(CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack()).getTag().hasKey("starter")){
+            	pl.setItemInHand(new ItemStack(Material.AIR));
+            	pl.sendMessage("Can't drop starter items!");
+            	return;
+            }
         }
     }
 }

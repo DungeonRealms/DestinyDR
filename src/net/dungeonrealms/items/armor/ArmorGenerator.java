@@ -66,18 +66,20 @@ public class ArmorGenerator {
 
 		attributeTypes.stream().filter(aType -> aType != null).forEach(aType -> {
 			int i = new DamageMeta().nextArmor(tier, modifier, aType);
-			switch (type) {
-				case HELMET:
-					i *= 0.7;
-					break;
-				case LEGGINGS:
-					i *= 0.9;
-					break;
-				case BOOTS:
-					i *= 0.7;
-					break;
-				default:
-					break;
+			if (aType == Armor.ArmorAttributeType.HEALTH_POINTS) {
+				switch (type) {
+					case HELMET:
+						i *= 0.7;
+						break;
+					case LEGGINGS:
+						i *= 0.9;
+						break;
+					case BOOTS:
+						i *= 0.7;
+						break;
+					default:
+						break;
+				}
 			}
 			attributeTypeIntegerHashMap.put(aType, i);
 			itemLore.add(setCorrectArmorLore(aType, i));
@@ -165,6 +167,11 @@ public class ArmorGenerator {
 	 */
 	private ArrayList<Armor.ArmorAttributeType> getRandomAttributes(int amountOfAttributes) {
 		ArrayList<Armor.ArmorAttributeType> attributeList = new ArrayList<>();
+		if (new Random().nextBoolean()) {
+			attributeList.add(Armor.ArmorAttributeType.ARMOR);
+		} else {
+			attributeList.add(Armor.ArmorAttributeType.DAMAGE);
+		}
 		attributeList.add(Armor.ArmorAttributeType.HEALTH_POINTS);
 		if (new Random().nextBoolean()) {
 			attributeList.add(Armor.ArmorAttributeType.HEALTH_REGEN);

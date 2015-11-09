@@ -21,6 +21,8 @@ import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.spawning.BuffManager;
 import net.dungeonrealms.spawning.MobSpawner;
 import net.dungeonrealms.spawning.SpawningMechanics;
@@ -65,8 +67,11 @@ public class DamageListener implements Listener {
     public void onBuffExplode(EntityExplodeEvent event) {
         if (!(event.getEntity().hasMetadata("type"))) return;
         event.blockList().clear();
+        event.setYield(0.1F);
+        event.setCancelled(true);
         if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("buff")) {
             event.setCancelled(true);
+            event.blockList().clear();
             int radius = event.getEntity().getMetadata("radius").get(0).asInt();
             int duration = event.getEntity().getMetadata("duration").get(0).asInt();
             PotionEffectType effectType = PotionEffectType.getByName(event.getEntity().getMetadata("effectType").get(0).asString());
@@ -190,6 +195,7 @@ public class DamageListener implements Listener {
             if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
             if (attacker.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(attacker.getUniqueId()) <= 0) {
                 event.setCancelled(true);
+                event.setDamage(0);
                 attacker.playSound(attacker.getLocation(), Sound.WOLF_PANT, 12F, 1.5F);
                 try {
                     ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, event.getEntity().getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
@@ -203,16 +209,34 @@ public class DamageListener implements Listener {
             } else {
                 CombatLog.addToCombat(attacker);
             }
-            if (API.isPlayer(event.getEntity())) {
+            if (API.isPlayer(event.getEntity()) && !DuelMechanics.isDueling(event.getEntity().getUniqueId())) {
                 KarmaHandler.getInstance().handleAlignmentChanges(attacker);
             }
             EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getItemInHand()));
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);
+
+            if (API.isPlayer(event.getDamager()) && API.isPlayer(event.getEntity())) {
+                if (API.getGamePlayer((Player) event.getEntity()) != null && API.getGamePlayer((Player) event.getDamager()) != null) {
+                    if (API.getGamePlayer((Player) event.getEntity()).getPlayerAlignment() == KarmaHandler.EnumPlayerAlignments.LAWFUL) {
+                        if (API.getGamePlayer((Player) event.getDamager()).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, event.getDamager().getUniqueId()).toString())) {
+                                if (finalDamage >= HealthHandler.getInstance().getPlayerHPLive((Player) event.getEntity())) {
+                                    event.setCancelled(true);
+                                    event.setDamage(0);
+                                    event.getDamager().sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + event.getEntity().getName() + "!");
+                                    event.getEntity().sendMessage(ChatColor.YELLOW + event.getDamager().getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
+                                    return;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
         } else if (event.getDamager().getType() == EntityType.ARROW) {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof Player)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((Player) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
-            if (API.isPlayer(event.getEntity())) {
+            if (API.isPlayer(event.getEntity()) && !DuelMechanics.isDueling(event.getEntity().getUniqueId())) {
                 KarmaHandler.getInstance().handleAlignmentChanges((Player) attackingArrow.getShooter());
             }
             if (CombatLog.isInCombat(((Player) attackingArrow.getShooter()))) {
@@ -224,7 +248,7 @@ public class DamageListener implements Listener {
             Snowball staffProjectile = (Snowball) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof Player)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((Player) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
-            if (API.isPlayer(event.getEntity())) {
+            if (API.isPlayer(event.getEntity()) && !DuelMechanics.isDueling(event.getEntity().getUniqueId())) {
                 KarmaHandler.getInstance().handleAlignmentChanges((Player) staffProjectile.getShooter());
             }
             if (CombatLog.isInCombat(((Player) staffProjectile.getShooter()))) {
@@ -647,8 +671,8 @@ public class DamageListener implements Listener {
             if (finalSavedArmorContents) {
                 for (ItemStack itemStack : armorToSave) {
                     if (itemStack != null && itemStack.getType() != Material.AIR) {
-                        if (RepairAPI.getCustomDurability(itemStack) - 450 > 1D) {
-                            RepairAPI.subtractCustomDurability(player, itemStack, 450);
+                        if (RepairAPI.getCustomDurability(itemStack) - 400 > 0.1D) {
+                            RepairAPI.subtractCustomDurability(player, itemStack, 400);
                         }
                         player.getInventory().addItem(itemStack);
                     }

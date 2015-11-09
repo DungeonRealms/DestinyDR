@@ -45,6 +45,7 @@ public class EnergyHandler implements GenericMechanic {
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::regenerateAllPlayerEnergy, 40, 3L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::removePlayerEnergySprint, 40, 10L);
         Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::addStarvingPotionEffect, 40, 15L);
+        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::regenerateFoodInSafezones, 40, 40L);
     }
 
     @Override
@@ -88,6 +89,18 @@ public class EnergyHandler implements GenericMechanic {
         }
     }
 
+    private void regenerateFoodInSafezones() {
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!API.isInSafeRegion(player.getLocation())) {
+                continue;
+            }
+            if (player.getFoodLevel() >= 20) {
+                continue;
+            }
+            player.setFoodLevel(player.getFoodLevel() + 8);
+        }
+    }
+
     /**
      * Handles the regeneration of energy
      * for all players applicable on the
@@ -110,7 +123,7 @@ public class EnergyHandler implements GenericMechanic {
                 if (player.hasMetadata("starving")) {
                     regenAmount = 0.07F;
                 }
-                regenAmount = regenAmount / 6.3F;
+                regenAmount = regenAmount / 6.2F;
                 GamePlayer gp = API.getGamePlayer(player);
                 if (gp == null || gp.getStats() == null) return;
                 regenAmount += (int) (regenAmount * gp.getStats().getEnergyRegen());
@@ -227,7 +240,7 @@ public class EnergyHandler implements GenericMechanic {
      */
     private void removePlayerEnergySprint() {
         Bukkit.getOnlinePlayers().stream().filter(player -> player.isSprinting() || player.hasMetadata("sprinting")).forEach(player -> {
-            removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 0.135F);
+            removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 0.125F);
             if (getPlayerCurrentEnergy(player.getUniqueId()) <= 0 || player.hasMetadata("starving")) {
                 player.setSprinting(false);
                 player.removeMetadata("sprinting", DungeonRealms.getInstance());
@@ -236,14 +249,11 @@ public class EnergyHandler implements GenericMechanic {
                     if (player.getFoodLevel() > 1) {
                         player.setFoodLevel(1);
                     }
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.JUMP, 20, 150)), 0L);
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "**EXHAUSTED**");
                     if (foodLevel > 1) {
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.setFoodLevel(foodLevel), 60L);
                     }
                 }
-                //TODO: THIS IS A SUPER SKETCHY WAY OF PREVENTING LEFT-CONTROL SPRINTING FROM OVERRIDING. As its CLIENTSIDE setSprinting(false) only cancels it for one tick
-                //TODO: Since this is a plugin and not a mod, we can't toggle keypresses clientside. RIP.
             }
         });
     }
@@ -261,6 +271,7 @@ public class EnergyHandler implements GenericMechanic {
         Player player = Bukkit.getPlayer(uuid);
         if (player.isOp()) return;
         if (player.getGameMode() == GameMode.CREATIVE) return;
+        if (API.isInSafeRegion(player.getLocation())) return;
         if (player.hasMetadata("last_energy_remove")) {
             if ((System.currentTimeMillis() - player.getMetadata("last_energy_remove").get(0).asLong()) < 100) {
                 return;
@@ -309,49 +320,49 @@ public class EnergyHandler implements GenericMechanic {
 
         switch (material) {
             case AIR:
-                return 0.045F;
+                return 0.041F;
             case WOOD_SWORD:
-                return 0.054F;
+                return 0.05F;
             case STONE_SWORD:
-                return 0.064F;
+                return 0.06F;
             case IRON_SWORD:
-                return 0.075F;
+                return 0.071F;
             case DIAMOND_SWORD:
-                return 0.113F;
+                return 0.109F;
             case GOLD_SWORD:
-                return 0.123F;
+                return 0.119F;
             case WOOD_AXE:
-                return 0.07062F;
+                return 0.07F;
             case STONE_AXE:
-                return 0.08393F;
+                return 0.083F;
             case IRON_AXE:
-                return 0.099F;
-            case DIAMOND_AXE:
-                return 0.1243F;
-            case GOLD_AXE:
-                return 0.1353F;
-            case WOOD_SPADE:
-                return 0.0642F;
-            case STONE_SPADE:
-                return 0.0763F;
-            case IRON_SPADE:
                 return 0.09F;
-            case DIAMOND_SPADE:
-                return 0.113F;
-            case GOLD_SPADE:
+            case DIAMOND_AXE:
                 return 0.123F;
+            case GOLD_AXE:
+                return 0.134F;
+            case WOOD_SPADE:
+                return 0.063F;
+            case STONE_SPADE:
+                return 0.075F;
+            case IRON_SPADE:
+                return 0.087F;
+            case DIAMOND_SPADE:
+                return 0.111F;
+            case GOLD_SPADE:
+                return 0.121F;
             case WOOD_HOE:
-                return 0.12F;
+                return 0.118F;
             case STONE_HOE:
-                return 0.13F;
+                return 0.128F;
             case IRON_HOE:
-                return 0.14F;
+                return 0.138F;
             case DIAMOND_HOE:
-                return 0.15F;
+                return 0.148F;
             case GOLD_HOE:
-                return 0.16F;
+                return 0.158F;
             case BOW:
-                return 0.093F;
+                return 0.091F;
             default:
                 return 0.1F;
         }
