@@ -1,22 +1,19 @@
 package net.dungeonrealms.entities.types.monsters;
 
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Projectile;
-import org.bukkit.inventory.ItemStack;
-
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.base.DRSkeleton;
+import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.items.Item.ItemType;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.Armor;
 import net.dungeonrealms.items.armor.ArmorGenerator;
-import net.dungeonrealms.mastery.MetadataUtils;
 import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.EntityWitherSkull;
-import net.minecraft.server.v1_8_R3.MathHelper;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.World;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by Chase on Sep 21, 2015
@@ -71,7 +68,7 @@ public class EntityFireImp extends DRSkeleton {
 
     @Override
     public void a(EntityLiving entity, float f) {
-        double d0 = entity.locX - this.locX;
+        /*double d0 = entity.locX - this.locX;
         float f1 = MathHelper.c(f) * 0.5F;
         double d1 = entity.getBoundingBox().b + entity.length / 2.0F - (this.locY + this.length / 2.0F);
         double d2 = entity.locZ - this.locZ;
@@ -83,7 +80,11 @@ public class EntityFireImp extends DRSkeleton {
         NBTTagCompound tag = nmsItem.getTag();
         MetadataUtils.registerProjectileMetadata(tag, projectileWitherSkull, tier);
         this.makeSound("random.bow", 1.0F, 1.0F / (0.8F));
-        this.world.addEntity(entityWitherSkull);
+        this.world.addEntity(entityWitherSkull);*/
+
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
+        NBTTagCompound tag = nmsItem.getTag();
+        DamageAPI.fireStaffProjectileMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entity.getBukkitEntity());
     }
 
 }

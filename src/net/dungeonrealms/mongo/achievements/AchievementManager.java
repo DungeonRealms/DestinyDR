@@ -53,7 +53,7 @@ public class AchievementManager implements GenericMechanic, Listener {
             KarmaHandler.getInstance().tellPlayerRegionInfo(player);
             Bukkit.getServer().getPluginManager().callEvent(new PlayerEnterRegionEvent(player, region));
             REGION_TRACKER.put(player.getUniqueId(), region);
-        }), 0, 80L);
+        }), 0, 60L);
     }
 
     @Override

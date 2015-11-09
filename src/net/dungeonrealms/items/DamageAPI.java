@@ -216,18 +216,10 @@ public class DamageAPI {
                 nmsTags[3] = CraftItemStack.asNMSCopy(attackerArmor[0]).getTag();
             }
         }
-        for (NBTTagCompound nmsTag : nmsTags) {
-            if (nmsTag == null) {
-                damage += 0;
-            } else {
-                if (nmsTag.getDouble("damage") != 0) {
-                    damage += nmsTag.getDouble("damage");
-                }
-            }
-        }
         int damageRandomizer = ItemGenerator.getRandomDamageVariable(projectile.getMetadata("itemTier").get(0).asInt());
         damage = Utils.randInt(((int) Math.round(projectile.getMetadata("damage").get(0).asDouble() - projectile.getMetadata("damage").get(0).asDouble() / damageRandomizer)),
                 (int) Math.round(projectile.getMetadata("damage").get(0).asDouble() + projectile.getMetadata("damage").get(0).asDouble() / (damageRandomizer - 1)));
+
         boolean isHitCrit = false;
         if (API.isPlayer(receiver)) {
             if (projectile.getMetadata("vsPlayers").get(0).asDouble() != 0) {
@@ -247,10 +239,6 @@ public class DamageAPI {
 
         if (projectile.getMetadata("armorPenetration").get(0).asInt() != 0) {
             damage += projectile.getMetadata("armorPenetration").get(0).asInt();
-        }
-
-        if (projectile.getMetadata("accuracy").get(0).asInt() != 0) {
-            damage += projectile.getMetadata("accuracy").get(0).asInt();
         }
 
         if (projectile.getMetadata("dexterity").get(0).asDouble() != 0) {
@@ -384,6 +372,15 @@ public class DamageAPI {
                 case 2:
                     damage *= 1.5;
                     break;
+            }
+        }
+        for (NBTTagCompound nmsTag : nmsTags) {
+            if (nmsTag == null) {
+                damage += 0;
+            } else {
+                if (nmsTag.getDouble("damage") != 0) {
+                    damage += (damage * (nmsTag.getDouble("damage") / 100));
+                }
             }
         }
         if (isHitCrit) {
@@ -645,6 +642,45 @@ public class DamageAPI {
                 projectile.setVelocity(projectile.getVelocity().multiply(2.5));
                 break;
         }
+        projectile.setShooter(player);
+        MetadataUtils.registerProjectileMetadata(tag, projectile, weaponTier);
+    }
+
+    public static void fireStaffProjectileMob(CraftLivingEntity livingEntity, NBTTagCompound tag, LivingEntity target) {
+        if (!(target instanceof Player)) return;
+        org.bukkit.util.Vector vector = target.getLocation().toVector().subtract(livingEntity.getLocation().toVector()).normalize();
+        int weaponTier = tag.getInt("itemTier");
+        Projectile projectile = livingEntity.launchProjectile(Snowball.class);
+        switch (weaponTier) {
+            case 1:
+                vector.multiply(1.05);
+                break;
+            case 2:
+                vector.multiply(1.25);
+                break;
+            case 3:
+                vector.multiply(1.5);
+                break;
+            case 4:
+                vector.multiply(2);
+                break;
+            case 5:
+                vector.multiply(2.5);
+                break;
+        }
+        projectile.setVelocity(vector);
+        projectile.setShooter(livingEntity);
+        MetadataUtils.registerProjectileMetadata(tag, projectile, weaponTier);
+    }
+
+    public static void fireArrowFromMob(CraftLivingEntity livingEntity, NBTTagCompound tag, LivingEntity target) {
+        if (!(target instanceof Player)) return;
+        org.bukkit.util.Vector vector = target.getLocation().toVector().subtract(livingEntity.getLocation().toVector()).normalize();
+        int weaponTier = tag.getInt("itemTier");
+        Projectile projectile = livingEntity.launchProjectile(Arrow.class);
+        vector.multiply(1.5);
+        projectile.setVelocity(vector);
+        projectile.setShooter(livingEntity);
         MetadataUtils.registerProjectileMetadata(tag, projectile, weaponTier);
     }
 }

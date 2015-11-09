@@ -456,12 +456,12 @@ public class HealthHandler implements GenericMechanic {
         }
 
         if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-            player.sendMessage(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.RED + " -> " + ChatColor.GREEN + " [" + newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+            player.sendMessage(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.RED + " -> " + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
         }
 
         if (API.isPlayer(damager)) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, damager.getUniqueId()).toString())) {
-                damager.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + "[" + newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
+                damager.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + "[" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
             }
         }
 
@@ -553,7 +553,7 @@ public class HealthHandler implements GenericMechanic {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
                 String customNameAppended = entity.getCustomName();
                 customNameAppended = ChatColor.stripColor(customNameAppended.substring(customNameAppended.indexOf("]") + 1, customNameAppended.indexOf("❤")).trim());
-                attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + customNameAppended + ChatColor.BOLD + " [" + newHP + "]");
+                attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + customNameAppended + ChatColor.BOLD + "[" + (int) newHP + "HP]");
             }
         }
 
