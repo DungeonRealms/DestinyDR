@@ -110,6 +110,9 @@ public class CommandSet extends BasicCommand {
 				Mining.lvlUp(Mining.getPickTier(player.getItemInHand()), player);
 				player.updateInventory();
 				break;
+			case "shopoff":
+				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
+				break;
 			}
 		}
 		return true;

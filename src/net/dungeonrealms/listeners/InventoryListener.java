@@ -311,7 +311,7 @@ public class InventoryListener implements Listener {
                 if (clicker.getUniqueId().toString().equalsIgnoreCase(shopOwner.toString())) {
                     if (event.getRawSlot() < shop.inventory.getSize()) {
                         ItemStack itemHeld = event.getCursor();
-                        if (itemHeld.getType() == Material.AIR)
+                        if (itemHeld.getType() == Material.AIR || itemHeld == null)
                             return;
                         Player player = clicker;
                         if (player.getInventory().firstEmpty() < 0) {
@@ -320,12 +320,12 @@ public class InventoryListener implements Listener {
                         }
                         event.setCancelled(true);
                         event.setCursor(null);
-                        if(CraftItemStack.asNMSCopy(itemHeld).getTag().hasKey("subtype")){
+                        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemHeld);
+                        if(nmsItem.hasTag() && nmsItem.getTag().hasKey("starter")){
                         	event.setCancelled(true);
                         	player.sendMessage("Can't sell starter Items!");
                         	return;
                         }
-                        // player.getInventory().addItem(itemHeld);
                         player.getInventory().setItem(player.getInventory().firstEmpty(), itemHeld);
                         AnvilGUIInterface gui = AnvilApi.createNewGUI(player, event1 -> {
                             if (event1.getSlot() == AnvilSlot.OUTPUT) {
