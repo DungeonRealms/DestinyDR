@@ -55,8 +55,9 @@ public class Chat {
 
         if (event.getMessage().startsWith("@")) {
             String playerName = event.getMessage().replace("@", "").split(" ")[0];
-            Bukkit.getOnlinePlayers().stream().filter(player -> player.getName().equalsIgnoreCase(playerName)).forEach(player1 -> {
+            Bukkit.getOnlinePlayers().stream().filter(player -> player.getName().equalsIgnoreCase(playerName)).limit(1).forEach(player1 -> {
                 player1.sendMessage(ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage().replace("@" + playerName, ""));
+                event.getPlayer().sendMessage((ChatColor.GRAY + playerName + " -> " + event.getMessage().replace("@" + playerName, "")));
             });
             event.setCancelled(true);
             return;
@@ -73,17 +74,15 @@ public class Chat {
         boolean gChat = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, uuid);
 
         prefix.append(gChat ?
-                ChatColor.GREEN + "<" + ChatColor.BOLD + "G" + ChatColor.GREEN + ">" + ChatColor.RESET + ""
+                ChatColor.GREEN + "<" + ChatColor.AQUA.toString() + ChatColor.BOLD + "G" + ChatColor.GREEN + ">" + ChatColor.RESET + ""
                 :
                 ChatColor.GREEN + "<" + ChatColor.BOLD + "L" + ChatColor.GREEN + ">" + ChatColor.RESET + "");
 
         Rank.RankBlob r = Rank.getInstance().getRank(uuid);
         if (r != null && !r.getPrefix().equals("null")) {
             if (r.getName().equalsIgnoreCase("DEFAULT")) {
-                System.out.println("RNAK IS DEFAULT");
                 prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.GRAY + ""));
             } else if (!r.getName().equalsIgnoreCase("DEFAULT")) {
-                System.out.println("RANK IS NOT DEFAULT");
                 prefix.append(ChatColor.translateAlternateColorCodes('&', " " + r.getPrefix() + ChatColor.RESET));
             }
         } else {

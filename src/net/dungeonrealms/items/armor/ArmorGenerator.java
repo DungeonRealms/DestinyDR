@@ -227,6 +227,8 @@ public class ArmorGenerator {
 			return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + i + "%";
 		case DODGE:
 			return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + i + "%";
+		case HEALTH_REGEN:
+			return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + i + "/S";
 		default:
 			return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + i;
 		}
