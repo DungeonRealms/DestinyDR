@@ -24,6 +24,8 @@ import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.miscellaneous.ItemBuilder;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.profession.Fishing;
+import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.spawning.BuffManager;
 import net.dungeonrealms.spawning.MobSpawner;
 import net.dungeonrealms.spawning.SpawningMechanics;
@@ -598,6 +600,7 @@ public class DamageListener implements Listener {
         event.setDeathMessage("");
         Player player = event.getEntity();
         ItemStack armorToSave[] = new ItemStack[5];
+        ArrayList<ItemStack> savedItems = new ArrayList<ItemStack>();
         Location respawnLocation = Teleportation.Cyrennica;
         boolean savedArmorContents = false;
         if (EntityAPI.hasPetOut(player.getUniqueId())) {
@@ -616,6 +619,18 @@ public class DamageListener implements Listener {
             EntityAPI.getPlayerMount(player.getUniqueId());
             player.sendMessage("For it's own safety, your mount has returned to the stable.");
         }
+        
+        for(ItemStack stack : event.getEntity().getInventory()){
+        	if(stack == null || stack.getType() == Material.AIR) continue;
+        	if(Mining.isDRPickaxe(stack) || Fishing.isDRFishingPole(stack)){
+        		if (RepairAPI.getCustomDurability(stack) - 400 > 0.1D) {
+                    RepairAPI.subtractCustomDurability(player, stack, 400);
+                    savedItems.add(stack);
+                }
+        	}
+        }
+        
+        
         if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.LAWFUL.name())) {
             if (player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR) {
                 armorToSave[4] = player.getItemInHand();

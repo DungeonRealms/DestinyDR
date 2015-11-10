@@ -10,8 +10,10 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
+import net.dungeonrealms.items.Item.ItemModifier;
 import net.dungeonrealms.items.ItemGenerator;
 import net.minecraft.server.v1_8_R3.EntitySkeleton;
 import net.minecraft.server.v1_8_R3.GenericAttributes;
@@ -76,11 +78,11 @@ public class DRWitherSkeleton extends EntitySkeleton implements Monster{
 		return CraftItemStack.asNMSCopy(head);
 	}
 
-	private ItemStack getTierWeapon(int tier) {
-		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.BOW,
-		        net.dungeonrealms.items.Item.ItemTier.getByTier(tier), net.dungeonrealms.items.Item.ItemModifier.COMMON);
-	}
-
+	   private ItemStack getTierWeapon(int tier) {
+	    	ItemStack item = new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.BOW, net.dungeonrealms.items.Item.ItemTier.getByTier(tier), ItemModifier.COMMON);
+	        AntiCheat.getInstance().applyAntiDupe(item);
+	        return item;
+	    }
 	@Override
 	public void onMonsterAttack(Player p) {
 		// TODO Auto-generated method stub

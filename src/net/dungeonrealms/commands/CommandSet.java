@@ -106,6 +106,10 @@ public class CommandSet extends BasicCommand {
 				player.getWorld().getLivingEntities().forEach(org.bukkit.entity.Entity::remove);
 				getSpawners().forEach(net.dungeonrealms.spawning.MobSpawner::kill);
 				break;
+			case "pick":
+				Mining.lvlUp(Mining.getPickTier(player.getItemInHand()), player);
+				player.updateInventory();
+				break;
 			}
 		}
 		return true;

@@ -80,14 +80,15 @@ public class EnergyListener implements Listener {
             event.setCancelled(true);
             return;
         }
+        if (weapon.getType() != Material.AIR && Mining.isDRPickaxe(weapon)) {
+            return;
+        }
         if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player.getUniqueId()) <= 0) {
             event.setUseItemInHand(Event.Result.DENY);
             event.setCancelled(true);
             return;
         }
-        if (weapon.getType() != Material.AIR && Mining.isDRPickaxe(weapon)) {
-            return;
-        }
+
         if (player.hasMetadata("last_Attack")) {
             if (System.currentTimeMillis() - player.getMetadata("last_Attack").get(0).asLong() < 100){
                 event.setUseItemInHand(Event.Result.DENY);

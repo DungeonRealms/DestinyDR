@@ -80,8 +80,19 @@ public class Mining implements GenericMechanic {
 	 * @return Integer
 	 */
 	public static int getPickTier(ItemStack stack) {
-		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-		return nms.getTag().getInt("itemTier");
+		switch(stack.getType()){
+		case WOOD_PICKAXE:
+			return 1;
+		case STONE_PICKAXE:
+			return 2;
+		case IRON_PICKAXE:
+			return 3;
+		case DIAMOND_PICKAXE:
+			return 4;
+		case GOLD_PICKAXE:
+			return 5;
+		}
+		return 1;
 	}
 
 	/**
@@ -183,6 +194,14 @@ public class Mining implements GenericMechanic {
 		p.setItemInHand(stackInHand);
 	}
 
+	
+	 public static int getBreakChance(ItemStack is) {
+	        int i_level = CraftItemStack.asNMSCopy(is).getTag().getInt("level");
+	        int win = 50;
+	        win += ((i_level % 20) * 3);
+	        return win;
+	    }
+	 
 	/**
 	 * Sets players item in hand to upgraded Tier
 	 *
@@ -190,7 +209,7 @@ public class Mining implements GenericMechanic {
 	 * @param p
 	 * @since 1.0
 	 */
-	private static void lvlUp(int tier, Player p) {
+	public static void lvlUp(int tier, Player p) {
 		ItemStack pick = p.getItemInHand();
 		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(pick);
 		int lvl = nms.getTag().getInt("level") + 1;
@@ -209,12 +228,41 @@ public class Mining implements GenericMechanic {
 				pick.setType(getPickType(5));
 				break;
 			}
-			pick.setType(getPickType(tier));
+			p.sendMessage(ChatColor.YELLOW + "Your pick has increased to level " + ChatColor.AQUA + lvl);
 			nms = CraftItemStack.asNMSCopy(pick);
 			nms.getTag().setInt("maxXP", getEXPNeeded(lvl));
 			nms.getTag().setInt("XP", 0);
 			nms.getTag().setInt("level", lvl);
 			pick = CraftItemStack.asBukkitCopy(nms);
+			ItemMeta meta = pick.getItemMeta();
+			ArrayList<String> lore = new ArrayList<String>();
+	        String expBar = ChatColor.RED + "||||||||||" + "||||||||||" + "||||||||||";
+	        lore.add(ChatColor.GRAY.toString() + "Level: " + ChatColor.WHITE.toString() + lvl);
+	        lore.add(ChatColor.GRAY.toString() + "EXP: " + ChatColor.WHITE+ + 0 + ChatColor.GRAY + "/" + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
+	        lore.add(" ");
+	        lore.add(expBar);
+	        lore.add(" ");
+	        switch (tier) {
+	            case 1:
+	                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Wood");
+	                break;
+	            case 2:
+	                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Stone");
+	                break;
+	            case 3:
+	                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Iron");
+	                break;
+	            case 4:
+	                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Diamond");
+	                break;
+	            case 5:
+	                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Gold");
+	                break;
+	            default:
+	                break;
+	        }
+	        meta.setLore(lore);
+	        pick.setItemMeta(meta);
 			p.setItemInHand(pick);
 		}
 	}

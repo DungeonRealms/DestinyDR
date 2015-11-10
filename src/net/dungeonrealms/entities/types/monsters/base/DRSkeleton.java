@@ -2,6 +2,7 @@ package net.dungeonrealms.entities.types.monsters.base;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
@@ -19,6 +20,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.lang.reflect.Field;
+import java.util.Random;
 
 /**
  * Created by Chase on Sep 19, 2015
@@ -107,7 +109,9 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
     }
 
     private ItemStack getTierWeapon(int tier) {
-        return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.BOW, net.dungeonrealms.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);
+    	ItemStack item = new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.BOW, net.dungeonrealms.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);
+        AntiCheat.getInstance().applyAntiDupe(item);
+        return item;
     }
 
     

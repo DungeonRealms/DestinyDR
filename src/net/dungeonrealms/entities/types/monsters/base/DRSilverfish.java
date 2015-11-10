@@ -1,6 +1,9 @@
 package net.dungeonrealms.entities.types.monsters.base;
 
 import net.dungeonrealms.items.Item;
+
+import java.util.Random;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -11,6 +14,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.items.ItemGenerator;
@@ -66,10 +70,11 @@ public class DRSilverfish extends EntitySilverfish implements Monster{
 		return CraftItemStack.asNMSCopy(head);
 	}
 
-	private ItemStack getTierWeapon(int tier) {
-		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.SWORD,
-		        net.dungeonrealms.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);
-	}
+    private ItemStack getTierWeapon(int tier) {
+    	ItemStack item = new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.getById(new Random().nextInt(net.dungeonrealms.items.Item.ItemType.values().length - 2)), net.dungeonrealms.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);
+        AntiCheat.getInstance().applyAntiDupe(item);
+        return item;
+    }
 
 	@Override
 	public void onMonsterAttack(Player p) {

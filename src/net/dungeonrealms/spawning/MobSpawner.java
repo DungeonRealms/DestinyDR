@@ -267,7 +267,6 @@ public class MobSpawner {
 		if(!API.getNearbyPlayers(loc, 35).isEmpty()){
 			timerID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
 				if (isRemoved) {
-					Utils.log.info("Cancelled Task");
 					Bukkit.getScheduler().cancelTask(timerID);
 				} else
 					Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::spawnIn);
@@ -275,7 +274,6 @@ public class MobSpawner {
 		}else{
 			if(timerID != -1){
 				Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-				Utils.log.info("Cancelled Task");
 				Bukkit.getScheduler().cancelTask(timerID);
 				timerID = -1;
 				},20);

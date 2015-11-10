@@ -2,6 +2,7 @@ package net.dungeonrealms.entities.types.monsters.base;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
@@ -93,10 +94,12 @@ public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze i
 		this.setEquipment(4, this.getHead());
 	}
 
-	private ItemStack getTierWeapon(int tier) {
-		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.STAFF, net.dungeonrealms.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);
-	}
-
+    private ItemStack getTierWeapon(int tier) {
+    	ItemStack item =new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.STAFF, net.dungeonrealms.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);
+        AntiCheat.getInstance().applyAntiDupe(item);
+        return item;
+    }
+    
 	@Override
 	protected String z() {
 		return "";
