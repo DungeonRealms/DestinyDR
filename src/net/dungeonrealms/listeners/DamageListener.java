@@ -427,11 +427,21 @@ public class DamageListener implements Listener {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof LivingEntity)) return;
             attacker = (LivingEntity) attackingArrow.getShooter();
+            if (!(attacker instanceof Player && defender instanceof Player)) {
+                event.setCancelled(true);
+                event.setDamage(0);
+                return;
+            }
             armourReducedDamage = DamageAPI.calculateArmorReduction(attackingArrow, defender, defenderArmor);
         } else if (event.getDamager().getType() == EntityType.SNOWBALL) {
             Snowball staffProjectile = (Snowball) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof LivingEntity)) return;
             attacker = (LivingEntity) staffProjectile.getShooter();
+            if (!(attacker instanceof Player && defender instanceof Player)) {
+                event.setCancelled(true);
+                event.setDamage(0);
+                return;
+            }
             armourReducedDamage = DamageAPI.calculateArmorReduction(staffProjectile, defender, defenderArmor);
         }
         if (armourReducedDamage == -1) {
