@@ -87,7 +87,7 @@ public class Burick extends BasicEntitySkeleton implements Boss {
 	}
 
 	@Override
-	protected void setArmor(int tier) {
+	public void setArmor(int tier) {
 		ItemStack[] armor = getArmor();
 		// weapon, boots, legs, chest, helmet/head
 		ItemStack weapon = getWeapon();

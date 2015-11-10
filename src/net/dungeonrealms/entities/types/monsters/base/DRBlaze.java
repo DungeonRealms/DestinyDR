@@ -79,20 +79,22 @@ public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze i
 		head.setItemMeta(meta);
 		return CraftItemStack.asNMSCopy(head);
 	}
-	/**
-	 * set monster armor tier.
-	 * @param tier
-	 */
-	private void setArmor(int tier) {
-		ItemStack[] armor = API.getTierArmor(tier);
-		// weapon, boots, legs, chest, helmet/head
-		ItemStack weapon = getTierWeapon(tier);
-		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-		this.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
-		this.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
-		this.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
-		this.setEquipment(4, this.getHead());
-	}
+	
+    private void setArmor(int tier) {
+        ItemStack[] armor = API.getTierArmor(tier);
+        // weapon, boots, legs, chest, helmet/head
+        ItemStack weapon = getTierWeapon(tier);
+        
+        ItemStack armor0 = AntiCheat.getInstance().applyAntiDupe(armor[0]);
+        ItemStack armor1 = AntiCheat.getInstance().applyAntiDupe(armor[1]);
+        ItemStack armor2 = AntiCheat.getInstance().applyAntiDupe(armor[2]);
+
+        this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
+        this.setEquipment(1, CraftItemStack.asNMSCopy(armor0));
+        this.setEquipment(2, CraftItemStack.asNMSCopy(armor1));
+        this.setEquipment(3, CraftItemStack.asNMSCopy(armor2));
+        this.setEquipment(4, this.getHead());
+    }
 
     private ItemStack getTierWeapon(int tier) {
     	ItemStack item =new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.STAFF, net.dungeonrealms.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);

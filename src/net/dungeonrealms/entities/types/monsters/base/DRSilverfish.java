@@ -47,16 +47,21 @@ public class DRSilverfish extends EntitySilverfish implements Monster{
 
 	}
 
-	protected void setArmor(int tier) {
-		ItemStack[] armor = API.getTierArmor(tier);
-		// weapon, boots, legs, chest, helmet/head
-		ItemStack weapon = getTierWeapon(tier);
-		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-		this.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
-		this.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
-		this.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
-		this.setEquipment(4, this.getHead());
-	}
+    private void setArmor(int tier) {
+        ItemStack[] armor = API.getTierArmor(tier);
+        // weapon, boots, legs, chest, helmet/head
+        ItemStack weapon = getTierWeapon(tier);
+        
+        ItemStack armor0 = AntiCheat.getInstance().applyAntiDupe(armor[0]);
+        ItemStack armor1 = AntiCheat.getInstance().applyAntiDupe(armor[1]);
+        ItemStack armor2 = AntiCheat.getInstance().applyAntiDupe(armor[2]);
+
+        this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
+        this.setEquipment(1, CraftItemStack.asNMSCopy(armor0));
+        this.setEquipment(2, CraftItemStack.asNMSCopy(armor1));
+        this.setEquipment(3, CraftItemStack.asNMSCopy(armor2));
+        this.setEquipment(4, this.getHead());
+    }
 
 	protected String getCustomEntityName() {
 		return this.enumMonster.name;
