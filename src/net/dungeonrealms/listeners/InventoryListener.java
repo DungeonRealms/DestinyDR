@@ -321,7 +321,7 @@ public class InventoryListener implements Listener {
                         event.setCancelled(true);
                         event.setCursor(null);
                         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemHeld);
-                        if(nmsItem.hasTag() && nmsItem.getTag().hasKey("starter")){
+                        if(nmsItem.hasTag() && nmsItem.getTag().hasKey("subtype") && nmsItem.getTag().getString("subtype").equalsIgnoreCase("starter")){
                         	event.setCancelled(true);
                         	player.sendMessage("Can't sell starter Items!");
                         	return;
