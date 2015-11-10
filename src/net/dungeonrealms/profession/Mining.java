@@ -1,8 +1,8 @@
 package net.dungeonrealms.profession;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
+import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,7 +15,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 
@@ -24,28 +23,39 @@ import net.dungeonrealms.mechanics.generic.GenericMechanic;
  */
 public class Mining implements GenericMechanic {
 
-	public static int T1Exp = 100000;
-	public static int T2Exp = 250000;
-	public static int T3Exp = 400000;
-	public static int T4Exp = 550000;
-	public static int T5Exp = 700000;
-
-	public static int getMaxXP(int tier) {
-		switch (tier) {
-		case 1:
-			return T1Exp;
-		case 2:
-			return T2Exp;
-		case 3:
-			return T3Exp;
-		case 4:
-			return T4Exp;
-		case 5:
-			return T5Exp;
-		default:
-			return -1;
-		}
-	}
+	public static int getOreEXP(ItemStack stackInHand, Material m) {
+		//TODO incorporate Modifiers? Enchants? etc.
+		
+        if (m == Material.COAL_ORE) {
+            return 90 + new Random().nextInt(35);
+        }
+        if (m == Material.EMERALD_ORE) {
+            return 275 + new Random().nextInt(35);
+        }
+        if (m == Material.IRON_ORE) {
+            return 460 + new Random().nextInt(80);
+        }
+        if (m == Material.DIAMOND_ORE) {
+            return 820 + new Random().nextInt(40);
+        }
+        if (m == Material.GOLD_ORE) {
+            return 1025 + new Random().nextInt(55);
+        }
+        return 1;
+    }
+	
+    public static int getEXPNeeded(int level) {
+            if (level == 1) {
+                return 176; // formula doens't work on level 1.
+            }
+            if (level == 100) {
+                return 0;
+            }
+            int previous_level = level - 1;
+            return (int) (Math.pow((previous_level), 2) + ((previous_level) * 20) + 150 + ((previous_level) * 4) + getEXPNeeded((previous_level)));
+    }
+	
+	
 
 	/**
 	 * Checks if itemstack is our pickaxe
@@ -70,8 +80,19 @@ public class Mining implements GenericMechanic {
 	 * @return Integer
 	 */
 	public static int getPickTier(ItemStack stack) {
-		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-		return nms.getTag().getInt("itemTier");
+		switch(stack.getType()){
+		case WOOD_PICKAXE:
+			return 1;
+		case STONE_PICKAXE:
+			return 2;
+		case IRON_PICKAXE:
+			return 3;
+		case DIAMOND_PICKAXE:
+			return 4;
+		case GOLD_PICKAXE:
+			return 5;
+		}
+		return 1;
 	}
 
 	/**
@@ -82,35 +103,8 @@ public class Mining implements GenericMechanic {
 	 * @return integer
 	 * @since 1.0
 	 */
-	public static int getExperienceGain(ItemStack stackInHand, Material type) {
-		int pickTier = Mining.getPickTier(stackInHand);
-		int multiplier = 1;
-		int gain = 0;
-		switch (type) {
-		// TODO INCORPORATE LOWER GAIN FOR USING HIGHER PICK ON LOWER TIER;
-		case COAL_ORE:
-			gain = 100;
-			break;
-		case EMERALD_ORE:
-			gain = 200;
-			break;
-		case IRON_ORE:
-			gain = 300;
-			break;
-		case DIAMOND_ORE:
-			gain = 400;
-			break;
-		case GOLD_ORE:
-			gain = 500;
-			break;
-		default:
-			return 0;
-		}
-		gain = (gain * multiplier);
-		int guildExp = (int) (gain * (1.0f / 100.0f));
-		// I Don't Fucking Know, but here's the exxp to give guilds.
-		return gain;
-	}
+//		gain = (gain * multiplier);
+//		int guildExp = (int) (gain * (1.0f / 100.0f));
 
 	/**
 	 * Returns the respawn time of ore in seconds
@@ -123,7 +117,7 @@ public class Mining implements GenericMechanic {
 		switch (oreType) {
 		case COAL_ORE:
 			return 120;
-		case EMERALD_BLOCK:
+		case EMERALD_ORE:
 			return 300;
 		case IRON_ORE:
 			return 600;
@@ -134,7 +128,6 @@ public class Mining implements GenericMechanic {
 		}
 		return 0;
 	}
-
 	/**
 	 * Adds experienceGain to players pick
 	 *
@@ -150,15 +143,14 @@ public class Mining implements GenericMechanic {
 		int tier = nms.getTag().getInt("itemTier");
 		currentXP += experienceGain;
 		if (currentXP > maxXP) {
-			upgradePickaxe(tier, p);
+			lvlUp(tier, p);
 			return;
-		}
-		nms.getTag().setInt("XP", currentXP);
+		}else
+			nms.getTag().setInt("XP", currentXP);
 		stackInHand = CraftItemStack.asBukkitCopy(nms);
 		p.setItemInHand(stackInHand);
 		ItemMeta meta = stackInHand.getItemMeta();
 		ArrayList<String> lore = new ArrayList<>();
-        lore.add(currentXP + "/" + Mining.getMaxXP(tier));
         String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
         double percentDone = 100.0 * currentXP / maxXP;
         double percentDoneDisplay = (percentDone / 100) * 50.0D;
@@ -171,9 +163,9 @@ public class Mining implements GenericMechanic {
         }
         String newexpBar = ChatColor.GREEN.toString() + expBar.substring(0, display) + ChatColor.RED.toString()
         	        + expBar.substring(display, expBar.length());
-        lore.add(newexpBar);
-        
-        lore.add(ChatColor.GREEN.toString() + currentXP + "/" + maxXP);
+        int lvl = CraftItemStack.asNMSCopy(stackInHand).getTag().getInt("level");
+        lore.add(ChatColor.GRAY.toString() + "Level: " + ChatColor.WHITE.toString() + lvl);
+        lore.add(ChatColor.GRAY.toString() + "EXP: " + ChatColor.WHITE+ currentXP + ChatColor.GRAY + "/" + ChatColor.GRAY + maxXP);
         lore.add(" ");
         lore.add(newexpBar);
         lore.add(" ");
@@ -202,6 +194,14 @@ public class Mining implements GenericMechanic {
 		p.setItemInHand(stackInHand);
 	}
 
+	
+	 public static int getBreakChance(ItemStack is) {
+	        int i_level = CraftItemStack.asNMSCopy(is).getTag().getInt("level");
+	        int win = 50;
+	        win += ((i_level % 20) * 3);
+	        return win;
+	    }
+	 
 	/**
 	 * Sets players item in hand to upgraded Tier
 	 *
@@ -209,9 +209,82 @@ public class Mining implements GenericMechanic {
 	 * @param p
 	 * @since 1.0
 	 */
-	private static void upgradePickaxe(int tier, Player p) {
-		if (tier < 6)
-			p.setItemInHand(ItemManager.createPickaxe(tier + 1));
+	public static void lvlUp(int tier, Player p) {
+		ItemStack pick = p.getItemInHand();
+		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(pick);
+		int lvl = nms.getTag().getInt("level") + 1;
+		if (lvl < 101){
+			switch(lvl){
+			case 20:
+				pick.setType(getPickType(2));
+				break;
+			case 40:
+				pick.setType(getPickType(3));
+				break;
+			case 60:
+				pick.setType(getPickType(4));
+				break;
+			case 80:
+				pick.setType(getPickType(5));
+				break;
+			}
+			p.sendMessage(ChatColor.YELLOW + "Your pick has increased to level " + ChatColor.AQUA + lvl);
+			nms = CraftItemStack.asNMSCopy(pick);
+			nms.getTag().setInt("maxXP", getEXPNeeded(lvl));
+			nms.getTag().setInt("XP", 0);
+			nms.getTag().setInt("level", lvl);
+			pick = CraftItemStack.asBukkitCopy(nms);
+			ItemMeta meta = pick.getItemMeta();
+			ArrayList<String> lore = new ArrayList<String>();
+	        String expBar = ChatColor.RED + "||||||||||" + "||||||||||" + "||||||||||";
+	        lore.add(ChatColor.GRAY.toString() + "Level: " + ChatColor.WHITE.toString() + lvl);
+	        lore.add(ChatColor.GRAY.toString() + "EXP: " + ChatColor.WHITE+ + 0 + ChatColor.GRAY + "/" + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
+	        lore.add(" ");
+	        lore.add(expBar);
+	        lore.add(" ");
+	        switch (tier) {
+	            case 1:
+	                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Wood");
+	                break;
+	            case 2:
+	                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Stone");
+	                break;
+	            case 3:
+	                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Iron");
+	                break;
+	            case 4:
+	                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Diamond");
+	                break;
+	            case 5:
+	                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Gold");
+	                break;
+	            default:
+	                break;
+	        }
+	        meta.setLore(lore);
+	        pick.setItemMeta(meta);
+			p.setItemInHand(pick);
+		}
+	}
+
+	/**
+	 * @param tier
+	 * @return
+	 */
+	private static Material getPickType(int tier) {
+		switch(tier){
+		case 1:
+			return Material.WOOD_PICKAXE;
+		case 2:
+			return Material.STONE_PICKAXE;
+		case 3:
+			return Material.IRON_PICKAXE;
+		case 4:
+			return Material.DIAMOND_PICKAXE;
+		case 5:
+			return Material.GOLD_PICKAXE;
+		}
+		return null;
 	}
 
 	/**
@@ -293,5 +366,25 @@ public class Mining implements GenericMechanic {
 	@Override
 	public void stopInvocation() {
 
+	}
+
+	/**
+	 * @param tier
+	 * @return
+	 */
+	public static int getTierLvl(int tier) {
+		switch(tier){
+		case 1:
+			return 1;
+		case 2: 
+			return 20;
+		case 3:
+			return 40;
+		case 4:
+			return 60;
+		case 5:
+			return 80;
+		}
+		return 1;
 	}
 }

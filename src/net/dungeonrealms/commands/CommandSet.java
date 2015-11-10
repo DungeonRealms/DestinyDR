@@ -107,28 +107,8 @@ public class CommandSet extends BasicCommand {
 				getSpawners().forEach(net.dungeonrealms.spawning.MobSpawner::kill);
 				break;
 			case "pick":
-				ItemStack stack = player.getItemInHand();
-				if(stack != null){
-					if(Mining.isDRPickaxe(stack)){
-						int pickTier = Mining.getPickTier(stack);
-						int xp = Mining.getMaxXP(pickTier) / 2;
-						net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-						nms.getTag().setInt("XP", xp);
-						player.setItemInHand(CraftItemStack.asBukkitCopy(nms));
-					}
-				}
-				break;
-			case "rod":
-				ItemStack rodStack = player.getItemInHand();
-				if(rodStack != null){
-					if(Fishing.isDRFishingPole(rodStack)){
-						int rodTier = Fishing.getRodTier(rodStack);
-						int xp = Mining.getMaxXP(rodTier) / 2;
-						net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rodStack);
-						nms.getTag().setInt("XP", xp);
-						player.setItemInHand(CraftItemStack.asBukkitCopy(nms));
-					}
-				}
+				Mining.lvlUp(Mining.getPickTier(player.getItemInHand()), player);
+				player.updateInventory();
 				break;
 			}
 		}

@@ -61,6 +61,25 @@ public class Fishing implements GenericMechanic {
 			return -1;
 		}
 	}
+	
+	public int getFishEXP(int tier) {
+        if (tier == 1) {
+            return (int) (2.5D * (250 + new Random().nextInt((int) (250 * 0.3D))));
+        }
+        if (tier == 2) {
+            return (int) (2.5D * (430 + new Random().nextInt((int) (430 * 0.3D))));
+        }
+        if (tier == 3) {
+            return (int) (2.5D * (820 + new Random().nextInt((int) (820 * 0.3D))));
+        }
+        if (tier == 4) {
+            return (int) (2.5D * (1050 + new Random().nextInt((int) (1050 * 0.3D))));
+        }
+        if (tier == 5) {
+            return (int) (2.5D * (1230 + new Random().nextInt((int) (1230 * 0.3D))));
+        }
+        return 1;
+    }
 
 	/**
 	 * Check if itemstack is a DR fishing pole.
@@ -71,6 +90,8 @@ public class Fishing implements GenericMechanic {
 	 */
 	public static boolean isDRFishingPole(ItemStack stack) {
 		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+		if(!nms.hasTag())
+			return false;
 		return nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("rod");
 	}
 

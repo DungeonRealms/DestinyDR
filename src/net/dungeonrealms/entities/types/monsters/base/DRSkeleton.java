@@ -2,6 +2,7 @@ package net.dungeonrealms.entities.types.monsters.base;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
@@ -19,6 +20,7 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.lang.reflect.Field;
+import java.util.Random;
 
 /**
  * Created by Chase on Sep 19, 2015
@@ -83,14 +85,19 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
 
     protected abstract void setStats();
 
-    protected void setArmor(int tier) {
+    public void setArmor(int tier) {
         ItemStack[] armor = API.getTierArmor(tier);
         // weapon, boots, legs, chest, helmet/head
         ItemStack weapon = getTierWeapon(tier);
+        
+        ItemStack armor0 = AntiCheat.getInstance().applyAntiDupe(armor[0]);
+        ItemStack armor1 = AntiCheat.getInstance().applyAntiDupe(armor[1]);
+        ItemStack armor2 = AntiCheat.getInstance().applyAntiDupe(armor[2]);
+
         this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-        this.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
-        this.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
-        this.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
+        this.setEquipment(1, CraftItemStack.asNMSCopy(armor0));
+        this.setEquipment(2, CraftItemStack.asNMSCopy(armor1));
+        this.setEquipment(3, CraftItemStack.asNMSCopy(armor2));
         this.setEquipment(4, this.getHead());
     }
 
@@ -107,7 +114,9 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
     }
 
     private ItemStack getTierWeapon(int tier) {
-        return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.BOW, net.dungeonrealms.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);
+    	ItemStack item = new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.BOW, net.dungeonrealms.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);
+        AntiCheat.getInstance().applyAntiDupe(item);
+        return item;
     }
 
     

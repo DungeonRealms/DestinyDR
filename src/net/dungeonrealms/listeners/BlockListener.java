@@ -110,7 +110,7 @@ public class BlockListener implements Listener {
      * @param e
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void breakOre(BlockBreakEvent e) {
         Block block = e.getBlock();
         if (block == null) return;
@@ -128,13 +128,18 @@ public class BlockListener implements Listener {
                     e.setCancelled(true);
                     return;
                 }
-                int experienceGain = Mining.getExperienceGain(stackInHand, type);
+                int experienceGain = Mining.getOreEXP(stackInHand, type);
                 Mining.addExperience(stackInHand, experienceGain, p);
-                Utils.log.info(RepairAPI.getCustomDurability(stackInHand) + " durrab");
                 RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInHand(), RandomHelper.getRandomNumberBetween(2, 5));
-                Utils.log.info(RepairAPI.getCustomDurability(stackInHand) + " durrab");
-                if (new Random().nextInt(100) <= 75)//TODO INCORPORATE CHANCE INTO PICKS
+                int break_chance = Mining.getBreakChance(stackInHand);
+                int do_i_break = new Random().nextInt(100);
+//                p.playSound(p.getLocation(), Sound.DIG_STONE, 1F, 0.75F);
+                if (do_i_break > break_chance) {
                     p.getInventory().addItem(new ItemStack(type));
+                    p.sendMessage(ChatColor.GREEN + ChatColor.ITALIC.toString() + "You found some ore!");
+                }else{
+                    p.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "You fail to gather any ore.");
+                }
                 e.getBlock().setType(Material.STONE);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> e.getBlock().setType(type), (Mining.getOreRespawnTime(type) * 20L));
             }
@@ -168,19 +173,14 @@ public class BlockListener implements Listener {
           Material type = block.getType();
           int tier = Mining.getBlockTier(type);
           int pickTier = Mining.getPickTier(stackInHand);
-          if (pickTier < tier) {
-              // Cannot mine. Too low level of pickaxe.
-              p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 30, 4));
-              return;
-          }
           
           int diff = pickTier - tier;
           
           if (diff >= 3) {
               if (pickTier == 5) {
-                  p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 30, 1));
+                  p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 40, 1));
               } else {
-                  p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 30, 0));
+                  p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 40, 0));
               }
               return;
           }
@@ -188,36 +188,36 @@ public class BlockListener implements Listener {
           if (pickTier == 4 || pickTier == 5) {
               if (pickTier == 4) {
                   if (diff == 0) { // Diamond ore.
-                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 30, 3));
+                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 3));
                   }
                   if (diff == 1) { // Iron ore.
-                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 30, 3));
+                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 3));
                   }
               }
               if (pickTier == 5) {
                   if (diff == 0) { // Gold ore.
-                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 30, 3));
+                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 3));
                   }
                   if (diff == 1) { // Diamond ore.
-                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 30, 2));
+                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 2));
                   }
               }
           } else {
               if (diff == 0) {
                   // Lvl 2 debuff
                   if (pickTier == 2) {
-                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 30, 1));
+                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 1));
                   } else {
-                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 30, 1));
+                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 1));
                   }
               }
               if (diff == 1) {
                   // Lvl 1 debuff
-                  p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 30, 1));
+                  p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 1));
               }
               if (diff == 2) {
                   // Lvl 0 debuff
-                  p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 30, 0));
+                  p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 0));
               }
           }
         }

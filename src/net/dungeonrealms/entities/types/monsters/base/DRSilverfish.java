@@ -1,6 +1,9 @@
 package net.dungeonrealms.entities.types.monsters.base;
 
 import net.dungeonrealms.items.Item;
+
+import java.util.Random;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -11,6 +14,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.items.ItemGenerator;
@@ -43,16 +47,21 @@ public class DRSilverfish extends EntitySilverfish implements Monster{
 
 	}
 
-	protected void setArmor(int tier) {
-		ItemStack[] armor = API.getTierArmor(tier);
-		// weapon, boots, legs, chest, helmet/head
-		ItemStack weapon = getTierWeapon(tier);
-		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-		this.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
-		this.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
-		this.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
-		this.setEquipment(4, this.getHead());
-	}
+    private void setArmor(int tier) {
+        ItemStack[] armor = API.getTierArmor(tier);
+        // weapon, boots, legs, chest, helmet/head
+        ItemStack weapon = getTierWeapon(tier);
+        
+        ItemStack armor0 = AntiCheat.getInstance().applyAntiDupe(armor[0]);
+        ItemStack armor1 = AntiCheat.getInstance().applyAntiDupe(armor[1]);
+        ItemStack armor2 = AntiCheat.getInstance().applyAntiDupe(armor[2]);
+
+        this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
+        this.setEquipment(1, CraftItemStack.asNMSCopy(armor0));
+        this.setEquipment(2, CraftItemStack.asNMSCopy(armor1));
+        this.setEquipment(3, CraftItemStack.asNMSCopy(armor2));
+        this.setEquipment(4, this.getHead());
+    }
 
 	protected String getCustomEntityName() {
 		return this.enumMonster.name;
@@ -66,10 +75,11 @@ public class DRSilverfish extends EntitySilverfish implements Monster{
 		return CraftItemStack.asNMSCopy(head);
 	}
 
-	private ItemStack getTierWeapon(int tier) {
-		return new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.SWORD,
-		        net.dungeonrealms.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);
-	}
+    private ItemStack getTierWeapon(int tier) {
+    	ItemStack item = new ItemGenerator().next(net.dungeonrealms.items.Item.ItemType.getById(new Random().nextInt(net.dungeonrealms.items.Item.ItemType.values().length - 2)), net.dungeonrealms.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);
+        AntiCheat.getInstance().applyAntiDupe(item);
+        return item;
+    }
 
 	@Override
 	public void onMonsterAttack(Player p) {
