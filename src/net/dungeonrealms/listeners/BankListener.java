@@ -224,7 +224,7 @@ public class BankListener implements Listener {
                         } else if (e.isRightClick()) {
                             Inventory inv = Bukkit.createInventory(null, 9, "Upgrade your bank storage?");
                         	int invLvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
-                			int num = invLvl * 100;
+                			int num = BankMechanics.getPrice(invLvl);
                             ItemStack accept = new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData());
                             ItemMeta acceptMeta = accept.getItemMeta();
                             acceptMeta.setDisplayName(ChatColor.GREEN.toString() +"Accept");
