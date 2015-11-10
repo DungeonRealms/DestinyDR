@@ -49,7 +49,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -398,24 +397,10 @@ public class DamageListener implements Listener {
                 if (nmsItem != null && nmsItem.getTag() != null) {
                     if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.POLE_ARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
                         DamageAPI.polearmAOEProcessing.add(attacker);
-                        for (Entity entityNear : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
-                            if (entityNear instanceof LivingEntity && entityNear != event.getEntity() && entityNear != event.getDamager()) {
-                                if (!event.getDamager().hasMetadata("type")) {
-                                    if (!(API.isPlayer(entityNear))) {
-                                        break;
-                                    } else {
-                                        if (entityNear != null) {
-                                            HealthHandler.getInstance().handlePlayerBeingDamaged((Player) entityNear, event.getDamager(), (event.getDamage() - armourReducedDamage));
-                                            Vector unitVector = entityNear.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
-                                            entityNear.setVelocity(unitVector.multiply(0.15D));
-                                        }
-                                    }
-                                } else {
-                                    if (entityNear != null) {
-                                        HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entityNear, attacker, (event.getDamage() - armourReducedDamage));
-                                        Vector unitVector = entityNear.getLocation().toVector().subtract(attacker.getLocation().toVector()).normalize();
-                                        entityNear.setVelocity(unitVector.multiply(0.15D));
-                                    }
+                        for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
+                            if (entity instanceof LivingEntity && entity != event.getEntity() && !(entity instanceof Player)) {
+                                if ((event.getDamage() - armourReducedDamage) > 0) {
+                                    HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, attacker, (event.getDamage() - armourReducedDamage));
                                 }
                             }
                         }
@@ -427,20 +412,24 @@ public class DamageListener implements Listener {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof LivingEntity)) return;
             attacker = (LivingEntity) attackingArrow.getShooter();
-            if (!(attacker instanceof Player && defender instanceof Player)) {
-                event.setCancelled(true);
-                event.setDamage(0);
-                return;
+            if (!(attacker instanceof Player)) {
+                if (!(defender instanceof Player)) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
+                }
             }
             armourReducedDamage = DamageAPI.calculateArmorReduction(attackingArrow, defender, defenderArmor);
         } else if (event.getDamager().getType() == EntityType.SNOWBALL) {
             Snowball staffProjectile = (Snowball) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof LivingEntity)) return;
             attacker = (LivingEntity) staffProjectile.getShooter();
-            if (!(attacker instanceof Player && defender instanceof Player)) {
-                event.setCancelled(true);
-                event.setDamage(0);
-                return;
+            if (!(attacker instanceof Player)) {
+                if (!(defender instanceof Player)) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
+                }
             }
             armourReducedDamage = DamageAPI.calculateArmorReduction(staffProjectile, defender, defenderArmor);
         }

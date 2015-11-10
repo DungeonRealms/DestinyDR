@@ -38,14 +38,14 @@ public class CommandPl extends BasicCommand {
                     or should we create one and invite the player.
                      */
                     if (Affair.getInstance().isInParty(player)) {
-                        Affair.getInstance().getParty(player).get().invitePlayer(inviting);
+                        //Affair.getInstance().getParty(player).get().invitePlayer(inviting);
                     } else {
                         /*
                         Create the invitor a party because he doesn't have one.
                         And invite the player he wants to invite.
                          */
                         Affair.getInstance().createParty(player);
-                        Affair.getInstance().getParty(player).get().invitePlayer(inviting);
+                        //Affair.getInstance().getParty(player).get().invitePlayer(inviting);
                     }
                 } else {
                     player.sendMessage(ChatColor.RED + "That player is already in a party!?");
