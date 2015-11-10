@@ -214,21 +214,21 @@ public class ArmorGenerator {
 	public static String setCorrectArmorLore(Armor.ArmorAttributeType aType, int i) {
 		switch (aType) {
 		case DAMAGE:
-			return ChatColor.GREEN + "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+			return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + i + "%";
 		case ENERGY_REGEN:
-			return ChatColor.GREEN + "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+			return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + i + "%";
 		case ARMOR:
-			return ChatColor.GREEN + "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+			return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + i + "%";
 		case BLOCK:
-			return ChatColor.GREEN + "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+			return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + i + "%";
 		case LUCK:
-			return ChatColor.GREEN + "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+			return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + i + "%";
 		case THORNS:
-			return ChatColor.GREEN + "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+			return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + i + "%";
 		case DODGE:
-			return ChatColor.GREEN + "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+			return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + i + "%";
 		default:
-			return ChatColor.GREEN + "" + ChatColor.RED + i + " " + ChatColor.WHITE + aType.getName();
+			return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + i;
 		}
 	}
 
