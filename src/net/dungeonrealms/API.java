@@ -348,6 +348,7 @@ public class API {
                     GAMEPLAYERS.remove(gPlayer);
                 }
             }
+/*
         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
             try {
                 File playerDatFile = new File(Bukkit.getWorlds().get(0).getWorldFolder() + "\\playerdata\\" + uuid.toString() + ".dat");
@@ -356,6 +357,7 @@ public class API {
 
             }
         }, 80);
+ */
     }
 
     /**

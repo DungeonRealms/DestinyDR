@@ -31,13 +31,9 @@ import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.spawning.BuffManager;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
-import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.File;
-import java.io.IOException;
 
 /* Copyright (C) 2015 CherryIO, LLC - All Rights Reserved http://cherryio.com
 
@@ -183,13 +179,16 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandStop("stop", "/<command> [args]", "The stop command."));
         cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "The roll command."));
         cm.registerCommand(new CommandStuck("stuck", "/<command> [args]", "The stuck command."));
+        cm.registerCommand(new CommandRedeem("redeem", "/<command> [args]", "The redeem command."));
 
+        /*
         try {
             FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));
             //TODO: remove stats
         } catch (IOException e) {
             e.printStackTrace();
         }
+         */
 
 
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
