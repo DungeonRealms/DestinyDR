@@ -268,25 +268,19 @@ public class ItemGenerator {
         switch (aType) {
             case DAMAGE:
                 int damageRandomizer = getRandomDamageVariable(tierID);
-                return "" + ChatColor.RED + Math.round((i - (i / damageRandomizer))) + ChatColor.WHITE + " - " + ChatColor.RED + Math.round((i + (i / damageRandomizer))) + ChatColor.WHITE + " " + aType.getName();
+                return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + Math.round((i - (i / damageRandomizer))) + ChatColor.WHITE + " - " + ChatColor.RED + Math.round((i + (i / damageRandomizer)));
             case VS_MONSTERS:
-                return "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+                return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + i + "%";
             case VS_PLAYER:
-                return "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+                return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + i + "%";
             case CRITICAL_HIT:
-                return "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+                return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + i + "%";
             case LIFE_STEAL:
-                return "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
-            case FIRE_DAMAGE:
-                return "" + ChatColor.RED + i + " " + ChatColor.WHITE + aType.getName();
-            case ICE_DAMAGE:
-                return "" + ChatColor.RED + i + " " + ChatColor.WHITE + aType.getName();
-            case POISON_DAMAGE:
-                return "" + ChatColor.RED + i + " " + ChatColor.WHITE + aType.getName();
+                return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + i + "%";
             case ACCURACY:
-                return "" + ChatColor.RED + i + "% " + ChatColor.WHITE + aType.getName();
+                return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + i + "%";
             default:
-                return "" + ChatColor.RED + i + " " + ChatColor.WHITE + aType.getName();
+                return ChatColor.WHITE + aType.getName() + ": " + ChatColor.RED + i;
         }
     }
 

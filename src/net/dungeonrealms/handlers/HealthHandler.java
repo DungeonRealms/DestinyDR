@@ -563,7 +563,7 @@ public class HealthHandler implements GenericMechanic {
             entity.playEffect(EntityEffect.DEATH);
             entity1.damageEntity(DamageSource.GENERIC, 50F);
             if (!entity1.dead) {
-            	entity1.dead = true;
+                entity1.dead = true;
             }
             if (Entities.getInstance().MONSTER_LAST_ATTACK.containsKey(entity)) {
                 Entities.getInstance().MONSTER_LAST_ATTACK.remove(entity);

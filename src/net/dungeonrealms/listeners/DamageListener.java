@@ -632,8 +632,8 @@ public class DamageListener implements Listener {
         
         
         if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.LAWFUL.name())) {
-            if (player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR) {
-                armorToSave[4] = player.getItemInHand();
+            if (player.getInventory().getItem(0)!= null && player.getInventory().getItem(0).getType() != Material.AIR) {
+                armorToSave[4] = player.getInventory().getItem(0);
             }
             armorToSave[0] = player.getEquipment().getBoots();
             armorToSave[1] = player.getEquipment().getLeggings();
@@ -649,8 +649,8 @@ public class DamageListener implements Listener {
             }
         } else if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.NEUTRAL.name())) {
             if (new Random().nextInt(99) <= 50) {
-                if (player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR) {
-                    armorToSave[4] = player.getItemInHand();
+                if (player.getInventory().getItem(0)!= null && player.getInventory().getItem(0).getType() != Material.AIR) {
+                    armorToSave[4] = player.getInventory().getItem(0);
                 }
             }
             if (new Random().nextInt(99) <= 25) {
