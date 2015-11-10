@@ -57,7 +57,7 @@ public class LootSpawner {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 			setContents();
 			block.setType(Material.CHEST);
-		} , 20 * 60l);
+		} , 20 * 120l);
 	}
 
 }

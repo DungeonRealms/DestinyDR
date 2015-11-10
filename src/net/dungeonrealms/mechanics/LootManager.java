@@ -196,28 +196,28 @@ public class LootManager implements GenericMechanic{
 				loot.add(Glyph.getInstance().getBaseGlyph("Lucky Glyph", 4, Glyph.GlyphType.WEAPON));
     		}
     	break;
-        case 5:
-        	ItemStack t5Potion = ItemManager.createHealthPotion(5, false, new Random().nextBoolean());
-    		if(RandomHelper.getRandomNumberBetween(1, 100) <= 75){
-    			loot.add(t5Potion);
-    		}
-    		if(RandomHelper.getRandomNumberBetween(1, 100) <= 75){
-    			loot.add(new ItemStack(Material.RABBIT_STEW));
-    		}
-    		if(RandomHelper.getRandomNumberBetween(1, 100) <= 10){
-    			loot.add(ItemManager.createRandomTeleportBook("Teleport Book"));
-    		}
-    		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 1){
-    			loot.add(new ItemGenerator().next(ItemTier.TIER_5));
-    		}
-    		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 1){
-    			loot.add(new ArmorGenerator().nextTier(5)[RandomHelper.getRandomNumberBetween(0, 2)]);
-    		}
-    		
-    		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 2){
-				loot.add(Glyph.getInstance().getBaseGlyph("Lucky Glyph", 5, Glyph.GlyphType.WEAPON));
-    		}
-    	break;
+//        case 5:
+//        	ItemStack t5Potion = ItemManager.createHealthPotion(5, false, new Random().nextBoolean());
+//    		if(RandomHelper.getRandomNumberBetween(1, 100) <= 75){
+//    			loot.add(t5Potion);
+//    		}
+//    		if(RandomHelper.getRandomNumberBetween(1, 100) <= 75){
+//    			loot.add(new ItemStack(Material.RABBIT_STEW));
+//    		}
+//    		if(RandomHelper.getRandomNumberBetween(1, 100) <= 10){
+//    			loot.add(ItemManager.createRandomTeleportBook("Teleport Book"));
+//    		}
+//    		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 1){
+//    			loot.add(new ItemGenerator().next(ItemTier.TIER_5));
+//    		}
+//    		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 1){
+//    			loot.add(new ArmorGenerator().nextTier(5)[RandomHelper.getRandomNumberBetween(0, 2)]);
+//    		}
+//    		
+//    		if(RandomHelper.getRandomNumberBetween(1, 1000) <= 2){
+//				loot.add(Glyph.getInstance().getBaseGlyph("Lucky Glyph", 5, Glyph.GlyphType.WEAPON));
+//    		}
+//    	break;
         }
         
         if(loot.isEmpty()){
@@ -236,13 +236,13 @@ public class LootManager implements GenericMechanic{
 //            int tier = Integer.parseInt(line.split(":")[1]);
         	int tier = 1;
         	int num = RandomHelper.getRandomNumberBetween(1, 100);
+//        	if(num <= 10){
+//        		tier = 5;
         	if(num <= 10){
-        		tier = 5;
-        	}else if(num <= 25 && num > 10){
         		tier = 4;
-        	}else if(num <=40 && num > 25){
+        	}else if(num <=30 && num > 10){
         		tier = 3;
-        	}else if(num  <= 65 && num > 40){
+        	}else if(num  <= 50 && num > 30){
         		tier = 2;
         	}else{
         		tier = 1;
