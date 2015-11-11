@@ -24,6 +24,11 @@ public class CommandPRemove extends BasicCommand {
 
         Player player = (Player) s;
 
+        if (!Affair.getInstance().isInParty(player)) {
+            player.sendMessage(ChatColor.RED + "You must be in a party to invoke this!");
+            return true;
+        }
+
         if (args.length == 1) {
             if (Affair.getInstance().isOwner(player)) {
                 if (Bukkit.getPlayer(args[0]) == null) {

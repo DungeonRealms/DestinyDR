@@ -26,7 +26,7 @@ public class CommandRedeem extends BasicCommand {
         if (!Rank.getInstance().getRank(player.getUniqueId()).getName().equalsIgnoreCase("SUB")) {
             Rank.getInstance().setRank(player.getUniqueId(), "SUB");
         } else {
-            player.sendMessage(ChatColor.RED + "You've already redeemed your rank!");
+            player.sendMessage(ChatColor.RED + "You've already redeemed your rank!\n Note: You are considered a 'Founder' and will receive 'Founder Perks' shortly before or after open beta release!");
         }
 
         return false;

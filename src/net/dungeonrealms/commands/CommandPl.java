@@ -72,6 +72,8 @@ public class CommandPl extends BasicCommand {
                 player.sendMessage(ChatColor.RED + "You must specify a player that isn't [NULL]!");
             }
 
+        } else {
+            player.sendMessage(ChatColor.RED + "/pinvite <playerName>");
         }
         return false;
     }
