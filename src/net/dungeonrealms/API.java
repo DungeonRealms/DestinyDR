@@ -34,7 +34,6 @@ import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.mongo.achievements.AchievementManager;
 import net.dungeonrealms.notice.Notice;
-import net.dungeonrealms.party.Party;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import org.bukkit.*;
@@ -347,7 +346,6 @@ public class API {
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
         KarmaHandler.getInstance().handleLogoutEvents(player);
-        Party.getInstance().handleLogout(player);
         ScoreboardHandler.getInstance().removePlayerScoreboard(player);
         if (EntityAPI.hasPetOut(uuid)) {
             net.minecraft.server.v1_8_R3.Entity pet = Entities.PLAYER_PETS.get(uuid);

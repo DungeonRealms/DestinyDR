@@ -24,23 +24,20 @@ public class CommandPRemove extends BasicCommand {
 
         Player player = (Player) s;
 
-        if (Bukkit.getPlayer(args[0]) == null) {
-            player.sendMessage(ChatColor.RED + "You must specify a player!");
-            return true;
-        }
-
-        if (Affair.getInstance().isInParty(player)) {
-            Affair.AffairO party = Affair.getInstance().getParty(player).get();
-            if (party.getOwner().equals(player)) {
-                Affair.getInstance().removeMember(Bukkit.getPlayer(args[0]));
+        if (args.length == 1) {
+            if (Affair.getInstance().isOwner(player)) {
+                if (Bukkit.getPlayer(args[0]) == null) {
+                    player.sendMessage(ChatColor.RED + "You must specify a player!");
+                } else {
+                    Affair.getInstance().removeMember(Bukkit.getPlayer(args[0]));
+                }
             } else {
-                player.sendMessage(ChatColor.RED + "You must be a party owner!");
+                player.sendMessage(ChatColor.RED + "You must be of the rank [Party Owner] to invoke this!");
             }
-
+            return true;
         } else {
-            player.sendMessage(ChatColor.RED + "You are not in a party!");
+            player.sendMessage(ChatColor.RED + "/premove <playerName>");
         }
-
         return false;
     }
 }

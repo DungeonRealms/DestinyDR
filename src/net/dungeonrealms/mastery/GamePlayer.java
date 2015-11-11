@@ -1,10 +1,5 @@
 package net.dungeonrealms.mastery;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
-import org.bukkit.metadata.FixedMetadataValue;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
@@ -12,8 +7,12 @@ import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
-import net.dungeonrealms.party.Party;
+import net.dungeonrealms.party.Affair;
 import net.dungeonrealms.stats.PlayerStats;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * Created by Nick on 10/19/2015.
@@ -57,7 +56,7 @@ public class GamePlayer {
      * @since 1.0
      */
     public boolean isInParty() {
-        return Party.getInstance().isInParty(T);
+        return Affair.getInstance().isInParty(T);
     }
 
     /**

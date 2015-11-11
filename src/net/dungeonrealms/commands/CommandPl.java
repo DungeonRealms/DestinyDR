@@ -28,35 +28,51 @@ public class CommandPl extends BasicCommand {
 
         //pinvite <playerName>
 
-        if (args.length == 0) {
-            if (Bukkit.getPlayer(args[0]) != null) {
-                Player inviting = Bukkit.getPlayer(args[0]);
-                //Check if the inviting player is in a party.
-                if (!Affair.getInstance().isInParty(inviting)) {
-                    /*
-                    Check if the player inviting is in a paryt
-                    or should we create one and invite the player.
-                     */
-                    if (Affair.getInstance().isInParty(player)) {
-                        //Affair.getInstance().getParty(player).get().invitePlayer(inviting);
+        if (args.length == 1) {
+            if (Bukkit.getPlayer(args[0]) != null && !Bukkit.getPlayer(args[0]).equals(player)) {
+                if (Affair.getInstance().isInParty(Bukkit.getPlayer(args[0]))) {
+                    player.sendMessage(ChatColor.RED + "That player is already in a party!");
+                    return true;
+                }
+             /*
+                Invoker is in party
+                 */
+                if (Affair.getInstance().isInParty(player)) {
+                /*
+                Check if player is owner of the party they're in.
+                 */
+                    if (Affair.getInstance().isOwner(player)) {
+                        if (Bukkit.getPlayer(args[0]) != null) {
+                            Affair.getInstance().invitePlayer(Bukkit.getPlayer(args[0]), player);
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You must specify a player that isn't [NULL]!");
+                        }
+                    } else if (!Affair.getInstance().isOwner(player)) {
+                        player.sendMessage(ChatColor.RED + "You are not the owner!");
                     } else {
-                        /*
-                        Create the invitor a party because he doesn't have one.
-                        And invite the player he wants to invite.
-                         */
-                        Affair.getInstance().createParty(player);
-                        //Affair.getInstance().getParty(player).get().invitePlayer(inviting);
+                        player.sendMessage(ChatColor.RED + "You are in a party, but don't have rank [Party Owner]!");
                     }
                 } else {
-                    player.sendMessage(ChatColor.RED + "That player is already in a party!?");
+                /*
+                Invoker isn't in party!
+                 */
+                    if (Bukkit.getPlayer(args[0]) != null) {
+                        Player inviting = Bukkit.getPlayer(args[0]);
+                        if (!Affair.getInstance().isInParty(inviting)) {
+                            Affair.getInstance().createParty(player);
+                            Affair.getInstance().invitePlayer(inviting, player);
+                        } else {
+                            player.sendMessage(ChatColor.RED + "That player is already in a party!?");
+                        }
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You must specify a player that isn't [NULL]!");
+                    }
                 }
             } else {
-                player.sendMessage(ChatColor.RED + "Unable to find that player online?");
+                player.sendMessage(ChatColor.RED + "You must specify a player that isn't [NULL]!");
             }
-        } else {
-            player.sendMessage(ChatColor.RED + "Try /pinvite <playerName>");
-        }
 
+        }
         return false;
     }
 }

@@ -24,16 +24,20 @@ import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.achievements.AchievementManager;
 import net.dungeonrealms.network.NetworkAPI;
 import net.dungeonrealms.network.NetworkServer;
-import net.dungeonrealms.party.Party;
+import net.dungeonrealms.party.Affair;
 import net.dungeonrealms.profession.Fishing;
 import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.spawning.BuffManager;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import java.io.File;
+import java.io.IOException;
 
 /* Copyright (C) 2015 CherryIO, LLC - All Rights Reserved http://cherryio.com
 
@@ -129,7 +133,6 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(PetUtils.getInstance());
         mm.registerMechanic(Teleportation.getInstance());
         mm.registerMechanic(CombatLog.getInstance());
-        mm.registerMechanic(Party.getInstance());
         mm.registerMechanic(EnergyHandler.getInstance());
         mm.registerMechanic(EnchantmentAPI.getInstance());
         //mm.registerMechanic(Subscription.getInstance());
@@ -149,6 +152,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(AchievementManager.getInstance());
         mm.registerMechanic(BuffManager.getInstance());
         mm.registerMechanic(new LootManager());
+        mm.registerMechanic(Affair.getInstance());
 
         /*
         In development
@@ -164,7 +168,6 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "Spawns a mob? idk chase"));
         cm.registerCommand(new CommandAdd("ad", "/<command> [args]", "Adds shit"));
         cm.registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
-        cm.registerCommand(new CommandParty("party", "/<command> [args]", "Does this and that."));
         cm.registerCommand(new CommandSet("set", "/<command> [args]", "SETS THE YEAH."));
         cm.registerCommand(new CommandList("list", "/<command> [args]", "THE LIST"));
         cm.registerCommand(new CommandRank("rank", "/<command> [args]", "The rank command!"));
@@ -181,21 +184,16 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandStuck("stuck", "/<command> [args]", "The stuck command."));
         cm.registerCommand(new CommandRedeem("redeem", "/<command> [args]", "The redeem command."));
 
-        /*
         cm.registerCommand(new CommandPl("pinvite", "/<command> [args]", "Will invite a player to a party and create one!"));
         cm.registerCommand(new CommandPAccept("paccept", "/<command> [args]", "Accept a party invitation."));
         cm.registerCommand(new CommandPRemove("premove", "/<command> [args]", "Remove player from party."));
         cm.registerCommand(new CommandPLeave("pleave", "/<command> [args]", "Remove player from party."));
-         */
 
-        /*
         try {
             FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));
-            //TODO: remove stats
         } catch (IOException e) {
             e.printStackTrace();
         }
-         */
 
 
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
