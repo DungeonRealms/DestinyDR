@@ -1,8 +1,7 @@
 package net.dungeonrealms.shops;
 
-import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,7 +15,6 @@ import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -27,7 +25,7 @@ import net.dungeonrealms.mongo.EnumOperators;
  * Created by Chase on Sep 23, 2015
  */
 public class ShopMechanics implements GenericMechanic{
-    public static HashMap<UUID, Shop> PLAYER_SHOPS = new HashMap<>();
+    public static ConcurrentHashMap<UUID, Shop> PLAYER_SHOPS = new ConcurrentHashMap<>();
     /**
      * setup new shop for player
      *
