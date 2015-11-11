@@ -139,7 +139,6 @@ public enum LootType {
 					}
 					break;
 				case POTION:
-					Utils.log.info(item_meta + " Potion");
 					switch(item_meta){
 					case 1:
 						item = ItemManager.createHealthPotion(1, false, false);

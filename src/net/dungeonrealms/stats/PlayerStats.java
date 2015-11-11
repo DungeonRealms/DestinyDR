@@ -31,7 +31,7 @@ public class PlayerStats {
 	 private int level;
 	 UUID playerUUID;
 	 public int freeResets;
-	 final static int POINTS_PER_LEVEL = 3;
+	 public final static int POINTS_PER_LEVEL = 3;
 	 public int resetAmounts;
 	 public boolean reset = true;
 
@@ -332,13 +332,13 @@ public class PlayerStats {
 	  	 */
 	  	 
 		 public void updateDatabase() {
-			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LEVEL, level, false);
-			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.INTELLECT, intPoints, false);
-			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.STRENGTH, strPoints, false);
-			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.VITALITY, vitPoints, false);
-			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DEXTERITY, dexPoints, false);
-			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BUFFER_POINTS, freePoints, false);
-			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.RESETS, resetAmounts, false);
+			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.LEVEL, level, true);
+			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.INTELLECT, intPoints, true);
+			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.STRENGTH, strPoints, true);
+			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.VITALITY, vitPoints, true);
+			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DEXTERITY, dexPoints, true);
+			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BUFFER_POINTS, freePoints, true);
+			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.RESETS, resetAmounts, true);
 			DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.FREERESETS, freeResets, true);
 		}
 

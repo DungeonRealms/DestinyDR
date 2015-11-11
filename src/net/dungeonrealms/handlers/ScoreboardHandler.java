@@ -130,7 +130,7 @@ public class ScoreboardHandler implements GenericMechanic {
      * @return Scoreboard
      * @since 1.0
      */
-    private Team getPlayerTeam(Scoreboard scoreboard, Player player) {
+    public Team getPlayerTeam(Scoreboard scoreboard, Player player) {
         if (scoreboard.getTeam(player.getName()) == null) {
             return scoreboard.registerNewTeam(player.getName());
         }
