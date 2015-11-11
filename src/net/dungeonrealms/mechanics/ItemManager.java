@@ -1,24 +1,11 @@
 package net.dungeonrealms.mechanics;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.anticheat.AntiCheat;
-import net.dungeonrealms.handlers.EnergyHandler;
-import net.dungeonrealms.handlers.HealthHandler;
-import net.dungeonrealms.items.EnumItem;
-import net.dungeonrealms.items.Item;
-import net.dungeonrealms.items.repairing.RepairAPI;
-import net.dungeonrealms.mastery.GamePlayer;
-import net.dungeonrealms.miscellaneous.RandomHelper;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.profession.Fishing;
-import net.dungeonrealms.profession.Mining;
-import net.dungeonrealms.stats.PlayerStats;
-import net.dungeonrealms.teleportation.TeleportAPI;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.NBTTagInt;
-import net.minecraft.server.v1_8_R3.NBTTagList;
-import net.minecraft.server.v1_8_R3.NBTTagString;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -31,11 +18,26 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import net.dungeonrealms.API;
+import net.dungeonrealms.anticheat.AntiCheat;
+import net.dungeonrealms.handlers.EnergyHandler;
+import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.items.EnumItem;
+import net.dungeonrealms.items.Item;
+import net.dungeonrealms.items.repairing.RepairAPI;
+import net.dungeonrealms.mastery.GamePlayer;
+import net.dungeonrealms.miscellaneous.ItemBuilder;
+import net.dungeonrealms.miscellaneous.RandomHelper;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.profession.Fishing;
+import net.dungeonrealms.profession.Mining;
+import net.dungeonrealms.stats.PlayerStats;
+import net.dungeonrealms.teleportation.TeleportAPI;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.NBTTagInt;
+import net.minecraft.server.v1_8_R3.NBTTagList;
+import net.minecraft.server.v1_8_R3.NBTTagString;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -61,6 +63,13 @@ public class ItemManager {
         tag.set("usage", new NBTTagString("hearthstone"));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
+    }
+    
+    public static ItemStack createOrbofAlteration(){
+    	ItemStack rawStack = createItem(Material.MAGMA_CREAM, ChatColor.LIGHT_PURPLE.toString() + "Orb of Alteration", new String[]{(ChatColor.GRAY.toString() + "Randomizes bonus stats of selected equipment")});
+    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
+    	nms.getTag().setString("type", "orb");
+    	return CraftItemStack.asBukkitCopy(nms);
     }
 
     /**

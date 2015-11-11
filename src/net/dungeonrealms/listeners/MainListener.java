@@ -670,7 +670,7 @@ public class MainListener implements Listener {
     	if(event.getRegion().equalsIgnoreCase("teleport_underworld")){
     		event.getPlayer().teleport(Teleportation.Underworld);
     	}else if(event.getRegion().equalsIgnoreCase("teleport_overworld")){
-    		event.getPlayer().teleport(Teleportation.Underworld);
+    		event.getPlayer().teleport(Teleportation.Overworld);
     	}
     }
     

@@ -148,8 +148,8 @@ public class MobSpawner {
 								entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 								toSpawn = false;
 								SPAWNED_MONSTERS.add(entity);
-							} , 100l);//1200 * 2L);
-						} else {
+							}, 1200 * 2L);
+							} else {
 							Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 								entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 								world.addEntity(entity, SpawnReason.CUSTOM);
