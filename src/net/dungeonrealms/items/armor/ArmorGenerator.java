@@ -199,7 +199,13 @@ public class ArmorGenerator {
 	 * @since 1.0
 	 */
 	private static boolean canAddAttribute(Armor.ArmorAttributeType attributeType, ArrayList<Armor.ArmorAttributeType> attributeList) {
-		return !(attributeType == Armor.ArmorAttributeType.VITALITY || attributeType == Armor.ArmorAttributeType.DEXTERITY || attributeType == Armor.ArmorAttributeType.INTELLECT || attributeType == Armor.ArmorAttributeType.STRENGTH) || !attributeList.contains(Armor.ArmorAttributeType.VITALITY) && !attributeList.contains(Armor.ArmorAttributeType.DEXTERITY) && !attributeList.contains(Armor.ArmorAttributeType.INTELLECT) && !attributeList.contains(Armor.ArmorAttributeType.STRENGTH);
+		if (attributeType == Armor.ArmorAttributeType.VITALITY || attributeType == Armor.ArmorAttributeType.DEXTERITY || attributeType == Armor.ArmorAttributeType.INTELLECT || attributeType == Armor.ArmorAttributeType.STRENGTH) {
+			return !attributeList.contains(Armor.ArmorAttributeType.VITALITY) && !attributeList.contains(Armor.ArmorAttributeType.DEXTERITY) && !attributeList.contains(Armor.ArmorAttributeType.INTELLECT) && !attributeList.contains(Armor.ArmorAttributeType.STRENGTH);
+		}
+		if (attributeType == Armor.ArmorAttributeType.HEALTH_REGEN || attributeType == Armor.ArmorAttributeType.ENERGY_REGEN) {
+			return !attributeList.contains(Armor.ArmorAttributeType.ENERGY_REGEN) && !attributeList.contains(Armor.ArmorAttributeType.HEALTH_REGEN);
+		}
+		return !(attributeType == Armor.ArmorAttributeType.ARMOR || attributeType == Armor.ArmorAttributeType.DAMAGE) || !attributeList.contains(Armor.ArmorAttributeType.ARMOR) && !attributeList.contains(Armor.ArmorAttributeType.DAMAGE);
 	}
 
 	/**

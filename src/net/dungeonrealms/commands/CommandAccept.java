@@ -7,8 +7,6 @@ import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumGuildData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.network.NetworkAPI;
-import net.dungeonrealms.party.Party;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -28,7 +26,7 @@ public class CommandAccept extends BasicCommand {
     }
 
     @Override
-	public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
+    public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
         if (s instanceof ConsoleCommandSender) return false;
 
         Player player = (Player) s;
@@ -67,21 +65,6 @@ public class CommandAccept extends BasicCommand {
                     NetworkAPI.getInstance().sendNetworkMessage("guild", "message", player.getName() + " has joined the Guild!");
                     player.sendMessage(ChatColor.GREEN + "Congratulations! You have successfully joined " + ChatColor.AQUA + guildName);
 
-
-                    break;
-                case "party":
-                    if (!Party.getInstance().isInParty(player) && Bukkit.getPlayer(args[1]) != null && Party.getInstance().isInParty(Bukkit.getPlayer(args[1]))) {
-                        Party.RawParty party = Party.getInstance().getPlayerParty(Bukkit.getPlayer(args[1]));
-                        if (party.getInviting().contains(player)) {
-                            party.getInviting().remove(player);
-                            party.getMembers().add(player);
-                            player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.YELLOW + "You've join " + Bukkit.getPlayer(args[1]).getName() + "'s party!");
-                        } else {
-                            player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.RED + "That party doesn't have you in the request!");
-                        }
-                    } else {
-                        player.sendMessage(org.bukkit.ChatColor.WHITE + "[" + org.bukkit.ChatColor.AQUA.toString() + org.bukkit.ChatColor.BOLD + "PARTY" + org.bukkit.ChatColor.WHITE + "] " + org.bukkit.ChatColor.RED + "You are not in a party!");
-                    }
 
                     break;
             }

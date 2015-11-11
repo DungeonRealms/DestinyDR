@@ -24,11 +24,12 @@ public class CommandPAccept extends BasicCommand {
         Player player = (Player) s;
 
         if (args.length == 0) {
-            if (Affair._invitations.containsKey(player)) {
+            if (Affair._invitations.containsKey(player) && Affair._invitations.get(player) != null) {
                 Affair._invitations.get(player).getMembers().add(player);
+                Affair._invitations.remove(player);
                 player.sendMessage(ChatColor.GREEN + "You have joined the party!");
             } else {
-                player.sendMessage(ChatColor.RED + "You have not been invited anywhere.. ;-(");
+                player.sendMessage(ChatColor.RED + "You do not have any pending invitations!");
             }
         } else {
             player.sendMessage(ChatColor.RED + "You must specify the party owners name, like so; /paccept <partyOwnerName>");

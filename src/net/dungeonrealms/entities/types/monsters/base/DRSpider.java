@@ -24,7 +24,7 @@ public class DRSpider extends DRZombie implements Monster{
 	 */
 	public DRSpider(World world, EnumMonster monst, int tier) {
 		super(world, monst, tier, EnumEntityType.HOSTILE_MOB, true);
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(10d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(14d);
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
         this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
         String customName = monsterType.getPrefix() + " " + monsterType.name + " " + monsterType.getSuffix() + " ";

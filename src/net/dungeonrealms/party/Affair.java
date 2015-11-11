@@ -50,6 +50,10 @@ public class Affair implements GenericMechanic {
         }, 0, 20);
     }
 
+    public void invitePlayer(Player inviting, Player invitor) {
+        _invitations.put(inviting, getParty(invitor).get());
+        inviting.sendMessage(ChatColor.GREEN + "You've been invited to " + invitor.getName() + "'s party! Type /paccept to join!");
+    }
 
     public void removeParty(AffairO party) {
 
@@ -67,6 +71,11 @@ public class Affair implements GenericMechanic {
 
     public void removeMember(Player player) {
 
+        if(isOwner(player)) {
+            removeParty(getParty(player).get());
+            return;
+        }
+
         AffairO party = getParty(player).get();
 
         party.getMembers().remove(player);
@@ -77,6 +86,10 @@ public class Affair implements GenericMechanic {
             player1.sendMessage(ChatColor.AQUA + player.getName() + " " + ChatColor.RED + "has left the party!");
         });
 
+    }
+
+    public boolean isOwner(Player player) {
+        return isInParty(player) && getParty(player).get().getOwner().equals(player);
     }
 
 
@@ -114,9 +127,11 @@ public class Affair implements GenericMechanic {
     }
 
     public boolean isInParty(Player player) {
-        _parties.stream().filter(affairO -> affairO.getOwner().equals(player) || affairO.getMembers().contains(player)).limit(1).filter(affairO1 -> {
-            return true;
-        });
+        for (AffairO party : _parties) {
+            if (party.getOwner().equals(player) || party.getMembers().contains(player)) {
+                return true;
+            }
+        }
         return false;
     }
 

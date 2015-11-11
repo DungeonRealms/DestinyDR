@@ -11,7 +11,7 @@ import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.party.Party;
+import net.dungeonrealms.party.Affair;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.Entity;
 import org.bukkit.*;
@@ -203,7 +203,7 @@ public class RiftPortal implements GenericMechanic, Listener {
             Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
                 if (!getParticipating().isEmpty()) {
                     getParticipating().stream().forEach(player -> {
-                        if (!Party.getInstance().isInParty(player)) {
+                        if (!Affair.getInstance().isInParty(player)) {
                             ScoreboardManager manager = Bukkit.getScoreboardManager();
                             Scoreboard board = manager.getNewScoreboard();
                             Objective objective = board.registerNewObjective("test", "dummy");

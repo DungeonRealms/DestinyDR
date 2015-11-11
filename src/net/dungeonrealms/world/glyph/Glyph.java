@@ -144,7 +144,7 @@ public class Glyph {
                 StringBuilder armorAttribute = new StringBuilder();
                 for (Armor.ArmorAttributeType type : getGlyphArmorAttributes(randomizedTier)) {
                     //Get the value
-                    int value = new DamageMeta().nextArmor(Armor.ArmorTier.getByTier(randomizedTier), Armor.ArmorModifier.getById((randomizedTier - 1)), Armor.ArmorAttributeType.getByString(type.getNBTName()));
+                    int value = new DamageMeta().nextArmor(Armor.ArmorTier.getByTier(tier), Armor.ArmorModifier.getById((tier - 1)), Armor.ArmorAttributeType.getByString(type.getNBTName()));
                     armorAttribute.append(type.getNBTName()).append("@").append(value).append(",");
 
                     //Make sure percentages aren't over 10
@@ -172,10 +172,9 @@ public class Glyph {
                 StringBuilder weaponAttribute = new StringBuilder();
                 for (Item.AttributeType weaponAttributeType : getGlyphWeaponAttributes(randomizedTier)) {
                     if ((weaponAttributeType) == null) continue;
-                    Item.AttributeType type = (weaponAttributeType);
                     //Get the value
-                    int value = new DamageMeta().nextWeapon(Item.ItemTier.getByTier(randomizedTier), Item.ItemModifier.getById((randomizedTier - 1)), Item.AttributeType.getByString(type.getNBTName()));
-                    weaponAttribute.append(type.getNBTName()).append("@").append(value).append(",");
+                    int value = new DamageMeta().nextWeapon(Item.ItemTier.getByTier(tier), Item.ItemModifier.getById((tier - 1)), Item.AttributeType.getByString((weaponAttributeType).getNBTName()));
+                    weaponAttribute.append((weaponAttributeType).getNBTName()).append("@").append(value).append(",");
 
                     //Make sure percentages aren't over 10
                     if (Arrays.asList(new String[]{
@@ -184,13 +183,13 @@ public class Glyph {
                             "vsPlayers",
                             "lifesteal",
                             "accuracy"
-                    }).contains(type.getNBTName())) {
+                    }).contains((weaponAttributeType).getNBTName())) {
                         if (value > 10) {
                             value = 8;
                         }
-                        lore.add("  • " + ChatColor.RED + String.valueOf(value) + "% " + ChatColor.RESET + type.getName());
+                        lore.add("  • " + ChatColor.RED + String.valueOf(value) + "% " + ChatColor.RESET + (weaponAttributeType).getName());
                     } else {
-                        lore.add("  • " + ChatColor.RED + String.valueOf(value) + " " + ChatColor.RESET + type.getName());
+                        lore.add("  • " + ChatColor.RED + String.valueOf(value) + " " + ChatColor.RESET + (weaponAttributeType).getName());
                     }
 
                 }

@@ -231,7 +231,7 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public int getMonsterMaxHPOnSpawn(LivingEntity entity) {
-           return calculateMaxHPFromItems(entity) - 50;
+           return calculateMaxHPFromItems(entity) - 80;
     }
 
     /**
@@ -357,6 +357,7 @@ public class HealthHandler implements GenericMechanic {
         if (currentHP + 1 > maxHP) {
             if (player.getHealth() != 20) {
                 player.setHealth(20);
+                return;
             }
         }
 
@@ -445,8 +446,33 @@ public class HealthHandler implements GenericMechanic {
         double currentHP = getPlayerHPLive(player);
         double newHP = currentHP - damage;
 
+        LivingEntity leAttacker = null;
+        if (damager instanceof CraftLivingEntity) {
+            leAttacker = (LivingEntity) damager;
+        } else {
+            switch (damager.getType()) {
+                case ARROW:
+                    if (((Arrow) damager).getShooter() instanceof LivingEntity) {
+                        leAttacker = (LivingEntity) ((Arrow) damager).getShooter();
+                    }
+                    break;
+                case SNOWBALL:
+                    if (((Snowball) damager).getShooter() instanceof LivingEntity) {
+                        leAttacker = (LivingEntity) ((Snowball) damager).getShooter();
+                    }
+                    break;
+                case WITHER_SKULL:
+                    if (((WitherSkull) damager).getShooter() instanceof LivingEntity) {
+                        leAttacker = (LivingEntity) ((WitherSkull) damager).getShooter();
+                    }
+                    break;
+                default:
+                    break;
+            }
+        }
+
         CombatLog.addToCombat(player);
-        if (damager instanceof Player) {
+        if (leAttacker instanceof Player) {
             player.playEffect(EntityEffect.HURT);
             SoundAPI.getInstance().playSoundAtLocation("damage.hit", player.getLocation(), 6);
         }
@@ -454,11 +480,11 @@ public class HealthHandler implements GenericMechanic {
             newHP = 1;
         }
 
-        if (newHP <= 0 && API.isPlayer(damager) && Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, damager.getUniqueId()).toString())) {
+        if (newHP <= 0 && API.isPlayer(leAttacker) && Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, leAttacker.getUniqueId()).toString())) {
             if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.LAWFUL.name())) {
                 newHP = 1;
-                damager.sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + player.getName() + "!");
-                player.sendMessage(ChatColor.YELLOW + damager.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
+                leAttacker.sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + player.getName() + "!");
+                player.sendMessage(ChatColor.YELLOW + leAttacker.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
             }
         }
 
@@ -510,32 +536,6 @@ public class HealthHandler implements GenericMechanic {
             convHPToDisplay = 20;
         }
         player.setHealth(convHPToDisplay);
-        LivingEntity leAttacker = null;
-        if (damager instanceof CraftLivingEntity) {
-            if (damager.hasMetadata("type")) {
-                leAttacker = (LivingEntity) damager;
-            }
-        } else {
-            switch (damager.getType()) {
-                case ARROW:
-                    if (((Arrow) damager).getShooter() instanceof LivingEntity) {
-                        leAttacker = (LivingEntity) ((Arrow) damager).getShooter();
-                    }
-                    break;
-                case SNOWBALL:
-                    if (((Snowball) damager).getShooter() instanceof LivingEntity) {
-                        leAttacker = (LivingEntity) ((Snowball) damager).getShooter();
-                    }
-                    break;
-                case WITHER_SKULL:
-                    if (((WitherSkull) damager).getShooter() instanceof LivingEntity) {
-                        leAttacker = (LivingEntity) ((WitherSkull) damager).getShooter();
-                    }
-                    break;
-                default:
-                    break;
-            }
-        }
         if (!(leAttacker == null) && !(API.isPlayer(leAttacker))) {
             Entities.getInstance().MONSTER_LAST_ATTACK.put(leAttacker, 15);
             if (!Entities.getInstance().MONSTERS_LEASHED.contains(leAttacker)) {

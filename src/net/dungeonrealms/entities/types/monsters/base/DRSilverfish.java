@@ -1,9 +1,13 @@
 package net.dungeonrealms.entities.types.monsters.base;
 
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.anticheat.AntiCheat;
+import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.items.Item;
-
-import java.util.Random;
-
+import net.dungeonrealms.items.ItemGenerator;
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -12,18 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.anticheat.AntiCheat;
-import net.dungeonrealms.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.entities.types.monsters.Monster;
-import net.dungeonrealms.items.ItemGenerator;
-import net.minecraft.server.v1_8_R3.EntityHuman;
-import net.minecraft.server.v1_8_R3.EntitySilverfish;
-import net.minecraft.server.v1_8_R3.GenericAttributes;
-import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
-import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
-import net.minecraft.server.v1_8_R3.World;
+import java.util.Random;
 
 /**
  * Created by Chase on Oct 21, 2015
@@ -37,7 +30,7 @@ public class DRSilverfish extends EntitySilverfish implements Monster{
         this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
         this.goalSelector.a(5, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.0D, false));
 		this.enumMonster = type;
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(10d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(14d);
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
         this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
 		setArmor(tier);

@@ -6,8 +6,8 @@ import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
-import net.dungeonrealms.items.*;
 import net.dungeonrealms.items.Item;
+import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.miscellaneous.RandomHelper;
 import net.minecraft.server.v1_8_R3.*;
@@ -21,7 +21,6 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.lang.reflect.Field;
-import java.util.Random;
 
 /**
  * Created by Chase on Sep 19, 2015
@@ -52,12 +51,10 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
 
         this.goalSelector.a(1, new PathfinderGoalFloat(this));
         this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
-        this.goalSelector.a(6, new PathfinderGoalRandomStroll(this, 1.0D));
         this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-        this.goalSelector.a(7, new PathfinderGoalRandomLookaround(this));
         this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
         this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(10d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(14d);
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
         this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
         monsterType = monster;
