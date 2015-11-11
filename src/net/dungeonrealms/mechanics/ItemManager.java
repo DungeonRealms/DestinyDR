@@ -86,6 +86,28 @@ public class ItemManager {
     }
 
     /**
+     * Creates a Teleport book using location for a String
+     *
+     * @param name
+     * @return ItemStack
+     * @since 1.0
+     */
+    public static ItemStack createTeleportBook(String location) {
+        ItemStack rawStack = new ItemStack(Material.BOOK);
+        ItemMeta meta = rawStack.getItemMeta();
+        String teleportLocation = location;
+        meta.setDisplayName(teleportLocation + " Teleport Book");
+        meta.setLore(Collections.singletonList(ChatColor.GRAY + "(Right-Click) Teleport to " + teleportLocation));
+        rawStack.setItemMeta(meta);
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set("type", new NBTTagString("teleport"));
+        tag.set("usage", new NBTTagString(teleportLocation));
+        nmsStack.setTag(tag);
+        return CraftItemStack.asBukkitCopy(nmsStack);
+    }
+    
+    /**
      * Creates a scrap piece based on
      * given tier
      *

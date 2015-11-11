@@ -132,14 +132,14 @@ public class MobSpawner {
 					if (monsEnum == null)
 						return;
 					Entity entity = SpawningMechanics.getMob(world, tier, monsEnum);
+					String customName = eliteName;
+					entity.setCustomName(customName.trim());
 					int level = Utils.getRandomFromTier(tier, lvlRange);
 					MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
-					EntityStats.setMonsterRandomStats(entity, level, tier);
+					EntityStats.setMonsterElite(entity, level, tier);
 					
 					if (entity == null)
 						return;
-					String customName = eliteName;
-					entity.setCustomName(customName);
 						toSpawn = true;
 						if (!firstSpawn) {
 							Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -148,7 +148,7 @@ public class MobSpawner {
 								entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 								toSpawn = false;
 								SPAWNED_MONSTERS.add(entity);
-							} , 1200 * 2L);
+							} , 100l);//1200 * 2L);
 						} else {
 							Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 								entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
@@ -197,7 +197,7 @@ public class MobSpawner {
 					customName = monsEnum.name;
 				}
 				
-		        if (!entity.getBukkitEntity().hasMetadata("isElite"))
+		        if (!entity.getBukkitEntity().hasMetadata("elite"))
 					entity.setCustomName(lvlName + ChatColor.RESET + customName + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
 				toSpawn = true;
 				if(!firstSpawn){

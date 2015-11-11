@@ -6,7 +6,7 @@ import me.Bogdacutu.VoidGenerator.VoidGeneratorGenerator;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.mechanics.LootManager;
+import net.dungeonrealms.loot.LootManager;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.teleportation.Teleportation;

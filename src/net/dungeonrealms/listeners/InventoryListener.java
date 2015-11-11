@@ -16,8 +16,8 @@ import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.TradeHandler;
 import net.dungeonrealms.handlers.TradeHandler.TradeManager;
 import net.dungeonrealms.items.repairing.RepairAPI;
+import net.dungeonrealms.loot.LootManager;
 import net.dungeonrealms.mechanics.ItemManager;
-import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.network.NetworkAPI;
@@ -576,7 +576,7 @@ public class InventoryListener implements Listener {
         } else if (event.getInventory().getTitle().contains("Loot")) {
             Player p = (Player) event.getPlayer();
             Block block = p.getTargetBlock((Set<Material>) null, 100);
-            LootManager.LOOT_SPAWNERS.stream().filter(loot -> loot.location.equals(block.getLocation())).forEach(net.dungeonrealms.spawning.LootSpawner::update);
+            LootManager.LOOT_SPAWNERS.stream().filter(loot -> loot.location.equals(block.getLocation())).forEach(net.dungeonrealms.loot.LootSpawner::update);
         } else if (event.getInventory().getTitle().contains("Trade")) {
             Player p = (Player) event.getPlayer();
             TradeHandler t = TradeManager.getTrade(p.getUniqueId());

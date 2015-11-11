@@ -1,21 +1,36 @@
 package net.dungeonrealms.spawning;
 
+import java.util.ArrayList;
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.monsters.*;
-import net.dungeonrealms.entities.types.monsters.base.*;
+import net.dungeonrealms.entities.types.monsters.BasicEntityBlaze;
+import net.dungeonrealms.entities.types.monsters.BasicEntitySkeleton;
+import net.dungeonrealms.entities.types.monsters.BasicMageMonster;
+import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
+import net.dungeonrealms.entities.types.monsters.EntityBandit;
+import net.dungeonrealms.entities.types.monsters.EntityFireImp;
+import net.dungeonrealms.entities.types.monsters.EntityGolem;
+import net.dungeonrealms.entities.types.monsters.EntityPirate;
+import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
+import net.dungeonrealms.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.entities.types.monsters.base.DRMagma;
+import net.dungeonrealms.entities.types.monsters.base.DRPigman;
+import net.dungeonrealms.entities.types.monsters.base.DRSilverfish;
+import net.dungeonrealms.entities.types.monsters.base.DRSpider;
+import net.dungeonrealms.entities.types.monsters.base.DRWitherSkeleton;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.World;
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-
-import java.util.ArrayList;
 
 /**
  * Created by Chase on Sep 28, 2015
@@ -153,7 +168,10 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new EntityGolem(world, tier, type);
                 break;
             case Naga:
-                entity = new BasicMageMonster(world, EnumMonster.Naga, tier);
+            	if(new Random().nextBoolean())
+            		entity = new BasicMageMonster(world, EnumMonster.Naga, tier);
+            	else
+            		entity = new BasicMeleeMonster(world, EnumMonster.Naga, tier);
                 break;
             case Tripoli1:
             case Tripoli:

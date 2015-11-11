@@ -6,7 +6,7 @@ package net.dungeonrealms.commands;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.commands.generic.BasicCommand;
-import net.dungeonrealms.mechanics.LootManager;
+import net.dungeonrealms.loot.LootManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;

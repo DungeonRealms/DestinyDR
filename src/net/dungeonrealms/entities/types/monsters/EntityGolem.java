@@ -13,7 +13,6 @@ public class EntityGolem extends DRZombie {
 
     public EntityGolem(World world, int tier, EnumEntityType entityType) {
         super(world, EnumMonster.Golem, tier, entityType, true);
-        this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().next()));
     }
 
     /**

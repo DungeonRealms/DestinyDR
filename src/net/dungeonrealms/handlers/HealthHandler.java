@@ -1,6 +1,25 @@
 	package net.dungeonrealms.handlers;
 
-    import net.dungeonrealms.API;
+    import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.EntityEffect;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
+import org.bukkit.entity.WitherSkull;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.inventivetalent.bossbar.BossBarAPI;
+
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelMechanics;
@@ -15,15 +34,7 @@ import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.profession.Fishing;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
-import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.*;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.inventivetalent.bossbar.BossBarAPI;
+import net.minecraft.server.v1_8_R3.EntityLiving;
 
 /**
  * Created by Kieran on 10/3/2015.
@@ -552,7 +563,9 @@ public class HealthHandler implements GenericMechanic {
         if (API.isPlayer(attacker)) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
                 String customNameAppended = entity.getCustomName();
-                customNameAppended = ChatColor.stripColor(customNameAppended.substring(customNameAppended.indexOf("]") + 1, customNameAppended.indexOf("❤")).trim());
+                 EntityLiving nms = ((CraftLivingEntity)entity).getHandle();
+                if(!nms.getCustomName().contains("*"))
+                	customNameAppended = ChatColor.stripColor(customNameAppended.substring(customNameAppended.indexOf("]") + 1, customNameAppended.indexOf("❤")).trim());
                 attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + customNameAppended + ChatColor.BOLD + "[" + (int) newHP + "HP]");
             }
         }
@@ -597,7 +610,7 @@ public class HealthHandler implements GenericMechanic {
                 String lvlName = ChatColor.LIGHT_PURPLE + "[" + level + "] ";
                 String name = entity.getMetadata("customname").get(0).asString();
                 int hp = entity.getMetadata("currentHP").get(0).asInt();
-                if (!entity.hasMetadata("isElite"))
+                if (!entity.hasMetadata("elite"))
                     entity.setCustomName(lvlName + ChatColor.RESET + name + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
                 entity.setHealth(convHPToDisplay);
                 if (!Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {

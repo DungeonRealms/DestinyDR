@@ -7,6 +7,7 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.items.Item.ItemModifier;
@@ -93,7 +94,7 @@ public class EntityStats {
     }
 
     public static void setMonsterElite(Entity entity ,int lvl, int tier) {
-    	String name = ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "* " + entity.getCustomName() + ChatColor.GREEN.toString() + " *";
+    	String name = ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "*" + API.getTierColor(tier) +  entity.getCustomName() + ChatColor.GREEN.toString() + "*";
     	Stats stat = Stats.getRandomStats(lvl,tier);
     	stat.atk *= 2.5;
     	stat.hp *= 2.5;

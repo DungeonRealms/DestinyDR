@@ -29,7 +29,7 @@ public interface Monster {
 	public default void checkItemDrop(int tier, EnumMonster monter, Entity ent) {
 		Location loc = ent.getLocation();
 		World world = ((CraftWorld) loc.getWorld()).getHandle();
-		if (world.random.nextInt(100) <= 25) {
+		if (world.random.nextInt(100) <= 20) {
 			ItemStack item = BankMechanics.gem.clone();
 			item.setAmount(((tier * 10) - 8) + new Random().nextInt(5));
 			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), item);

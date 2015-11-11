@@ -9,6 +9,7 @@ import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.items.*;
 import net.dungeonrealms.items.Item;
 import net.dungeonrealms.mechanics.ItemManager;
+import net.dungeonrealms.miscellaneous.RandomHelper;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -73,7 +74,7 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
 
     @Override
     protected void getRareDrop(){
-    	this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation().add(0, 1, 0), ItemManager.createRandomTeleportBook("Teleport Book"));
+    	this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation().add(0, 1, 0), new ItemStack(Material.ARROW, RandomHelper.getRandomNumberBetween(2, 5)));
     }
     
     protected DRSkeleton(World world) {

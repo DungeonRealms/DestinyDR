@@ -38,7 +38,6 @@ public abstract class DRZombie extends EntityZombie implements Monster{
     public int tier;
     @Override
     protected void getRareDrop(){
-    	this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation().add(0, 1, 0), ItemManager.createRandomTeleportBook("Teleport Book"));
     }
     
     protected DRZombie(World world, EnumMonster monster, int tier, EnumEntityType entityType, boolean setArmor) {

@@ -187,8 +187,6 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 					entity.getBukkitEntity().setPassenger(stand);
 					EntityStats.setMonsterElite(entity, level + 10, 1);
 					stand.setCustomName(entity.getCustomName());
-					entity.getBukkitEntity().setMetadata("isElite",
-				            new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
 				Location location = new Location(world.getWorld(),
 				        this.getBukkitEntity().getLocation().getX() + new Random().nextInt(3),
 				        this.getBukkitEntity().getLocation().getY(),

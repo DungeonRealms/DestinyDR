@@ -1,25 +1,20 @@
 package net.dungeonrealms.listeners;
 
-import com.connorlinfoot.bountifulapi.BountifulAPI;
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.banks.BankMechanics;
-import net.dungeonrealms.chat.Chat;
-import net.dungeonrealms.donate.DonationEffects;
-import net.dungeonrealms.duel.DuelMechanics;
-import net.dungeonrealms.duel.DuelWager;
-import net.dungeonrealms.entities.utils.EntityAPI;
-import net.dungeonrealms.handlers.KarmaHandler;
-import net.dungeonrealms.handlers.TradeHandler;
-import net.dungeonrealms.inventory.GUI;
-import net.dungeonrealms.inventory.NPCMenus;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.profession.Fishing;
-import net.minecraft.server.v1_8_R3.EntityArmorStand;
-import org.bukkit.*;
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Rotation;
+import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.ItemFrame;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -29,16 +24,44 @@ import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.AsyncPlayerPreLoginEvent;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerFishEvent;
 import org.bukkit.event.player.PlayerFishEvent.State;
+import org.bukkit.event.player.PlayerInteractEntityEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.Random;
+import com.connorlinfoot.bountifulapi.BountifulAPI;
+
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.banks.BankMechanics;
+import net.dungeonrealms.chat.Chat;
+import net.dungeonrealms.donate.DonationEffects;
+import net.dungeonrealms.duel.DuelMechanics;
+import net.dungeonrealms.duel.DuelWager;
+import net.dungeonrealms.entities.utils.EntityAPI;
+import net.dungeonrealms.events.PlayerEnterRegionEvent;
+import net.dungeonrealms.handlers.KarmaHandler;
+import net.dungeonrealms.handlers.TradeHandler;
+import net.dungeonrealms.inventory.GUI;
+import net.dungeonrealms.inventory.NPCMenus;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.profession.Fishing;
+import net.dungeonrealms.teleportation.Teleportation;
+import net.minecraft.server.v1_8_R3.EntityArmorStand;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -121,7 +144,6 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onMountDismount(VehicleExitEvent event) {
-        Utils.log.info(event.getExited().getClass().getName());
         if (!(API.isPlayer(event.getExited()))) {
             if (event.getExited() instanceof EntityArmorStand) {
                 event.getExited().remove();
@@ -595,7 +617,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMapDrop(PlayerDropItemEvent event) {
     	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
-    	if(nms == null)
+    	if(nms == null || !nms.hasTag())
     		return;
         if (!(event.isCancelled())) {
             Player pl = event.getPlayer();
@@ -642,4 +664,14 @@ public class MainListener implements Listener {
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.NOTE_PLING, 1f, 1f);
         }
     }
+    
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void avalonTP(PlayerEnterRegionEvent event){
+    	if(event.getRegion().equalsIgnoreCase("teleport_underworld")){
+    		event.getPlayer().teleport(Teleportation.Underworld);
+    	}else if(event.getRegion().equalsIgnoreCase("teleport_overworld")){
+    		event.getPlayer().teleport(Teleportation.Underworld);
+    	}
+    }
+    
 }

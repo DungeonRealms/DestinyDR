@@ -19,7 +19,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockDamageEvent;
 import org.bukkit.event.block.BlockPhysicsEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.EntityBlockFormEvent;
@@ -43,9 +42,10 @@ import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.items.repairing.RepairAPI;
+import net.dungeonrealms.loot.LootManager;
+import net.dungeonrealms.loot.LootSpawner;
 import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.LootManager;
 import net.dungeonrealms.miscellaneous.RandomHelper;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -53,7 +53,6 @@ import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
-import net.dungeonrealms.spawning.LootSpawner;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
@@ -282,9 +281,9 @@ public class BlockListener implements Listener {
         Block block = e.getClickedBlock();
         if (block == null) return;
         if (block.getType() != Material.CHEST) return;
-        for (LootSpawner loot : LootManager.LOOT_SPAWNERS) {
-            if (loot.location.getBlockX() == block.getX() && loot.location.getBlockY() == block.getY() && loot.location.getBlockZ() == block.getLocation().getZ()) {
-                Collection<Entity> list = API.getNearbyMonsters(loot.location, 10);
+        LootSpawner loot = LootManager.getSpawner(e.getClickedBlock().getLocation());
+        if(loot != null){
+                Collection<Entity> list = API.getNearbyMonsters(loot.location, 4);
                 if (list.isEmpty()) {
                     Action actionType = e.getAction();
                     switch (actionType) {
@@ -308,7 +307,6 @@ public class BlockListener implements Listener {
                     e.getPlayer().sendMessage(ChatColor.RED + "You can't open this while monsters are around!");
                     e.setCancelled(true);
                 }
-            }
         }
 
         Shop shop = ShopMechanics.getShop(block);
