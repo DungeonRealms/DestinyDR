@@ -188,6 +188,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandPAccept("paccept", "/<command> [args]", "Accept a party invitation."));
         cm.registerCommand(new CommandPRemove("premove", "/<command> [args]", "Remove player from party."));
         cm.registerCommand(new CommandPLeave("pleave", "/<command> [args]", "Remove player from party."));
+        cm.registerCommand(new CommandPChat("pchat", "/<command> [args]", "Talk in party chat."));
 
         try {
             FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));
