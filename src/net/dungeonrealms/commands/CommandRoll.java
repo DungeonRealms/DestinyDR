@@ -21,7 +21,7 @@ public class CommandRoll extends BasicCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED +  "Only players can execute this command!");
+            sender.sendMessage(ChatColor.RED + "Only players can execute this command!");
             return false;
         }
         if (args.length != 1) {
@@ -39,7 +39,8 @@ public class CommandRoll extends BasicCommand {
 
             int roll = new Random().nextInt(max) + 1;
 
-            API.getNearbyPlayers(player.getLocation(), 20).stream().forEach(player1 -> player1.sendMessage(ChatColor.GRAY + player.getName() + " has rolled a " + roll + " out of " + max + "."));
+            API.getNearbyPlayers(player.getLocation(), 20).stream().forEach(player1 -> player1.sendMessage(ChatColor.AQUA.toString() + ChatColor.UNDERLINE + player.getName() +
+                    ChatColor.GRAY + " has rolled a " + ChatColor.RED + roll + ChatColor.GRAY + " out of " + ChatColor.RED + max + ChatColor.GRAY + "."));
         } catch (Exception ex) {
             sender.sendMessage(ChatColor.RED + "Incorrect syntax. /Roll <1-10000>");
             return false;

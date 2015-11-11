@@ -71,7 +71,7 @@ public class Affair implements GenericMechanic {
 
     public void removeMember(Player player) {
 
-        if(isOwner(player)) {
+        if (isOwner(player)) {
             removeParty(getParty(player).get());
             return;
         }
@@ -85,6 +85,8 @@ public class Affair implements GenericMechanic {
         party.getMembers().stream().forEach(player1 -> {
             player1.sendMessage(ChatColor.AQUA + player.getName() + " " + ChatColor.RED + "has left the party!");
         });
+
+        player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
 
     }
 
