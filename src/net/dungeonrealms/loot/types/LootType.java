@@ -209,7 +209,6 @@ public enum LootType {
 						net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
 						nms.setTag(new NBTTagCompound());
 						nms.getTag().setInt("itemTier", item_tier);
-						Utils.log.info("tier " + item_tier + " weapon" + ", " + spawn_chance + " SPAWN CHANCE");
 						loot.put(CraftItemStack.asBukkitCopy(nms), spawn_chance);
 					}
 				}
