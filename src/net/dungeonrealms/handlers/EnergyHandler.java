@@ -110,6 +110,9 @@ public class EnergyHandler implements GenericMechanic {
      */
     private void regenerateAllPlayerEnergy() {
         for (Player player : Bukkit.getOnlinePlayers()) {
+            if (!API.isPlayer(player)) {
+                continue;
+            }
             if (getPlayerCurrentEnergy(player.getUniqueId()) == 1.0F) {
                 continue;
             }
@@ -123,7 +126,7 @@ public class EnergyHandler implements GenericMechanic {
                 if (player.hasMetadata("starving")) {
                     regenAmount = 0.07F;
                 }
-                regenAmount = regenAmount / 6.2F;
+                regenAmount = regenAmount / 6.3F;
                 GamePlayer gp = API.getGamePlayer(player);
                 if (gp == null || gp.getStats() == null) return;
                 regenAmount += (int) (regenAmount * gp.getStats().getEnergyRegen());

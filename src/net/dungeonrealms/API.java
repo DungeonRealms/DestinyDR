@@ -134,15 +134,18 @@ public class API {
     }
     
     public static ArmorModifier getArmorModifier(){
-		int chance = RandomHelper.getRandomNumberBetween(1, 1000);
-		if(chance == 1){
+		int chance = RandomHelper.getRandomNumberBetween(1, 500);
+		if (chance == 1) {
 			return ArmorModifier.LEGENDARY;
-		}else if(chance <= 10){
+		} else if (chance <= 10) {
+			return ArmorModifier.UNIQUE;
+		} else if (chance > 10 && chance <= 50) {
 			return ArmorModifier.RARE;
-		}else if(chance > 10 && chance <= 50){
-			return ArmorModifier.UNCOMMON;
-		}else
-			return ArmorModifier.COMMON;
+		} else if (chance > 50 && chance <= 200) {
+            return ArmorModifier.UNCOMMON;
+        } else {
+            return ArmorModifier.COMMON;
+        }
     }
 
     public static ChatColor getTierColor(int tier) {
