@@ -145,7 +145,8 @@ public class BlockListener implements Listener {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> e.getBlock().setType(type), (Mining.getOreRespawnTime(type) * 20L));
             }
         }else{
-        	e.setCancelled(true);
+        	if(!e.getPlayer().isOp())
+        		e.setCancelled(true);
         }
     }
     
@@ -287,7 +288,7 @@ public class BlockListener implements Listener {
         if (block.getType() != Material.CHEST) return;
         LootSpawner loot = LootManager.getSpawner(e.getClickedBlock().getLocation());
         if(loot != null){
-                Collection<Entity> list = API.getNearbyMonsters(loot.location, 4);
+                Collection<Entity> list = API.getNearbyMonsters(loot.location, 5);
                 if (list.isEmpty()) {
                     Action actionType = e.getAction();
                     switch (actionType) {

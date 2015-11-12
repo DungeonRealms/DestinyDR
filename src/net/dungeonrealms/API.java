@@ -132,6 +132,18 @@ public class API {
 		else
         return new ArmorGenerator().nextArmor(tier, ArmorModifier.COMMON);
     }
+    
+    public static ArmorModifier getArmorModifier(){
+		int chance = RandomHelper.getRandomNumberBetween(1, 1000);
+		if(chance == 1){
+			return ArmorModifier.LEGENDARY;
+		}else if(chance <= 10){
+			return ArmorModifier.RARE;
+		}else if(chance > 10 && chance <= 50){
+			return ArmorModifier.UNCOMMON;
+		}else
+			return ArmorModifier.COMMON;
+    }
 
     public static ChatColor getTierColor(int tier) {
         if (tier == 1) {

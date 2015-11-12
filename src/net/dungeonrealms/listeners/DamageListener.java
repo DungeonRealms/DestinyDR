@@ -829,6 +829,14 @@ public class DamageListener implements Listener {
         event.getDrops().clear();
     }
     
+    @EventHandler(priority = EventPriority.HIGH)
+    public void playerDMGOnHorse(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player)) return;
+        if(event.getEntity().getVehicle() == null)return;
+        	event.getEntity().getVehicle().setPassenger(null);
+    }
+    
+    
     /**
      * Get rid of fall damage
      * 

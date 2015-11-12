@@ -1,5 +1,6 @@
 package net.dungeonrealms.entities.types.monsters;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.items.armor.Armor.ArmorTier;
 import net.dungeonrealms.items.armor.Armor.EquipmentType;
@@ -39,7 +40,7 @@ public interface Monster {
 			ItemStack[] loot = new ItemStack[5];
 			ItemStack[] armor = ((LivingEntity) ent).getEquipment().getArmorContents();
 			ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
-			armor[3] = new ArmorGenerator().getArmor(EquipmentType.HELMET, ArmorTier.getByTier(tier), ArmorGenerator.getRandomItemModifier());
+			armor[3] = new ArmorGenerator().getArmor(EquipmentType.HELMET, ArmorTier.getByTier(tier), API.getArmorModifier());
 			loot = new ItemStack[]{armor[0], armor[1], armor[2], armor[3], weapon};
 			int number = RandomHelper.getRandomNumberBetween(0, 4);
 			ItemStack armorToDrop = loot[number];

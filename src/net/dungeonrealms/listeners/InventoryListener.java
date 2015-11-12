@@ -111,11 +111,7 @@ public class InventoryListener implements Listener {
             }
             String owner = event.getInventory().getTitle().split("@")[1];
             UUID shopOwner = API.getUUIDFromName(owner);
-            
-            
             Player clicker = (Player) event.getWhoClicked();
-            
-            
             Shop shop = ShopMechanics.PLAYER_SHOPS.get(shopOwner);
             if(shop == null){
             	event.setCancelled(true);
@@ -252,7 +248,6 @@ public class InventoryListener implements Listener {
                                             gui.open();
                                         }
                                     }
-                                } else {
                                 }
                             }
                         }
