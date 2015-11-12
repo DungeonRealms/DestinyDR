@@ -359,19 +359,19 @@ public class HealthHandler implements GenericMechanic {
                 player.setHealth(20);
                 return;
             }
+            return;
         }
-
-        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-            double newHealth = currentHP + amount;
-            if (newHealth >= maxHP) {
-                newHealth = maxHP;
-            }
-            player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " -> " + ChatColor.GREEN + " [" + (int) newHealth + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
-        }
-
         if ((currentHP + (double) amount) >= maxHP) {
             player.setHealth(20);
             setPlayerHPLive(player, (int) maxHP);
+            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+                double newHealth = currentHP + amount;
+                if (newHealth >= maxHP) {
+                    newHealth = maxHP;
+                }
+                player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " -> " + ChatColor.GREEN + " [" + (int) newHealth + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+            }
+            return;
         } else if (player.getHealth() <= 19 && ((currentHP + (double) amount) < maxHP)) {
             setPlayerHPLive(player, (int) (getPlayerHPLive(player) + (double) amount));
             double playerHPPercent = (getPlayerHPLive(player) + (double) amount) / maxHP;
@@ -387,6 +387,14 @@ public class HealthHandler implements GenericMechanic {
                 newPlayerHP = 1;
             }
             player.setHealth((int) newPlayerHP);
+        }
+
+        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+            double newHealth = currentHP + amount;
+            if (newHealth >= maxHP) {
+                newHealth = maxHP;
+            }
+            player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " -> " + ChatColor.GREEN + " [" + (int) newHealth + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
         }
     }
 
