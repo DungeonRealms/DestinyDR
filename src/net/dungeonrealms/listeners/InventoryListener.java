@@ -255,6 +255,7 @@ public class InventoryListener implements Listener {
                         if (!shop.isopen) {
                             clicker.closeInventory();
                             clicker.sendMessage(ChatColor.RED.toString() + "This shop is closed!");
+                            event.setCancelled(true);
                             return;
                         }
                         if (event.getRawSlot() < shop.inventory.getSize()) {
