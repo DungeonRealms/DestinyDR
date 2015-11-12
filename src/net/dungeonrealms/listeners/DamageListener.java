@@ -1,6 +1,46 @@
 package net.dungeonrealms.listeners;
 
+import java.util.ArrayList;
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
+import org.bukkit.entity.WitherSkull;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
+
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
@@ -31,27 +71,6 @@ import net.dungeonrealms.spawning.MobSpawner;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.*;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.*;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
-import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -809,4 +828,19 @@ public class DamageListener implements Listener {
         if (!(event.getEntity() instanceof CraftLivingEntity)) return;
         event.getDrops().clear();
     }
+    
+    /**
+     * Get rid of fall damage
+     * 
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.HIGH)
+    public void playerFallDmg(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player)) return;
+        if(event.getCause() == DamageCause.FALL){
+        	event.setDamage(0);
+        	event.setCancelled(true);
+        }
+    }
+    
 }

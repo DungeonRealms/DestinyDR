@@ -85,7 +85,7 @@ public class BlockListener implements Listener {
      * @param e
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void blockBreak(BlockBreakEvent e) {
         if (!e.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
         Block block = e.getBlock();
@@ -112,6 +112,8 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void breakOre(BlockBreakEvent e) {
         Block block = e.getBlock();
+        if (!e.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
+
         if (block == null) return;
         if (e.getPlayer().getItemInHand() == null || e.getPlayer().getItemInHand().getType() == Material.AIR) return;
         if (block.getType() == Material.COAL_ORE || block.getType() == Material.IRON_ORE || block.getType() == Material.GOLD_ORE || block.getType() == Material.DIAMOND_ORE || block.getType() == Material.EMERALD_ORE) {
@@ -142,6 +144,8 @@ public class BlockListener implements Listener {
                 e.getBlock().setType(Material.STONE);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> e.getBlock().setType(type), (Mining.getOreRespawnTime(type) * 20L));
             }
+        }else{
+        	e.setCancelled(true);
         }
     }
     
@@ -471,7 +475,7 @@ public class BlockListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.NORMAL)
+    @EventHandler(priority = EventPriority.NORMAL, ignoreCancelled = true)
     public void onPlayerBreakBlockInRealm(BlockBreakEvent event) {
         if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
         if (event.getPlayer().getWorld().getName().contains("DUNGEON")) return;
