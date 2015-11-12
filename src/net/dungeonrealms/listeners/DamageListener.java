@@ -697,12 +697,12 @@ public class DamageListener implements Listener {
         for (ItemStack itemStack : event.getDrops()) {
             if (itemStack != null && itemStack.getType() != Material.AIR) {
                 if (itemStack.equals(armorToSave[0]) || itemStack.equals(armorToSave[1]) || itemStack.equals(armorToSave[2]) || itemStack.equals(armorToSave[3]) || itemStack.equals(armorToSave[4])) {
-                    break;
+                    continue;
                 }
                 net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
                 if (nms.hasTag()) {
                     if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important") || nms.getTag().hasKey("subtype")) {
-                        break;
+                    	continue;
                     } else {
                         player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
                     }

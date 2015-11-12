@@ -35,8 +35,25 @@ public interface Monster {
 			item.setAmount(((tier * 10) - 8) + new Random().nextInt(5));
 			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), item);
 		}
-
-		if (RandomHelper.getRandomNumberBetween(1, 100) <= 5) {
+		int chance = 0;
+		switch(tier){
+		case 1:
+			chance = 250;
+			break;
+		case 2:
+			chance = 150;
+			break;
+		case 3:
+			chance = 75;
+			break;
+		case 4:
+			chance = 40;
+			break;
+		case 5:
+			chance = 10;
+			break;
+		}
+		if (RandomHelper.getRandomNumberBetween(1, 1000) <= chance) {
 			ItemStack[] loot = new ItemStack[5];
 			ItemStack[] armor = ((LivingEntity) ent).getEquipment().getArmorContents();
 			ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();

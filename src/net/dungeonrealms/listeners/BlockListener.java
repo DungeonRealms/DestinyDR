@@ -70,7 +70,7 @@ public class BlockListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockPlace(BlockPlaceEvent event) {
-    	if(event.getPlayer().isOp()) return;
+        if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         if (event.getItemInHand() == null) return;
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemInHand());
         if (nmsItem == null) return;
@@ -92,15 +92,21 @@ public class BlockListener implements Listener {
         if (block == null) return;
         if (block.getType() == Material.CHEST) {
             Shop shop = ShopMechanics.getShop(block);
-            if (shop != null) {
+            if (shop == null) return;
                 e.setCancelled(true);
                 if (e.getPlayer().isOp()) {
                     shop.deleteShop();
                 }
-            }
         } else if (block.getType() == Material.ARMOR_STAND) {
             SpawningMechanics.getSpawners().stream().filter(spawner -> spawner.loc == block.getLocation()).forEach(SpawningMechanics::remove);
         }
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void breakBlock(BlockBreakEvent e) {
+    	if(e.getPlayer().isOp() || e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
+    	if(e.getBlock().getWorld() == Bukkit.getWorlds().get(0))
+    		e.setCancelled(true);
     }
 
     /**
@@ -144,9 +150,6 @@ public class BlockListener implements Listener {
                 e.getBlock().setType(Material.STONE);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> e.getBlock().setType(type), (Mining.getOreRespawnTime(type) * 20L));
             }
-        }else{
-        	if(!e.getPlayer().isOp())
-        		e.setCancelled(true);
         }
     }
     
