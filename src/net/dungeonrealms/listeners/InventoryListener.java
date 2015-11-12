@@ -536,6 +536,7 @@ public class InventoryListener implements Listener {
     public void playerEquipArmor(ArmorEquipEvent event) {
         //TODO: Chase do this to prevent all forms of putting on armor if they are not the correct level.
         if (!CombatLog.isInCombat(event.getPlayer())) {
+            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.NOTE_PLING, 1f, 1f);
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 HealthHandler.getInstance().setPlayerMaxHPLive(event.getPlayer(), HealthHandler.getInstance().calculateMaxHPFromItems(event.getPlayer()));
                 HealthHandler.getInstance().setPlayerHPRegenLive(event.getPlayer(), HealthHandler.getInstance().calculateHealthRegenFromItems(event.getPlayer()));

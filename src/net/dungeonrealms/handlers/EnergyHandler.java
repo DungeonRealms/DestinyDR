@@ -317,54 +317,52 @@ public class EnergyHandler implements GenericMechanic {
      */
     public static float getWeaponSwingEnergyCost(ItemStack itemStack) {
         Material material = itemStack.getType();
-
         switch (material) {
             case AIR:
-                return 0.041F;
+                return 0.045f;
             case WOOD_SWORD:
-                return 0.05F;
+                return 0.054f;
             case STONE_SWORD:
-                return 0.06F;
+                return 0.064f;
             case IRON_SWORD:
-                return 0.071F;
+                return 0.075f;
             case DIAMOND_SWORD:
-                return 0.109F;
+                return 0.113f;
             case GOLD_SWORD:
-                return 0.119F;
+                return 0.123f;
             case WOOD_AXE:
-                return 0.07F;
+                return 0.0642F * 1.1F;
             case STONE_AXE:
-                return 0.083F;
+                return 0.0763F * 1.1F;
             case IRON_AXE:
-                return 0.09F;
+                return 0.09F * 1.1F;
             case DIAMOND_AXE:
-                return 0.123F;
+                return 0.113F * 1.1F;
             case GOLD_AXE:
-                return 0.134F;
+                return 0.123F * 1.1F;
             case WOOD_SPADE:
-                return 0.063F;
+                return 0.0642F;
             case STONE_SPADE:
-                return 0.075F;
+                return 0.0763F;
             case IRON_SPADE:
-                return 0.087F;
+                return 0.09F;
             case DIAMOND_SPADE:
-                return 0.111F;
+                return 0.113F;
             case GOLD_SPADE:
-                return 0.121F;
+                return 0.123F;
             case WOOD_HOE:
-                return 0.118F;
+                return 0.11F / 1.1F;
             case STONE_HOE:
-                return 0.128F;
+                return 0.13F / 1.1F;
             case IRON_HOE:
-                return 0.138F;
+                return 0.14F / 1.1F;
             case DIAMOND_HOE:
-                return 0.148F;
+                return 0.15F / 1.1F;
             case GOLD_HOE:
-                return 0.158F;
+                return 0.16F / 1.1F;
             case BOW:
-                return 0.091F;
-            default:
-                return 0.1F;
+                return 0.099F;
         }
+        return 0.10F;
     }
 }

@@ -124,7 +124,7 @@ public class DamageMeta {
                             case HEALTH_REGEN:
                                 return random(26, 40);
                             case ENERGY_REGEN:
-                                return random(1, 4);
+                                return random(1, 3);
                             case INTELLECT:
                                 return random(7, 15);
                             case FIRE_RESISTANCE:
@@ -155,7 +155,7 @@ public class DamageMeta {
                             case HEALTH_REGEN:
                                 return random(26, 45);
                             case ENERGY_REGEN:
-                                return random(2, 5);
+                                return random(2, 4);
                             case INTELLECT:
                                 return random(7, 15);
                             case FIRE_RESISTANCE:
@@ -190,7 +190,7 @@ public class DamageMeta {
                             case HEALTH_REGEN:
                                 return random(45, 60);
                             case ENERGY_REGEN:
-                                return random(2, 5);
+                                return random(2, 4);
                             case INTELLECT:
                                 return random(10, 35);
                             case FIRE_RESISTANCE:
