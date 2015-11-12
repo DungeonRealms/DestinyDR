@@ -828,8 +828,7 @@ public class DamageListener implements Listener {
      * @param event
      */
     @EventHandler(priority = EventPriority.HIGH)
-    public void playerFallDmg(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof Player)) return;
+    public void removeFallDmg(EntityDamageEvent event) {
         if(event.getCause() == DamageCause.FALL){
         	event.setDamage(0);
         	event.setCancelled(true);
