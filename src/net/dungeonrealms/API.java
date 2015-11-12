@@ -51,6 +51,7 @@ import org.bukkit.plugin.Plugin;
 import org.json.simple.JSONObject;
 import org.json.simple.JSONValue;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -691,6 +692,27 @@ public class API {
 		world.addEntity(entity, SpawnReason.CUSTOM);
 		entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
     	
+    }
+    
+    public static File getRemoteDataFolder(){
+    	String filePath = DungeonRealms.getInstance().getDataFolder().getAbsolutePath();
+    	File file = new File(DungeonRealms.getInstance().getDataFolder().getAbsolutePath());
+    	if(filePath.contains("/home/servers")){
+    		if(filePath.contains("d1")){
+    			filePath = "d1";
+    		}else if(filePath.contains("d2")){
+    			filePath = "d2";
+    		}else if(filePath.contains("d3")){
+    			filePath = "d3";
+    		}else if(filePath.contains("d4")){
+    			filePath = "d4";
+    		}else if(filePath.contains("d5")){
+    			filePath = "d5";
+    		}
+    		String webRoot = "/home/servers/" + filePath+ "/";
+    		file = new File(webRoot, DungeonRealms.getInstance().getDataFolder() +"");
+    	}
+    	return file;
     }
     
 }

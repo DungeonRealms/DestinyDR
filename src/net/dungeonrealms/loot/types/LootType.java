@@ -1,5 +1,6 @@
 package net.dungeonrealms.loot.types;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.mastery.Utils;
@@ -50,7 +51,7 @@ public enum LootType {
 //	Tutorial("tutorial.loot");
 
     public String fileName;
-    private HashMap<ItemStack, Double> loot = new HashMap<>();
+    public HashMap<ItemStack, Double> loot = new HashMap<>();
 
     LootType(String fileName) {
         this.fileName = fileName;
@@ -78,10 +79,12 @@ public enum LootType {
      *
      */
     private void loadItems() {
-        File file = new File(DungeonRealms.getInstance().getDataFolder() + "\\loot\\" + fileName);
-        file.getParentFile().mkdirs();
-        if (!file.exists())
+    	File file = new File(API.getRemoteDataFolder() + "//loot//" + fileName);
+        Utils.log.info(file.getAbsolutePath() + " LOADING...");
+        if (!file.exists()){
+        	Utils.log.info(file.getAbsolutePath() + " DOES NOT EXIST");
             return;
+        }
 
         try {
             BufferedReader reader = new BufferedReader(new FileReader(file));
