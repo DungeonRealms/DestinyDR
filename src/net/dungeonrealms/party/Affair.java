@@ -86,7 +86,7 @@ public class Affair implements GenericMechanic {
             player1.sendMessage(ChatColor.AQUA + player.getName() + " " + ChatColor.RED + "has left the party!");
         });
 
-        player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
 
     }
 

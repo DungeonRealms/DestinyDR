@@ -86,7 +86,7 @@ public class Achievements {
                 "Congratulations You've logged in!",
         }, 100, "achievement.first_login"),
 
-        VILLAGE_SAFE(1, "Harrisons Fields", new String[]{
+        VILLAGE_SAFE(1, "Harridons Fields", new String[]{
                 "Explorer: harrisons Fields",
         }, 500, "achievement.harrisons_fields"),
 
