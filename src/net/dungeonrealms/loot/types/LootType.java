@@ -111,12 +111,9 @@ public enum LootType {
 					}
 				}
 				double spawn_chance = Double.parseDouble(s.substring(s.indexOf("%") + 1, s.length())) * 10.0D;
-				double do_i_spawn = new Random().nextInt(1000);
-				
 				if(spawn_chance < 1) {
 					spawn_chance = 1;
 				}
-				
 				if(item_id != -1){
 				Material m = Material.getMaterial(item_id);
 				ItemStack item = null;//new ItemStack(m, 1, item_meta);
@@ -196,11 +193,13 @@ public enum LootType {
 					continue;
 				default:
 					item = new ItemStack(m, 1, item_meta);
+					break;
 				}
 				if(item == null){
 					Utils.log.info("NULL " + item_id + " " + item_meta);
 					continue;
 				}
+				Utils.log.info(m.name() + " " + spawn_chance);
 				loot.put(item, spawn_chance);
 				}else{
 					if(item_tier != -1){
@@ -208,6 +207,7 @@ public enum LootType {
 						net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
 						nms.setTag(new NBTTagCompound());
 						nms.getTag().setInt("itemTier", item_tier);
+						Utils.log.info(Material.IRON_SWORD.name() + " " + spawn_chance);
 						loot.put(CraftItemStack.asBukkitCopy(nms), spawn_chance);
 					}
 				}

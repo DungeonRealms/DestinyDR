@@ -50,6 +50,7 @@ import net.dungeonrealms.miscellaneous.RandomHelper;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.profession.Fishing;
 import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
@@ -136,14 +137,15 @@ public class BlockListener implements Listener {
                     return;
                 }
                 int experienceGain = Mining.getOreEXP(stackInHand, type);
-                Mining.addExperience(stackInHand, experienceGain, p);
                 RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInHand(), RandomHelper.getRandomNumberBetween(2, 5));
                 int break_chance = Mining.getBreakChance(stackInHand);
                 int do_i_break = new Random().nextInt(100);
-//                p.playSound(p.getLocation(), Sound.DIG_STONE, 1F, 0.75F);
                 if (do_i_break > break_chance) {
+                    Mining.addExperience(stackInHand, experienceGain, p);
+                    if((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
+                    	p.sendMessage(ChatColor.DARK_GREEN.toString() + ChatColor.BOLD.toString() +"   +" + experienceGain +" for mining ore!");
                     p.getInventory().addItem(new ItemStack(type));
-                    p.sendMessage(ChatColor.GREEN + ChatColor.ITALIC.toString() + "You found some ore!");
+//                    p.sendMessage(ChatColor.GREEN + ChatColor.ITALIC.toString() + "You found some ore!");
                 }else{
                     p.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "You fail to gather any ore.");
                 }
@@ -182,6 +184,9 @@ public class BlockListener implements Listener {
           int pickTier = Mining.getPickTier(stackInHand);
           
           int diff = pickTier - tier;
+          
+          if(tier == 1)
+        	  return;
           
           if (diff >= 3) {
               if (pickTier == 5) {
@@ -240,14 +245,14 @@ public class BlockListener implements Listener {
             return;
         }
         ItemStack item = event.getPlayer().getItemInHand();
-        if (RepairAPI.isItemArmorOrWeapon(item)) {
+        if (RepairAPI.isItemArmorOrWeapon(item) || Mining.isDRPickaxe(item) || Fishing.isDRFishingPole(item)) {
             if (RepairAPI.canItemBeRepaired(item)) {
                 int cost = RepairAPI.getItemRepairCost(item);
                 Player player = event.getPlayer();
                 AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
                     if (e.getSlot() == AnvilSlot.OUTPUT) {
                         String text = e.getName();
-                        if (text.equalsIgnoreCase("yes") || text.equalsIgnoreCase("y")) {
+                        if (text.equalsIgnoreCase("yes") || text.equalsIgnoreCase("y") || text.contains("Repair for ")) {
                             boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(cost, player);
                             if (tookGems) {
                                 RepairAPI.setCustomItemDurability(player.getItemInHand(), 1499);
@@ -268,7 +273,7 @@ public class BlockListener implements Listener {
                     stack.setItemMeta(meta);
                     gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
                     gui.open();
-                });
+                }, 10l);
             } else {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED + "This item is already repaired all the way!");

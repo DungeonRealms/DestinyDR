@@ -56,10 +56,10 @@ public class RepairAPI {
                     totalRepairCost *= 1.9;
                     break;
                 case 4:
-                    totalRepairCost *= 5.5;
+                    totalRepairCost *= 4.5;
                     break;
                 case 5:
-                    totalRepairCost *= 8.0;
+                    totalRepairCost *= 6.25;
                     break;
                 default:
                     totalRepairCost *= 4;

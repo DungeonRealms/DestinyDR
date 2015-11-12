@@ -16,6 +16,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.loot.types.LootType;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ItemManager;
 
 /**
@@ -46,14 +47,14 @@ public class LootSpawner {
 	private void setContents() {
 		HashMap<ItemStack, Double> loot = lootType.getLoot();
 		int count = 0;
-		ArrayList<ItemStack> itemsToSpawn = new ArrayList<>();
 		for (ItemStack stack : loot.keySet()) {
 			double spawn_chance = loot.get(stack);
 			double do_i_spawn = new Random().nextInt(1000);
 			if (spawn_chance < 1) {
 				spawn_chance = 1;
 			}
-			if (spawn_chance > do_i_spawn) {
+			Utils.log.info(spawn_chance + " > " + do_i_spawn + " " + stack.getType());
+			if (spawn_chance >= do_i_spawn) {
 				if(stack.getType() == Material.IRON_SWORD){
 					int tier = CraftItemStack.asNMSCopy(stack).getTag().getInt("itemTier");
 					stack = LootManager.generateRandomTierItem(tier);
@@ -64,7 +65,8 @@ public class LootSpawner {
 		}
 		
 		if(count == 0){
-			inv.addItem(ItemManager.createHealthPotion(1, false, false));
+			setContents();
+//			inv.addItem(ItemManager.createHealthPotion(1, false, false));
 		}
 		
 	}
