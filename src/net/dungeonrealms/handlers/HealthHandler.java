@@ -643,6 +643,10 @@ public class HealthHandler implements GenericMechanic {
             }
             totalHP = getVitalityValueOfArmor(itemStack, totalHP);
         }
+        
+        if(entity.hasMetadata("elite"))
+        	totalHP *= 10;
+        
         return (int) totalHP;
     }
 

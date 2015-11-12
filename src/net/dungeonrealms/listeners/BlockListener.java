@@ -143,7 +143,7 @@ public class BlockListener implements Listener {
                 if (do_i_break > break_chance) {
                     Mining.addExperience(stackInHand, experienceGain, p);
                     if((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
-                    	p.sendMessage(ChatColor.DARK_GREEN.toString() + ChatColor.BOLD.toString() +"   +" + experienceGain +" for mining ore!");
+                    	p.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD.toString() +"   +" + experienceGain +"EXP for mining ore!");
                     p.getInventory().addItem(new ItemStack(type));
 //                    p.sendMessage(ChatColor.GREEN + ChatColor.ITALIC.toString() + "You found some ore!");
                 }else{
@@ -245,9 +245,9 @@ public class BlockListener implements Listener {
             return;
         }
         ItemStack item = event.getPlayer().getItemInHand();
+        int cost = RepairAPI.getItemRepairCost(item);
         if (RepairAPI.isItemArmorOrWeapon(item) || Mining.isDRPickaxe(item) || Fishing.isDRFishingPole(item)) {
             if (RepairAPI.canItemBeRepaired(item)) {
-                int cost = RepairAPI.getItemRepairCost(item);
                 Player player = event.getPlayer();
                 AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
                     if (e.getSlot() == AnvilSlot.OUTPUT) {
@@ -266,14 +266,19 @@ public class BlockListener implements Listener {
                         }
                     }
                 });
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
-                    ItemMeta meta = stack.getItemMeta();
-                    meta.setDisplayName("Repair for " + cost + "g ?");
-                    stack.setItemMeta(meta);
-                    gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
-                    gui.setSlot(AnvilSlot.OUTPUT, stack);
-                    gui.open();
+                Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
+                if( RepairAPI.getItemRepairCost(player.getItemInHand()) != cost){
+                	gui.destroy();
+                	player.closeInventory();
+                	player.sendMessage(ChatColor.RED + "Don't change your item while repairing.");
+                	return;
+                }
+                 	ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
+                 	ItemMeta meta = stack.getItemMeta();
+                 	meta.setDisplayName("Repair for " + cost + "g ?");
+                 	stack.setItemMeta(meta);
+                 	gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
+                 	gui.open();
                 }, 10l);
             } else {
                 event.setCancelled(true);
