@@ -53,7 +53,7 @@ public class LootSpawner {
 			if (spawn_chance < 1) {
 				spawn_chance = 1;
 			}
-			Utils.log.info(spawn_chance + " > " + do_i_spawn + " " + stack.getType());
+//			Utils.log.info(spawn_chance + " > " + do_i_spawn + " " + stack.getType());
 			if (spawn_chance >= do_i_spawn) {
 				if(stack.getType() == Material.IRON_SWORD){
 					int tier = CraftItemStack.asNMSCopy(stack).getTag().getInt("itemTier");

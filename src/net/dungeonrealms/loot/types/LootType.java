@@ -199,7 +199,7 @@ public enum LootType {
 					Utils.log.info("NULL " + item_id + " " + item_meta);
 					continue;
 				}
-				Utils.log.info(m.name() + " " + spawn_chance);
+//				Utils.log.info(m.name() + " " + spawn_chance);
 				loot.put(item, spawn_chance);
 				}else{
 					if(item_tier != -1){
@@ -207,7 +207,7 @@ public enum LootType {
 						net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
 						nms.setTag(new NBTTagCompound());
 						nms.getTag().setInt("itemTier", item_tier);
-						Utils.log.info(Material.IRON_SWORD.name() + " " + spawn_chance);
+//						Utils.log.info(Material.IRON_SWORD.name() + " " + spawn_chance);
 						loot.put(CraftItemStack.asBukkitCopy(nms), spawn_chance);
 					}
 				}
