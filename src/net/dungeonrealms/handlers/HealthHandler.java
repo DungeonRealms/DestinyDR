@@ -366,7 +366,7 @@ public class HealthHandler implements GenericMechanic {
             if (newHealth >= maxHP) {
                 newHealth = maxHP;
             }
-            player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " -> " + ChatColor.GREEN + " [" + newHealth + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+            player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " -> " + ChatColor.GREEN + " [" + (int) newHealth + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
         }
 
         if ((currentHP + (double) amount) >= maxHP) {
@@ -571,9 +571,9 @@ public class HealthHandler implements GenericMechanic {
         }
 
         if (newHP <= 0) {
+            entity.playEffect(EntityEffect.DEATH);
             setMonsterHPLive(entity, 0);
             net.minecraft.server.v1_8_R3.Entity entity1 = ((CraftEntity) entity).getHandle();
-            entity.playEffect(EntityEffect.DEATH);
             entity1.damageEntity(DamageSource.GENERIC, 50F);
             if (!entity1.dead) {
                 entity1.dead = true;

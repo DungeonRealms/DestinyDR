@@ -149,22 +149,22 @@ public class TradeCalculator {
                     }
                     switch (tier) {
                         case 1:
-                            ItemStack scrap1 = ItemManager.createArmorScrap(1);
+                            ItemStack scrap1 = ItemManager.createArmorScrap(2);
                             scrap1.setAmount(payout);
                             merchant_offer.add(scrap1);
                             break;
                         case 2:
-                            ItemStack scrap2 = ItemManager.createArmorScrap(2);
+                            ItemStack scrap2 = ItemManager.createArmorScrap(3);
                             scrap2.setAmount(payout);
                             merchant_offer.add(scrap2);
                             break;
                         case 3:
-                            ItemStack scrap3 = ItemManager.createArmorScrap(3);
+                            ItemStack scrap3 = ItemManager.createArmorScrap(4);
                             scrap3.setAmount(payout);
                             merchant_offer.add(scrap3);
                             break;
                         case 4:
-                            ItemStack scrap4 = ItemManager.createArmorScrap(4);
+                            ItemStack scrap4 = ItemManager.createArmorScrap(5);
                             scrap4.setAmount(payout);
                             merchant_offer.add(scrap4);
                             break;

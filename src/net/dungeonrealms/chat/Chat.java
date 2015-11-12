@@ -100,7 +100,12 @@ public class Chat {
             }
         } else {
             event.setCancelled(true);
-            API.getNearbyPlayers(event.getPlayer().getLocation(), 100).stream().forEach(player -> player.sendMessage(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage()));
+            if (API.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() >= 2) {
+                API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage()));
+            } else {
+                event.getPlayer().sendMessage(ChatColor.GRAY + "No one head you...");
+            }
+
         }
     }
 
