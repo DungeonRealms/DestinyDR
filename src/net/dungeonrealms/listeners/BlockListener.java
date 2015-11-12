@@ -272,7 +272,7 @@ public class BlockListener implements Listener {
                     meta.setDisplayName("Repair for " + cost + "g ?");
                     stack.setItemMeta(meta);
                     gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
-                    gui.setSlot(AnvilSlot.INPUT_RIGHT, stack);
+                    gui.setSlot(AnvilSlot.OUTPUT, stack);
                     gui.open();
                 }, 10l);
             } else {
