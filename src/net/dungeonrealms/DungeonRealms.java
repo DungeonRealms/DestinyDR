@@ -13,7 +13,6 @@ import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
 import net.dungeonrealms.listeners.*;
-import net.dungeonrealms.loot.LootManager;
 import net.dungeonrealms.mastery.AsyncUtils;
 import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mastery.Utils;
@@ -135,7 +134,6 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(CombatLog.getInstance());
         mm.registerMechanic(EnergyHandler.getInstance());
         mm.registerMechanic(EnchantmentAPI.getInstance());
-        //mm.registerMechanic(Subscription.getInstance());
         mm.registerMechanic(Rank.getInstance());
         mm.registerMechanic(DonationEffects.getInstance());
         mm.registerMechanic(HealthHandler.getInstance());
@@ -151,7 +149,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(SpawningMechanics.getInstance());
         mm.registerMechanic(AchievementManager.getInstance());
         mm.registerMechanic(BuffManager.getInstance());
-        mm.registerMechanic(new LootManager());
+        //mm.registerMechanic(new LootManager());
         mm.registerMechanic(Affair.getInstance());
 
         /*
