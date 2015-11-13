@@ -101,9 +101,7 @@ public class MailHandler {
         UUID fromUUID = player.getUniqueId();
         UUID toUUID = API.getUUIDFromName(to);
 
-        assert fromUUID != null && toUUID != null : "Error Sending mail!";
-
-        String toPlayer = API.getNameFromUUID(toUUID.toString());
+        String toPlayer = API.getNameFromUUID(toUUID);
 
         String serializedItem = ItemSerialization.itemStackToBase64(itemStack);
 

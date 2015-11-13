@@ -179,7 +179,7 @@ public class EnergyHandler implements GenericMechanic {
      * @since 1.0
      */
     public float getPlayerEnergyRegenerationAmount(UUID uuid) {
-        float regenAmount = 0.15F;
+        float regenAmount = 0.2F;
         Player player = Bukkit.getPlayer(uuid);
         EntityEquipment playerEquipment = player.getEquipment();
         ItemStack[] playerArmor = playerEquipment.getArmorContents();
@@ -209,7 +209,7 @@ public class EnergyHandler implements GenericMechanic {
                 regenAmount += 0;
             } else {
                 if (nmsTag.getInt("energyRegen") != 0) {
-                    regenAmount += (regenAmount / 100.F) * (nmsTag.getInt("energyRegen"));
+                    regenAmount += (regenAmount / 100.F) * ((nmsTag.getInt("energyRegen") + 2));
                 }
                 if (nmsTag.getInt("intellect") != 0) {
                     regenAmount += ((nmsTag.getInt("intellect") * 0.015F) / 100.0F);

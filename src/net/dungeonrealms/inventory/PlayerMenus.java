@@ -54,7 +54,7 @@ public class PlayerMenus {
 
         int slot = 9;
         for (String s : friendRequest) {
-            String name = API.getNameFromUUID(s);
+            String name = API.getNameFromUUID(UUID.fromString(s));
             ItemStack stack = editItem(name, name, new String[]{
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to delete!"
             });
@@ -94,7 +94,7 @@ public class PlayerMenus {
         int slot = 9;
         for (String s : friendRequest) {
             String from = s.split(",")[0];
-            String name = API.getNameFromUUID(from);
+            String name = API.getNameFromUUID(UUID.fromString(from));
 
             long unix = Long.valueOf(s.split(",")[1]);
             Date sentDate = new Date(unix * 1000);
@@ -229,7 +229,7 @@ public class PlayerMenus {
 
         for (String s : members) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                String name = API.getNameFromUUID(s);
+                String name = API.getNameFromUUID(UUID.fromString(s));
                 inv.addItem(editItem(name, ChatColor.GREEN + "Member " + name, new String[]{}));
             }, 0l);
         }
@@ -254,7 +254,7 @@ public class PlayerMenus {
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
 
         for (String s : members) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> inv.addItem(editItem(API.getNameFromUUID(s), ChatColor.GREEN + "Officer " + API.getNameFromUUID(s), new String[]{})), 0l);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> inv.addItem(editItem(API.getNameFromUUID(UUID.fromString(s)), ChatColor.GREEN + "Officer " + API.getNameFromUUID(UUID.fromString(s)), new String[]{})), 0l);
         }
 
         player.openInventory(inv);
@@ -542,80 +542,80 @@ public class PlayerMenus {
         return itemStack;
     }
 
-	/**
-	 * @param player
-	 */
-	public static void openToggleMenu(Player player) {
-		Inventory inv = Bukkit.createInventory(null, 9, "Toggles");
-		boolean toggle1 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, player.getUniqueId());
-		boolean toggle2 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId());
-		boolean toggle3 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DUEL, player.getUniqueId());
-		boolean toggle4 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
-		boolean toggle5 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, player.getUniqueId());
-		boolean toggle6 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, player.getUniqueId());
-		boolean toggle7 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, player.getUniqueId());
-		boolean toggle8 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, player.getUniqueId());
-		ItemStack stack1 = null;
-		ItemStack stack2 = null;
-		ItemStack stack3 = null;
-		ItemStack stack4 = null;
-		ItemStack stack5 = null;
-		ItemStack stack6 = null;
-		ItemStack stack7 = null;
-		ItemStack stack8 = null;
-		
-		if(toggle1)
-			stack1 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle CHAOTIC PREVENTION", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
-		else
-			stack1 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle CHAOTIC PREVENTION", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
-		
-		if(toggle2)
-			stack2 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle DEBUG", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
-		else
-			stack2 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle DEBUG", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
-		
-		if(toggle3)
-			stack3 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle DUEL", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
-		else
-			stack3 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle DUEL", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
-		
-		if(toggle4)
-			stack4 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle GLOBAL CHAT", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
-		else
-			stack4 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle GLOBAL CHAT", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
-		
-		if(toggle5)
-			stack5 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle PVP", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
-		else
-			stack5 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle PVP", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
-		
-		if(toggle6)
-			stack6 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle RECEIVE MESSAGE", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
-		else
-			stack6 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle RECEIVE MESSAGE", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
-		
-		if(toggle7)
-			stack7 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle TRADE", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
-		else
-			stack7 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle TRADE", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
-		
-		if(toggle8)
-			stack8 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle TRADE CHAT", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
-		else
-			stack8 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle TRADE CHAT", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
+    /**
+     * @param player
+     */
+    public static void openToggleMenu(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 9, "Toggles");
+        boolean toggle1 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, player.getUniqueId());
+        boolean toggle2 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId());
+        boolean toggle3 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DUEL, player.getUniqueId());
+        boolean toggle4 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
+        boolean toggle5 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, player.getUniqueId());
+        boolean toggle6 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, player.getUniqueId());
+        boolean toggle7 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, player.getUniqueId());
+        boolean toggle8 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, player.getUniqueId());
+        ItemStack stack1 = null;
+        ItemStack stack2 = null;
+        ItemStack stack3 = null;
+        ItemStack stack4 = null;
+        ItemStack stack5 = null;
+        ItemStack stack6 = null;
+        ItemStack stack7 = null;
+        ItemStack stack8 = null;
 
-		ItemStack back = ItemManager.createItem(Material.BARRIER, ChatColor.YELLOW + "Back", new String[]{ChatColor.AQUA + "Back to the Profile Menu!"});
-		
-		inv.setItem(0, stack1);
-		inv.setItem(1, stack2);
-		inv.setItem(2, stack3);
-		inv.setItem(3, stack4);
-		inv.setItem(4, stack5);
-		inv.setItem(5, stack6);
-		inv.setItem(6, stack7);
-		inv.setItem(7, stack8);
-		inv.setItem(8, back);
-		player.openInventory(inv);
-	}
+        if (toggle1)
+            stack1 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle CHAOTIC PREVENTION", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
+        else
+            stack1 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle CHAOTIC PREVENTION", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
+
+        if (toggle2)
+            stack2 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle DEBUG", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
+        else
+            stack2 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle DEBUG", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
+
+        if (toggle3)
+            stack3 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle DUEL", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
+        else
+            stack3 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle DUEL", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
+
+        if (toggle4)
+            stack4 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle GLOBAL CHAT", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
+        else
+            stack4 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle GLOBAL CHAT", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
+
+        if (toggle5)
+            stack5 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle PVP", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
+        else
+            stack5 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle PVP", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
+
+        if (toggle6)
+            stack6 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle RECEIVE MESSAGE", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
+        else
+            stack6 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle RECEIVE MESSAGE", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
+
+        if (toggle7)
+            stack7 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle TRADE", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
+        else
+            stack7 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle TRADE", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
+
+        if (toggle8)
+            stack8 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle TRADE CHAT", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
+        else
+            stack8 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle TRADE CHAT", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
+
+        ItemStack back = ItemManager.createItem(Material.BARRIER, ChatColor.YELLOW + "Back", new String[]{ChatColor.AQUA + "Back to the Profile Menu!"});
+
+        inv.setItem(0, stack1);
+        inv.setItem(1, stack2);
+        inv.setItem(2, stack3);
+        inv.setItem(3, stack4);
+        inv.setItem(4, stack5);
+        inv.setItem(5, stack6);
+        inv.setItem(6, stack7);
+        inv.setItem(7, stack8);
+        inv.setItem(8, back);
+        player.openInventory(inv);
+    }
 
 }

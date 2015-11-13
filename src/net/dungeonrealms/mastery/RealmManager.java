@@ -79,7 +79,7 @@ public class RealmManager implements GenericMechanic {
      * @since 1.0
      */
     @Override
-	public void startInitialization() {
+    public void startInitialization() {
         Utils.log.info("DungeonRealms Registering FTP() ... STARTING ...");
         File coreDirectory = DungeonRealms.getInstance().getDataFolder();
         try {
@@ -231,60 +231,63 @@ public class RealmManager implements GenericMechanic {
      * @since 1.0
      */
     public void downloadRealm(UUID uuid) {
-        if (REALM_STATUS.containsKey(uuid) && REALM_STATUS.get(uuid) == FTPStatus.DOWNLOADED) return;
-        //AsyncUtils.pool.submit(() -> {
-        REALM_STATUS.put(uuid, FTPStatus.DOWNLOADING);
-        FTPClient ftpClient = new FTPClient();
-        FileOutputStream fos = null;
-        String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
-        Utils.log.info("Attempting to start Realm Download!");
-        try {
-            ftpClient.connect(HOST, port);
-            boolean login = ftpClient.login(USER, PASSWORD);
-            if (login) {
-                Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString());
-            }
-            ftpClient.enterLocalPassiveMode();
-            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+        if (REALM_STATUS.containsKey(uuid) && REALM_STATUS.get(uuid) == FTPStatus.DOWNLOADED) {
+            Utils.log.warning("Realm already exist for: " + uuid.toString());
+            return;
+        }
+        AsyncUtils.pool.submit(() -> {
+            REALM_STATUS.put(uuid, FTPStatus.DOWNLOADING);
+            FTPClient ftpClient = new FTPClient();
+            FileOutputStream fos = null;
+            String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
+            Utils.log.info("Attempting to start Realm Download!");
+            try {
+                ftpClient.connect(HOST, port);
+                boolean login = ftpClient.login(USER, PASSWORD);
+                if (login) {
+                    Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString());
+                }
+                ftpClient.enterLocalPassiveMode();
+                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
 
-            if (!checkFileExists(ftpClient, REMOTE_FILE)) {
-                ftpClient.logout();
-                ftpClient.disconnect();
-                Utils.log.warning("[REALM] [ASYNC] Player: " + uuid.toString() + " doesn't exist remotely!");
-                generateBlankRealm(uuid);
-                Bukkit.broadcastMessage("GENERATING BLANK REALM!");
-                return;
-            }
-
-            Utils.log.info("[REALM] [ASYNC] Downloading " + uuid.toString() + "'s Realm ... STARTING");
-            File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloading/" + uuid.toString() + ".zip");
-            fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
-            ftpClient.retrieveFile(REMOTE_FILE, fos);
-            fos.close();
-            Utils.log.info("[REALM] [ASYNC] Realm downloaded for " + uuid.toString());
-
-            REALM_STATUS.put(uuid, FTPStatus.EXTRACTING);
-            ZipFile zipFile = new ZipFile(TEMP_LOCAL_LOCATION);
-            unZip(zipFile, uuid);
-
-
-        } catch (IOException e) {
-            REALM_STATUS.put(uuid, FTPStatus.FAILED);
-            e.printStackTrace();
-        } finally {
-            deleteLocalCache(uuid);
-            if (ftpClient.isConnected()) {
-                try {
+                if (!checkFileExists(ftpClient, REMOTE_FILE)) {
                     ftpClient.logout();
                     ftpClient.disconnect();
-                } catch (IOException e) {
-                    e.printStackTrace();
+                    Utils.log.warning("[REALM] [ASYNC] Player: " + uuid.toString() + " doesn't exist remotely!");
+                    generateBlankRealm(uuid);
+                    Bukkit.broadcastMessage("GENERATING BLANK REALM!");
+                    return;
                 }
+
+                Utils.log.info("[REALM] [ASYNC] Downloading " + uuid.toString() + "'s Realm ... STARTING");
+                File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloading/" + uuid.toString() + ".zip");
+                fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
+                ftpClient.retrieveFile(REMOTE_FILE, fos);
+                fos.close();
+                Utils.log.info("[REALM] [ASYNC] Realm downloaded for " + uuid.toString());
+
+                REALM_STATUS.put(uuid, FTPStatus.EXTRACTING);
+                ZipFile zipFile = new ZipFile(TEMP_LOCAL_LOCATION);
+                unZip(zipFile, uuid);
+
+
+            } catch (IOException e) {
+                REALM_STATUS.put(uuid, FTPStatus.FAILED);
+                e.printStackTrace();
+            } finally {
+                deleteLocalCache(uuid);
+                if (ftpClient.isConnected()) {
+                    try {
+                        ftpClient.logout();
+                        ftpClient.disconnect();
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+                REALM_STATUS.put(uuid, FTPStatus.DOWNLOADED);
+                loadInWorld(uuid.toString(), uuid);
             }
-            REALM_STATUS.put(uuid, FTPStatus.DOWNLOADED);
-            loadInWorld(uuid.toString());
-        }
-        //});
+        });
     }
 
     /**
@@ -368,11 +371,28 @@ public class RealmManager implements GenericMechanic {
      * @param worldName name of the world, player.UUID.
      * @since 1.0
      */
-    public void loadInWorld(String worldName) {
-        WorldCreator worldCreator = new WorldCreator(worldName);
-        worldCreator.type(WorldType.FLAT);
-        worldCreator.generateStructures(false);
-        Bukkit.createWorld(worldCreator);
+    public void loadInWorld(String worldName, UUID uuid) {
+
+        if (Bukkit.getPlayer(uuid) == null) {
+            /*
+            The player has disconnected before or rightafter the realm
+            has downloaded.
+             */
+        } else {
+            WorldCreator worldCreator = new WorldCreator(worldName);
+            worldCreator.type(WorldType.FLAT);
+            worldCreator.generateStructures(false);
+
+            World w = Bukkit.getServer().createWorld(worldCreator);
+
+            w.setKeepSpawnInMemory(false);
+            w.setAutoSave(false);
+            w.setStorm(false);
+            w.setMonsterSpawnLimit(0);
+            Bukkit.getWorlds().add(w);
+
+            Bukkit.getPlayer(uuid).teleport(w.getSpawnLocation());
+        }
     }
 
     /**

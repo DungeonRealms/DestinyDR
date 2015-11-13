@@ -134,7 +134,7 @@ public class API {
 		else
         return new ArmorGenerator().nextArmor(tier, ArmorModifier.COMMON);
     }
-    
+
     public static ArmorModifier getArmorModifier(){
 		int chance = RandomHelper.getRandomNumberBetween(1, 500);
 		if (chance == 1) {
@@ -214,8 +214,7 @@ public class API {
      */
     public static UUID getUUIDFromName(String name) {
         try {
-            URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + name + "?at="
-                    + (System.currentTimeMillis() / 1000l));
+            URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + name + "?at=" + (System.currentTimeMillis() / 1000l));
 
             Reader in = new InputStreamReader(url.openStream());
             Object json = JSONValue.parse(in);
@@ -240,12 +239,12 @@ public class API {
     /**
      * Gets players name from UUID. ASYNC.
      *
-     * @param playerUuid
+     * @param uuid
      * @return
      */
-    public static String getNameFromUUID(String playerUuid) {
+    public static String getNameFromUUID(UUID uuid) {
 
-        NameFetcher fetcher = new NameFetcher(Collections.singletonList(UUID.fromString(playerUuid)));
+        NameFetcher fetcher = new NameFetcher(Collections.singletonList(uuid));
 
         try {
             return fetcher.call();
@@ -345,7 +344,7 @@ public class API {
             }
         }
         PlayerInventory inv = player.getInventory();
-        
+
         ArrayList<String> armor = new ArrayList<String>();
         for (ItemStack itemStack : player.getInventory().getArmorContents()) {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
@@ -355,7 +354,7 @@ public class API {
             }
         }
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, false);
-        
+
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, ItemSerialization.toString(inv),
                 false);
         if(MountUtils.inventories.containsKey(uuid)){
@@ -423,7 +422,7 @@ public class API {
 
         GamePlayer gp = new GamePlayer(player);
         API.GAMEPLAYERS.add(gp);
-        
+
        List<String> playerArmor = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ARMOR, player.getUniqueId());
         int i = -1;
         ItemStack[] armorContents = new ItemStack[4];
@@ -676,7 +675,7 @@ public class API {
     }
     /**
      * Spawn our Entity at Location
-     * 
+     *
      * Use SpawningMechanics.getMob for Entity
      * lvlRange = "high" or "low"
      * @param location
@@ -696,9 +695,9 @@ public class API {
 		entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 		world.addEntity(entity, SpawnReason.CUSTOM);
 		entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-    	
+
     }
-    
+
     public static File getRemoteDataFolder(){
     	String filePath = DungeonRealms.getInstance().getDataFolder().getAbsolutePath();
     	File file = new File(DungeonRealms.getInstance().getDataFolder().getAbsolutePath());
@@ -719,5 +718,5 @@ public class API {
     	}
     	return file;
     }
-    
+
 }

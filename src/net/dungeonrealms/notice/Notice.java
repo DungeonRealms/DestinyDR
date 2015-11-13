@@ -13,6 +13,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by Nick on 10/11/2015.
@@ -68,7 +69,7 @@ public class Notice {
 
         if (friendRequests.size() > 0) {
             for (String s : friendRequests) {
-                String name = API.getNameFromUUID(s.split(",")[0]);
+                String name = API.getNameFromUUID(UUID.fromString(s.split(",")[0]));
                 long inviteSent = Long.valueOf(s.split(",")[1]) * 1000;
                 long currentTime = System.currentTimeMillis();
                 long differenceInTime = currentTime - inviteSent;

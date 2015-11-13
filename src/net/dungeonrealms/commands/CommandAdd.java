@@ -1,5 +1,6 @@
 package net.dungeonrealms.commands;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.guild.Guild;
@@ -12,6 +13,7 @@ import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.world.glyph.Glyph;
+import net.dungeonrealms.world.realms.Instance;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Bukkit;
@@ -45,6 +47,12 @@ public class CommandAdd extends BasicCommand {
         }
         if (args.length > 0) {
             switch (args[0]) {
+                case "uuid":
+                    player.sendMessage(Bukkit.getPlayer(API.getUUIDFromName(player.getName())).getDisplayName());
+                    break;
+                case "name":
+                    player.sendMessage(API.getNameFromUUID(player.getUniqueId()));
+                    break;
                 case "ga":
                     player.getInventory().addItem(Glyph.getInstance().getBaseGlyph(args[1], Integer.valueOf(args[2]), Glyph.GlyphType.ARMOR));
                     break;
@@ -58,7 +66,8 @@ public class CommandAdd extends BasicCommand {
                     new RealmManager().uploadRealm(player.getUniqueId());
                     break;
                 case "realm":
-                    new RealmManager().downloadRealm(player.getUniqueId());
+                    Instance.getInstance().openRealm(player);
+                    //new RealmManager().downloadRealm(player.getUniqueId());
                     break;
                 case "weapon":
                     player.getInventory().addItem(new ItemGenerator().next());
