@@ -558,6 +558,13 @@ public class DamageListener implements Listener {
                 break;
             case "mount":
                 event.setCancelled(true);
+            	Player p = (Player) event.getDamager();
+        		Horse horse = (Horse) event.getEntity();
+        		if(!horse.getVariant().equals(Variant.MULE)) return;
+        		if(horse.getOwner().getUniqueId().toString().equalsIgnoreCase(p.getUniqueId().toString())){
+                    EntityAPI.removePlayerMountList(p.getUniqueId());
+        			horse.remove();
+        		}
                 break;
             default:
                 break;
@@ -840,18 +847,6 @@ public class DamageListener implements Listener {
             event.getEntity().getVehicle().remove();
             EntityAPI.removePlayerMountList(event.getEntity().getUniqueId());
         }
-    }
-    
-    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = true)
-    public void playerDamageMule(EntityDamageByEntityEvent event){
-    	if(!(event.getDamager() instanceof Player) && !(event.getEntity() instanceof Horse)) return;
-    		Player p = (Player) event.getDamager();
-    		Horse horse = (Horse) event.getEntity();
-    		if(!horse.getVariant().equals(Variant.MULE)) return;
-    		if(horse.getOwner().getUniqueId().toString().equalsIgnoreCase(p.getUniqueId().toString())){
-                EntityAPI.removePlayerMountList(p.getUniqueId());
-    			horse.remove();
-    		}
     }
     
     /**
