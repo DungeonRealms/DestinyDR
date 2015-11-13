@@ -1,10 +1,8 @@
 package net.dungeonrealms.duel;
 
-import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.UUID;
-
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.items.Item.ItemTier;
+import net.dungeonrealms.mechanics.ItemManager;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -12,9 +10,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.InventoryView;
 import org.bukkit.inventory.ItemStack;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.items.Item.ItemTier;
-import net.dungeonrealms.mechanics.ItemManager;
+import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.UUID;
 
 /**
  * Created by Chase on Sep 20, 2015
@@ -35,8 +34,10 @@ public class DuelWager {
         weaponTier = ItemTier.TIER_5;
         winningItems = new ArrayList<>();
     }
+
     /**
      * updates the Duel Inventory by setting the slot for both players screens
+     *
      * @param slot
      * @param stack
      */
@@ -47,6 +48,7 @@ public class DuelWager {
 
     /**
      * Checks if the player is on the left side of the inventory.
+     *
      * @param p
      * @return
      */
@@ -133,11 +135,13 @@ public class DuelWager {
     /**
      * Player2 is the loser.
      * Ends the duel for the specified DUel
+     *
      * @param winner
      * @param loser
      */
     public void endDuel(Player winner, Player loser) {
-        Bukkit.broadcastMessage(winner.getDisplayName() + " has defeated " + loser.getDisplayName() + " in a duel.");
+        Bukkit.broadcastMessage(ChatColor.AQUA.toString() + ChatColor.UNDERLINE + winner.getDisplayName() + ChatColor.GRAY + " has defeated " +
+                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + loser.getDisplayName() + ChatColor.GRAY + " in a duel.");
         for (ItemStack winningItem : winningItems) {
             winner.getInventory().addItem(winningItem);
         }
@@ -148,7 +152,7 @@ public class DuelWager {
     }
 
     /**
-     *Initiates a duel with players from wager.
+     * Initiates a duel with players from wager.
      */
     public void startDuel() {
         completed = true;
@@ -175,13 +179,13 @@ public class DuelWager {
             }
 
         }, 0, 1000);
-        
-        
+
+
         timerID = Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             ItemStack[] p1armor = p1.getInventory().getArmorContents();
             ItemStack[] p2armor = p2.getInventory().getArmorContents();
-            if(!DuelMechanics.isDueling(p1.getUniqueId()))
-            	Bukkit.getScheduler().cancelTask(timerID);//this is okay.
+            if (!DuelMechanics.isDueling(p1.getUniqueId()))
+                Bukkit.getScheduler().cancelTask(timerID);//this is okay.
             for (int i = 0; i < p1armor.length; i++) {
                 if (!isTier(p1armor[i])) {
                     ItemStack stack = p1armor[i];
@@ -198,7 +202,7 @@ public class DuelWager {
                     p2.getInventory().addItem(stack);
                 }
             }
-        },10 * 1000);
+        }, 10 * 1000);
         p1.closeInventory();
         p2.closeInventory();
 
@@ -259,8 +263,7 @@ public class DuelWager {
     }
 
     /**
-     * @param slot 
-     * Check if slot is specified slot
+     * @param slot Check if slot is specified slot
      */
     public boolean isLeftSlot(int slot) {
         int[] left = new int[]{1, 2, 3, 9, 10, 11, 12, 18, 19, 20, 21};
