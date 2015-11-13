@@ -14,7 +14,6 @@ import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
 import net.dungeonrealms.listeners.*;
 import net.dungeonrealms.mastery.AsyncUtils;
-import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.DungeonManager;
 import net.dungeonrealms.mechanics.generic.MechanicManager;
@@ -30,6 +29,7 @@ import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.spawning.BuffManager;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
+import net.dungeonrealms.world.realms.Instance;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.plugin.PluginManager;
@@ -120,6 +120,7 @@ public class DungeonRealms extends JavaPlugin {
         pm.registerEvents(new AntiCheatListener(), this);
         pm.registerEvents(new BossListener(), this);
         pm.registerEvents(new AchievementManager(), this);
+        pm.registerEvents(Instance.getInstance(), this);
         /*
         In development
         pm.registerEvents(new RiftPortal(), this);
@@ -143,8 +144,12 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(DungeonManager.getInstance());
         mm.registerMechanic(Entities.getInstance());
         mm.registerMechanic(ScoreboardHandler.getInstance());
+        /*
+        Working on instance
         mm.registerMechanic(RealmManager.getInstance());
+         */
         mm.registerMechanic(Mining.getInstance());
+        mm.registerMechanic(Instance.getInstance());
         mm.registerMechanic(Fishing.getInstance());
         mm.registerMechanic(SpawningMechanics.getInstance());
         mm.registerMechanic(AchievementManager.getInstance());
@@ -197,7 +202,7 @@ public class DungeonRealms extends JavaPlugin {
 
 
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
-        getInstance().hasFinishedSetup = true;
+        this.hasFinishedSetup = true;
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
     }
 

@@ -1,4 +1,5 @@
 Manifest-Version: 1.0
 Class-Path: lib/bson-3.0.2.jar lib/mongodb-driver-core-3.0.2.jar lib/m
- ongodb-driver-async-3.0.2.jar lib/commons-net-3.3.jar
+ ongodb-driver-async-3.0.2.jar lib/commons-net-3.3.jar lib/zip4j_1.3.2
+ .jar
 

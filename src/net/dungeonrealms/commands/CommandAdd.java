@@ -13,6 +13,7 @@ import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.world.glyph.Glyph;
+import net.dungeonrealms.world.realms.Instance;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Bukkit;
@@ -65,7 +66,8 @@ public class CommandAdd extends BasicCommand {
                     new RealmManager().uploadRealm(player.getUniqueId());
                     break;
                 case "realm":
-                    new RealmManager().downloadRealm(player.getUniqueId());
+                    Instance.getInstance().openRealm(player);
+                    //new RealmManager().downloadRealm(player.getUniqueId());
                     break;
                 case "weapon":
                     player.getInventory().addItem(new ItemGenerator().next());
