@@ -131,10 +131,13 @@ public class MountUtils {
                 h.setOwner((AnimalTamer) player);
                 h.setColor(org.bukkit.entity.Horse.Color.BROWN);
             	MetadataUtils.registerEntityMetadata(((CraftEntity)h).getHandle(), EnumEntityType.MOUNT, 0, 0);
+            	h.setCustomName(player.getName() + "'s Storage Mule");
+            	h.setCustomNameVisible(true);
                 h.setMetadata("mule", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
                 String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, uuid);
                 player.closeInventory();
-                
+                player.playSound(player.getLocation(), Sound.DONKEY_IDLE, 1F, 1F);
+                EntityAPI.addPlayerMountList(player.getUniqueId(), ((CraftEntity)h).getHandle());
                 if(!inventories.containsKey(player.getUniqueId())){
                 	Inventory inv = Bukkit.createInventory(player, 9, "Mule Storage");
                 	if(!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4){
