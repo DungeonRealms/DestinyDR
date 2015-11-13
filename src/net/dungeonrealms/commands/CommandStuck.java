@@ -40,6 +40,7 @@ public class CommandStuck extends BasicCommand {
                 ){
             player.sendMessage(ChatColor.GREEN + "It appears that you're stuck inside of a blocK?");
             player.teleport(player.getLocation().add(0, 2, 0));
+            return true;
         }
 
         player.sendMessage(ChatColor.GREEN + "You seem to be fine, maybe your issue is mental?");
