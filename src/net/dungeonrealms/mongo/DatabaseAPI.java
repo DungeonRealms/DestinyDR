@@ -397,7 +397,7 @@ public class DatabaseAPI {
                                         .append("rank", "DEFAULT"))
                         .append("inventory",
                                 new Document("collection_bin", "")
-                                        .append("mule", "")
+                                        .append("mule", "empty")
                                         .append("storage", "")
                                         .append("level", 1)
                                         .append("player", "")

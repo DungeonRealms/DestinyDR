@@ -114,6 +114,7 @@ public class InventoryListener implements Listener {
             Player clicker = (Player) event.getWhoClicked();
             Shop shop = ShopMechanics.PLAYER_SHOPS.get(shopOwner);
             if(shop == null){
+            	clicker.closeInventory();
             	event.setCancelled(true);
             	return;
             }
@@ -122,7 +123,7 @@ public class InventoryListener implements Listener {
                 net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
                 if (nms != null) {
                     if (clicker.getUniqueId().toString().equalsIgnoreCase(shopOwner.toString())) {
-                        // Is OWner Clicking
+                        // Is Owner Clicking
                         if (nms.hasTag() && nms.getTag().hasKey("status")) {
                             // Clicking status off and on.
                             event.setCancelled(true);
@@ -252,6 +253,8 @@ public class InventoryListener implements Listener {
                             }
                         }
                     } else {
+                    	//NOT OWNER
+                        event.setCancelled(true);
                         if (!shop.isopen) {
                             clicker.closeInventory();
                             clicker.sendMessage(ChatColor.RED.toString() + "This shop is closed!");
@@ -259,17 +262,16 @@ public class InventoryListener implements Listener {
                             return;
                         }
                         if (event.getRawSlot() < shop.inventory.getSize()) {
-                            event.setCancelled(true);
                             if (event.isLeftClick()) {
-                                if (nms != null) {
-                                    if (nms.getTag().hasKey("status"))
+                                    if (event.getRawSlot() == 9){
                                         return;
+                                    }
                                     int price = nms.getTag().getInt("worth");
                                     if (BankMechanics.getInstance().takeGemsFromInventory(price, clicker)) {
                                         ItemStack stack = item.clone();
                                         ItemMeta meta = stack.getItemMeta();
                                         List<String> lore = meta.getLore();
-                                        if (lore != null)
+                                        if (lore != null){
                                             for (int i = 0; i < lore.size(); i++) {
                                                 String current = lore.get(i);
                                                 if (current.contains("Price")) {
@@ -277,6 +279,7 @@ public class InventoryListener implements Listener {
                                                     break;
                                                 }
                                             }
+                                        }
                                         meta.setLore(lore);
                                         stack.setItemMeta(meta);
                                         stack.setAmount(1);
@@ -297,9 +300,6 @@ public class InventoryListener implements Listener {
                                         clicker.sendMessage(ChatColor.RED + "Not enough " + ChatColor.RED.toString() + ChatColor.BOLD + "gems!");
                                     }
                                 }
-                            }
-                        } else {
-                            event.setCancelled(true);
                         }
                     }
                 }

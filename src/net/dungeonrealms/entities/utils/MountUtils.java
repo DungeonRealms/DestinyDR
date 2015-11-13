@@ -1,26 +1,42 @@
 package net.dungeonrealms.entities.utils;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.mounts.EnumMounts;
-import net.dungeonrealms.entities.types.mounts.Horse;
-import net.minecraft.server.v1_8_R3.World;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.entity.AnimalTamer;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse.Variant;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.HorseInventory;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.UUID;
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.mounts.EnumMounts;
+import net.dungeonrealms.entities.types.mounts.Horse;
+import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Kieran on 9/18/2015.
  */
 public class MountUtils {
-
+	
+	public static ConcurrentHashMap<UUID, Inventory> inventories = new ConcurrentHashMap<>();
+	
     public static void spawnMount(UUID uuid, String mountType) {
         Player player = Bukkit.getPlayer(uuid);
         World world = ((CraftWorld) player.getWorld()).getHandle();
@@ -102,6 +118,31 @@ public class MountUtils {
                 EntityAPI.addPlayerMountList(player.getUniqueId(), mountHorse);
                 player.closeInventory();
                 break;
+            }
+            case MULE :{
+            	org.bukkit.entity.Horse h = (org.bukkit.entity.Horse) player.getWorld().spawnEntity(player.getLocation(), EntityType.HORSE);
+                h.setAdult();
+                h.setAgeLock(true);
+                h.setVariant(Variant.MULE);
+                h.setCarryingChest(true);
+                h.setTamed(true);
+                h.setLeashHolder(player);
+                
+                h.setOwner((AnimalTamer) player);
+                h.setColor(org.bukkit.entity.Horse.Color.BROWN);
+            	MetadataUtils.registerEntityMetadata(((CraftEntity)h).getHandle(), EnumEntityType.MOUNT, 0, 0);
+                h.setMetadata("mule", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
+                String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, uuid);
+                player.closeInventory();
+                
+                if(!inventories.containsKey(player.getUniqueId())){
+                	Inventory inv = Bukkit.createInventory(player, 9, "Mule Storage");
+                	if(!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4){
+                		Utils.log.info(invString + " INV STRING");
+                		inv = ItemSerialization.fromString(invString);
+                	}
+                	inventories.put(uuid, inv);
+                }
             }
             /*case 7: {
                 EnderDragon mountEnderDragon = new EnderDragon(world, player.getUniqueId(), EnumEntityType.MOUNT);

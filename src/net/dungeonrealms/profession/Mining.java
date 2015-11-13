@@ -197,8 +197,18 @@ public class Mining implements GenericMechanic {
 	
 	 public static int getBreakChance(ItemStack is) {
 	        int i_level = CraftItemStack.asNMSCopy(is).getTag().getInt("level");
-	        int win = 50;
-	        win += ((i_level % 20) * 3);
+	          Material m = is.getType();
+	          int win = 50;
+	          if(m == Material.WOOD_PICKAXE) {
+	        	   win += ((i_level) * 2);
+	          }else if(m == Material.STONE_PICKAXE) {
+	        	   win += ((i_level - 20) * 2); // +2% per level.
+	          }else if(m == Material.IRON_PICKAXE) {
+	        	   win += ((i_level - 40) * 2); // +2% per
+	          }else if(m == Material.DIAMOND_PICKAXE) {
+	        	   win += ((i_level - 60) * 2); // +2% per level. 
+	          }else if(m == Material.GOLD_PICKAXE) {
+	        	   win += ((i_level - 80) * 2);  }// +2% per level.
 	        return win;
 	    }
 	 

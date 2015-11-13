@@ -15,6 +15,7 @@ import net.dungeonrealms.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.entities.types.pets.EnumPets;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.entities.utils.EntityStats;
+import net.dungeonrealms.entities.utils.MountUtils;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
@@ -357,6 +358,10 @@ public class API {
         
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, ItemSerialization.toString(inv),
                 false);
+        if(MountUtils.inventories.containsKey(uuid)){
+        	DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_MULE, ItemSerialization.toString(MountUtils.inventories.get(uuid)), false);
+        	MountUtils.inventories.remove(uuid);
+        }
         String locationAsString = "-367,86,390,0,0"; // Cyrennica
         if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
             locationAsString = player.getLocation().getX() + "," + (player.getLocation().getY() + 0.5) + ","

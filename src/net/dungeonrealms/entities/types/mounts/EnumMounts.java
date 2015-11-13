@@ -11,7 +11,8 @@ public enum EnumMounts {
     GOLD_HORSE(1, "GOLDHORSE", new ItemStack(Material.GOLD_BARDING, 1), 0),
     DIAMOND_HORSE(2, "DIAMONDHORSE", new ItemStack(Material.DIAMOND_BARDING, 1), 0),
     SKELETON_HORSE(3, "SKELETONHORSE", new ItemStack(Material.SKULL_ITEM, 1), 0),
-    ZOMBIE_HORSE(4, "ZOMBIEHORSE", new ItemStack(Material.SKULL_ITEM, 1), 2);
+    ZOMBIE_HORSE(4, "ZOMBIEHORSE", new ItemStack(Material.SKULL_ITEM, 1), 2),
+    MULE(5, "MULE", new ItemStack(Material.CHEST, 1), 0);
 
     private int id;
     private String name;

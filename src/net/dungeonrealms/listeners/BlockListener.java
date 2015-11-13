@@ -140,12 +140,11 @@ public class BlockListener implements Listener {
                 RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInHand(), RandomHelper.getRandomNumberBetween(2, 5));
                 int break_chance = Mining.getBreakChance(stackInHand);
                 int do_i_break = new Random().nextInt(100);
-                if (do_i_break > break_chance) {
+                if (do_i_break < break_chance) {
                     Mining.addExperience(stackInHand, experienceGain, p);
                     if((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()))
                     	p.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD.toString() +"   +" + experienceGain +"EXP for mining ore!");
                     p.getInventory().addItem(new ItemStack(type));
-//                    p.sendMessage(ChatColor.GREEN + ChatColor.ITALIC.toString() + "You found some ore!");
                 }else{
                     p.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "You fail to gather any ore.");
                 }

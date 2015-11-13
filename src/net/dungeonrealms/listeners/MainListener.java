@@ -12,6 +12,8 @@ import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse;
+import org.bukkit.entity.Horse.Variant;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -21,6 +23,8 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityUnleashEvent;
+import org.bukkit.event.entity.EntityUnleashEvent.UnleashReason;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -39,6 +43,7 @@ import org.bukkit.event.player.PlayerShearEntityEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -52,6 +57,7 @@ import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.duel.DuelMechanics;
 import net.dungeonrealms.duel.DuelWager;
 import net.dungeonrealms.entities.utils.EntityAPI;
+import net.dungeonrealms.entities.utils.MountUtils;
 import net.dungeonrealms.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.TradeHandler;
@@ -673,5 +679,40 @@ public class MainListener implements Listener {
     		event.getPlayer().teleport(Teleportation.Overworld);
     	}
     }
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void playerInteractMule(PlayerInteractEntityEvent event){
+    	if(!(event.getRightClicked() instanceof Horse)) return;
+    	Horse horse = (Horse) event.getRightClicked();
+    	event.setCancelled(true);
+    	Utils.log.info(horse.getVariant().name());
+    	if(horse.getVariant() != Variant.MULE) return;
+    	if(horse.getOwner() == null){
+    		horse.remove();
+    		return;
+    	}
+    	Player p = event.getPlayer();
+    	if(horse.getOwner().getUniqueId().toString().equalsIgnoreCase(event.getPlayer().getUniqueId().toString())){
+    		horse.setLeashHolder(p);
+    		Inventory inv = MountUtils.inventories.get(p.getUniqueId());
+    		p.openInventory(inv);
+    	}
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void unLeashMule(EntityUnleashEvent event){
+    if(!(event.getEntity() instanceof Horse)) return;
+    Horse horse = (Horse)event.getEntity();
+    if(horse.getVariant() != Variant.MULE)return;
+    if(!event.getReason().equals(UnleashReason.PLAYER_UNLEASH)){
+    	horse.remove();
+    	return;
+    }
+    	if(horse.getOwner() == null){
+    		horse.remove();
+    		return;
+    	}
+    	horse.setLeashHolder((Player)horse.getOwner());
+    }
+    
     
 }
