@@ -28,7 +28,7 @@ public class ParticleAPI {
         MAGIC_CRIT(4, "MAGICCRIT", EnumParticle.CRIT_MAGIC, new org.bukkit.inventory.ItemStack(Material.GOLD_HOE)),
         WITCH_MAGIC(5, "WITCHMAGIC", EnumParticle.SPELL_WITCH, new org.bukkit.inventory.ItemStack(Material.CAULDRON_ITEM)),
         NOTE(6, "NOTE", EnumParticle.NOTE, new org.bukkit.inventory.ItemStack(Material.NOTE_BLOCK)),
-        PORTAL(7, "PORTAL", EnumParticle.PORTAL, new org.bukkit.inventory.ItemStack(Material.PORTAL)),
+        PORTAL(7, "PORTAL", EnumParticle.PORTAL, new org.bukkit.inventory.ItemStack(Material.EYE_OF_ENDER)),
         ENCHANTMENT_TABLE(8, "ENCHANTMENT", EnumParticle.ENCHANTMENT_TABLE, new org.bukkit.inventory.ItemStack(Material.ENCHANTMENT_TABLE)),
         FLAME(9, "FLAME", EnumParticle.FLAME, new org.bukkit.inventory.ItemStack(Material.FIREBALL)),
         LAVA(10, "LAVA", EnumParticle.LAVA, new org.bukkit.inventory.ItemStack(Material.LAVA_BUCKET)),

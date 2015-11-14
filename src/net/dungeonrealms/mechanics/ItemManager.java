@@ -84,7 +84,8 @@ public class ItemManager {
         ItemMeta meta = rawStack.getItemMeta();
         meta.setDisplayName(name);
         String teleportLocation = TeleportAPI.getRandomTeleportString();
-        meta.setLore(Collections.singletonList(ChatColor.GRAY + "(Right-Click) Teleport to " + teleportLocation));
+        String displayName = TeleportAPI.getDisplayNameOfLocation(teleportLocation);
+        meta.setLore(Collections.singletonList(ChatColor.GRAY + "(Right-Click) Teleport to " + displayName));
         rawStack.setItemMeta(meta);
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
@@ -104,14 +105,14 @@ public class ItemManager {
     public static ItemStack createTeleportBook(String location) {
         ItemStack rawStack = new ItemStack(Material.BOOK);
         ItemMeta meta = rawStack.getItemMeta();
-        String teleportLocation = location;
-        meta.setDisplayName(teleportLocation + " Teleport Book");
-        meta.setLore(Collections.singletonList(ChatColor.GRAY + "(Right-Click) Teleport to " + teleportLocation));
+        String displayName = TeleportAPI.getDisplayNameOfLocation(location);
+        meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.BOLD + "Teleport: " + ChatColor.WHITE + location);
+        meta.setLore(Collections.singletonList(ChatColor.GRAY + "(Right-Click) Teleport to " + displayName));
         rawStack.setItemMeta(meta);
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("teleport"));
-        tag.set("usage", new NBTTagString(teleportLocation));
+        tag.set("usage", new NBTTagString(location));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
