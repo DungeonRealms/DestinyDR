@@ -54,8 +54,8 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.chat.Chat;
 import net.dungeonrealms.donate.DonationEffects;
-import net.dungeonrealms.duel.DuelMechanics;
-import net.dungeonrealms.duel.DuelWager;
+import net.dungeonrealms.duel.DuelOffer;
+import net.dungeonrealms.duel.DuelingMechanics;
 import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.entities.utils.MountUtils;
 import net.dungeonrealms.events.PlayerEnterRegionEvent;
@@ -205,8 +205,8 @@ public class MainListener implements Listener {
         }
 
         // Player leaves while in duel
-        if (DuelMechanics.isDueling(player.getUniqueId())) {
-            DuelMechanics.getWager(player.getUniqueId()).handleLogOut(player.getUniqueId());
+        if (DuelingMechanics.isDueling(player.getUniqueId())) {
+        	DuelingMechanics.getOffer(player.getUniqueId()).handleLogOut(player);
         }
         API.handleLogout(player.getUniqueId());
     }
@@ -235,39 +235,8 @@ public class MainListener implements Listener {
                                 theevent.getPlayer().closeInventory();
                                 Player p1 = theevent.getPlayer();
                                 Player p2 = playerClicked;
-                                if (API.isInSafeRegion(p1.getLocation()) && API.isInSafeRegion(p2.getLocation())) {
-                                    if (DuelMechanics.isDueling(p2.getUniqueId())) {
-                                    } else {
-                                        if (DuelMechanics.isPendingDuel(p1.getUniqueId())) {
-                                            if (DuelMechanics.isPendingDuelPartner(p1.getUniqueId(),
-                                                    p2.getUniqueId())) {
-                                                Bukkit.getScheduler().scheduleAsyncDelayedTask(
-                                                        DungeonRealms.getInstance(),
-                                                        () -> DuelMechanics.launchWager(p1, p2), 10l);
-                                                // Remove from pending
-                                                // DuelMechanics.cancelRequestedDuel(p1.getUniqueId());
-                                            } else {
-                                                if (!DuelMechanics.isOnCooldown(p1.getUniqueId())) {
-                                                    DuelMechanics.cancelRequestedDuel(p1.getUniqueId());
-                                                    DuelMechanics.sendDuelRequest(p1.getUniqueId(), p2.getUniqueId());
-                                                } else {
-                                                    p1.sendMessage(ChatColor.RED
-                                                            + "You must wait to send another Duel Request");
-                                                }
-
-                                            }
-                                        } else {
-                                            if (DuelMechanics.isOnCooldown(p1.getUniqueId())) {
-                                                p1.sendMessage(
-                                                        ChatColor.RED + "You must wait to send another Duel Request");
-                                                return;
-                                            }
-                                            if (DuelMechanics.isPendingDuel(p2.getUniqueId())) {
-                                                DuelMechanics.cancelRequestedDuel(p2.getUniqueId());
-                                            }
-                                            DuelMechanics.sendDuelRequest(p1.getUniqueId(), p2.getUniqueId());
-                                        }
-                                    }
+                                if (API.isNonPvPRegion(p1.getLocation()) && API.isNonPvPRegion(p2.getLocation())) {
+                                	DuelingMechanics.sendDuelRequest(p1, p2);
                                 }
                             } else if (item.getType() == Material.EMERALD) {
                                 event.setWillClose(true);
@@ -297,41 +266,6 @@ public class MainListener implements Listener {
         }
     }
 
-    /**
-     * Handling Duels. When a player punches another player.
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void playerPunchPlayer(EntityDamageByEntityEvent event) {
-        if (!(API.isPlayer(event.getEntity()) && API.isPlayer(event.getDamager())))
-            return;
-        Player p1 = (Player) event.getDamager();
-        Player p2 = (Player) event.getEntity();
-        if (API.isNonPvPRegion(p1.getLocation()) && API.isNonPvPRegion(p2.getLocation())) {
-            if (DuelMechanics.isDueling(p2.getUniqueId())) {
-                // If player they're punching is their duel partner
-                if (DuelMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
-                    if (p2.getHealth() - event.getDamage() <= 0) {
-                        // if they're gonna die this hit end duel
-                        DuelWager wager = DuelMechanics.getWager(p1.getUniqueId());
-                        if (wager != null) {
-                            event.setDamage(0);
-                            event.setCancelled(true);
-                            p2.setHealth(0.5);
-                            wager.endDuel(p1, p2);
-                        }
-                    }
-                } else
-                    p1.sendMessage("That's not you're dueling partner!");
-            } else {
-                event.setDamage(0);
-                event.setCancelled(true);
-            }
-        }
-
-    }
 
     /**
      * Checks player movement, adds a trail of gold blocks if they have the perk
@@ -344,6 +278,17 @@ public class MainListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         if (!API.isPlayer(event.getPlayer()))
             return;
+        
+        if(DuelingMechanics.isDueling(event.getPlayer().getUniqueId())){
+        	DuelOffer offer = DuelingMechanics.getOffer(event.getPlayer().getUniqueId());
+        	if(!offer.canFight) return;
+        	if(event.getTo().distance(offer.centerPoint) >= 15){
+        		event.setCancelled(true);
+        		event.getPlayer().teleport(event.getFrom());
+        		event.getPlayer().sendMessage(ChatColor.RED + "Can't leave area while in battle!");
+        	}
+        }
+        
         if (!(DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAILS.contains(event.getPlayer())))
             return;
         Player player = event.getPlayer();
@@ -365,6 +310,8 @@ public class MainListener implements Listener {
             player.getLocation().subtract(0, 1, 0).getBlock().setMetadata("time",
                     new FixedMetadataValue(DungeonRealms.getInstance(), 10));
         }
+        
+        
     }
 
     /**

@@ -24,6 +24,7 @@ import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
@@ -57,9 +58,11 @@ import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.items.Item;
+import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.Armor;
 import net.dungeonrealms.items.armor.Armor.ArmorModifier;
+import net.dungeonrealms.items.armor.Armor.ArmorTier;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mastery.ItemSerialization;
@@ -119,7 +122,24 @@ public class API {
         }
         return "";
     }
-
+    
+    public static ItemTier getItemTier(ItemStack stack){
+    	if(stack.getType() == Material.AIR || stack == null)
+    	return null;
+    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+    	if(!nms.hasTag() || nms.hasTag() && nms.getTag().hasKey("itemTier")) return null;
+    	
+    	return ItemTier.getByTier(nms.getTag().getInt("itemTier"));
+    }
+    
+    public static ArmorTier getArmorTier(ItemStack stack){
+    	if(stack.getType() == Material.AIR || stack == null)
+    	return null;
+    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+    	if(!nms.hasTag() || nms.hasTag() && !nms.getTag().hasKey("armorTier")) return null;
+    	
+    	return ArmorTier.getByTier(nms.getTag().getInt("armorTier"));
+    }
     /**
      * @param player
      * @param kill

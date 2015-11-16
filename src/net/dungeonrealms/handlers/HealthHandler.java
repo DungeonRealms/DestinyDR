@@ -22,7 +22,8 @@ import org.inventivetalent.bossbar.BossBarAPI;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.duel.DuelMechanics;
+import net.dungeonrealms.duel.DuelOffer;
+import net.dungeonrealms.duel.DuelingMechanics;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mechanics.SoundAPI;
@@ -484,8 +485,10 @@ public class HealthHandler implements GenericMechanic {
             player.playEffect(EntityEffect.HURT);
             SoundAPI.getInstance().playSoundAtLocation("damage.hit", player.getLocation(), 6);
         }
-        if (newHP <= 0 && DuelMechanics.isDueling(player.getUniqueId())) {
+        if (newHP <= 0 && DuelingMechanics.isDueling(player.getUniqueId())) {
             newHP = 1;
+        	DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
+            offer.endDuel((Player)leAttacker, player);
         }
 
         if (newHP <= 0 && API.isPlayer(leAttacker) && Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, leAttacker.getUniqueId()).toString())) {
