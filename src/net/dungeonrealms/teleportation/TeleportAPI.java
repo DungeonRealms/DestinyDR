@@ -7,6 +7,7 @@ import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.achievements.Achievements;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -179,6 +180,48 @@ public class TeleportAPI {
             }
             case "deadpeaks": {
                 return Teleportation.Deadpeaks_Mountain_Camp;
+            }
+            default: {
+                return null;
+            }
+        }
+    }
+
+    /**
+     * Gets the display name of a teleport location
+     *
+     * @param location
+     * @return Location
+     * @since 1.0
+     */
+    public static String getDisplayNameOfLocation(String location) {
+        switch (location.toLowerCase()) {
+            case "starter": {
+                return "Tutorial Island";
+            }
+            case "cyrennica": {
+                return "City of Cyrennica";
+            }
+            case "harrison_field": {
+                return "Harrison Field";
+            }
+            case "dark_oak": {
+                return "Dark Oak Tavern";
+            }
+            case "trollsbane": {
+                return "Trollsbane Tavern";
+            }
+            case "tripoli": {
+                return "Tripoli";
+            }
+            case "gloomy_hollows": {
+                return "Gloomy Hollows";
+            }
+            case "crestguard": {
+                return "Crestguard Keep";
+            }
+            case "deadpeaks": {
+                return "DeadPeaks Mountain Camp" + ChatColor.RED + " WARNING: CHAOTIC ZONE";
             }
             default: {
                 return null;

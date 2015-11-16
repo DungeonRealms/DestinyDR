@@ -40,7 +40,7 @@ public class BuffUtils {
     }
 
     public static PotionEffectType getRandomPotionEffect() {
-        switch (new Random().nextInt(5)) {
+        switch (new Random().nextInt(8)) {
             case 0:
                 return PotionEffectType.DAMAGE_RESISTANCE;
             case 1:
@@ -50,14 +50,12 @@ public class BuffUtils {
             case 3:
                 return PotionEffectType.HUNGER;
             case 4:
-                return PotionEffectType.REGENERATION;
-            case 5:
                 return PotionEffectType.WATER_BREATHING;
-            case 6:
+            case 5:
                 return PotionEffectType.JUMP;
-            case 7:
+            case 6:
                 return PotionEffectType.SPEED;
-            case 8:
+            case 7:
                 return PotionEffectType.INCREASE_DAMAGE;
             default:
                 return PotionEffectType.SPEED;
