@@ -398,6 +398,8 @@ public class DamageListener implements Listener {
                                 if ((event.getDamage() - armourReducedDamage) > 0) {
                                     HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, attacker, (event.getDamage() - armourReducedDamage));
                                 }
+                            } else {
+                                continue;
                             }
                         }
                         DamageAPI.polearmAOEProcessing.remove(attacker);
