@@ -4,7 +4,8 @@ import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.duel.DuelMechanics;
+import net.dungeonrealms.duel.DuelOffer;
+import net.dungeonrealms.duel.DuelingMechanics;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.entities.utils.EntityAPI;
@@ -19,6 +20,7 @@ import net.dungeonrealms.items.armor.Armor;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.miscellaneous.ItemBuilder;
@@ -108,12 +110,13 @@ public class DamageListener implements Listener {
      *
      * @param event
      */
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void disallowPVPEvent(DisallowedPVPEvent event) {
         Player p1 = event.getAttacker();
         Player p2 = event.getDefender();
-        if (DuelMechanics.isDueling(p1.getUniqueId()) && DuelMechanics.isDueling(p2.getUniqueId())) {
-            if (DuelMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
+        if (DuelingMechanics.isDueling(p1.getUniqueId()) && DuelingMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
+        	DuelOffer offer = DuelingMechanics.getOffer(p1.getUniqueId());
+            if (offer.canFight) {
                 event.setCancelled(true);
             }
         }
@@ -178,8 +181,8 @@ public class DamageListener implements Listener {
         if (API.isPlayer(event.getDamager())) {
             if (API.isNonPvPRegion(event.getDamager().getLocation()) || API.isNonPvPRegion(event.getEntity().getLocation())) {
                 if (API.isPlayer(event.getEntity()) && API.isPlayer(event.getDamager())) {
-                    if (DuelMechanics.isDueling(event.getEntity().getUniqueId()) && DuelMechanics.isDueling(event.getDamager().getUniqueId())) {
-                        if (!DuelMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
+                    if (DuelingMechanics.isDueling(event.getEntity().getUniqueId()) && DuelingMechanics.isDueling(event.getDamager().getUniqueId())) {
+                        if (!DuelingMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
                             event.setCancelled(true);
                             event.setDamage(0);
                             return;
@@ -216,7 +219,7 @@ public class DamageListener implements Listener {
             } else {
                 CombatLog.addToCombat(attacker);
             }
-            if (API.isPlayer(event.getEntity()) && !DuelMechanics.isDueling(event.getEntity().getUniqueId())) {
+            if (API.isPlayer(event.getEntity()) && !DuelingMechanics.isDueling(event.getEntity().getUniqueId())) {
                 KarmaHandler.getInstance().handleAlignmentChanges(attacker);
             }
             EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getItemInHand()));
@@ -243,7 +246,7 @@ public class DamageListener implements Listener {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof Player)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((Player) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
-            if (API.isPlayer(event.getEntity()) && !DuelMechanics.isDueling(event.getEntity().getUniqueId())) {
+            if (API.isPlayer(event.getEntity()) && !DuelingMechanics.isDueling(event.getEntity().getUniqueId())) {
                 KarmaHandler.getInstance().handleAlignmentChanges((Player) attackingArrow.getShooter());
             }
             if (CombatLog.isInCombat(((Player) attackingArrow.getShooter()))) {
@@ -255,7 +258,7 @@ public class DamageListener implements Listener {
             Snowball staffProjectile = (Snowball) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof Player)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((Player) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
-            if (API.isPlayer(event.getEntity()) && !DuelMechanics.isDueling(event.getEntity().getUniqueId())) {
+            if (API.isPlayer(event.getEntity()) && !DuelingMechanics.isDueling(event.getEntity().getUniqueId())) {
                 KarmaHandler.getInstance().handleAlignmentChanges((Player) staffProjectile.getShooter());
             }
             if (CombatLog.isInCombat(((Player) staffProjectile.getShooter()))) {
@@ -350,7 +353,35 @@ public class DamageListener implements Listener {
         event.setDamage(finalDamage);
     }
 
-
+    /**
+     * Handling Duels. When a player punches another player.
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.HIGH)
+    public void playerPunchPlayer(EntityDamageByEntityEvent event) {
+        if (!(API.isPlayer(event.getEntity()) && API.isPlayer(event.getDamager())))
+            return;
+        Player p1 = (Player) event.getDamager();
+        Player p2 = (Player) event.getEntity();
+        
+        if (!API.isNonPvPRegion(p1.getLocation()) && !API.isNonPvPRegion(p2.getLocation())) return;
+        if(!DuelingMechanics.isDueling(p2.getUniqueId())) return;
+        if (!DuelingMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
+        	p1.sendMessage("That's not you're dueling partner!");
+        	event.setDamage(0);
+        	event.setCancelled(true);
+        	return;
+        }
+        DuelOffer offer = DuelingMechanics.getOffer(p1.getUniqueId());
+         if(!offer.canFight){
+        	event.setCancelled(true);
+        	event.setDamage(0);
+        	return;
+         }
+        }
+    
     /**
      * Reduces damage after it is set previously based on the defenders armor
      *
@@ -366,8 +397,8 @@ public class DamageListener implements Listener {
         if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         if (API.isNonPvPRegion(event.getDamager().getLocation()) || API.isNonPvPRegion(event.getEntity().getLocation())) {
             if (API.isPlayer(event.getEntity()) && API.isPlayer(event.getDamager())) {
-                if (DuelMechanics.isDueling(event.getEntity().getUniqueId()) && DuelMechanics.isDueling(event.getDamager().getUniqueId())) {
-                    if (!DuelMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
+                if (DuelingMechanics.isDueling(event.getEntity().getUniqueId()) && DuelingMechanics.isDueling(event.getDamager().getUniqueId())) {
+                    if (!DuelingMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
                         event.setCancelled(true);
                         event.setDamage(0);
                         return;

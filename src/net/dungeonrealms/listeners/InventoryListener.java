@@ -1,22 +1,49 @@
 package net.dungeonrealms.listeners;
 
-import ca.thederpygolems.armorequip.ArmorEquipEvent;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+
+import ca.thederpygolems.armorequip.ArmorEquipEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
 import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.duel.DuelMechanics;
-import net.dungeonrealms.duel.DuelWager;
+import net.dungeonrealms.duel.DuelOffer;
+import net.dungeonrealms.duel.DuelingMechanics;
 import net.dungeonrealms.handlers.ClickHandler;
 import net.dungeonrealms.handlers.HealthHandler;
-import net.dungeonrealms.handlers.TradeHandler;
-import net.dungeonrealms.handlers.TradeHandler.TradeManager;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.loot.LootManager;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -27,32 +54,12 @@ import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.stats.PlayerStats;
 import net.dungeonrealms.stats.StatsManager;
+import net.dungeonrealms.trade.Trade;
 import net.dungeonrealms.world.glyph.Glyph;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldEvent;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -383,111 +390,185 @@ public class InventoryListener implements Listener {
         }
     }
 
-    /**
-     * @param e
-     * @since 1.0 Handling wager inventory, when a player clicks the inventory.
-     */
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onDuelWagerClick(InventoryClickEvent e) {
-        if (e.getInventory().getTitle().contains("vs.")) {
-            if (e.isShiftClick()) {
-                e.setCancelled(true);
-                return;
-            }
-            Player p = (Player) e.getWhoClicked();
-            DuelWager wager = DuelMechanics.getWager(p.getUniqueId());
-            int slot = e.getRawSlot();
-            ItemStack stack = e.getCurrentItem();
-            if (stack == null)
-                return;
-            if (stack.getType() == Material.BONE) {
-                e.setCancelled(true);
-            } else if (slot == 30) {
-                e.setCancelled(true);
-                wager.cycleArmor();
-            } else if (slot == 32) {
-                e.setCancelled(true);
-                wager.cycleWeapon();
-            } else if (slot == 0) {
-                if (wager.isLeft(p)) {
-                    // Left clicked
-                    e.setCancelled(true);
-                    if (CraftItemStack.asNMSCopy(stack).getTag().getString("state").equalsIgnoreCase("notready")) {
-                        ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
-                                ChatColor.YELLOW.toString() + "Ready", null, DyeColor.LIME.getDyeData());
-                        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
-                        NBTTagCompound nbt = new NBTTagCompound();
-                        nbt.setString("state", "ready");
-                        nms.setTag(nbt);
-                        nms.c(ChatColor.YELLOW.toString() + "Ready");
-                        wager.setItemSlot(0, CraftItemStack.asBukkitCopy(nms));
-                        if (CraftItemStack.asNMSCopy(e.getInventory().getItem(8)).getTag().getString("state")
-                                .equalsIgnoreCase("ready")) {
-                            wager.startDuel();
-                        }
-                    } else {
-                        ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
-                                ChatColor.YELLOW.toString() + "Not Ready", null, DyeColor.GRAY.getDyeData());
-                        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
-                        NBTTagCompound nbt = new NBTTagCompound();
-                        nbt.setString("state", "notready");
-                        nms.setTag(nbt);
-                        nms.c(ChatColor.YELLOW.toString() + "Not Ready");
-                        wager.setItemSlot(0, CraftItemStack.asBukkitCopy(nms));
-                    }
-                } else {
-                    e.setCancelled(true);
-                }
-            } else if (slot == 8) {
-                if (!wager.isLeft(p)) {
-                    // Right Clicked
-                    e.setCancelled(true);
-                    if (CraftItemStack.asNMSCopy(stack).getTag().getString("state").equalsIgnoreCase("notready")) {
-                        ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
-                                ChatColor.YELLOW.toString() + "Ready", null, DyeColor.LIME.getDyeData());
-                        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
-                        NBTTagCompound nbt = new NBTTagCompound();
-                        nbt.setString("state", "ready");
-                        nms.setTag(nbt);
-                        nms.c(ChatColor.YELLOW.toString() + "Ready");
-                        wager.setItemSlot(8, CraftItemStack.asBukkitCopy(nms));
-                        if (CraftItemStack.asNMSCopy(e.getInventory().getItem(0)).getTag().getString("state")
-                                .equalsIgnoreCase("ready")) {
-                            wager.startDuel();
-                        }
-                    } else {
-                        ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
-                                ChatColor.YELLOW.toString() + "Not Ready", null, DyeColor.GRAY.getDyeData());
-                        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
-                        NBTTagCompound nbt = new NBTTagCompound();
-                        nbt.setString("state", "notready");
-                        nms.setTag(nbt);
-                        nms.c(ChatColor.YELLOW.toString() + "Not Ready");
-                        wager.setItemSlot(8, CraftItemStack.asBukkitCopy(nms));
-                    }
-                } else {
-                    e.setCancelled(true);
-                }
-            } else if (slot < 36) {
-                if (e.isLeftClick()) {
-                    if (wager.isLeftSlot(slot)) {
-                        if (wager.isLeft(p)) {
-
-                        } else {
-                            e.setCancelled(true);
-                        }
-                    } else {
-                        if (!wager.isLeft(p)) {
-                        } else {
-                            e.setCancelled(true);
-                        }
-                    }
-                } else {
-                    e.setCancelled(true);
-                }
-            }
-        }
+    public void onDuelOfferClick(InventoryClickEvent e) {
+    	if(!e.getInventory().getTitle().contains("VS.")) return;
+		if(e.getAction() == InventoryAction.COLLECT_TO_CURSOR){
+    		e.setCancelled(true);
+    		return;
+    	}
+    	Player p = (Player) e.getWhoClicked();
+    	DuelOffer offer = DuelingMechanics.getOffer(p.getUniqueId());
+    	if(offer == null){ p.closeInventory(); return;}
+    	if(e.getRawSlot() > offer.sharedInventory.getSize()) return;
+    	
+    	if(e.getCurrentItem() != null && e.getCurrentItem().getType() == Material.BONE){
+    		e.setCancelled(true);
+    		return;
+    	}
+		int slot = e.getRawSlot();
+		if (slot == 30) {
+          e.setCancelled(true);
+  		  offer.updateOffer();
+          offer.cycleArmor();
+          return;
+		} else if (slot == 32) {
+          e.setCancelled(true);
+  		  offer.updateOffer();
+          offer.cycleItem();
+          return;
+      	}
+    	
+       	if(offer.isLeftSlot(e.getRawSlot())){
+    		if(!offer.isLeftPlayer(p)){
+    			e.setCancelled(true);
+    			return;
+    		}
+          }else{
+        	  if(offer.isLeftPlayer(p)){
+    			e.setCancelled(true);
+    			return;
+        	  }
+    	}
+       	
+    	if(e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR)
+    		return;
+		ItemStack stackClicked = e.getCurrentItem();
+		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stackClicked);
+		if(nms.hasTag() && nms.getTag().hasKey("status")){
+			String status = nms.getTag().getString("status");
+			e.setCancelled(true);
+			if(status.equalsIgnoreCase("ready")){
+				offer.updateReady(p.getUniqueId());
+				ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "NOT READY",
+				        null, DyeColor.GRAY.getDyeData());
+				nms = CraftItemStack.asNMSCopy(item);
+				NBTTagCompound nbt = new NBTTagCompound();
+				nbt.setString("status", "notready");
+				nms.setTag(nbt);
+				nms.c(ChatColor.YELLOW + "NOT READY");
+				e.getInventory().setItem(e.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
+				offer.checkReady();
+				return;
+			}else{
+				offer.updateReady(p.getUniqueId());
+				ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY",
+				        null, DyeColor.LIME.getDyeData());
+				nms = CraftItemStack.asNMSCopy(item);
+				NBTTagCompound nbt = new NBTTagCompound();
+				nbt.setString("status", "ready");
+				nms.setTag(nbt);
+				nms.c(ChatColor.YELLOW + "READY");
+				e.getInventory().setItem(e.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
+				offer.checkReady();
+				return;
+			}
+		}
+		Utils.log.info("Updated");
+		offer.updateOffer();
     }
+    
+//    @EventHandler(priority = EventPriority.HIGHEST)
+//    public void onDuelWagerClick(InventoryClickEvent e) {
+//        if (e.getInventory().getTitle().contains("vs.")) {
+//            if (e.isShiftClick()) {
+//                e.setCancelled(true);
+//                return;
+//            }
+//            Player p = (Player) e.getWhoClicked();
+//            DuelOffer wager = DuelingMechanics.getOffer(p.getUniqueId());
+//            int slot = e.getRawSlot();
+//            ItemStack stack = e.getCurrentItem();
+//            if (stack == null)
+//                return;
+//            if (stack.getType() == Material.BONE) {
+//                e.setCancelled(true);
+//            } else if (slot == 30) {
+//                e.setCancelled(true);
+//                wager.cycleArmor();
+//            } else if (slot == 32) {
+//                e.setCancelled(true);
+//                wager.cycleWeapon();
+//            } else if (slot == 0) {
+//                if (wager.isLeft(p)) {
+//                    // Left clicked
+//                    e.setCancelled(true);
+//                    if (CraftItemStack.asNMSCopy(stack).getTag().getString("state").equalsIgnoreCase("notready")) {
+//                        ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
+//                                ChatColor.YELLOW.toString() + "Ready", null, DyeColor.LIME.getDyeData());
+//                        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+//                        NBTTagCompound nbt = new NBTTagCompound();
+//                        nbt.setString("state", "ready");
+//                        nms.setTag(nbt);
+//                        nms.c(ChatColor.YELLOW.toString() + "Ready");
+//                        wager.setItemSlot(0, CraftItemStack.asBukkitCopy(nms));
+//                        if (CraftItemStack.asNMSCopy(e.getInventory().getItem(8)).getTag().getString("state")
+//                                .equalsIgnoreCase("ready")) {
+//                            wager.startDuel();
+//                        }
+//                    } else {
+//                        ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
+//                                ChatColor.YELLOW.toString() + "Not Ready", null, DyeColor.GRAY.getDyeData());
+//                        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+//                        NBTTagCompound nbt = new NBTTagCompound();
+//                        nbt.setString("state", "notready");
+//                        nms.setTag(nbt);
+//                        nms.c(ChatColor.YELLOW.toString() + "Not Ready");
+//                        wager.setItemSlot(0, CraftItemStack.asBukkitCopy(nms));
+//                    }
+//                } else {
+//                    e.setCancelled(true);
+//                }
+//            } else if (slot == 8) {
+//                if (!wager.isLeft(p)) {
+//                    // Right Clicked
+//                    e.setCancelled(true);
+//                    if (CraftItemStack.asNMSCopy(stack).getTag().getString("state").equalsIgnoreCase("notready")) {
+//                        ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
+//                                ChatColor.YELLOW.toString() + "Ready", null, DyeColor.LIME.getDyeData());
+//                        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+//                        NBTTagCompound nbt = new NBTTagCompound();
+//                        nbt.setString("state", "ready");
+//                        nms.setTag(nbt);
+//                        nms.c(ChatColor.YELLOW.toString() + "Ready");
+//                        wager.setItemSlot(8, CraftItemStack.asBukkitCopy(nms));
+//                        if (CraftItemStack.asNMSCopy(e.getInventory().getItem(0)).getTag().getString("state")
+//                                .equalsIgnoreCase("ready")) {
+//                            wager.startDuel();
+//                        }
+//                    } else {
+//                        ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
+//                                ChatColor.YELLOW.toString() + "Not Ready", null, DyeColor.GRAY.getDyeData());
+//                        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+//                        NBTTagCompound nbt = new NBTTagCompound();
+//                        nbt.setString("state", "notready");
+//                        nms.setTag(nbt);
+//                        nms.c(ChatColor.YELLOW.toString() + "Not Ready");
+//                        wager.setItemSlot(8, CraftItemStack.asBukkitCopy(nms));
+//                    }
+//                } else {
+//                    e.setCancelled(true);
+//                }
+//            } else if (slot < 36) {
+//                if (e.isLeftClick()) {
+//                    if (wager.isLeftSlot(slot)) {
+//                        if (wager.isLeft(p)) {
+//
+//                        } else {
+//                            e.setCancelled(true);
+//                        }
+//                    } else {
+//                        if (!wager.isLeft(p)) {
+//                        } else {
+//                            e.setCancelled(true);
+//                        }
+//                    }
+//                } else {
+//                    e.setCancelled(true);
+//                }
+//            }
+//        }
+//    }
 
     /**
      * @param event
@@ -495,7 +576,7 @@ public class InventoryListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onDragItemInDuelWager(InventoryDragEvent event) {
-        if (event.getInventory().getTitle().contains("vs.") || event.getInventory().getTitle().contains("Bank")
+        if (event.getInventory().getTitle().contains("VS.") || event.getInventory().getTitle().contains("Bank")
                 || event.getInventory().getTitle().contains("@") || event.getInventory().getTitle().contains("Trade"))
             event.setCancelled(true);
     }
@@ -555,17 +636,20 @@ public class InventoryListener implements Listener {
      * @since 1.0 Closes both players wager inventory.
      */
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onDuelWagerClosed(InventoryCloseEvent event) {
-        if (event.getInventory().getTitle().contains("vs.")) {
+    public void onInventoryClosed(InventoryCloseEvent event) {
+        if (event.getInventory().getTitle().contains("VS.")) {
             Player p = (Player) event.getPlayer();
-            DuelWager wager = DuelMechanics.getWager(p.getUniqueId());
-            if (wager != null) {
-                if (!wager.completed) {
-                    wager.giveItemsBack();
-                    DuelMechanics.removeWager(wager);
-                    wager.p1.closeInventory();
-                    wager.p2.closeInventory();
-                }
+            DuelOffer offer = DuelingMechanics.getOffer(p.getUniqueId());
+            if(offer == null) return;
+            if(!offer.p1Ready || !offer.p2Ready){
+            	offer.giveBackItems();
+            	DuelingMechanics.removeOffer(offer);
+            	Player p1 =Bukkit.getPlayer(offer.player1);
+            	if(p1 != null)
+            		p1.closeInventory();
+            	Player p2 = Bukkit.getPlayer(offer.player2);
+            	if(p2 != null)
+            		p2.closeInventory();
             }
         } else if (event.getInventory().getTitle().contains("Storage Chest")) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
@@ -576,8 +660,8 @@ public class InventoryListener implements Listener {
             LootManager.LOOT_SPAWNERS.stream().filter(loot -> loot.location.equals(block.getLocation())).forEach(net.dungeonrealms.loot.LootSpawner::update);
         } else if (event.getInventory().getTitle().contains("Trade")) {
             Player p = (Player) event.getPlayer();
-            TradeHandler t = TradeManager.getTrade(p.getUniqueId());
-            if (t != null) {
+            Trade t = net.dungeonrealms.trade.TradeManager.getTrade(p.getUniqueId());
+            if (t != null && !t.p1Ready || !t.p2Ready) {
                 t.handleClose();
             }
         } else if (event.getInventory().getTitle().contains("Stat Points")) {
@@ -596,90 +680,76 @@ public class InventoryListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onTradeInvClicked(InventoryClickEvent event) {
-        if (event.getInventory().getTitle().contains("Trade")) {
+        if (event.getInventory().getTitle().contains("Trade Window")) {
+    		if(event.getAction() == InventoryAction.COLLECT_TO_CURSOR){
+    			event.setCancelled(true);
+        		return;
+        	}
             if (event.isShiftClick()) {
                 event.setCancelled(true);
                 return;
             }
-            TradeHandler trade = TradeManager.getTrade(event.getWhoClicked().getUniqueId());
+            Trade trade = net.dungeonrealms.trade.TradeManager.getTrade(event.getWhoClicked().getUniqueId());
+            if(trade == null){
+            	return;
+            }
             int slot = event.getRawSlot();
             if (slot >= 36)
                 return;
-            if (trade.isSeperator(slot)) {
+            
+            if(event.getCurrentItem() == null)
+            	return;
+            if (event.getCurrentItem().getType() == Material.STAINED_GLASS_PANE) {
                 event.setCancelled(true);
                 return;
             }
-            if (trade.isLeftSlot(slot)) {
-                //Left Slot
-                if (trade.isLeft(event.getWhoClicked().getUniqueId())) {
-                    //Left Player Clicked Left Slot
-                    if (slot == 0) {
-                        event.setCancelled(true);
-                        ItemStack stack = event.getCurrentItem();
-                        if (CraftItemStack.asNMSCopy(stack).getTag().getString("state").equalsIgnoreCase("notready")) {
-                            ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
-                                    ChatColor.YELLOW.toString() + "Ready", null, DyeColor.LIME.getDyeData());
-                            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
-                            NBTTagCompound nbt = new NBTTagCompound();
-                            nbt.setString("state", "ready");
-                            nms.setTag(nbt);
-                            nms.c(ChatColor.YELLOW.toString() + "Ready");
-                            event.getInventory().setItem(0, CraftItemStack.asBukkitCopy(nms));
-                            if (CraftItemStack.asNMSCopy(event.getInventory().getItem(8)).getTag().getString("state")
-                                    .equalsIgnoreCase("ready")) {
-                                trade.accept();
-                            }
-                        } else {
-                            ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
-                                    ChatColor.YELLOW.toString() + "Not Ready", null, DyeColor.GRAY.getDyeData());
-                            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
-                            NBTTagCompound nbt = new NBTTagCompound();
-                            nbt.setString("state", "notready");
-                            nms.setTag(nbt);
-                            nms.c(ChatColor.YELLOW.toString() + "Not Ready");
-                            event.getInventory().setItem(0, CraftItemStack.asBukkitCopy(nms));
-                        }
-                    }
-                } else {
-                    //Right Player Clicked left Slot
-                    event.setCancelled(true);
-                }
-            } else {
-                //Right Slot Clicked
-                if (trade.isLeft(event.getWhoClicked().getUniqueId())) {
-                    //Left Player Clicked Right Slot
-                    event.setCancelled(true);
-                } else {
-                    //Right Player and Right Slot
-                    if (slot == 8) {
-                        event.setCancelled(true);
-                        ItemStack stack = event.getCurrentItem();
-                        if (CraftItemStack.asNMSCopy(stack).getTag().getString("state").equalsIgnoreCase("notready")) {
-                            ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
-                                    ChatColor.YELLOW.toString() + "Ready", null, DyeColor.LIME.getDyeData());
-                            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
-                            NBTTagCompound nbt = new NBTTagCompound();
-                            nbt.setString("state", "ready");
-                            nms.setTag(nbt);
-                            nms.c(ChatColor.YELLOW.toString() + "Ready");
-                            event.getInventory().setItem(8, CraftItemStack.asBukkitCopy(nms));
-                            if (CraftItemStack.asNMSCopy(event.getInventory().getItem(0)).getTag().getString("state")
-                                    .equalsIgnoreCase("ready")) {
-                                trade.accept();
-                            }
-                        } else {
-                            ItemStack item = ItemManager.createItemWithData(Material.INK_SACK,
-                                    ChatColor.YELLOW.toString() + "Not Ready", null, DyeColor.GRAY.getDyeData());
-                            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
-                            NBTTagCompound nbt = new NBTTagCompound();
-                            nbt.setString("state", "notready");
-                            nms.setTag(nbt);
-                            nms.c(ChatColor.YELLOW.toString() + "Not Ready");
-                            event.getInventory().setItem(8, CraftItemStack.asBukkitCopy(nms));
-                        }
-                    }
-                }
+            
+            if(trade.isLeftSlot(slot)){
+            	if(!trade.isLeftPlayer(event.getWhoClicked().getUniqueId())){
+            		event.setCancelled(true);
+            		return;
+            	}
+            }else if(trade.isRightSlot(slot)){
+            	if(trade.isLeftPlayer(event.getWhoClicked().getUniqueId())){
+            		event.setCancelled(true);
+            		return;
+            	}
             }
+            
+        	if(event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
+        		return;
+    		ItemStack stackClicked = event.getCurrentItem();
+    		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stackClicked);
+    		if(nms.hasTag() && nms.getTag().hasKey("status")){
+    			String status = nms.getTag().getString("status");
+    			event.setCancelled(true);
+    			if(status.equalsIgnoreCase("ready")){
+    				trade.updateReady(event.getWhoClicked().getUniqueId());
+    				ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "NOT READY",
+    				        null, DyeColor.GRAY.getDyeData());
+    				nms = CraftItemStack.asNMSCopy(item);
+    				NBTTagCompound nbt = new NBTTagCompound();
+    				nbt.setString("status", "notready");
+    				nms.setTag(nbt);
+    				nms.c(ChatColor.YELLOW + "NOT READY");
+    				event.getInventory().setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
+    				trade.checkReady();
+    				return;
+    			}else{
+    				trade.updateReady(event.getWhoClicked().getUniqueId());
+    				ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY",
+    				        null, DyeColor.LIME.getDyeData());
+    				nms = CraftItemStack.asNMSCopy(item);
+    				NBTTagCompound nbt = new NBTTagCompound();
+    				nbt.setString("status", "ready");
+    				nms.setTag(nbt);
+    				nms.c(ChatColor.YELLOW + "READY");
+    				event.getInventory().setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms));
+    				trade.checkReady();
+    				return;
+    			}
+    		}
+            trade.changeReady();
         }
     }
 
