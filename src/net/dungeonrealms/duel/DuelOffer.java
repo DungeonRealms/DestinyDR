@@ -224,6 +224,9 @@ public class DuelOffer {
 		ItemStack newItem = CraftItemStack.asBukkitCopy(nms);
 		sharedInventory.setItem(0, newItem);
 		sharedInventory.setItem(8, newItem);
+		p1Ready = false;
+		p2Ready = false;
+
 	}
 
 	/**

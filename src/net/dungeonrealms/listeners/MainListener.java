@@ -60,13 +60,13 @@ import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.entities.utils.MountUtils;
 import net.dungeonrealms.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.handlers.KarmaHandler;
-import net.dungeonrealms.handlers.TradeHandler;
 import net.dungeonrealms.inventory.GUI;
 import net.dungeonrealms.inventory.NPCMenus;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.profession.Fishing;
 import net.dungeonrealms.teleportation.Teleportation;
+import net.dungeonrealms.trade.TradeManager;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 
 /**
@@ -242,9 +242,7 @@ public class MainListener implements Listener {
                                 event.setWillClose(true);
                                 event.setWillDestroy(true);
                                 event.willDestroy();
-                                TradeHandler trade = new TradeHandler(theevent.getPlayer(), playerClicked);
-                                Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(),
-                                        trade::launchTradeWindow, 10l);
+                                TradeManager.sendTradeRequest(theevent.getPlayer().getUniqueId(), playerClicked.getUniqueId());
                             } else if (item.getType() == Material.PAPER) {
                                 theevent.getPlayer().closeInventory();
                                 theevent.getPlayer().chat("/tell " + playerClicked.getName() + " ");
