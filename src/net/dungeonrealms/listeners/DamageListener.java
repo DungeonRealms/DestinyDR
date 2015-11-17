@@ -20,7 +20,6 @@ import net.dungeonrealms.items.armor.Armor;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.miscellaneous.ItemBuilder;
@@ -219,9 +218,6 @@ public class DamageListener implements Listener {
             } else {
                 CombatLog.addToCombat(attacker);
             }
-            if (API.isPlayer(event.getEntity()) && !DuelingMechanics.isDueling(event.getEntity().getUniqueId())) {
-                KarmaHandler.getInstance().handleAlignmentChanges(attacker);
-            }
             EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getItemInHand()));
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);
 
@@ -246,9 +242,6 @@ public class DamageListener implements Listener {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof Player)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((Player) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
-            if (API.isPlayer(event.getEntity()) && !DuelingMechanics.isDueling(event.getEntity().getUniqueId())) {
-                KarmaHandler.getInstance().handleAlignmentChanges((Player) attackingArrow.getShooter());
-            }
             if (CombatLog.isInCombat(((Player) attackingArrow.getShooter()))) {
                 CombatLog.updateCombat(((Player) attackingArrow.getShooter()));
             } else {
@@ -258,9 +251,6 @@ public class DamageListener implements Listener {
             Snowball staffProjectile = (Snowball) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof Player)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((Player) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
-            if (API.isPlayer(event.getEntity()) && !DuelingMechanics.isDueling(event.getEntity().getUniqueId())) {
-                KarmaHandler.getInstance().handleAlignmentChanges((Player) staffProjectile.getShooter());
-            }
             if (CombatLog.isInCombat(((Player) staffProjectile.getShooter()))) {
                 CombatLog.updateCombat(((Player) staffProjectile.getShooter()));
             } else {

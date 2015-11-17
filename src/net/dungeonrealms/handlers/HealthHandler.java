@@ -451,6 +451,9 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public void handlePlayerBeingDamaged(Player player, Entity damager, double damage) {
+        if (!API.isPlayer(player)) {
+            return;
+        }
         double maxHP = getPlayerMaxHPLive(player);
         double currentHP = getPlayerHPLive(player);
         double newHP = currentHP - damage;
@@ -488,7 +491,7 @@ public class HealthHandler implements GenericMechanic {
         if (newHP <= 0 && DuelingMechanics.isDueling(player.getUniqueId())) {
             newHP = 1;
         	DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
-            offer.endDuel((Player)leAttacker, player);
+            offer.endDuel((Player) leAttacker, player);
         }
 
         if (newHP <= 0 && API.isPlayer(leAttacker) && Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, leAttacker.getUniqueId()).toString())) {
@@ -503,14 +506,14 @@ public class HealthHandler implements GenericMechanic {
             player.sendMessage(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.RED + " -> " + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
         }
 
-        if (API.isPlayer(damager)) {
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, damager.getUniqueId()).toString())) {
-                damager.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + "[" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
+        if (API.isPlayer(leAttacker)) {
+            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, leAttacker.getUniqueId()).toString())) {
+                leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + "[" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
             }
         }
 
-        if (damager instanceof Player) {
-            KarmaHandler.getInstance().handleAlignmentChanges((Player) damager);
+        if (leAttacker instanceof Player) {
+            KarmaHandler.getInstance().handleAlignmentChanges((Player) leAttacker);
         }
         if (newHP <= 0) {
             player.playSound(player.getLocation(), Sound.WITHER_SPAWN, 1f, 1f);
@@ -520,7 +523,7 @@ public class HealthHandler implements GenericMechanic {
                     player.damage(25);
                     //TODO: WATCH THIS
                     //player.setHealth(0);
-                    KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, damager);
+                    KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, leAttacker);
                     CombatLog.removeFromCombat(player);
                     API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(player.getName() + " has died!"));
                     return;
@@ -530,7 +533,7 @@ public class HealthHandler implements GenericMechanic {
                 player.damage(25);
                 //TODO: WATCH THIS
                 //player.setHealth(0);
-                KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, damager);
+                KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, leAttacker);
                 API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(player.getName() + " has died!"));
                 return;
             }
