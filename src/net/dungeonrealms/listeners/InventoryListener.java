@@ -648,10 +648,11 @@ public class InventoryListener implements Listener {
             Player p = (Player) event.getPlayer();
             Block block = p.getTargetBlock((Set<Material>) null, 100);
             LootManager.LOOT_SPAWNERS.stream().filter(loot -> loot.location.equals(block.getLocation())).forEach(net.dungeonrealms.loot.LootSpawner::update);
-        } else if (event.getInventory().getTitle().contains("Trade")) {
+        } else if (event.getInventory().getTitle().contains("Trade Window")) {
             Player p = (Player) event.getPlayer();
             Trade t = net.dungeonrealms.trade.TradeManager.getTrade(p.getUniqueId());
-            if (t != null && !t.p1Ready || !t.p2Ready) {
+            if(t != null)
+            if (!t.p1Ready || !t.p2Ready) {
                 t.handleClose();
             }
         } else if (event.getInventory().getTitle().contains("Stat Points")) {

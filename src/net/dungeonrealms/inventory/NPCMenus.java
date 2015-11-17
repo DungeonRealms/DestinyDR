@@ -35,8 +35,11 @@ public class NPCMenus {
                 ChatColor.RED + "Speed 160%",
                 ChatColor.RED + "Jump 110%",
                 ChatColor.AQUA + "25000 Gems"}).setNBTString("mountType", "GOLDHORSE").setNBTInt("mountCost", 25000).build());
-        //TODO: Add Mule when Chase finishes it.
-
+        
+        inv.setItem(3, new ItemBuilder().setItem(new ItemStack(Material.CHEST), ChatColor.GREEN + "Storage Mule", new String[]{
+                ChatColor.RED + "Storage 120%",
+                ChatColor.RED + "Coolness 220%",
+                ChatColor.AQUA + "15000 Gems"}).setNBTString("mountType", "MULE").setNBTInt("mountCost", 15000).build());
         player.openInventory(inv);
     }
 

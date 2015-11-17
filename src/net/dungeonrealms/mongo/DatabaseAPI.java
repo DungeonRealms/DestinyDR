@@ -2,16 +2,13 @@ package net.dungeonrealms.mongo;
 
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.core.Callback;
 import net.dungeonrealms.mastery.Utils;
 import org.bson.Document;
-import org.bukkit.Bukkit;
 
 import java.util.ArrayList;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Nick on 8/29/2015.
@@ -29,8 +26,6 @@ public class DatabaseAPI {
 
     public volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
     public volatile ConcurrentHashMap<String, Document> GUILDS = new ConcurrentHashMap<>();
-    private volatile CopyOnWriteArrayList<UUID> REQUEST_NEW_PLAYER_DOCUMENT = new CopyOnWriteArrayList<>();
-    private volatile CopyOnWriteArrayList<String> REQUEST_NEW_GUILD_DOCUMENT = new CopyOnWriteArrayList<>();
 
     /**
      * Updates a players information in Mongo and returns the updated result.
@@ -47,7 +42,7 @@ public class DatabaseAPI {
                 (result, exception) -> {
                     Utils.log.info("DatabaseAPI update() called ...");
                     if (exception == null && requestNew) {
-                        REQUEST_NEW_PLAYER_DOCUMENT.add(uuid);
+                        requestPlayer(uuid);
                     }
                 });
     }
@@ -69,7 +64,7 @@ public class DatabaseAPI {
                     callback.callback(exception, result);
                     Utils.log.info("DatabaseAPI update() called ...");
                     if (exception == null && requestNew) {
-                        REQUEST_NEW_PLAYER_DOCUMENT.add(uuid);
+                        requestPlayer(uuid);
                     }
                 });
     }
@@ -89,7 +84,7 @@ public class DatabaseAPI {
                 (result, exception) -> {
                     Utils.log.info("DatabaseAPI update() called ...");
                     if (exception == null && requestNew) {
-                        REQUEST_NEW_GUILD_DOCUMENT.add(guildName);
+                        requestGuild(guildName);
                     }
                 });
     }
@@ -181,7 +176,7 @@ public class DatabaseAPI {
             case INVENTORY:
                 return ((Document) PLAYERS.get(uuid).get("inventory")).get("player", String.class);
             case HASSHOP:
-            	return ((Document)PLAYERS.get(uuid).get("info")).get("shopOpen", Boolean.class);
+                return ((Document) PLAYERS.get(uuid).get("info")).get("shopOpen", Boolean.class);
             case ARMOR:
                 return ((Document) PLAYERS.get(uuid).get("inventory")).get("armor", ArrayList.class);
             /*
@@ -287,8 +282,6 @@ public class DatabaseAPI {
      * @since 1.0
      */
     public void startInitialization() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> REQUEST_NEW_PLAYER_DOCUMENT.forEach(this::requestPlayer), 0, 5l);
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> REQUEST_NEW_GUILD_DOCUMENT.forEach(this::requestGuild), 0, 15l);
     }
 
     /**
@@ -303,9 +296,6 @@ public class DatabaseAPI {
             if (document != null) {
                 Utils.log.info("Fetched information for uuid: " + uuid.toString());
                 PLAYERS.put(uuid, document);
-                if (REQUEST_NEW_PLAYER_DOCUMENT.contains(uuid)) {
-                    REQUEST_NEW_PLAYER_DOCUMENT.remove(uuid);
-                }
             } else {
                 addNewPlayer(uuid);
             }
@@ -323,12 +313,6 @@ public class DatabaseAPI {
         Database.guilds.find(Filters.eq("info.name", guildName)).first((document, throwable) -> {
             if (document != null) {
                 GUILDS.put(guildName, document);
-                if (REQUEST_NEW_GUILD_DOCUMENT.contains(guildName)) {
-                    REQUEST_NEW_GUILD_DOCUMENT.remove(guildName);
-                    Utils.log.info("[GUILD] [ASYNC] Called update for Guild=(" + guildName + ")");
-                } else {
-                    Utils.log.warning("[GUILD] [ASYNC] Grabbed new cache of Guild=(" + guildName + ")");
-                }
             }
         });
     }
@@ -403,7 +387,7 @@ public class DatabaseAPI {
                                         .append("player", "")
                                         .append("armor", new ArrayList<String>()));
         Database.collection.insertOne(newPlayerDocument, (aVoid, throwable) -> {
-            REQUEST_NEW_PLAYER_DOCUMENT.add(uuid);
+            requestPlayer(uuid);
             Utils.log.info("Requesting new data for : " + uuid);
         });
     }
