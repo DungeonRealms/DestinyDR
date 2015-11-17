@@ -922,6 +922,19 @@ public class InventoryListener implements Listener {
                 }
             }
         }
+    }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void playerDragItemInMerchant(InventoryClickEvent event) {
+        if (event.getInventory().getName().equals("Merchant")) {
+            if (event.getAction() == InventoryAction.SWAP_WITH_CURSOR) {
+                int slot = event.getSlot();
+                if (!(slot == 1 || slot == 2 || slot == 3 || slot == 9 || slot == 10 || slot == 11 || slot == 12 || slot == 18 || slot == 19
+                        || slot == 20 || slot == 21) && !(slot > 27)) {
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "Naughty Naughty Naughty!");
+                    event.setCancelled(true);
+                }
+            }
+        }
     }
 }
