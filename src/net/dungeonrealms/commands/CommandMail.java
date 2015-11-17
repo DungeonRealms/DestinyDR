@@ -17,7 +17,6 @@ public class CommandMail extends BasicCommand {
     public CommandMail(String command, String usage, String description) {
         super(command, usage, description);
     }
-
     @Override
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
         if (s instanceof ConsoleCommandSender) return false;
