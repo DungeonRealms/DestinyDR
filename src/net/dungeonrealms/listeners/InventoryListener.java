@@ -1,37 +1,9 @@
 package net.dungeonrealms.listeners;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
+import ca.thederpygolems.armorequip.ArmorEquipEvent;
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
-
-import ca.thederpygolems.armorequip.ArmorEquipEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
@@ -60,6 +32,25 @@ import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldEvent;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.*;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.UUID;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -353,7 +344,7 @@ public class InventoryListener implements Listener {
                                         lore = (ArrayList<String>) meta.getLore();
                                     }
                                     lore.add(ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "Price: "
-                                            + ChatColor.WHITE.toString() + number);
+                                            + ChatColor.WHITE.toString() + number + "g");
                                     meta.setLore(lore);
                                     stack.setItemMeta(meta);
                                     net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
@@ -932,6 +923,26 @@ public class InventoryListener implements Listener {
                 }
             }
         }
+    }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void playerDragItemInMerchant(InventoryClickEvent event) {
+        if (event.getInventory().getName().equals("Merchant")) {
+            int slot = event.getSlot();
+            if (!(slot == 1 || slot == 2 || slot == 3 || slot == 9 || slot == 10 || slot == 11 || slot == 12 || slot == 18 || slot == 19
+                    || slot == 20 || slot == 21) && !(slot > 27)) {
+                if (event.getAction() == InventoryAction.SWAP_WITH_CURSOR) {
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "Naughty Naughty Naughty!");
+                    event.setCancelled(true);
+                    event.setResult(Event.Result.DENY);
+                    return;
+                }
+                if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "Naughty Naughty Naughty!");
+                    event.setCancelled(true);
+                    event.setResult(Event.Result.DENY);
+                }
+            }
+        }
     }
 }
