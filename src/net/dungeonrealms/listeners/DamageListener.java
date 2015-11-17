@@ -93,6 +93,7 @@ public class DamageListener implements Listener {
                 ((Player) e).addPotionEffect(new PotionEffect(effectType, duration, 2));
                 if (effectType.equals(PotionEffectType.HEAL)) {
                     HealthHandler.getInstance().healPlayerByAmount((Player) e, HealthHandler.getInstance().getPlayerMaxHPLive((Player) e) / 2);
+                    ((Player) e).removePotionEffect(PotionEffectType.HEAL);
                 }
                 e.sendMessage(new String[]{
                         "",

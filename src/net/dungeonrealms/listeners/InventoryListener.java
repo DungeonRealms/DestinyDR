@@ -38,6 +38,7 @@ import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -927,12 +928,19 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void playerDragItemInMerchant(InventoryClickEvent event) {
         if (event.getInventory().getName().equals("Merchant")) {
-            if (event.getAction() == InventoryAction.SWAP_WITH_CURSOR) {
-                int slot = event.getSlot();
-                if (!(slot == 1 || slot == 2 || slot == 3 || slot == 9 || slot == 10 || slot == 11 || slot == 12 || slot == 18 || slot == 19
-                        || slot == 20 || slot == 21) && !(slot > 27)) {
+            int slot = event.getSlot();
+            if (!(slot == 1 || slot == 2 || slot == 3 || slot == 9 || slot == 10 || slot == 11 || slot == 12 || slot == 18 || slot == 19
+                    || slot == 20 || slot == 21) && !(slot > 27)) {
+                if (event.getAction() == InventoryAction.SWAP_WITH_CURSOR) {
                     event.getWhoClicked().sendMessage(ChatColor.RED + "Naughty Naughty Naughty!");
                     event.setCancelled(true);
+                    event.setResult(Event.Result.DENY);
+                    return;
+                }
+                if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "Naughty Naughty Naughty!");
+                    event.setCancelled(true);
+                    event.setResult(Event.Result.DENY);
                 }
             }
         }
