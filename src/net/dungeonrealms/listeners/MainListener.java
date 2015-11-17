@@ -490,10 +490,9 @@ public class MainListener implements Listener {
     
     @EventHandler
     public void onEntityImmunityAfterHit(EntityDamageByEntityEvent e) {
-        if (e.getCause() == DamageCause.PROJECTILE) {
-            return;
-        }
-        if (e.getEntity() instanceof LivingEntity && !(e.getEntity() instanceof Player)) {
+        if (e.getCause() == DamageCause.PROJECTILE)return;
+        if(API.isPlayer(e.getEntity())) return;
+        if (e.getEntity() instanceof LivingEntity) {
             LivingEntity ent = (LivingEntity) e.getEntity();
             ent.setMaximumNoDamageTicks(3);
             ent.setNoDamageTicks(3);

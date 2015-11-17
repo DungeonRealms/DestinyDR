@@ -285,6 +285,7 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
+    	if(API.isPlayer(event.getDamager()))return; // THIS METHOD WAS BREAKING EVERYTHING BECAUSE IT WASN'T MAKING SURE DAMAGER WAS A PLAYER FCKING NIGGERS I SPENT SO LONG ON THIS
         if ((!(event.getDamager() instanceof CraftLivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL)))
             return;
         if (!(API.isPlayer(event.getEntity()))) return;
@@ -361,7 +362,7 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGH)
     public void playerPunchPlayer(EntityDamageByEntityEvent event) {
-        if (!(API.isPlayer(event.getEntity()) && API.isPlayer(event.getDamager())))
+        if (!API.isPlayer(event.getEntity()) || !API.isPlayer(event.getDamager()))
             return;
         Player p1 = (Player) event.getDamager();
         Player p2 = (Player) event.getEntity();
