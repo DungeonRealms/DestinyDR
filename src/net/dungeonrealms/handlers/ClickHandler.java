@@ -560,6 +560,11 @@ public class ClickHandler {
          */
                     if (name.equals("Mailbox")) {
                         event.setCancelled(true);
+                        switch (slot) {
+                            case 0:
+                                player.sendMessage(ChatColor.RED + "You cannot send mail yet! It's coming soon! :-)");
+                                break;
+                        }
                         if (event.getCurrentItem() != null) {
                             ItemStack clickedItem = event.getCurrentItem();
                             MailHandler.getInstance().giveItemToPlayer(clickedItem, player);
