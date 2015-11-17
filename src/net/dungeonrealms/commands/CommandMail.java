@@ -17,17 +17,16 @@ public class CommandMail extends BasicCommand {
     public CommandMail(String command, String usage, String description) {
         super(command, usage, description);
     }
-
     @Override
-	public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
+    public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
         if (s instanceof ConsoleCommandSender) return false;
 
         Player player = (Player) s;
-        if (!player.isOp()) {
-            player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
-            return false;
-        }
         if (args.length > 0) {
+            if (!player.isOp()) {
+                player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
+                return false;
+            }
             if (args[0].equals("send")) {
                 MailHandler.getInstance().sendMail(player, args[1], player.getItemInHand());
 

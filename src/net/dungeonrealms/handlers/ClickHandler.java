@@ -224,7 +224,7 @@ public class ClickHandler {
                             player.sendMessage(ChatColor.RED + "This is currently not implemented!");
                             player.closeInventory();
                     /*if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                    	player.getInventory().addItem(ItemManager.createItem(EnumItem.RetrainingBook));
+                        player.getInventory().addItem(ItemManager.createItem(EnumItem.RetrainingBook));
                         player.sendMessage(ChatColor.GREEN + "You have purchased a Retraining Book!");
                         player.closeInventory();
                         return;
@@ -560,13 +560,17 @@ public class ClickHandler {
          */
                     if (name.equals("Mailbox")) {
                         event.setCancelled(true);
+                        switch (slot) {
+                            case 0:
+                                player.sendMessage(ChatColor.RED + "You cannot send mail yet! It's coming soon! :-)");
+                                break;
+                        }
                         if (event.getCurrentItem() != null) {
                             ItemStack clickedItem = event.getCurrentItem();
                             MailHandler.getInstance().giveItemToPlayer(clickedItem, player);
                         }
                         return;
                     } else
-
         /*
         Pets Below
          */
