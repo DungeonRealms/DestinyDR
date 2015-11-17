@@ -141,7 +141,6 @@ public class MountUtils {
                 if(!inventories.containsKey(player.getUniqueId())){
                 	Inventory inv = Bukkit.createInventory(player, 9, "Mule Storage");
                 	if(!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4){
-                		Utils.log.info(invString + " INV STRING");
                 		inv = ItemSerialization.fromString(invString);
                 	}
                 	inventories.put(uuid, inv);
