@@ -1,8 +1,38 @@
 package net.dungeonrealms;
 
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.commands.*;
+import net.dungeonrealms.commands.CommandAccept;
+import net.dungeonrealms.commands.CommandAdd;
+import net.dungeonrealms.commands.CommandEss;
+import net.dungeonrealms.commands.CommandGlobalChat;
+import net.dungeonrealms.commands.CommandGuild;
+import net.dungeonrealms.commands.CommandInvoke;
+import net.dungeonrealms.commands.CommandLag;
+import net.dungeonrealms.commands.CommandList;
+import net.dungeonrealms.commands.CommandMail;
+import net.dungeonrealms.commands.CommandModeration;
+import net.dungeonrealms.commands.CommandPAccept;
+import net.dungeonrealms.commands.CommandPChat;
+import net.dungeonrealms.commands.CommandPLeave;
+import net.dungeonrealms.commands.CommandPRemove;
+import net.dungeonrealms.commands.CommandPl;
+import net.dungeonrealms.commands.CommandRank;
+import net.dungeonrealms.commands.CommandRedeem;
+import net.dungeonrealms.commands.CommandRoll;
+import net.dungeonrealms.commands.CommandSet;
+import net.dungeonrealms.commands.CommandSpawn;
+import net.dungeonrealms.commands.CommandStats;
+import net.dungeonrealms.commands.CommandStop;
+import net.dungeonrealms.commands.CommandStuck;
 import net.dungeonrealms.commands.generic.CommandManager;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.entities.Entities;
@@ -12,7 +42,16 @@ import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
-import net.dungeonrealms.listeners.*;
+import net.dungeonrealms.listeners.AntiCheatListener;
+import net.dungeonrealms.listeners.BankListener;
+import net.dungeonrealms.listeners.BlockListener;
+import net.dungeonrealms.listeners.BossListener;
+import net.dungeonrealms.listeners.DamageListener;
+import net.dungeonrealms.listeners.EnergyListener;
+import net.dungeonrealms.listeners.InventoryListener;
+import net.dungeonrealms.listeners.ItemListener;
+import net.dungeonrealms.listeners.MainListener;
+import net.dungeonrealms.loot.LootManager;
 import net.dungeonrealms.mastery.AsyncUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.DungeonManager;
@@ -30,13 +69,6 @@ import net.dungeonrealms.spawning.BuffManager;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.dungeonrealms.world.realms.Instance;
-import org.apache.commons.io.FileUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.File;
-import java.io.IOException;
 
 /* Copyright (C) 2015 CherryIO, LLC - All Rights Reserved http://cherryio.com
 
@@ -154,7 +186,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(SpawningMechanics.getInstance());
         mm.registerMechanic(AchievementManager.getInstance());
         mm.registerMechanic(BuffManager.getInstance());
-        //mm.registerMechanic(new LootManager());
+        mm.registerMechanic(new LootManager());
         mm.registerMechanic(Affair.getInstance());
 
         /*

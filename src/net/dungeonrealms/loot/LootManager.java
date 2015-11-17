@@ -165,6 +165,7 @@ public class LootManager implements GenericMechanic {
 
 	@Override
 	public void startInitialization() {
+		Utils.log.info("LOADING ALL LOOT CHESTS...");
 		loadLootSpawners();
 	}
 
