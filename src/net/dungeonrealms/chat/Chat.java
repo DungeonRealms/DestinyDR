@@ -57,31 +57,7 @@ public class Chat {
      */
     public void doChat(AsyncPlayerChatEvent event) {
 
-    	if(event.getMessage().contains("@i@") &&  event.getPlayer().getItemInHand().getType() != Material.AIR){
-            String message = event.getMessage();
-            
-          final Player p = event.getPlayer();
-          String aprefix = ChatColor.GRAY + p.getName() + ": ";
-          String[] split = message.split("@i@");
-          String after = "";
-          String before = "";
-          if (split.length > 0)
-              before = split[0];
-          if (split.length > 1)
-              after = split[1];
-          
-          final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
-          normal.addText(before + "");
-          normal.addItem(p.getItemInHand(), ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOW" + ChatColor.WHITE, ChatColor.UNDERLINE);
-          normal.addText(after);
-          Bukkit.getOnlinePlayers().stream().forEach(player ->{
-        	  if((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId())){
-        		  normal.sendToPlayer(player);
-        	  }
-          });
-    	}
-    	
-        if (event.getMessage().startsWith("@")) {
+        if (event.getMessage().startsWith("@") && !event.getMessage().contains("@i@")) {
             String playerName = event.getMessage().replace("@", "").split(" ")[0];
             Bukkit.getOnlinePlayers().stream().filter(player -> player.getName().equalsIgnoreCase(playerName)).limit(1).forEach(player1 -> {
                 player1.sendMessage(ChatColor.GRAY + event.getPlayer().getName() + ": " + event.getMessage().replace("@" + playerName, ""));
@@ -123,12 +99,61 @@ public class Chat {
         }
 
         if (gChat) {
+           	if(event.getMessage().contains("@i@") &&  event.getPlayer().getItemInHand().getType() != Material.AIR){
+                String message = event.getMessage();
+               final Player p = event.getPlayer();
+               String aprefix = ChatColor.GRAY + p.getName() + ": ";
+               String[] split = message.split("@i@");
+               String after = "";
+               String before = "";
+               if (split.length > 0)
+                   before = split[0];
+               if (split.length > 1)
+                   after = split[1];
+               
+               final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
+               normal.addText(before + "");
+               normal.addItem(p.getItemInHand(), ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOW" + ChatColor.WHITE, ChatColor.UNDERLINE);
+               normal.addText(after);
+               Bukkit.getOnlinePlayers().stream().forEach(player ->{
+             	  if((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId())){
+             		  normal.sendToPlayer(player);
+             	  }
+               });
+               return;
+         	}
+        	
+        	
             if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, event.getPlayer().getUniqueId())) {
                 event.setFormat(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage());
             }
         } else {
             event.setCancelled(true);
             if (API.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() >= 2) {
+            	if(event.getMessage().contains("@i@") &&  event.getPlayer().getItemInHand().getType() != Material.AIR){
+                    String message = event.getMessage();
+                   final Player p = event.getPlayer();
+                   String aprefix = ChatColor.GRAY + p.getName() + ": ";
+                   String[] split = message.split("@i@");
+                   String after = "";
+                   String before = "";
+                   if (split.length > 0)
+                       before = split[0];
+                   if (split.length > 1)
+                       after = split[1];
+                   
+                   final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
+                   normal.addText(before + "");
+                   normal.addItem(p.getItemInHand(), ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOW" + ChatColor.WHITE, ChatColor.UNDERLINE);
+                   normal.addText(after);
+                   API.getNearbyPlayers(event.getPlayer().getLocation(), 75)	.stream().forEach(player ->{
+                 	  if((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId())){
+                 		  normal.sendToPlayer(player);
+                 	  }
+                   });
+                   return;
+             	}
+            	
                 API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage()));
             } else {
                 event.getPlayer().sendMessage(ChatColor.GRAY + "No one heard you...");
