@@ -36,6 +36,7 @@ public class DuelOffer {
 	public ItemTier tierWeapon = ItemTier.TIER_5;
 	public Location centerPoint = null;
 	public boolean canFight = false;
+	public int timerID = -1;
 
 	public DuelOffer(Player player, Player player2) {
 		this.player1 = player.getUniqueId();
@@ -268,13 +269,11 @@ public class DuelOffer {
 		this.getPlayer2().teleport(centerPoint);
 		this.getPlayer1().sendMessage(ChatColor.YELLOW + "Battle begins in 10 seconds!");
 		this.getPlayer2().sendMessage(ChatColor.YELLOW + "Battle begins in 10 seconds!");
+		 timerID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
 		checkArmorAndWeapon();
+		}, 0, 10);
 		Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
 			canFight = true;
-			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-				while (canFight)
-					checkArmorAndWeapon();
-			});
 			this.getPlayer1().sendMessage(ChatColor.YELLOW + "Fight!");
 			this.getPlayer2().sendMessage(ChatColor.YELLOW + "Fight!");
 		} , 100);

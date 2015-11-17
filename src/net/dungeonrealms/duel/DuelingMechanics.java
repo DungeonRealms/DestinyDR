@@ -136,6 +136,8 @@ public class DuelingMechanics {
 	 * @param offer
 	 */
 	public static void removeOffer(DuelOffer offer) {
+		if(offer.timerID != -1)
+				Bukkit.getScheduler().cancelTask(offer.timerID);
 		duels.remove(offer);
 	}
 
