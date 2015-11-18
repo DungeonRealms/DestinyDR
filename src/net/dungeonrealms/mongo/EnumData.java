@@ -19,7 +19,8 @@ public enum EnumData {
     ALIGNMENT("info.alignment"),
     CURRENT_LOCATION("info.currentLocation"),
     HASSHOP("info.shopOpen"),
-    SHOPLEVEL("info.shoplevel"), //TODO
+    SHOPLEVEL("info.shopLevel"), //TODO
+    CURRENT_FOOD("info.foodLevel"), //TODO
 
     ACHIEVEMENTS("collectibles.achievements"),
 
