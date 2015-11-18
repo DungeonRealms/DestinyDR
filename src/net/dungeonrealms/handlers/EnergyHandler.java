@@ -179,7 +179,7 @@ public class EnergyHandler implements GenericMechanic {
      * @since 1.0
      */
     public float getPlayerEnergyRegenerationAmount(UUID uuid) {
-        float regenAmount = 0.2F;
+        float regenAmount = 0.19F;
         Player player = Bukkit.getPlayer(uuid);
         EntityEquipment playerEquipment = player.getEquipment();
         ItemStack[] playerArmor = playerEquipment.getArmorContents();
