@@ -2,12 +2,14 @@ package net.dungeonrealms.commands;
 
 import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.guild.Guild;
+import net.dungeonrealms.json.JSONMessage;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumGuildData;
 import net.dungeonrealms.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -63,6 +65,30 @@ public class CommandGlobalChat extends BasicCommand {
             prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.WHITE + " [" + clanTag + ChatColor.RESET + "]"));
         }
 
+       	if(chatMessage.toString().contains("@i@") && player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR){
+            String message = chatMessage.toString();
+           final Player p = player;
+           String aprefix = prefix.toString().trim() + ChatColor.GRAY + p.getName() + ": ";
+           String[] split = message.split("@i@");
+           String after = "";
+           String before = "";
+           if (split.length > 0)
+               before = split[0];
+           if (split.length > 1)
+               after = split[1];
+           
+           final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
+           normal.addText(before + "");
+           normal.addItem(p.getItemInHand(), ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOW" + ChatColor.WHITE, ChatColor.UNDERLINE);
+           normal.addText(after);
+           Bukkit.getOnlinePlayers().stream().forEach(newPlayer ->{
+         	  if((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, newPlayer.getUniqueId())){
+         		  normal.sendToPlayer(newPlayer);
+         	  }
+           });
+           return true;
+     	}
+        
         Bukkit.broadcastMessage(prefix.toString().trim() + " " + player.getName() + ChatColor.GRAY + ": " + chatMessage.toString());
 
         return true;

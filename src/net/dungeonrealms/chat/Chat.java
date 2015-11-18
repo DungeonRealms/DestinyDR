@@ -99,10 +99,10 @@ public class Chat {
         }
 
         if (gChat) {
-           	if(event.getMessage().contains("@i@") &&  event.getPlayer().getItemInHand().getType() != Material.AIR){
+           	if(event.getMessage().contains("@i@") && event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType() != Material.AIR){
                 String message = event.getMessage();
                final Player p = event.getPlayer();
-               String aprefix = ChatColor.GRAY + p.getName() + ": ";
+               String aprefix = prefix.toString().trim() + ChatColor.GRAY + p.getName() + ": ";
                String[] split = message.split("@i@");
                String after = "";
                String before = "";
@@ -120,6 +120,7 @@ public class Chat {
              		  normal.sendToPlayer(player);
              	  }
                });
+               event.setCancelled(true);
                return;
          	}
         	
@@ -128,9 +129,8 @@ public class Chat {
                 event.setFormat(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage());
             }
         } else {
-            event.setCancelled(true);
             if (API.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() >= 2) {
-            	if(event.getMessage().contains("@i@") &&  event.getPlayer().getItemInHand().getType() != Material.AIR){
+               	if(event.getMessage().contains("@i@") && event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType() != Material.AIR){
                     String message = event.getMessage();
                    final Player p = event.getPlayer();
                    String aprefix = ChatColor.GRAY + p.getName() + ": ";
@@ -151,9 +151,10 @@ public class Chat {
                  		  normal.sendToPlayer(player);
                  	  }
                    });
+                   event.setCancelled(true);
                    return;
              	}
-            	
+                event.setCancelled(true);
                 API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage()));
             } else {
                 event.getPlayer().sendMessage(ChatColor.GRAY + "No one heard you...");

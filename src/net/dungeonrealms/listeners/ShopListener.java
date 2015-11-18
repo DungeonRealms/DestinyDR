@@ -302,6 +302,18 @@ public class ShopListener implements Listener {
 					event.getInventory().getItem(event.getRawSlot()).setAmount(itemClicked.getAmount() - 1);
 				}
 				ItemStack clickClone = itemClicked.clone();
+				ItemMeta meta = clickClone.getItemMeta();
+				List<String> lore = meta.getLore();
+				if (lore != null)
+					for (int i = 0; i < lore.size(); i++) {
+						String current = lore.get(i);
+						if (current.contains("Price")) {
+							lore.remove(i);
+							break;
+						}
+					}
+				meta.setLore(lore);
+				clickClone.setItemMeta(meta);
 				DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS, itemPrice, true);
 				if(shop.getOwner() != null){
 					shop.getOwner().sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "  +" + itemPrice + " gems from shop");
