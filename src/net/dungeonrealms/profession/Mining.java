@@ -243,6 +243,7 @@ public class Mining implements GenericMechanic {
 			nms.getTag().setInt("maxXP", getEXPNeeded(lvl));
 			nms.getTag().setInt("XP", 0);
 			nms.getTag().setInt("level", lvl);
+            nms.getTag().setInt("itemTier", nms.getTag().getInt("itemTier") + 1);
 			pick = CraftItemStack.asBukkitCopy(nms);
 			ItemMeta meta = pick.getItemMeta();
 			ArrayList<String> lore = new ArrayList<String>();

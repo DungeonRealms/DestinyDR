@@ -157,6 +157,7 @@ public class Chat {
                 event.setCancelled(true);
                 API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage()));
             } else {
+                event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.GRAY + "No one heard you...");
             }
 

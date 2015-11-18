@@ -36,6 +36,7 @@ public class LootSpawner {
 		this.delay = delay;
 		this.lootType = lootType;
 		block = chest;
+		block.setType(Material.CHEST);
 		inv = Bukkit.createInventory(null, 27, "Loot");
 		setContents();
 		broken = false;

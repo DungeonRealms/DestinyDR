@@ -6,6 +6,7 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.inventory.ItemStack;
@@ -55,7 +56,7 @@ public class LootManager implements GenericMechanic {
 			World world = Bukkit.getWorlds().get(0);
 			Location loc = new Location(world, x, y, z);
 			Block chest = world.getBlockAt(loc);
-			
+			chest.setType(Material.CHEST);
 			String lootType = line.split("=")[1];
 			lootType = lootType.substring(1, lootType.length());
 			lootType = lootType.split("@")[0];
@@ -64,6 +65,7 @@ public class LootManager implements GenericMechanic {
 			 	 continue;
 			 }
 			long spawn_delay = Math.round(Double.parseDouble(line.substring(line.lastIndexOf("@") + 1, line.indexOf("#"))));
+			Utils.log.info("Loot placed at " + loc);
 			LootSpawner spawner = new LootSpawner(chest, spawn_delay, LootType.getLootType(lootType));
 			LOOT_SPAWNERS.add(spawner);
 		}
