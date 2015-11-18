@@ -147,7 +147,7 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 	public void onBossDeath() {
 		say(this.getBukkitEntity(), getEnumBoss().death);
 		List<Player> list = API.getNearbyPlayers(this.getBukkitEntity().getLocation(), 50);
-		Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
+		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
 			for(Player p : list){
 			p.teleport(Teleportation.Cyrennica);
 			}

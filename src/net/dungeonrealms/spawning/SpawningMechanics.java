@@ -147,6 +147,9 @@ public class SpawningMechanics implements GenericMechanic {
             case Pirate:
                 entity = new EntityPirate(world, EnumMonster.Pirate, tier);
                 break;
+            case MayelPirate:
+                entity = new EntityPirate(world, EnumMonster.MayelPirate, tier);
+                break;
             case FireImp:
                 entity = new EntityFireImp(world, tier, type);
                 break;

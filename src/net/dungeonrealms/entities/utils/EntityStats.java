@@ -134,6 +134,7 @@ public class EntityStats {
 	 * @param i
 	 */
 	public static void setBossRandomStats(Entity entity, int level, int tier) {
+		entity.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
     	Stats stat = Stats.getRandomStats(level, tier);
     	stat.atk *= 10;
     	stat.hp *= 50;

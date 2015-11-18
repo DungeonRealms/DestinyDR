@@ -177,52 +177,26 @@ public class BlockListener implements Listener {
           
           int diff = pickTier - tier;
           
-          if(tier == 1)
-        	  return;
-          
-          if (diff >= 3) {
-              if (pickTier == 5) {
-                  p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 40, 1));
-              } else {
-                  p.addPotionEffect(new PotionEffect(PotionEffectType.FAST_DIGGING, 40, 0));
-              }
-              return;
-          }
-          
-          if (pickTier == 4 || pickTier == 5) {
-              if (pickTier == 4) {
-                  if (diff == 0) { // Diamond ore.
-                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 3));
-                  }
-                  if (diff == 1) { // Iron ore.
-                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 3));
-                  }
-              }
-              if (pickTier == 5) {
-                  if (diff == 0) { // Gold ore.
-                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 3));
-                  }
-                  if (diff == 1) { // Diamond ore.
-                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 2));
-                  }
-              }
-          } else {
-              if (diff == 0) {
-                  // Lvl 2 debuff
-                  if (pickTier == 2) {
-                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 1));
-                  } else {
-                      p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 1));
-                  }
-              }
-              if (diff == 1) {
-                  // Lvl 1 debuff
-                  p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 1));
-              }
-              if (diff == 2) {
-                  // Lvl 0 debuff
+          switch(pickTier){
+          case 1:
+        	  break;
+          case 2:
+        	  break;
+          case 3:
+        	  if(tier == pickTier)
                   p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 0));
-              }
+        	  break;
+          case 4:
+        	  if(tier == 3 || tier == 4)
+              p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 1));
+        	  if(tier == 2 || tier == 1)
+                  p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 0));
+             break;
+          case 5:
+        	  if(tier == 4 || tier == 5){
+              p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 1));
+        	  }else
+              p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 0));
           }
         }
     }
@@ -538,7 +512,7 @@ public class BlockListener implements Listener {
                     e.getPlayer().sendMessage(ChatColor.RED + "You already have an open shop!");
                     return;
                 }
-                if (API.isInSafeRegion(b1.getLocation()) && !API.isMaterialNearby(b1, 4, Material.CHEST) && !API.isMaterialNearby(b1, 20, Material.ENDER_CHEST)) {
+                if (API.isInSafeRegion(b1.getLocation()) && !API.isMaterialNearby(b1, 4, Material.CHEST) && !API.isMaterialNearby(b1, 10, Material.ENDER_CHEST)) {
                 	if(!API.getGamePlayer(e.getPlayer()).hasShopOpen()){
                     Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () ->
                             ShopMechanics.setupShop(e.getClickedBlock(), e.getPlayer().getUniqueId()));

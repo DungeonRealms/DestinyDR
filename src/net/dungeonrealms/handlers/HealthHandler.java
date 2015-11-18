@@ -573,12 +573,12 @@ public class HealthHandler implements GenericMechanic {
         double currentHP = getMonsterHPLive(entity);
         double newHP = currentHP - damage;
         if (entity instanceof EntityArmorStand) return;
-
+        
         if (API.isPlayer(attacker)) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
                 String customNameAppended = entity.getCustomName();
                  EntityLiving nms = ((CraftLivingEntity)entity).getHandle();
-                if(!nms.getCustomName().contains("*"))
+                if(!nms.getCustomName().contains("*") || !entity.hasMetadata("boss"))
                 	customNameAppended = ChatColor.stripColor(customNameAppended.substring(customNameAppended.indexOf("]") + 1, customNameAppended.indexOf("❤")).trim());
                 attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + customNameAppended + ChatColor.BOLD + "[" + (int) newHP + "HP]");
             }
