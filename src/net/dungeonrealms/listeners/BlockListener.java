@@ -1,8 +1,40 @@
 package net.dungeonrealms.listeners;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.EntityBlockFormEvent;
+import org.bukkit.event.player.PlayerAnimationEvent;
+import org.bukkit.event.player.PlayerAnimationType;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
@@ -24,27 +56,6 @@ import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.world.realms.Instance;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.*;
-import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerAnimationType;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerPortalEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Random;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -80,14 +91,7 @@ public class BlockListener implements Listener {
         if (!e.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
         Block block = e.getBlock();
         if (block == null) return;
-        if (block.getType() == Material.CHEST) {
-            Shop shop = ShopMechanics.getShop(block);
-            if (shop == null) return;
-                e.setCancelled(true);
-                if (e.getPlayer().isOp()) {
-                    shop.deleteShop();
-                }
-        } else if (block.getType() == Material.ARMOR_STAND) {
+        if(block.getType() == Material.ARMOR_STAND) {
             SpawningMechanics.getSpawners().stream().filter(spawner -> spawner.loc == block.getLocation()).forEach(SpawningMechanics::remove);
         }
     }
@@ -324,16 +328,16 @@ public class BlockListener implements Listener {
         Action actionType = e.getAction();
         switch (actionType) {
             case RIGHT_CLICK_BLOCK:
-                if (shop.isopen || shop.getUUID().toString().equalsIgnoreCase(e.getPlayer().getUniqueId().toString())) {
+                if (shop.isopen || shop.ownerUUID.toString().equalsIgnoreCase(e.getPlayer().getUniqueId().toString())) {
                     e.setCancelled(true);
-                    e.getPlayer().openInventory(shop.getInv());
+                    e.getPlayer().openInventory(shop.getInventory());
                 } else {
                     e.setCancelled(true);
                     e.getPlayer().sendMessage(ChatColor.RED + "This shop is closed!");
                 }
                 break;
             case LEFT_CLICK_BLOCK:
-                if (shop.getUUID().toString().equalsIgnoreCase(e.getPlayer().getUniqueId().toString())) {
+                if (shop.ownerUUID.toString().equalsIgnoreCase(e.getPlayer().getUniqueId().toString())) {
                     e.setCancelled(true);
                     shop.deleteShop();
                 }
@@ -530,7 +534,7 @@ public class BlockListener implements Listener {
             Block b1 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(0, 1, 0));
             Block b2 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(1, 1, 0));
             if (b1.getType() == Material.AIR && b2.getType() == Material.AIR && API.isInSafeRegion(e.getClickedBlock().getLocation())) {
-                if (ShopMechanics.PLAYER_SHOPS.containsKey(e.getPlayer().getUniqueId())) {
+                if (ShopMechanics.ALLSHOPS.containsKey(e.getPlayer().getUniqueId())) {
                     e.getPlayer().sendMessage(ChatColor.RED + "You already have an open shop!");
                     return;
                 }

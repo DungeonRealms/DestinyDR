@@ -51,6 +51,7 @@ import net.dungeonrealms.listeners.EnergyListener;
 import net.dungeonrealms.listeners.InventoryListener;
 import net.dungeonrealms.listeners.ItemListener;
 import net.dungeonrealms.listeners.MainListener;
+import net.dungeonrealms.listeners.ShopListener;
 import net.dungeonrealms.loot.LootManager;
 import net.dungeonrealms.mastery.AsyncUtils;
 import net.dungeonrealms.mastery.Utils;
@@ -65,6 +66,7 @@ import net.dungeonrealms.party.Affair;
 import net.dungeonrealms.profession.Fishing;
 import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.rank.Rank;
+import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.spawning.BuffManager;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
@@ -151,6 +153,7 @@ public class DungeonRealms extends JavaPlugin {
         pm.registerEvents(new EnergyListener(), this);
         pm.registerEvents(new AntiCheatListener(), this);
         pm.registerEvents(new BossListener(), this);
+        pm.registerEvents(new ShopListener(), this);
         pm.registerEvents(new AchievementManager(), this);
         pm.registerEvents(Instance.getInstance(), this);
         /*
@@ -180,6 +183,7 @@ public class DungeonRealms extends JavaPlugin {
         Working on instance
         mm.registerMechanic(RealmManager.getInstance());
          */
+        mm.registerMechanic(new ShopMechanics());
         mm.registerMechanic(Mining.getInstance());
         mm.registerMechanic(Instance.getInstance());
         mm.registerMechanic(Fishing.getInstance());
@@ -240,6 +244,7 @@ public class DungeonRealms extends JavaPlugin {
 
     public void onDisable() {
         saveConfig();
+        ShopMechanics.deleteAllShops();
         API.logoutAllPlayers();
         mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
