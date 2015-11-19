@@ -357,6 +357,19 @@ public class InventoryListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerUseOrbsAndEnchant(InventoryClickEvent event) {
+        if (event.getCursor() == null) return;
+        if (event.getCurrentItem() == null) return;
+        if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
+        if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
+        ItemStack cursorItem = event.getCursor();
+        ItemStack slotItem = event.getCurrentItem();
+        if(slotItem == null || slotItem.getType() == Material.AIR) return;
+        Player player = (Player) event.getWhoClicked();
+
+    }
+    
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerUseScrapItem(InventoryClickEvent event) {
         if (event.getCursor() == null) return;
         if (event.getCurrentItem() == null) return;

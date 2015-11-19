@@ -35,6 +35,7 @@ import net.minecraft.server.v1_8_R3.Entity;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryType;
@@ -291,6 +292,10 @@ public class ClickHandler {
          */
                         if (name.equals("Merchant")) {
                             Inventory tradeWindow = event.getInventory();
+                            if(event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)){
+                            	event.setCancelled(true);
+                            	return;
+                            }
                             if (!(event.isShiftClick()) || (event.isShiftClick() && slot < 27)) {
                                 if (!(event.getSlotType() == InventoryType.SlotType.CONTAINER)) {
                                     return;

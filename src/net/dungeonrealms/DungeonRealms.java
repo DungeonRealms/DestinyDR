@@ -18,6 +18,7 @@ import net.dungeonrealms.commands.CommandGuild;
 import net.dungeonrealms.commands.CommandInvoke;
 import net.dungeonrealms.commands.CommandLag;
 import net.dungeonrealms.commands.CommandList;
+import net.dungeonrealms.commands.CommandLogout;
 import net.dungeonrealms.commands.CommandMail;
 import net.dungeonrealms.commands.CommandModeration;
 import net.dungeonrealms.commands.CommandPAccept;
@@ -229,6 +230,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandPLeave("pleave", "/<command> [args]", "Remove player from party."));
         cm.registerCommand(new CommandPChat("pchat", "/<command> [args]", "Talk in party chat."));
         cm.registerCommand(new CommandModeration("dr", "/<command> [args]", "the dr moderation command."));
+        cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "the Logout command."));
 
         try {
             FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));

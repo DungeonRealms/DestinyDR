@@ -10,8 +10,10 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.Repairable;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.items.Attribute;
+import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.enchanting.EnchantmentAPI;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.SoundAPI;
@@ -24,85 +26,227 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
  */
 public class RepairAPI {
 
-    /**
-     * Returns the repair cost
-     * of a specified itemstack
-     *
-     * @param itemStack
-     * @return int
-     * @since 1.0
-     */
-    public static int getItemRepairCost(ItemStack itemStack) {
-        double totalRepairCost = 0;
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
-        NBTTagCompound tag = nmsItem.getTag();
-        if (tag == null) return 0;
-        if (tag.getInt("itemTier") == 0 && tag.getInt("armorTier") == 0) return 0;
-        if (tag.getString("type").equalsIgnoreCase("weapon")) {
-            double damagePercentCost = tag.getInt("damage") * 0.1;
-            double weaponDurabilityLeft = getItemDurabilityValue(itemStack);
-            if (weaponDurabilityLeft > 99) {
-                weaponDurabilityLeft = 99;
-            }
-            totalRepairCost = ((100 - weaponDurabilityLeft) * damagePercentCost);
-            switch (tag.getInt("itemTier")) {
-                case 1:
-                    totalRepairCost *= 1.05;
-                    break;
-                case 2:
-                    totalRepairCost *= 1.20;
-                    break;
-                case 3:
-                    totalRepairCost *= 1.9;
-                    break;
-                case 4:
-                    totalRepairCost *= 4.5;
-                    break;
-                case 5:
-                    totalRepairCost *= 6.25;
-                    break;
-                default:
-                    totalRepairCost *= 4;
-                    break;
-            }
-            totalRepairCost *= 0.2;
-        }
-        if (tag.getString("type").equalsIgnoreCase("armor")) {
-            double armorPercentCost = tag.getInt("armor") * 0.4;
-            double armorDurabilityLeft = getItemDurabilityValue(itemStack);
-            if (armorDurabilityLeft > 99) {
-                armorDurabilityLeft = 99;
-            }
-            totalRepairCost = ((100 - armorDurabilityLeft) * armorPercentCost);
-            switch (tag.getInt("armorTier")) {
-                case 1:
-                    totalRepairCost *= 1.05;
-                    break;
-                case 2:
-                    totalRepairCost *= 1.20;
-                    break;
-                case 3:
-                    totalRepairCost *= 1.45;
-                    break;
-                case 4:
-                    totalRepairCost *= 3.5;
-                    break;
-                case 5:
-                    totalRepairCost *= 5.5;
-                    break;
-                default:
-                    totalRepairCost *= 2;
-                    break;
-            }
-            totalRepairCost *= 0.25;
-        }
+	public static int getItemRepairCost(ItemStack i) {
+		double repair_cost = 0;
+		
+		if(API.isArmor(i)) { // It's a piece of armor.
+			
+			int item_tier = API.getArmorTier(i).getTierId();
+//			String dmg_range = ItemMechanics.getDamageRange(i);
+//			String armor_range = ItemMechanics.getArmorData(i);
 
-        if (totalRepairCost < 1) {
-            totalRepairCost = 1;
-        }
-
-        return (int) Math.round(totalRepairCost);
-    }
+//			double avg_armor = Integer.parseInt(armor_range.split("-")[0].replaceAll(" ", "").replace("!", "")) + Integer.parseInt(armor_range.split("-")[1].substring(0, armor_range.split("-")[1].indexOf(":")).replaceAll(" ", "").replace("!", ""));
+//			avg_armor = avg_armor / 2; // Get the average of the two added values.
+			double percent_durability_left = getDurabilityValueAsPercent(i, getCustomDurability(i));
+//			if(percent_durability_left > 99) {
+//				percent_durability_left = 99;
+//			}
+			double armor_cost = 1 * 1; // This is the cost PER PERCENT
+			
+			double global_multiplier = 0.30 - 0.06; // Additional 0.06 less
+			double multiplier = 1;
+			double missing_percent = 100 - percent_durability_left;
+			double total_armor_cost = missing_percent * armor_cost;
+			
+			if(item_tier == 1) {
+				multiplier = 1.0;
+				repair_cost = total_armor_cost * multiplier;
+			}
+			if(item_tier == 2) {
+				multiplier = 1.25;
+				repair_cost = total_armor_cost * multiplier;
+			}
+			if(item_tier == 3) {
+				multiplier = 1.5;
+				repair_cost = total_armor_cost * multiplier;
+			}
+			if(item_tier == 4) {
+				multiplier = 3.75;
+				repair_cost = total_armor_cost * multiplier;
+			}
+			if(item_tier == 5) {
+				multiplier = 6.0;
+				repair_cost = total_armor_cost * multiplier;
+			}
+			
+			repair_cost = repair_cost * global_multiplier;
+			return (int) Math.round(repair_cost);
+		}
+		
+		if(API.isWeapon(i)) { // It's a weapon.
+			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(i);
+			if(!nms.hasTag() && !nms.getTag().hasKey("itemTier"))
+				return -1;
+			int item_tier = nms.getTag().getInt("itemTier");
+	        int damageRandomizer = ItemGenerator.getRandomDamageVariable(item_tier);
+	        NBTTagCompound tag = CraftItemStack.asNMSCopy(i).getTag();
+	        double avg_dmg = Utils.randInt((int) Math.round(tag.getDouble("damage") - (tag.getDouble("damage") / damageRandomizer)), (int) Math.round(tag.getDouble("damage") + (tag.getDouble("damage") / (damageRandomizer - 1))));
+//			double avg_dmg = (Integer.parseInt((dmg_range.split("-")[0])) + Integer.parseInt(dmg_range.split("-")[1])) / 2; // Average DMG
+			double dmg_cost = avg_dmg * 0.1; // This is the cost PER PERCENT
+			
+			double percent_durability_left = getDurabilityValueAsPercent(i, getItemDurabilityValue(i));
+			if(percent_durability_left > 99) {
+				percent_durability_left = 99;
+			}
+			
+			double global_multiplier = 0.25 - 0.05;
+			double multiplier = 1.0; // 100%
+			double missing_percent = 100 - percent_durability_left;
+			double total_dmg_cost = missing_percent * dmg_cost;
+			
+			if(item_tier == 1) {
+				multiplier = 1.0;
+				repair_cost = total_dmg_cost * multiplier;
+			}
+			if(item_tier == 2) {
+				multiplier = 1.25;
+				repair_cost = total_dmg_cost * multiplier;
+			}
+			if(item_tier == 3) {
+				multiplier = 2.0;
+				repair_cost = total_dmg_cost * multiplier;
+			}
+			if(item_tier == 4) {
+				multiplier = 6.0;
+				repair_cost = total_dmg_cost * multiplier;
+			}
+			if(item_tier == 5) {
+				multiplier = 9.0;
+				repair_cost = total_dmg_cost * multiplier;
+			}
+			
+			repair_cost = repair_cost * global_multiplier;
+			return (int) Math.round(repair_cost);
+		}
+		
+		if(Mining.isDRPickaxe(i) || Fishing.isDRFishingPole(i) ) {
+			int item_tier = Mining.getPickTier(i);
+			double dmg_cost = Math.pow(Mining.getLvl(i), 2) / 100D; // This is the cost PER PERCENT
+			double percent_durability_left = getDurabilityValueAsPercent(i, getCustomDurability(i));
+			if(percent_durability_left > 99) {
+				percent_durability_left = 99;
+			}
+			
+			double global_multiplier = 0.8;
+			double multiplier = 1.0; // 100%
+			double missing_percent = 100 - percent_durability_left;
+			double total_dmg_cost = missing_percent * dmg_cost;
+			
+			if(item_tier == 1) {
+				multiplier = 0.5;
+				repair_cost = total_dmg_cost * multiplier;
+			}
+			if(item_tier == 2) {
+				multiplier = 0.75;
+				repair_cost = total_dmg_cost * multiplier;
+			}
+			if(item_tier == 3) {
+				multiplier = 1.0;
+				repair_cost = total_dmg_cost * multiplier;
+			}
+			if(item_tier == 4) {
+				multiplier = 2.0;
+				repair_cost = total_dmg_cost * multiplier;
+			}
+			if(item_tier == 5) {
+				multiplier = 3.0;
+				repair_cost = total_dmg_cost * multiplier;
+			}
+			
+			repair_cost = repair_cost * global_multiplier;
+		}
+		
+		if(repair_cost < 1) {
+			repair_cost = 1;
+		}
+		
+		return (int) Math.round(repair_cost);
+	}
+	
+	
+	
+	
+	
+	
+//    /**
+//     * Returns the repair cost
+//     * of a specified itemstack
+//     *
+//     * @param itemStack
+//     * @return int
+//     * @since 1.0
+//     */
+//    public static int getItemRepairCost(ItemStack itemStack) {
+//        double totalRepairCost = 0;
+//        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+//        NBTTagCompound tag = nmsItem.getTag();
+//        if (tag == null) return 0;
+//        if (tag.getInt("itemTier") == 0 && tag.getInt("armorTier") == 0) return 0;
+//        if (tag.getString("type").equalsIgnoreCase("weapon")) {
+//            double damagePercentCost = tag.getInt("damage") * 0.1;
+//            double weaponDurabilityLeft = getItemDurabilityValue(itemStack);
+//            if (weaponDurabilityLeft > 99) {
+//                weaponDurabilityLeft = 99;
+//            }
+//            totalRepairCost = ((100 - weaponDurabilityLeft) * damagePercentCost);
+//            switch (tag.getInt("itemTier")) {
+//                case 1:
+//                    totalRepairCost *= 1.05;
+//                    break;
+//                case 2:
+//                    totalRepairCost *= 1.20;
+//                    break;
+//                case 3:
+//                    totalRepairCost *= 1.9;
+//                    break;
+//                case 4:
+//                    totalRepairCost *= 4.5;
+//                    break;
+//                case 5:
+//                    totalRepairCost *= 6.25;
+//                    break;
+//                default:
+//                    totalRepairCost *= 4;
+//                    break;
+//            }
+//            totalRepairCost *= 0.2;
+//        }
+//        if (tag.getString("type").equalsIgnoreCase("armor")) {
+//            double armorPercentCost = tag.getInt("armor") * 0.4;
+//            double armorDurabilityLeft = getItemDurabilityValue(itemStack);
+//            if (armorDurabilityLeft > 99) {
+//                armorDurabilityLeft = 99;
+//            }
+//            totalRepairCost = ((100 - armorDurabilityLeft) * armorPercentCost);
+//            switch (tag.getInt("armorTier")) {
+//                case 1:
+//                    totalRepairCost *= 1.05;
+//                    break;
+//                case 2:
+//                    totalRepairCost *= 1.20;
+//                    break;
+//                case 3:
+//                    totalRepairCost *= 1.45;
+//                    break;
+//                case 4:
+//                    totalRepairCost *= 3.5;
+//                    break;
+//                case 5:
+//                    totalRepairCost *= 5.5;
+//                    break;
+//                default:
+//                    totalRepairCost *= 2;
+//                    break;
+//            }
+//            totalRepairCost *= 0.25;
+//        }
+//
+//        if (totalRepairCost < 1) {
+//            totalRepairCost = 1;
+//        }
+//
+//        return (int) Math.round(totalRepairCost);
+//    }
 
     /**
      * Returns the base durability

@@ -398,4 +398,12 @@ public class Mining implements GenericMechanic {
 		}
 		return 1;
 	}
+
+	/**
+	 * @param i
+	 * @return
+	 */
+	public static double getLvl(ItemStack i) {
+		return CraftItemStack.asNMSCopy(i).getTag().getInt("level");
+	}
 }

@@ -211,7 +211,17 @@ public class BlockListener implements Listener {
             return;
         }
         ItemStack item = event.getPlayer().getItemInHand();
+        
+        if(!API.isWeapon(item) && API.isArmor(item)){
+        	event.setCancelled(true);
+        	return;
+        }
+        
         int cost = RepairAPI.getItemRepairCost(item);
+        if(cost < 0){
+        	event.setCancelled(true);
+        	return;
+        }
         if (RepairAPI.isItemArmorOrWeapon(item) || Mining.isDRPickaxe(item) || Fishing.isDRFishingPole(item)) {
             if (RepairAPI.canItemBeRepaired(item)) {
                 Player player = event.getPlayer();
