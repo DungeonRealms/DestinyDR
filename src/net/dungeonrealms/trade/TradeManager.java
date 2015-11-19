@@ -28,11 +28,14 @@ public class TradeManager {
 	public static void sendTradeRequest(UUID p1, UUID p2) {
 		Player sender = Bukkit.getPlayer(p1);
 		Player requested = Bukkit.getPlayer(p2);
+		if(sender  == null|| requested == null){
+			return;
+		}
 		if (isOnCooldown(p1)) {
 			sender.sendMessage(ChatColor.RED + "You're currently on cooldown for sending duel requests!");
 			return;
 		}
-		if (isPending(requested.getUniqueId()) && getPendingPartner(requested.getUniqueId()).toString()
+		if (isPending(requested.getUniqueId()) && getPendingPartner(requested.getUniqueId()) != null && getPendingPartner(requested.getUniqueId()).toString()
 		        .equalsIgnoreCase(sender.getUniqueId().toString())) {
 			startTrade(sender, requested);
 			return;
@@ -46,9 +49,9 @@ public class TradeManager {
 		pending.put(p1, p2);
 
 		Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-			if (pending.containsKey(sender.getUniqueId()))
-				pending.remove(sender.getUniqueId());
-			cooldown.remove(sender.getUniqueId());
+			if (pending.containsKey(p1))
+				pending.remove(p1);
+			cooldown.remove(p1);
 		} , 100l);// Remove Pending Request after 10 seconds.
 
 	}

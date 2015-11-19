@@ -1,5 +1,22 @@
 package net.dungeonrealms.commands;
 
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.command.BlockCommandSender;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Wolf;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.metadata.FixedMetadataValue;
+
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.entities.EnumEntityType;
@@ -18,19 +35,6 @@ import net.dungeonrealms.spawning.MobSpawner;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.World;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.command.BlockCommandSender;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.entity.*;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.metadata.FixedMetadataValue;
-
-import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -65,51 +69,40 @@ public class CommandSpawn extends BasicCommand {
                         Location loc = new Location(block.getBlock().getWorld(), x, y, z, 1, 1);
                         EnumBoss boss = EnumBoss.getByID(bossName);
                         switch (boss) {
-                            case Mayel:
-                                entity = new Mayel(world, loc);
-                                break;
-                            case Burick:
-                                entity = new Burick(world, loc);
-                                break;
-                            case Pyromancer:
-                                entity = new Pyromancer(world, loc);
-                                break;
-                            case InfernalAbyss:
-                                entity = new InfernalAbyss(world, loc);
-                                break;
-//            		case LordsGuard:
-//            			entity = new InfernalLordsGuard(world, loc);
-//            			break;
-                            default:
-                                entity = null;
-                        }
-                        if (entity == null)
-                            return false;
+                        case Mayel:
+                            entity = new Mayel(world, loc);
+            				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, 100);
+            				EntityStats.setBossRandomStats(entity, 100, 1);
+                            break;
+                        case Burick:
+                            entity = new Burick(world, loc);
+            				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 3, 100);
+            				EntityStats.setBossRandomStats(entity, 100, 3);
+                            break;
+                        case Pyromancer:
+                            entity = new Pyromancer(world, loc);
+            				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, 50);
+            				EntityStats.setBossRandomStats(entity, 50, 1);
+                            break;
+                        case InfernalAbyss:
+                            entity = new InfernalAbyss(world, loc);
+            				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 4, 100);
+            				EntityStats.setBossRandomStats(entity, 100, 4);
+                            break;
+//                		case LordsGuard:
+//                			entity = new InfernalLordsGuard(world, player.getLocation());
+//                			break;
+                        default:
+                            entity = null;
+                    }
+                    if (entity == null)
+                        return false;
 
-                        int level = entity.getBukkitEntity().getMetadata("level").get(0).asInt();
-                        String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET;
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), entity.getCustomName()));
-//                String healthName = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt()+ChatColor.RED.toString() + "❤";
-//                String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
-//                ArmorStand stand = entity.getBukkitEntity().getLocation().getWorld().spawn(entity.getBukkitEntity().getLocation(), ArmorStand.class);
-//                stand.setRemoveWhenFarAway(false);
-//                stand.setVisible(false);
-//                stand.setSmall(true);
-//                stand.setBasePlate(false);
-//                stand.setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "nametag"));
-//                stand.setGravity(false);
-//                stand.setArms(false);
-//                stand.setCustomNameVisible(true);
-//                stand.setCustomName(lvl + customName + healthName);
-//                LivingEntity ent = stand;
-//                ent.setRemoveWhenFarAway(false);
-//                entity.getBukkitEntity().setPassenger(stand);
-
-
-                        Location location = loc;
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                        world.addEntity(entity, SpawnReason.CUSTOM);
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                    Location location = loc;
+                    entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                    world.addEntity(entity, SpawnReason.CUSTOM);
+                    entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                    ((BlockCommandSender) s).getBlock().setType(Material.AIR);
                 }
             return false;
         }
@@ -191,15 +184,23 @@ public class CommandSpawn extends BasicCommand {
                     switch (boss) {
                         case Mayel:
                             entity = new Mayel(world, player.getLocation());
+            				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, 100);
+            				EntityStats.setBossRandomStats(entity, 100, 1);
                             break;
                         case Burick:
                             entity = new Burick(world, player.getLocation());
+            				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 3, 100);
+            				EntityStats.setBossRandomStats(entity, 100, 3);
                             break;
                         case Pyromancer:
                             entity = new Pyromancer(world, player.getLocation());
+            				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, 50);
+            				EntityStats.setBossRandomStats(entity, 50, 1);
                             break;
                         case InfernalAbyss:
                             entity = new InfernalAbyss(world, player.getLocation());
+            				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 4, 100);
+            				EntityStats.setBossRandomStats(entity, 100, 4);
                             break;
 //                		case LordsGuard:
 //                			entity = new InfernalLordsGuard(world, player.getLocation());
@@ -209,11 +210,6 @@ public class CommandSpawn extends BasicCommand {
                     }
                     if (entity == null)
                         return false;
-
-                    int level = entity.getBukkitEntity().getMetadata("level").get(0).asInt();
-                    String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET;
-                    String healthName = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt() + ChatColor.RED.toString() + "❤";
-                    String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
 
                     Location location = new Location(world.getWorld(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ());
                     entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);

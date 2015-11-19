@@ -87,9 +87,7 @@ public class Notice {
                         }
                     });
                 }
-
             }
-
             FriendHandler.getInstance().sendFriendMessage(player, ChatColor.GREEN + "You have " + ChatColor.AQUA + friendRequests.size() + ChatColor.GREEN + " pending friend request!");
         }
 

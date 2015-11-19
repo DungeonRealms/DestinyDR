@@ -10,7 +10,10 @@ import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mechanics.ItemManager;
 import net.minecraft.server.v1_8_R3.*;
+
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -128,26 +131,15 @@ public class Pyromancer extends EntitySkeleton implements Boss {
 
 	@Override
 	public void onBossDeath() {
-		Block b1 = this.getBukkitEntity().getWorld().getBlockAt((int) locX + 1, (int) locY, (int) locZ + 1);
-		b1.setType(Material.TNT);
-		this.getBukkitEntity().getWorld().getBlockAt((int) locX + 1, (int) locY - 1, (int) locZ + 1).setType(Material.REDSTONE_TORCH_ON);
-		
-		
-		Block b2 = this.getBukkitEntity().getWorld().getBlockAt((int) locX + 1, (int) locY, (int) locZ - 1);
-		b1.setType(Material.TNT);
-		this.getBukkitEntity().getWorld().getBlockAt((int) locX + 1, (int) locY-1, (int) locZ - 1).setType(Material.REDSTONE_TORCH_ON);
-		
-		Block b3 = this.getBukkitEntity().getWorld().getBlockAt((int) locX - 1, (int) locY, (int) locZ + 1);
-		b1.setType(Material.TNT);
-		this.getBukkitEntity().getWorld().getBlockAt((int) locX - 1, (int) locY, (int) locZ + 1).setType(Material.REDSTONE_TORCH_ON);
-		
-		Block b4 = this.getBukkitEntity().getWorld().getBlockAt((int) locX - 1, (int) locY, (int) locZ - 1);
-		b1.setType(Material.TNT);
-		this.getBukkitEntity().getWorld().getBlockAt((int) locX - 1, (int) locY, (int) locZ - 1).setType(Material.REDSTONE_TORCH_ON);
+		this.getBukkitEntity().getWorld().getBlockAt(641, 55, -457).setType(Material.REDSTONE_TORCH_ON);
 		
 		for (Player p : API.getNearbyPlayers(this.getBukkitEntity().getLocation(), 50)) {
 			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().death);
 		}
+		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
+		world.getWorld().dropItemNaturally(loc.add(0, 2, 0), ItemManager.createItem(Material.GLOWSTONE_DUST, ChatColor.GREEN + "Magical Dust", new String[] {ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "A strange substance that animates objects.", ChatColor.RED + "Dungeon Item"}));
+		}, 10);
+		
 	}
 
 	@Override

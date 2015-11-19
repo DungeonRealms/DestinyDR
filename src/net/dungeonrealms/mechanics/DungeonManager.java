@@ -109,10 +109,14 @@ public class DungeonManager implements GenericMechanic{
      */
     public void removeInstance(DungeonObject dungeonObject) {
         dungeonObject.getPlayerList().stream().forEach(player -> {
-            if (API.getGamePlayer(player).isInDungeon()) {
-                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance is will close!");
-                player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
-            }
+        	if(player != null){
+        		if(Bukkit.getPlayer(player.getUniqueId()) != null){
+        			if (API.getGamePlayer(player).isInDungeon()) {
+        				player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance is will close!");
+        				player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+        			}
+        		}
+        	}
         });
         Bukkit.getWorlds().remove(Bukkit.getWorld(dungeonObject.getWorldName()));
         Utils.log.info("[DUNGEONS] Removing world: " + dungeonObject.getWorldName() + " from worldList().");
