@@ -212,7 +212,7 @@ public class BlockListener implements Listener {
         }
         ItemStack item = event.getPlayer().getItemInHand();
         
-        if(!API.isWeapon(item) && API.isArmor(item)){
+        if(!API.isWeapon(item) && !API.isArmor(item)){
         	event.setCancelled(true);
         	return;
         }
@@ -255,7 +255,7 @@ public class BlockListener implements Listener {
                  	stack.setItemMeta(meta);
                  	gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
                  	gui.open();
-                }, 10l);
+                }, 20l);
             } else {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED + "This item is already repaired all the way!");
