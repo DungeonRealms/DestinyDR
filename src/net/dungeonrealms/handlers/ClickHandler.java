@@ -238,7 +238,7 @@ public class ClickHandler {
                             player.sendMessage(ChatColor.RED + "This is currently not implemented!");
                             player.closeInventory();
                     /*if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                    	player.getInventory().addItem(ItemManager.createItem(EnumItem.MedalOfGathering));
+                        player.getInventory().addItem(ItemManager.createItem(EnumItem.MedalOfGathering));
                         player.sendMessage(ChatColor.GREEN + "You have purchased a Medal Of Gathering!");
                         player.closeInventory();
                         return;
