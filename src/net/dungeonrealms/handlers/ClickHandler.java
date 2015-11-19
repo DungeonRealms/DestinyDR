@@ -696,7 +696,20 @@ public class ClickHandler {
                                         return;
                                     }
                                     player.sendMessage(ChatColor.GREEN + "Your Mount is being summoned into this world!");
-                                    MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"));
+                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                                        if (EntityAPI.hasMountOut(player.getUniqueId())) {
+                                            Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
+                                            if (entity.isAlive()) {
+                                                entity.getBukkitEntity().remove();
+                                            }
+                                            if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                                                DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
+                                            }
+                                            EntityAPI.removePlayerMountList(player.getUniqueId());
+                                            player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " Your Mount has returned home as you've summoned another companion!");
+                                        }
+                                        MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"));
+                                    }, 60L);
                                 }
                                 return;
                             } else
