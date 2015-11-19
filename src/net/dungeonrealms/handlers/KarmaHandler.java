@@ -340,7 +340,7 @@ public class KarmaHandler implements GenericMechanic {
             if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.LAWFUL.name)) {
                 setPlayerAlignment(killerPlayer, EnumPlayerAlignments.CHAOTIC.name);
             } else if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.NEUTRAL.name)) {
-                setPlayerAlignment(killerPlayer, alignmentKiller);
+                setPlayerAlignment(killerPlayer, EnumPlayerAlignments.NEUTRAL.name);
             }
         }
     }

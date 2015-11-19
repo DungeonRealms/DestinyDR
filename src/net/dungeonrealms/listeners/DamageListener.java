@@ -709,13 +709,10 @@ public class DamageListener implements Listener {
                     continue;
                 }
                 net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
-                if (nms.hasTag()) {
-                    if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important") || nms.getTag().hasKey("subtype")) {
-                    	continue;
-                    } else {
-                        player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
-                    }
+                if (nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important") || nms.getTag().hasKey("subtype")) {
+                    continue;
                 }
+                player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
             }
         }
         event.getDrops().clear();
