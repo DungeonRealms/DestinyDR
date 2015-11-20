@@ -105,8 +105,8 @@ public class MobSpawner {
 							monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
 						}
 						
-						if(monster.getBukkitEntity().getLocation().subtract(0, 1, 0).getBlock().getType() == Material.WATER || 
-								monster.getBukkitEntity().getLocation().subtract(0, 1, 0).getBlock().getType() == Material.STATIONARY_WATER){
+						if(monster.getBukkitEntity().getLocation().getBlock().getType() == Material.WATER || 
+								monster.getBukkitEntity().getLocation().getBlock().getType() == Material.STATIONARY_WATER){
 							monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
 						}
 						

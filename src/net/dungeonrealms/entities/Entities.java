@@ -8,6 +8,7 @@ import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -143,8 +144,8 @@ public class Entities implements GenericMechanic {
 		nmsUtils.registerEntity("PetSnowman", 97, EntitySnowman.class, Snowman.class);
 		nmsUtils.registerEntity("MountEnderDragon", 63, EntityEnderDragon.class, EnderDragon.class);
 
-		Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::checkForLeashedMobs, 10,
-		        20L);
+//		Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::checkForLeashedMobs, 10,
+//		        20L);
 	}
 
 	@Override
@@ -163,8 +164,9 @@ public class Entities implements GenericMechanic {
 					if (MONSTER_LAST_ATTACK.get(entity) == 12) {
 						EntityInsentient entityInsentient = (EntityInsentient) ((CraftEntity)entity).getHandle();
 						if (entityInsentient.getGoalTarget().getBukkitEntity().getLocation().distanceSquared(entity.getLocation()) >= 5) {
-							entity.teleport(entityInsentient.getGoalTarget().getBukkitEntity());
-							entityInsentient.getGoalTarget().getBukkitEntity().sendMessage(ChatColor.WHITE + "BOO!");
+//							entity.teleport(entityInsentient.getGoalTarget().getBukkitEntity());
+							Location loc = entityInsentient.getGoalTarget().getBukkitEntity().getLocation();
+							((CraftEntity)entity).getHandle().setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 							MONSTER_LAST_ATTACK.put(entity, 15);
 						}
 					}
