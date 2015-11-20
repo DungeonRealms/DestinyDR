@@ -26,7 +26,6 @@ import net.dungeonrealms.network.NetworkAPI;
 import net.dungeonrealms.stats.StatsManager;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.dungeonrealms.teleportation.Teleportation;
-import net.dungeonrealms.world.glyph.Glyph;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -45,7 +44,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by Nick on 10/2/2015.
@@ -292,9 +290,9 @@ public class ClickHandler {
          */
                         if (name.equals("Merchant")) {
                             Inventory tradeWindow = event.getInventory();
-                            if(event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)){
-                            	event.setCancelled(true);
-                            	return;
+                            if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
+                                event.setCancelled(true);
+                                return;
                             }
                             if (!(event.isShiftClick()) || (event.isShiftClick() && slot < 27)) {
                                 if (!(event.getSlotType() == InventoryType.SlotType.CONTAINER)) {
@@ -758,55 +756,55 @@ public class ClickHandler {
                                             case 8:
                                                 PlayerMenus.openPlayerPetMenu(player);
                                                 break;
-                                            case 16:{
-                                                	List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
-                                                	if(!playerMounts.contains("MULE")){
-                                                		player.sendMessage(ChatColor.RED + "You do not own a storage mule!");
-                                                		return;
-                                                	}	
-                                                    if (EntityAPI.hasMountOut(player.getUniqueId())) {
-                                                        Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
-                                                        if (entity.isAlive()) {
-                                                            entity.getBukkitEntity().remove();
-                                                        }
-                                                        if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                                                            DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
-                                                        }
-                                                        EntityAPI.removePlayerMountList(player.getUniqueId());
-                                                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " Your Mount has returned home as you've summoned another companion!");
+                                            case 16: {
+                                                List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
+                                                if (!playerMounts.contains("MULE")) {
+                                                    player.sendMessage(ChatColor.RED + "You do not own a storage mule!");
+                                                    return;
+                                                }
+                                                if (EntityAPI.hasMountOut(player.getUniqueId())) {
+                                                    Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
+                                                    if (entity.isAlive()) {
+                                                        entity.getBukkitEntity().remove();
                                                     }
-                                                    if (EntityAPI.hasPetOut(player.getUniqueId())) {
-                                                        Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
-                                                        if (entity.isAlive()) {
-                                                            entity.getBukkitEntity().remove();
-                                                        }
-                                                        if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                                                            DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
-                                                        }
-                                                        EntityAPI.removePlayerPetList(player.getUniqueId());
-                                                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " Your Pet has returned home as you've summoned another companion!");
+                                                    if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                                                        DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                                                     }
-                                                    if (CombatLog.isInCombat(player)) {
-                                                        player.sendMessage(ChatColor.RED + "You cannot summon a storage mule while in Combat!");
-                                                        return;
+                                                    EntityAPI.removePlayerMountList(player.getUniqueId());
+                                                    player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " Your Mount has returned home as you've summoned another companion!");
+                                                }
+                                                if (EntityAPI.hasPetOut(player.getUniqueId())) {
+                                                    Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
+                                                    if (entity.isAlive()) {
+                                                        entity.getBukkitEntity().remove();
                                                     }
-                                                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                                                    if (nmsStack.getTag() == null || nmsStack.getTag().getString("mountType") == null) {
-                                                        player.sendMessage("Uh oh... Something went wrong with your mount! Please inform a staff member! [NBTTag]");
-                                                        player.closeInventory();
-                                                        return;
+                                                    if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                                                        DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                                                     }
-                                                    player.sendMessage(ChatColor.GREEN + "Your storage mule is being summoned into this world!");
-                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                                                        if (!EntityAPI.hasMountOut(player.getUniqueId())) {
-                                                            MountUtils.spawnMount(player.getUniqueId(), "MULE");
-                                                        } else {
-                                                            player.sendMessage(ChatColor.RED + "You just summoned your mount!");
-                                                        }
-                                                    }, 60L);
+                                                    EntityAPI.removePlayerPetList(player.getUniqueId());
+                                                    player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " Your Pet has returned home as you've summoned another companion!");
+                                                }
+                                                if (CombatLog.isInCombat(player)) {
+                                                    player.sendMessage(ChatColor.RED + "You cannot summon a storage mule while in Combat!");
+                                                    return;
+                                                }
+                                                net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                                                if (nmsStack.getTag() == null || nmsStack.getTag().getString("mountType") == null) {
+                                                    player.sendMessage("Uh oh... Something went wrong with your mount! Please inform a staff member! [NBTTag]");
                                                     player.closeInventory();
-                                                    break;
-                                                	//SPAWN
+                                                    return;
+                                                }
+                                                player.sendMessage(ChatColor.GREEN + "Your storage mule is being summoned into this world!");
+                                                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                                                    if (!EntityAPI.hasMountOut(player.getUniqueId())) {
+                                                        MountUtils.spawnMount(player.getUniqueId(), "MULE");
+                                                    } else {
+                                                        player.sendMessage(ChatColor.RED + "You just summoned your mount!");
+                                                    }
+                                                }, 60L);
+                                                player.closeInventory();
+                                                break;
+                                                //SPAWN
                                             }
                                             case 18:
                                                 NPCMenus.openECashPurchaseMenu(player);
@@ -948,7 +946,7 @@ public class ClickHandler {
                                             }
                                             return;
                                         } else
-        	
+
         /*Reset Stats Wizard*/
                                             if (name.equalsIgnoreCase("Wizard")) {
                                                 GamePlayer gp = API.getGamePlayer(player);
