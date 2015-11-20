@@ -1,7 +1,5 @@
 package net.dungeonrealms.commands;
 
-import net.dungeonrealms.commands.generic.BasicCommand;
-import net.dungeonrealms.handlers.ScoreboardHandler;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -12,6 +10,11 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+
+import net.dungeonrealms.banks.BankMechanics;
+import net.dungeonrealms.banks.Storage;
+import net.dungeonrealms.commands.generic.BasicCommand;
+import net.dungeonrealms.handlers.ScoreboardHandler;
 
 /**
  * Created by Chase on Nov 11, 2015
@@ -69,6 +72,13 @@ public class CommandModeration extends BasicCommand {
                     sender.sendMessage(ChatColor.GREEN + " You have been hidden");
                 }
                 break;
+            case "banksee":
+            	playerName = args[1];
+            	if(Bukkit.getPlayer(playerName) != null){
+            		Storage storage = BankMechanics.getInstance().getStorage(Bukkit.getPlayer(playerName).getUniqueId());
+            		sender.openInventory(storage.inv);
+            	}
+            	break;
         }
         return false;
     }

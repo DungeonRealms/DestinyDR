@@ -12,9 +12,9 @@ import org.bukkit.inventory.meta.Repairable;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.enchantments.EnchantmentAPI;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.ItemGenerator;
-import net.dungeonrealms.items.enchanting.EnchantmentAPI;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.SoundAPI;
 import net.dungeonrealms.profession.Fishing;
@@ -37,10 +37,11 @@ public class RepairAPI {
 
 //			double avg_armor = Integer.parseInt(armor_range.split("-")[0].replaceAll(" ", "").replace("!", "")) + Integer.parseInt(armor_range.split("-")[1].substring(0, armor_range.split("-")[1].indexOf(":")).replaceAll(" ", "").replace("!", ""));
 //			avg_armor = avg_armor / 2; // Get the average of the two added values.
-			double percent_durability_left = getDurabilityValueAsPercent(i, getCustomDurability(i));
-//			if(percent_durability_left > 99) {
-//				percent_durability_left = 99;
-//			}
+			double percent_durability_left =   (getCustomDurability(i) / 1550);  // getDurabilityValueAsPercent(i, getCustomDurability(i));
+			Utils.log.info(percent_durability_left + " percent_durability_left");
+			if(percent_durability_left > 99) {
+				percent_durability_left = 99;
+			}
 			double armor_cost = 1 * 1; // This is the cost PER PERCENT
 			
 			double global_multiplier = 0.30 - 0.06; // Additional 0.06 less
@@ -78,13 +79,17 @@ public class RepairAPI {
 			if(!nms.hasTag() && !nms.getTag().hasKey("itemTier"))
 				return -1;
 			int item_tier = nms.getTag().getInt("itemTier");
+			Utils.log.info(item_tier + " tier");
 	        int damageRandomizer = ItemGenerator.getRandomDamageVariable(item_tier);
+			Utils.log.info(damageRandomizer + " damageRandomizer");
 	        NBTTagCompound tag = CraftItemStack.asNMSCopy(i).getTag();
-	        double avg_dmg = Utils.randInt((int) Math.round(tag.getDouble("damage") - (tag.getDouble("damage") / damageRandomizer)), (int) Math.round(tag.getDouble("damage") + (tag.getDouble("damage") / (damageRandomizer - 1))));
+	        double avg_dmg = tag.getInt("damage");//Utils.randInt((int) Math.round(tag.getDouble("damage")  / damageRandomizer), (int) Math.round(tag.getDouble("damage")/ (damageRandomizer - 1)));
 //			double avg_dmg = (Integer.parseInt((dmg_range.split("-")[0])) + Integer.parseInt(dmg_range.split("-")[1])) / 2; // Average DMG
 			double dmg_cost = avg_dmg * 0.1; // This is the cost PER PERCENT
-			
-			double percent_durability_left = getDurabilityValueAsPercent(i, getItemDurabilityValue(i));
+			Utils.log.info(dmg_cost + " dmg_cost");
+
+			double percent_durability_left =   (getCustomDurability(i) / 1450);  // getDurabilityValueAsPercent(i, getCustomDurability(i));
+			Utils.log.info(percent_durability_left + " percent_durability_left");
 			if(percent_durability_left > 99) {
 				percent_durability_left = 99;
 			}
@@ -92,8 +97,10 @@ public class RepairAPI {
 			double global_multiplier = 0.25 - 0.05;
 			double multiplier = 1.0; // 100%
 			double missing_percent = 100 - percent_durability_left;
+			Utils.log.info(missing_percent + " missing_percent");
 			double total_dmg_cost = missing_percent * dmg_cost;
-			
+			Utils.log.info(total_dmg_cost + " total_dmg_cost");
+
 			if(item_tier == 1) {
 				multiplier = 1.0;
 				repair_cost = total_dmg_cost * multiplier;
@@ -114,8 +121,9 @@ public class RepairAPI {
 				multiplier = 9.0;
 				repair_cost = total_dmg_cost * multiplier;
 			}
-			
+			Utils.log.info(repair_cost + " repair_cost");
 			repair_cost = repair_cost * global_multiplier;
+			Utils.log.info(repair_cost + " repair_cost");
 			return (int) Math.round(repair_cost);
 		}
 		
@@ -284,8 +292,15 @@ public class RepairAPI {
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return 0;
         if (tag.getInt("itemTier") == 0 && tag.getInt("armorTier") == 0) return 0;
+        
+        Utils.log.info(durability  + "/ 1500" + " DURB");
+        Utils.log.info(durability / 1500 + " DURB Double?");
         double durabilityHitsLeft = durability / 1500;
+        Utils.log.info(durability + " double Durb");
         double percentDurability = itemStack.getType().getMaxDurability() - (itemStack.getType().getMaxDurability() * durabilityHitsLeft);
+        
+        Utils.log.info(durability + " double Durb");
+        
         if (percentDurability == itemStack.getType().getMaxDurability()) {
             percentDurability = itemStack.getType().getMaxDurability() - 1;
         }
@@ -492,8 +507,8 @@ public class RepairAPI {
             repairable.setRepairCost((int) durability);
             itemStack.setItemMeta((ItemMeta) repairable);
 
-            if (EnchantmentAPI.getItemEnchantmentLevel(itemStack) >= 4) {
-                EnchantmentAPI.addCustomEnchantToItem(itemStack);
+            if (EnchantmentAPI.getEnchantLvl(itemStack) >= 4) {
+                EnchantmentAPI.addGlow(itemStack);
             }
 
             setPercentageDurabilityBar(itemStack, durability);

@@ -42,7 +42,6 @@ import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.ScoreboardHandler;
-import net.dungeonrealms.items.enchanting.EnchantmentAPI;
 import net.dungeonrealms.listeners.AntiCheatListener;
 import net.dungeonrealms.listeners.BankListener;
 import net.dungeonrealms.listeners.BlockListener;
@@ -170,7 +169,6 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(Teleportation.getInstance());
         mm.registerMechanic(CombatLog.getInstance());
         mm.registerMechanic(EnergyHandler.getInstance());
-        mm.registerMechanic(EnchantmentAPI.getInstance());
         mm.registerMechanic(Rank.getInstance());
         mm.registerMechanic(DonationEffects.getInstance());
         mm.registerMechanic(HealthHandler.getInstance());

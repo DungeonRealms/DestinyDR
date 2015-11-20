@@ -70,9 +70,9 @@ public class ClickHandler {
         /*
         Animal Tamer NPC
          */
-        if (name.equals("Mount Vendor")) {
+        if (name.equals("Animal Vendor")) {
             event.setCancelled(true);
-            if (slot > 9) return;
+            if (slot > 18) return;
             if (event.getCurrentItem().getType() != Material.AIR) {
                 net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                 if (nmsStack == null) return;
@@ -469,14 +469,14 @@ public class ClickHandler {
                                         if (itemStack.getType() == Material.EMERALD) {
                                             itemStack = BankMechanics.createBankNote(itemStack.getAmount());
                                         }
-                                        if (Glyph.getInstance().isGlyph(itemStack)) {
-                                            int tier = Glyph.getInstance().getGlyphTier(itemStack);
-                                            if (new Random().nextBoolean()) {
-                                                itemStack = Glyph.getInstance().getBaseGlyph("Weapon Glyph", tier, Glyph.GlyphType.WEAPON);
-                                            } else {
-                                                itemStack = Glyph.getInstance().getBaseGlyph("Armor Glyph", tier, Glyph.GlyphType.ARMOR);
-                                            }
-                                        }
+//                                        if (Glyph.getInstance().isGlyph(itemStack)) {
+//                                            int tier = Glyph.getInstance().getGlyphTier(itemStack);
+//                                            if (new Random().nextBoolean()) {
+//                                                itemStack = Glyph.getInstance().getBaseGlyph("Weapon Glyph", tier, Glyph.GlyphType.WEAPON);
+//                                            } else {
+//                                                itemStack = Glyph.getInstance().getBaseGlyph("Armor Glyph", tier, Glyph.GlyphType.ARMOR);
+//                                            }
+//                                        }
                                         player.getInventory().setItem(player.getInventory().firstEmpty(), itemStack);
                                     }
                                     player.sendMessage(ChatColor.GREEN + "Trade Accepted!");
@@ -758,6 +758,56 @@ public class ClickHandler {
                                             case 8:
                                                 PlayerMenus.openPlayerPetMenu(player);
                                                 break;
+                                            case 16:{
+                                                	List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
+                                                	if(!playerMounts.contains("MULE")){
+                                                		player.sendMessage(ChatColor.RED + "You do not own a storage mule!");
+                                                		return;
+                                                	}	
+                                                    if (EntityAPI.hasMountOut(player.getUniqueId())) {
+                                                        Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
+                                                        if (entity.isAlive()) {
+                                                            entity.getBukkitEntity().remove();
+                                                        }
+                                                        if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                                                            DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
+                                                        }
+                                                        EntityAPI.removePlayerMountList(player.getUniqueId());
+                                                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " Your Mount has returned home as you've summoned another companion!");
+                                                    }
+                                                    if (EntityAPI.hasPetOut(player.getUniqueId())) {
+                                                        Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
+                                                        if (entity.isAlive()) {
+                                                            entity.getBukkitEntity().remove();
+                                                        }
+                                                        if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                                                            DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
+                                                        }
+                                                        EntityAPI.removePlayerPetList(player.getUniqueId());
+                                                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD.toString() + ChatColor.BOLD + "DONATE" + ChatColor.WHITE + "]" + ChatColor.AQUA + " Your Pet has returned home as you've summoned another companion!");
+                                                    }
+                                                    if (CombatLog.isInCombat(player)) {
+                                                        player.sendMessage(ChatColor.RED + "You cannot summon a storage mule while in Combat!");
+                                                        return;
+                                                    }
+                                                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                                                    if (nmsStack.getTag() == null || nmsStack.getTag().getString("mountType") == null) {
+                                                        player.sendMessage("Uh oh... Something went wrong with your mount! Please inform a staff member! [NBTTag]");
+                                                        player.closeInventory();
+                                                        return;
+                                                    }
+                                                    player.sendMessage(ChatColor.GREEN + "Your storage mule is being summoned into this world!");
+                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                                                        if (!EntityAPI.hasMountOut(player.getUniqueId())) {
+                                                            MountUtils.spawnMount(player.getUniqueId(), "MULE");
+                                                        } else {
+                                                            player.sendMessage(ChatColor.RED + "You just summoned your mount!");
+                                                        }
+                                                    }, 60L);
+                                                    player.closeInventory();
+                                                    break;
+                                                	//SPAWN
+                                            }
                                             case 18:
                                                 NPCMenus.openECashPurchaseMenu(player);
                                                 break;

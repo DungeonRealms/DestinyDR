@@ -22,7 +22,7 @@ import java.util.Arrays;
 public class NPCMenus {
 
     public static void openMountPurchaseMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 9, "Mount Vendor");
+        Inventory inv = Bukkit.createInventory(null, 18, "Animal Vendor");
 
         inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.SADDLE), ChatColor.GREEN + "Old Horse Mount", new String[]{
                 ChatColor.RED + "Speed 120%",
@@ -36,7 +36,7 @@ public class NPCMenus {
                 ChatColor.RED + "Jump 110%",
                 ChatColor.AQUA + "25000 Gems"}).setNBTString("mountType", "GOLDHORSE").setNBTInt("mountCost", 25000).build());
         
-        inv.setItem(3, new ItemBuilder().setItem(new ItemStack(Material.CHEST), ChatColor.GREEN + "Storage Mule", new String[]{
+        inv.setItem(9, new ItemBuilder().setItem(new ItemStack(Material.CHEST), ChatColor.GREEN + "Storage Mule", new String[]{
                 ChatColor.RED + "Storage 120%",
                 ChatColor.RED + "Coolness 220%",
                 ChatColor.AQUA + "15000 Gems"}).setNBTString("mountType", "MULE").setNBTInt("mountCost", 15000).build());

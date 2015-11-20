@@ -406,6 +406,34 @@ public class InventoryListener implements Listener {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(slotItem);
         if(!API.isWeapon(slotItem)  && !API.isArmor(slotItem)) return;
         event.setCancelled(true);
+        
+        
+        if(nmsCursor.getTag().getString("type").equalsIgnoreCase("protection")){
+        	if(!EnchantmentAPI.isItemProtected(slotItem)){
+            	int tier = nmsCursor.getTag().getInt("tier");
+            	int itemTier = 1;
+            	if(nmsItem.getTag().hasKey("armorTier")){
+            		itemTier = nmsItem.getTag().getInt("armorTier");
+            	}else{
+            		itemTier = nmsItem.getTag().getInt("itemTier");
+            	}
+        		if(tier > itemTier){
+        			event.getWhoClicked().sendMessage(ChatColor.RED + "This protection scroll is made for a higher tier!");
+        			return;
+        		}
+        		
+        		event.setCurrentItem(EnchantmentAPI.addItemProtection(event.getCurrentItem()));
+        		  if(cursorItem.getAmount() == 1){
+                  	event.setCursor(new ItemStack(Material.AIR));
+                  }else{
+                  	ItemStack newStack = cursorItem.clone();
+                  	newStack.setAmount(newStack.getAmount() - 1);
+                  	event.setCursor(newStack);
+                  }
+        	}
+        	return;
+        }
+        
         if(API.isWeapon(slotItem)){
         	if(!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("weaponenchant")){
         		return;
@@ -474,6 +502,14 @@ public class InventoryListener implements Listener {
         }
         if(failed){
         	event.setCancelled(true);
+        	
+        	if(EnchantmentAPI.isItemProtected(slotItem)){
+                event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your protection scroll saved your item from vanishing");
+                event.setCurrentItem(EnchantmentAPI.removeItemProtection(event.getCurrentItem()));
+        		return;
+        	}
+        	
+        	
             if(cursorItem.getAmount() == 1){
             	event.setCursor(new ItemStack(Material.AIR));
             }else{
@@ -604,6 +640,13 @@ public class InventoryListener implements Listener {
 			}
         }
         if(failed){
+        	
+        	if(EnchantmentAPI.isItemProtected(slotItem)){
+                event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your protection scroll saved your item from vanishing");
+                event.setCurrentItem(EnchantmentAPI.removeItemProtection(event.getCurrentItem()));
+        		return;
+        	}
+        	
         	event.setCancelled(true);
             if(cursorItem.getAmount() == 1){
             	event.setCursor(new ItemStack(Material.AIR));

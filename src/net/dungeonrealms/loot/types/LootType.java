@@ -185,14 +185,47 @@ public enum LootType {
                                 case 4:
                                     item = ItemManager.createTeleportBook("Deadpeaks");
                                     break;
+                                  
+                                case 11:
+                                	item = ItemManager.createWeaponEnchant(1);
+                                	break;
+                                case 12:
+                                	item = ItemManager.createWeaponEnchant(2);
+                                	break;
+                                case 13:
+                                	item = ItemManager.createWeaponEnchant(3);
+                                	break;
+                                case 14:
+                                	item = ItemManager.createWeaponEnchant(4);
+                                	break;
+                                case 15:
+                                	item = ItemManager.createWeaponEnchant(5);
+                                	break;
+                                case 21:
+                                	item = ItemManager.createArmorEnchant(1);
+                                	break;
+                                case 22:
+                                	item = ItemManager.createArmorEnchant(2);
+                                	break;
+                                case 23:
+                                	item = ItemManager.createArmorEnchant(3);
+                                	break;
+                                case 24:
+                                	item = ItemManager.createArmorEnchant(4);
+                                	break;
+                                case 25:
+                                	item = ItemManager.createArmorEnchant(5);
+                                	break;
                                 default:
                                     continue;
                             }
                             break;
                         case SNOW_BALL:
                         case WATCH:
-                        case MAGMA_CREAM:
+                        case CHEST:
                             continue;
+                        case MAGMA_CREAM:
+                        	item = ItemManager.createOrbofAlteration();
                         default:
                             item = new ItemStack(m, 1, item_meta);
                             break;
@@ -201,7 +234,6 @@ public enum LootType {
                         Utils.log.info("NULL " + item_id + " " + item_meta);
                         continue;
                     }
-//				Utils.log.info(m.name() + " " + spawn_chance);
                     loot.put(item, spawn_chance);
                 } else {
                     if (item_tier != -1) {

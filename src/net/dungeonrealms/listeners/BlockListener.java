@@ -202,6 +202,18 @@ public class BlockListener implements Listener {
     }
     	
     @EventHandler(priority = EventPriority.HIGHEST)
+    public void cancelPlayersBlockOpen(PlayerInteractEvent event) {
+        Block block = event.getClickedBlock();
+        if (block == null) return;
+        if(event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE)return;
+        Material mat = block.getType();
+        if (mat == Material.ANVIL || mat == Material.CHEST || mat == Material.ENDER_CHEST) return;
+        event.setCancelled(true);
+    }
+
+    
+    
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void playerRightClickAnvil(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
         if (block == null) return;

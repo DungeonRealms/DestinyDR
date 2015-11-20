@@ -380,8 +380,12 @@ public class PlayerMenus {
         UUID uuid = player.getUniqueId();
 
         List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, uuid);
-
-        if (playerMounts.size() <= 0) {
+        int count = 0;
+        if(playerMounts.size() > 0)
+        for(String mount : playerMounts)
+        	if(!mount.equalsIgnoreCase("MULE"))
+        		count++;
+        if (count <= 0) {
             Inventory noMounts = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mounts!");
             player.openInventory(noMounts);
             return;
@@ -392,6 +396,8 @@ public class PlayerMenus {
         inv.setItem(26, editItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Dismiss Mount", new String[]{}));
 
         for (String mountType : playerMounts) {
+        	if(mountType.equalsIgnoreCase(EnumMounts.MULE.getRawName()))
+        		continue;
             ItemStack itemStack = EnumMounts.getByName(mountType).getSelectionItem();
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
@@ -480,6 +486,13 @@ public class PlayerMenus {
                 ChatColor.GRAY + "solution!",
                 "",
                 ChatColor.YELLOW + "Click to view Player Pets!"
+        }));
+        inv.setItem(16, editItem(new ItemStack(Material.CHEST), ChatColor.GREEN + "Spawn Storage Mule", new String[]{
+                ChatColor.DARK_GRAY + "Storage",
+                "",
+                ChatColor.GRAY + "Must own a storage mule prior to spawning!",
+                "",
+                ChatColor.YELLOW + "Click to spawn your Storage Mule!"
         }));
         inv.setItem(18, editItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Donations", new String[]{
                 ChatColor.DARK_GRAY + "Micro Transactions",

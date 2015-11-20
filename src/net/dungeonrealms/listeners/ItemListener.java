@@ -104,6 +104,23 @@ public class ItemListener implements Listener {
         PlayerMenus.openPlayerProfileMenu(player);
     }
     
+    /**
+     * Handles Right Click of Character Journal
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerUseMap(PlayerInteractEvent event){
+        if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
+        Player p = event.getPlayer();
+        if (p.getItemInHand() == null || p.getItemInHand().getType() != Material.EMPTY_MAP) return;
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getItemInHand());
+        NBTTagCompound tag = nmsStack.getTag();
+        if (tag == null) return;
+        if (tag.hasKey("type")){
+        	event.setCancelled(true);
+        }
+    }
+    
+    
     
     /**
      * Handles Right Click of Character Journal

@@ -162,6 +162,11 @@ public class CommandAdd extends BasicCommand {
                 	tier = Integer.parseInt(args[1]);
                 	player.getInventory().addItem(ItemManager.createWeaponEnchant(tier));
                 	break;
+                case "protectscroll":
+            	tier = Integer.parseInt(args[1]);
+            	player.getInventory().addItem(ItemManager.createProtectScroll(tier));
+            	break;
+
             }
         }
 

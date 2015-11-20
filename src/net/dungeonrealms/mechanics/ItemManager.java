@@ -73,7 +73,8 @@ public class ItemManager {
     }
     
     public static ItemStack createWeaponEnchant(int tier){
-    	ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() +ChatColor.BOLD.toString() + "Scroll: " + API.getTierColor(tier) + "Enchant T" + tier + " Weapon" , new String[]{ChatColor.RED + "+5% DMG", ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "Weapon will VANISH if enchant +3 FAILS."});
+    	String material = getMatString(tier);
+    	ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() +ChatColor.BOLD.toString() + "Scroll: " + API.getTierColor(tier) + "Enchant "+material + " Weapon" , new String[]{ChatColor.RED + "+5% DMG", ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "Weapon will VANISH if enchant +3 FAILS."});
     	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
     	nms.getTag().setString("type", "weaponenchant");
     	nms.getTag().setInt("tier", tier);
@@ -81,9 +82,39 @@ public class ItemManager {
     }
     
     public static ItemStack createArmorEnchant(int tier){
-    	ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() +ChatColor.BOLD.toString() + "Scroll: " + API.getTierColor(tier) + "Enchant T" + tier + " Armor" , new String[]{ChatColor.RED + "+5% HP",ChatColor.RED + "+5% HP REGEN", ChatColor.GRAY.toString() + ChatColor.ITALIC + "    - OR -", ChatColor.RED + "+1% ENERGY REGEN" ,ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "Armor will VANISH if enchant +3 FAILS."});
+    	String material = getMatString(tier);
+    	ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() +ChatColor.BOLD.toString() + "Scroll: " + API.getTierColor(tier) + "Enchant "+ material + " Armor" , new String[]{ChatColor.RED + "+5% HP",ChatColor.RED + "+5% HP REGEN", ChatColor.GRAY.toString() + ChatColor.ITALIC + "    - OR -", ChatColor.RED + "+1% ENERGY REGEN" ,ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "Armor will VANISH if enchant +3 FAILS."});
     	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
     	nms.getTag().setString("type", "armorenchant");
+    	nms.getTag().setInt("tier", tier);
+    	return CraftItemStack.asBukkitCopy(nms);
+    }
+    
+    /**
+	 * @param tier
+	 * @return
+	 */
+	private static String getMatString(int tier) {
+		switch(tier){
+		case 1:
+			return "Leather";
+		case 2:
+			return "Chainmail";
+		case 3: 
+			return "Iron";
+		case 4:
+			return "Diamond";
+		case 5:
+			return "Gold";
+		}
+		return null;
+	}
+
+	public static ItemStack createProtectScroll(int tier){
+    	String material = getMatString(tier);
+    	ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() +ChatColor.BOLD.toString() + "Scroll: Protect " + material + " Armor/Weapon" , new String[]{ChatColor.GRAY.toString() + ChatColor.ITALIC + "Protects a weapon and armor up to [+8] from failing an enchant"});
+    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
+    	nms.getTag().setString("type", "protection");
     	nms.getTag().setInt("tier", tier);
     	return CraftItemStack.asBukkitCopy(nms);
     }

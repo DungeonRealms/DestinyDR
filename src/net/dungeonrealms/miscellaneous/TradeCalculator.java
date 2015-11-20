@@ -315,10 +315,17 @@ public class TradeCalculator {
             scrap.setAmount(payout);
             merchant_offer.add(scrap);
         }
+        
+        
         if (t1_scraps > 0) {
             while (t1_scraps >= 80) {
                 t1_scraps -= 80;
-                ItemStack scroll = Glyph.getInstance().nextBlankGlyph(1);
+                ItemStack scroll = ItemManager.createWeaponEnchant(1);
+                merchant_offer.add(scroll);
+            }
+            while (t1_scraps >= 70) {
+                t1_scraps -= 70;
+                ItemStack scroll = ItemManager.createArmorEnchant(1);
                 merchant_offer.add(scroll);
             }
             int payout = t1_scraps / 2;
@@ -333,11 +340,19 @@ public class TradeCalculator {
             merchant_offer.add(scrap);
         }
         if (t2_scraps > 0) {
+        	
             while (t2_scraps >= 140) {
                 t2_scraps -= 140;
-                ItemStack scroll = Glyph.getInstance().nextBlankGlyph(2);
+                ItemStack scroll = ItemManager.createWeaponEnchant(2);
                 merchant_offer.add(scroll);
             }
+
+            while (t2_scraps >= 125) {
+                t2_scraps -= 125;
+                ItemStack scroll = ItemManager.createArmorEnchant(2);
+                merchant_offer.add(scroll);
+            }
+        	
             int payout = 2 * t2_scraps;
             while (payout > 64) {
                 ItemStack scrap = ItemManager.createArmorScrap(1);
@@ -352,7 +367,13 @@ public class TradeCalculator {
         if (t3_scraps > 0) {
             while (t3_scraps >= 110) {
                 t3_scraps -= 110;
-                ItemStack scroll = Glyph.getInstance().nextBlankGlyph(3);
+                ItemStack scroll = ItemManager.createWeaponEnchant(3);
+                merchant_offer.add(scroll);
+            }
+
+            while (t3_scraps >= 100) {
+                t3_scraps -= 100;
+                ItemStack scroll = ItemManager.createArmorEnchant(3);
                 merchant_offer.add(scroll);
             }
             int payout = 2 * t3_scraps;
@@ -369,8 +390,20 @@ public class TradeCalculator {
         if (t4_scraps > 0) {
             while (t4_scraps >= 88) {
                 t4_scraps -= 88;
-                ItemStack scroll = Glyph.getInstance().nextBlankGlyph(4);
+                ItemStack scroll = ItemManager.createWeaponEnchant(3);
                 merchant_offer.add(scroll);
+            }
+
+            while (t4_scraps >= 80) {
+                t4_scraps -= 80;
+                ItemStack scroll = ItemManager.createArmorEnchant(3);
+                merchant_offer.add(scroll);
+            }
+
+            while (t4_scraps >= 60) {
+                t4_scraps -= 60;
+                ItemStack orb = ItemManager.createOrbofAlteration();
+                merchant_offer.add(orb);
             }
             int payout = 2 * t4_scraps;
             while (payout > 64) {
@@ -386,8 +419,20 @@ public class TradeCalculator {
         if (t5_scraps > 0) {
             while (t5_scraps >= 33) {
                 t5_scraps -= 33;
-                ItemStack scroll = Glyph.getInstance().nextBlankGlyph(5);
+                ItemStack scroll = ItemManager.createWeaponEnchant(3);
                 merchant_offer.add(scroll);
+            }
+
+            while (t5_scraps >= 30) {
+                t5_scraps -= 30;
+                ItemStack scroll = ItemManager.createArmorEnchant(3);
+                merchant_offer.add(scroll);
+            }
+
+            while (t5_scraps >= 20) {
+                t5_scraps -= 20;
+                ItemStack orb = ItemManager.createOrbofAlteration();
+                merchant_offer.add(orb);
             }
             int payout = 3 * t5_scraps;
             while (payout > 64) {
