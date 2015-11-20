@@ -67,10 +67,12 @@ public final class GameChat {
             case "sub+":
                 return ChatColor.WHITE + player.getName() + ChatColor.GRAY + ":" + ChatColor.RESET + " ";
         }
+        System.out.println(rank);
         return "NULL";
     }
 
     public static String getRankPrefix(String rank) {
+        System.out.println(rank);
         switch (rank.toLowerCase()) {
             case "sub":
                 return SUB;
