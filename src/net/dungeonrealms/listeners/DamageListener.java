@@ -720,7 +720,8 @@ public class DamageListener implements Listener {
         for (PotionEffect potionEffect : player.getActivePotionEffects()) {
             player.removePotionEffect(potionEffect.getType());
         }
-        HealthHandler.getInstance().setPlayerHPLive(player, HealthHandler.getInstance().getPlayerMaxHPLive(player));
+        HealthHandler.getInstance().setPlayerMaxHPLive(player, HealthHandler.getInstance().calculateMaxHPFromItems(player));
+        HealthHandler.getInstance().setPlayerHPLive(player, HealthHandler.getInstance().calculateMaxHPFromItems(player));
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 10));
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 10));
         player.teleport(respawnLocation);
