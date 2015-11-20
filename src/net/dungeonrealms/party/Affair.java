@@ -40,14 +40,18 @@ public class Affair implements GenericMechanic {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             _parties.stream().forEach(party -> {
 
+                if (party.getOwner() == null) {
+                    removeParty(party);
+                } else {
                 /*
                 Scoreboards
                  */
-                updateParties();
+                    updateParties();
+                }
 
 
             });
-        }, 0, 20);
+        }, 0, 20 * 2);
     }
 
     public void invitePlayer(Player inviting, Player invitor) {
