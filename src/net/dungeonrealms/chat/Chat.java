@@ -41,8 +41,8 @@ public class Chat {
         if (event.getMessage().startsWith("@") && !event.getMessage().contains("@i@")) {
             String playerName = event.getMessage().replace("@", "").split(" ")[0];
             Bukkit.getOnlinePlayers().stream().filter(player -> player.getName().equalsIgnoreCase(playerName)).forEach(player1 -> {
-                event.getPlayer().sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getPreMessage(Bukkit.getPlayer(playerName)) + event.getMessage().replace("@" + playerName, ""));
-                player1.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "FROM " + GameChat.getPreMessage(event.getPlayer()) + event.getMessage().replace("@" + event.getPlayer().getName(), ""));
+                event.getPlayer().sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getPreMessage(Bukkit.getPlayer(playerName)) + event.getMessage().toLowerCase().replace("@" + playerName, ""));
+                player1.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "FROM " + GameChat.getPreMessage(event.getPlayer()) + event.getMessage().toLowerCase().replace("@" + event.getPlayer(), ""));
                 Bukkit.getPluginManager().callEvent(new PlayerMessagePlayerEvent(event.getPlayer(), Bukkit.getPlayer(playerName), event.getMessage()));
             });
             event.setCancelled(true);
