@@ -62,14 +62,14 @@ public class ItemManager {
         tag.set("type", new NBTTagString("important"));
         tag.set("usage", new NBTTagString("hearthstone"));
         nmsStack.setTag(tag);
-        return CraftItemStack.asBukkitCopy(nmsStack);
+    	return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
     
     public static ItemStack createOrbofAlteration(){
     	ItemStack rawStack = createItem(Material.MAGMA_CREAM, ChatColor.LIGHT_PURPLE.toString() + "Orb of Alteration", new String[]{(ChatColor.GRAY.toString() + "Randomizes bonus stats of selected equipment")});
     	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
     	nms.getTag().setString("type", "orb");
-    	return CraftItemStack.asBukkitCopy(nms);
+    	return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
     
     public static ItemStack createWeaponEnchant(int tier){
@@ -78,7 +78,7 @@ public class ItemManager {
     	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
     	nms.getTag().setString("type", "weaponenchant");
     	nms.getTag().setInt("tier", tier);
-    	return CraftItemStack.asBukkitCopy(nms);
+    	return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
     
     public static ItemStack createArmorEnchant(int tier){
@@ -87,7 +87,7 @@ public class ItemManager {
     	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
     	nms.getTag().setString("type", "armorenchant");
     	nms.getTag().setInt("tier", tier);
-    	return CraftItemStack.asBukkitCopy(nms);
+    	return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
     
     /**
@@ -116,7 +116,7 @@ public class ItemManager {
     	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
     	nms.getTag().setString("type", "protection");
     	nms.getTag().setInt("tier", tier);
-    	return CraftItemStack.asBukkitCopy(nms);
+    	return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
     
     /**

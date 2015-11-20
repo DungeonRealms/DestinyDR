@@ -66,10 +66,10 @@ public class Chat {
             return;
         }
 
-        TERRIBLE_WORDS.stream().filter(s -> event.getMessage().contains(s.toLowerCase())).forEach(s1 -> {
-            event.setCancelled(true);
-            event.getPlayer().sendMessage(ChatColor.RED + "Wow! You have used a terrible word.. Please rethink your sentence!");
-        });
+//        TERRIBLE_WORDS.stream().filter(s -> event.getMessage().contains(s.toLowerCase())).forEach(s1 -> {
+//            event.setCancelled(true);
+//            event.getPlayer().sendMessage(ChatColor.RED + "Wow! You have used a terrible word.. Please rethink your sentence!");
+//        });
 
         UUID uuid = event.getPlayer().getUniqueId();
         StringBuilder prefix = new StringBuilder();
@@ -132,7 +132,7 @@ public class Chat {
                	if(event.getMessage().contains("@i@") && event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType() != Material.AIR){
                     String message = event.getMessage();
                    final Player p = event.getPlayer();
-                   String aprefix = ChatColor.GRAY + p.getName() + ": ";
+                   String aprefix = GameChat.getPreMessage(p);
                    String[] split = message.split("@i@");
                    String after = "";
                    String before = "";
@@ -145,7 +145,7 @@ public class Chat {
                    normal.addText(before + "");
                    normal.addItem(p.getItemInHand(), ChatColor.AQUA + ChatColor.BOLD.toString() + "SHOW" + ChatColor.WHITE, ChatColor.UNDERLINE);
                    normal.addText(after);
-                   API.getNearbyPlayers(event.getPlayer().getLocation(), 75)	.stream().forEach(player ->{
+                   API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player ->{
                  	  if((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId())){
                  		  normal.sendToPlayer(player);
                  	  }
@@ -154,7 +154,7 @@ public class Chat {
                    return;
              	}
                 event.setCancelled(true);
-                API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage()));
+                API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(player)+ event.getMessage()));
             } else {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.GRAY + "No one heard you...");
