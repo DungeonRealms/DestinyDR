@@ -136,6 +136,11 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("alignment", String.class);
             case CURRENT_LOCATION:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("currentLocation", String.class);
+            case CURRENT_FOOD:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("foodLevel", Integer.class);
+            case SHOPLEVEL:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("shopLevel", Integer.class);
+
             /*
             Rank Things. Different Sub-Document().
              */
