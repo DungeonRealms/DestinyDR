@@ -66,42 +66,16 @@ public class Chat {
             return;
         }
 
-//        TERRIBLE_WORDS.stream().filter(s -> event.getMessage().contains(s.toLowerCase())).forEach(s1 -> {
-//            event.setCancelled(true);
-//            event.getPlayer().sendMessage(ChatColor.RED + "Wow! You have used a terrible word.. Please rethink your sentence!");
-//        });
 
         UUID uuid = event.getPlayer().getUniqueId();
-        StringBuilder prefix = new StringBuilder();
 
         boolean gChat = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, uuid);
-
-        prefix.append(gChat ?
-                ChatColor.GREEN + "<" + ChatColor.AQUA.toString() + ChatColor.BOLD + "G" + ChatColor.GREEN + ">" + ChatColor.RESET + ""
-                :
-                ChatColor.GREEN + "<" + ChatColor.BOLD + "L" + ChatColor.GREEN + ">" + ChatColor.RESET + "");
-
-        Rank.RankBlob r = Rank.getInstance().getRank(uuid);
-        if (r != null && !r.getPrefix().equals("null")) {
-            if (r.getName().equalsIgnoreCase("DEFAULT")) {
-                prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.GRAY + ""));
-            } else if (!r.getName().equalsIgnoreCase("DEFAULT")) {
-                prefix.append(ChatColor.translateAlternateColorCodes('&', " " + r.getPrefix() + ChatColor.RESET));
-            }
-        } else {
-            Utils.log.warning("Rank is null for player: " + event.getPlayer().getName());
-        }
-
-        if (!Guild.getInstance().isGuildNull(uuid)) {
-            String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-            prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.WHITE + " [" + clanTag + ChatColor.RESET + "]"));
-        }
 
         if (gChat) {
            	if(event.getMessage().contains("@i@") && event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType() != Material.AIR){
                 String message = event.getMessage();
                final Player p = event.getPlayer();
-               String aprefix = prefix.toString().trim() + ChatColor.GRAY + p.getName() + ": ";
+               String aprefix = GameChat.getPreMessage(p);
                String[] split = message.split("@i@");
                String after = "";
                String before = "";
@@ -125,7 +99,7 @@ public class Chat {
         	
         	
             if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, event.getPlayer().getUniqueId())) {
-                event.setFormat(prefix.toString().trim() + " " + event.getPlayer().getName() + ChatColor.GRAY + ": " + event.getMessage());
+                event.setFormat(GameChat.getPreMessage(event.getPlayer()) + event.getMessage());
             }
         } else {
             if (API.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() >= 2) {
