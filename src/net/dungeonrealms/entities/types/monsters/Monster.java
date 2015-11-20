@@ -4,6 +4,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.items.armor.Armor.ArmorTier;
 import net.dungeonrealms.items.armor.Armor.EquipmentType;
+import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.miscellaneous.RandomHelper;
 import net.minecraft.server.v1_8_R3.World;
@@ -62,6 +63,10 @@ public interface Monster {
 			int number = RandomHelper.getRandomNumberBetween(0, 4);
 			ItemStack armorToDrop = loot[number];
 			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), armorToDrop);
+		}
+		
+		if(RandomHelper.getRandomNumberBetween(1, 200) == 2){
+			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), ItemManager.createProtectScroll(tier));
 		}
 	}
 }

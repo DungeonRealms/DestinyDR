@@ -603,7 +603,7 @@ public class MainListener implements Listener {
     public void chunkLoad(ChunkLoadEvent event) {
      if(event.getChunk().getEntities().length > 0){
       for(Entity ent : event.getChunk().getEntities()){
-    	  if(!(ent instanceof Player))
+    	  if((ent instanceof CraftLivingEntity) && !(ent instanceof Player))
     		  ent.remove();
       }
      }
