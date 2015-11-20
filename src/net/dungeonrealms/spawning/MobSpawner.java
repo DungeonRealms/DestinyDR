@@ -104,6 +104,12 @@ public class MobSpawner {
 						if (num > 32) {
 							monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
 						}
+						
+						if(monster.getBukkitEntity().getLocation().subtract(0, 1, 0).getBlock().getType() == Material.WATER || 
+								monster.getBukkitEntity().getLocation().subtract(0, 1, 0).getBlock().getType() == Material.STATIONARY_WATER){
+							monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
+						}
+						
 					} else {
 						SPAWNED_MONSTERS.remove(monster);
 					}
