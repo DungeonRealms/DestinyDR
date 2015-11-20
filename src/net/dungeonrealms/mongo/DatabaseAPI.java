@@ -342,7 +342,9 @@ public class DatabaseAPI {
                                 .append("friends", new ArrayList<>())
                                 .append("alignment", "lawful")
                                 .append("guild", "")
-                                .append("shopOpen", false))
+                                .append("shopOpen", false)
+                                .append("foodLevel", 20)
+                                .append("shopLevel", 1))
                         .append("attributes",
                                 new Document("bufferPoints", 6)
                                         .append("strength", 0)

@@ -5,6 +5,9 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.profession.Fishing;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
@@ -67,6 +70,7 @@ public class EnergyHandler implements GenericMechanic {
         if (player.hasMetadata("sprinting")) {
             player.removeMetadata("sprinting", DungeonRealms.getInstance());
         }
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_FOOD, player.getFoodLevel(), false);
     }
 
     /**
@@ -78,7 +82,12 @@ public class EnergyHandler implements GenericMechanic {
      * @since 1.0
      */
     public void handleLoginEvents(Player player) {
-        if (player.getFoodLevel() <= 0) {
+        int foodLevel = Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_FOOD, player.getUniqueId())));
+        if (foodLevel < 0) {
+            foodLevel = 0;
+        }
+        player.setFoodLevel(foodLevel);
+        if (foodLevel <= 0) {
             if (player.isOp() || player.getGameMode() == GameMode.CREATIVE) {
                 return;
             }
