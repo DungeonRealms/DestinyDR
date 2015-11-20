@@ -187,7 +187,11 @@ public class Achievements {
         }, 8000, "achievement.master"),
         PLAY_WITH_XFINITYPRO(23, "Play with xFinityPro", new String[]{
                 "Congratulations! You've been granted the privilege to play on the same server as xFinityPro!",
-        }, 450, "achievement.play_with_xfinitypro"),;
+        }, 450, "achievement.play_with_xfinitypro"),
+
+        MESSAGE_YOURSELF(24, "Message yourself", new String[]{}, 640, "achievement.message_your_self"),
+        SEND_A_PM(25, "Send a private message", new String[]{}, 200, "achievement.send_a_pm");
+        ;
 
         private int id;
         private String name;

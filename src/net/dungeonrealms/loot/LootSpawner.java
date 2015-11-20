@@ -92,7 +92,7 @@ public class LootSpawner {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 			setContents();
 			block.setType(Material.CHEST);
-		}, (long) (delay  * LootManager.getDelayMultiplier()) );
+		}, (long) ((delay + 1200)  * LootManager.getDelayMultiplier()) );
 	}
 
 }

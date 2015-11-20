@@ -293,13 +293,8 @@ public class RepairAPI {
         if (tag == null) return 0;
         if (tag.getInt("itemTier") == 0 && tag.getInt("armorTier") == 0) return 0;
         
-        Utils.log.info(durability  + "/ 1500" + " DURB");
-        Utils.log.info(durability / 1500 + " DURB Double?");
         double durabilityHitsLeft = durability / 1500;
-        Utils.log.info(durability + " double Durb");
         double percentDurability = itemStack.getType().getMaxDurability() - (itemStack.getType().getMaxDurability() * durabilityHitsLeft);
-        
-        Utils.log.info(durability + " double Durb");
         
         if (percentDurability == itemStack.getType().getMaxDurability()) {
             percentDurability = itemStack.getType().getMaxDurability() - 1;

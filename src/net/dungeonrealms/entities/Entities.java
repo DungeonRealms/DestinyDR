@@ -1,9 +1,34 @@
 package net.dungeonrealms.entities;
 
+import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.CopyOnWriteArrayList;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.EntityTargetEvent;
+
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.entities.types.monsters.*;
+import net.dungeonrealms.entities.types.monsters.BasicEntitySkeleton;
+import net.dungeonrealms.entities.types.monsters.BasicMageMonster;
+import net.dungeonrealms.entities.types.monsters.BasicMeleeMonster;
+import net.dungeonrealms.entities.types.monsters.EntityBandit;
+import net.dungeonrealms.entities.types.monsters.EntityFireImp;
 import net.dungeonrealms.entities.types.monsters.EntityGolem;
-import net.dungeonrealms.entities.types.monsters.base.*;
+import net.dungeonrealms.entities.types.monsters.EntityPirate;
+import net.dungeonrealms.entities.types.monsters.EntityRangedPirate;
+import net.dungeonrealms.entities.types.monsters.base.DRBlaze;
+import net.dungeonrealms.entities.types.monsters.base.DRMagma;
+import net.dungeonrealms.entities.types.monsters.base.DRPigman;
+import net.dungeonrealms.entities.types.monsters.base.DRSilverfish;
+import net.dungeonrealms.entities.types.monsters.base.DRSpider;
+import net.dungeonrealms.entities.types.monsters.base.DRWitherSkeleton;
 import net.dungeonrealms.entities.types.monsters.boss.Burick;
 import net.dungeonrealms.entities.types.monsters.boss.InfernalAbyss;
 import net.dungeonrealms.entities.types.monsters.boss.InfernalGhast;
@@ -12,25 +37,42 @@ import net.dungeonrealms.entities.types.monsters.boss.subboss.InfernalLordsGuard
 import net.dungeonrealms.entities.types.monsters.boss.subboss.Pyromancer;
 import net.dungeonrealms.entities.types.mounts.EnderDragon;
 import net.dungeonrealms.entities.types.mounts.Horse;
-import net.dungeonrealms.entities.types.pets.*;
+import net.dungeonrealms.entities.types.pets.BabyZombie;
+import net.dungeonrealms.entities.types.pets.BabyZombiePig;
+import net.dungeonrealms.entities.types.pets.CaveSpider;
+import net.dungeonrealms.entities.types.pets.Chicken;
+import net.dungeonrealms.entities.types.pets.Endermite;
+import net.dungeonrealms.entities.types.pets.Ocelot;
+import net.dungeonrealms.entities.types.pets.Rabbit;
+import net.dungeonrealms.entities.types.pets.Silverfish;
+import net.dungeonrealms.entities.types.pets.Snowman;
+import net.dungeonrealms.entities.types.pets.Wolf;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.mastery.NMSUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.spawning.SpawningMechanics;
-import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.entity.EntityTargetEvent;
-
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
+import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.EntityBlaze;
+import net.minecraft.server.v1_8_R3.EntityCaveSpider;
+import net.minecraft.server.v1_8_R3.EntityChicken;
+import net.minecraft.server.v1_8_R3.EntityEnderDragon;
+import net.minecraft.server.v1_8_R3.EntityEndermite;
+import net.minecraft.server.v1_8_R3.EntityGhast;
+import net.minecraft.server.v1_8_R3.EntityHorse;
+import net.minecraft.server.v1_8_R3.EntityInsentient;
+import net.minecraft.server.v1_8_R3.EntityLiving;
+import net.minecraft.server.v1_8_R3.EntityMagmaCube;
+import net.minecraft.server.v1_8_R3.EntityOcelot;
+import net.minecraft.server.v1_8_R3.EntityPigZombie;
+import net.minecraft.server.v1_8_R3.EntityRabbit;
+import net.minecraft.server.v1_8_R3.EntitySilverfish;
+import net.minecraft.server.v1_8_R3.EntitySkeleton;
+import net.minecraft.server.v1_8_R3.EntitySnowman;
+import net.minecraft.server.v1_8_R3.EntityWolf;
+import net.minecraft.server.v1_8_R3.EntityZombie;
+import net.minecraft.server.v1_8_R3.PathEntity;
 
 /**
  * Created by Kieran on 9/18/2015.
@@ -102,8 +144,8 @@ public class Entities implements GenericMechanic {
 		nmsUtils.registerEntity("PetSnowman", 97, EntitySnowman.class, Snowman.class);
 		nmsUtils.registerEntity("MountEnderDragon", 63, EntityEnderDragon.class, EnderDragon.class);
 
-		Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::checkForLeashedMobs, 10,
-		        20L);
+//		Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::checkForLeashedMobs, 10,
+//		        20L);
 	}
 
 	@Override
@@ -121,12 +163,14 @@ public class Entities implements GenericMechanic {
 				if (MONSTER_LAST_ATTACK.containsKey(entity)) {
 					if (MONSTER_LAST_ATTACK.get(entity) == 12) {
 						EntityInsentient entityInsentient = (EntityInsentient) ((CraftEntity)entity).getHandle();
-						if (entityInsentient.getGoalTarget().getBukkitEntity().getLocation().distanceSquared(entity.getLocation()) >= 4) {
-							entity.teleport(entityInsentient.getGoalTarget().getBukkitEntity());
-							entityInsentient.getGoalTarget().getBukkitEntity().sendMessage(ChatColor.WHITE + "BOO!");
+						if (entityInsentient.getGoalTarget().getBukkitEntity().getLocation().distanceSquared(entity.getLocation()) >= 5) {
+//							entity.teleport(entityInsentient.getGoalTarget().getBukkitEntity());
+							Location loc = entityInsentient.getGoalTarget().getBukkitEntity().getLocation();
+							((CraftEntity)entity).getHandle().setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
 							MONSTER_LAST_ATTACK.put(entity, 15);
 						}
 					}
+					
 					if (MONSTER_LAST_ATTACK.get(entity) <= 0) {
 						MONSTERS_LEASHED.remove(entity);
 						MONSTER_LAST_ATTACK.remove(entity);
