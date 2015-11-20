@@ -119,6 +119,14 @@ public class Entities implements GenericMechanic {
 					continue;
 				}
 				if (MONSTER_LAST_ATTACK.containsKey(entity)) {
+					if (MONSTER_LAST_ATTACK.get(entity) == 12) {
+						EntityInsentient entityInsentient = (EntityInsentient) ((CraftEntity)entity).getHandle();
+						if (entityInsentient.getGoalTarget().getBukkitEntity().getLocation().distanceSquared(entity.getLocation()) >= 4) {
+							entity.teleport(entityInsentient.getGoalTarget().getBukkitEntity());
+							entityInsentient.getGoalTarget().getBukkitEntity().sendMessage(ChatColor.WHITE + "BOO!");
+							MONSTER_LAST_ATTACK.put(entity, 15);
+						}
+					}
 					if (MONSTER_LAST_ATTACK.get(entity) <= 0) {
 						MONSTERS_LEASHED.remove(entity);
 						MONSTER_LAST_ATTACK.remove(entity);
