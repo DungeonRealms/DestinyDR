@@ -696,7 +696,13 @@ public class ClickHandler {
                                         return;
                                     }
                                     player.sendMessage(ChatColor.GREEN + "Your Mount is being summoned into this world!");
-                                    MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"));
+                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                                        if (!EntityAPI.hasMountOut(player.getUniqueId())) {
+                                            MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"));
+                                        } else {
+                                            player.sendMessage(ChatColor.RED + "You just summoned your mount!");
+                                        }
+                                    }, 60L);
                                 }
                                 return;
                             } else

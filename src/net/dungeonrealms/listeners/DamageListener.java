@@ -709,13 +709,10 @@ public class DamageListener implements Listener {
                     continue;
                 }
                 net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
-                if (nms.hasTag()) {
-                    if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important") || nms.getTag().hasKey("subtype")) {
-                    	continue;
-                    } else {
-                        player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
-                    }
+                if (nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important") || nms.getTag().hasKey("subtype")) {
+                    continue;
                 }
+                player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
             }
         }
         event.getDrops().clear();
@@ -723,7 +720,8 @@ public class DamageListener implements Listener {
         for (PotionEffect potionEffect : player.getActivePotionEffects()) {
             player.removePotionEffect(potionEffect.getType());
         }
-        HealthHandler.getInstance().setPlayerHPLive(player, HealthHandler.getInstance().getPlayerMaxHPLive(player));
+        HealthHandler.getInstance().setPlayerMaxHPLive(player, HealthHandler.getInstance().calculateMaxHPFromItems(player));
+        HealthHandler.getInstance().setPlayerHPLive(player, HealthHandler.getInstance().calculateMaxHPFromItems(player));
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 10));
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 10));
         player.teleport(respawnLocation);
