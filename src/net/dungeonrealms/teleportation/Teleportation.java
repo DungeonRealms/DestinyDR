@@ -104,7 +104,7 @@ public class Teleportation implements GenericMechanic {
      */
     public void teleportPlayer(UUID uuid, EnumTeleportType teleportType, NBTTagCompound nbt) {
         Player player = Bukkit.getPlayer(uuid);
-        if (!(player.getWorld().getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName()))) {
+        if (!(player.getWorld().equals(Bukkit.getWorlds().get(0)))) {
             if (teleportType == EnumTeleportType.HEARTHSTONE) {
                 TeleportAPI.addPlayerHearthstoneCD(uuid, 280);
             }
@@ -165,7 +165,7 @@ public class Teleportation implements GenericMechanic {
         Location startingLocation = player.getLocation();
         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
-                if (player.getLocation().distanceSquared(startingLocation) <= 2 && !CombatLog.isInCombat(player)) {
+                if (player.getLocation().distanceSquared(startingLocation) <= 4 && !CombatLog.isInCombat(player)) {
                     player.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + taskTimer[0] + "s...");
                     try {
                         ParticleAPI.sendParticleToLocation(particleEffect[0], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
