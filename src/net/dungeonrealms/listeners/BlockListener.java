@@ -212,7 +212,7 @@ public class BlockListener implements Listener {
         }
         ItemStack item = event.getPlayer().getItemInHand();
         
-        if(!API.isWeapon(item) && !API.isArmor(item)){
+        if(!API.isWeapon(item) && !API.isArmor(item) && !Mining.isDRPickaxe(item) && !Fishing.isDRFishingPole(item)){
         	event.setCancelled(true);
         	return;
         }
@@ -226,15 +226,16 @@ public class BlockListener implements Listener {
             if (RepairAPI.canItemBeRepaired(item)) {
                 Player player = event.getPlayer();
                 AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
+                    int newCost = RepairAPI.getItemRepairCost(item);
                     if (e.getSlot() == AnvilSlot.OUTPUT) {
                         String text = e.getName();
                         if (text.equalsIgnoreCase("yes") || text.equalsIgnoreCase("y") || text.contains("Repair for ")) {
-                            boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(cost, player);
+                            boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(newCost, player);
                             if (tookGems) {
                                 RepairAPI.setCustomItemDurability(player.getItemInHand(), 1499);
                                 player.updateInventory();
                             } else {
-                                player.sendMessage(ChatColor.RED + "You do not have " + cost + "g");
+                                player.sendMessage(ChatColor.RED + "You do not have " + newCost + "g");
                             }
                         } else {
                             e.destroy();
@@ -242,16 +243,11 @@ public class BlockListener implements Listener {
                         }
                     }
                 });
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
-                if( RepairAPI.getItemRepairCost(player.getItemInHand()) != cost){
-                	gui.destroy();
-                	player.closeInventory();
-                	player.sendMessage(ChatColor.RED + "Don't change your item while repairing.");
-                	return;
-                }
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
+                    int newCost = RepairAPI.getItemRepairCost(item);
                  	ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
                  	ItemMeta meta = stack.getItemMeta();
-                 	meta.setDisplayName("Repair for " + cost + "g ?");
+                 	meta.setDisplayName("Repair for " + newCost + "g ?");
                  	stack.setItemMeta(meta);
                  	gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
                  	gui.open();
@@ -524,6 +520,11 @@ public class BlockListener implements Listener {
                 }
                 if (API.isInSafeRegion(b1.getLocation()) && !API.isMaterialNearby(b1, 4, Material.CHEST) && !API.isMaterialNearby(b1, 10, Material.ENDER_CHEST)) {
                 	if(!API.getGamePlayer(e.getPlayer()).hasShopOpen()){
+                		if(BankMechanics.getInstance().getStorage(e.getPlayer().getUniqueId()).collection_bin != null){
+                			e.getPlayer().sendMessage(ChatColor.RED + "You must collect your items from the collection bin!");
+                			e.setCancelled(true);
+                			return;
+                		}
                     Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () ->
                             ShopMechanics.setupShop(e.getClickedBlock(), e.getPlayer().getUniqueId()));
                 	}else{

@@ -1,5 +1,33 @@
 package net.dungeonrealms.listeners;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
 import ca.thederpygolems.armorequip.ArmorEquipEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
@@ -8,8 +36,14 @@ import net.dungeonrealms.banks.Storage;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelOffer;
 import net.dungeonrealms.duel.DuelingMechanics;
+import net.dungeonrealms.enchantments.EnchantmentAPI;
 import net.dungeonrealms.handlers.ClickHandler;
 import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.items.Attribute;
+import net.dungeonrealms.items.Item.AttributeType;
+import net.dungeonrealms.items.ItemGenerator;
+import net.dungeonrealms.items.armor.Armor.ArmorAttributeType;
+import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.loot.LootManager;
 import net.dungeonrealms.mastery.Utils;
@@ -26,21 +60,6 @@ import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldEvent;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.*;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.Set;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -264,6 +283,8 @@ public class InventoryListener implements Listener {
                 stat.resetTemp();
             }
             stat.reset = true;
+        }else if(event.getInventory().getTitle().contains("Collection Bin")){
+        	
         }
     }
 
@@ -348,16 +369,314 @@ public class InventoryListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerUseOrbsAndEnchant(InventoryClickEvent event) {
-        if (event.getCursor() == null) return;
-        if (event.getCurrentItem() == null) return;
+    public void onPlayerUseOrbs(InventoryClickEvent event) {
+        if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) return;
+        if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
         if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
         if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
         ItemStack cursorItem = event.getCursor();
+        net.minecraft.server.v1_8_R3.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
+        if(cursorItem.getType() != Material.MAGMA_CREAM || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || nmsCursor.getTag().hasKey("type") && !nmsCursor.getTag().getString("type").equalsIgnoreCase("orb"))return;
         ItemStack slotItem = event.getCurrentItem();
+        if(!API.isWeapon(slotItem)  && !API.isArmor(slotItem)) return;
         if(slotItem == null || slotItem.getType() == Material.AIR) return;
-        Player player = (Player) event.getWhoClicked();
+        event.setCancelled(true);
+        if(cursorItem.getAmount() == 1){
+        	event.setCursor(new ItemStack(Material.AIR));
+        }else{
+        	ItemStack newStack = cursorItem.clone();
+        	newStack.setAmount(newStack.getAmount() - 1);
+        	event.setCursor(newStack);
+        }
+        event.getCurrentItem().setType(Material.AIR);
+        event.getInventory().addItem(new ItemGenerator().reRoll(slotItem));
+    }
+    
+    
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerUseEnchant(InventoryClickEvent event) {
+        if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) return;
+        if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+        if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
+        if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
+        ItemStack cursorItem = event.getCursor();
+        net.minecraft.server.v1_8_R3.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
+        if(cursorItem.getType() != Material.EMPTY_MAP || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type"))return;
+        ItemStack slotItem = event.getCurrentItem();
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(slotItem);
+        if(!API.isWeapon(slotItem)  && !API.isArmor(slotItem)) return;
+        event.setCancelled(true);
+        if(API.isWeapon(slotItem)){
+        	if(!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("weaponenchant")){
+        		return;
+        	}
+        	
+        	int tier = nmsCursor.getTag().getInt("tier");
+        	if(tier > new Attribute(slotItem).getItemTier().getTierId()){
+        		event.getWhoClicked().sendMessage(ChatColor.RED + "You can not use that enchant scroll on this weapon.");
+        		return;
+        	}
+        	
+        int amount = 0;
+        if(nmsItem.getTag().hasKey("enchant")){
+        	amount = nmsItem.getTag().getInt("enchant");
+        }
 
+        boolean failed = false;
+        if(amount < 3){
+        	failed = false;
+        }else{
+			if(amount >= 12) {
+				event.getWhoClicked().sendMessage(ChatColor.RED + "This item is already enchanted +12, cannot apply more stats.");
+				event.setCancelled(true);
+				((Player)event.getWhoClicked()).updateInventory();
+				return;
+			}
+			int win_chance = new Random().nextInt(100);
+			int fail = 0;
+			if(amount >= 3) {
+    			switch(amount){
+    			case 3:
+    				fail = 30;
+    				break;
+    			case 4:
+    				fail = 40;
+    				break;
+    			case 5:
+    				fail = 50;
+    				break;
+    			case 6:
+    				fail = 65;
+    				break;
+    			case 7:
+    				fail = 75;
+    				break;
+    			case 8:
+    				fail = 80;
+    				break;
+    			case 9:
+    				fail = 85;
+    				break;
+    			case 10:
+    				fail = 90;
+    				break;
+    			case 11:
+    				fail = 95;
+    				break;
+    			}
+				if(win_chance < fail) {
+					failed = true;
+					// Fail.
+				} else if(win_chance >= fail) {
+					failed = false;
+				}
+			}
+        }
+        if(failed){
+        	event.setCancelled(true);
+            if(cursorItem.getAmount() == 1){
+            	event.setCursor(new ItemStack(Material.AIR));
+            }else{
+            	ItemStack newStack = cursorItem.clone();
+            	newStack.setAmount(newStack.getAmount() - 1);
+            	event.setCursor(newStack);
+            }
+            event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your item VANISHED");
+            event.setCurrentItem(new ItemStack(Material.AIR));
+        	return;
+        }
+
+        ItemMeta meta2 = slotItem.getItemMeta();
+        String itemName = meta2.getDisplayName();
+        ArrayList<String> lore = (ArrayList<String>) meta2.getLore();
+    	
+        String newName = "";
+        if(amount == 0){
+            newName = itemName;
+        }else{
+        	newName = itemName.substring((itemName.lastIndexOf("]") + 2), itemName.length());
+        }
+        
+    	String finalName = ChatColor.RED + "[" + "+" + (amount+1) + "] " + newName;
+        double  doublenewDamage = nmsItem.getTag().getInt("damage") + ((5 * nmsItem.getTag().getInt("damage")) / 100);
+        int finalDmg = (int) Math.round(doublenewDamage);
+        Attribute att = new Attribute(slotItem);
+        List<String> itemLore = new ArrayList<>();
+        itemLore.add(ItemGenerator.setCorrectItemLore(AttributeType.DAMAGE, finalDmg, att.getItemTier().getTierId()));
+        
+        for(String current : lore){
+        	if(!current.startsWith(ChatColor.WHITE + "Damage:"))
+        		itemLore.add(current);
+        }
+        nmsItem.getTag().setInt("enchant", amount + 1);
+        nmsItem.getTag().setInt("damage", finalDmg);
+        ItemStack newItem = CraftItemStack.asBukkitCopy(nmsItem);
+        
+        
+        
+        ItemMeta meta = newItem.getItemMeta();
+        meta.setDisplayName(finalName);
+        meta.setLore(itemLore);
+        newItem.setItemMeta(meta);
+        
+        if(cursorItem.getAmount() == 1){
+        	event.setCursor(new ItemStack(Material.AIR));
+        }else{
+        	ItemStack newStack = cursorItem.clone();
+        	newStack.setAmount(newStack.getAmount() - 1);
+        	event.setCursor(newStack);
+        }
+        event.getCurrentItem().setType(Material.AIR);
+        event.setCurrentItem(new ItemStack(Material.AIR));
+        if((amount + 1) >= 3)
+        	EnchantmentAPI.addGlow(newItem);
+        event.getWhoClicked().getInventory().addItem(newItem);
+        ((Player)event.getWhoClicked()).updateInventory();
+        }else if(API.isArmor(slotItem)){
+        	
+        	
+        	
+        	if(!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("armorenchant")){
+        		return;
+        	}
+        	
+        	
+        	int tier = nmsCursor.getTag().getInt("tier");
+        	if(tier > new Attribute(slotItem).getArmorTier().getTierId()){
+        		event.getWhoClicked().sendMessage(ChatColor.RED + "You can not use that enchant scroll on this armor.");
+        		return;
+        	}
+        	
+        int amount = 0;
+        if(nmsItem.getTag().hasKey("enchant")){
+        	amount = nmsItem.getTag().getInt("enchant");
+        }
+
+        boolean failed = false;
+        if(amount < 3){
+        	failed = false;
+        }else{
+			if(amount >= 12) {
+				event.getWhoClicked().sendMessage(ChatColor.RED + "This item is already enchanted +12, cannot apply more stats.");
+				event.setCancelled(true);
+				((Player)event.getWhoClicked()).updateInventory();
+				return;
+			}
+			int win_chance = new Random().nextInt(100);
+			int fail = 0;
+			if(amount >= 3) {
+    			switch(amount){
+    			case 3:
+    				fail = 30;
+    				break;
+    			case 4:
+    				fail = 40;
+    				break;
+    			case 5:
+    				fail = 50;
+    				break;
+    			case 6:
+    				fail = 65;
+    				break;
+    			case 7:
+    				fail = 75;
+    				break;
+    			case 8:
+    				fail = 80;
+    				break;
+    			case 9:
+    				fail = 85;
+    				break;
+    			case 10:
+    				fail = 90;
+    				break;
+    			case 11:
+    				fail = 95;
+    				break;
+    			}
+				if(win_chance < fail) {
+					failed = true;
+					// Fail.
+				} else if(win_chance >= fail) {
+					failed = false;
+				}
+			}
+        }
+        if(failed){
+        	event.setCancelled(true);
+            if(cursorItem.getAmount() == 1){
+            	event.setCursor(new ItemStack(Material.AIR));
+            }else{
+            	ItemStack newStack = cursorItem.clone();
+            	newStack.setAmount(newStack.getAmount() - 1);
+            	event.setCursor(newStack);
+            }
+            event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your item VANISHED");
+            event.setCurrentItem(new ItemStack(Material.AIR));
+        	return;
+        }
+
+        ItemMeta meta2 = slotItem.getItemMeta();
+        String itemName = meta2.getDisplayName();
+        String newName = "";
+        if(amount == 0){
+            newName = itemName;
+        }else{
+        	newName = itemName.substring((itemName.lastIndexOf("]") + 2), itemName.length());
+        }
+        
+    	String finalName = ChatColor.RED + "[" + "+" + (amount+1) + "] " + newName;
+        List<String> itemLore = new ArrayList<>();
+        
+        double hpDouble = nmsItem.getTag().getInt(ArmorAttributeType.HEALTH_POINTS.getNBTName()) + ((nmsItem.getTag().getInt(ArmorAttributeType.HEALTH_POINTS.getNBTName()) * 5) / 100);
+        int newHP = (int) Math.round((hpDouble));
+		itemLore.add(ArmorGenerator.setCorrectArmorLore(ArmorAttributeType.HEALTH_POINTS, newHP));
+        nmsItem.getTag().setInt(ArmorAttributeType.HEALTH_POINTS.getNBTName(), newHP);
+
+		if(nmsItem.getTag().hasKey(ArmorAttributeType.HEALTH_REGEN.getNBTName())){
+            double hpRegenDouble = nmsItem.getTag().getInt(ArmorAttributeType.HEALTH_REGEN.getNBTName()) + ((nmsItem.getTag().getInt(ArmorAttributeType.HEALTH_REGEN.getNBTName()) * 5) / 100);
+            int newHPRegen = (int) Math.round((hpRegenDouble));
+            nmsItem.getTag().setInt(ArmorAttributeType.HEALTH_REGEN.getNBTName(), newHPRegen);
+			itemLore.add(ArmorGenerator.setCorrectArmorLore(ArmorAttributeType.HEALTH_REGEN, newHPRegen));
+
+		}else if(nmsItem.getTag().hasKey(ArmorAttributeType.ENERGY_REGEN.getNBTName())){
+            double energyRegen = nmsItem.getTag().getInt(ArmorAttributeType.ENERGY_REGEN.getNBTName()) + ((nmsItem.getTag().getInt(ArmorAttributeType.ENERGY_REGEN.getNBTName()) * 5) / 100);
+            int newEnergyRegen = (int) Math.round((energyRegen));
+            nmsItem.getTag().setInt(ArmorAttributeType.ENERGY_REGEN.getNBTName(), newEnergyRegen);
+			itemLore.add(ArmorGenerator.setCorrectArmorLore(ArmorAttributeType.ENERGY_REGEN, newEnergyRegen));
+		}
+		
+        ArrayList<String> lore = (ArrayList<String>) meta2.getLore();
+        for(String current : lore){
+        	if(current.contains("Health Points") || current.contains("Health Regen") || current.contains("Energy Regen"))
+        		continue;
+        		itemLore.add(current);
+        }
+        
+    	nmsItem.getTag().setInt("enchant", amount + 1);
+        ItemStack newItem = CraftItemStack.asBukkitCopy(nmsItem);
+        
+        
+        
+        ItemMeta meta = newItem.getItemMeta();
+        meta.setDisplayName(finalName);
+        meta.setLore(itemLore);
+        newItem.setItemMeta(meta);
+        
+        if(cursorItem.getAmount() == 1){
+        	event.setCursor(new ItemStack(Material.AIR));
+        }else{
+        	ItemStack newStack = cursorItem.clone();
+        	newStack.setAmount(newStack.getAmount() - 1);
+        	event.setCursor(newStack);
+        }
+        event.getCurrentItem().setType(Material.AIR);
+        event.setCurrentItem(new ItemStack(Material.AIR));
+        if((amount + 1) >= 3)
+        	EnchantmentAPI.addGlow(newItem);
+        event.getWhoClicked().getInventory().addItem(newItem);
+        ((Player)event.getWhoClicked()).updateInventory();
+        }
     }
     
     @EventHandler(priority = EventPriority.HIGHEST)

@@ -34,6 +34,9 @@ import java.util.UUID;
  * Created by Chase, by fixed by Proxying and under inspection of xFinityPro.
  */
 public class BankListener implements Listener {
+	
+	public ArrayList<UUID> prompted = new ArrayList<>();
+	
     /**
      * Bank Inventory. When a player moves items
      *
@@ -44,18 +47,22 @@ public class BankListener implements Listener {
     public void onEnderChestRightClick(PlayerInteractEvent e) {
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
-            	
-            	String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, e.getPlayer().getUniqueId());
-            	if(!invString.equalsIgnoreCase("")){
-            		Inventory tempInv = ItemSerialization.fromString(invString);
-            		Inventory collectionBin = Bukkit.createInventory(e.getPlayer(), tempInv.getSize(), "Collection Bin");
-            		collectionBin.setContents(tempInv.getContents());
+                Storage storage = BankMechanics.getInstance().getStorage(e.getPlayer().getUniqueId());
+            	if(storage.collection_bin != null){
+            		if(!prompted.contains(e.getPlayer().getUniqueId())){
+            			prompted.add(e.getPlayer().getUniqueId());
+            			e.getPlayer().sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.YELLOW + "Collection Bin emptied once you open it.");
+            			e.getPlayer().sendMessage(ChatColor.YELLOW + "Open your chest again once you're ready to empty your collection bin.");
+            			e.setCancelled(true);
+            			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{prompted.remove(e.getPlayer().getUniqueId());}, 100);
+            			return;
+            		}
+            		e.getPlayer().openInventory(storage.collection_bin);
             		DatabaseAPI.getInstance().update(e.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
-            		e.getPlayer().openInventory(collectionBin);
+            		storage.collection_bin = null;
             		e.setCancelled(true);
             		return;
             	}
-            	
             	
                 Block b = e.getClickedBlock();
                 ItemStack stack = new ItemStack(b.getType(), 1);

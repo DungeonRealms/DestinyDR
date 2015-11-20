@@ -165,7 +165,7 @@ public class ArmorGenerator {
 	 * @return ArrayList
 	 * @since 1.0
 	 */
-	private ArrayList<Armor.ArmorAttributeType> getRandomAttributes(int amountOfAttributes) {
+	public ArrayList<Armor.ArmorAttributeType> getRandomAttributes(int amountOfAttributes) {
 		ArrayList<Armor.ArmorAttributeType> attributeList = new ArrayList<>();
 		if (new Random().nextBoolean()) {
 			attributeList.add(Armor.ArmorAttributeType.ARMOR);

@@ -80,8 +80,8 @@ public class Teleportation implements GenericMechanic {
         Gloomy_Hollows = new Location(Bukkit.getWorlds().get(0), -590, 44, 0, 144F, 1F);
         Crestguard_Keep = new Location(Bukkit.getWorlds().get(0), -1428, 116, -489, 95F, 1F);
         Tutorial = new Location(Bukkit.getWorlds().get(0), 824, 49, -103, 124F, 1F);
-        Underworld = new Location(Bukkit.getWorlds().get(0), -362, 170, -3440, -90F, 1F);
-        Overworld = new Location(Bukkit.getWorlds().get(0), -1158, 94, -515, 91F, 1F);
+        Underworld = new Location(Bukkit.getWorlds().get(0), -362, 172, -3440, -90F, 1F);
+        Overworld = new Location(Bukkit.getWorlds().get(0), -1158, 96, -515, 91F, 1F);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for (Map.Entry<UUID, Integer> e : PLAYER_TELEPORT_COOLDOWNS.entrySet()) {
                 TeleportAPI.addPlayerHearthstoneCD(e.getKey(), (e.getValue() - 1));

@@ -71,7 +71,23 @@ public class ItemManager {
     	nms.getTag().setString("type", "orb");
     	return CraftItemStack.asBukkitCopy(nms);
     }
-
+    
+    public static ItemStack createWeaponEnchant(int tier){
+    	ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() +ChatColor.BOLD.toString() + "Scroll: " + API.getTierColor(tier) + "Enchant T" + tier + " Weapon" , new String[]{ChatColor.RED + "+5% DMG", ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "Weapon will VANISH if enchant +3 FAILS."});
+    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
+    	nms.getTag().setString("type", "weaponenchant");
+    	nms.getTag().setInt("tier", tier);
+    	return CraftItemStack.asBukkitCopy(nms);
+    }
+    
+    public static ItemStack createArmorEnchant(int tier){
+    	ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() +ChatColor.BOLD.toString() + "Scroll: " + API.getTierColor(tier) + "Enchant T" + tier + " Armor" , new String[]{ChatColor.RED + "+5% HP",ChatColor.RED + "+5% HP REGEN", ChatColor.GRAY.toString() + ChatColor.ITALIC + "    - OR -", ChatColor.RED + "+1% ENERGY REGEN" ,ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "Armor will VANISH if enchant +3 FAILS."});
+    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
+    	nms.getTag().setString("type", "armorenchant");
+    	nms.getTag().setInt("tier", tier);
+    	return CraftItemStack.asBukkitCopy(nms);
+    }
+    
     /**
      * Creates a random Teleport book
      *

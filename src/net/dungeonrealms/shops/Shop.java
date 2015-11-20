@@ -20,6 +20,8 @@ import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
@@ -83,6 +85,18 @@ public class Shop {
 	public void deleteShop() {
 		DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true);
 		hologram.delete();
+		block1.setType(Material.AIR);
+		block2.setType(Material.AIR);
+		block1.getWorld().playSound(block1.getLocation(), Sound.PISTON_RETRACT, 1, 1);
+
+		if(getOwner() == null){
+			saveCollectionBin();
+			block1.setType(Material.AIR);
+			block2.setType(Material.AIR);
+			block1.getWorld().playSound(block1.getLocation(), Sound.PISTON_RETRACT, 1, 1);
+			block1.getWorld().save();
+			ShopMechanics.ALLSHOPS.remove(ownerName);
+		}else{
 		for (int i = 0; i < inventory.getSize(); i++) {
 			ItemStack current = inventory.getItem(i);
 			if (current == null)
@@ -107,23 +121,49 @@ public class Shop {
 			current.setItemMeta(meta);
 			if (getOwner() != null) {
 				getOwner().getInventory().addItem(current);
-			} else {
-				saveCollectionBin();
 			}
 		}
-		block1.setType(Material.AIR);
-		block2.setType(Material.AIR);
-		block1.getWorld().playSound(block1.getLocation(), Sound.PISTON_RETRACT, 1, 1);
 
 		block1.getWorld().save();
 		ShopMechanics.ALLSHOPS.remove(ownerName);
+		}
 	}
 
 	/**
-	* 
+	* save to collection
 	*/
 	private void saveCollectionBin() {
-
+		Inventory inv = Bukkit.createInventory(null, inventory.getSize(), "Collection Bin");
+		int count = 0;
+		for(ItemStack stack : inventory){
+			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+			if(stack != null && stack.getType() != Material.AIR){
+				if(stack.getType() == Material.INK_SACK && nms.hasTag() && nms.getTag().hasKey("status"))
+					continue;
+    			ItemMeta meta = stack.getItemMeta();
+    			List<String> lore = meta.getLore();
+    			for (int j = 0; j < lore.size(); j++) {
+    				String currentStr = lore.get(j);
+    				if (currentStr.contains("Price")) {
+    					lore.remove(j);
+    					break;
+    				}
+    			}
+    			if(nms.getTag().hasKey("worth"))
+    			nms.getTag().remove("worth");
+    			meta.setLore(lore);
+    			stack.setItemMeta(meta);
+    			
+				inv.addItem(stack);
+				count++;
+			}
+		}
+		if(count > 0){
+			String invToString = ItemSerialization.toString(inv);
+			DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, invToString, true);
+		}else{
+			DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
+		}
 	}
 
 	/**
@@ -147,7 +187,7 @@ public class Shop {
 			net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
 			nmsButton.getTag().setString("status", "off");
 			inventory.setItem(8, CraftItemStack.asBukkitCopy(nmsButton));
-			hologram.appendTextLine(ChatColor.RED + shopName);
+			hologram.appendTextLine(ChatColor.RED + ChatColor.BOLD.toString() +  shopName);
 		} else {
 			ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.LIME.getDyeData());
 			ItemMeta meta = button.getItemMeta();
@@ -156,7 +196,7 @@ public class Shop {
 			net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
 			nmsButton.getTag().setString("status", "on");
 			inventory.setItem(8, CraftItemStack.asBukkitCopy(nmsButton));
-			hologram.appendTextLine(ChatColor.GREEN + shopName);
+			hologram.appendTextLine(ChatColor.GREEN + ChatColor.BOLD.toString() + shopName + " [S]");
 		}
 	}
 

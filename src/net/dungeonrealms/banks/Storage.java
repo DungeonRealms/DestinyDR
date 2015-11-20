@@ -3,9 +3,12 @@ package net.dungeonrealms.banks;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 
+import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 
@@ -16,7 +19,8 @@ public class Storage {
 
     public UUID ownerUUID;
     public Inventory inv;
-
+	public Inventory collection_bin = null;
+	
     public Storage(UUID owner) {
         ownerUUID = owner;
         inv = getNewStorage();
@@ -33,7 +37,18 @@ public class Storage {
         	if(stack != null && stack.getType() != org.bukkit.Material.AIR)
         	if(inv.firstEmpty() >= 0)
         		inv.addItem(stack);
+        }
+        String stringInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, ownerUUID);
+        if(stringInv.length() > 1){
+        	Inventory inv = ItemSerialization.fromString(stringInv);
+        	for(ItemStack item : inv.getContents()){
+        		if(item != null && item.getType() == Material.AIR){
+        			inv.addItem(item);
+        		}
         	}
+        	this.collection_bin = inv;
+        }
+        
     }
 
     /**

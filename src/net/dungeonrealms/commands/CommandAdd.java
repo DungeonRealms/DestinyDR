@@ -151,6 +151,17 @@ public class CommandAdd extends BasicCommand {
                 case "test":
                     Bukkit.broadcastMessage("Get2" + String.valueOf(RepairAPI.getCustomDurability(player.getItemInHand())));
                     break;
+                case "orb":
+                	player.getInventory().addItem(ItemManager.createOrbofAlteration());
+                	break;
+                case "armorenchant":
+                	tier = Integer.parseInt(args[1]);
+                	player.getInventory().addItem(ItemManager.createArmorEnchant(tier));
+                	break;
+                case "weaponenchant":
+                	tier = Integer.parseInt(args[1]);
+                	player.getInventory().addItem(ItemManager.createWeaponEnchant(tier));
+                	break;
             }
         }
 
