@@ -755,6 +755,16 @@ public class DamageListener implements Listener {
             PlayerManager.checkInventory(player.getUniqueId());
             player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 10)).setNBTString("subtype", "starter").build());
             if (finalSavedArmorContents) {
+            	
+            	for(ItemStack itemStack : savedItems){
+            		 if (itemStack != null && itemStack.getType() != Material.AIR) {
+                         if (RepairAPI.getCustomDurability(itemStack) - 400 > 0.1D) {
+                             RepairAPI.subtractCustomDurability(player, itemStack, 400);
+                         }
+                         player.getInventory().addItem(itemStack);
+                     }	
+            	}
+            	
                 for (ItemStack itemStack : armorToSave) {
                     if (itemStack != null && itemStack.getType() != Material.AIR) {
                         if (RepairAPI.getCustomDurability(itemStack) - 400 > 0.1D) {
