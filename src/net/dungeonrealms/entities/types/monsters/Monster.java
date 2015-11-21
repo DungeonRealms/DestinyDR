@@ -65,7 +65,7 @@ public interface Monster {
 			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), armorToDrop);
 		}
 		
-		if(RandomHelper.getRandomNumberBetween(1, 200) == 2){
+		if(RandomHelper.getRandomNumberBetween(1, 400) <= 2){
 			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), ItemManager.createProtectScroll(tier));
 		}
 	}

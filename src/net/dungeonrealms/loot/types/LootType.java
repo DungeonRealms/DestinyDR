@@ -226,6 +226,7 @@ public enum LootType {
                             continue;
                         case MAGMA_CREAM:
                         	item = ItemManager.createOrbofAlteration();
+                            break;
                         default:
                             item = new ItemStack(m, 1, item_meta);
                             break;

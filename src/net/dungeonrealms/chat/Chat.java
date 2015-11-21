@@ -108,7 +108,7 @@ public class Chat {
                     return;
                 }
                 event.setCancelled(true);
-                API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(player) + event.getMessage()));
+                API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + event.getMessage()));
             } else {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.GRAY + "No one heard you...");

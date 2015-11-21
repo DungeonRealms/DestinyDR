@@ -1,5 +1,6 @@
 package net.dungeonrealms.commands;
 
+import net.dungeonrealms.chat.GameChat;
 import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.json.JSONMessage;
@@ -68,7 +69,7 @@ public class CommandGlobalChat extends BasicCommand {
        	if(chatMessage.toString().contains("@i@") && player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR){
             String message = chatMessage.toString();
            final Player p = player;
-           String aprefix = prefix.toString().trim() + ChatColor.GRAY + p.getName() + ": ";
+           String aprefix = GameChat.getPreMessage(p);
            String[] split = message.split("@i@");
            String after = "";
            String before = "";
