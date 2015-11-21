@@ -20,6 +20,7 @@ import net.dungeonrealms.items.armor.Armor;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.miscellaneous.ItemBuilder;
@@ -754,6 +755,16 @@ public class DamageListener implements Listener {
             PlayerManager.checkInventory(player.getUniqueId());
             player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 10)).setNBTString("subtype", "starter").build());
             if (finalSavedArmorContents) {
+            	
+            	for(ItemStack itemStack : savedItems){
+            		 if (itemStack != null && itemStack.getType() != Material.AIR) {
+                         if (RepairAPI.getCustomDurability(itemStack) - 400 > 0.1D) {
+                             RepairAPI.subtractCustomDurability(player, itemStack, 400);
+                         }
+                         player.getInventory().addItem(itemStack);
+                     }	
+            	}
+            	
                 for (ItemStack itemStack : armorToSave) {
                     if (itemStack != null && itemStack.getType() != Material.AIR) {
                         if (RepairAPI.getCustomDurability(itemStack) - 400 > 0.1D) {

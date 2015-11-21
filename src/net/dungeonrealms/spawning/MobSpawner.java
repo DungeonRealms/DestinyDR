@@ -12,6 +12,7 @@ import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.util.Vector;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
@@ -211,6 +212,7 @@ public class MobSpawner {
 					entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 					world.addEntity(entity, SpawnReason.CUSTOM);
 					entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+					entity.getBukkitEntity().setVelocity(new Vector(0.75, 0.5, 0.75));
 					SPAWNED_MONSTERS.add(entity);
 					toSpawn = false;
 					} , 200L);
@@ -219,6 +221,7 @@ public class MobSpawner {
 					entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 					world.addEntity(entity, SpawnReason.CUSTOM);
 					entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+					entity.getBukkitEntity().setVelocity(new Vector(0.75, 0.5, 0.75));
 					firstSpawn = false;
 					SPAWNED_MONSTERS.add(entity);
 					toSpawn = false;

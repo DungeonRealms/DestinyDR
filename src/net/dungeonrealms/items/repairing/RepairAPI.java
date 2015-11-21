@@ -153,6 +153,7 @@ public class RepairAPI {
 			}
 			
 			repair_cost = repair_cost * global_multiplier;
+			return (int) Math.round(repair_cost);
 		}
 		
 		if(repair_cost < 1) {

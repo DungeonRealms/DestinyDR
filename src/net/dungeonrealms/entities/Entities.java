@@ -82,8 +82,8 @@ public class Entities implements GenericMechanic {
 	private static Entities instance = null;
 	public static HashMap<UUID, Entity> PLAYER_PETS = new HashMap<>();
 	public static HashMap<UUID, Entity> PLAYER_MOUNTS = new HashMap<>();
-	public ConcurrentHashMap<LivingEntity, Integer> MONSTER_LAST_ATTACK = new ConcurrentHashMap<>();
-	public List<LivingEntity> MONSTERS_LEASHED = new CopyOnWriteArrayList<>();
+	public static ConcurrentHashMap<LivingEntity, Integer> MONSTER_LAST_ATTACK = new ConcurrentHashMap<>();
+	public static List<LivingEntity> MONSTERS_LEASHED = new CopyOnWriteArrayList<>();
 
 	public static Entities getInstance() {
 		if (instance == null) {
@@ -144,8 +144,8 @@ public class Entities implements GenericMechanic {
 		nmsUtils.registerEntity("PetSnowman", 97, EntitySnowman.class, Snowman.class);
 		nmsUtils.registerEntity("MountEnderDragon", 63, EntityEnderDragon.class, EnderDragon.class);
 
-//		Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::checkForLeashedMobs, 10,
-//		        20L);
+		Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> checkForLeashedMobs(), 0,
+		        20L);
 	}
 
 	@Override
@@ -160,14 +160,20 @@ public class Entities implements GenericMechanic {
 					Utils.log.warning("[ENTITIES] [ASYNC] Mob is somehow leashed but null, safety removing!");
 					continue;
 				}
+				
 				if (MONSTER_LAST_ATTACK.containsKey(entity)) {
-					if (MONSTER_LAST_ATTACK.get(entity) == 12) {
+					if (MONSTER_LAST_ATTACK.get(entity) == 14) {
 						EntityInsentient entityInsentient = (EntityInsentient) ((CraftEntity)entity).getHandle();
-						if (entityInsentient.getGoalTarget().getBukkitEntity().getLocation().distanceSquared(entity.getLocation()) >= 5) {
+						if(entityInsentient != null && entityInsentient.getGoalTarget() != null){
+						if(entityInsentient.getGoalTarget().getBukkitEntity().getLocation().distance(entity.getLocation()) <= 5 ){
+						if (entityInsentient.getGoalTarget().getBukkitEntity().getLocation().getBlockY() > entity.getLocation().getBlockY()) {
 //							entity.teleport(entityInsentient.getGoalTarget().getBukkitEntity());
 							Location loc = entityInsentient.getGoalTarget().getBukkitEntity().getLocation();
-							((CraftEntity)entity).getHandle().setLocation(loc.getX(), loc.getY(), loc.getZ(), loc.getYaw(), loc.getPitch());
+							((CraftEntity)entity).getHandle().setLocation(loc.getX(), loc.getY() + 1, loc.getZ(), loc.getYaw(), loc.getPitch());
+							MONSTER_LAST_ATTACK.remove(entity);
 							MONSTER_LAST_ATTACK.put(entity, 15);
+							}
+						}
 						}
 					}
 					
@@ -205,7 +211,7 @@ public class Entities implements GenericMechanic {
 				} else {
 					MONSTER_LAST_ATTACK.put(entity, 15);
 				}
-			}
+			}	
 		}
 	}
 

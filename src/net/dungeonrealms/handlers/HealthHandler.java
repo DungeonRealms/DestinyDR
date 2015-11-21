@@ -551,9 +551,9 @@ public class HealthHandler implements GenericMechanic {
         }
         player.setHealth(convHPToDisplay);
         if (!(leAttacker == null) && !(API.isPlayer(leAttacker))) {
-            Entities.getInstance().MONSTER_LAST_ATTACK.put(leAttacker, 15);
-            if (!Entities.getInstance().MONSTERS_LEASHED.contains(leAttacker)) {
-                Entities.getInstance().MONSTERS_LEASHED.add(leAttacker);
+            Entities.MONSTER_LAST_ATTACK.put(leAttacker, 15);
+            if (!Entities.MONSTERS_LEASHED.contains(leAttacker)) {
+                Entities.MONSTERS_LEASHED.add(leAttacker);
             }
         }
     }
@@ -578,7 +578,7 @@ public class HealthHandler implements GenericMechanic {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
                 String customNameAppended = entity.getCustomName();
                  EntityLiving nms = ((CraftLivingEntity)entity).getHandle();
-                if(!nms.getCustomName().contains("*") || !entity.hasMetadata("boss"))
+                if(!nms.getCustomName().contains("*") || !entity.hasMetadata("boss") || !entity.hasMetadata("elite"))
                 	customNameAppended = ChatColor.stripColor(customNameAppended.substring(customNameAppended.indexOf("]") + 1, customNameAppended.indexOf("❤")).trim());
                 attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + customNameAppended + ChatColor.BOLD + "[" + (int) newHP + "HP]");
             }
@@ -592,11 +592,11 @@ public class HealthHandler implements GenericMechanic {
             if (!entity1.dead) {
                 entity1.dead = true;
             }
-            if (Entities.getInstance().MONSTER_LAST_ATTACK.containsKey(entity)) {
-                Entities.getInstance().MONSTER_LAST_ATTACK.remove(entity);
+            if (Entities.MONSTER_LAST_ATTACK.containsKey(entity)) {
+                Entities.MONSTER_LAST_ATTACK.remove(entity);
             }
-            if (Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
-                Entities.getInstance().MONSTERS_LEASHED.remove(entity);
+            if (Entities.MONSTERS_LEASHED.contains(entity)) {
+                Entities.MONSTERS_LEASHED.remove(entity);
             }
             if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
                 ((net.dungeonrealms.entities.types.monsters.Monster) entity1).onMonsterDeath();
@@ -624,11 +624,11 @@ public class HealthHandler implements GenericMechanic {
                 String lvlName = ChatColor.LIGHT_PURPLE + "[" + level + "] ";
                 String name = entity.getMetadata("customname").get(0).asString();
                 int hp = entity.getMetadata("currentHP").get(0).asInt();
-                if (!entity.hasMetadata("elite"))
+                if (!entity.hasMetadata("elite") || !entity.hasMetadata("boss"))
                     entity.setCustomName(lvlName + ChatColor.RESET + name + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
                 entity.setHealth(convHPToDisplay);
-                if (!Entities.getInstance().MONSTERS_LEASHED.contains(entity)) {
-                    Entities.getInstance().MONSTERS_LEASHED.add(entity);
+                if (!Entities.MONSTERS_LEASHED.contains(entity)) {
+                    Entities.MONSTERS_LEASHED.add(entity);
                 }
             }
         }
