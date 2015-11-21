@@ -714,9 +714,13 @@ public class DamageListener implements Listener {
                         continue;
                     }
                     net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
-                    if (nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important") || nms.getTag().hasKey("subtype")) {
-                        //event.getDrops().remove(itemStack);
-                        continue;
+                    if (nms != null) {
+                        if (nms.getTag() != null) {
+                            if ((nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")) || nms.hasTag() && nms.getTag().hasKey("subtype")) {
+                                //event.getDrops().remove(itemStack);
+                                continue;
+                            }
+                        }
                     }
                     if (Mining.isDRPickaxe(itemStack) || Fishing.isDRFishingPole(itemStack)) {
                         //event.getDrops().remove(itemStack);
