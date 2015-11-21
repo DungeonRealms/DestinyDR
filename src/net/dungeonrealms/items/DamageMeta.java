@@ -380,7 +380,7 @@ public class DamageMeta {
                             case HEALTH_REGEN:
                                 return random(68, 80);
                             case ENERGY_REGEN:
-                                return random(2, 5);
+                                return random(3, 4);
                             case INTELLECT:
                                 return random(22, 75);
                             case FIRE_RESISTANCE:
@@ -411,7 +411,7 @@ public class DamageMeta {
                             case HEALTH_REGEN:
                                 return random(70, 80);
                             case ENERGY_REGEN:
-                                return random(2, 5);
+                                return random(3, 4);
                             case INTELLECT:
                                 return random(25, 75);
                             case FIRE_RESISTANCE:
@@ -442,7 +442,7 @@ public class DamageMeta {
                             case HEALTH_REGEN:
                                 return random(72, 80);
                             case ENERGY_REGEN:
-                                return random(2, 5);
+                                return random(3, 4);
                             case INTELLECT:
                                 return random(30, 75);
                             case FIRE_RESISTANCE:
@@ -473,7 +473,7 @@ public class DamageMeta {
                             case HEALTH_REGEN:
                                 return random(75, 80);
                             case ENERGY_REGEN:
-                                return random(3, 6);
+                                return random(3, 5);
                             case INTELLECT:
                                 return random(40, 75);
                             case FIRE_RESISTANCE:
@@ -508,7 +508,7 @@ public class DamageMeta {
                             case HEALTH_REGEN:
                                 return random(110, 130);
                             case ENERGY_REGEN:
-                                return random(3, 6);
+                                return random(3, 5);
                             case INTELLECT:
                                 return random(40, 115);
                             case FIRE_RESISTANCE:
@@ -539,7 +539,7 @@ public class DamageMeta {
                             case HEALTH_REGEN:
                                 return random(115, 130);
                             case ENERGY_REGEN:
-                                return random(4, 6);
+                                return random(4, 5);
                             case INTELLECT:
                                 return random(44, 115);
                             case FIRE_RESISTANCE:
@@ -570,7 +570,7 @@ public class DamageMeta {
                             case HEALTH_REGEN:
                                 return random(117, 130);
                             case ENERGY_REGEN:
-                                return random(4, 6);
+                                return random(4, 5);
                             case INTELLECT:
                                 return random(50, 115);
                             case FIRE_RESISTANCE:
@@ -601,7 +601,7 @@ public class DamageMeta {
                             case HEALTH_REGEN:
                                 return random(120, 130);
                             case ENERGY_REGEN:
-                                return random(4, 6);
+                                return random(4, 5);
                             case INTELLECT:
                                 return random(55, 115);
                             case FIRE_RESISTANCE:
@@ -632,7 +632,7 @@ public class DamageMeta {
                             case HEALTH_REGEN:
                                 return random(125, 130);
                             case ENERGY_REGEN:
-                                return random(5, 7);
+                                return random(5, 6);
                             case INTELLECT:
                                 return random(60, 115);
                             case FIRE_RESISTANCE:
@@ -667,7 +667,7 @@ public class DamageMeta {
                             case HEALTH_REGEN:
                                 return random(250, 300);
                             case ENERGY_REGEN:
-                                return random(5, 7);
+                                return random(5, 6);
                             case INTELLECT:
                                 return random(80, 315);
                             case FIRE_RESISTANCE:
@@ -698,7 +698,7 @@ public class DamageMeta {
                             case HEALTH_REGEN:
                                 return random(250, 300);
                             case ENERGY_REGEN:
-                                return random(6, 7);
+                                return random(5, 7);
                             case INTELLECT:
                                 return random(85, 315);
                             case FIRE_RESISTANCE:
@@ -729,7 +729,7 @@ public class DamageMeta {
                             case HEALTH_REGEN:
                                 return random(250, 300);
                             case ENERGY_REGEN:
-                                return random(6, 7);
+                                return random(5, 7);
                             case INTELLECT:
                                 return random(90, 315);
                             case FIRE_RESISTANCE:
@@ -760,7 +760,7 @@ public class DamageMeta {
                             case HEALTH_REGEN:
                                 return random(250, 300);
                             case ENERGY_REGEN:
-                                return random(6, 7);
+                                return random(5, 7);
                             case INTELLECT:
                                 return random(100, 315);
                             case FIRE_RESISTANCE:
@@ -791,7 +791,7 @@ public class DamageMeta {
                             case HEALTH_REGEN:
                                 return random(250, 300);
                             case ENERGY_REGEN:
-                                return random(7, 8);
+                                return random(6, 7);
                             case INTELLECT:
                                 return random(110, 315);
                             case FIRE_RESISTANCE:
