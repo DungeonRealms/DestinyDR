@@ -717,6 +717,7 @@ public class DamageListener implements Listener {
             }
         }
         event.getDrops().clear();
+        player.teleport(respawnLocation);
         player.setHealth(20);
         player.teleport(respawnLocation);
         for (PotionEffect potionEffect : player.getActivePotionEffects()) {
