@@ -626,6 +626,7 @@ public class DamageListener implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         event.setDeathMessage("");
         Player player = event.getEntity();
+        Location deathLocation = event.getEntity().getLocation();
         ItemStack armorToSave[] = new ItemStack[5];
         ArrayList<ItemStack> savedItems = new ArrayList<ItemStack>();
         Location respawnLocation = Teleportation.Cyrennica;
@@ -712,11 +713,12 @@ public class DamageListener implements Listener {
                 if (nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important") || nms.getTag().hasKey("subtype")) {
                     continue;
                 }
-                player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
+                player.getWorld().dropItemNaturally(deathLocation, itemStack);
             }
         }
         event.getDrops().clear();
         player.setHealth(20);
+        player.teleport(respawnLocation);
         for (PotionEffect potionEffect : player.getActivePotionEffects()) {
             player.removePotionEffect(potionEffect.getType());
         }

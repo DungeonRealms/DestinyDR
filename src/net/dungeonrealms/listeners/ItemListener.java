@@ -9,7 +9,6 @@ import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.inventory.PlayerMenus;
 import net.dungeonrealms.mechanics.ItemManager;
-import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.profession.Fishing;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.dungeonrealms.teleportation.Teleportation;
@@ -269,13 +268,11 @@ public class ItemListener implements Listener {
         if (nmsItem != null && nmsItem.getTag() != null) {
             if (nmsItem.getTag().hasKey("type") && nmsItem.getTag().getString("type").equalsIgnoreCase("splashHealthPotion")) {
                 event.setCancelled(true);
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.WITCH_MAGIC, event.getEntity().getLocation(), 0, 0, 0, 4, 50);
                 for (LivingEntity entity : event.getAffectedEntities()) {
                     if (!API.isPlayer(entity)) {
                         continue;
                     }
                     HealthHandler.getInstance().healPlayerByAmount((Player) entity, nmsItem.getTag().getInt("healAmount"));
-                    entity.sendMessage(ChatColor.GREEN + "Healed for " + ChatColor.BOLD + nmsItem.getTag().getInt("healAmount") + ChatColor.GREEN + "HP.");
                 }
             }
         }
