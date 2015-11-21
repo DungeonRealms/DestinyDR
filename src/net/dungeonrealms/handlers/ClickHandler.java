@@ -696,7 +696,11 @@ public class ClickHandler {
                                     player.sendMessage(ChatColor.GREEN + "Your Mount is being summoned into this world!");
                                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                                         if (!EntityAPI.hasMountOut(player.getUniqueId())) {
-                                            MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"));
+                                            if (!CombatLog.isInCombat(player)) {
+                                                MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"));
+                                            } else {
+                                                player.sendMessage(ChatColor.RED + "Combat has cancelled your mount summoning!");
+                                            }
                                         } else {
                                             player.sendMessage(ChatColor.RED + "You just summoned your mount!");
                                         }
