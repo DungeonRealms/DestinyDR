@@ -683,8 +683,8 @@ public class InventoryListener implements Listener {
 			itemLore.add(ArmorGenerator.setCorrectArmorLore(ArmorAttributeType.HEALTH_REGEN, newHPRegen));
 
 		}else if(nmsItem.getTag().hasKey(ArmorAttributeType.ENERGY_REGEN.getNBTName())){
-            double energyRegen = nmsItem.getTag().getInt(ArmorAttributeType.ENERGY_REGEN.getNBTName()) + ((nmsItem.getTag().getInt(ArmorAttributeType.ENERGY_REGEN.getNBTName()) * 5) / 100);
-            int newEnergyRegen = (int) Math.round((energyRegen));
+            double energyRegen = nmsItem.getTag().getInt(ArmorAttributeType.ENERGY_REGEN.getNBTName());
+            int newEnergyRegen = (int) Math.round((energyRegen)) + 1;
             nmsItem.getTag().setInt(ArmorAttributeType.ENERGY_REGEN.getNBTName(), newEnergyRegen);
 			itemLore.add(ArmorGenerator.setCorrectArmorLore(ArmorAttributeType.ENERGY_REGEN, newEnergyRegen));
 		}
