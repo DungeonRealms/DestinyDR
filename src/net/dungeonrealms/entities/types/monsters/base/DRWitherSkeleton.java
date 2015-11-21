@@ -2,6 +2,7 @@ package net.dungeonrealms.entities.types.monsters.base;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -14,10 +15,13 @@ import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.items.Item.ItemModifier;
+import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.ItemGenerator;
+import net.minecraft.server.v1_8_R3.EntityLiving;
 import net.minecraft.server.v1_8_R3.EntitySkeleton;
 import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.Item;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.World;
 
 /**
@@ -45,6 +49,13 @@ public class DRWitherSkeleton extends EntitySkeleton implements Monster{
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
 	}
 
+    @Override
+    public void a(EntityLiving entityliving, float f) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
+        NBTTagCompound tag = nmsItem.getTag();
+        DamageAPI.fireArrowFromMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entityliving.getBukkitEntity());
+    }
+	
 	@Override
 	protected Item getLoot() {
 		return null;

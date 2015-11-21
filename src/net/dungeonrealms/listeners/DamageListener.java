@@ -54,8 +54,6 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -625,9 +623,9 @@ public class DamageListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerDeath(PlayerDeathEvent event) {
-        event.setDeathMessage(null);
+        event.setDeathMessage("");
         Player player = event.getEntity();
         Location deathLocation = event.getEntity().getLocation();
         ItemStack armorToSave[] = new ItemStack[5];
@@ -707,39 +705,32 @@ public class DamageListener implements Listener {
             respawnLocation = KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1));
         }
         event.setDroppedExp(0);
-//        if(event.getDrops().size() > 0){
-        	final ArrayList<ItemStack> drops =  new ArrayList<>(Arrays.asList(event.getEntity().getInventory().getContents()));
-//        	event.getDrops().clear();
-        	for (ItemStack itemStack : drops) {
-        		if(itemStack == null || itemStack.getType() == Material.AIR){
-        			drops.remove(itemStack);
-        			continue;
-        		}
-        		Utils.log.info(itemStack.getType().name() + " Material");
-            	if (itemStack != null && itemStack.getType() != Material.AIR) {
-                	if (itemStack.equals(armorToSave[0]) || itemStack.equals(armorToSave[1]) || itemStack.equals(armorToSave[2]) || itemStack.equals(armorToSave[3]) || itemStack.equals(armorToSave[4])) {
-                		drops.remove(itemStack);
-                    	continue;
-                	}
-                	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
-                	if (nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important") || nms.getTag().hasKey("subtype")) {
-                		drops.remove(itemStack);
-                    	continue;
-                	}
-                	if (Mining.isDRPickaxe(itemStack) || Fishing.isDRFishingPole(itemStack)) {
-                		drops.remove(itemStack);
-                		continue;
-                	}
-            	}
-        	}
-        	for (ItemStack stack : drops) {
-        		if(stack == null || stack.getType() == Material.AIR){
-        			continue;
-        		}
-        		Utils.log.info(stack.getType().name() + " DROPPED");
-        		deathLocation.getWorld().dropItemNaturally(deathLocation, stack);
-        	}
-//        }	
+        ArrayList<ItemStack> items = new ArrayList<>();
+        if (!event.getDrops().isEmpty()) {
+            for (ItemStack itemStack : event.getDrops()) {
+                if (itemStack != null && itemStack.getType() != Material.AIR) {
+                    if (itemStack.equals(armorToSave[0]) || itemStack.equals(armorToSave[1]) || itemStack.equals(armorToSave[2]) || itemStack.equals(armorToSave[3]) || itemStack.equals(armorToSave[4])) {
+                        //event.getDrops().remove(itemStack);
+                        continue;
+                    }
+                    net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
+                    if (nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important") || nms.getTag().hasKey("subtype")) {
+                        //event.getDrops().remove(itemStack);
+                        continue;
+                    }
+                    if (Mining.isDRPickaxe(itemStack) || Fishing.isDRFishingPole(itemStack)) {
+                        //event.getDrops().remove(itemStack);
+                        continue;
+                    }
+                    items.add(itemStack);
+                }
+            }
+        }
+        event.getDrops().clear();
+        for (ItemStack itemStack : items) {
+            event.getEntity().getWorld().dropItemNaturally(deathLocation, itemStack);
+        }
+        items.clear();
         player.teleport(respawnLocation);
         player.setHealth(20);
         player.teleport(respawnLocation);
@@ -760,15 +751,6 @@ public class DamageListener implements Listener {
             PlayerManager.checkInventory(player.getUniqueId());
             player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 10)).setNBTString("subtype", "starter").build());
             if (finalSavedArmorContents) {
-            	
-            	for(ItemStack itemStack : savedItems){
-                    if (itemStack != null && itemStack.getType() != Material.AIR) {
-                        if (RepairAPI.getCustomDurability(itemStack) - 400 > 0.1D) {
-                            RepairAPI.subtractCustomDurability(player, itemStack, 400);
-                        }
-                        player.getInventory().addItem(itemStack);
-                    }
-            	}
                 for (ItemStack itemStack : armorToSave) {
                     if (itemStack != null && itemStack.getType() != Material.AIR) {
                         if (RepairAPI.getCustomDurability(itemStack) - 400 > 0.1D) {
