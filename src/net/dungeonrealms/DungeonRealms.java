@@ -176,7 +176,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(BankMechanics.getInstance());
         mm.registerMechanic(NetworkServer.getInstance());
         mm.registerMechanic(DungeonManager.getInstance());
-        mm.registerMechanic(Entities.getInstance());
+        mm.registerMechanic(new Entities());
         mm.registerMechanic(ScoreboardHandler.getInstance());
         /*
         Working on instance

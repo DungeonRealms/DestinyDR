@@ -177,7 +177,6 @@ public class InventoryListener implements Listener {
 				return;
 			}
 		}
-		Utils.log.info("Updated");
 		offer.updateOffer();
     }
     

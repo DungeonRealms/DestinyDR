@@ -608,7 +608,6 @@ public class MainListener implements Listener {
       for(Entity ent : event.getChunk().getEntities()){
     	  net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity)ent).getHandle();
     	  if((!(nms instanceof EntityItem)) && !(ent instanceof Player))
-    		  Utils.log.info(ent.getCustomName() + " | " + ent.getName() );
     		  ent.remove();
       }
      }
@@ -620,7 +619,6 @@ public class MainListener implements Listener {
       for(Entity ent : event.getChunk().getEntities()){
     	  net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity)ent).getHandle();
     	  if((!(nms instanceof EntityItem)) && !(ent instanceof Player)){
-    		  Utils.log.info(ent.getCustomName() + " | " + ent.getName() );
     		  ent.remove();
     	  }
       }
