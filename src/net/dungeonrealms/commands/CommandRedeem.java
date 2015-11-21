@@ -1,6 +1,9 @@
 package net.dungeonrealms.commands;
 
 import net.dungeonrealms.commands.generic.BasicCommand;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.rank.Rank;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -25,6 +28,8 @@ public class CommandRedeem extends BasicCommand {
 
         if (!Rank.getInstance().getRank(player.getUniqueId()).getName().equalsIgnoreCase("SUB")) {
             Rank.getInstance().setRank(player.getUniqueId(), "SUB");
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 2000, true);
+            player.sendMessage(ChatColor.YELLOW + "You also obtained 2000 ECash in order to assist us in testing out ECash!");
         } else {
             player.sendMessage(ChatColor.RED + "You've already redeemed your rank!\n Note: You are considered a 'Founder' and will receive 'Founder Perks' shortly before or after open beta release!");
         }

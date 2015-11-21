@@ -203,12 +203,14 @@ public class BlockListener implements Listener {
     	
     @EventHandler(priority = EventPriority.HIGHEST)
     public void cancelPlayersBlockOpen(PlayerInteractEvent event) {
+    	if(event.getAction() == Action.RIGHT_CLICK_BLOCK){
         Block block = event.getClickedBlock();
         if (block == null) return;
         if(event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE)return;
         Material mat = block.getType();
-        if (mat == Material.ANVIL || mat == Material.CHEST || mat == Material.ENDER_CHEST) return;
-        event.setCancelled(true);
+        if (mat == Material.FURNACE || mat == Material.HOPPER || mat == Material.DISPENSER || mat == Material.HOPPER_MINECART)
+        	event.setCancelled(true);
+    	}
     }
 
     

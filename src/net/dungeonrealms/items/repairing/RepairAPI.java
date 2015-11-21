@@ -38,7 +38,6 @@ public class RepairAPI {
 //			double avg_armor = Integer.parseInt(armor_range.split("-")[0].replaceAll(" ", "").replace("!", "")) + Integer.parseInt(armor_range.split("-")[1].substring(0, armor_range.split("-")[1].indexOf(":")).replaceAll(" ", "").replace("!", ""));
 //			avg_armor = avg_armor / 2; // Get the average of the two added values.
 			double percent_durability_left =   (getCustomDurability(i) / 1550);  // getDurabilityValueAsPercent(i, getCustomDurability(i));
-			Utils.log.info(percent_durability_left + " percent_durability_left");
 			if(percent_durability_left > 99) {
 				percent_durability_left = 99;
 			}
@@ -79,17 +78,13 @@ public class RepairAPI {
 			if(!nms.hasTag() && !nms.getTag().hasKey("itemTier"))
 				return -1;
 			int item_tier = nms.getTag().getInt("itemTier");
-			Utils.log.info(item_tier + " tier");
 	        int damageRandomizer = ItemGenerator.getRandomDamageVariable(item_tier);
-			Utils.log.info(damageRandomizer + " damageRandomizer");
 	        NBTTagCompound tag = CraftItemStack.asNMSCopy(i).getTag();
 	        double avg_dmg = tag.getInt("damage");//Utils.randInt((int) Math.round(tag.getDouble("damage")  / damageRandomizer), (int) Math.round(tag.getDouble("damage")/ (damageRandomizer - 1)));
 //			double avg_dmg = (Integer.parseInt((dmg_range.split("-")[0])) + Integer.parseInt(dmg_range.split("-")[1])) / 2; // Average DMG
 			double dmg_cost = avg_dmg * 0.1; // This is the cost PER PERCENT
-			Utils.log.info(dmg_cost + " dmg_cost");
 
 			double percent_durability_left =   (getCustomDurability(i) / 1450);  // getDurabilityValueAsPercent(i, getCustomDurability(i));
-			Utils.log.info(percent_durability_left + " percent_durability_left");
 			if(percent_durability_left > 99) {
 				percent_durability_left = 99;
 			}
@@ -97,9 +92,7 @@ public class RepairAPI {
 			double global_multiplier = 0.25 - 0.05;
 			double multiplier = 1.0; // 100%
 			double missing_percent = 100 - percent_durability_left;
-			Utils.log.info(missing_percent + " missing_percent");
 			double total_dmg_cost = missing_percent * dmg_cost;
-			Utils.log.info(total_dmg_cost + " total_dmg_cost");
 
 			if(item_tier == 1) {
 				multiplier = 1.0;
@@ -121,9 +114,7 @@ public class RepairAPI {
 				multiplier = 9.0;
 				repair_cost = total_dmg_cost * multiplier;
 			}
-			Utils.log.info(repair_cost + " repair_cost");
 			repair_cost = repair_cost * global_multiplier;
-			Utils.log.info(repair_cost + " repair_cost");
 			return (int) Math.round(repair_cost);
 		}
 		
