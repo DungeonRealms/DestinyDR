@@ -707,24 +707,25 @@ public class DamageListener implements Listener {
         for (ItemStack itemStack : event.getDrops()) {
             if (itemStack != null && itemStack.getType() != Material.AIR) {
                 if (itemStack.equals(armorToSave[0]) || itemStack.equals(armorToSave[1]) || itemStack.equals(armorToSave[2]) || itemStack.equals(armorToSave[3]) || itemStack.equals(armorToSave[4])) {
+                    event.getDrops().remove(itemStack);
                     continue;
                 }
                 net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
                 if (nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important") || nms.getTag().hasKey("subtype")) {
+                    event.getDrops().remove(itemStack);
                     continue;
                 }
-                player.getWorld().dropItemNaturally(deathLocation, itemStack);
+                if (Mining.isDRPickaxe(itemStack) || Fishing.isDRFishingPole(itemStack)) {
+                    event.getDrops().remove(itemStack);
+                }
             }
         }
-        event.getDrops().clear();
         player.teleport(respawnLocation);
         player.setHealth(20);
         player.teleport(respawnLocation);
         for (PotionEffect potionEffect : player.getActivePotionEffects()) {
             player.removePotionEffect(potionEffect.getType());
         }
-        HealthHandler.getInstance().setPlayerMaxHPLive(player, HealthHandler.getInstance().calculateMaxHPFromItems(player));
-        HealthHandler.getInstance().setPlayerHPLive(player, HealthHandler.getInstance().calculateMaxHPFromItems(player));
         player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 100, 10));
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 100, 10));
         player.teleport(respawnLocation);
@@ -734,6 +735,8 @@ public class DamageListener implements Listener {
         player.setFallDistance(0);
         final boolean finalSavedArmorContents = savedArmorContents;
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            HealthHandler.getInstance().setPlayerMaxHPLive(player, 50);
+            HealthHandler.getInstance().setPlayerHPLive(player, 50);
             PlayerManager.checkInventory(player.getUniqueId());
             player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 10)).setNBTString("subtype", "starter").build());
             if (finalSavedArmorContents) {
