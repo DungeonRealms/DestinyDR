@@ -704,22 +704,32 @@ public class DamageListener implements Listener {
             respawnLocation = KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1));
         }
         event.setDroppedExp(0);
-        for (ItemStack itemStack : event.getDrops()) {
-            if (itemStack != null && itemStack.getType() != Material.AIR) {
-                if (itemStack.equals(armorToSave[0]) || itemStack.equals(armorToSave[1]) || itemStack.equals(armorToSave[2]) || itemStack.equals(armorToSave[3]) || itemStack.equals(armorToSave[4])) {
-                    event.getDrops().remove(itemStack);
-                    continue;
-                }
-                net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
-                if (nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important") || nms.getTag().hasKey("subtype")) {
-                    event.getDrops().remove(itemStack);
-                    continue;
-                }
-                if (Mining.isDRPickaxe(itemStack) || Fishing.isDRFishingPole(itemStack)) {
-                    event.getDrops().remove(itemStack);
+        ArrayList<ItemStack> items = new ArrayList<>();
+        if (!event.getDrops().isEmpty()) {
+            for (ItemStack itemStack : event.getDrops()) {
+                if (itemStack != null && itemStack.getType() != Material.AIR) {
+                    if (itemStack.equals(armorToSave[0]) || itemStack.equals(armorToSave[1]) || itemStack.equals(armorToSave[2]) || itemStack.equals(armorToSave[3]) || itemStack.equals(armorToSave[4])) {
+                        //event.getDrops().remove(itemStack);
+                        continue;
+                    }
+                    net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
+                    if (nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important") || nms.getTag().hasKey("subtype")) {
+                        //event.getDrops().remove(itemStack);
+                        continue;
+                    }
+                    if (Mining.isDRPickaxe(itemStack) || Fishing.isDRFishingPole(itemStack)) {
+                        //event.getDrops().remove(itemStack);
+                        continue;
+                    }
+                    items.add(itemStack);
                 }
             }
         }
+        event.getDrops().clear();
+        for (ItemStack itemStack : items) {
+            event.getEntity().getWorld().dropItemNaturally(deathLocation, itemStack);
+        }
+        items.clear();
         player.teleport(respawnLocation);
         player.setHealth(20);
         player.teleport(respawnLocation);
