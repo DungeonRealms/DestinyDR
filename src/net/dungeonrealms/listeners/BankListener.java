@@ -192,25 +192,32 @@ public class BankListener implements Listener {
                                 int size = 0;
                                 if (e.isLeftClick()) {
                                 	if(e.getCursor().getType() == Material.INK_SACK){
-                                    	e.setCursor(null);
-                                    	e.setCurrentItem(null);
                                 		int type = nms.getTag().getInt("tier");
                                 		size = nms.getTag().getInt("worth");
+                                    	e.setCursor(null);
+                                    	e.setCurrentItem(null);
                                 		e.getWhoClicked().getInventory().addItem(BankMechanics.getInstance().createGemPouch(type, 0));
-                                	}
-                                    if (e.getCursor().getType() == Material.EMERALD){
+                                	}else if (e.getCursor().getType() == Material.EMERALD){
                                     	size = e.getCursor().getAmount();
                                     	e.setCursor(null);
                                     	e.setCurrentItem(null);
-                                    }else{
+                                    }else if (e.getCursor().getType() == Material.PAPER){
                                         size = e.getCursor().getAmount() * nms.getTag().getInt("worth");
+                                    	e.setCursor(null);
+                                    	e.setCurrentItem(null);
                                     }
                                 } else if (e.isRightClick()) {
-                                    e.getCursor().setAmount(e.getCursor().getAmount() - 1);
+                                    
                                     if (e.getCursor().getType() == Material.EMERALD)
                                         size = 1;
                                     else
                                         size = nms.getTag().getInt("worth");
+                                    
+                                    if(e.getCursor().getAmount() > 1){
+                                        e.getCursor().setAmount(e.getCursor().getAmount() - 1);
+                                    }else{
+                                    	e.setCursor(null);
+                                    }
                                 }
                                 BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
                                 ItemStack bankItem = new ItemStack(Material.EMERALD);
