@@ -51,7 +51,7 @@ public class Affair implements GenericMechanic {
 
 
             });
-        }, 0, 20 * 2);
+        }, 0, 15);
     }
 
     public void invitePlayer(Player inviting, Player invitor) {
@@ -66,7 +66,7 @@ public class Affair implements GenericMechanic {
         allPlayers.addAll(party.getMembers());
 
         allPlayers.stream().forEach(player -> {
-            player.setScoreboard(Bukkit.getScoreboardManager().getNewScoreboard());
+            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
             player.sendMessage(ChatColor.RED + "Your party has been disbanded!");
         });
 
