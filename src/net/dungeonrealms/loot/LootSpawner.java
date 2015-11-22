@@ -53,6 +53,8 @@ public class LootSpawner {
 		}
 		int count = 0;
 		for (ItemStack stack : loot.keySet()) {
+			if(loot == null || !loot.containsKey(stack))
+				continue;
 			double spawn_chance = loot.get(stack);
 			double do_i_spawn = new Random().nextInt(1000);
 			if (spawn_chance < 1) {

@@ -5,6 +5,7 @@ import java.io.IOException;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -235,7 +236,16 @@ public class DungeonRealms extends JavaPlugin {
         } catch (IOException e) {
             e.printStackTrace();
         }
-
+        
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
+        	Bukkit.broadcastMessage(ChatColor.RED + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.YELLOW + "A SCHEDULED RESET WILL TAKE PLACE IN 5 MINUTES");
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
+        	Bukkit.shutdown();
+            }, 6000);
+        }, 570000);
+        // 576000 = 8 hours
+        // 5 Minutes = 6000
+        // 570000 == 7 hours and 55 minutes.
 
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         this.hasFinishedSetup = true;
