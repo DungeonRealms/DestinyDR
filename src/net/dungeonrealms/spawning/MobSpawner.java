@@ -221,7 +221,7 @@ public class MobSpawner {
 					entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 					world.addEntity(entity, SpawnReason.CUSTOM);
 					entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-					entity.getBukkitEntity().setVelocity(new Vector(0.25, 0.5, 0.25));
+					entity.getBukkitEntity().setVelocity(new Vector(0.1, 0, 0.1));
 					firstSpawn = false;
 					SPAWNED_MONSTERS.add(entity);
 					toSpawn = false;

@@ -576,11 +576,10 @@ public class HealthHandler implements GenericMechanic {
         
         if (API.isPlayer(attacker)) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
-                String customNameAppended = entity.getCustomName();
-                 EntityLiving nms = ((CraftLivingEntity)entity).getHandle();
-                if(!nms.getCustomName().contains("*") || !entity.hasMetadata("boss") || !entity.hasMetadata("elite"))
-                	customNameAppended = ChatColor.stripColor(customNameAppended.substring(customNameAppended.indexOf("]") + 1, customNameAppended.indexOf("❤")).trim());
-                attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + customNameAppended + ChatColor.BOLD + "[" + (int) newHP + "HP]");
+                String customNameAppended = (entity.getMetadata("customname").get(0).asString());
+//                 EntityLiving nms = ((CraftLivingEntity)entity).getHandle();
+//                if(!entity.getCustomName().contains("*") || !entity.hasMetadata("boss") || !entity.hasMetadata("elite"))
+                attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + API.getTierColor(entity.getMetadata("tier").get(0).asInt()) + customNameAppended + ChatColor.DARK_PURPLE + ChatColor.BOLD + "[" + (int) newHP + "HP]");
             }
         }
 
@@ -624,7 +623,7 @@ public class HealthHandler implements GenericMechanic {
                 String lvlName = ChatColor.LIGHT_PURPLE + "[" + level + "] ";
                 String name = entity.getMetadata("customname").get(0).asString();
                 int hp = entity.getMetadata("currentHP").get(0).asInt();
-                if (!entity.hasMetadata("elite") || !entity.hasMetadata("boss"))
+                if (!entity.hasMetadata("elite") && !entity.hasMetadata("boss"))
                     entity.setCustomName(lvlName + ChatColor.RESET + name + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
                 entity.setHealth(convHPToDisplay);
                 if (!Entities.MONSTERS_LEASHED.contains(entity)) {
@@ -659,7 +658,7 @@ public class HealthHandler implements GenericMechanic {
         }
         
         if(entity.hasMetadata("elite"))
-        	totalHP *= 10;
+        	totalHP *= 5;
         
         return (int) totalHP;
     }

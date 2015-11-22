@@ -137,16 +137,6 @@ public class Entities implements GenericMechanic {
 						MONSTERS_LEASHED.remove(entity);
 						MONSTER_LAST_ATTACK.remove(entity);
 						tryToReturnMobToBase(((CraftEntity) entity).getHandle());
-						Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-					        int level = entity.getMetadata("level").get(0).asInt();
-					        String lvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
-					        String name = entity.getMetadata("customname").get(0).asString();
-					        int currentHP = entity.getMetadata("currentHP").get(0).asInt();
-							if (!entity.isDead()) {
-								entity.setCustomName(currentHP + ChatColor.RED.toString() + " ❤ " + ChatColor.LIGHT_PURPLE.toString() + "[" + ChatColor.RESET + level + ChatColor.LIGHT_PURPLE + "] " + ChatColor.RESET + name);
-							}
-
-						} , 100);
 						int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(),
 						        () -> {
 							        if (HealthHandler.getInstance().getMonsterHPLive(entity) < HealthHandler

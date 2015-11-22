@@ -14,6 +14,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import net.dungeonrealms.anticheat.AntiCheat;
+import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.mongo.DatabaseAPI;
@@ -54,8 +56,6 @@ public class BankMechanics implements GenericMechanic {
 
     }
 
-    
-    
     
 	public boolean takeGemsFromInventory(int amount, Player p) {
 		Inventory i = p.getInventory();
@@ -163,7 +163,7 @@ public class BankMechanics implements GenericMechanic {
 	 * @return ItemStack
 	 * @since 1.0
 	 */
-	private static ItemStack createGems(int amount) {
+	public static ItemStack createGems(int amount) {
 		ItemStack stack = gem.clone();
 		stack.setAmount(amount);
 		return stack;
@@ -227,8 +227,56 @@ public class BankMechanics implements GenericMechanic {
 //        }
 //        return false;
 //    }
-
-
+	/**
+	 * 
+	 * Return new ItemSTack of gem pouch
+	 * 
+	 * @param amount
+	 * @return ITemStack
+	 */
+	public ItemStack createGemPouch(int type, int amount){
+		ItemStack stack = null;
+		net.minecraft.server.v1_8_R3.ItemStack nms = null;
+		switch(type){
+		case 1:
+			stack = ItemManager.createItem(Material.INK_SACK, "Small Gem Pouch" + ChatColor.GREEN + " " + amount +"g", new String[] {ChatColor.GRAY + "A small linen pouch that holds 100g"});
+			break;
+		case 2:
+			stack = ItemManager.createItem(Material.INK_SACK, "Medium Gem Pouch" + ChatColor.GREEN + " " + amount+"g", new String[] {ChatColor.GRAY + "A small linen pouch that holds 150g"});
+			break;
+		case 3:
+			stack = ItemManager.createItem(Material.INK_SACK, "Large Gem Pouch" + ChatColor.GREEN + " " + amount+"g", new String[] {ChatColor.GRAY + "A small linen pouch that holds 200g"});
+			break;
+		case 4:
+			stack = ItemManager.createItem(Material.INK_SACK, "Gigantic Gem Pouch" + ChatColor.GREEN + " " + amount+"g", new String[] {ChatColor.GRAY + "A small linen pouch that holds 300g"});
+			break;
+		}
+		nms = CraftItemStack.asNMSCopy(stack);
+		NBTTagCompound tag = nms.getTag();
+		tag.setString("type", "money");
+		tag.setInt("worth", amount);
+		tag.setInt("tier", type);
+//		nms.setTag(tag);
+		return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
+	}
+	
+	public int getPouchMax(int tier){
+		switch(tier){
+		case 0:
+		case 1:
+			return 100;
+		case 2:
+			return 150;
+		case 3:
+			return 200;
+		case 4:
+			return 300;
+		}
+		return 0;
+	}
+	
+	
+	
     /**
      * Pre loads an itemstack version of our currency
      *

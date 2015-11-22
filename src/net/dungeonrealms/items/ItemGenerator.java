@@ -160,7 +160,7 @@ public class ItemGenerator {
      * @return Item.ItemType
      * @since 1.0
      */
-    private Item.ItemType getRandomItemType() {
+    public static Item.ItemType getRandomItemType() {
         return Item.ItemType.getById(new Random().nextInt(Item.ItemType.values().length));
     }
 

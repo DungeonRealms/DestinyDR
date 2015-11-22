@@ -97,7 +97,7 @@ public class EntityStats {
     	String name = ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "*" + API.getTierColor(tier) +  entity.getCustomName() + ChatColor.GREEN.toString() + "*";
     	Stats stat = Stats.getRandomStats(lvl,tier);
     	stat.atk *= 2.5;
-    	stat.hp *= 10;
+    	stat.hp *= 5;
     	stat.def *= 2.5;
         stat.spd *= 2.5;
         entity.setCustomName(name);

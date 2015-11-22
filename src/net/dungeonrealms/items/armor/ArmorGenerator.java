@@ -123,7 +123,7 @@ public class ArmorGenerator {
 	 * @return
 	 * @since 1.0
 	 */
-	private Armor.EquipmentType getRandomEquipmentType() {
+	public static Armor.EquipmentType getRandomEquipmentType() {
 		return Armor.EquipmentType.getById(new Random().nextInt(Armor.EquipmentType.values().length));
 	}
 
