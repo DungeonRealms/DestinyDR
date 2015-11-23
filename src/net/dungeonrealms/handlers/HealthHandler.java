@@ -1,25 +1,6 @@
 	package net.dungeonrealms.handlers;
 
-    import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.EntityEffect;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
-import org.bukkit.entity.WitherSkull;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.inventivetalent.bossbar.BossBarAPI;
-
-import net.dungeonrealms.API;
+    import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelOffer;
@@ -36,6 +17,15 @@ import net.dungeonrealms.profession.Fishing;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.EntityLiving;
+import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.*;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.inventivetalent.bossbar.BossBarAPI;
 
 /**
  * Created by Kieran on 10/3/2015.
@@ -76,7 +66,14 @@ public class HealthHandler implements GenericMechanic {
      */
     public void handleLoginEvents(Player player) {
         setPlayerMaxHPLive(player, getPlayerMaxHPOnLogin(player));
-        setPlayerHPLive(player, getPlayerMaxHPOnLogin(player));
+        int hp = Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEALTH, player.getUniqueId())));
+        if (hp > 0) {
+            setPlayerHPLive(player, hp);
+            healPlayerByAmount(player, 5);
+        } else {
+            setPlayerHPLive(player, 10);
+            healPlayerByAmount(player, 5);
+        }
         setPlayerHPRegenLive(player, getPlayerHPRegenLive(player));
         player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
     }
@@ -90,7 +87,7 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public void handleLogoutEvents(Player player) {
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, getPlayerMaxHPLive(player), false);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, getPlayerHPLive(player), false);
         for (PotionEffect potionEffect : player.getActivePotionEffects()) {
             player.removePotionEffect(potionEffect.getType());
         }
