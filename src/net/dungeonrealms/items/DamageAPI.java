@@ -529,7 +529,7 @@ public class DamageAPI {
                                 NBTTagCompound tag = nmsItem.getTag();
                                 if (tag != null) {
                                     if (tag.getDouble("damage") != 0) {
-                                        int damageFromThorns = (int) ((tag.getDouble("damage") / 100) * nmsTags[i].getInt("thorns"));
+                                        int damageFromThorns = (int) ((tag.getDouble("damage") / 100) * (nmsTags[i].getInt("thorns") / 2));
                                         HealthHandler.getInstance().handlePlayerBeingDamaged((Player) attacker, defender, damageFromThorns);
                                     }
                                 }
