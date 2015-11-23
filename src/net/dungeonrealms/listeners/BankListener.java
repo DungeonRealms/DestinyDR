@@ -84,10 +84,10 @@ public class BankListener implements Listener {
     public void onBankClicked(InventoryClickEvent e) {
         Player player = (Player) e.getWhoClicked();
         if (e.getInventory().getTitle().equalsIgnoreCase("Bank Chest")) {
-        	e.setCancelled(true);
+//        	e.setCancelled(true);
             if (e.getCursor() != null) {
                 net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(e.getCursor());
-                e.setCancelled(true);
+//                e.setCancelled(true);
                 if (e.getRawSlot() < 9) {
                     if (e.getRawSlot() == 8) {
                         e.setCancelled(true);
@@ -187,22 +187,37 @@ public class BankListener implements Listener {
                             return;
                         e.setCancelled(true);
                         if (nms.hasTag() && e.getCursor().getType() == Material.EMERALD
-                                || nms.hasTag() && e.getCursor().getType() == Material.PAPER) {
+                                || nms.hasTag() && e.getCursor().getType() == Material.PAPER || nms.hasTag() && e.getCursor().getType() == Material.INK_SACK) {
                             if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                                 int size = 0;
                                 if (e.isLeftClick()) {
-                                    if (e.getCursor().getType() == Material.EMERALD)
-                                        size = e.getCursor().getAmount();
-                                    else
+                                	if(e.getCursor().getType() == Material.INK_SACK){
+                                		int type = nms.getTag().getInt("tier");
+                                		size = nms.getTag().getInt("worth");
+                                    	e.setCursor(null);
+                                    	e.setCurrentItem(null);
+                                		e.getWhoClicked().getInventory().addItem(BankMechanics.getInstance().createGemPouch(type, 0));
+                                	}else if (e.getCursor().getType() == Material.EMERALD){
+                                    	size = e.getCursor().getAmount();
+                                    	e.setCursor(null);
+                                    	e.setCurrentItem(null);
+                                    }else if (e.getCursor().getType() == Material.PAPER){
                                         size = e.getCursor().getAmount() * nms.getTag().getInt("worth");
-                                    e.setCursor(null);
-                                    e.setCurrentItem(null);
+                                    	e.setCursor(null);
+                                    	e.setCurrentItem(null);
+                                    }
                                 } else if (e.isRightClick()) {
-                                    e.getCursor().setAmount(e.getCursor().getAmount() - 1);
+                                    
                                     if (e.getCursor().getType() == Material.EMERALD)
                                         size = 1;
                                     else
                                         size = nms.getTag().getInt("worth");
+                                    
+                                    if(e.getCursor().getAmount() > 1){
+                                        e.getCursor().setAmount(e.getCursor().getAmount() - 1);
+                                    }else{
+                                    	e.setCursor(null);
+                                    }
                                 }
                                 BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
                                 ItemStack bankItem = new ItemStack(Material.EMERALD);
@@ -254,19 +269,26 @@ public class BankListener implements Listener {
                     }
                 } else {
                     if (e.isShiftClick()) {
+                    	if(e.getCurrentItem().getType() != Material.EMERALD && e.getCurrentItem().getType() != Material.PAPER && e.getCurrentItem().getType() != Material.INK_SACK){ e.setCancelled(true); return;}
+                    	
                         nms = CraftItemStack.asNMSCopy(e.getCurrentItem());
                         int size = 0;
-                        if (e.getCurrentItem().getType() == Material.EMERALD)
+                        if (e.getCurrentItem().getType() == Material.EMERALD){
+                            e.setCurrentItem(null);
                             size = e.getCurrentItem().getAmount();
-                        else if (e.getCurrentItem().getType() == Material.PAPER) {
+                        }else if (e.getCurrentItem().getType() == Material.PAPER) {
+                            e.setCurrentItem(null);
                             size = e.getCurrentItem().getAmount() * nms.getTag().getInt("worth");
+                        }else if(e.getCurrentItem().getType() == Material.INK_SACK){
+                        	int tier = nms.getTag().getInt("tier");
+                        	e.setCurrentItem(BankMechanics.getInstance().createGemPouch(tier, 0));
+                            size = nms.getTag().getInt("worth");
                         }
                         if(!nms.hasTag())
                         	return;
                         if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                             e.setCancelled(true);
                             BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
-                            e.setCurrentItem(null);
                             ItemStack bankItem = new ItemStack(Material.EMERALD);
                             ItemMeta meta = bankItem.getItemMeta();
                             meta.setDisplayName(getPlayerGems(player.getUniqueId()) + size + ChatColor.BOLD.toString()

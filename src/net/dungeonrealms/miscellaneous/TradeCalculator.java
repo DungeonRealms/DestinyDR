@@ -390,13 +390,13 @@ public class TradeCalculator {
         if (t4_scraps > 0) {
             while (t4_scraps >= 88) {
                 t4_scraps -= 88;
-                ItemStack scroll = ItemManager.createWeaponEnchant(3);
+                ItemStack scroll = ItemManager.createWeaponEnchant(4);
                 merchant_offer.add(scroll);
             }
 
             while (t4_scraps >= 80) {
                 t4_scraps -= 80;
-                ItemStack scroll = ItemManager.createArmorEnchant(3);
+                ItemStack scroll = ItemManager.createArmorEnchant(4);
                 merchant_offer.add(scroll);
             }
 
@@ -419,13 +419,13 @@ public class TradeCalculator {
         if (t5_scraps > 0) {
             while (t5_scraps >= 33) {
                 t5_scraps -= 33;
-                ItemStack scroll = ItemManager.createWeaponEnchant(3);
+                ItemStack scroll = ItemManager.createWeaponEnchant(5);
                 merchant_offer.add(scroll);
             }
 
             while (t5_scraps >= 30) {
                 t5_scraps -= 30;
-                ItemStack scroll = ItemManager.createArmorEnchant(3);
+                ItemStack scroll = ItemManager.createArmorEnchant(5);
                 merchant_offer.add(scroll);
             }
 

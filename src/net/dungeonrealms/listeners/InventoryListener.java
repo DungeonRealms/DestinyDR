@@ -713,6 +713,46 @@ public class InventoryListener implements Listener {
     }
     
     @EventHandler(priority = EventPriority.HIGHEST)
+    public void onPlayerAddToGemPouch(InventoryClickEvent event) {
+        if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) return;
+        if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+        if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
+        if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
+        if(event.getCursor().getType() != Material.EMERALD || event.getCurrentItem().getType() != Material.INK_SACK) return;
+        ItemStack cursorItem = event.getCursor();
+        net.minecraft.server.v1_8_R3.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
+        ItemStack slotItem = event.getCurrentItem();
+        net.minecraft.server.v1_8_R3.ItemStack nmsSlot = CraftItemStack.asNMSCopy(slotItem);
+        Player player = (Player) event.getWhoClicked();
+        if(!nmsSlot.hasTag() || !nmsCursor.hasTag())return;
+        if(!nmsSlot.getTag().hasKey("type") || !nmsSlot.getTag().getString("type").equalsIgnoreCase("money"))return;
+        if(!nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("money")) return;
+        
+        int amount = cursorItem.getAmount();
+        int pouchAmount = nmsSlot.getTag().getInt("worth");
+        int tier = nmsSlot.getTag().getInt("tier");
+        int pouchMax = BankMechanics.getInstance().getPouchMax(tier);
+        
+        if(pouchAmount < pouchMax){
+        	player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
+        	if(pouchAmount + amount >= pouchMax){
+        		amount = pouchMax - pouchAmount;
+        		event.setCurrentItem(BankMechanics.getInstance().createGemPouch(tier, pouchMax));
+        		event.setCursor(BankMechanics.getInstance().createGems(amount));
+        	}else{
+        		event.setCursor(null);
+        		event.setCurrentItem(BankMechanics.getInstance().createGemPouch(tier, pouchAmount + amount));
+        	}
+        }else{
+        	player.sendMessage(ChatColor.RED + "That gem pouch is full!");
+        }
+        
+        
+    }
+    
+    
+    
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerUseScrapItem(InventoryClickEvent event) {
         if (event.getCursor() == null) return;
         if (event.getCurrentItem() == null) return;

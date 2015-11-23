@@ -1,13 +1,16 @@
 package net.dungeonrealms.commands;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.items.EnumItem;
 import net.dungeonrealms.items.Item;
+import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.ArmorGenerator;
+import net.dungeonrealms.items.armor.Armor.ArmorTier;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.RealmManager;
 import net.dungeonrealms.mechanics.ItemManager;
@@ -46,7 +49,8 @@ public class CommandAdd extends BasicCommand {
             return false;
         }
         if (args.length > 0) {
-            switch (args[0]) {
+            int tier;
+			switch (args[0]) {
                 case "uuid":
                     player.sendMessage(Bukkit.getPlayer(API.getUUIDFromName(player.getName())).getDisplayName());
                     break;
@@ -70,10 +74,12 @@ public class CommandAdd extends BasicCommand {
                     //new RealmManager().downloadRealm(player.getUniqueId());
                     break;
                 case "weapon":
-                    player.getInventory().addItem(new ItemGenerator().next());
+                	tier = Integer.parseInt(args[1]);
+                    player.getInventory().addItem(new ItemGenerator().getDefinedStack(ItemGenerator.getRandomItemType(), ItemTier.getByTier(tier), ItemGenerator.getRandomItemModifier()));
                     break;
                 case "armor":
-                    player.getInventory().addItem(new ArmorGenerator().next());
+                	tier = Integer.parseInt(args[1]);
+                    player.getInventory().addItem(new ArmorGenerator().getDefinedStack(ArmorGenerator.getRandomEquipmentType(), ArmorTier.getByTier(tier), ArmorGenerator.getRandomItemModifier()));
                     break;
                 case "particle":
                     if (args[1] != null)
@@ -94,7 +100,7 @@ public class CommandAdd extends BasicCommand {
                     DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAILS.add(player);
                     break;
                 case "pick":
-                    int tier = 1;
+                     tier = 1;
                     if (args.length == 2)
                         tier = Integer.parseInt(args[1]);
                     player.getInventory().addItem(ItemManager.createPickaxe(tier));
@@ -166,7 +172,10 @@ public class CommandAdd extends BasicCommand {
             	tier = Integer.parseInt(args[1]);
             	player.getInventory().addItem(ItemManager.createProtectScroll(tier));
             	break;
-
+                case "pouch":
+                	tier = Integer.parseInt(args[1]);
+                	player.getInventory().addItem(BankMechanics.getInstance().createGemPouch(tier, 0));
+                	break;
             }
         }
 
