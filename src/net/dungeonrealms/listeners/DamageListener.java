@@ -433,10 +433,12 @@ public class DamageListener implements Listener {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof LivingEntity)) return;
             attacker = (LivingEntity) attackingArrow.getShooter();
-            if (API.isNonPvPRegion(defender.getLocation()) && attacker instanceof Player) {
-                event.setCancelled(true);
-                event.setDamage(0);
-                return;
+            if (defender instanceof Player) {
+                if (API.isNonPvPRegion(defender.getLocation()) && attacker instanceof Player) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
+                }
             }
             if (!(attacker instanceof Player)) {
                 if (!(defender instanceof Player)) {
@@ -450,10 +452,12 @@ public class DamageListener implements Listener {
             Snowball staffProjectile = (Snowball) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof LivingEntity)) return;
             attacker = (LivingEntity) staffProjectile.getShooter();
-            if (API.isNonPvPRegion(defender.getLocation()) && attacker instanceof Player) {
-                event.setCancelled(true);
-                event.setDamage(0);
-                return;
+            if (defender instanceof Player) {
+                if (API.isNonPvPRegion(defender.getLocation()) && attacker instanceof Player) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
+                }
             }
             if (!(attacker instanceof Player)) {
                 if (!(defender instanceof Player)) {
