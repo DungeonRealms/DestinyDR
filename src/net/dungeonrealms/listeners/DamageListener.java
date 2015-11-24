@@ -67,7 +67,6 @@ import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.miscellaneous.ItemBuilder;
@@ -460,6 +459,13 @@ public class DamageListener implements Listener {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof LivingEntity)) return;
             attacker = (LivingEntity) attackingArrow.getShooter();
+            if (defender instanceof Player) {
+                if (API.isNonPvPRegion(defender.getLocation()) && attacker instanceof Player) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
+                }
+            }
             if (!(attacker instanceof Player)) {
                 if (!(defender instanceof Player)) {
                     event.setCancelled(true);
@@ -472,6 +478,13 @@ public class DamageListener implements Listener {
             Snowball staffProjectile = (Snowball) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof LivingEntity)) return;
             attacker = (LivingEntity) staffProjectile.getShooter();
+            if (defender instanceof Player) {
+                if (API.isNonPvPRegion(defender.getLocation()) && attacker instanceof Player) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
+                }
+            }
             if (!(attacker instanceof Player)) {
                 if (!(defender instanceof Player)) {
                     event.setCancelled(true);
