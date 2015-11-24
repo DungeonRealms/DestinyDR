@@ -140,6 +140,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("foodLevel", Integer.class);
             case SHOPLEVEL:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("shopLevel", Integer.class);
+            case LOGGERDIED:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("loggerdied", Boolean.class);
 
             /*
             Rank Things. Different Sub-Document().
@@ -350,6 +352,7 @@ public class DatabaseAPI {
                                 .append("shopOpen", false)
                                 .append("foodLevel", 20)
                                 .append("shopLevel", 1))
+//                				.append("loggerdied", false) TODO
                         .append("attributes",
                                 new Document("bufferPoints", 6)
                                         .append("strength", 0)

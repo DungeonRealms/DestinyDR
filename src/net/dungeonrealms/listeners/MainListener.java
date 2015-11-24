@@ -1,6 +1,7 @@
 package net.dungeonrealms.listeners;
 
 import java.util.Random;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -10,7 +11,6 @@ import org.bukkit.Material;
 import org.bukkit.Rotation;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.EntityType;
@@ -19,6 +19,7 @@ import org.bukkit.entity.Horse.Variant;
 import org.bukkit.entity.ItemFrame;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Zombie;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -55,6 +56,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.chat.Chat;
+import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.duel.DuelOffer;
 import net.dungeonrealms.duel.DuelingMechanics;
@@ -67,6 +69,8 @@ import net.dungeonrealms.inventory.GUI;
 import net.dungeonrealms.inventory.NPCMenus;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.mongo.achievements.Achievements;
 import net.dungeonrealms.profession.Fishing;
 import net.dungeonrealms.teleportation.Teleportation;
@@ -137,6 +141,11 @@ public class MainListener implements Listener {
         player.getInventory().setArmorContents(armor);
         player.sendMessage(ChatColor.GREEN + "Loading your data.. This will only take a moment!");
 
+        UUID uuid = player.getUniqueId();
+        //TODO UNCOMMENT WHEN WIPED MONGO
+//        if((boolean) DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, uuid))
+//      		player.sendMessage(ChatColor.YELLOW  + ChatColor.BOLD.toString() + "You have Combat Logged and someone killed your body while you were gone!"); 
+        CombatLog.checkCombatLog(uuid);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
                 () -> API.handleLogin(player.getUniqueId()), 20L * 3);
     }

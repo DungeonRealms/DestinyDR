@@ -272,20 +272,20 @@ public class BankListener implements Listener {
                     	if(e.getCurrentItem().getType() != Material.EMERALD && e.getCurrentItem().getType() != Material.PAPER && e.getCurrentItem().getType() != Material.INK_SACK){ e.setCancelled(true); return;}
                     	
                         nms = CraftItemStack.asNMSCopy(e.getCurrentItem());
-                        int size = 0;
-                        if (e.getCurrentItem().getType() == Material.EMERALD){
-                            e.setCurrentItem(null);
-                            size = e.getCurrentItem().getAmount();
-                        }else if (e.getCurrentItem().getType() == Material.PAPER) {
-                            e.setCurrentItem(null);
-                            size = e.getCurrentItem().getAmount() * nms.getTag().getInt("worth");
-                        }else if(e.getCurrentItem().getType() == Material.INK_SACK){
-                        	int tier = nms.getTag().getInt("tier");
-                        	e.setCurrentItem(BankMechanics.getInstance().createGemPouch(tier, 0));
-                            size = nms.getTag().getInt("worth");
-                        }
                         if(!nms.hasTag())
                         	return;
+                        int size = 0;
+                        if (e.getCurrentItem().getType() == Material.EMERALD){
+                            size = e.getCurrentItem().getAmount();
+                            e.setCurrentItem(null);
+                        }else if (e.getCurrentItem().getType() == Material.PAPER) {
+                            size = e.getCurrentItem().getAmount() * nms.getTag().getInt("worth");
+                            e.setCurrentItem(null);
+                        }else if(e.getCurrentItem().getType() == Material.INK_SACK){
+                        	int tier = nms.getTag().getInt("tier");
+                            size = nms.getTag().getInt("worth");
+                        	e.setCurrentItem(BankMechanics.getInstance().createGemPouch(tier, 0));
+                        }
                         if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                             e.setCancelled(true);
                             BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);

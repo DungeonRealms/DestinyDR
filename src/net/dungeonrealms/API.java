@@ -1,5 +1,41 @@
 package net.dungeonrealms;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.rmi.activation.UnknownObjectException;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Zombie;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.plugin.Plugin;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -7,8 +43,11 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
+import net.dungeonrealms.combat.CombatLog;
+import net.dungeonrealms.duel.DuelingMechanics;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.mounts.EnumMounts;
@@ -28,7 +67,11 @@ import net.dungeonrealms.items.armor.Armor;
 import net.dungeonrealms.items.armor.Armor.ArmorModifier;
 import net.dungeonrealms.items.armor.Armor.ArmorTier;
 import net.dungeonrealms.items.armor.ArmorGenerator;
-import net.dungeonrealms.mastery.*;
+import net.dungeonrealms.mastery.GamePlayer;
+import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.NameFetcher;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.miscellaneous.ItemBuilder;
@@ -40,28 +83,6 @@ import net.dungeonrealms.mongo.achievements.AchievementManager;
 import net.dungeonrealms.notice.Notice;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.teleportation.TeleportAPI;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.plugin.Plugin;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
-import java.io.*;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.rmi.activation.UnknownObjectException;
-import java.util.*;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -349,6 +370,8 @@ public class API {
      */
     public static void handleLogout(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
+        if(CombatLog.isInCombat(player) && !DuelingMechanics.isDueling(uuid))
+        	CombatLog.handleCombatLogger(player);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, false);
         if (BankMechanics.storage.containsKey(uuid)) {
             Inventory inv = BankMechanics.storage.get(uuid).inv;
@@ -450,12 +473,8 @@ public class API {
             }
         }
         player.getInventory().setArmorContents(armorContents);
-        /*for(int i = 0; i  < playerArmor.size(); i++){
-        	String armorStr = playerArmor.get(i);
-        	if(armorStr.equalsIgnoreCase("null") || armorStr == null)
-        		continue;
-        	player.getInventory().getArmorContents()[i] = ItemSerialization.itemStackFromBase64(armorStr);
-        }*/
+        
+//TODO MONGO WIPES  		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
 
         AchievementManager.getInstance().handleLogin(player);
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);

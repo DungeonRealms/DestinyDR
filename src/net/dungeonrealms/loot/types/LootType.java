@@ -241,6 +241,8 @@ public enum LootType {
                         ItemStack stack = new ItemStack(Material.IRON_SWORD, 1);
                         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
                         nms.setTag(new NBTTagCompound());
+                        if(item_tier >= 5)
+                        	item_tier = 4;
                         nms.getTag().setInt("itemTier", item_tier);
 //						Utils.log.info(Material.IRON_SWORD.name() + " " + spawn_chance);
                         loot.put(CraftItemStack.asBukkitCopy(nms), spawn_chance);

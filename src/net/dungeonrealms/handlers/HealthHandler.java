@@ -576,10 +576,10 @@ public class HealthHandler implements GenericMechanic {
         
         if (API.isPlayer(attacker)) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
+            	if(!entity.hasMetadata("uuid")){
                 String customNameAppended = (entity.getMetadata("customname").get(0).asString());
-//                 EntityLiving nms = ((CraftLivingEntity)entity).getHandle();
-//                if(!entity.getCustomName().contains("*") || !entity.hasMetadata("boss") || !entity.hasMetadata("elite"))
                 attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + API.getTierColor(entity.getMetadata("tier").get(0).asInt()) + customNameAppended + ChatColor.DARK_PURPLE + ChatColor.BOLD + "[" + (int) newHP + "HP]");
+            	}
             }
         }
 
@@ -597,7 +597,7 @@ public class HealthHandler implements GenericMechanic {
             if (Entities.MONSTERS_LEASHED.contains(entity)) {
                 Entities.MONSTERS_LEASHED.remove(entity);
             }
-            if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+            if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile") && !entity.hasMetadata("uuid")) {
                 ((net.dungeonrealms.entities.types.monsters.Monster) entity1).onMonsterDeath();
                 if (attacker instanceof Player) {
                     int exp = API.getMonsterExp((Player) attacker, entity);
@@ -621,9 +621,12 @@ public class HealthHandler implements GenericMechanic {
             if (entity.hasMetadata("type") && entity.hasMetadata("level")) {
                 int level = entity.getMetadata("level").get(0).asInt();
                 String lvlName = ChatColor.LIGHT_PURPLE + "[" + level + "] ";
-                String name = entity.getMetadata("customname").get(0).asString();
+                String name = "";
+                if(!entity.hasMetadata("elite") && !entity.hasMetadata("boss") && !entity.hasMetadata("uuid"))
+                name = entity.getMetadata("customname").get(0).asString();
+                else name = entity.getCustomName();
                 int hp = entity.getMetadata("currentHP").get(0).asInt();
-                if (!entity.hasMetadata("elite") && !entity.hasMetadata("boss"))
+                if (!entity.hasMetadata("elite") && !entity.hasMetadata("boss") && !entity.hasMetadata("uuid"))
                     entity.setCustomName(lvlName + ChatColor.RESET + name + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
                 entity.setHealth(convHPToDisplay);
                 if (!Entities.MONSTERS_LEASHED.contains(entity)) {

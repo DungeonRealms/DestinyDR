@@ -14,6 +14,7 @@ import net.dungeonrealms.entities.utils.PetUtils;
 import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.inventory.NPCMenus;
 import net.dungeonrealms.inventory.PlayerMenus;
+import net.dungeonrealms.items.EnumItem;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.ParticleAPI;
@@ -198,6 +199,7 @@ public class ClickHandler {
                         }
                         if (nmsStack.getTag().hasKey("storageExpansion")) {
                             if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
+                            	player.getInventory().addItem(ItemManager.createItem(EnumItem.StorageExpansion));
                                 player.sendMessage(ChatColor.GREEN + "You have purchased a Storage Expansion!");
                                 player.closeInventory();
                                 return;

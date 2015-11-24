@@ -94,7 +94,6 @@ public class PlayerStats {
 	}
 
 	public void updateItems(Inventory openInventory, Player p) {
-		PlayerStats stats = StatsManager.getPlayerStats(p);
 		ItemStack confirmItem = loadConfirmItem();
 		ItemStack dexItem = loadDexItem();
 		ItemStack dexStatsItem = loadDexStatsItem();
@@ -175,7 +174,6 @@ public class PlayerStats {
 	}
 	
 	  ItemStack loadVitItem() {
-		int points = vitPoints;
 		boolean spent = tempvitPoints > 0;
 		
 		return ItemManager.createItem(Material.EMPTY_MAP, ChatColor.DARK_PURPLE + "Vitality", new String[]{ChatColor.GRAY + "Adds health, hp regen, ", ChatColor.GRAY + " and ", ChatColor.GRAY + "sword damage.",
@@ -210,7 +208,6 @@ public class PlayerStats {
 	  }
 
 	  ItemStack loadStrItem() {
-		int points = strPoints;
 		boolean spent = tempstrPoints > 0;
 		return ItemManager.createItem(Material.EMPTY_MAP, ChatColor.DARK_PURPLE + "Strength", new String[]{ChatColor.GRAY + "Adds armor, block chance, axe ", ChatColor.GRAY + "damage, and polearm damage.",
 				ChatColor.AQUA + "Allocated Points: " + strPoints + (spent ? ChatColor.GREEN + " [+" + tempstrPoints + "]" : ""),
@@ -251,7 +248,6 @@ public class PlayerStats {
 	  }
 	  
 	  ItemStack loadIntItem() {
-		int points = intPoints;
 		boolean spent = tempintPoints > 0;
 		
 		return ItemManager.createItem(Material.EMPTY_MAP, ChatColor.DARK_PURPLE + "Intellect", new String[]{ChatColor.GRAY + "Adds energy regeneration,  ", ChatColor.GRAY + "critical ",
@@ -263,7 +259,6 @@ public class PlayerStats {
 	  DecimalFormat df = new DecimalFormat("##.###");
 
 	  ItemStack loadDexItem() {
-		int points = dexPoints;
 		boolean spent = tempdexPoints > 0;
 		
 		return ItemManager.createItem(Material.EMPTY_MAP, ChatColor.DARK_PURPLE + "Dexterity", new String[]{ChatColor.GRAY + "Adds DPS%, dodge chance, armor ", ChatColor.GRAY + "penetration, and bow damage.",
@@ -319,7 +314,10 @@ public class PlayerStats {
 	  	
 	  	public void updatePoints(){
 	  		int allPoints = freePoints;
-	  		allPoints += strPoints += intPoints += dexPoints += vitPoints;
+	  		allPoints += strPoints;
+	  		allPoints += intPoints;
+	  		allPoints += dexPoints;
+	  		allPoints += vitPoints;
 	  		int shouldHave = POINTS_PER_LEVEL * level;
 	  		int diff = shouldHave - allPoints;
 	  		if(diff > 0){

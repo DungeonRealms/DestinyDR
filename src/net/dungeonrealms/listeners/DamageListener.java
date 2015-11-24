@@ -1,6 +1,51 @@
 package net.dungeonrealms.listeners;
 
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse;
+import org.bukkit.entity.Horse.Variant;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
+import org.bukkit.entity.WitherSkull;
+import org.bukkit.entity.Zombie;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.entity.ExplosionPrimeEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.ProjectileLaunchEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
+
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
@@ -12,6 +57,7 @@ import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
+import net.dungeonrealms.handlers.KarmaHandler.EnumPlayerAlignments;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.Item;
@@ -19,6 +65,7 @@ import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.Armor;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.items.repairing.RepairAPI;
+import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
@@ -26,6 +73,7 @@ import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.miscellaneous.ItemBuilder;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.profession.Fishing;
 import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.spawning.BuffManager;
@@ -33,28 +81,6 @@ import net.dungeonrealms.spawning.MobSpawner;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.*;
-import org.bukkit.entity.Horse.Variant;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.*;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
-import java.util.ArrayList;
-import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -877,6 +903,100 @@ public class DamageListener implements Listener {
             EntityAPI.removePlayerMountList(event.getEntity().getUniqueId());
         }
     }
+    
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void handleCombatLoggerNPCDeath(EntityDeathEvent event) {
+        if (event.getEntity() instanceof Player) return;
+        if (!(event.getEntity() instanceof CraftLivingEntity)) return;
+        if(!event.getEntity().hasMetadata("uuid"))return;
+        UUID uuid = UUID.fromString(event.getEntity().getMetadata("uuid").get(0).asString());
+        Zombie z = CombatLog.LOGGER.get(uuid);
+        z.setBaby(false);
+        Inventory inv = CombatLog.LOGGER_INVENTORY.get(uuid);
+        if(inv == null){
+        	Utils.log.info("inv Null");
+        	return;
+        }
+        String align = (String) DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid);
+        EnumPlayerAlignments alignment = EnumPlayerAlignments.getByName(align);
+        ItemStack savedItem = null;
+        ArrayList<ItemStack> savedArmor = new ArrayList();
+        Location loc = null;
+        switch(alignment){
+        case LAWFUL:
+            if (inv != null && inv.getItem(0) != null && inv.getItem(0).getType() != Material.AIR) {
+                savedItem = inv.getItem(0);
+              }
+            if (RepairAPI.getCustomDurability(z.getEquipment().getBoots()) - 400 > 0) {
+            	ItemStack item = z.getEquipment().getBoots();
+            	RepairAPI.setCustomItemDurability(item, RepairAPI.getCustomDurability(item) - 400);
+            	savedArmor.add(z.getEquipment().getBoots());
+            }
+            if (RepairAPI.getCustomDurability(z.getEquipment().getLeggings()) - 400 > 0) {
+            	savedArmor.add(z.getEquipment().getLeggings());
+            }
+            if (RepairAPI.getCustomDurability(z.getEquipment().getChestplate()) - 400 > 0) {
+            	savedArmor.add(z.getEquipment().getChestplate());
+            }
+            if (RepairAPI.getCustomDurability(z.getEquipment().getHelmet()) - 400 > 0) {
+            	savedArmor.add(z.getEquipment().getHelmet());
+            }
+        	break;
+        case CHAOTIC:
+          loc = KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1));
+        	break;
+        case NEUTRAL:
+        	if (new Random().nextInt(99) <= 50) {
+            if (inv.getItem(0) != null && inv.getItem(0).getType() != Material.AIR) {
+                savedItem = inv.getItem(0);
+             }
+            }
+            if (new Random().nextInt(99) <= 25) {
+            	savedArmor.add(z.getEquipment().getBoots());
+            }
+            if (new Random().nextInt(99) <= 25) {
+            	savedArmor.add(z.getEquipment().getLeggings());
+            }
+            if (new Random().nextInt(99) <= 25) {
+            	savedArmor.add(z.getEquipment().getChestplate());
+            }
+            if (new Random().nextInt(99) <= 25) {
+            	savedArmor.add(z.getEquipment().getHelmet());
+            }
+            break;
+        }
+        for(ItemStack stack : inv.getContents()){
+        	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        	if(savedItem != null && stack != null && stack == savedItem)
+        		continue;
+        	if(stack == null || stack.getType() == Material.AIR || nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important") || nms.hasTag() && nms.getTag().hasKey("subtype"))
+        		continue;
+        	event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), stack);
+        }
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, true, true);
+        CombatLog.checkCombatLog(uuid);
+
+        ArrayList<String> armor = new ArrayList<String>();
+        for (ItemStack itemStack : savedArmor) {
+            if (itemStack == null || itemStack.getType() == Material.AIR) {
+                armor.add("null");
+            } else {
+                armor.add(ItemSerialization.itemStackToBase64(itemStack));
+            }
+        }
+        
+        Inventory savedItemInv = Bukkit.createInventory(null, 9, "Inventory");
+  		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, ItemSerialization.toString(savedItemInv), true);
+  		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, true);
+  		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, "-367,90,390,0,0", true);
+  		if(loc != null){
+  			String locString = loc.getBlockX() +"," + loc.getBlockY() + 2 + "," + loc.getBlockZ() + "," + "0,0";
+  			DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locString, true);
+  		}
+  		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, true, true);
+        CombatLog.LOGGER_INVENTORY.remove(uuid);
+    }
+    
     
     /**
      * Get rid of fall damage
