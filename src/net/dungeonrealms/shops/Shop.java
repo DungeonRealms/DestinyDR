@@ -196,7 +196,7 @@ public class Shop {
 			net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
 			nmsButton.getTag().setString("status", "on");
 			inventory.setItem(8, CraftItemStack.asBukkitCopy(nmsButton));
-			hologram.appendTextLine(ChatColor.GREEN + ChatColor.BOLD.toString() + shopName + " [S]");
+			hologram.appendTextLine(ChatColor.GREEN + ChatColor.BOLD.toString() + "[S] " + shopName);
 		}
 	}
 

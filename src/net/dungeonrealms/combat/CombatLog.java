@@ -23,6 +23,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.duel.DuelingMechanics;
 import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.NBTUtils;
 import net.dungeonrealms.mastery.Utils;
@@ -84,17 +85,21 @@ public class CombatLog implements GenericMechanic{
         z.getEquipment().setArmorContents(p.getEquipment().getArmorContents());
         z.getEquipment().setItemInHand(p.getItemInHand());
         if(p.getEquipment().getHelmet() == null || p.getEquipment().getHelmet().getType() == Material.AIR){
-        ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-        SkullMeta meta = (SkullMeta) skull.getItemMeta();
-        meta.setOwner(p.getName());
-        meta.setDisplayName(p.getName());
-        skull.setItemMeta(meta);
-        z.getEquipment().setHelmet(skull);
+        	ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
+        	SkullMeta meta = (SkullMeta) skull.getItemMeta();
+        	meta.setOwner(p.getName());
+        	meta.setDisplayName(p.getName());
+        	skull.setItemMeta(meta);
+        	z.getEquipment().setHelmet(skull);
         }
         int lvl = API.getGamePlayer(p).getLevel();
         z.setCustomName(ChatColor.LIGHT_PURPLE + "[" + lvl + "]" + ChatColor.RESET + " " + p.getName());
         z.setCustomNameVisible(true);
         MetadataUtils.registerEntityMetadata(((CraftEntity)z).getHandle(), EnumEntityType.HOSTILE_MOB, 4, lvl);
+        
+        
+        HealthHandler.getInstance().setMonsterHPLive(z, HealthHandler.getInstance().getPlayerHPLive(p));
+        z.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getPlayerMaxHPLive(p)));
         z.setMetadata("combatlog", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
         z.setMetadata("uuid", new FixedMetadataValue(DungeonRealms.getInstance(), p.getUniqueId().toString()));
         LOGGER.put(p.getUniqueId(), z);
@@ -140,6 +145,8 @@ public class CombatLog implements GenericMechanic{
 	          if(CombatLog.LOGGER.containsKey(uuid)){
 	          	Zombie z = CombatLog.LOGGER.get(uuid);
 	          	if(!z.isDead()){
+	          		Player p = Bukkit.getPlayer(uuid);
+	          		HealthHandler.getInstance().setPlayerHPLive(p, HealthHandler.getInstance().getMonsterHPLive(z));
 	          		z.remove();
 	          	}else{
 	          		//TP TO CYRENN

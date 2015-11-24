@@ -944,16 +944,22 @@ public class DamageListener implements Listener {
             if (RepairAPI.getCustomDurability(z.getEquipment().getBoots()) - 400 > 0) {
             	ItemStack item = z.getEquipment().getBoots();
             	RepairAPI.setCustomItemDurability(item, RepairAPI.getCustomDurability(item) - 400);
-            	savedArmor.add(z.getEquipment().getBoots());
+            	savedArmor.add(item);
             }
             if (RepairAPI.getCustomDurability(z.getEquipment().getLeggings()) - 400 > 0) {
-            	savedArmor.add(z.getEquipment().getLeggings());
+            	ItemStack item = z.getEquipment().getLeggings();
+            	RepairAPI.setCustomItemDurability(item, RepairAPI.getCustomDurability(item) - 400);
+            	savedArmor.add(item);
             }
             if (RepairAPI.getCustomDurability(z.getEquipment().getChestplate()) - 400 > 0) {
-            	savedArmor.add(z.getEquipment().getChestplate());
+            	ItemStack item = z.getEquipment().getChestplate();
+            	RepairAPI.setCustomItemDurability(item, RepairAPI.getCustomDurability(item) - 400);
+            	savedArmor.add(item);
             }
             if (RepairAPI.getCustomDurability(z.getEquipment().getHelmet()) - 400 > 0) {
-            	savedArmor.add(z.getEquipment().getHelmet());
+            	ItemStack item = z.getEquipment().getHelmet();
+            	RepairAPI.setCustomItemDurability(item, RepairAPI.getCustomDurability(item) - 400);
+            	savedArmor.add(item);
             }
         	break;
         case CHAOTIC:
@@ -966,23 +972,32 @@ public class DamageListener implements Listener {
              }
             }
             if (new Random().nextInt(99) <= 25) {
-            	savedArmor.add(z.getEquipment().getBoots());
+            	ItemStack item = z.getEquipment().getBoots();
+            	RepairAPI.setCustomItemDurability(item, RepairAPI.getCustomDurability(item) - 400);
+            	savedArmor.add(item);
             }
             if (new Random().nextInt(99) <= 25) {
-            	savedArmor.add(z.getEquipment().getLeggings());
+            	ItemStack item = z.getEquipment().getLeggings();
+            	RepairAPI.setCustomItemDurability(item, RepairAPI.getCustomDurability(item) - 400);
+            	savedArmor.add(item);
             }
             if (new Random().nextInt(99) <= 25) {
-            	savedArmor.add(z.getEquipment().getChestplate());
+            	ItemStack item = z.getEquipment().getChestplate();
+            	RepairAPI.setCustomItemDurability(item, RepairAPI.getCustomDurability(item) - 400);
+            	savedArmor.add(item);
             }
             if (new Random().nextInt(99) <= 25) {
-            	savedArmor.add(z.getEquipment().getHelmet());
+            	ItemStack item = z.getEquipment().getHelmet();
+            	RepairAPI.setCustomItemDurability(item, RepairAPI.getCustomDurability(item) - 400);
+            	savedArmor.add(item);
             }
             break;
         }
-        for(ItemStack stack : inv.getContents()){
-        	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        	if(savedItem != null && stack != null && stack == savedItem)
+        for(int i = 0; i < inv.getContents().length; i++){
+        	if(i == 0)
         		continue;
+        	ItemStack stack = inv.getItem(i);
+        	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         	if(stack == null || stack.getType() == Material.AIR || nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important") || nms.hasTag() && nms.getTag().hasKey("subtype"))
         		continue;
         	event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), stack);
@@ -998,9 +1013,12 @@ public class DamageListener implements Listener {
                 armor.add(ItemSerialization.itemStackToBase64(itemStack));
             }
         }
-        
-        Inventory savedItemInv = Bukkit.createInventory(null, 9, "Inventory");
-  		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, ItemSerialization.toString(savedItemInv), true);
+        if(savedItem != null && savedItem.getType() != Material.AIR){
+        	Inventory savedItemInv = Bukkit.createInventory(null, 9, "Inventory");
+        	savedItemInv.addItem(savedItem);
+        	DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, ItemSerialization.toString(savedItemInv), true);
+        }else
+        	DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, "", true);
   		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, true);
   		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, "-367,90,390,0,0", true);
   		if(loc != null){
