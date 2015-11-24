@@ -995,7 +995,7 @@ public class DamageListener implements Listener {
         }
         for(int i = 0; i < inv.getContents().length; i++){
         	if(i == 0)
-        		continue;
+        		continue;	
         	ItemStack stack = inv.getItem(i);
         	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         	if(stack == null || stack.getType() == Material.AIR || nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important") || nms.hasTag() && nms.getTag().hasKey("subtype"))
