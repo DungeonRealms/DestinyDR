@@ -255,6 +255,143 @@ public class TradeCalculator {
             }
         }
 
+
+        if (t1_ore > 0) {
+            while (t1_ore >= 100) {
+                t1_ore -= 100;
+                ItemStack pouch = BankMechanics.getInstance().createGemPouch(1, 0);
+                merchant_offer.add(pouch);
+            }
+
+            int payout = t1_ore * 2;
+            while (payout > 64) {
+                payout -= 64;
+                ItemStack scrap = ItemManager.createArmorScrap(1);
+                scrap.setAmount(64);
+                merchant_offer.add(scrap);
+            }
+            ItemStack scrap = ItemManager.createArmorScrap(1);
+            scrap.setAmount(payout);
+            merchant_offer.add(scrap);
+        }
+        if (t2_ore > 0) {
+            while (t2_ore >= 150) {
+                t2_ore -= 150;
+                ItemStack pouch = BankMechanics.getInstance().createGemPouch(2, 0);
+                merchant_offer.add(pouch);
+            }
+
+            while (t2_ore >= 70) {
+                t2_ore -= 70;
+                ItemStack pouch = BankMechanics.getInstance().createGemPouch(1, 0);
+                merchant_offer.add(pouch);
+            }
+
+            int payout = t2_ore * 1;
+            while (payout > 64) {
+                payout -= 64;
+                ItemStack scrap = ItemManager.createArmorScrap(2);
+                scrap.setAmount(64);
+                merchant_offer.add(scrap);
+            }
+            ItemStack scrap = ItemManager.createArmorScrap(2);
+            scrap.setAmount(payout);
+            merchant_offer.add(scrap);
+        }
+        if (t3_ore > 0) {
+            while (t3_ore >= 200) {
+                t3_ore -= 200;
+                ItemStack pouch = BankMechanics.getInstance().createGemPouch(3, 0);
+                merchant_offer.add(pouch);
+            }
+            while (t3_ore >= 100) {
+                t3_ore -= 100;
+                ItemStack pouch = BankMechanics.getInstance().createGemPouch(2, 0);
+                merchant_offer.add(pouch);
+            }
+            while (t3_ore >= 40) {
+                t3_ore -= 40;
+                ItemStack pouch = BankMechanics.getInstance().createGemPouch(1, 0);
+                merchant_offer.add(pouch);
+            }
+
+            int payout = t3_ore / 2;
+            while (payout > 64) {
+                payout -= 64;
+                ItemStack scrap = ItemManager.createArmorScrap(3);
+                scrap.setAmount(64);
+                merchant_offer.add(scrap);
+            }
+            ItemStack scrap = ItemManager.createArmorScrap(3);
+            scrap.setAmount(payout);
+            merchant_offer.add(scrap);
+        }
+        if (t4_ore > 0) {
+            while (t4_ore >= 140) {
+                t4_ore -= 140;
+                ItemStack pouch = BankMechanics.getInstance().createGemPouch(3, 0);
+                merchant_offer.add(pouch);
+            }
+            while (t4_ore >= 80) {
+                t4_ore -= 80;
+                ItemStack pouch = BankMechanics.getInstance().createGemPouch(2, 0);
+                merchant_offer.add(pouch);
+            }
+            while (t4_ore >= 35) {
+                t4_ore -= 35;
+                ItemStack pouch = BankMechanics.getInstance().createGemPouch(1, 0);
+                merchant_offer.add(pouch);
+            }
+
+            int payout = t4_ore / 2;
+            while (payout > 64) {
+                payout -= 64;
+                ItemStack scrap = ItemManager.createArmorScrap(4);
+                scrap.setAmount(64);
+                merchant_offer.add(scrap);
+            }
+            ItemStack scrap = ItemManager.createArmorScrap(4);
+            scrap.setAmount(payout);
+            merchant_offer.add(scrap);
+        }
+        if (t5_ore > 0) {
+            while (t5_ore >= 80) {
+                t5_ore -= 80;
+                ItemStack pouch = BankMechanics.getInstance().createGemPouch(4, 0);
+                merchant_offer.add(pouch);
+            }
+            while (t5_ore >= 60) {
+                t5_ore -= 60;
+                ItemStack pouch = BankMechanics.getInstance().createGemPouch(3, 0);
+                merchant_offer.add(pouch);
+            }
+            while (t5_ore >= 40) {
+                t5_ore -= 40;
+                ItemStack pouch = BankMechanics.getInstance().createGemPouch(2, 0);
+                merchant_offer.add(pouch);
+            }
+            while (t5_ore >= 20) {
+                t5_ore -= 20;
+                ItemStack pouch = BankMechanics.getInstance().createGemPouch(1, 0);
+                merchant_offer.add(pouch);
+            }
+
+            int payout = t5_ore / 2;
+            while (payout > 64) {
+                payout -= 64;
+                ItemStack scrap = ItemManager.createArmorScrap(5);
+                scrap.setAmount(64);
+                merchant_offer.add(scrap);
+            }
+            ItemStack scrap = ItemManager.createArmorScrap(5);
+            scrap.setAmount(payout);
+            merchant_offer.add(scrap);
+        }
+        
+        
+        
+        
+        
         if (t1_ore > 0) {
             int payout = t1_ore * 2;
             while (payout > 64) {
