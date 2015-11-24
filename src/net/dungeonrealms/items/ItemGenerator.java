@@ -411,7 +411,6 @@ public class ItemGenerator {
         tag.set("itemType", new NBTTagInt(type.getId()));
         tag.set("itemTier", new NBTTagInt(tier.getTierId()));
         tag.set("itemModifier", new NBTTagInt(attribute.getItemModifier().getId()));
-        tag.set("bound", new NBTTagString("false"));
 
         /*
         The line below removes the weapons attributes.
@@ -427,14 +426,13 @@ public class ItemGenerator {
 
         return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
       	}else if(API.isArmor(stack)){
-      		
           	ArrayList<ArmorAttributeType> attributeTypes = new ArmorGenerator().getRandomAttributes(new Random().nextInt(attribute.getArmorTier().getAttributeRange()));
             List<String> itemLore = new ArrayList<>();
             ArmorTier tier = attribute.getArmorTier();
           	ItemMeta meta = stack.getItemMeta();
             HashMap<ArmorAttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
             EquipmentType type = attribute.getArmorType();
-            
+            int modifierID = nmsStack.getTag().getInt("armorModifier");
             if(meta.getLore() != null)
                 for(String lore : meta.getLore()){
                 	if(lore.contains("Health Points") || lore.contains("Health Regen") || lore.contains("Energy Regen"))
@@ -444,24 +442,23 @@ public class ItemGenerator {
             
             
             attributeTypes.stream().filter(aType -> aType != null && aType != ArmorAttributeType.HEALTH_POINTS && aType != ArmorAttributeType.HEALTH_REGEN && aType != ArmorAttributeType.ENERGY_REGEN).forEach(aType -> {
-                int i = new DamageMeta().nextArmor(tier, ArmorModifier.getById(tier.getTierId() - 1), aType);
+                int i = new DamageMeta().nextArmor(tier, ArmorModifier.getById(modifierID), aType);
                 attributeTypeIntegerHashMap.put(aType, i);
 				itemLore.add(ArmorGenerator.setCorrectArmorLore(aType, i));
             });
-            ArmorModifier modifier = ArmorModifier.getById(tier.getTierId() - 1);
+            ArmorModifier modifier = ArmorModifier.getById(modifierID);
             itemLore.add(modifier.getChatColorOfModifier(modifier).toString() + modifier.getName());
             meta.setLore(itemLore);
             stack.setItemMeta(meta);
 
             RepairAPI.setCustomItemDurability(stack, 1500);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("type", new NBTTagString("weapon"));
+            tag.set("type", new NBTTagString("armor"));
 
             //Settings NBT for the Attribute Class. () -> itemType, itemTier, itemModifier
     		tag.set("armorType", new NBTTagInt(type.getId()));
     		tag.set("armorTier", new NBTTagInt(tier.getTierId()));
     		tag.set("armorModifier", new NBTTagInt(modifier.getId()));
-    		tag.set("bound", new NBTTagString("false"));
 
             /*
             The line below removes the weapons attributes.
