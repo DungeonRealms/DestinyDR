@@ -39,10 +39,10 @@ public interface Monster {
 		int chance = 0;
 		switch(tier){
 		case 1:
-			chance = 250;
+			chance = 200;
 			break;
 		case 2:
-			chance = 150;
+			chance = 100;
 			break;
 		case 3:
 			chance = 75;
@@ -54,7 +54,7 @@ public interface Monster {
 			chance = 10;
 			break;
 		}
-		if (RandomHelper.getRandomNumberBetween(1, 1000) <= chance) {
+		if (RandomHelper.getRandomNumberBetween(0, 1000) <= chance) {
 			ItemStack[] loot = new ItemStack[5];
 			ItemStack[] armor = ((LivingEntity) ent).getEquipment().getArmorContents();
 			ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
@@ -65,7 +65,7 @@ public interface Monster {
 			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), armorToDrop);
 		}
 		
-		if(RandomHelper.getRandomNumberBetween(1, 400) <= 2){
+		if(RandomHelper.getRandomNumberBetween(1, 500) <= 2){
 			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), ItemManager.createProtectScroll(tier));
 		}
 	}

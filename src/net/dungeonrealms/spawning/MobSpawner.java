@@ -59,8 +59,8 @@ public class MobSpawner {
 		if (type.contains("*")) {
 			type = type.replace("*", "");
 		}
-		if (spawnAmount > 6)
-			spawnAmount = 6;
+		if (spawnAmount > 5)
+			spawnAmount = 5;
 		this.lvlRange = lvlRange;
 		this.spawnAmount = spawnAmount;
 		this.loc = location;
@@ -215,16 +215,36 @@ public class MobSpawner {
 					entity.getBukkitEntity().setVelocity(new Vector(0.25, 0.5, 0.25));
 					SPAWNED_MONSTERS.add(entity);
 					toSpawn = false;
-					} , 200L);
+					} , 400L);
 				}else{
 					Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-					entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-					world.addEntity(entity, SpawnReason.CUSTOM);
-					entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-					entity.getBukkitEntity().setVelocity(new Vector(0.1, 0, 0.1));
-					firstSpawn = false;
-					SPAWNED_MONSTERS.add(entity);
-					toSpawn = false;
+					for(int i = 0; i < spawnAmount; i++){
+					    Entity newentity = SpawningMechanics.getMob(world, tier, monsEnum);
+						int newlevel = Utils.getRandomFromTier(tier, lvlRange);
+						MetadataUtils.registerEntityMetadata(newentity, type, tier, newlevel);
+						EntityStats.setMonsterRandomStats(newentity, level, tier);
+						
+				        String newlvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+				        int newhp = newentity.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
+						String newcustomName = "";
+						try {
+							newcustomName  = newentity.getBukkitEntity().getMetadata("customname").get(0).asString();
+						} catch (Exception exc) {
+							Utils.log.info(newentity.getCustomName() + " doesn't have metadata 'customname' ");
+							newcustomName = monsEnum.name;
+						}
+						
+				        if (!newentity.getBukkitEntity().hasMetadata("elite"))
+				        	newentity.setCustomName(newlvlName + ChatColor.RESET + newcustomName + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + newhp);
+				        newentity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+						world.addEntity(newentity, SpawnReason.CUSTOM);
+						newentity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+						newentity.getBukkitEntity().setVelocity(new Vector(0.1, 0, 0.1));
+						SPAWNED_MONSTERS.add(newentity);
+
+					}
+						firstSpawn = false;
+						toSpawn = false;
 					});
 				}
 			}

@@ -497,8 +497,6 @@ public class InventoryListener implements Listener {
                 event.setCurrentItem(EnchantmentAPI.removeItemProtection(event.getCurrentItem()));
         		return;
         	}
-        	
-        	
             if(cursorItem.getAmount() == 1){
             	event.setCursor(new ItemStack(Material.AIR));
             }else{
@@ -510,7 +508,11 @@ public class InventoryListener implements Listener {
             event.setCurrentItem(new ItemStack(Material.AIR));
         	return;
         }
-
+     	
+    	if(EnchantmentAPI.isItemProtected(slotItem)){
+            event.setCurrentItem(EnchantmentAPI.removeItemProtection(event.getCurrentItem()));
+    		return;
+    	}
         ItemMeta meta2 = slotItem.getItemMeta();
         String itemName = meta2.getDisplayName();
         ArrayList<String> lore = (ArrayList<String>) meta2.getLore();
