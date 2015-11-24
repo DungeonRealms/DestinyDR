@@ -488,7 +488,7 @@ public class MainListener implements Listener {
                 continue;
             }
             ItemStack itemStack = event.getInventory().getItem(slot_Variable);
-            if (itemStack == null || itemStack.getType() == Material.AIR || CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton") || itemStack.getType() == Material.THIN_GLASS) {
+            if (itemStack == null || itemStack.getType() == Material.AIR ||CraftItemStack.asNMSCopy(itemStack).hasTag() && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton") || itemStack.getType() == Material.THIN_GLASS) {
                 continue;
             }
             if (itemStack.getType() == Material.EMERALD) {
