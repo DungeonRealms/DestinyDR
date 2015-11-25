@@ -669,7 +669,7 @@ public class DamageListener implements Listener {
         Player player = event.getEntity();
         Location deathLocation = event.getEntity().getLocation();
         ItemStack armorToSave[] = new ItemStack[5];
-        ArrayList<ItemStack> savedItems = new ArrayList<ItemStack>();
+//        ArrayList<ItemStack> savedItems = new ArrayList<ItemStack>();
         Location respawnLocation = Teleportation.Cyrennica;
         boolean savedArmorContents = false;
         if (EntityAPI.hasPetOut(player.getUniqueId())) {
@@ -689,15 +689,15 @@ public class DamageListener implements Listener {
             player.sendMessage("For it's own safety, your mount has returned to the stable.");
         }
         
-        for(ItemStack stack : event.getEntity().getInventory()){
-        	if(stack == null || stack.getType() == Material.AIR) continue;
-        	if(Mining.isDRPickaxe(stack) || Fishing.isDRFishingPole(stack)){
-        		if (RepairAPI.getCustomDurability(stack) - 400 > 0.1D) {
-                    RepairAPI.subtractCustomDurability(player, stack, 400);
-                    savedItems.add(stack);
-                }
-        	}
-        }
+//        for(ItemStack stack : event.getEntity().getInventory()){
+//        	if(stack == null || stack.getType() == Material.AIR) continue;
+//        	if(Mining.isDRPickaxe(stack) || Fishing.isDRFishingPole(stack)){
+//        		if (RepairAPI.getCustomDurability(stack) - 400 > 0.1D) {
+//                    RepairAPI.subtractCustomDurability(player, stack, 400);
+//                    savedItems.add(stack);
+//                }
+//        	}
+//        }
         
         
         if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.LAWFUL.name())) {
@@ -762,10 +762,10 @@ public class DamageListener implements Listener {
                             }
                         }
                     }
-                    if (Mining.isDRPickaxe(itemStack) || Fishing.isDRFishingPole(itemStack)) {
-                        //event.getDrops().remove(itemStack);
-                        continue;
-                    }
+//                    if (Mining.isDRPickaxe(itemStack) || Fishing.isDRFishingPole(itemStack)) {
+//                        //event.getDrops().remove(itemStack);
+//                        continue;
+//                    }
                     items.add(itemStack);
                 }
             }
@@ -796,14 +796,14 @@ public class DamageListener implements Listener {
             player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 10)).setNBTString("subtype", "starter").build());
             if (finalSavedArmorContents) {
             	
-            	for(ItemStack itemStack : savedItems){
-            		 if (itemStack != null && itemStack.getType() != Material.AIR) {
-                         if (RepairAPI.getCustomDurability(itemStack) - 400 > 0.1D) {
-                             RepairAPI.subtractCustomDurability(player, itemStack, 400);
-                         }
-                         player.getInventory().addItem(itemStack);
-                     }	
-            	}
+//            	for(ItemStack itemStack : savedItems){
+//            		 if (itemStack != null && itemStack.getType() != Material.AIR) {
+//                         if (RepairAPI.getCustomDurability(itemStack) - 400 > 0.1D) {
+//                             RepairAPI.subtractCustomDurability(player, itemStack, 400);
+//                         }
+//                         player.getInventory().addItem(itemStack);
+//                     }	
+//            	}
             	
                 for (ItemStack itemStack : armorToSave) {
                     if (itemStack != null && itemStack.getType() != Material.AIR) {

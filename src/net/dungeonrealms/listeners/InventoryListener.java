@@ -429,7 +429,7 @@ public class InventoryListener implements Listener {
         	}
         	
         	int tier = nmsCursor.getTag().getInt("tier");
-        	if(tier > new Attribute(slotItem).getItemTier().getTierId()){
+        	if(tier != new Attribute(slotItem).getItemTier().getTierId()){
         		event.getWhoClicked().sendMessage(ChatColor.RED + "You can not use that enchant scroll on this weapon.");
         		return;
         	}
