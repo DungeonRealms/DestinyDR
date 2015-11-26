@@ -962,6 +962,11 @@ public class InventoryListener implements Listener {
         }
     }
     
+    /**
+     * Handles the accepting and denying for repairing items.
+     * 
+     * @param event
+     */
     @EventHandler(priority = EventPriority.LOWEST)
     public void playerClickRepairInv(InventoryClickEvent event) {
     	if(!event.getInventory().getTitle().contains("Repair your item for")) return;
