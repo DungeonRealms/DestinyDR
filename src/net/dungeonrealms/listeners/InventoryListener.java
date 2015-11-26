@@ -18,6 +18,7 @@ import net.dungeonrealms.items.armor.Armor.ArmorAttributeType;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.loot.LootManager;
+import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -959,5 +960,29 @@ public class InventoryListener implements Listener {
                 event.setResult(Event.Result.DENY);
             }
         }
+    }
+    
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void playerClickRepairInv(InventoryClickEvent event) {
+    	if(!event.getInventory().getTitle().contains("Repair your item for")) return;
+    	if(event.getRawSlot() < 9){
+    		event.setCancelled(true);
+    		if(event.getRawSlot() == 3){
+    			String string = event.getInventory().getTitle().substring(event.getInventory().getTitle().indexOf(ChatColor.BOLD.toString()) + 2);
+    			string = string.replace("g?", "");
+    			int cost = Integer.parseInt(string);
+    			if(BankMechanics.getInstance().takeGemsFromInventory(cost, (Player) event.getWhoClicked())){
+    				ItemStack stack = event.getWhoClicked().getItemInHand();
+    				RepairAPI.setCustomItemDurability(stack, 1500);
+    				event.getWhoClicked().setItemInHand(stack);
+    				event.getWhoClicked().closeInventory();
+    			}else{
+    				event.getWhoClicked().sendMessage(ChatColor.RED + "You do not have " +cost + " gems!");
+    				event.getWhoClicked().closeInventory();
+    			}
+    		}else if(event.getRawSlot() == 5){
+    			event.getWhoClicked().closeInventory();
+    		}
+    	}
     }
 }

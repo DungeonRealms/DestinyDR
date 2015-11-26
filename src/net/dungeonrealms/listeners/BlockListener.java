@@ -6,6 +6,7 @@ import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.GameMode;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -26,14 +27,10 @@ import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
-import com.minebone.anvilapi.core.AnvilApi;
-import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
-import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
@@ -45,6 +42,7 @@ import net.dungeonrealms.handlers.FriendHandler;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.loot.LootManager;
 import net.dungeonrealms.loot.LootSpawner;
+import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.miscellaneous.RandomHelper;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
@@ -220,12 +218,14 @@ public class BlockListener implements Listener {
         Block block = event.getClickedBlock();
         if (block == null) return;
         if (block.getType() != Material.ANVIL) return;
+    	event.setCancelled(true);
+
         if (event.getPlayer().getItemInHand() == null || event.getPlayer().getItemInHand().getType() == Material.AIR) {
             event.setCancelled(true);
             return;
         }
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
         ItemStack item = event.getPlayer().getItemInHand();
-        
         if(!API.isWeapon(item) && !API.isArmor(item) && !Mining.isDRPickaxe(item) && !Fishing.isDRFishingPole(item)){
         	event.setCancelled(true);
         	return;
@@ -236,43 +236,21 @@ public class BlockListener implements Listener {
         	event.setCancelled(true);
         	return;
         }
-        if (RepairAPI.isItemArmorOrWeapon(item) || Mining.isDRPickaxe(item) || Fishing.isDRFishingPole(item)) {
             if (RepairAPI.canItemBeRepaired(item)) {
                 Player player = event.getPlayer();
-                AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
-                    int newCost = RepairAPI.getItemRepairCost(item);
-                    if (e.getSlot() == AnvilSlot.OUTPUT) {
-                        String text = e.getName();
-                        if (text.equalsIgnoreCase("yes") || text.equalsIgnoreCase("y") || text.contains("Repair for ")) {
-                            boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(newCost, player);
-                            if (tookGems) {
-                                RepairAPI.setCustomItemDurability(player.getItemInHand(), 1499);
-                                player.updateInventory();
-                            } else {
-                                player.sendMessage(ChatColor.RED + "You do not have " + newCost + "g");
-                            }
-                        } else {
-                            e.destroy();
-                            e.setWillClose(true);
-                        }
-                    }
-                });
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-                    int newCost = RepairAPI.getItemRepairCost(item);
-                 	ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
-                 	ItemMeta meta = stack.getItemMeta();
-                 	meta.setDisplayName("Repair for " + newCost + "g ?");
-                 	stack.setItemMeta(meta);
-                 	gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
-                 	gui.open();
-                }, 20l);
+            	int newCost = RepairAPI.getItemRepairCost(item);
+            	
+            	Inventory inv = Bukkit.createInventory(null, 9, "Repair your item for " + ChatColor.BOLD + newCost + "g?");	
+            	inv.setItem(3, ItemManager.createItemWithData(Material.WOOL, ChatColor.YELLOW + "Accept", new String[] {ChatColor.GRAY + "Repairs your item fully for specified amount."}, DyeColor.LIME.getData()));
+            	inv.setItem(5, ItemManager.createItemWithData(Material.WOOL, ChatColor.YELLOW + "Deny", new String[] {ChatColor.GRAY + "Deny the repair of your item."}, DyeColor.RED.getData()));
+            	
+            	player.openInventory(inv);
+            	
             } else {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED + "This item is already repaired all the way!");
             }
-        } else {
-            event.setCancelled(true);
-        }
+        }, 20l);
     }
 
     /**
