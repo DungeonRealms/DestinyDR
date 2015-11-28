@@ -228,6 +228,7 @@ public class KarmaHandler implements GenericMechanic {
                                 ChatColor.GRAY + "While lawful, you will not lose any equipped armor on death, instead, all armor will lose 30% of its durability when you die.",
                                 ""
                         });
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.LAWFUL.name, true);
                     }
                     if(API.getGamePlayer(player) == null) {
                         Bukkit.broadcastMessage("player is null!");
@@ -246,6 +247,7 @@ public class KarmaHandler implements GenericMechanic {
                                 ChatColor.GRAY + "While neutral, you have a 50% chance of dropping your weapon, and a 25% chance of dropping each piece of equipped armor on death.",
                                 ""
                         });
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.NEUTRAL.name, true);
                     }
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.YELLOW, API.getGamePlayer(player).getLevel());
                     /*if (RealmManager.getInstance().getPlayerRealm(player) != null) {
@@ -267,6 +269,7 @@ public class KarmaHandler implements GenericMechanic {
                                 ChatColor.GRAY + "While chaotic, you cannot enter any major cities or safe zones. If you are killed while chaotic, you will lose everything in your inventory.",
                                 ""
                         });
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.CHAOTIC.name, true);
                     }
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.RED, API.getGamePlayer(player).getLevel());
                     /*if (RealmManager.getInstance().getPlayerRealm(player) != null) {
@@ -339,7 +342,7 @@ public class KarmaHandler implements GenericMechanic {
             String alignmentKiller = getPlayerRawAlignment(killerPlayer);
             if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.LAWFUL.name)) {
                 setPlayerAlignment(killerPlayer, EnumPlayerAlignments.CHAOTIC.name);
-            } else if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.NEUTRAL.name)) {
+            } else if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.NEUTRAL.name) || alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.CHAOTIC.name)) {
                 setPlayerAlignment(killerPlayer, alignmentKiller);
             }
         }
@@ -359,6 +362,8 @@ public class KarmaHandler implements GenericMechanic {
             setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL.name);
         } else if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.NEUTRAL.name)) {
             setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL.name);
+        } else if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.CHAOTIC.name)) {
+            //Hmm.
         }
     }
 
