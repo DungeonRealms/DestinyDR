@@ -1,17 +1,5 @@
 package net.dungeonrealms.items;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.items.Item.AttributeType;
@@ -29,6 +17,13 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagInt;
 import net.minecraft.server.v1_8_R3.NBTTagList;
 import net.minecraft.server.v1_8_R3.NBTTagString;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.*;
 
 /**
  * Created by Nick on 9/19/2015.
@@ -110,10 +105,13 @@ public class ItemGenerator {
                         i *= 1.25;
                         break;
                     case BOW:
-                        i *= 2;
+                        i *= 1.75;
                         break;
                     case STAFF:
                         i *= 0.8;
+                        break;
+                    case POLE_ARM:
+                        i *= 0.65;
                         break;
                     default:
                         break;

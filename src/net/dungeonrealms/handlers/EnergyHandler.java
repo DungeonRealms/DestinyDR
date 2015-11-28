@@ -218,7 +218,7 @@ public class EnergyHandler implements GenericMechanic {
                 regenAmount += 0;
             } else {
                 if (nmsTag.getInt("energyRegen") != 0) {
-                    regenAmount += (regenAmount / 100.F) * ((nmsTag.getInt("energyRegen") + 2));
+                    regenAmount += (regenAmount / 100.F) * (nmsTag.getInt("energyRegen"));
                 }
                 if (nmsTag.getInt("intellect") != 0) {
                     regenAmount += ((nmsTag.getInt("intellect") * 0.015F) / 100.0F);
