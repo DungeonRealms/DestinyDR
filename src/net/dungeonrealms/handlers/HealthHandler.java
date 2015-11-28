@@ -805,5 +805,6 @@ public class HealthHandler implements GenericMechanic {
         if (getPlayerHPLive(player) > getPlayerMaxHPLive(player)) {
             setPlayerHPLive(player, calculateMaxHPFromItems(player));
         }
+        COMBAT_ARMORSWITCH.remove(player);
     }
 }

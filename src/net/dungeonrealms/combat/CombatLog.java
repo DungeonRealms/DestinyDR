@@ -95,9 +95,9 @@ public class CombatLog implements GenericMechanic{
         z.setMetadata("uuid", new FixedMetadataValue(DungeonRealms.getInstance(), p.getUniqueId().toString()));
         LOGGER.put(p.getUniqueId(), z);
         LOGGER_INVENTORY.put(p.getUniqueId(), p.getInventory());
-        for(ItemStack stack : p.getInventory()){
+        //for(ItemStack stack : p.getInventory()){
         	
-        }
+        //}
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () ->{
         	LOGGER.get(p.getUniqueId()).remove();
         	LOGGER.remove(p.getUniqueId());
