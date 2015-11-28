@@ -907,71 +907,10 @@ public class DamageListener implements Listener {
         z.setBaby(false);
         Inventory inv = CombatLog.LOGGER_INVENTORY.get(uuid);
         if(inv == null){
-        	Utils.log.info("inv Null");
+        	Utils.log.info("COMBAT LOGGER INV NULL");
         	return;
         }
-        String align = (String) DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid);
-        EnumPlayerAlignments alignment = EnumPlayerAlignments.getByName(align);
-        ItemStack savedItem = null;
-        ArrayList<ItemStack> savedArmor = new ArrayList();
-        Location loc = null;
-        switch(alignment){
-        case LAWFUL:
-            if (inv != null && inv.getItem(0) != null && inv.getItem(0).getType() != Material.AIR) {
-                savedItem = inv.getItem(0);
-              }
-            if (RepairAPI.getCustomDurability(z.getEquipment().getBoots()) - 400 > 0) {
-            	ItemStack item = z.getEquipment().getBoots();
-            	RepairAPI.setCustomItemDurability(item, RepairAPI.getCustomDurability(item) - 400);
-            	savedArmor.add(item);
-            }
-            if (RepairAPI.getCustomDurability(z.getEquipment().getLeggings()) - 400 > 0) {
-            	ItemStack item = z.getEquipment().getLeggings();
-            	RepairAPI.setCustomItemDurability(item, RepairAPI.getCustomDurability(item) - 400);
-            	savedArmor.add(item);
-            }
-            if (RepairAPI.getCustomDurability(z.getEquipment().getChestplate()) - 400 > 0) {
-            	ItemStack item = z.getEquipment().getChestplate();
-            	RepairAPI.setCustomItemDurability(item, RepairAPI.getCustomDurability(item) - 400);
-            	savedArmor.add(item);
-            }
-            if (RepairAPI.getCustomDurability(z.getEquipment().getHelmet()) - 400 > 0) {
-            	ItemStack item = z.getEquipment().getHelmet();
-            	RepairAPI.setCustomItemDurability(item, RepairAPI.getCustomDurability(item) - 400);
-            	savedArmor.add(item);
-            }
-        	break;
-        case CHAOTIC:
-          loc = KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1));
-        	break;
-        case NEUTRAL:
-        	if (new Random().nextInt(99) <= 50) {
-            if (inv.getItem(0) != null && inv.getItem(0).getType() != Material.AIR) {
-                savedItem = inv.getItem(0);
-             }
-            }
-            if (new Random().nextInt(99) <= 25) {
-            	ItemStack item = z.getEquipment().getBoots();
-            	RepairAPI.setCustomItemDurability(item, RepairAPI.getCustomDurability(item) - 400);
-            	savedArmor.add(item);
-            }
-            if (new Random().nextInt(99) <= 25) {
-            	ItemStack item = z.getEquipment().getLeggings();
-            	RepairAPI.setCustomItemDurability(item, RepairAPI.getCustomDurability(item) - 400);
-            	savedArmor.add(item);
-            }
-            if (new Random().nextInt(99) <= 25) {
-            	ItemStack item = z.getEquipment().getChestplate();
-            	RepairAPI.setCustomItemDurability(item, RepairAPI.getCustomDurability(item) - 400);
-            	savedArmor.add(item);
-            }
-            if (new Random().nextInt(99) <= 25) {
-            	ItemStack item = z.getEquipment().getHelmet();
-            	RepairAPI.setCustomItemDurability(item, RepairAPI.getCustomDurability(item) - 400);
-            	savedArmor.add(item);
-            }
-            break;
-        }
+        Location loc =  KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1));
         for(int i = 0; i < inv.getContents().length; i++){
         	if(i == 0)
         		continue;	
@@ -981,27 +920,11 @@ public class DamageListener implements Listener {
         		continue;
         	event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), stack);
         }
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, true, true);
         CombatLog.checkCombatLog(uuid);
-
-        ArrayList<String> armor = new ArrayList<String>();
-        for (ItemStack itemStack : savedArmor) {
-            if (itemStack == null || itemStack.getType() == Material.AIR) {
-                armor.add("null");
-            } else {
-                armor.add(ItemSerialization.itemStackToBase64(itemStack));
-            }
-        }
-        if(savedItem != null && savedItem.getType() != Material.AIR){
-        	Inventory savedItemInv = Bukkit.createInventory(null, 9, "Inventory");
-        	savedItemInv.addItem(savedItem);
-        	DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, ItemSerialization.toString(savedItemInv), true);
-        }else
-        	DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, "", true);
-  		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, true);
-  		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, "-367,90,390,0,0", true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, "", true);
+  		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, new ArrayList<String>(), true);
   		if(loc != null){
-  			String locString = loc.getBlockX() +"," + loc.getBlockY() + 2 + "," + loc.getBlockZ() + "," + "0,0";
+  			String locString = loc.getBlockX() +"," + loc.getBlockY() + 5 + "," + loc.getBlockZ() + "," + "0,0";
   			DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locString, true);
   		}
   		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, true, true);

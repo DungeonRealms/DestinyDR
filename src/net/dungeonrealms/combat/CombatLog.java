@@ -84,7 +84,7 @@ public class CombatLog implements GenericMechanic{
         	z.getEquipment().setHelmet(skull);
         }
         int lvl = API.getGamePlayer(p).getLevel();
-        z.setCustomName(ChatColor.LIGHT_PURPLE + "[" + lvl + "]" + ChatColor.RESET + " " + p.getName());
+        z.setCustomName(ChatColor.LIGHT_PURPLE + "[" + lvl + "]" + ChatColor.RED + " " + p.getName());
         z.setCustomNameVisible(true);
         MetadataUtils.registerEntityMetadata(((CraftEntity)z).getHandle(), EnumEntityType.HOSTILE_MOB, 4, lvl);
         
