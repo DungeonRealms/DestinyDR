@@ -12,7 +12,6 @@ import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
-import net.dungeonrealms.handlers.KarmaHandler.EnumPlayerAlignments;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.Item;
@@ -20,7 +19,6 @@ import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.Armor;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.items.repairing.RepairAPI;
-import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
@@ -101,7 +99,7 @@ public class DamageListener implements Listener {
                 }
                 e.sendMessage(new String[]{
                         "",
-                        ChatColor.BLUE + "[BUFF] " + ChatColor.YELLOW + "You have received the " + ChatColor.UNDERLINE + effectType.getName() + ChatColor.YELLOW + " buff!",
+                        ChatColor.BLUE + "An Invocation of " + ChatColor.YELLOW.toString() + ChatColor.UNDERLINE + effectType.getName() + ChatColor.BLUE + " has begun!",
                         ""
                 });
             }
@@ -620,7 +618,7 @@ public class DamageListener implements Listener {
             }
         }
         if (event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.DROWNING
-                || event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.FIRE
+                || event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FALL
                 || event.getCause() == DamageCause.ENTITY_EXPLOSION || event.getCause() == DamageCause.BLOCK_EXPLOSION || event.getCause() == DamageCause.FIRE_TICK) {
             event.setCancelled(true);
             event.setDamage(0);
@@ -890,10 +888,13 @@ public class DamageListener implements Listener {
     public void playerDMGOnHorse(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
         if (event.getEntity().getVehicle() == null) return;
+        if (event.getDamage() <= 0) return;
+        if (event.isCancelled()) return;
         if (EntityAPI.hasMountOut(event.getEntity().getUniqueId())) {
             event.getEntity().getVehicle().setPassenger(null);
             event.getEntity().getVehicle().remove();
             EntityAPI.removePlayerMountList(event.getEntity().getUniqueId());
+            event.getEntity().sendMessage(ChatColor.RED + "You have been dismounted as you have taken damage!");
         }
     }
     
@@ -930,19 +931,4 @@ public class DamageListener implements Listener {
   		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, true, true);
         CombatLog.LOGGER_INVENTORY.remove(uuid);
     }
-    
-    
-    /**
-     * Get rid of fall damage
-     * 
-     * @param event
-     */
-    @EventHandler(priority = EventPriority.HIGH)
-    public void removeFallDmg(EntityDamageEvent event) {
-        if(event.getCause() == DamageCause.FALL){
-        	event.setDamage(0);
-        	event.setCancelled(true);
-        }
-    }
-    
 }
