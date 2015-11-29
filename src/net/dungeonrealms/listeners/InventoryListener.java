@@ -559,7 +559,7 @@ public class InventoryListener implements Listener {
         }
         event.getCurrentItem().setType(Material.AIR);
         event.setCurrentItem(new ItemStack(Material.AIR));
-        if((amount + 1) >= 3)
+        if((amount + 1) > 3)
         	EnchantmentAPI.addGlow(newItem);
         event.getWhoClicked().getInventory().addItem(newItem);
         ((Player)event.getWhoClicked()).updateInventory();

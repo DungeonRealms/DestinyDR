@@ -497,7 +497,7 @@ public class RepairAPI {
             repairable.setRepairCost((int) durability);
             itemStack.setItemMeta((ItemMeta) repairable);
 
-            if (EnchantmentAPI.getEnchantLvl(itemStack) >= 4) {
+            if (EnchantmentAPI.getEnchantLvl(itemStack) > 3) {
                 EnchantmentAPI.addGlow(itemStack);
             }
 
