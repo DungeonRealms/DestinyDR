@@ -803,7 +803,7 @@ public class HealthHandler implements GenericMechanic {
         }
         setPlayerMaxHPLive(player, calculateMaxHPFromItems(player));
         if (getPlayerHPLive(player) > getPlayerMaxHPLive(player)) {
-            setPlayerHPLive(player, calculateMaxHPFromItems(player));
+            setPlayerHPLive(player, getPlayerMaxHPLive(player));
         }
         COMBAT_ARMORSWITCH.remove(player);
     }

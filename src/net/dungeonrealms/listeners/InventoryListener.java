@@ -230,6 +230,9 @@ public class InventoryListener implements Listener {
             }, 10L);
         } else {
             event.getPlayer().sendMessage(ChatColor.RED + "Equipping armor while in combat will not change your stats! Please re-equip out of combat!");
+			if (!HealthHandler.COMBAT_ARMORSWITCH.contains(event.getPlayer())) {
+				HealthHandler.COMBAT_ARMORSWITCH.add(event.getPlayer());
+			}
         }
     }
 
