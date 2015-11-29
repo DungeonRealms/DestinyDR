@@ -1,15 +1,17 @@
 package net.dungeonrealms.combat;
 
-import java.util.Arrays;
-import java.util.Map;
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mastery.NBTUtils;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
@@ -19,20 +21,9 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.duel.DuelingMechanics;
-import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.handlers.HealthHandler;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.NBTUtils;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.ItemManager;
-import net.dungeonrealms.mechanics.generic.EnumPriority;
-import net.dungeonrealms.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.mongo.EnumOperators;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Nick on 8/29/2015.
@@ -104,9 +95,9 @@ public class CombatLog implements GenericMechanic{
         z.setMetadata("uuid", new FixedMetadataValue(DungeonRealms.getInstance(), p.getUniqueId().toString()));
         LOGGER.put(p.getUniqueId(), z);
         LOGGER_INVENTORY.put(p.getUniqueId(), p.getInventory());
-        for(ItemStack stack : p.getInventory()){
+        //for(ItemStack stack : p.getInventory()){
         	
-        }
+        //}
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () ->{
         	LOGGER.get(p.getUniqueId()).remove();
         	LOGGER.remove(p.getUniqueId());
@@ -126,6 +117,7 @@ public class CombatLog implements GenericMechanic{
             for (Map.Entry<Player, Integer> e : COMBAT.entrySet()) {
                 if (e.getValue() <= 0) {
                     removeFromCombat(e.getKey());
+                    HealthHandler.getInstance().recalculateHPAfterCombat(e.getKey());
                 } else {
                     COMBAT.put(e.getKey(), (e.getValue() - 1));
                 }

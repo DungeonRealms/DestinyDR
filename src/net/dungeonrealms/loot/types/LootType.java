@@ -1,7 +1,6 @@
 package net.dungeonrealms.loot.types;
 
 import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ItemManager;
@@ -185,7 +184,6 @@ public enum LootType {
                                 case 4:
                                     item = ItemManager.createTeleportBook("Deadpeaks");
                                     break;
-                                  
                                 case 11:
                                 	item = ItemManager.createWeaponEnchant(1);
                                 	break;
@@ -226,6 +224,9 @@ public enum LootType {
                             continue;
                         case MAGMA_CREAM:
                         	item = ItemManager.createOrbofAlteration();
+                            break;
+                        case MELON_BLOCK:
+                            item = new ItemStack(Material.MELON, 16);
                             break;
                         default:
                             item = new ItemStack(m, 1, item_meta);

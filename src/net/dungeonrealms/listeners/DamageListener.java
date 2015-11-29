@@ -1,51 +1,6 @@
 package net.dungeonrealms.listeners;
 
-import java.util.ArrayList;
-import java.util.Random;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Horse;
-import org.bukkit.entity.Horse.Variant;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
-import org.bukkit.entity.WitherSkull;
-import org.bukkit.entity.Zombie;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.event.entity.EntityExplodeEvent;
-import org.bukkit.event.entity.ExplosionPrimeEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.entity.ProjectileLaunchEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
-import org.bukkit.inventory.EntityEquipment;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
@@ -57,7 +12,6 @@ import net.dungeonrealms.entities.utils.EntityAPI;
 import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
-import net.dungeonrealms.handlers.KarmaHandler.EnumPlayerAlignments;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.items.Item;
@@ -65,7 +19,6 @@ import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.Armor;
 import net.dungeonrealms.items.armor.ArmorGenerator;
 import net.dungeonrealms.items.repairing.RepairAPI;
-import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mastery.MetadataUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
@@ -74,13 +27,35 @@ import net.dungeonrealms.miscellaneous.ItemBuilder;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
-import net.dungeonrealms.profession.Fishing;
-import net.dungeonrealms.profession.Mining;
 import net.dungeonrealms.spawning.BuffManager;
 import net.dungeonrealms.spawning.MobSpawner;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.*;
+import org.bukkit.entity.Horse.Variant;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.*;
+import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.inventory.EntityEquipment;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.ArrayList;
+import java.util.Random;
+import java.util.UUID;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -124,7 +99,7 @@ public class DamageListener implements Listener {
                 }
                 e.sendMessage(new String[]{
                         "",
-                        ChatColor.BLUE + "[BUFF] " + ChatColor.YELLOW + "You have received the " + ChatColor.UNDERLINE + effectType.getName() + ChatColor.YELLOW + " buff!",
+                        ChatColor.BLUE + "An Invocation of " + ChatColor.YELLOW.toString() + ChatColor.UNDERLINE + effectType.getName() + ChatColor.BLUE + " has begun!",
                         ""
                 });
             }
@@ -627,10 +602,12 @@ public class DamageListener implements Listener {
             switch (metaValue) {
                 case "pet":
                     event.setCancelled(true);
+                    event.setDamage(0);
                     event.getEntity().setFireTicks(0);
                     break;
                 case "mount":
                     event.setCancelled(true);
+                    event.setDamage(0);
                     event.getEntity().setFireTicks(0);
                     break;
                 case "spawner":
@@ -641,7 +618,7 @@ public class DamageListener implements Listener {
             }
         }
         if (event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.DROWNING
-                || event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.FIRE
+                || event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FALL
                 || event.getCause() == DamageCause.ENTITY_EXPLOSION || event.getCause() == DamageCause.BLOCK_EXPLOSION || event.getCause() == DamageCause.FIRE_TICK) {
             event.setCancelled(true);
             event.setDamage(0);
@@ -911,10 +888,13 @@ public class DamageListener implements Listener {
     public void playerDMGOnHorse(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
         if (event.getEntity().getVehicle() == null) return;
+        if (event.getDamage() <= 0) return;
+        if (event.isCancelled()) return;
         if (EntityAPI.hasMountOut(event.getEntity().getUniqueId())) {
             event.getEntity().getVehicle().setPassenger(null);
             event.getEntity().getVehicle().remove();
             EntityAPI.removePlayerMountList(event.getEntity().getUniqueId());
+            event.getEntity().sendMessage(ChatColor.RED + "You have been dismounted as you have taken damage!");
         }
     }
     
@@ -951,19 +931,4 @@ public class DamageListener implements Listener {
   		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, true, true);
         CombatLog.LOGGER_INVENTORY.remove(uuid);
     }
-    
-    
-    /**
-     * Get rid of fall damage
-     * 
-     * @param event
-     */
-    @EventHandler(priority = EventPriority.HIGH)
-    public void removeFallDmg(EntityDamageEvent event) {
-        if(event.getCause() == DamageCause.FALL){
-        	event.setDamage(0);
-        	event.setCancelled(true);
-        }
-    }
-    
 }
