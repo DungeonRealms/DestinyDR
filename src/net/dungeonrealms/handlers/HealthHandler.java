@@ -492,9 +492,11 @@ public class HealthHandler implements GenericMechanic {
             SoundAPI.getInstance().playSoundAtLocation("damage.hit", player.getLocation(), 6);
         }
         if (newHP <= 0 && DuelingMechanics.isDueling(player.getUniqueId())) {
+        	damage = 0;
             newHP = 1;
         	DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
             offer.endDuel((Player) leAttacker, player);
+            return;
         }
 
         if (newHP <= 0 && API.isPlayer(leAttacker) && Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, leAttacker.getUniqueId()).toString())) {
