@@ -173,16 +173,16 @@ public enum LootType {
                         case EMPTY_MAP:
                             switch (item_meta) {
                                 case 1:
-                                    item = ItemManager.createTeleportBook("Cyrennica");
+                                    item = ItemManager.createRandomTeleportBook();
                                     break;
                                 case 2:
-                                    item = ItemManager.createTeleportBook("Harrison_Field");
+                                    item = ItemManager.createRandomTeleportBook();
                                     break;
                                 case 3:
-                                    item = ItemManager.createTeleportBook("Dark_Oak");
+                                    item = ItemManager.createRandomTeleportBook();
                                     break;
                                 case 4:
-                                    item = ItemManager.createTeleportBook("Deadpeaks");
+                                    item = ItemManager.createRandomTeleportBook();
                                     break;
                                 case 11:
                                 	item = ItemManager.createWeaponEnchant(1);

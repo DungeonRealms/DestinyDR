@@ -249,7 +249,7 @@ public class HealthHandler implements GenericMechanic {
         if (player.hasMetadata("maxHP")) {
             return player.getMetadata("maxHP").get(0).asInt();
         } else {
-            return calculateMaxHPFromItems(player);
+            return API.getGamePlayer(player).getPlayerMaxHP();
         }
     }
 

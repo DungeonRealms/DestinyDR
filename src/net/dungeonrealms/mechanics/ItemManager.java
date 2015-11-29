@@ -1,11 +1,24 @@
 package net.dungeonrealms.mechanics;
 
-import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
+import net.dungeonrealms.API;
+import net.dungeonrealms.anticheat.AntiCheat;
+import net.dungeonrealms.handlers.EnergyHandler;
+import net.dungeonrealms.handlers.HealthHandler;
+import net.dungeonrealms.items.EnumItem;
+import net.dungeonrealms.items.Item;
+import net.dungeonrealms.items.repairing.RepairAPI;
+import net.dungeonrealms.mastery.GamePlayer;
+import net.dungeonrealms.miscellaneous.RandomHelper;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.profession.Fishing;
+import net.dungeonrealms.profession.Mining;
+import net.dungeonrealms.stats.PlayerStats;
+import net.dungeonrealms.teleportation.TeleportAPI;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.NBTTagInt;
+import net.minecraft.server.v1_8_R3.NBTTagList;
+import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -18,26 +31,11 @@ import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.anticheat.AntiCheat;
-import net.dungeonrealms.handlers.EnergyHandler;
-import net.dungeonrealms.handlers.HealthHandler;
-import net.dungeonrealms.items.EnumItem;
-import net.dungeonrealms.items.Item;
-import net.dungeonrealms.items.repairing.RepairAPI;
-import net.dungeonrealms.mastery.GamePlayer;
-import net.dungeonrealms.miscellaneous.ItemBuilder;
-import net.dungeonrealms.miscellaneous.RandomHelper;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.dungeonrealms.profession.Fishing;
-import net.dungeonrealms.profession.Mining;
-import net.dungeonrealms.stats.PlayerStats;
-import net.dungeonrealms.teleportation.TeleportAPI;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.NBTTagInt;
-import net.minecraft.server.v1_8_R3.NBTTagList;
-import net.minecraft.server.v1_8_R3.NBTTagString;
+import java.text.DecimalFormat;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -122,16 +120,15 @@ public class ItemManager {
     /**
      * Creates a random Teleport book
      *
-     * @param name
      * @return ItemStack
      * @since 1.0
      */
-    public static ItemStack createRandomTeleportBook(String name) {
+    public static ItemStack createRandomTeleportBook() {
         ItemStack rawStack = new ItemStack(Material.BOOK);
         ItemMeta meta = rawStack.getItemMeta();
-        meta.setDisplayName(name);
         String teleportLocation = TeleportAPI.getRandomTeleportString();
         String displayName = TeleportAPI.getDisplayNameOfLocation(teleportLocation);
+        meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.BOLD + "Teleport: " + ChatColor.WHITE + teleportLocation);
         meta.setLore(Collections.singletonList(ChatColor.GRAY + "(Right-Click) Teleport to " + displayName));
         rawStack.setItemMeta(meta);
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
@@ -145,7 +142,6 @@ public class ItemManager {
     /**
      * Creates a Teleport book using location for a String
      *
-     * @param name
      * @return ItemStack
      * @since 1.0
      */
@@ -292,9 +288,6 @@ public class ItemManager {
         if (!fromShop) {
             healAmount = (((healAmount + 5) / 10) * 10);
         }
-        if (isSplashPotion) {
-            healAmount *= 0.75;
-        }
         if (!isSplashPotion) {
             ItemStack rawStack = new ItemStack(Material.POTION, 1, (short) 5);
             PotionMeta potionMeta = (PotionMeta) rawStack.getItemMeta();
@@ -309,6 +302,7 @@ public class ItemManager {
             nmsStack.setTag(tag);
             return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
         } else {
+            healAmount *= 0.65;
             Potion potion = new Potion(PotionType.INSTANT_HEAL, 1);
             potion.setSplash(true);
             ItemStack rawStack = potion.toItemStack(1);
@@ -703,7 +697,7 @@ public class ItemManager {
                 + ChatColor.BLACK.toString() + "+" + df.format(stats.getStaffDMG() * 100) + "% Staff DMG";
 
 
-        bm.setAuthor("Xwaffle");
+        bm.setAuthor("DungeonRealms");
         pages.add(page1_string);
         pages.add(page2_string);
         pages.add(page3_string);
