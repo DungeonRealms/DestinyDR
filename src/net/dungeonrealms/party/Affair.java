@@ -37,21 +37,19 @@ public class Affair implements GenericMechanic {
 
     @Override
     public void startInitialization() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            _parties.stream().forEach(party -> {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> _parties.stream().forEach(party -> {
 
-                if (party.getOwner() == null) {
-                    removeParty(party);
-                } else {
-                /*
-                Scoreboards
-                 */
-                    updateParties();
-                }
+            if (party.getOwner() == null) {
+                removeParty(party);
+            } else {
+            /*
+            Scoreboards
+             */
+                updateParties();
+            }
 
 
-            });
-        }, 0, 15);
+        }), 0, 15);
     }
 
     public void invitePlayer(Player inviting, Player invitor) {
@@ -86,9 +84,7 @@ public class Affair implements GenericMechanic {
         player.sendMessage(ChatColor.RED + "You have left the party!");
 
         party.getOwner().sendMessage(ChatColor.AQUA + player.getName() + " " + ChatColor.RED + "has left the party!");
-        party.getMembers().stream().forEach(player1 -> {
-            player1.sendMessage(ChatColor.AQUA + player.getName() + " " + ChatColor.RED + "has left the party!");
-        });
+        party.getMembers().stream().forEach(player1 -> player1.sendMessage(ChatColor.AQUA + player.getName() + " " + ChatColor.RED + "has left the party!"));
 
         player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
 
@@ -124,9 +120,7 @@ public class Affair implements GenericMechanic {
                 score.setScore(HealthHandler.getInstance().getPlayerHPLive(player));
             });
 
-            allPlayers.stream().filter(player1 -> player1 != null).forEach(player -> {
-                player.setScoreboard(board);
-            });
+            allPlayers.stream().filter(player1 -> player1 != null).forEach(player -> player.setScoreboard(board));
 
 
         });

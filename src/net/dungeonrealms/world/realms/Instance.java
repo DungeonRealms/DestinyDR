@@ -542,11 +542,11 @@ public class Instance implements GenericMechanic, Listener {
         if (!CURRENT_REALMS.isEmpty()) {
             for (RealmObject realmObject : CURRENT_REALMS) {
                 if (location.distanceSquared(realmObject.getLocation()) <= 4) {
-                    if (Bukkit.getWorld(realmObject.getRealmOwner().toString()) == null) {
+                    if (Bukkit.getWorld(realmObject.getRealmOwner().getUniqueId().toString()) == null) {
                         return null;
                     }
                     realmObject.getPlayerList().add(player);
-                    return Bukkit.getWorld(realmObject.getRealmOwner().toString()).getSpawnLocation();
+                    return Bukkit.getWorld(realmObject.getRealmOwner().getUniqueId().toString()).getSpawnLocation();
                 }
             }
         } else {

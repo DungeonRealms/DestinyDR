@@ -146,12 +146,8 @@ public class GamePlayer {
      * @since 1.0
      */
     public int getPlayerMaxHP() {
-        if (T.hasMetadata("maxHP")) {
-            return T.getMetadata("maxHP").get(0).asInt();
-        } else {
-        	int temp = HealthHandler.getInstance().calculateMaxHPFromItems(T);
-            return temp + ((int)(temp * getStats().getVitHP()));
-        }
+        int temp = HealthHandler.getInstance().calculateMaxHPFromItems(T);
+        return temp + ((int)(temp * getStats().getVitHP()));
     }
 
     /**
