@@ -224,9 +224,9 @@ public class GamePlayer {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, futureExperience, true);
             if((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
                 if (!isSub) {
-                    T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "            +" + ChatColor.YELLOW + Math.round(experienceToAdd) + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience()) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + "] EXP");
+                    T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        +" + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience()) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
                 } else {
-                    T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "            +" + ChatColor.YELLOW + Math.round(experienceToAdd) + " (+" + Math.round(subBonus) + ")" + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience()) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + "] EXP");
+                    T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        +" + ChatColor.YELLOW + Math.round(experienceToAdd) + " (+" + Math.round(subBonus) + ")" + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience()) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
                 }
             }
         }
