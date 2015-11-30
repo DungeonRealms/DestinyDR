@@ -21,6 +21,7 @@ import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.spawning.SpawningMechanics;
 import net.dungeonrealms.world.realms.Instance;
+import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -210,6 +211,8 @@ public class BlockListener implements Listener {
     	event.setCancelled(true);
 
         if (event.getPlayer().getItemInHand() == null || event.getPlayer().getItemInHand().getType() == Material.AIR) {
+        	event.getPlayer().sendMessage(ChatColor.YELLOW + "Equip the item to repair and " + ChatColor.UNDERLINE + "RIGHT CLICK" + ChatColor.RESET + ChatColor.YELLOW + " the ANVIL.");
+        	event.getPlayer().sendMessage(ChatColor.GRAY + "Or, if you have an item scrap, drag it on top of the item in your inventory.");
             event.setCancelled(true);
             return;
         }
