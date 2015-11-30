@@ -420,7 +420,7 @@ public class BankListener implements Listener {
                     }
                 }
             }
-        }else if(e.getInventory().getTitle().contains("Upgrade your bank storage")){
+        }else if(e.getInventory().getTitle().contains("Upgrade your storage?")){
         	e.setCancelled(true);
         	int invLvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
 			int num = BankMechanics.getPrice(invLvl);
