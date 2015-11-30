@@ -697,7 +697,7 @@ public class ItemManager {
                 + ChatColor.BLACK.toString() + "+" + df.format(stats.getStaffDMG() * 100) + "% Staff DMG";
 
 
-        bm.setAuthor("DungeonRealms");
+        bm.setAuthor("King Bulwark");
         pages.add(page1_string);
         pages.add(page2_string);
         pages.add(page3_string);

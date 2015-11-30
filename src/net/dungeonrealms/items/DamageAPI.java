@@ -9,6 +9,7 @@ import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.EntityMonster;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
@@ -128,7 +129,13 @@ public class DamageAPI {
         }
 
         if (tag.getInt("criticalHit") != 0) {
-            if (new Random().nextInt(99) < tag.getInt("criticalHit")) {
+            int critHit = tag.getInt("criticalHit");
+            if (attacker instanceof Player) {
+                if (API.getGamePlayer((Player) attacker) != null) {
+                    critHit += critHit * ((API.getGamePlayer((Player) attacker).getStats()).getCritChance() / 100);
+                }
+            }
+            if (new Random().nextInt(99) < critHit) {
                 try {
                     ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, receiver.getLocation(),
                             new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
@@ -179,8 +186,34 @@ public class DamageAPI {
                 }
             }
         }
+        if (!(attacker instanceof Player)) {
+            if (attacker.hasMetadata("attack")) {
+                damage += (damage * (attacker.getMetadata("attack").get(0).asInt() / 100));
+                Bukkit.broadcastMessage("Mob melee damage increased by " + attacker.getMetadata("attack").get(0).asInt() + "%. REMOVE THIS (DAMAGEAPI 192)");
+            }
+        } else {
+            Player player = (Player) attacker;
+            if (API.getGamePlayer(player) != null) {
+                switch (new Attribute(((Player) attacker).getItemInHand()).getItemType()) {
+                    case POLE_ARM:
+                        damage += (damage * (API.getGamePlayer(player).getStats().getPolearmDMG() / 100));
+                        player.sendMessage("Your damage has been increased by " + API.getGamePlayer(player).getStats().getPolearmDMG() + "% (POLEARM)");
+                        break;
+                    case AXE:
+                        damage += (damage * (API.getGamePlayer(player).getStats().getAxeDMG() / 100));
+                        player.sendMessage("Your damage has been increased by " + API.getGamePlayer(player).getStats().getAxeDMG() + "% (AXE)");
+                        break;
+                    case SWORD:
+                        damage += (damage * (API.getGamePlayer(player).getStats().getSwordDMG() / 100));
+                        player.sendMessage("Your damage has been increased by " + API.getGamePlayer(player).getStats().getSwordDMG() + "% (SWORD)");
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
         if (isHitCrit) {
-            damage = damage * 1.5;
+            damage *= 1.5;
         }
         return Math.round(damage);
     }
@@ -382,6 +415,28 @@ public class DamageAPI {
             } else {
                 if (nmsTag.getDouble("damage") != 0) {
                     damage += (damage * (nmsTag.getDouble("damage") / 100));
+                }
+            }
+        }
+        if (!(attacker instanceof Player)) {
+            if (attacker.hasMetadata("attack")) {
+                damage += (damage * (attacker.getMetadata("attack").get(0).asInt() / 100));
+                Bukkit.broadcastMessage("Mob ranged damage increased by " + attacker.getMetadata("attack").get(0).asInt() + "%. REMOVE THIS (DAMAGEAPI 424)");
+            }
+        } else {
+            Player player = (Player) attacker;
+            if (API.getGamePlayer(player) != null) {
+                switch (projectile.getType()) {
+                    case ARROW:
+                        damage += (damage * (API.getGamePlayer(player).getStats().getBowDMG() / 100));
+                        player.sendMessage("Your damage has been increased by " + API.getGamePlayer(player).getStats().getBowDMG() + "% (BOW)");
+                        break;
+                    case SNOWBALL:
+                        damage += (damage * (API.getGamePlayer(player).getStats().getStaffDMG() / 100));
+                        player.sendMessage("Your damage has been increased by " + API.getGamePlayer(player).getStats().getStaffDMG() + "% (STAFF)");
+                        break;
+                    default:
+                        break;
                 }
             }
         }

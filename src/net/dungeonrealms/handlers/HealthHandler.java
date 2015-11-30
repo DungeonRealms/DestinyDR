@@ -2,6 +2,7 @@
 
     import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.chat.GameChat;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelOffer;
 import net.dungeonrealms.duel.DuelingMechanics;
@@ -20,8 +21,8 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.*;
-    import org.bukkit.event.entity.EntityDeathEvent;
-    import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.inventivetalent.bossbar.BossBarAPI;
@@ -527,20 +528,30 @@ public class HealthHandler implements GenericMechanic {
                 if (player.getMetadata("last_death_time").get(0).asLong() > 100) {
                     player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                     player.damage(25);
-                    //TODO: WATCH THIS
-                    //player.setHealth(0);
                     KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, leAttacker);
                     CombatLog.removeFromCombat(player);
-                    API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(player.getName() + " has died!"));
+                    String killerName;
+                    if (damager instanceof Player) {
+                        killerName = damager.getName();
+                    } else {
+                        killerName = damager.getCustomName();
+                    }
+                    final String finalKillerName = killerName;
+                    API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(GameChat.getPreMessage(player) + player.getName() + " was killed by a(n) " + finalKillerName));
                     return;
                 }
             } else {
                 player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                 player.damage(25);
-                //TODO: WATCH THIS
-                //player.setHealth(0);
                 KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, leAttacker);
-                API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(player.getName() + " has died!"));
+                String killerName;
+                if (damager instanceof Player) {
+                    killerName = damager.getName();
+                } else {
+                    killerName = damager.getCustomName();
+                }
+                final String finalKillerName = killerName;
+                API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(GameChat.getPreMessage(player) + player.getName() + " was killed by a(n) " + finalKillerName));
                 return;
             }
         }
