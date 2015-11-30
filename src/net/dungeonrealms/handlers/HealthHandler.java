@@ -14,20 +14,20 @@ import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.profession.Fishing;
-import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.*;
-import org.bukkit.inventory.ItemStack;
+    import org.bukkit.event.entity.EntityDeathEvent;
+    import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.inventivetalent.bossbar.BossBarAPI;
 
-    import java.util.ArrayList;
-    import java.util.List;
+import java.util.ArrayList;
+import java.util.List;
 
     /**
  * Created by Kieran on 10/3/2015.
@@ -589,13 +589,22 @@ public class HealthHandler implements GenericMechanic {
         }
 
         if (newHP <= 0) {
-            entity.playEffect(EntityEffect.DEATH);
+            //entity.playEffect(EntityEffect.DEATH);
             setMonsterHPLive(entity, 0);
             net.minecraft.server.v1_8_R3.Entity entity1 = ((CraftEntity) entity).getHandle();
-            entity1.damageEntity(DamageSource.GENERIC, 50F);
-            if (!entity1.dead) {
+            //entity1.damageEntity(DamageSource.GENERIC, 50F);
+            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+                if (!entity.isDead()) {
+                    entity.setMaximumNoDamageTicks(200);
+                    entity.setNoDamageTicks(10);
+                    EntityDeathEvent event = new EntityDeathEvent(entity,  new ArrayList<>());
+                    Bukkit.getPluginManager().callEvent(event);
+                    entity.setHealth(0);
+                }
+            }, 1L);
+            /*if (!entity1.dead) {
                 entity1.dead = true;
-            }
+            }*/
             if (Entities.MONSTER_LAST_ATTACK.containsKey(entity)) {
                 Entities.MONSTER_LAST_ATTACK.remove(entity);
             }
