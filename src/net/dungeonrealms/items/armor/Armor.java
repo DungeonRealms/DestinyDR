@@ -170,7 +170,7 @@ public class Armor {
         BLOCK(6, "BLOCK", "block"), //Percentage
         LUCK(7, "LUCK", "luck"), //Percentage
         THORNS(8, "THORNS", "thorns"), //Percentage
-        STRENGTH(9, "STRENGTH", "strength"),
+        STRENGTH(9, "STR", "strength"),
         VITALITY(10, "VIT", "vitality"),
         DODGE(11, "DODGE", "dodge"), //Percentage
         DAMAGE(12, "DMG", "damage"), //Percentage
