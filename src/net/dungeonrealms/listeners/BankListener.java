@@ -6,7 +6,6 @@ import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
-import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
@@ -137,7 +136,7 @@ public class BankListener implements Listener {
                                 });
                                 ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
                                 ItemMeta meta = stack.getItemMeta();
-                                meta.setDisplayName("Withdraw?");
+                                meta.setDisplayName("?");
                                 stack.setItemMeta(meta);
                                 gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
                                 player.closeInventory();
@@ -174,7 +173,7 @@ public class BankListener implements Listener {
                                 });
                                 ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
                                 ItemMeta meta = stack.getItemMeta();
-                                meta.setDisplayName("Withdraw?");
+                                meta.setDisplayName("?");
                                 stack.setItemMeta(meta);
                                 gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
                                 player.closeInventory();
