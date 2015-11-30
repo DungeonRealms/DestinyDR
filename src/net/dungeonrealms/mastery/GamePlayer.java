@@ -12,6 +12,7 @@ import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.stats.PlayerStats;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -205,22 +206,28 @@ public class GamePlayer {
     public void addExperience(double experienceToAdd) {
         int level = getLevel();
         double experience = getExperience();
+        double subBonus = 0;
         if (level >= 64) return;
-        if (!Rank.getInstance().getRank(T.getUniqueId()).getName().contains("SUB")) {
-            experienceToAdd *= 1.1;
+        boolean isSub = Rank.getInstance().getRank(T.getUniqueId()).getName().contains("SUB");
+        if (isSub) {
+            subBonus = experienceToAdd * 0.1;
         }
-        double futureExperience = experience + experienceToAdd;
+        double futureExperience = experience + experienceToAdd + subBonus;
         int xpNeeded = getEXPNeeded(level);
         if (futureExperience >= xpNeeded) {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, 0, true);
-            Utils.log.info("[LEVEL] Leveling " + T.getName() + " to level " + (getLevel() + 1));
             getStats().lvlUp();
+            T.playSound(T.getLocation(), Sound.LEVEL_UP, 0.5F, 1F);
             T.sendMessage(ChatColor.GREEN + "You have reached level " + ChatColor.AQUA + (level + 1) + ChatColor.GREEN + " and have gained " + ChatColor.AQUA + Integer.toString(PlayerStats.POINTS_PER_LEVEL) + ChatColor.GREEN + " Attribute Points!");
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(T, getPlayerAlignment().getAlignmentColor(), (level + 1));
         } else {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, futureExperience, true);
             if((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
-                T.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "+ " + ChatColor.GREEN + Math.round(experienceToAdd) + " EXP");
+                if (!isSub) {
+                    T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "            +" + ChatColor.YELLOW + Math.round(experienceToAdd) + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience()) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + "] EXP");
+                } else {
+                    T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "            +" + ChatColor.YELLOW + Math.round(experienceToAdd) + " (+" + Math.round(subBonus) + ")" + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience()) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + "] EXP");
+                }
             }
         }
 
