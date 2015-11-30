@@ -11,6 +11,8 @@ import net.dungeonrealms.mastery.AsyncUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -234,9 +236,6 @@ public class Instance implements GenericMechanic, Listener {
                 zipFile.extractAll(rootFolder.getAbsolutePath() + "/" + uuid.toString());
                 Utils.log.info("[REALM] [ASYNC] Realm Extracted for " + uuid.toString());
 
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> loadInWorld(Bukkit.getPlayer(uuid)), 5);
-
-
             } catch (IOException | ZipException e) {
                 e.printStackTrace();
             } finally {
@@ -248,6 +247,7 @@ public class Instance implements GenericMechanic, Listener {
                         e.printStackTrace();
                     }
                 }
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> loadInWorld(Bukkit.getPlayer(uuid)), 5);
             }
         });
     }
@@ -357,12 +357,13 @@ public class Instance implements GenericMechanic, Listener {
             realmObject.getPlayerList().stream().forEach(player -> {
                 if (!player.getWorld().getName().contains("DUNGEON") && !player.getWorld().equals(Bukkit.getWorlds().get(0))) {
                     player.sendMessage(ChatColor.RED + "This Realm has been closed!");
-                    player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
                     player.setFlying(false);
+                    String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId())).split(",");
+                    player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]), Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
                 }
             });
-            Bukkit.unloadWorld(realmObject.getRealmOwner().toString(), false);
-            Utils.log.info("[REALMS] Unloading world: " + realmObject.getRealmOwner().toString() + " in preparation for deletion!");
+            Bukkit.unloadWorld(realmObject.getRealmOwner().getUniqueId().toString(), false);
+            Utils.log.info("[REALMS] Unloading world: " + realmObject.getRealmOwner().getUniqueId().toString() + " in preparation for deletion!");
             CURRENT_REALMS.remove(realmObject);
             uploadRealm(realmObject.getRealmOwner());
         }
@@ -376,7 +377,7 @@ public class Instance implements GenericMechanic, Listener {
     public RealmObject getPlayerRealm(Player player) {
         if (!CURRENT_REALMS.isEmpty()) {
             for (RealmObject realmObject : CURRENT_REALMS) {
-                if (realmObject.getRealmOwner().equals(player.getUniqueId())) {
+                if (realmObject.getRealmOwner().getUniqueId().equals(player.getUniqueId())) {
                     return realmObject;
                 }
             }
@@ -393,7 +394,7 @@ public class Instance implements GenericMechanic, Listener {
     public RealmObject getPlayersCurrentRealm(Player player) {
         if (!CURRENT_REALMS.isEmpty()) {
             for (RealmObject realmObject : CURRENT_REALMS) {
-                if (realmObject.getRealmOwner().toString().equals(player.getWorld().getName())) {
+                if (realmObject.getRealmOwner().getUniqueId().toString().equals(player.getWorld().getName())) {
                     return realmObject;
                 }
             }
@@ -473,8 +474,6 @@ public class Instance implements GenericMechanic, Listener {
                 CURRENT_REALMS.add(realmObject);
                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "REALMS" + ChatColor.WHITE + "] " + ChatColor.YELLOW + "Your realm is ready!");
             }, 200L);
-
-
             if (!doesRemoteRealmExist(player.getUniqueId().toString())) {
                 player.sendMessage(ChatColor.RED + "Your realm does not exist remotely! Creating you a new realm!");
                 createTemplate(player);
@@ -482,7 +481,7 @@ public class Instance implements GenericMechanic, Listener {
             }
             else if (doesRemoteRealmExist(player.getUniqueId().toString()) && !isRealmLoaded(player.getUniqueId())) {
                 Utils.log.info("[REALMS] Player " + player.getUniqueId().toString() + "'s Realm existed locally, loading it!");
-                Bukkit.createWorld(new WorldCreator(player.getUniqueId().toString()));
+                downloadRealm(player.getUniqueId());
             }
         } else {
             player.sendMessage(ChatColor.RED + "You already have a Realm Portal in the world, please destroy it!");
@@ -573,7 +572,7 @@ public class Instance implements GenericMechanic, Listener {
      */
     public Location getPortalLocationFromRealmWorld(Player player) {
         for (RealmObject realmObject : CURRENT_REALMS) {
-            if (player.getWorld().getName().equalsIgnoreCase(realmObject.getRealmOwner().toString())) {
+            if (player.getWorld().getName().equalsIgnoreCase(realmObject.getRealmOwner().getUniqueId().toString())) {
                 realmObject.getPlayerList().remove(player);
                 return realmObject.getLocation();
             }
