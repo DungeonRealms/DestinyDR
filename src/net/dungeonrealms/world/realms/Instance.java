@@ -210,52 +210,49 @@ public class Instance implements GenericMechanic, Listener {
     }
 
     public void downloadRealm(UUID uuid) {
-        AsyncUtils.pool.submit(() -> {
-            FTPClient ftpClient = new FTPClient();
-            FileOutputStream fos = null;
-            String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
-            try {
-                ftpClient.connect(host, port);
-                boolean login = ftpClient.login(user, password);
-                if (login) {
-                    Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString());
-                }
-                ftpClient.enterLocalPassiveMode();
-                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-                Utils.log.info("[REALM] [ASYNC] Downloading " + uuid.toString() + "'s Realm ... STARTING");
-                File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloading/" + uuid.toString() + ".zip");
-                fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
-                ftpClient.retrieveFile(REMOTE_FILE, fos);
-                fos.close();
-                Utils.log.info("[REALM] [ASYNC] Realm downloaded for " + uuid.toString());
+        FTPClient ftpClient = new FTPClient();
+        FileOutputStream fos = null;
+        String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
+        try {
+            ftpClient.connect(host, port);
+            boolean login = ftpClient.login(user, password);
+            if (login) {
+                Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString());
+            }
+            ftpClient.enterLocalPassiveMode();
+            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+            Utils.log.info("[REALM] [ASYNC] Downloading " + uuid.toString() + "'s Realm ... STARTING");
+            File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloading/" + uuid.toString() + ".zip");
+            fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
+            ftpClient.retrieveFile(REMOTE_FILE, fos);
+            fos.close();
+            Utils.log.info("[REALM] [ASYNC] Realm downloaded for " + uuid.toString());
 
-                ZipFile zipFile = new ZipFile(TEMP_LOCAL_LOCATION);
-                Utils.log.info("[REALM] [ASYNC] Extracting Realm for " + uuid.toString());
-                zipFile.extractAll(rootFolder.getAbsolutePath() + "/" + uuid.toString());
-                Utils.log.info("[REALM] [ASYNC] Realm Extracted for " + uuid.toString());
+            ZipFile zipFile = new ZipFile(TEMP_LOCAL_LOCATION);
+            Utils.log.info("[REALM] [ASYNC] Extracting Realm for " + uuid.toString());
+            zipFile.extractAll(rootFolder.getAbsolutePath() + "/" + uuid.toString());
+            Utils.log.info("[REALM] [ASYNC] Realm Extracted for " + uuid.toString());
 
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> loadInWorld(Bukkit.getPlayer(uuid)), 5);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> loadInWorld(Bukkit.getPlayer(uuid)), 5);
 
 
-            } catch (IOException | ZipException e) {
-                e.printStackTrace();
-            } finally {
-                if (ftpClient.isConnected()) {
-                    try {
-                        ftpClient.logout();
-                        ftpClient.disconnect();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+        } catch (IOException | ZipException e) {
+            e.printStackTrace();
+        } finally {
+            if (ftpClient.isConnected()) {
+                try {
+                    ftpClient.logout();
+                    ftpClient.disconnect();
+                } catch (IOException e) {
+                    e.printStackTrace();
                 }
             }
-        });
+        }
     }
 
     public void uploadRealm(Player player) {
         AsyncUtils.pool.submit(() -> {
             Utils.log.info("[REALM] [ASYNC] Starting Compression for player realm " + player.getName());
-            //zip(rootFolder.getAbsolutePath() + "/" + player.getUniqueId().toString(), pluginFolder.getAbsolutePath() + "/" + "realms/" + "uploading" + "/" + player.getUniqueId().toString() + ".zip", "");
             zip(rootFolder.getAbsolutePath() + "/" + player.getUniqueId().toString() + "/", pluginFolder.getAbsolutePath() + "/" + "realms/" + "uploading" + "/" + player.getUniqueId().toString() + ".zip", "");
             FTPClient ftpClient = new FTPClient();
             try {
@@ -307,7 +304,7 @@ public class Instance implements GenericMechanic, Listener {
             } else if (targetFile.isDirectory()) {
                 zipFile.addFolder(targetFile, parameters);
             } else {
-                //show error message
+                System.out.println("ERROR ERROR, HOLY SHIT");
             }
 
         } catch (ZipException e) {
@@ -315,7 +312,7 @@ public class Instance implements GenericMechanic, Listener {
         }
     }
 
-    boolean doesRemoteRealmExist(String uuid) {
+    public boolean doesRemoteRealmExist(String uuid) {
         try {
             FTPClient ftpClient = new FTPClient();
             ftpClient.connect(host, port);
@@ -361,8 +358,9 @@ public class Instance implements GenericMechanic, Listener {
                     player.setFlying(false);
                 }
             });
-            Bukkit.unloadWorld(realmObject.getRealmOwner().toString(), false);
-            Utils.log.info("[REALMS] Unloading world: " + realmObject.getRealmOwner().toString() + " in preparation for deletion!");
+            Bukkit.unloadWorld(realmObject.getRealmOwner().getUniqueId().toString(), false);
+            Utils.log.info("[REALMS] Unloading world: " + realmObject.getRealmOwner().getUniqueId()
+                    .toString() + " in preparation for deletion!");
             CURRENT_REALMS.remove(realmObject);
             uploadRealm(realmObject.getRealmOwner());
         }
@@ -376,7 +374,7 @@ public class Instance implements GenericMechanic, Listener {
     public RealmObject getPlayerRealm(Player player) {
         if (!CURRENT_REALMS.isEmpty()) {
             for (RealmObject realmObject : CURRENT_REALMS) {
-                if (realmObject.getRealmOwner().equals(player.getUniqueId())) {
+                if (realmObject.getRealmOwner().getUniqueId().equals(player.getUniqueId())) {
                     return realmObject;
                 }
             }
@@ -479,8 +477,7 @@ public class Instance implements GenericMechanic, Listener {
                 player.sendMessage(ChatColor.RED + "Your realm does not exist remotely! Creating you a new realm!");
                 createTemplate(player);
                 generateBlankRealmWorld(player);
-            }
-            else if (doesRemoteRealmExist(player.getUniqueId().toString()) && !isRealmLoaded(player.getUniqueId())) {
+            } else if (doesRemoteRealmExist(player.getUniqueId().toString()) && !isRealmLoaded(player.getUniqueId())) {
                 Utils.log.info("[REALMS] Player " + player.getUniqueId().toString() + "'s Realm existed locally, loading it!");
                 Bukkit.createWorld(new WorldCreator(player.getUniqueId().toString()));
             }
@@ -510,12 +507,7 @@ public class Instance implements GenericMechanic, Listener {
      * @since 1.0
      */
     public boolean isRealmLoaded(UUID uuid) {
-        for (World world : Bukkit.getServer().getWorlds()) {
-            if (world.getName().equalsIgnoreCase(uuid.toString())) {
-                return true;
-            }
-        }
-        return false;
+        return Bukkit.getServer().getWorlds().contains(uuid.toString());
     }
 
     /**
@@ -573,7 +565,7 @@ public class Instance implements GenericMechanic, Listener {
      */
     public Location getPortalLocationFromRealmWorld(Player player) {
         for (RealmObject realmObject : CURRENT_REALMS) {
-            if (player.getWorld().getName().equalsIgnoreCase(realmObject.getRealmOwner().toString())) {
+            if (player.getWorld().getName().equalsIgnoreCase(realmObject.getRealmOwner().getUniqueId().toString())) {
                 realmObject.getPlayerList().remove(player);
                 return realmObject.getLocation();
             }

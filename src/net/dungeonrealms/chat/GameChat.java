@@ -14,7 +14,6 @@ import org.bukkit.entity.Player;
 public final class GameChat {
 
     public static final String GLOBAL = ChatColor.GRAY + "<" + ChatColor.AQUA.toString() + ChatColor.BOLD + "G" + ChatColor.GRAY + ">" + ChatColor.RESET + " ";
-    public static final String LOCAL = ChatColor.GRAY + "<" + ChatColor.AQUA.toString() + ChatColor.BOLD + "L" + ChatColor.GRAY + ">" + ChatColor.RESET + " ";
 
 
     public static final String SUB = ChatColor.GREEN.toString() + ChatColor.BOLD + "S" + ChatColor.RESET + " ";
@@ -48,7 +47,7 @@ public final class GameChat {
             if (gChat) {
                 message.append(GLOBAL).append(getRankPrefix(r.getName())).append(getName(player, r.getName().toLowerCase()));
             } else {
-                message.append(LOCAL).append(getRankPrefix(r.getName())).append(getName(player, r.getName().toLowerCase()));
+                message.append(getRankPrefix(r.getName())).append(getName(player, r.getName().toLowerCase()));
             }
         } else {
             //Player is default.
@@ -56,7 +55,7 @@ public final class GameChat {
             if (gChat) {
                 message.append(GLOBAL).append(getName(player, r.getName().toLowerCase()));
             } else {
-                message.append(LOCAL).append(getName(player, r.getName().toLowerCase()));
+                message.append(getName(player, r.getName().toLowerCase()));
             }
         }
 
