@@ -5,6 +5,7 @@ import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import me.Bogdacutu.VoidGenerator.VoidGeneratorGenerator;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.chat.GameChat;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.loot.LootManager;
 import net.dungeonrealms.mastery.AsyncUtils;
@@ -32,7 +33,6 @@ import org.bukkit.util.Vector;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -464,7 +464,7 @@ public class Instance implements GenericMechanic, Listener {
                 portalLocation.add(0, 1, 0).getBlock().setType(Material.PORTAL);
                 portalLocation.add(0, 1, 0).getBlock().setType(Material.PORTAL);
                 Hologram realmHologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), portalLocation.add(0.5, 1.5, 0.5));
-                realmHologram.appendTextLine(player.getName() + "(s) REALM");
+                realmHologram.appendTextLine(GameChat.getPreMessage(player) + "'s Realm");
                 realmHologram.getVisibilityManager().setVisibleByDefault(true);
                 RealmObject realmObject = new RealmObject(player, clickLocation, new ArrayList<>(), realmHologram, new ArrayList<>(), true);
                 realmObject.getRealmBuilders().add(player);
