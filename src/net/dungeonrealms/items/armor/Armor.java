@@ -161,20 +161,20 @@ public class Armor {
     }
 
     public enum ArmorAttributeType {
-        ARMOR(0, "Armor", "armor"), //Percentage
-        HEALTH_POINTS(1, "Health Points", "healthPoints"),
-        HEALTH_REGEN(2, "Health Regen", "healthRegen"),
-        ENERGY_REGEN(3, "Energy Regen", "energyRegen"), //Percentage
-        INTELLECT(4, "Intellect", "intellect"),
-        FIRE_RESISTANCE(5, "Fire Resistance", "fireResistance"),
-        BLOCK(6, "Block", "block"), //Percentage
-        LUCK(7, "Luck", "luck"), //Percentage
-        THORNS(8, "Thorns", "thorns"), //Percentage
-        STRENGTH(9, "Strength", "strength"),
-        VITALITY(10, "Vitality", "vitality"),
-        DODGE(11, "Dodge", "dodge"), //Percentage
-        DAMAGE(12, "Damage", "damage"), //Percentage
-        DEXTERITY(13, "Dexterity", "dexterity");
+        ARMOR(0, "ARMOR", "armor"), //Percentage
+        HEALTH_POINTS(1, "HP", "healthPoints"),
+        HEALTH_REGEN(2, "HP REGEN", "healthRegen"),
+        ENERGY_REGEN(3, "ENERGY REGEN", "energyRegen"), //Percentage
+        INTELLECT(4, "INT", "intellect"),
+        FIRE_RESISTANCE(5, "FIRE RESISTANCE", "fireResistance"),
+        BLOCK(6, "BLOCK", "block"), //Percentage
+        LUCK(7, "LUCK", "luck"), //Percentage
+        THORNS(8, "THORNS", "thorns"), //Percentage
+        STRENGTH(9, "STRENGTH", "strength"),
+        VITALITY(10, "VIT", "vitality"),
+        DODGE(11, "DODGE", "dodge"), //Percentage
+        DAMAGE(12, "DMG", "damage"), //Percentage
+        DEXTERITY(13, "DEX", "dexterity");
 
         private int id;
         private String name;
