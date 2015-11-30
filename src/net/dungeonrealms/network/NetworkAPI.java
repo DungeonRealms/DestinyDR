@@ -9,10 +9,14 @@ import net.dungeonrealms.guild.Guild;
 import net.dungeonrealms.handlers.MailHandler;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumGuildData;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+
+import java.util.ArrayList;
+import java.util.UUID;
 
 /**
  * Created by Nick on 10/12/2015.
@@ -79,13 +83,11 @@ public class NetworkAPI implements PluginMessageListener {
      * @since 1.0
      */
     public void sendNetworkMessage(String channel, String message, String contents) {
-        if (Bukkit.getOnlinePlayers().size() <= 0) return;
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(channel);
         out.writeUTF(message);
         out.writeUTF(contents);
         Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-        assert player != null : "sendNetworkMessage failed at 300 levels. JEFFFFF";
         player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
     }
 
@@ -98,13 +100,11 @@ public class NetworkAPI implements PluginMessageListener {
      * @since 1.0
      */
     public void sendPlayerMessage(String playerName, String message) {
-        if (Bukkit.getOnlinePlayers().size() <= 0) return;
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF("Message");
         out.writeUTF(playerName);
         out.writeUTF(message);
         Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-        assert player != null : "sendPlayerMessage() NetworkAPI.java unable to find Iterables.first(Player)";
         player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
     }
 
@@ -117,7 +117,6 @@ public class NetworkAPI implements PluginMessageListener {
      * @since 1.0
      */
     public void sendAllGuildMessage(String guildName, String message) {
-        /*
         ArrayList<String> members = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, guildName);
         ArrayList<String> officers = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, guildName);
 
@@ -129,9 +128,7 @@ public class NetworkAPI implements PluginMessageListener {
         members.add((String) DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, guildName));
         members.add((String) DatabaseAPI.getInstance().getData(EnumGuildData.CO_OWNER, guildName));
 
-        members.stream().filter(s -> s != null && !s.equals("") && API.isOnline(UUID.fromString(s))).forEach(s -> Bukkit.getPlayer(UUID.fromString(s)).sendMessage("[" + ChatColor.GREEN + guildName + ChatColor.RESET + "]" + " " + message));
-
-         */
+        members.stream().filter(s -> s != null && !s.equals("") && Bukkit.getPlayer(UUID.fromString(s)) != null).forEach(s -> Bukkit.getPlayer(UUID.fromString(s)).sendMessage("[" + ChatColor.GREEN + guildName + ChatColor.RESET + "]" + " " + message));
     }
 
 }

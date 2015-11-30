@@ -3,10 +3,12 @@ package net.dungeonrealms.guild;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
 import net.dungeonrealms.API;
+import net.dungeonrealms.chat.GameChat;
 import net.dungeonrealms.core.Callback;
 import net.dungeonrealms.handlers.ScoreboardHandler;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.*;
+import net.dungeonrealms.mongo.achievements.Achievements;
 import net.dungeonrealms.network.NetworkAPI;
 import org.bson.Document;
 import org.bukkit.Bukkit;
@@ -113,13 +115,18 @@ public class Guild {
         UUID uuid = API.getUUIDFromName(playerName);
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
 
-        if (!isOwner(player.getUniqueId(), guildName)) {
-            if (!isCoOwner(player.getUniqueId(), guildName)) {
-                player.sendMessage(ChatColor.RED + "You cannot demote players, you must be at-least rank [CoOwner]");
+        if (!isOwner(player.getUniqueId(), guildName) && !isCoOwner(player.getUniqueId(), guildName)) {
+            player.sendMessage(ChatColor.RED + "You do not have permissions to invoke this!");
+            return;
+        }
+
+        if (isOwner(player.getUniqueId(), guildName)) {
+            if (isCoOwner(uuid, guildName)) {
+                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, EnumGuildData.CO_OWNER, "", false);
+                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, EnumGuildData.MEMBERS, uuid.toString(), true);
+                NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + API.getNameFromUUID(uuid) + " " + ChatColor.GREEN + "has been demoted from co-owner to member.");
                 return;
             }
-            player.sendMessage(ChatColor.RED + "You cannot demote players, you aren't rank [Owner]");
-            return;
         }
 
         if (isOfficer(guildName, uuid)) {
@@ -150,31 +157,34 @@ public class Guild {
      */
     public void promotePlayer(Player player, String playerName) {
         if (player.getName().equalsIgnoreCase(playerName)) return;
-        UUID uuid = API.getUUIDFromName(playerName);
-        String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
 
-        if (!isOwner(player.getUniqueId(), guildName)) {
-            player.sendMessage(ChatColor.RED + "You cannot promote players, you aren't an Owner");
-            if (!isCoOwner(player.getUniqueId(), guildName)) {
-                player.sendMessage(ChatColor.RED + "You cannot promote players, you aren't an CoOwner");
-                return;
-            }
+        if (Bukkit.getPlayer(playerName) == null) {
+            player.sendMessage(ChatColor.RED + "You cannot promote a player that isn't online..");
             return;
         }
 
-        if (isOfficer(guildName, uuid)) {
+        Player inviting = Bukkit.getPlayer(playerName);
+
+        String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
+
+        if (!isOwner(player.getUniqueId(), guildName) && !isCoOwner(player.getUniqueId(), guildName)) {
+            player.sendMessage(ChatColor.RED + "You do not have permissions to invoke this!");
+            return;
+        }
+
+        if (isOfficer(guildName, inviting.getUniqueId())) {
             if (DatabaseAPI.getInstance().getData(EnumGuildData.CO_OWNER, guildName).equals("")) {
-                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, EnumGuildData.CO_OWNER, uuid.toString(), true);
-                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.OFFICERS, uuid.toString(), true);
-                NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + API.getNameFromUUID(uuid) + " " + ChatColor.GREEN + "has been promoted to CoOwner!");
+                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, EnumGuildData.CO_OWNER, inviting.getUniqueId().toString(), true);
+                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.OFFICERS, inviting.getUniqueId().toString(), true);
+                NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + inviting.getName() + " " + ChatColor.GREEN + "has been promoted to CoOwner!");
             } else {
                 player.sendMessage(ChatColor.RED + "You already have someone as an CoOwner!");
             }
-        } else if (isMember(guildName, uuid)) {
-            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.MEMBERS, uuid.toString(), false);
-            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, EnumGuildData.OFFICERS, uuid.toString(), true);
-            NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + API.getNameFromUUID(uuid) + " " + ChatColor.GREEN + "has been promoted to an Officer!");
-        } else if (isInvited(guildName, uuid)) {
+        } else if (isMember(guildName, inviting.getUniqueId())) {
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.MEMBERS, inviting.getUniqueId().toString(), false);
+            DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, EnumGuildData.OFFICERS, inviting.getUniqueId().toString(), true);
+            NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.AQUA + inviting.getName() + " " + ChatColor.GREEN + "has been promoted to an Officer!");
+        } else if (isInvited(guildName, inviting.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "You cannot promote a player that hasn't accepted the Guild Invitation Yet!");
         } else {
             player.sendMessage(ChatColor.RED + "Unable to find player (" + playerName + ")! In your guild..");
@@ -247,26 +257,36 @@ public class Guild {
      * @return
      */
     public void invitePlayer(Player player, String playerName) {
-        if (player.getName().equalsIgnoreCase(playerName)) return;
-        UUID uuid = API.getUUIDFromName(playerName);
-        if (API.isOnline(uuid)) {
-            if (Guild.getInstance().isGuildNull(uuid)) {
-                String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
-                if (Guild.getInstance().isInvited(guildName, player.getUniqueId())) {
-                    player.sendMessage(ChatColor.RED + "That player is already invited to your guild!");
-                } else {
-                    DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.GUILD_INVITES, guildName + "," + System.currentTimeMillis(), true);
-                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, EnumGuildData.INVITATIONS, uuid.toString(), true);
-                    player.sendMessage(ChatColor.GREEN + "Player has been invited to a guild!");
-                    Bukkit.getPlayer(uuid).sendMessage(ChatColor.GREEN + "You have been invited to " + ChatColor.AQUA + guildName + ChatColor.GREEN + " type /accept guild " + guildName + " to join!");
-                    NetworkAPI.getInstance().sendAllGuildMessage(guildName, player.getName() + " has invited " + playerName + " to your guild!");
-                }
+        if (player.getName().equalsIgnoreCase(playerName)) {
+            player.sendMessage(ChatColor.RED + "You cannot invite yourself to your own guild.. Idiot.");
+            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.GUILD_INVITE_YOURSELF);
+            return;
+        }
+
+        if (Bukkit.getPlayer(playerName) == null) {
+            player.sendMessage(ChatColor.RED + "You cannot invite a player that isn't online!");
+            return;
+        }
+
+        Player inviting = Bukkit.getPlayer(playerName);
+
+        if (Guild.getInstance().isGuildNull(inviting.getUniqueId())) {
+            String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
+            if (Guild.getInstance().isInvited(guildName, inviting.getUniqueId())) {
+                player.sendMessage(ChatColor.RED + "That player is already invited to your guild!");
             } else {
-                player.sendMessage(ChatColor.RED + "That player is already ranked " + ChatColor.AQUA + getGuildName(player));
-                player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 1f, 63f);
+                DatabaseAPI.getInstance().update(inviting.getUniqueId(), EnumOperators.$PUSH, EnumData.GUILD_INVITES, guildName + "," + System.currentTimeMillis(), true);
+
+                DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, EnumGuildData.INVITATIONS, inviting.getUniqueId().toString(), true);
+
+                player.sendMessage(ChatColor.GREEN + GameChat.getPreMessage(inviting) + " has been invited to a guild!");
+
+                inviting.sendMessage(ChatColor.GREEN + "You have been invited to " + ChatColor.AQUA + guildName + ChatColor.GREEN + " type /accept guild " + guildName + " to join!");
+
+                NetworkAPI.getInstance().sendAllGuildMessage(guildName, player.getName() + " has invited " + playerName + " to your guild!");
             }
         } else {
-            player.sendMessage(ChatColor.RED + "You cannot invite a player that isn't on your shard!");
+            player.sendMessage(ChatColor.RED + "That player is already ranked " + ChatColor.AQUA + getGuildName(player));
             player.playSound(player.getLocation(), Sound.ANVIL_BREAK, 1f, 63f);
         }
     }
@@ -294,6 +314,7 @@ public class Guild {
      */
     public void setGuildIcon(String guildName, Material material) {
         DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$SET, EnumGuildData.ICON, material.toString(), true);
+        NetworkAPI.getInstance().sendAllGuildMessage(guildName, "Guild icon has been set to " + material.toString());
     }
 
     /**
@@ -585,6 +606,9 @@ public class Guild {
                             public void callback(Throwable failCause, UpdateResult result) {
                                 if (result.wasAcknowledged()) {
                                     doGet(owner);
+                                    if (Bukkit.getPlayer(owner) != null) {
+                                        doLogin(Bukkit.getPlayer(owner));
+                                    }
                                 }
                             }
                         });
