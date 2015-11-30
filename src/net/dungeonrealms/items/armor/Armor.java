@@ -142,20 +142,20 @@ public class Armor {
             return null;
         }
 
-        public ChatColor getChatColorOfModifier(ArmorModifier armorModifier) {
+        public String getChatColorOfModifier(ArmorModifier armorModifier) {
             switch (armorModifier) {
                 case COMMON:
-                    return ChatColor.GRAY;
+                    return ChatColor.GRAY.toString();
                 case UNCOMMON:
-                    return ChatColor.GREEN;
+                    return ChatColor.GREEN.toString();
                 case RARE:
-                    return ChatColor.AQUA;
+                    return ChatColor.AQUA.toString();
                 case UNIQUE:
-                    return ChatColor.YELLOW;
+                    return ChatColor.YELLOW + ChatColor.ITALIC.toString();
                 case LEGENDARY:
-                    return ChatColor.DARK_PURPLE;
+                    return ChatColor.DARK_PURPLE + ChatColor.ITALIC.toString();
                 default:
-                    return ChatColor.GRAY;
+                    return ChatColor.GRAY.toString();
             }
         }
     }

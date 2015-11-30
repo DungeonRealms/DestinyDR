@@ -84,7 +84,7 @@ public class ArmorGenerator {
 			itemLore.add(setCorrectArmorLore(aType, i));
 		});
 		meta.setDisplayName(tier.getChatColorOfTier(tier) + getArmorName(type, attributeTypes));
-		itemLore.add(modifier.getChatColorOfModifier(modifier).toString() + modifier.getName());
+		itemLore.add(modifier.getChatColorOfModifier(modifier) + modifier.getName());
 		meta.setLore(itemLore);
 		item.setItemMeta(meta);
 

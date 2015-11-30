@@ -121,7 +121,7 @@ public class ItemGenerator {
             itemLore.add(setCorrectItemLore(aType, i, tier.getTierId()));
         });
         meta.setDisplayName(tier.getChatColorOfTier(tier) + getWeaponName(type, attributeTypes));
-        itemLore.add(modifier.getChatColorOfModifier(modifier).toString() + modifier.getName());
+        itemLore.add(modifier.getChatColorOfModifier(modifier) + modifier.getName());
         meta.setLore(itemLore);
         item.setItemMeta(meta);
 
@@ -457,8 +457,6 @@ public class ItemGenerator {
         	if(lore.startsWith(ChatColor.WHITE + "Damage: "))
         		itemLore.add(lore);
         }
-        
-        
         HashMap<Item.AttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
         ItemType type = attribute.getItemType();
         attributeTypes.stream().filter(aType -> aType != null && aType != AttributeType.DAMAGE).forEach(aType -> {
@@ -466,7 +464,7 @@ public class ItemGenerator {
             attributeTypeIntegerHashMap.put(aType, i);
             itemLore.add(setCorrectItemLore(aType, i, tier.getTierId()));
         });
-        itemLore.add(attribute.getItemModifier().getChatColorOfModifier(attribute.getItemModifier()).toString() + attribute.getItemModifier().getName());
+        itemLore.add(attribute.getItemModifier().getChatColorOfModifier(attribute.getItemModifier()) + attribute.getItemModifier().getName());
         meta.setLore(itemLore);
         stack.setItemMeta(meta);
 
@@ -514,7 +512,7 @@ public class ItemGenerator {
 				itemLore.add(ArmorGenerator.setCorrectArmorLore(aType, i));
             });
             ArmorModifier modifier = ArmorModifier.getById(modifierID);
-            itemLore.add(modifier.getChatColorOfModifier(modifier).toString() + modifier.getName());
+            itemLore.add(modifier.getChatColorOfModifier(modifier) + modifier.getName());
             meta.setLore(itemLore);
             stack.setItemMeta(meta);
 
