@@ -522,7 +522,7 @@ public class API {
 
         player.setGameMode(GameMode.SURVIVAL);
 
-        player.sendMessage(ChatColor.GREEN + "Character loaded, have fun. ;-)");
+        player.sendMessage(ChatColor.GREEN + "");
 
         player.setMaximumNoDamageTicks(0);
 
