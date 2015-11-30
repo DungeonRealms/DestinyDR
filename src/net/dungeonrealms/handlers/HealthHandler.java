@@ -592,6 +592,7 @@ public class HealthHandler implements GenericMechanic {
             //entity.playEffect(EntityEffect.DEATH);
             setMonsterHPLive(entity, 0);
             net.minecraft.server.v1_8_R3.Entity entity1 = ((CraftEntity) entity).getHandle();
+            entity.damage(entity.getHealth());
             //entity1.damageEntity(DamageSource.GENERIC, 50F);
             Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
                 if (!entity.isDead()) {
