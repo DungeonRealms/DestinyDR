@@ -1,5 +1,7 @@
 package net.dungeonrealms.shops;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -18,6 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+import com.google.common.collect.Lists;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.ItemSerialization;
@@ -59,7 +62,10 @@ public class Shop {
 		        shopName + " - @" + Bukkit.getPlayer(uuid).getName());
 		ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.GRAY.getDyeData());
 		ItemMeta meta = button.getItemMeta();
-		meta.setDisplayName(ChatColor.YELLOW.toString() + "Open Shop");
+		meta.setDisplayName(ChatColor.GREEN.toString() + "Click to OPEN Shop");
+		ArrayList<String> lore = new ArrayList<>();
+		lore.add(ChatColor.GRAY + "This will open your shop to the public.");
+		meta.setLore(lore);
 		button.setItemMeta(meta);
 		net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
 		nmsButton.getTag().setString("status", "off");
@@ -68,9 +74,9 @@ public class Shop {
 	}
 
 	public int getInvSize() {
-		// int lvl = DatabaseAPI.getInstance().getData(EnumData.SHOPLEVEL,
-		// ownerUUID);
-		return 9 * 1;
+		 int lvl = (int) DatabaseAPI.getInstance().getData(EnumData.SHOPLEVEL,
+		 ownerUUID);
+		return 9 * lvl;
 	}
 
 	public Player getOwner() {
@@ -182,7 +188,10 @@ public class Shop {
 		if (!isopen) {
 			ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.GRAY.getDyeData());
 			ItemMeta meta = button.getItemMeta();
-			meta.setDisplayName(ChatColor.YELLOW.toString() + "Open Shop");
+			meta.setDisplayName(ChatColor.GREEN.toString() + "Click to OPEN Shop");
+			ArrayList<String> lore = new ArrayList<>();
+			lore.add(ChatColor.GRAY + "This will open your shop to the public.");
+			meta.setLore(lore);
 			button.setItemMeta(meta);
 			net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
 			nmsButton.getTag().setString("status", "off");
@@ -191,7 +200,10 @@ public class Shop {
 		} else {
 			ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.LIME.getDyeData());
 			ItemMeta meta = button.getItemMeta();
-			meta.setDisplayName(ChatColor.YELLOW.toString() + "Close Shop");
+			meta.setDisplayName(ChatColor.RED.toString() + "Click to CLOSE Shop");
+			ArrayList<String> lore = new ArrayList<>();
+			lore.add(ChatColor.GRAY + "This will allow you to edit your stock.");
+			meta.setLore(lore);
 			button.setItemMeta(meta);
 			net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
 			nmsButton.getTag().setString("status", "on");

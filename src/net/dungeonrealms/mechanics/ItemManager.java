@@ -534,12 +534,12 @@ public class ItemManager {
         net.minecraft.server.v1_8_R3.ItemStack nms = null;
         switch (enumItem) {
             case StorageExpansion:
-                stack = createItem(Material.TRAPPED_CHEST, ChatColor.GREEN + "Storage Expansion", new String[]{ChatColor.GRAY + "Increase storage space by 1 row." + ChatColor.RED + ChatColor.BOLD + "Max of 6"});
+                stack = createItem(Material.ENDER_CHEST, ChatColor.GREEN + "Storage Expansion", new String[]{ChatColor.GRAY + "Increase storage space by 1 row.", ChatColor.RED.toString() + ChatColor.BOLD + "Max of 6"});
                 nms = CraftItemStack.asNMSCopy(stack);
                 nms.getTag().setString("type", "upgrade");
                 break;
             case RepairHammer:
-                stack = createItem(Material.ANVIL, ChatColor.GREEN + "Repair Hammer", new String[]{ChatColor.GRAY + "Increase storage space by 1 row." + ChatColor.RED + ChatColor.BOLD + "Max of 6"});
+                stack = createItem(Material.ANVIL, ChatColor.GREEN + "Repair Hammer", new String[]{ChatColor.GRAY + "Fully repair a single item."});
                 nms = CraftItemStack.asNMSCopy(stack);
                 nms.getTag().setString("type", "repair");
                 break;
@@ -653,19 +653,19 @@ public class ItemManager {
         String page4_string = "";
         String new_line = "\n" + ChatColor.WHITE.toString() + "`" + "\n";
         GamePlayer gp = API.getGamePlayer(p);
-        String pretty_align = ChatColor.AQUA + gp.getPlayerAlignment().name();
+        String pretty_align = ChatColor.DARK_GREEN + ChatColor.UNDERLINE.toString() + gp.getPlayerAlignment().name();
         DecimalFormat df = new DecimalFormat("#.##");
         PlayerStats stats = gp.getStats();
 
         page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character" + "\n" + new_line
-                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + "\n"
+                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + new_line
                 + ChatColor.BLACK.toString() + gp.getPlayerAlignment().description + new_line + ChatColor.BLACK.toString() + "   " + gp.getPlayerCurrentHP()
                 + " / " + gp.getPlayerMaxHP() + "" + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK.toString()
-//                + "   " + gp.getStats().getDPS() + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
-                + "   " + (HealthHandler.getInstance().getPlayerHPRegenLive(p)) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n"
-                + ChatColor.BLACK.toString() + "   " + EnergyHandler.getInstance().getPlayerEnergyRegenerationAmount(p.getUniqueId())
-                + " " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString() + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString()
-                + " E-CASH";
+                + "   " + gp.getStats().getDPS() + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
+                + "   " + (HealthHandler.getInstance().getPlayerHPRegenLive(p)) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n" + ChatColor.BLACK.toString() 
+                + "   " + EnergyHandler.getInstance().getPlayerEnergyRegenerationAmount(p.getUniqueId()) + " " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString() 
+                + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString() 
+                + "   " + gp.getPlayerLuck() + ChatColor.BOLD.toString() + " LUCK";
 
         page2_string = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "  ** LEVEL/EXP **\n\n" + ChatColor.BLACK + ChatColor.BOLD
                 + "       LEVEL\n" + "          " + ChatColor.BLACK + gp.getLevel() + "\n\n" + ChatColor.BLACK + ChatColor.BOLD

@@ -4,6 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.handlers.ScoreboardHandler;
+import net.dungeonrealms.items.DamageAPI;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
@@ -267,6 +268,10 @@ public class GamePlayer {
      */
     public PlayerStats getStats() {
         return stats;
+    }
+    
+    public int getPlayerLuck(){
+    	return DamageAPI.calculatePlayerLuck(T);
     }
 
 }

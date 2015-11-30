@@ -205,7 +205,7 @@ public class MobSpawner {
 				}
 				
 		        if (!entity.getBukkitEntity().hasMetadata("elite"))
-					entity.setCustomName(lvlName + ChatColor.RESET + customName + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
+					entity.setCustomName(lvlName + API.getTierColor(tier) + customName + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
 				toSpawn = true;
 				if(!firstSpawn){
 					Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -235,7 +235,7 @@ public class MobSpawner {
 						}
 						
 				        if (!newentity.getBukkitEntity().hasMetadata("elite"))
-				        	newentity.setCustomName(newlvlName + ChatColor.RESET + newcustomName + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + newhp);
+				        	newentity.setCustomName(newlvlName + API.getTierColor(tier) + newcustomName + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + newhp);
 				        newentity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 						world.addEntity(newentity, SpawnReason.CUSTOM);
 						newentity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);

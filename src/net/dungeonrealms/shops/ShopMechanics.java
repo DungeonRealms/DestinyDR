@@ -85,6 +85,8 @@ public class ShopMechanics implements GenericMechanic{
 					Shop shop = new Shop(uniqueId, b.getLocation(), shopName);
 					DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$SET, EnumData.HASSHOP, true, true);
 					ALLSHOPS.put(player.getName(), shop);
+					player.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "YOU'VE CREATED A SHOP!");
+					player.sendMessage(ChatColor.YELLOW + "To stock your shop, simply drag items into your shop's inventory.");
 					event.setWillClose(true);
 					event.setWillDestroy(true);
 				} else {

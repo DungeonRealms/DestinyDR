@@ -5,10 +5,14 @@ import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.inventory.PlayerMenus;
 import net.dungeonrealms.mechanics.ItemManager;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.profession.Fishing;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.dungeonrealms.teleportation.Teleportation;
@@ -183,6 +187,22 @@ public class ItemListener implements Listener {
     			if (nms.hasTag() && nms.getTag().hasKey("type")) {
     				if (nms.getTag().getString("type").equalsIgnoreCase("upgrade")) {
     					Player player = event.getPlayer();
+    					int invlvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
+    					if(invlvl == 6){
+    						player.sendMessage(ChatColor.RED + "Sorry you've reached the current maximum storage size!");
+    						return;
+    					}
+    					DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl + 1, true);
+    					Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->
+    					BankMechanics.getInstance().getStorage(player.getUniqueId()).update(), 20);
+    					if(event.getPlayer().getItemInHand().getAmount() == 1){
+    						event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
+    					}else{
+    						ItemStack item = event.getPlayer().getItemInHand();
+    						item.setAmount(item.getAmount() - 1);
+    						event.getPlayer().setItemInHand(item);
+    					}
+    					event.getPlayer().sendMessage(ChatColor.YELLOW + "Your banks storage has been increased by 9 slots.");
     				}
     			}
     		}

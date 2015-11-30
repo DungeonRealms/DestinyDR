@@ -514,6 +514,13 @@ public class API {
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + " Use " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/logout " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "to safely change your server instance."
         });
+        
+        if(API.getGamePlayer(player).getStats().freePoints > 0){
+        	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
+        	player.sendMessage(ChatColor.GREEN + "*" +ChatColor.GRAY + "You have available " + ChatColor.GREEN  + "stat points." + ChatColor.GRAY + "Right click your " +ChatColor.UNDERLINE + "Character Profile " + ChatColor.GRAY + "and choose " + ChatColor.UNDERLINE + "Attributes" + ChatColor.GRAY + " to allocate." + ChatColor.GREEN + "*");
+        	}, 100);
+        }
+        
     }
 
     /**

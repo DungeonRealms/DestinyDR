@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.chat.GameChat;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.items.Item.ItemTier;
 import net.dungeonrealms.items.ItemGenerator;
@@ -92,8 +93,10 @@ public class DuelOffer {
 				winner.getInventory().addItem(current);
 			}
 		}
-		Bukkit.broadcastMessage(ChatColor.AQUA + winner.getName() + ChatColor.YELLOW + " has defeated "
-		        + loser.getName() + " in a duel");
+//		Bukkit.broadcastMessage(ChatColor.AQUA + winner.getName() + ChatColor.YELLOW + " has defeated "
+//		        + loser.getName() + " in a duel");
+		
+		Bukkit.broadcastMessage(GameChat.getPreMessage(winner) + ChatColor.GREEN + " has " + ChatColor.UNDERLINE + "DEFEATED" + ChatColor.RESET + GameChat.getPreMessage(loser) + ChatColor.GREEN  + " in a duel");
 		DuelingMechanics.removeOffer(this);
 	}
 

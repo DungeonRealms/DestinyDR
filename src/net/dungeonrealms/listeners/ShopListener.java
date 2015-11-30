@@ -25,7 +25,6 @@ import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 
 import net.dungeonrealms.banks.BankMechanics;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
@@ -103,6 +102,7 @@ public class ShopListener implements Listener {
 			// Owner is Clicking
 			if (event.getRawSlot() == 8) {
 				event.setCancelled(true);
+				((Player)event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), Sound.LEVEL_UP, 1, 1)	;
 				shop.updateStatus();
 				return;
 			}
@@ -173,10 +173,8 @@ public class ShopListener implements Listener {
 										clicker.playSound(clicker.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
 
 										clicker.sendMessage(new String[] {
-						                        ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right click"
-						                                + ChatColor.GREEN + " the item to edit price!",
-						                        ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left Click"
-						                                + ChatColor.GREEN + " the item to remove!", });
+						                        ChatColor.YELLOW.toString() + "Price set. Right-Click item to edit.",
+						                        ChatColor.YELLOW + "Left Click the item to remove it from your shop." });
 
 										clicker.getInventory().remove(itemHeld);
 									} else {
