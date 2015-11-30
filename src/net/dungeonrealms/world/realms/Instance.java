@@ -11,6 +11,8 @@ import net.dungeonrealms.mastery.AsyncUtils;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.teleportation.Teleportation;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -80,12 +82,12 @@ public class Instance implements GenericMechanic, Listener {
 
         private Player realmOwner;
         private Location portalLocation;
-        private List<Player> playerList;
+        private ArrayList<Player> playerList;
         private Hologram realmHologram;
-        private List<Player> realmBuilders;
+        private ArrayList<Player> realmBuilders;
         private boolean isRealmPortalOpen;
 
-        public RealmObject(Player realmOwner, Location portalLocation, List<Player> playerList, Hologram realmHologram, List<Player> realmBuilders, boolean isRealmPortalOpen) {
+        public RealmObject(Player realmOwner, Location portalLocation, ArrayList<Player> playerList, Hologram realmHologram, ArrayList<Player> realmBuilders, boolean isRealmPortalOpen) {
             this.realmOwner = realmOwner;
             this.portalLocation = portalLocation;
             this.playerList = playerList;
@@ -102,7 +104,7 @@ public class Instance implements GenericMechanic, Listener {
             return portalLocation;
         }
 
-        public List<Player> getPlayerList() {
+        public ArrayList<Player> getPlayerList() {
             return playerList;
         }
 
@@ -110,7 +112,7 @@ public class Instance implements GenericMechanic, Listener {
             return realmHologram;
         }
 
-        public List<Player> getRealmBuilders() {
+        public ArrayList<Player> getRealmBuilders() {
             return realmBuilders;
         }
 
@@ -246,6 +248,7 @@ public class Instance implements GenericMechanic, Listener {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> loadInWorld(Bukkit.getPlayer(uuid)), 5);
             }
         }
     }
@@ -354,13 +357,13 @@ public class Instance implements GenericMechanic, Listener {
             realmObject.getPlayerList().stream().forEach(player -> {
                 if (!player.getWorld().getName().contains("DUNGEON") && !player.getWorld().equals(Bukkit.getWorlds().get(0))) {
                     player.sendMessage(ChatColor.RED + "This Realm has been closed!");
-                    player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
                     player.setFlying(false);
+                    String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId())).split(",");
+                    player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]), Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
                 }
             });
             Bukkit.unloadWorld(realmObject.getRealmOwner().getUniqueId().toString(), false);
-            Utils.log.info("[REALMS] Unloading world: " + realmObject.getRealmOwner().getUniqueId()
-                    .toString() + " in preparation for deletion!");
+            Utils.log.info("[REALMS] Unloading world: " + realmObject.getRealmOwner().getUniqueId().toString() + " in preparation for deletion!");
             CURRENT_REALMS.remove(realmObject);
             uploadRealm(realmObject.getRealmOwner());
         }
@@ -391,7 +394,7 @@ public class Instance implements GenericMechanic, Listener {
     public RealmObject getPlayersCurrentRealm(Player player) {
         if (!CURRENT_REALMS.isEmpty()) {
             for (RealmObject realmObject : CURRENT_REALMS) {
-                if (realmObject.getRealmOwner().toString().equals(player.getWorld().getName())) {
+                if (realmObject.getRealmOwner().getUniqueId().toString().equals(player.getWorld().getName())) {
                     return realmObject;
                 }
             }
@@ -471,15 +474,13 @@ public class Instance implements GenericMechanic, Listener {
                 CURRENT_REALMS.add(realmObject);
                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "REALMS" + ChatColor.WHITE + "] " + ChatColor.YELLOW + "Your realm is ready!");
             }, 200L);
-
-
             if (!doesRemoteRealmExist(player.getUniqueId().toString())) {
                 player.sendMessage(ChatColor.RED + "Your realm does not exist remotely! Creating you a new realm!");
                 createTemplate(player);
                 generateBlankRealmWorld(player);
             } else if (doesRemoteRealmExist(player.getUniqueId().toString()) && !isRealmLoaded(player.getUniqueId())) {
                 Utils.log.info("[REALMS] Player " + player.getUniqueId().toString() + "'s Realm existed locally, loading it!");
-                Bukkit.createWorld(new WorldCreator(player.getUniqueId().toString()));
+                downloadRealm(player.getUniqueId());
             }
         } else {
             player.sendMessage(ChatColor.RED + "You already have a Realm Portal in the world, please destroy it!");
@@ -507,7 +508,7 @@ public class Instance implements GenericMechanic, Listener {
      * @since 1.0
      */
     public boolean isRealmLoaded(UUID uuid) {
-        return Bukkit.getServer().getWorlds().contains(uuid.toString());
+        return Bukkit.getServer().getWorlds().contains(Bukkit.getWorld(uuid.toString()));
     }
 
     /**
