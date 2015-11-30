@@ -527,10 +527,10 @@ public class API {
         player.setMaximumNoDamageTicks(0);
 
         player.sendMessage(new String[]{
-                "                    " + ChatColor.WHITE.toString() + ChatColor.BOLD + "Dungeon Realms Patch " + ChatColor.AQUA.toString() + ChatColor.BOLD + String.valueOf(DungeonRealms.version),
-                ChatColor.GRAY + "                   http://www.dungeonrealms.net/",
+                "            " + ChatColor.WHITE.toString() + ChatColor.BOLD + "Dungeon Realms Patch " + ChatColor.AQUA.toString() + ChatColor.BOLD + String.valueOf(DungeonRealms.version),
+                ChatColor.GRAY + "               http://www.dungeonrealms.net/",
                 "",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + " Use " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/hub " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "to change your server instance."
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + " Use " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/logout " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "to safely change your server instance."
         });
     }
 
