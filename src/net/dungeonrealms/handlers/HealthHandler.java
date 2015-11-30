@@ -156,17 +156,16 @@ public class HealthHandler implements GenericMechanic {
         if (!API.isPlayer(player)) {
             return;
         }
+        GamePlayer gamePlayer = API.getGamePlayer(player);
+        if (gamePlayer == null) {
+            return;
+        }
         double maxHP = getPlayerMaxHPLive(player);
         double healthPercentage = ((double) hp / maxHP);
         if (healthPercentage * 100.0F > 100.0F) {
             healthPercentage = 1.0;
         }
         float healthToDisplay = (float) (healthPercentage * 100.F);
-        GamePlayer gamePlayer = API.getGamePlayer(player);
-        if (gamePlayer == null) {
-            //Utils.log.info("NULL GAME PLAYER");
-            return;
-        }
         int playerLevel = gamePlayer.getLevel();
         double currentEXP = gamePlayer.getExperience();
         double expToLevel = gamePlayer.getEXPNeeded(playerLevel);
