@@ -206,7 +206,7 @@ public class GamePlayer {
         int level = getLevel();
         double experience = getExperience();
         if (level >= 64) return;
-        if (!Rank.getInstance().getRank(T.getUniqueId()).getName().equalsIgnoreCase("SUB")) {
+        if (!Rank.getInstance().getRank(T.getUniqueId()).getName().contains("SUB")) {
             experienceToAdd *= 1.1;
         }
         double futureExperience = experience + experienceToAdd;
