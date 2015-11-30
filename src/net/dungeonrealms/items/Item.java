@@ -10,7 +10,7 @@ public class Item {
 
     public enum ItemType {
         SWORD(0, "Sword"),
-        POLE_ARM(1, "PoleArm"),
+        POLE_ARM(1, "Polearm"),
         AXE(2, "Axe"),
         STAFF(3, "Staff"),
         BOW(4, "Bow");
