@@ -113,8 +113,8 @@ public class Item {
     }
 
     public enum ItemModifier {
-        COMMON(0, ChatColor.GRAY + "Common" + ChatColor.RESET),
-        UNCOMMON(1, ChatColor.GREEN + "Uncommon" + ChatColor.RESET),
+        COMMON(0, ChatColor.GRAY.toString() + ChatColor.ITALIC + "Common" + ChatColor.RESET),
+        UNCOMMON(1, ChatColor.GREEN.toString() + ChatColor.ITALIC + "Uncommon" + ChatColor.RESET),
         RARE(2, ChatColor.AQUA.toString() + ChatColor.ITALIC + "Rare" + ChatColor.RESET),
         UNIQUE(3, ChatColor.YELLOW.toString() + ChatColor.ITALIC + "Unique" + ChatColor.RESET),
         //not used, for the lols.
