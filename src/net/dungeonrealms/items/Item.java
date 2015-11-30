@@ -164,21 +164,21 @@ public class Item {
     }
 
     public enum AttributeType {
-        DAMAGE(0, "Damage", "damage"),
-        PURE_DAMAGE(1, "Pure Damage", "pureDamage"),
-        CRITICAL_HIT(2, "Crit Chance", "criticalHit"), //Percentage
-        ARMOR_PENETRATION(3, "Armor Pen", "armorPenetration"),
-        VS_MONSTERS(4, "VS Monsters", "vsMonsters"), //Percentage
-        VS_PLAYER(5, "VS Players", "vsPlayers"), //Percentage
-        LIFE_STEAL(6, "Life Steal", "lifesteal"), //Percentage
-        VITALITY(7, "Vitality", "vitality"),
-        DEXTERITY(8, "Dexterity", "dexterity"),
-        ICE_DAMAGE(9, "Ice Damage", "iceDamage"),
-        FIRE_DAMAGE(10, "Fire Damage", "fireDamage"),
-        POISON_DAMAGE(11, "Poison Damage", "poisonDamage"),
-        ACCURACY(12, "Accuracy", "accuracy"), //Percentage
-        STRENGTH(13, "Strength", "strength"),
-        INTELLECT(14, "Intellect", "intellect");
+        DAMAGE(0, "DMG", "damage"),
+        PURE_DAMAGE(1, "PURE DMG", "pureDamage"),
+        CRITICAL_HIT(2, "CRITICAL HIT", "criticalHit"), //Percentage
+        ARMOR_PENETRATION(3, "ARMOR PENETRATION", "armorPenetration"),
+        VS_MONSTERS(4, "vs. MONSTERS", "vsMonsters"), //Percentage
+        VS_PLAYER(5, "vs. PLAYERS", "vsPlayers"), //Percentage
+        LIFE_STEAL(6, "LIFE STEAL", "lifesteal"), //Percentage
+        VITALITY(7, "VIT", "vitality"),
+        DEXTERITY(8, "DEX", "dexterity"),
+        ICE_DAMAGE(9, "ICE DMG", "iceDamage"),
+        FIRE_DAMAGE(10, "FIRE DMG", "fireDamage"),
+        POISON_DAMAGE(11, "POISON DMG", "poisonDamage"),
+        ACCURACY(12, "ACCURACY", "accuracy"), //Percentage
+        STRENGTH(13, "STR", "strength"),
+        INTELLECT(14, "INT", "intellect");
 
         private int id;
         private String name;
