@@ -531,10 +531,10 @@ public class HealthHandler implements GenericMechanic {
                     KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, leAttacker);
                     CombatLog.removeFromCombat(player);
                     String killerName;
-                    if (damager instanceof Player) {
-                        killerName = damager.getName();
+                    if (leAttacker instanceof Player) {
+                        killerName = leAttacker.getName();
                     } else {
-                        killerName = damager.getCustomName();
+                        killerName = leAttacker.getCustomName();
                     }
                     final String finalKillerName = killerName;
                     API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(GameChat.getPreMessage(player) + player.getName() + " was killed by a(n) " + finalKillerName));
@@ -545,10 +545,10 @@ public class HealthHandler implements GenericMechanic {
                 player.damage(25);
                 KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, leAttacker);
                 String killerName;
-                if (damager instanceof Player) {
-                    killerName = damager.getName();
+                if (leAttacker instanceof Player) {
+                    killerName = leAttacker.getName();
                 } else {
-                    killerName = damager.getCustomName();
+                    killerName = leAttacker.getCustomName();
                 }
                 final String finalKillerName = killerName;
                 API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(GameChat.getPreMessage(player) + player.getName() + " was killed by a(n) " + finalKillerName));

@@ -9,7 +9,6 @@ import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.minecraft.server.v1_8_R3.EntityMonster;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
@@ -188,24 +187,20 @@ public class DamageAPI {
         }
         if (!(attacker instanceof Player)) {
             if (attacker.hasMetadata("attack")) {
-                damage += (damage * (attacker.getMetadata("attack").get(0).asInt() / 100));
-                Bukkit.broadcastMessage("Mob melee damage increased by " + attacker.getMetadata("attack").get(0).asInt() + "%. REMOVE THIS (DAMAGEAPI 192)");
+                damage += (damage * (attacker.getMetadata("attack").get(0).asDouble() / 100));
             }
         } else {
             Player player = (Player) attacker;
             if (API.getGamePlayer(player) != null) {
                 switch (new Attribute(((Player) attacker).getItemInHand()).getItemType()) {
                     case POLE_ARM:
-                        damage += (damage * (API.getGamePlayer(player).getStats().getPolearmDMG() / 100));
-                        player.sendMessage("Your damage has been increased by " + API.getGamePlayer(player).getStats().getPolearmDMG() + "% (POLEARM)");
+                        damage += (damage * (API.getGamePlayer(player).getStats().getPolearmDMG()));
                         break;
                     case AXE:
-                        damage += (damage * (API.getGamePlayer(player).getStats().getAxeDMG() / 100));
-                        player.sendMessage("Your damage has been increased by " + API.getGamePlayer(player).getStats().getAxeDMG() + "% (AXE)");
+                        damage += (damage * (API.getGamePlayer(player).getStats().getAxeDMG()));
                         break;
                     case SWORD:
-                        damage += (damage * (API.getGamePlayer(player).getStats().getSwordDMG() / 100));
-                        player.sendMessage("Your damage has been increased by " + API.getGamePlayer(player).getStats().getSwordDMG() + "% (SWORD)");
+                        damage += (damage * (API.getGamePlayer(player).getStats().getSwordDMG()));
                         break;
                     default:
                         break;
@@ -420,20 +415,17 @@ public class DamageAPI {
         }
         if (!(attacker instanceof Player)) {
             if (attacker.hasMetadata("attack")) {
-                damage += (damage * (attacker.getMetadata("attack").get(0).asInt() / 100));
-                Bukkit.broadcastMessage("Mob ranged damage increased by " + attacker.getMetadata("attack").get(0).asInt() + "%. REMOVE THIS (DAMAGEAPI 424)");
+                damage += (damage * (attacker.getMetadata("attack").get(0).asDouble() / 100));
             }
         } else {
             Player player = (Player) attacker;
             if (API.getGamePlayer(player) != null) {
                 switch (projectile.getType()) {
                     case ARROW:
-                        damage += (damage * (API.getGamePlayer(player).getStats().getBowDMG() / 100));
-                        player.sendMessage("Your damage has been increased by " + API.getGamePlayer(player).getStats().getBowDMG() + "% (BOW)");
+                        damage += (damage * (API.getGamePlayer(player).getStats().getBowDMG()));
                         break;
                     case SNOWBALL:
-                        damage += (damage * (API.getGamePlayer(player).getStats().getStaffDMG() / 100));
-                        player.sendMessage("Your damage has been increased by " + API.getGamePlayer(player).getStats().getStaffDMG() + "% (STAFF)");
+                        damage += (damage * (API.getGamePlayer(player).getStats().getStaffDMG()));
                         break;
                     default:
                         break;
