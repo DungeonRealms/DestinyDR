@@ -517,7 +517,7 @@ public class BankListener implements Listener {
         storagetMeta.setDisplayName(ChatColor.AQUA.toString() + ChatColor.BOLD + "STORAGE");
         ArrayList<String> storelore = new ArrayList<>();
         storelore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to open " + ChatColor.GREEN.toString() + ChatColor.BOLD + "STORAGE");
-        storelore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to " + ChatColor.GREEN.toString() + ChatColor.BOLD + "UPGRADE STORAGE");
+        storelore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to " + ChatColor.GREEN.toString() + ChatColor.BOLD + "UPGRADE BANK");
         storagetMeta.setLore(storelore);
         storage.setItemMeta(storagetMeta);
         net.minecraft.server.v1_8_R3.ItemStack storagenms = CraftItemStack.asNMSCopy(storage);
@@ -525,7 +525,7 @@ public class BankListener implements Listener {
         inv.setItem(0, CraftItemStack.asBukkitCopy(storagenms));
 
         ItemMeta meta = bankItem.getItemMeta();
-        meta.setDisplayName(getPlayerGems(uuid) + ChatColor.BOLD.toString() + ChatColor.GREEN + " Gem(s)");
+        meta.setDisplayName(getPlayerGems(uuid) + ChatColor.BOLD.toString() + ChatColor.GREEN + " GEM(s)");
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to withdraw " + ChatColor.GREEN.toString() + ChatColor.BOLD + "RAW GEMS");
         lore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to create " + ChatColor.GREEN.toString() + ChatColor.BOLD + "A GEM NOTE");
