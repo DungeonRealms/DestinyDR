@@ -92,7 +92,7 @@ public class ItemGenerator {
         assert item != null;
         ItemMeta meta = item.getItemMeta();
         List<String> list = new NameGenerator().next(type);
-        meta.setDisplayName(tier.getChatColorOfTier(tier) + list.get(0) + " " + list.get(1) + " " + list.get(2));
+        //meta.setDisplayName(tier.getChatColorOfTier(tier) + list.get(0) + " " + list.get(1) + " " + list.get(2));
         List<String> itemLore = new ArrayList<>();
 
         HashMap<Item.AttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
@@ -120,6 +120,7 @@ public class ItemGenerator {
             attributeTypeIntegerHashMap.put(aType, i);
             itemLore.add(setCorrectItemLore(aType, i, tier.getTierId()));
         });
+        meta.setDisplayName(tier.getChatColorOfTier(tier) + getWeaponName(type, attributeTypes));
         itemLore.add(modifier.getChatColorOfModifier(modifier).toString() + modifier.getName());
         meta.setLore(itemLore);
         item.setItemMeta(meta);
@@ -240,6 +241,74 @@ public class ItemGenerator {
             return itemType == Item.ItemType.AXE;
         }
         return attributeType != Item.AttributeType.ACCURACY || itemType == Item.ItemType.SWORD;
+    }
+
+    /**
+     * Calculates the weapons name based
+     * on the stats it has
+     *
+     * @param attributeList
+     * @param itemType
+     * @return String
+     * @since 1.0
+     */
+    public static String getWeaponName(ItemType itemType, ArrayList<AttributeType> attributeList) {
+        String weaponName = itemType.getName();
+        if (attributeList.contains(AttributeType.PURE_DAMAGE)) {
+            weaponName = "Pure " + weaponName;
+        }
+        if (attributeList.contains(AttributeType.ACCURACY)) {
+            weaponName = "Accurate " + weaponName;
+        }
+        if (attributeList.contains(AttributeType.LIFE_STEAL)) {
+            if (itemType == ItemType.BOW) {
+                weaponName = "Lifestealing " + weaponName;
+            } else {
+                weaponName = "Vampyric " + weaponName;
+            }
+        }
+        if (attributeList.contains(AttributeType.CRITICAL_HIT)) {
+            weaponName = "Deadly " + weaponName;
+        }
+        if (attributeList.contains(AttributeType.ARMOR_PENETRATION)) {
+            weaponName = "Penetrating " + weaponName;
+        }
+        if (attributeList.contains(AttributeType.VS_PLAYER)) {
+            if (!weaponName.contains("of")) {
+                weaponName = weaponName + " of Slaughter";
+            } else {
+                weaponName = weaponName + " Slaughter";
+            }
+        }
+        if (attributeList.contains(AttributeType.VS_MONSTERS)) {
+            if (!weaponName.contains("of")) {
+                weaponName = weaponName + " of Slaying";
+            } else {
+                weaponName = weaponName + " Slaying";
+            }
+        }
+        if (attributeList.contains(AttributeType.ICE_DAMAGE)) {
+            if (!weaponName.contains("of")) {
+                weaponName = weaponName + " of Ice";
+            } else {
+                weaponName = weaponName + " Ice";
+            }
+        }
+        if (attributeList.contains(AttributeType.FIRE_DAMAGE)) {
+            if (!weaponName.contains("of")) {
+                weaponName = weaponName + " of Fire";
+            } else {
+                weaponName = weaponName + " Fire";
+            }
+        }
+        if (attributeList.contains(AttributeType.POISON_DAMAGE)) {
+            if (!weaponName.contains("of")) {
+                weaponName = weaponName + " of Poison";
+            } else {
+                weaponName = weaponName + " Poison";
+            }
+        }
+        return weaponName;
     }
 
     /**
