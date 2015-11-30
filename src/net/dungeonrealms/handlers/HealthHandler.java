@@ -68,20 +68,22 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public void handleLoginEvents(Player player) {
-        setPlayerMaxHPLive(player, getPlayerMaxHPOnLogin(player));
-        int hp = Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEALTH, player.getUniqueId())));
-        if (hp > 0) {
-            if (hp > getPlayerMaxHPLive(player)) {
-                hp = getPlayerMaxHPLive(player);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            setPlayerMaxHPLive(player, getPlayerMaxHPOnLogin(player));
+            int hp = Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEALTH, player.getUniqueId())));
+            if (hp > 0) {
+                if (hp > getPlayerMaxHPLive(player)) {
+                    hp = getPlayerMaxHPLive(player);
+                }
+                setPlayerHPLive(player, hp);
+                healPlayerByAmount(player, 5);
+            } else {
+                setPlayerHPLive(player, 10);
+                healPlayerByAmount(player, 5);
             }
-            setPlayerHPLive(player, hp);
-            healPlayerByAmount(player, 5);
-        } else {
-            setPlayerHPLive(player, 10);
-            healPlayerByAmount(player, 5);
-        }
-        setPlayerHPRegenLive(player, getPlayerHPRegenLive(player));
-        player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+            setPlayerHPRegenLive(player, getPlayerHPRegenLive(player));
+            player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+        }, 50L);
     }
 
     /**
