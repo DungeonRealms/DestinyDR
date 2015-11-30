@@ -2,7 +2,6 @@ package net.dungeonrealms.items.armor;
 
 import net.dungeonrealms.anticheat.AntiCheat;
 import net.dungeonrealms.items.DamageMeta;
-import net.dungeonrealms.items.NameGenerator;
 import net.dungeonrealms.items.armor.Armor.ArmorModifier;
 import net.dungeonrealms.items.armor.Armor.ArmorTier;
 import net.dungeonrealms.items.armor.Armor.EquipmentType;
@@ -58,8 +57,8 @@ public class ArmorGenerator {
 		ItemStack item = getBaseItem(type, tier);
 		ArrayList<Armor.ArmorAttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(tier.getAttributeRange()));
 		ItemMeta meta = item.getItemMeta();
-		List<String> list = new NameGenerator().next(type);
-		meta.setDisplayName(tier.getChatColorOfTier(tier) + list.get(0) + " " + list.get(1) + " " + list.get(2));
+		//List<String> list = new NameGenerator().next(type);
+		//meta.setDisplayName(tier.getChatColorOfTier(tier) + list.get(0) + " " + list.get(1) + " " + list.get(2));
 		List<String> itemLore = new ArrayList<>();
 
 		HashMap<Armor.ArmorAttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
@@ -84,6 +83,7 @@ public class ArmorGenerator {
 			attributeTypeIntegerHashMap.put(aType, i);
 			itemLore.add(setCorrectArmorLore(aType, i));
 		});
+		meta.setDisplayName(tier.getChatColorOfTier(tier) + getArmorName(type, attributeTypes));
 		itemLore.add(modifier.getChatColorOfModifier(modifier).toString() + modifier.getName());
 		meta.setLore(itemLore);
 		item.setItemMeta(meta);
@@ -188,6 +188,50 @@ public class ArmorGenerator {
 			}
 		}
 		return attributeList;
+	}
+
+	/**
+	 * Calculates the weapons name based
+	 * on the stats it has
+	 *
+	 * @param attributeList
+	 * @param itemType
+	 * @return String
+	 * @since 1.0
+	 */
+	public static String getArmorName(Armor.EquipmentType itemType, ArrayList<Armor.ArmorAttributeType> attributeList) {
+		String armorType = itemType.getName();
+		if (attributeList.contains(Armor.ArmorAttributeType.DODGE)) {
+			armorType = "Agile " + armorType;
+		}
+		if (attributeList.contains(Armor.ArmorAttributeType.THORNS)) {
+			if (!armorType.contains("of")) {
+				armorType += " of Thorns";
+			} else {
+				armorType += " Spikes";
+			}
+		}
+		if (attributeList.contains(Armor.ArmorAttributeType.HEALTH_REGEN)) {
+			armorType = "Mending " + armorType;
+		}
+		if (attributeList.contains(Armor.ArmorAttributeType.BLOCK)) {
+			armorType = "Protective " + armorType;
+		}
+		if (attributeList.contains(Armor.ArmorAttributeType.LUCK)) {
+			if (!armorType.contains("of")) {
+				armorType += " of Looting";
+			} else {
+				armorType += " Looting";
+			}
+		}
+		if (attributeList.contains(Armor.ArmorAttributeType.FIRE_RESISTANCE)) {
+			if (!armorType.contains("of")) {
+				armorType += " of Fire Resist";
+			} else {
+				armorType += " and Fire Resist";
+			}
+		}
+		return armorType;
 	}
 
 	/**

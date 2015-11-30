@@ -91,7 +91,7 @@ public class ItemGenerator {
         ArrayList<Item.AttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(tier.getAttributeRange()), type);
         assert item != null;
         ItemMeta meta = item.getItemMeta();
-        List<String> list = new NameGenerator().next(type);
+        //List<String> list = new NameGenerator().next(type);
         //meta.setDisplayName(tier.getChatColorOfTier(tier) + list.get(0) + " " + list.get(1) + " " + list.get(2));
         List<String> itemLore = new ArrayList<>();
 
@@ -275,37 +275,37 @@ public class ItemGenerator {
         }
         if (attributeList.contains(AttributeType.VS_PLAYER)) {
             if (!weaponName.contains("of")) {
-                weaponName = weaponName + " of Slaughter";
+                weaponName += " of Slaughter";
             } else {
-                weaponName = weaponName + " Slaughter";
+                weaponName += " Slaughter";
             }
         }
         if (attributeList.contains(AttributeType.VS_MONSTERS)) {
             if (!weaponName.contains("of")) {
-                weaponName = weaponName + " of Slaying";
+                weaponName += " of Slaying";
             } else {
-                weaponName = weaponName + " Slaying";
+                weaponName += " Slaying";
             }
         }
         if (attributeList.contains(AttributeType.ICE_DAMAGE)) {
             if (!weaponName.contains("of")) {
-                weaponName = weaponName + " of Ice";
+                weaponName += " of Ice";
             } else {
-                weaponName = weaponName + " Ice";
+                weaponName += " Ice";
             }
         }
         if (attributeList.contains(AttributeType.FIRE_DAMAGE)) {
             if (!weaponName.contains("of")) {
-                weaponName = weaponName + " of Fire";
+                weaponName += " of Fire";
             } else {
-                weaponName = weaponName + " Fire";
+                weaponName += " Fire";
             }
         }
         if (attributeList.contains(AttributeType.POISON_DAMAGE)) {
             if (!weaponName.contains("of")) {
-                weaponName = weaponName + " of Poison";
+                weaponName += " of Poison";
             } else {
-                weaponName = weaponName + " Poison";
+                weaponName += " Poison";
             }
         }
         return weaponName;
