@@ -292,7 +292,7 @@ public class BankListener implements Listener {
                             ItemStack bankItem = new ItemStack(Material.EMERALD);
                             ItemMeta meta = bankItem.getItemMeta();
                             meta.setDisplayName(getPlayerGems(player.getUniqueId()) + size + ChatColor.BOLD.toString()
-                                    + ChatColor.GREEN + " Gem(s)");
+                                    + ChatColor.GREEN + " GEM(s)");
                             ArrayList<String> lore = new ArrayList<>();
                             lore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to withdraw " + ChatColor.GREEN.toString() + ChatColor.BOLD + "RAW GEMS");
                             lore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to create " + ChatColor.GREEN.toString() + ChatColor.BOLD + "A GEM NOTE");
