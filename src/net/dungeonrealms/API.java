@@ -1,41 +1,5 @@
 package net.dungeonrealms;
 
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.rmi.activation.UnknownObjectException;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Zombie;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.plugin.Plugin;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
-
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -43,7 +7,6 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
 import net.dungeonrealms.combat.CombatLog;
@@ -67,11 +30,7 @@ import net.dungeonrealms.items.armor.Armor;
 import net.dungeonrealms.items.armor.Armor.ArmorModifier;
 import net.dungeonrealms.items.armor.Armor.ArmorTier;
 import net.dungeonrealms.items.armor.ArmorGenerator;
-import net.dungeonrealms.mastery.GamePlayer;
-import net.dungeonrealms.mastery.ItemSerialization;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.NameFetcher;
-import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mastery.*;
 import net.dungeonrealms.mechanics.ParticleAPI;
 import net.dungeonrealms.mechanics.PlayerManager;
 import net.dungeonrealms.miscellaneous.ItemBuilder;
@@ -83,6 +42,28 @@ import net.dungeonrealms.mongo.achievements.AchievementManager;
 import net.dungeonrealms.notice.Notice;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.teleportation.TeleportAPI;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.plugin.Plugin;
+import org.json.simple.JSONObject;
+import org.json.simple.JSONValue;
+
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.rmi.activation.UnknownObjectException;
+import java.util.*;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -124,24 +105,25 @@ public class API {
         }
         return "";
     }
-    
-    public static ItemTier getItemTier(ItemStack stack){
-    	if(stack.getType() == Material.AIR || stack == null)
-    	return null;
-    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-    	if(!nms.hasTag() || nms.hasTag() && nms.getTag().hasKey("itemTier")) return null;
-    	
-    	return ItemTier.getByTier(nms.getTag().getInt("itemTier"));
+
+    public static ItemTier getItemTier(ItemStack stack) {
+        if (stack.getType() == Material.AIR || stack == null)
+            return null;
+        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        if (!nms.hasTag() || nms.hasTag() && nms.getTag().hasKey("itemTier")) return null;
+
+        return ItemTier.getByTier(nms.getTag().getInt("itemTier"));
     }
-    
-    public static ArmorTier getArmorTier(ItemStack stack){
-    	if(stack.getType() == Material.AIR || stack == null)
-    	return null;
-    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-    	if(!nms.hasTag() || nms.hasTag() && !nms.getTag().hasKey("armorTier")) return null;
-    	
-    	return ArmorTier.getByTier(nms.getTag().getInt("armorTier"));
+
+    public static ArmorTier getArmorTier(ItemStack stack) {
+        if (stack.getType() == Material.AIR || stack == null)
+            return null;
+        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        if (!nms.hasTag() || nms.hasTag() && !nms.getTag().hasKey("armorTier")) return null;
+
+        return ArmorTier.getByTier(nms.getTag().getInt("armorTier"));
     }
+
     /**
      * @param player
      * @param kill
@@ -160,27 +142,27 @@ public class API {
     }
 
     public static ItemStack[] getTierArmor(int tier) {
-		int chance = RandomHelper.getRandomNumberBetween(1, 1000);
-		if(chance == 1){
-			return new ArmorGenerator().nextArmor(tier, ArmorModifier.LEGENDARY);
-		}
-		if(chance <= 10)
-			return new ArmorGenerator().nextArmor(tier, ArmorModifier.RARE);
-		else if(chance > 10 && chance <= 50)
-			return new ArmorGenerator().nextArmor(tier, ArmorModifier.UNCOMMON);
-		else
-        return new ArmorGenerator().nextArmor(tier, ArmorModifier.COMMON);
+        int chance = RandomHelper.getRandomNumberBetween(1, 1000);
+        if (chance == 1) {
+            return new ArmorGenerator().nextArmor(tier, ArmorModifier.LEGENDARY);
+        }
+        if (chance <= 10)
+            return new ArmorGenerator().nextArmor(tier, ArmorModifier.RARE);
+        else if (chance > 10 && chance <= 50)
+            return new ArmorGenerator().nextArmor(tier, ArmorModifier.UNCOMMON);
+        else
+            return new ArmorGenerator().nextArmor(tier, ArmorModifier.COMMON);
     }
 
-    public static ArmorModifier getArmorModifier(){
-		int chance = RandomHelper.getRandomNumberBetween(1, 500);
-		if (chance == 1) {
-			return ArmorModifier.LEGENDARY;
-		} else if (chance <= 10) {
-			return ArmorModifier.UNIQUE;
-		} else if (chance > 10 && chance <= 50) {
-			return ArmorModifier.RARE;
-		} else if (chance > 50 && chance <= 200) {
+    public static ArmorModifier getArmorModifier() {
+        int chance = RandomHelper.getRandomNumberBetween(1, 500);
+        if (chance == 1) {
+            return ArmorModifier.LEGENDARY;
+        } else if (chance <= 10) {
+            return ArmorModifier.UNIQUE;
+        } else if (chance > 10 && chance <= 50) {
+            return ArmorModifier.RARE;
+        } else if (chance > 50 && chance <= 200) {
             return ArmorModifier.UNCOMMON;
         } else {
             return ArmorModifier.COMMON;
@@ -205,6 +187,7 @@ public class API {
         }
         return ChatColor.WHITE;
     }
+
     /**
      * @param player
      * @param kill
@@ -370,8 +353,8 @@ public class API {
      */
     public static void handleLogout(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
-        if(CombatLog.isInCombat(player) && !DuelingMechanics.isDueling(uuid))
-        	CombatLog.handleCombatLogger(player);
+        if (CombatLog.isInCombat(player) && !DuelingMechanics.isDueling(uuid))
+            CombatLog.handleCombatLogger(player);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, false);
         if (BankMechanics.storage.containsKey(uuid)) {
             Inventory inv = BankMechanics.storage.get(uuid).inv;
@@ -396,9 +379,9 @@ public class API {
 
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, ItemSerialization.toString(inv),
                 false);
-        if(MountUtils.inventories.containsKey(uuid)){
-        	DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_MULE, ItemSerialization.toString(MountUtils.inventories.get(uuid)), false);
-        	MountUtils.inventories.remove(uuid);
+        if (MountUtils.inventories.containsKey(uuid)) {
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_MULE, ItemSerialization.toString(MountUtils.inventories.get(uuid)), false);
+            MountUtils.inventories.remove(uuid);
         }
         String locationAsString = "-367,86,390,0,0"; // Cyrennica
         if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
@@ -461,7 +444,7 @@ public class API {
         GamePlayer gp = new GamePlayer(player);
         API.GAMEPLAYERS.add(gp);
 
-       List<String> playerArmor = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ARMOR, player.getUniqueId());
+        List<String> playerArmor = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ARMOR, player.getUniqueId());
         int i = -1;
         ItemStack[] armorContents = new ItemStack[4];
         for (String armor : playerArmor) {
@@ -473,8 +456,8 @@ public class API {
             }
         }
         player.getInventory().setArmorContents(armorContents);
-        
-//TODO MONGO WIPES  		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
+
+//TODO: MONGO WIPES  		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
 
         AchievementManager.getInstance().handleLogin(player);
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
@@ -542,6 +525,13 @@ public class API {
         player.sendMessage(ChatColor.GREEN + "Character loaded, have fun. ;-)");
 
         player.setMaximumNoDamageTicks(0);
+
+        player.sendMessage(new String[]{
+                "                                        " + ChatColor.WHITE.toString() + ChatColor.BOLD + "Dungeon Realms Patch " + ChatColor.AQUA.toString() + ChatColor.BOLD + String.valueOf(DungeonRealms.version),
+                ChatColor.GRAY + "                              http://www.dungeonrealms.net/",
+                "",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Use " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/hub " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "to transfer back the hub."
+        });
     }
 
     /**
@@ -707,58 +697,61 @@ public class API {
             return false;
         }
     }
+
     /**
      * Spawn our Entity at Location
-     *
+     * <p>
      * Use SpawningMechanics.getMob for Entity
      * lvlRange = "high" or "low"
+     *
      * @param location
      * @param entity
      * @param tier
      * @param lvlRange
      */
-    public void spawnMonsterAt(Location location, net.minecraft.server.v1_8_R3.Entity entity, int tier, String lvlRange){
-    	net.minecraft.server.v1_8_R3.World world = ((CraftWorld)location.getWorld()).getHandle();
-		int level = Utils.getRandomFromTier(tier, "low");
-		MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
-		EntityStats.setMonsterRandomStats(entity, level, tier);
-        String lvlName =  ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+    public void spawnMonsterAt(Location location, net.minecraft.server.v1_8_R3.Entity entity, int tier, String lvlRange) {
+        net.minecraft.server.v1_8_R3.World world = ((CraftWorld) location.getWorld()).getHandle();
+        int level = Utils.getRandomFromTier(tier, "low");
+        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
+        EntityStats.setMonsterRandomStats(entity, level, tier);
+        String lvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
         int hp = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
-		String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
-		entity.setCustomName(lvlName + ChatColor.RESET + customName + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
-		entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-		world.addEntity(entity, SpawnReason.CUSTOM);
-		entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+        String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
+        entity.setCustomName(lvlName + ChatColor.RESET + customName + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
+        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+        world.addEntity(entity, SpawnReason.CUSTOM);
+        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 
     }
 
-    public static File getRemoteDataFolder(){
-    	String filePath = DungeonRealms.getInstance().getDataFolder().getAbsolutePath();
-    	File file = DungeonRealms.getInstance().getDataFolder();
-    	if(filePath.contains("/home/servers")){
-    		if(filePath.contains("d1")){
-    			filePath = "d1";
-    		}else if(filePath.contains("d2")){
-    			filePath = "d2";
-    		}else if(filePath.contains("d3")){
-    			filePath = "d3";
-    		}else if(filePath.contains("d4")){
-    			filePath = "d4";
-    		}else if(filePath.contains("d5")){
-    			filePath = "d5";
-    		}
-    		String webRoot = "/home/servers/" + filePath+ "/";
-    		file = new File(webRoot, DungeonRealms.getInstance().getDataFolder() +"");
-    	}
-    	return file;
+    public static File getRemoteDataFolder() {
+        String filePath = DungeonRealms.getInstance().getDataFolder().getAbsolutePath();
+        File file = DungeonRealms.getInstance().getDataFolder();
+        if (filePath.contains("/home/servers")) {
+            if (filePath.contains("d1")) {
+                filePath = "d1";
+            } else if (filePath.contains("d2")) {
+                filePath = "d2";
+            } else if (filePath.contains("d3")) {
+                filePath = "d3";
+            } else if (filePath.contains("d4")) {
+                filePath = "d4";
+            } else if (filePath.contains("d5")) {
+                filePath = "d5";
+            }
+            String webRoot = "/home/servers/" + filePath + "/";
+            file = new File(webRoot, DungeonRealms.getInstance().getDataFolder() + "");
+        }
+        return file;
     }
-    
-    public static boolean isWeapon(ItemStack stack){
-    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-		return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon");
+
+    public static boolean isWeapon(ItemStack stack) {
+        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon");
     }
-    public static boolean isArmor(ItemStack stack){
-    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-		return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("armor");
+
+    public static boolean isArmor(ItemStack stack) {
+        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("armor");
     }
 }
