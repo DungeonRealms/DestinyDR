@@ -111,11 +111,11 @@ public class Armor {
     }
 
     public enum ArmorModifier {
-        COMMON(0, ChatColor.GRAY + "Common" + ChatColor.RESET),
-        UNCOMMON(1, ChatColor.GREEN + "Uncommon" + ChatColor.RESET),
-        RARE(2, ChatColor.AQUA + "Rare" + ChatColor.RESET),
-        UNIQUE(3, ChatColor.YELLOW + "Unique" + ChatColor.RESET),
-        LEGENDARY(4, ChatColor.GOLD + "Legendary" + ChatColor.RESET),;
+        COMMON(0, ChatColor.GRAY.toString() + ChatColor.ITALIC + "Common" + ChatColor.RESET),
+        UNCOMMON(1, ChatColor.GREEN.toString() + ChatColor.ITALIC + "Uncommon" + ChatColor.RESET),
+        RARE(2, ChatColor.AQUA.toString() + ChatColor.ITALIC + "Rare" + ChatColor.RESET),
+        UNIQUE(3, ChatColor.YELLOW.toString() + ChatColor.ITALIC + "Unique" + ChatColor.RESET),
+        LEGENDARY(4, ChatColor.GOLD.toString() + ChatColor.ITALIC + "Legendary" + ChatColor.RESET),;
 
         private int id;
         private String name;
