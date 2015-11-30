@@ -487,6 +487,9 @@ public class HealthHandler implements GenericMechanic {
                     break;
             }
         }
+        if (damager instanceof Player) {
+            leAttacker = (LivingEntity) damager;
+        }
 
         CombatLog.addToCombat(player);
         if (leAttacker instanceof Player) {
@@ -517,11 +520,9 @@ public class HealthHandler implements GenericMechanic {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, leAttacker.getUniqueId()).toString())) {
                 leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + "[" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
             }
-        }
-
-        if (leAttacker instanceof Player) {
             KarmaHandler.getInstance().handleAlignmentChanges((Player) leAttacker);
         }
+
         if (newHP <= 0) {
             player.playSound(player.getLocation(), Sound.WITHER_SPAWN, 1f, 1f);
             if (player.hasMetadata("last_death_time")) {
@@ -537,7 +538,7 @@ public class HealthHandler implements GenericMechanic {
                         killerName = leAttacker.getCustomName();
                     }
                     final String finalKillerName = killerName;
-                    API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(GameChat.getPreMessage(player) + player.getName() + " was killed by a(n) " + finalKillerName));
+                    API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(GameChat.getPreMessage(player) + " was killed by a(n) " + finalKillerName));
                     return;
                 }
             } else {
@@ -551,7 +552,7 @@ public class HealthHandler implements GenericMechanic {
                     killerName = leAttacker.getCustomName();
                 }
                 final String finalKillerName = killerName;
-                API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(GameChat.getPreMessage(player) + player.getName() + " was killed by a(n) " + finalKillerName));
+                API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(GameChat.getPreMessage(player) + " was killed by a(n) " + finalKillerName));
                 return;
             }
         }

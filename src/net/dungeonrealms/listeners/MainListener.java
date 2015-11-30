@@ -320,25 +320,23 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerMoveWhileChaotic(PlayerMoveEvent event) {
-        if (!API.isPlayer(event.getPlayer()))
+        if (!API.isPlayer(event.getPlayer())) {
             return;
+        }
         Player player = event.getPlayer();
-        if (!KarmaHandler.getInstance().getPlayerRawAlignment(event.getPlayer()).equals(KarmaHandler.EnumPlayerAlignments.CHAOTIC.name()))
+        if (API.getGamePlayer(player) == null) {
             return;
-        if (!(player.getWorld().getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName())))
+        }
+        if (API.getGamePlayer(player).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
             return;
-        if (API.isInSafeRegion(event.getFrom()) && !API.isInSafeRegion(event.getTo())) {
-            player.teleport(
-                    KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1)));
-            player.sendMessage(ChatColor.RED + "The guards have kicked you out of the " + ChatColor.UNDERLINE
-                    + "protected area" + ChatColor.RED + " due to your Chaotic alignment.");
+        }
+        if (!(player.getWorld().equals(Bukkit.getWorlds().get(0)))) {
+            return;
         }
         if (API.isInSafeRegion(event.getTo())) {
-            // Might not cancel it as it could look buggy. May have to force TP
-            // to a Chaotic spawn from KarmaHandler.
             event.setCancelled(true);
-            player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " enter "
-                    + ChatColor.BOLD.toString() + "NON-PVP" + ChatColor.RED + " zones with a Chaotic alignment.");
+            player.teleport(new Location(player.getWorld(), event.getFrom().getX(), event.getFrom().getY(), event.getFrom().getZ(), player.getLocation().getPitch() * -1, player.getLocation().getPitch() * -1));
+            player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " enter " + ChatColor.BOLD.toString() + "NON-PVP" + ChatColor.RED + " zones with a Chaotic alignment.");
         }
     }
 
