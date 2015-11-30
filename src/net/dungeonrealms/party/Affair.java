@@ -82,7 +82,7 @@ public class Affair implements GenericMechanic {
 
         party.getMembers().remove(player);
         player.sendMessage(ChatColor.RED + "You have left the party!");
-
+        
         party.getOwner().sendMessage(ChatColor.AQUA + player.getName() + " " + ChatColor.RED + "has left the party!");
         party.getMembers().stream().forEach(player1 -> player1.sendMessage(ChatColor.AQUA + player.getName() + " " + ChatColor.RED + "has left the party!"));
 
