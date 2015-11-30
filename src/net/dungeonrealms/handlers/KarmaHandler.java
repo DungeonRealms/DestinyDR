@@ -236,7 +236,7 @@ public class KarmaHandler implements GenericMechanic {
                     }
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, API.getGamePlayer(player).getLevel());
                     if (Instance.getInstance().getPlayerRealm(player) != null && Instance.getInstance().getPlayerRealm(player).isRealmPortalOpen()) {
-                        Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + "[" + ChatColor.WHITE + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
+                        Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + " [" + ChatColor.WHITE + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
                     }
                     PLAYER_ALIGNMENTS.put(player, alignment);
                     break;
@@ -252,7 +252,7 @@ public class KarmaHandler implements GenericMechanic {
                     }
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.YELLOW, API.getGamePlayer(player).getLevel());
                     if (Instance.getInstance().getPlayerRealm(player) != null && Instance.getInstance().getPlayerRealm(player).isRealmPortalOpen()) {
-                        Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + "[" + ChatColor.YELLOW + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
+                        Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + " [" + ChatColor.YELLOW + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
                     }
                     if (seconds == 0) {
                         seconds = 120;
@@ -274,7 +274,7 @@ public class KarmaHandler implements GenericMechanic {
                     }
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.RED, API.getGamePlayer(player).getLevel());
                     if (Instance.getInstance().getPlayerRealm(player) != null && Instance.getInstance().getPlayerRealm(player).isRealmPortalOpen()) {
-                        Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + "[" + ChatColor.RED + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
+                        Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + " [" + ChatColor.RED + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
                     }
                     if (seconds == 0) {
                         seconds = 1200;

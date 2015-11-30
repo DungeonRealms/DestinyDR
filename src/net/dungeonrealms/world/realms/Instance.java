@@ -468,7 +468,7 @@ public class Instance implements GenericMechanic, Listener {
                 portalLocation.add(0, 1, 0).getBlock().setType(Material.PORTAL);
                 Hologram realmHologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), portalLocation.add(0.5, 1.5, 0.5));
                 KarmaHandler.EnumPlayerAlignments playerAlignment = KarmaHandler.EnumPlayerAlignments.getByName(KarmaHandler.getInstance().getPlayerRawAlignment(player));
-                realmHologram.appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + "[" + playerAlignment.getAlignmentColor() + playerAlignment.name().toUpperCase() + ChatColor.GOLD + "]");
+                realmHologram.appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + " [" + playerAlignment.getAlignmentColor() + playerAlignment.name().toUpperCase() + ChatColor.GOLD + "]");
                 realmHologram.getVisibilityManager().setVisibleByDefault(true);
                 RealmObject realmObject = new RealmObject(player, clickLocation, new ArrayList<>(), realmHologram, new ArrayList<>(), true);
                 realmObject.getRealmBuilders().add(player);
