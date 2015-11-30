@@ -223,10 +223,10 @@ public class BankListener implements Listener {
                                 ItemStack bankItem = new ItemStack(Material.EMERALD);
                                 ItemMeta meta = bankItem.getItemMeta();
                                 meta.setDisplayName(getPlayerGems(player.getUniqueId()) + size + ChatColor.BOLD.toString()
-                                        + ChatColor.GREEN + " Gem(s)");
+                                        + ChatColor.GREEN + " GEM(s)");
                                 ArrayList<String> lore = new ArrayList<>();
-                                lore.add(ChatColor.GREEN.toString() + "Left Click " + " to withdraw Raw Gems.");
-                                lore.add(ChatColor.GREEN.toString() + "Right Click " + " to create a Bank Note.");
+                                lore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to withdraw " + ChatColor.GREEN.toString() + ChatColor.BOLD + "RAW GEMS");
+                                lore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to create " + ChatColor.GREEN.toString() + ChatColor.BOLD + "A GEM NOTE");
                                 meta.setLore(lore);
                                 bankItem.setItemMeta(meta);
                                 net.minecraft.server.v1_8_R3.ItemStack nmsBank = CraftItemStack.asNMSCopy(bankItem);
@@ -244,20 +244,20 @@ public class BankListener implements Listener {
                             // Open Storage
                             player.openInventory(storage.inv);
                         } else if (e.isRightClick()) {
-                            Inventory inv = Bukkit.createInventory(null, 9, "Upgrade your bank storage?");
+                            Inventory inv = Bukkit.createInventory(null, 9, "Upgrade your storage?");
                         	int invLvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
                 			int num = BankMechanics.getPrice(invLvl);
                             ItemStack accept = new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData());
                             ItemMeta acceptMeta = accept.getItemMeta();
-                            acceptMeta.setDisplayName(ChatColor.GREEN.toString() +"Accept");
-                            acceptMeta.setLore(Arrays.asList(new String[] {ChatColor.GRAY + "Upgrade your bank storage for " + ChatColor.RED.toString() + num +" gems"}));
+                            acceptMeta.setDisplayName(ChatColor.GREEN.toString() + ChatColor.BOLD + "ACCEPT");
+                            acceptMeta.setLore(Arrays.asList(new String[] {ChatColor.GRAY + "Upgrade storage: " + ChatColor.GREEN.toString() + num +"g"}));
                             accept.setItemMeta(acceptMeta);
                             
                             
                             ItemStack deny = new ItemStack(Material.WOOL, 1, DyeColor.RED.getData());
                             ItemMeta denyMeta = deny.getItemMeta();
-                            denyMeta.setDisplayName(ChatColor.RED.toString() +"Deny");
-                            denyMeta.setLore(Arrays.asList(new String[] {ChatColor.GRAY + "Cancel bank upgrade"}));
+                            denyMeta.setDisplayName(ChatColor.RED.toString() + ChatColor.BOLD + "DENY");
+                            denyMeta.setLore(Arrays.asList(new String[] {ChatColor.GRAY + "Cancel upgrade"}));
                             deny.setItemMeta(denyMeta);
                             
                             inv.setItem(3, accept);
@@ -420,7 +420,7 @@ public class BankListener implements Listener {
                     }
                 }
             }
-        }else if(e.getInventory().getTitle().contains("Upgrade your bank storage")){
+        }else if(e.getInventory().getTitle().contains("Upgrade your storage?")){
         	e.setCancelled(true);
         	int invLvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
 			int num = BankMechanics.getPrice(invLvl);
@@ -516,8 +516,8 @@ public class BankListener implements Listener {
         ItemMeta storagetMeta = storage.getItemMeta();
         storagetMeta.setDisplayName(ChatColor.RED.toString() + "Storage");
         ArrayList<String> storelore = new ArrayList<>();
-        storelore.add(ChatColor.GREEN.toString() + "Left Click to open your storage.");
-        storelore.add(ChatColor.GREEN.toString() + "Right Click to upgrade your storage!");
+        storelore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to open " + ChatColor.GREEN.toString() + ChatColor.BOLD + "STORAGE");
+        storelore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to " + ChatColor.GREEN.toString() + ChatColor.BOLD + "UPGRADE STORAGE");
         storagetMeta.setLore(storelore);
         storage.setItemMeta(storagetMeta);
         net.minecraft.server.v1_8_R3.ItemStack storagenms = CraftItemStack.asNMSCopy(storage);

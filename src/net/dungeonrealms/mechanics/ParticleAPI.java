@@ -22,7 +22,7 @@ public class ParticleAPI {
 
     public enum ParticleEffect {
         FIREWORKS_SPARK(0, "FIREWORKS", EnumParticle.FIREWORKS_SPARK, new org.bukkit.inventory.ItemStack(Material.FIREWORK)),
-        BUBBLE(1, "BUBBLE", EnumParticle.WATER_BUBBLE, new org.bukkit.inventory.ItemStack(Material.AIR)),
+        BUBBLE(1, "BUBBLE", EnumParticle.WATER_BUBBLE, new org.bukkit.inventory.ItemStack(Material.WATER_BUCKET)),
         TOWN_AURA(2, "TOWNAURA", EnumParticle.TOWN_AURA, new org.bukkit.inventory.ItemStack(Material.FIREWORK)),
         CRIT(3, "CRITICAL", EnumParticle.CRIT, new org.bukkit.inventory.ItemStack(Material.GOLD_SWORD)),
         MAGIC_CRIT(4, "MAGICCRIT", EnumParticle.CRIT_MAGIC, new org.bukkit.inventory.ItemStack(Material.GOLD_HOE)),
@@ -33,10 +33,10 @@ public class ParticleAPI {
         FLAME(9, "FLAME", EnumParticle.FLAME, new org.bukkit.inventory.ItemStack(Material.FIREBALL)),
         LAVA(10, "LAVA", EnumParticle.LAVA, new org.bukkit.inventory.ItemStack(Material.LAVA_BUCKET)),
         SPLASH(11, "SPLASH", EnumParticle.WATER_SPLASH, new org.bukkit.inventory.ItemStack(Material.WATER_BUCKET)),
-        LARGE_SMOKE(12, "LARGESMOKE", EnumParticle.SMOKE_LARGE, new org.bukkit.inventory.ItemStack(Material.AIR)),
+        LARGE_SMOKE(12, "LARGESMOKE", EnumParticle.SMOKE_LARGE, new org.bukkit.inventory.ItemStack(Material.MELON)),
         RED_DUST(13, "REDDUST", EnumParticle.REDSTONE, new org.bukkit.inventory.ItemStack(Material.REDSTONE)),
         SNOWBALL_POOF(14, "SNOWBALL", EnumParticle.SNOWBALL, new org.bukkit.inventory.ItemStack(Material.SNOW_BLOCK)),
-        SMALL_SMOKE(15, "SMOKEY", EnumParticle.SMOKE_NORMAL, new org.bukkit.inventory.ItemStack(Material.INK_SACK)),
+        SMALL_SMOKE(15, "SMOKEY", EnumParticle.SMOKE_NORMAL, new org.bukkit.inventory.ItemStack(Material.SUGAR)),
         CLOUD(16, "CLOUD", EnumParticle.CLOUD, new org.bukkit.inventory.ItemStack(Material.BEACON)),
         HAPPY_VILLAGER(17, "POISON", EnumParticle.VILLAGER_HAPPY, new org.bukkit.inventory.ItemStack(Material.FIREWORK)),
         SPELL(18, "SPELL", EnumParticle.SPELL, new org.bukkit.inventory.ItemStack(Material.BLAZE_POWDER)),
