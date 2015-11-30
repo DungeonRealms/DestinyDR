@@ -244,20 +244,20 @@ public class BankListener implements Listener {
                             // Open Storage
                             player.openInventory(storage.inv);
                         } else if (e.isRightClick()) {
-                            Inventory inv = Bukkit.createInventory(null, 9, "Upgrade your bank storage?");
+                            Inventory inv = Bukkit.createInventory(null, 9, "Upgrade your storage?");
                         	int invLvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
                 			int num = BankMechanics.getPrice(invLvl);
                             ItemStack accept = new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData());
                             ItemMeta acceptMeta = accept.getItemMeta();
-                            acceptMeta.setDisplayName(ChatColor.GREEN.toString() +"Accept");
-                            acceptMeta.setLore(Arrays.asList(new String[] {ChatColor.GRAY + "Upgrade your bank storage for " + ChatColor.RED.toString() + num +" gems"}));
+                            acceptMeta.setDisplayName(ChatColor.GREEN.toString() + ChatColor.BOLD + "ACCEPT");
+                            acceptMeta.setLore(Arrays.asList(new String[] {ChatColor.GRAY + "Upgrade storage: " + ChatColor.GREEN.toString() + num +"g"}));
                             accept.setItemMeta(acceptMeta);
                             
                             
                             ItemStack deny = new ItemStack(Material.WOOL, 1, DyeColor.RED.getData());
                             ItemMeta denyMeta = deny.getItemMeta();
-                            denyMeta.setDisplayName(ChatColor.RED.toString() +"Deny");
-                            denyMeta.setLore(Arrays.asList(new String[] {ChatColor.GRAY + "Cancel bank upgrade"}));
+                            denyMeta.setDisplayName(ChatColor.RED.toString() + ChatColor.BOLD + "DENY");
+                            denyMeta.setLore(Arrays.asList(new String[] {ChatColor.GRAY + "Cancel upgrade"}));
                             deny.setItemMeta(denyMeta);
                             
                             inv.setItem(3, accept);
