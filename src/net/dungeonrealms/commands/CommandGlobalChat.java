@@ -49,7 +49,7 @@ public class CommandGlobalChat extends BasicCommand {
 
         StringBuilder prefix = new StringBuilder();
 
-        prefix.append(ChatColor.GREEN + "<" + ChatColor.BOLD + "G" + ChatColor.GREEN + ">" + ChatColor.RESET + "");
+        prefix.append(ChatColor.AQUA + "<" + ChatColor.BOLD + "G" + ChatColor.GREEN + ">" + ChatColor.RESET + "");
 
         Rank.RankBlob r = Rank.getInstance().getRank(uuid);
         if (r != null && !r.getPrefix().equals("null")) {

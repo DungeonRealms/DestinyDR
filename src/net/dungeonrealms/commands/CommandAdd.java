@@ -50,7 +50,10 @@ public class CommandAdd extends BasicCommand {
         }
         if (args.length > 0) {
             int tier;
-			switch (args[0]) {
+            switch (args[0]) {
+                case "check":
+                    player.sendMessage("YOUR REALM EXIST? " + String.valueOf(Instance.getInstance().doesRemoteRealmExist(player.getUniqueId().toString())));
+                    break;
                 case "uuid":
                     player.sendMessage(Bukkit.getPlayer(API.getUUIDFromName(player.getName())).getDisplayName());
                     break;
@@ -74,11 +77,11 @@ public class CommandAdd extends BasicCommand {
                     //new RealmManager().downloadRealm(player.getUniqueId());
                     break;
                 case "weapon":
-                	tier = Integer.parseInt(args[1]);
+                    tier = Integer.parseInt(args[1]);
                     player.getInventory().addItem(new ItemGenerator().getDefinedStack(ItemGenerator.getRandomItemType(), ItemTier.getByTier(tier), ItemGenerator.getRandomItemModifier()));
                     break;
                 case "armor":
-                	tier = Integer.parseInt(args[1]);
+                    tier = Integer.parseInt(args[1]);
                     player.getInventory().addItem(new ArmorGenerator().getDefinedStack(ArmorGenerator.getRandomEquipmentType(), ArmorTier.getByTier(tier), ArmorGenerator.getRandomItemModifier()));
                     break;
                 case "particle":
@@ -100,7 +103,7 @@ public class CommandAdd extends BasicCommand {
                     DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAILS.add(player);
                     break;
                 case "pick":
-                     tier = 1;
+                    tier = 1;
                     if (args.length == 2)
                         tier = Integer.parseInt(args[1]);
                     player.getInventory().addItem(ItemManager.createPickaxe(tier));
@@ -158,24 +161,24 @@ public class CommandAdd extends BasicCommand {
                     Bukkit.broadcastMessage("Get2" + String.valueOf(RepairAPI.getCustomDurability(player.getItemInHand())));
                     break;
                 case "orb":
-                	player.getInventory().addItem(ItemManager.createOrbofAlteration());
-                	break;
+                    player.getInventory().addItem(ItemManager.createOrbofAlteration());
+                    break;
                 case "armorenchant":
-                	tier = Integer.parseInt(args[1]);
-                	player.getInventory().addItem(ItemManager.createArmorEnchant(tier));
-                	break;
+                    tier = Integer.parseInt(args[1]);
+                    player.getInventory().addItem(ItemManager.createArmorEnchant(tier));
+                    break;
                 case "weaponenchant":
-                	tier = Integer.parseInt(args[1]);
-                	player.getInventory().addItem(ItemManager.createWeaponEnchant(tier));
-                	break;
+                    tier = Integer.parseInt(args[1]);
+                    player.getInventory().addItem(ItemManager.createWeaponEnchant(tier));
+                    break;
                 case "protectscroll":
-            	tier = Integer.parseInt(args[1]);
-            	player.getInventory().addItem(ItemManager.createProtectScroll(tier));
-            	break;
+                    tier = Integer.parseInt(args[1]);
+                    player.getInventory().addItem(ItemManager.createProtectScroll(tier));
+                    break;
                 case "pouch":
-                	tier = Integer.parseInt(args[1]);
-                	player.getInventory().addItem(BankMechanics.getInstance().createGemPouch(tier, 0));
-                	break;
+                    tier = Integer.parseInt(args[1]);
+                    player.getInventory().addItem(BankMechanics.getInstance().createGemPouch(tier, 0));
+                    break;
             }
         }
 
