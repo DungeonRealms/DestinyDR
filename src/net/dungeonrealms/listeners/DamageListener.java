@@ -27,6 +27,7 @@ import net.dungeonrealms.miscellaneous.ItemBuilder;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
+import net.dungeonrealms.party.Affair;
 import net.dungeonrealms.spawning.BuffManager;
 import net.dungeonrealms.spawning.MobSpawner;
 import net.dungeonrealms.spawning.SpawningMechanics;
@@ -193,6 +194,17 @@ public class DamageListener implements Listener {
                         event.setCancelled(true);
                         event.setDamage(0);
                         return;
+                    }
+                }
+            }
+            if (Affair.getInstance().isInParty((Player) event.getDamager())) {
+                if (event.getEntity() instanceof Player) {
+                    if (Affair.getInstance().isInParty((Player) event.getEntity())) {
+                        if (Affair.getInstance().getParty((Player) event.getDamager()).get().getMembers().contains(event.getEntity())) {
+                            event.setCancelled(true);
+                            event.setDamage(0);
+                            return;
+                        }
                     }
                 }
             }
@@ -404,6 +416,19 @@ public class DamageListener implements Listener {
                 }
             }
         }
+        if (event.getDamager() instanceof Player) {
+            if (Affair.getInstance().isInParty((Player) event.getDamager())) {
+                if (event.getEntity() instanceof Player) {
+                    if (Affair.getInstance().isInParty((Player) event.getEntity())) {
+                        if (Affair.getInstance().getParty((Player) event.getDamager()).get().getMembers().contains(event.getEntity())) {
+                            event.setCancelled(true);
+                            event.setDamage(0);
+                            return;
+                        }
+                    }
+                }
+            }
+        }
         double armourReducedDamage = 0;
         LivingEntity defender = (LivingEntity) event.getEntity();
         EntityEquipment defenderEquipment = defender.getEquipment();
@@ -442,6 +467,19 @@ public class DamageListener implements Listener {
                     return;
                 }
             }
+            if (attacker instanceof Player) {
+                if (Affair.getInstance().isInParty((Player) attacker)) {
+                    if (defender instanceof Player) {
+                        if (Affair.getInstance().isInParty((Player) defender)) {
+                            if (Affair.getInstance().getParty((Player) attacker).get().getMembers().contains(defender)) {
+                                event.setCancelled(true);
+                                event.setDamage(0);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
             if (!(attacker instanceof Player)) {
                 if (!(defender instanceof Player)) {
                     event.setCancelled(true);
@@ -459,6 +497,19 @@ public class DamageListener implements Listener {
                     event.setCancelled(true);
                     event.setDamage(0);
                     return;
+                }
+            }
+            if (attacker instanceof Player) {
+                if (Affair.getInstance().isInParty((Player) attacker)) {
+                    if (defender instanceof Player) {
+                        if (Affair.getInstance().isInParty((Player) defender)) {
+                            if (Affair.getInstance().getParty((Player) attacker).get().getMembers().contains(defender)) {
+                                event.setCancelled(true);
+                                event.setDamage(0);
+                                return;
+                            }
+                        }
+                    }
                 }
             }
             if (!(attacker instanceof Player)) {
