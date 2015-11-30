@@ -207,7 +207,6 @@ public class Instance implements GenericMechanic, Listener {
         w.setStorm(false);
         w.setMonsterSpawnLimit(0);
         Bukkit.getWorlds().add(w);
-        player.teleport(w.getSpawnLocation());
         player.sendMessage(ChatColor.GREEN + "Teleporting you to your realm!");
     }
 
@@ -234,8 +233,6 @@ public class Instance implements GenericMechanic, Listener {
             Utils.log.info("[REALM] [ASYNC] Extracting Realm for " + uuid.toString());
             zipFile.extractAll(rootFolder.getAbsolutePath() + "/" + uuid.toString());
             Utils.log.info("[REALM] [ASYNC] Realm Extracted for " + uuid.toString());
-
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> loadInWorld(Bukkit.getPlayer(uuid)), 5);
 
 
         } catch (IOException | ZipException e) {
@@ -362,7 +359,8 @@ public class Instance implements GenericMechanic, Listener {
                     player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]), Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
                 }
             });
-            Bukkit.unloadWorld(realmObject.getRealmOwner().getUniqueId().toString(), false);
+            Bukkit.getWorld(realmObject.getRealmOwner().getUniqueId().toString()).save();
+            Bukkit.unloadWorld(realmObject.getRealmOwner().getUniqueId().toString(), true);
             Utils.log.info("[REALMS] Unloading world: " + realmObject.getRealmOwner().getUniqueId().toString() + " in preparation for deletion!");
             CURRENT_REALMS.remove(realmObject);
             uploadRealm(realmObject.getRealmOwner());
