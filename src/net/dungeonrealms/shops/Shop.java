@@ -47,7 +47,7 @@ public class Shop {
 		this.block2 = loc.getWorld().getBlockAt(loc.add(1, 0, 0));
 		this.shopName = shopName;
 		hologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), loc.add(0, 1.5, .5));
-		hologram.appendTextLine(ChatColor.RED.toString() + ChatColor.BOLD + shopName);
+		hologram.appendTextLine(ChatColor.RED.toString() + shopName);
 		hologram.getVisibilityManager().setVisibleByDefault(true);
 		isopen = false;
 		inventory = createNewInv(ownerUUID);
@@ -187,7 +187,7 @@ public class Shop {
 			net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
 			nmsButton.getTag().setString("status", "off");
 			inventory.setItem(8, CraftItemStack.asBukkitCopy(nmsButton));
-			hologram.appendTextLine(ChatColor.RED + ChatColor.BOLD.toString() +  shopName);
+			hologram.appendTextLine(ChatColor.RED.toString() +  shopName);
 		} else {
 			ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.LIME.getDyeData());
 			ItemMeta meta = button.getItemMeta();
@@ -196,7 +196,7 @@ public class Shop {
 			net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
 			nmsButton.getTag().setString("status", "on");
 			inventory.setItem(8, CraftItemStack.asBukkitCopy(nmsButton));
-			hologram.appendTextLine(ChatColor.GREEN + ChatColor.BOLD.toString() + "[S] " + shopName);
+			hologram.appendTextLine(ChatColor.GREEN.toString() + "[S] " + shopName);
 		}
 	}
 
