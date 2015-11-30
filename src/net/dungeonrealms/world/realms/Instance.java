@@ -6,6 +6,7 @@ import me.Bogdacutu.VoidGenerator.VoidGeneratorGenerator;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.combat.CombatLog;
+import net.dungeonrealms.handlers.KarmaHandler;
 import net.dungeonrealms.loot.LootManager;
 import net.dungeonrealms.mastery.AsyncUtils;
 import net.dungeonrealms.mastery.Utils;
@@ -32,7 +33,6 @@ import org.bukkit.util.Vector;
 
 import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -207,7 +207,6 @@ public class Instance implements GenericMechanic, Listener {
         w.setStorm(false);
         w.setMonsterSpawnLimit(0);
         Bukkit.getWorlds().add(w);
-        player.sendMessage(ChatColor.GREEN + "Teleporting you to your realm!");
     }
 
     public void downloadRealm(UUID uuid) {
@@ -447,6 +446,10 @@ public class Instance implements GenericMechanic, Listener {
                 player.sendMessage(ChatColor.RED + "You cannot place a portal so close to another! (Min 3 Blocks)");
                 return;
             }
+            if (!API.isInSafeRegion(player.getLocation()) && !API.isNonPvPRegion(player.getLocation())) {
+                player.sendMessage(ChatColor.RED + "You cannot place a portal in a Chaotic Zone!");
+                return;
+            }
             for (Player player1 : Bukkit.getWorlds().get(0).getPlayers()) {
                 if (player1.getName().equals(player.getName())) {
                     continue;
@@ -464,7 +467,8 @@ public class Instance implements GenericMechanic, Listener {
                 portalLocation.add(0, 1, 0).getBlock().setType(Material.PORTAL);
                 portalLocation.add(0, 1, 0).getBlock().setType(Material.PORTAL);
                 Hologram realmHologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), portalLocation.add(0.5, 1.5, 0.5));
-                realmHologram.appendTextLine(player.getName() + "(s) REALM");
+                KarmaHandler.EnumPlayerAlignments playerAlignment = KarmaHandler.EnumPlayerAlignments.getByName(KarmaHandler.getInstance().getPlayerRawAlignment(player));
+                realmHologram.appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + "[" + playerAlignment.getAlignmentColor() + playerAlignment.name().toUpperCase() + ChatColor.GOLD + "]");
                 realmHologram.getVisibilityManager().setVisibleByDefault(true);
                 RealmObject realmObject = new RealmObject(player, clickLocation, new ArrayList<>(), realmHologram, new ArrayList<>(), true);
                 realmObject.getRealmBuilders().add(player);
