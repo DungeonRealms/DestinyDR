@@ -516,8 +516,8 @@ public class BankListener implements Listener {
         ItemMeta storagetMeta = storage.getItemMeta();
         storagetMeta.setDisplayName(ChatColor.RED.toString() + "Storage");
         ArrayList<String> storelore = new ArrayList<>();
-        storelore.add(ChatColor.GREEN.toString() + "Left Click to open your storage.");
-        storelore.add(ChatColor.GREEN.toString() + "Right Click to upgrade your storage!");
+        storelore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to open " + ChatColor.GREEN.toString() + ChatColor.BOLD + "STORAGE");
+        storelore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to " + ChatColor.GREEN.toString() + ChatColor.BOLD + "UPGRADE STORAGE");
         storagetMeta.setLore(storelore);
         storage.setItemMeta(storagetMeta);
         net.minecraft.server.v1_8_R3.ItemStack storagenms = CraftItemStack.asNMSCopy(storage);
