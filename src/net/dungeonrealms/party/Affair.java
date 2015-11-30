@@ -54,7 +54,7 @@ public class Affair implements GenericMechanic {
 
     public void invitePlayer(Player inviting, Player invitor) {
         _invitations.put(inviting, getParty(invitor).get());
-        inviting.sendMessage(ChatColor.GREEN + "You've been invited to " + invitor.getName() + "'s party! Type /paccept to join!");
+        inviting.sendMessage(ChatColor.LIGHT_PURPLE.toString() + ChatColor.UNDERLINE +  invitor.getName() + ChatColor.GRAY + " has invited you to join their party! Type " + ChatColor.LIGHT_PURPLE + "/paccept" + ChatColor.GRAY + " to join, or " + ChatColor.LIGHT_PURPLE + "/pdecline" + ChatColor.GRAY + " to decline.");
     }
 
     public void removeParty(AffairO party) {

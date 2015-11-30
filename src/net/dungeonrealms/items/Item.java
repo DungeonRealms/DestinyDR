@@ -10,7 +10,7 @@ public class Item {
 
     public enum ItemType {
         SWORD(0, "Sword"),
-        POLE_ARM(1, "PoleArm"),
+        POLE_ARM(1, "Polearm"),
         AXE(2, "Axe"),
         STAFF(3, "Staff"),
         BOW(4, "Bow");
@@ -113,12 +113,12 @@ public class Item {
     }
 
     public enum ItemModifier {
-        COMMON(0, ChatColor.GRAY + "Common" + ChatColor.RESET),
-        UNCOMMON(1, ChatColor.GREEN + "Uncommon" + ChatColor.RESET),
-        RARE(2, ChatColor.AQUA + "Rare" + ChatColor.RESET),
-        UNIQUE(3, ChatColor.YELLOW + "Unique" + ChatColor.RESET),
+        COMMON(0, ChatColor.GRAY.toString() + ChatColor.ITALIC + "Common" + ChatColor.RESET),
+        UNCOMMON(1, ChatColor.GREEN.toString() + ChatColor.ITALIC + "Uncommon" + ChatColor.RESET),
+        RARE(2, ChatColor.AQUA.toString() + ChatColor.ITALIC + "Rare" + ChatColor.RESET),
+        UNIQUE(3, ChatColor.YELLOW.toString() + ChatColor.ITALIC + "Unique" + ChatColor.RESET),
         //not used, for the lols.
-        LEGENDARY(4, ChatColor.DARK_PURPLE + "Legendary" + ChatColor.RESET),;
+        LEGENDARY(4, ChatColor.DARK_PURPLE.toString() + ChatColor.ITALIC + "Legendary" + ChatColor.RESET),;
 
         private int id;
         private String name;
@@ -145,20 +145,20 @@ public class Item {
             return null;
         }
 
-        public ChatColor getChatColorOfModifier(ItemModifier itemModifier) {
+        public String getChatColorOfModifier(ItemModifier itemModifier) {
             switch (itemModifier) {
                 case COMMON:
-                    return ChatColor.GRAY;
+                    return ChatColor.GRAY.toString();
                 case UNCOMMON:
-                    return ChatColor.GREEN;
+                    return ChatColor.GREEN.toString();
                 case RARE:
-                    return ChatColor.AQUA;
+                    return ChatColor.AQUA.toString();
                 case UNIQUE:
-                    return ChatColor.YELLOW;
+                    return ChatColor.YELLOW + ChatColor.ITALIC.toString();
                 case LEGENDARY:
-                    return ChatColor.DARK_PURPLE;
+                    return ChatColor.DARK_PURPLE + ChatColor.ITALIC.toString();
                 default:
-                    return ChatColor.GRAY;
+                    return ChatColor.GRAY.toString();
             }
         }
     }

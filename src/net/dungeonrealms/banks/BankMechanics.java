@@ -299,7 +299,7 @@ public class BankMechanics implements GenericMechanic {
         List<String> lore2 = new ArrayList<>();
         lore2.add(ChatColor.WHITE.toString() + ChatColor.BOLD.toString() + "Value: " + ChatColor.WHITE.toString());
         meta2.setLore(lore2);
-        meta2.setDisplayName(ChatColor.GREEN.toString() + "Bank Note");
+        meta2.setDisplayName(ChatColor.GREEN.toString() + "Gem Note");
         item2.setItemMeta(meta2);
         net.minecraft.server.v1_8_R3.ItemStack nms2 = CraftItemStack.asNMSCopy(item2);
         NBTTagCompound tag2 = nms2.getTag() == null ? new NBTTagCompound() : nms2.getTag();
@@ -320,8 +320,8 @@ public class BankMechanics implements GenericMechanic {
         ItemStack stack = BankMechanics.banknote.clone();
         ItemMeta meta = stack.getItemMeta();
         ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.BOLD.toString() + "Value: " + ChatColor.WHITE.toString()
-                + amount);
+        lore.add(ChatColor.WHITE.toString() + ChatColor.BOLD + "Value: " + ChatColor.WHITE + amount + " Gems");
+		lore.add(ChatColor.GRAY+ "Exchange at any bank for GEM(s)");
         meta.setLore(lore);
         stack.setItemMeta(meta);
         net.minecraft.server.v1_8_R3.ItemStack nms1 = CraftItemStack.asNMSCopy(stack);

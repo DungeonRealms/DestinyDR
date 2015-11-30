@@ -6,7 +6,6 @@ import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.banks.Storage;
-import net.dungeonrealms.mastery.ItemSerialization;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
@@ -137,7 +136,7 @@ public class BankListener implements Listener {
                                 });
                                 ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
                                 ItemMeta meta = stack.getItemMeta();
-                                meta.setDisplayName("Withdraw?");
+                                meta.setDisplayName("?");
                                 stack.setItemMeta(meta);
                                 gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
                                 player.closeInventory();
@@ -174,7 +173,7 @@ public class BankListener implements Listener {
                                 });
                                 ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
                                 ItemMeta meta = stack.getItemMeta();
-                                meta.setDisplayName("Withdraw?");
+                                meta.setDisplayName("?");
                                 stack.setItemMeta(meta);
                                 gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
                                 player.closeInventory();
@@ -292,10 +291,10 @@ public class BankListener implements Listener {
                             ItemStack bankItem = new ItemStack(Material.EMERALD);
                             ItemMeta meta = bankItem.getItemMeta();
                             meta.setDisplayName(getPlayerGems(player.getUniqueId()) + size + ChatColor.BOLD.toString()
-                                    + ChatColor.GREEN + " Gem(s)");
+                                    + ChatColor.GREEN + " GEM(s)");
                             ArrayList<String> lore = new ArrayList<>();
-                            lore.add(ChatColor.GREEN.toString() + "Left Click " + " to withdraw Raw Gems.");
-                            lore.add(ChatColor.GREEN.toString() + "Right Click " + " to create a Bank Note.");
+                            lore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to withdraw " + ChatColor.GREEN.toString() + ChatColor.BOLD + "RAW GEMS");
+                            lore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to create " + ChatColor.GREEN.toString() + ChatColor.BOLD + "A GEM NOTE");
                             meta.setLore(lore);
                             bankItem.setItemMeta(meta);
                             net.minecraft.server.v1_8_R3.ItemStack nmsBank = CraftItemStack.asNMSCopy(bankItem);
@@ -514,10 +513,10 @@ public class BankListener implements Listener {
         ItemStack bankItem = new ItemStack(Material.EMERALD);
         ItemStack storage = new ItemStack(Material.CHEST, 1);
         ItemMeta storagetMeta = storage.getItemMeta();
-        storagetMeta.setDisplayName(ChatColor.RED.toString() + "Storage");
+        storagetMeta.setDisplayName(ChatColor.AQUA.toString() + ChatColor.BOLD + "STORAGE");
         ArrayList<String> storelore = new ArrayList<>();
         storelore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to open " + ChatColor.GREEN.toString() + ChatColor.BOLD + "STORAGE");
-        storelore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to " + ChatColor.GREEN.toString() + ChatColor.BOLD + "UPGRADE STORAGE");
+        storelore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to " + ChatColor.GREEN.toString() + ChatColor.BOLD + "UPGRADE BANK");
         storagetMeta.setLore(storelore);
         storage.setItemMeta(storagetMeta);
         net.minecraft.server.v1_8_R3.ItemStack storagenms = CraftItemStack.asNMSCopy(storage);
@@ -525,10 +524,10 @@ public class BankListener implements Listener {
         inv.setItem(0, CraftItemStack.asBukkitCopy(storagenms));
 
         ItemMeta meta = bankItem.getItemMeta();
-        meta.setDisplayName(getPlayerGems(uuid) + ChatColor.BOLD.toString() + ChatColor.GREEN + " Gem(s)");
+        meta.setDisplayName(getPlayerGems(uuid) + ChatColor.BOLD.toString() + ChatColor.GREEN + " GEM(s)");
         ArrayList<String> lore = new ArrayList<>();
-        lore.add(ChatColor.GREEN.toString() + "Left Click to withdraw Raw Gems.");
-        lore.add(ChatColor.GREEN.toString() + "Right Click to create a Bank Note.");
+        lore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to withdraw " + ChatColor.GREEN.toString() + ChatColor.BOLD + "RAW GEMS");
+        lore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to create " + ChatColor.GREEN.toString() + ChatColor.BOLD + "A GEM NOTE");
         meta.setLore(lore);
         bankItem.setItemMeta(meta);
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(bankItem);

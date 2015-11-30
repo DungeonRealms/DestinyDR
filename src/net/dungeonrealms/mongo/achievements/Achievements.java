@@ -192,8 +192,10 @@ public class Achievements {
         SEND_A_PM(25, "Send a private message", new String[]{}, 200, "achievement.send_a_pm"),
         U_WOT_MATE(26, "U Wot Mate?", new String[]{
                 "You just challenged Proxying to a duel, are you crazy?",
-        }, 400, "achievement.u_wot_mate");
-        ;
+        }, 400, "achievement.u_wot_mate"),
+        GUILD_INVITE_YOURSELF(27, "krazy kat.", new String[]{
+                "Invite yourself to your own ugild!",
+        }, 400, "achievement.krazy_kat"),;
 
         private int id;
         private String name;

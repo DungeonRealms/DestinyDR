@@ -54,14 +54,18 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
-import org.json.simple.JSONObject;
-import org.json.simple.JSONValue;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -233,27 +237,10 @@ public class API {
      * @return
      */
     public static UUID getUUIDFromName(String name) {
-        try {
-            URL url = new URL("https://api.mojang.com/users/profiles/minecraft/" + name + "?at=" + (System.currentTimeMillis() / 1000l));
-
-            Reader in = new InputStreamReader(url.openStream());
-            Object json = JSONValue.parse(in);
-
-            JSONObject object = (JSONObject) json;
-
-            String rawInput = (String) object.get("id");
-            StringBuilder input = new StringBuilder(rawInput);
-
-            input.insert(8, "-");
-            input.insert(13, "-");
-            input.insert(18, "-");
-            input.insert(23, "-");
-
-            return UUID.fromString(input.toString());
-        } catch (Exception ex) {
-            Utils.log.warning("[API] [getUUIDFromName] an invalid name has been inputted!");
+        if (Bukkit.getPlayer(name) != null) {
+            return Bukkit.getPlayer(name).getUniqueId();
         }
-        return null;
+        return UUIDHelper.getOfflineUUID(name);
     }
 
     /**
@@ -263,15 +250,10 @@ public class API {
      * @return
      */
     public static String getNameFromUUID(UUID uuid) {
-
-        NameFetcher fetcher = new NameFetcher(Collections.singletonList(uuid));
-
-        try {
-            return fetcher.call();
-        } catch (Exception e) {
-            e.printStackTrace();
+        if (Bukkit.getPlayer(uuid) != null) {
+            return Bukkit.getPlayer(uuid).getName();
         }
-        return "BOB";
+        return UUIDHelper.uuidToName(uuid.toString());
     }
 
     /**
@@ -527,8 +509,8 @@ public class API {
         player.setMaximumNoDamageTicks(0);
 
         player.sendMessage(new String[]{
-                "            " + ChatColor.WHITE.toString() + ChatColor.BOLD + "Dungeon Realms Patch " + ChatColor.AQUA.toString() + ChatColor.BOLD + String.valueOf(DungeonRealms.version),
-                ChatColor.GRAY + "               http://www.dungeonrealms.net/",
+                "               " + ChatColor.WHITE.toString() + ChatColor.BOLD + "Dungeon Realms Patch " + ChatColor.AQUA.toString() + ChatColor.BOLD + String.valueOf(DungeonRealms.version),
+                ChatColor.GRAY + "                http://www.dungeonrealms.net/",
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + " Use " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/logout " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "to safely change your server instance."
         });

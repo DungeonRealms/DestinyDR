@@ -199,7 +199,7 @@ public class ClickHandler {
                         }
                         if (nmsStack.getTag().hasKey("storageExpansion")) {
                             if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                            	player.getInventory().addItem(ItemManager.createItem(EnumItem.StorageExpansion));
+                                player.getInventory().addItem(ItemManager.createItem(EnumItem.StorageExpansion));
                                 player.sendMessage(ChatColor.GREEN + "You have purchased a Storage Expansion!");
                                 player.closeInventory();
                                 return;
