@@ -27,21 +27,21 @@ public class NPCMenus {
         inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.SADDLE), ChatColor.GREEN + "Old Horse Mount", new String[]{
                 ChatColor.RED + "Speed 120%",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "An old brown starter horse.",
-                ChatColor.AQUA + "5000 Gems"}).setNBTString("mountType", "T1HORSE").setNBTInt("mountCost", 5000).build());
-        inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.DIAMOND_BARDING), ChatColor.GREEN + "Traveler's Horse Mount", new String[]{
+                ChatColor.GREEN + "Price:" + ChatColor.WHITE + "5000g"}).setNBTString("mountType", "T1HORSE").setNBTInt("mountCost", 5000).build());
+        inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.DIAMOND_BARDING), ChatColor.AQUA + "Traveler's Horse Mount", new String[]{
                 ChatColor.RED + "Speed 140%",
                 ChatColor.RED + "Jump 110%",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "A well versed travelling companion.",
-                ChatColor.AQUA + "12500 Gems"}).setNBTString("mountType", "DIAMONDHORSE").setNBTInt("mountCost", 12500).build());
-        inv.setItem(2, new ItemBuilder().setItem(new ItemStack(Material.GOLD_BARDING), ChatColor.GREEN + "Knight's Horse Mount", new String[]{
+                ChatColor.GREEN + "Price:" + ChatColor.WHITE + "15000g"}).setNBTString("mountType", "DIAMONDHORSE").setNBTInt("mountCost", 12500).build());
+        inv.setItem(2, new ItemBuilder().setItem(new ItemStack(Material.GOLD_BARDING), ChatColor.GOLD + "Knight's Horse Mount", new String[]{
                 ChatColor.RED + "Speed 160%",
                 ChatColor.RED + "Jump 110%",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "A mount fit for even the best of adventurers.",
-                ChatColor.AQUA + "25000 Gems"}).setNBTString("mountType", "GOLDHORSE").setNBTInt("mountCost", 25000).build());
-        inv.setItem(9, new ItemBuilder().setItem(new ItemStack(Material.CHEST), ChatColor.GREEN + "Storage Mule", new String[]{
-                ChatColor.RED + "Storage 120%",
-                ChatColor.RED + "Coolness 220%",
-                ChatColor.AQUA + "15000 Gems"}).setNBTString("mountType", "MULE").setNBTInt("mountCost", 15000).build());
+                ChatColor.GREEN + "Price:" + ChatColor.WHITE + "35000g"}).setNBTString("mountType", "GOLDHORSE").setNBTInt("mountCost", 25000).build());
+        inv.setItem(9, new ItemBuilder().setItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Storage Mule", new String[]{
+                ChatColor.RED + "Storage Size: 9 Items",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "An old worn-out storage mule.",
+                ChatColor.GREEN + "Price:" + ChatColor.WHITE + "15000g"}).setNBTString("mountType", "MULE").setNBTInt("mountCost", 15000).build());
         player.openInventory(inv);
     }
 
