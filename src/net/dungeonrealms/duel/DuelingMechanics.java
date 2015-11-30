@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
+import net.dungeonrealms.mongo.achievements.AchievementManager;
+import net.dungeonrealms.mongo.achievements.Achievements;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -47,11 +49,13 @@ public class DuelingMechanics {
 			return;
 		}
 
-		if (Boolean
-		        .valueOf((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DUEL, requested.getUniqueId()))) {
+		if (Boolean.valueOf((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DUEL, requested.getUniqueId()))) {
 			pending.put(sender.getUniqueId(), requested.getUniqueId());
 			cooldown.add(sender.getUniqueId());
 			sender.sendMessage(ChatColor.GREEN + "Duel request sent!");
+			if (requested.getUniqueId().toString().equals("f8740cbf-e6c7-43ef-830a-ac3923936b3c")) {
+				Achievements.getInstance().giveAchievement(sender.getUniqueId(), Achievements.EnumAchievements.U_WOT_MATE);
+			}
 			requested.sendMessage(ChatColor.YELLOW + "Duel request received from " + sender.getName() + "");
 			requested.sendMessage(ChatColor.YELLOW + "Shift Right click the player and choose duel to accept");
 			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {

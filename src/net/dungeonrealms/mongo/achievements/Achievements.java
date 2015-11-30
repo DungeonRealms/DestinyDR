@@ -188,9 +188,11 @@ public class Achievements {
         PLAY_WITH_XFINITYPRO(23, "Play with xFinityPro", new String[]{
                 "Congratulations! You've been granted the privilege to play on the same server as xFinityPro!",
         }, 450, "achievement.play_with_xfinitypro"),
-
         MESSAGE_YOURSELF(24, "Message yourself", new String[]{}, 640, "achievement.message_your_self"),
-        SEND_A_PM(25, "Send a private message", new String[]{}, 200, "achievement.send_a_pm");
+        SEND_A_PM(25, "Send a private message", new String[]{}, 200, "achievement.send_a_pm"),
+        U_WOT_MATE(26, "U Wot Mate?", new String[]{
+                "You just challenged Proxying to a duel, are you crazy?",
+        }, 400, "achievement.u_wot_mate");
         ;
 
         private int id;

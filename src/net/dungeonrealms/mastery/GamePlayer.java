@@ -8,6 +8,7 @@ import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.party.Affair;
+import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.stats.PlayerStats;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -204,9 +205,10 @@ public class GamePlayer {
     public void addExperience(double experienceToAdd) {
         int level = getLevel();
         double experience = getExperience();
-
         if (level >= 64) return;
-
+        if (!Rank.getInstance().getRank(T.getUniqueId()).getName().equalsIgnoreCase("SUB")) {
+            experienceToAdd *= 1.1;
+        }
         double futureExperience = experience + experienceToAdd;
         int xpNeeded = getEXPNeeded(level);
         if (futureExperience >= xpNeeded) {
@@ -217,8 +219,9 @@ public class GamePlayer {
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(T, getPlayerAlignment().getAlignmentColor(), (level + 1));
         } else {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, futureExperience, true);
-            if((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId()))
-            		T.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "+ " + ChatColor.GREEN + Math.round(experienceToAdd) + " EXP");
+            if((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
+                T.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "+ " + ChatColor.GREEN + Math.round(experienceToAdd) + " EXP");
+            }
         }
 
     }
