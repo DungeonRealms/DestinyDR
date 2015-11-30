@@ -206,93 +206,9 @@ public class DungeonRealms extends JavaPlugin {
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
             Bukkit.broadcastMessage(ChatColor.RED + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.YELLOW + "A SCHEDULED RESET WILL TAKE PLACE IN 5 MINUTES");
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                Bukkit.shutdown();
-            }, 6000);
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 6000);
         }, 570000);
 
-        {
-            {
-                {
-                    {
-                        {
-                            {
-                                {
-                                    {
-                                        {
-                                            {
-                                                {
-                                                    {
-                                                        {
-                                                            {
-                                                                {
-                                                                    {
-                                                                        {
-                                                                            {
-                                                                                {
-                                                                                    {
-                                                                                        {
-                                                                                            {
-                                                                                                {
-                                                                                                    {
-                                                                                                        {
-                                                                                                            {
-                                                                                                                {
-                                                                                                                    {
-                                                                                                                        {
-                                                                                                                            {
-                                                                                                                                {
-                                                                                                                                    {
-                                                                                                                                        {
-                                                                                                                                            {
-                                                                                                                                                {
-                                                                                                                                                    {
-                                                                                                                                                        {
-                                                                                                                                                            {
-                                                                                                                                                                {
-                                                                                                                                                                    int i = 2;
-                                                                                                                                                                    if (i < 2) {
-                                                                                                                                                                        Bukkit.shutdown();
-                                                                                                                                                                    }
-                                                                                                                                                                }
-                                                                                                                                                            }
-                                                                                                                                                        }
-                                                                                                                                                    }
-                                                                                                                                                }
-                                                                                                                                            }
-                                                                                                                                        }
-                                                                                                                                    }
-                                                                                                                                }
-                                                                                                                            }
-                                                                                                                        }
-                                                                                                                    }
-                                                                                                                }
-                                                                                                            }
-                                                                                                        }
-                                                                                                    }
-                                                                                                }
-                                                                                            }
-                                                                                        }
-                                                                                    }
-                                                                                }
-                                                                            }
-                                                                        }
-                                                                    }
-                                                                }
-                                                            }
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            }
-        }
 
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         this.hasFinishedSetup = true;
