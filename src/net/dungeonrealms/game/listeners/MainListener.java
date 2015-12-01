@@ -446,7 +446,8 @@ public class MainListener implements Listener {
         if (event.getState().equals(State.FISHING)) {
             Location loc = Fishing.getInstance().getFishingSpot(event.getPlayer().getLocation());
             if (loc == null) {
-                event.getPlayer().sendMessage("You must be near a fishing spot to cast");
+                event.getPlayer().sendMessage(ChatColor.RED + "There are " + ChatColor.UNDERLINE + "no" + ChatColor.RED + " populated fishing spots near this location.");
+                event.getPlayer().sendMessage(ChatColor.GRAY + "Look for particles above water blocks to signify active fishing spots.");
                 event.setCancelled(true);
             }
         } else {
@@ -673,7 +674,6 @@ public class MainListener implements Listener {
         if (!(event.getRightClicked() instanceof Horse)) return;
         Horse horse = (Horse) event.getRightClicked();
         event.setCancelled(true);
-        Utils.log.info(horse.getVariant().name());
         if (horse.getVariant() != Variant.MULE) return;
         if (horse.getOwner() == null) {
             horse.remove();
