@@ -410,13 +410,13 @@ public class BlockListener implements Listener {
                     event.setCancelled(true);
                     event.getPlayer().sendMessage(ChatColor.RED + "Sorry, you've tried to enter a null realm. Attempting to remove it!");
                     Instance.getInstance().removeRealmViaPortalLocation(event.getFrom());
-                    event.getFrom().getBlock().setType(Material.AIR);
+                    /*event.getFrom().getBlock().setType(Material.AIR);
                     if (event.getFrom().subtract(0, 1, 0).getBlock().getType() == Material.PORTAL) {
                         event.getFrom().getBlock().setType(Material.AIR);
                     }
                     if (event.getFrom().add(0, 2, 0).getBlock().getType() == Material.PORTAL) {
                         event.getFrom().getBlock().setType(Material.AIR);
-                    }
+                    }*/
                 }
             } else {
                 event.setCancelled(true);

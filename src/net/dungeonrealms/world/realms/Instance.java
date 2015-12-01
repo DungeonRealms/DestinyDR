@@ -519,9 +519,7 @@ public class Instance implements GenericMechanic, Listener {
      * @since 1.0
      */
     public void removeRealmViaPortalLocation(Location location) {
-        CURRENT_REALMS.stream().filter(realmObject -> location.distanceSquared(realmObject.getLocation()) <= 4).forEach(realmObject -> {
-            removeRealm(realmObject, false);
-        });
+        CURRENT_REALMS.stream().filter(realmObject -> location.distanceSquared(realmObject.getLocation()) <= 4).forEach(realmObject -> removeRealm(realmObject, false));
     }
 
 

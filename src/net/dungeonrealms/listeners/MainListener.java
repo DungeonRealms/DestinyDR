@@ -51,6 +51,8 @@ import org.bukkit.event.world.ChunkUnloadEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.Random;
 import java.util.UUID;
@@ -109,6 +111,7 @@ public class MainListener implements Listener {
         Player player = event.getPlayer();
         player.getInventory().clear();
         player.setGameMode(GameMode.ADVENTURE);
+        player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 4));
         player.teleport(new Location(Bukkit.getWorlds().get(0), 0, 0, 0, 0f, 0f));
         BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.GREEN.toString() + ChatColor.BOLD + "Fetching Data...");
         ItemStack[] armor = player.getInventory().getArmorContents();
