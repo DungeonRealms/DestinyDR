@@ -1,11 +1,14 @@
 package net.dungeonrealms.listeners;
 
 import com.connorlinfoot.bountifulapi.BountifulAPI;
+import com.mongodb.client.result.UpdateResult;
+import com.vexsoftware.votifier.model.VotifierEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.chat.Chat;
 import net.dungeonrealms.combat.CombatLog;
+import net.dungeonrealms.core.Callback;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.duel.DuelOffer;
 import net.dungeonrealms.duel.DuelingMechanics;
@@ -20,6 +23,7 @@ import net.dungeonrealms.inventory.NPCMenus;
 import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
+import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.mongo.achievements.Achievements;
 import net.dungeonrealms.profession.Fishing;
 import net.dungeonrealms.teleportation.Teleportation;
@@ -61,6 +65,28 @@ import java.util.UUID;
  * Created by Nick on 9/17/2015.
  */
 public class MainListener implements Listener {
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onVote(VotifierEvent event) {
+        if (Bukkit.getPlayer(event.getVote().getUsername()) != null) {
+            Player player = Bukkit.getPlayer(event.getVote().getUsername());
+            player.sendMessage(ChatColor.GREEN + "You have received: " + ChatColor.LIGHT_PURPLE + "30 E-CASH " + ChatColor.GREEN + " for voting!");
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 30, true, new Callback<UpdateResult>(UpdateResult.class) {
+                @Override
+                public void callback(Throwable failCause, UpdateResult result) {
+                    if (result.wasAcknowledged()) {
+                        player.sendMessage(ChatColor.GREEN + "You have received: " + ChatColor.LIGHT_PURPLE + "30 E-CASH " + ChatColor.GREEN + " for voting!");
+                        Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
+                    }
+                }
+            });
+        } else {
+            /*
+            Server received vote and player is null?
+             */
+            DatabaseAPI.getInstance().update(UUID.fromString(event.getVote().getUsername()), EnumOperators.$INC, EnumData.ECASH, 30, false);
+        }
+    }
 
     @EventHandler
     public void onPm(PlayerMessagePlayerEvent event) {
@@ -408,6 +434,7 @@ public class MainListener implements Listener {
             TutorialIslandHandler.getInstance().giveStarterKit(event.getPlayer());
         }
     }
+
     /**
      * Handle players catching fish, gives them exp/fish
      *
