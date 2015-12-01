@@ -8,19 +8,15 @@ import net.dungeonrealms.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.entities.types.monsters.Monster;
 import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.ItemGenerator;
-import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.miscellaneous.RandomHelper;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
-
-import java.lang.reflect.Field;
 
 /**
  * Created by Chase on Sep 19, 2015

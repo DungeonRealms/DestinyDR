@@ -245,7 +245,7 @@ public class Mining implements GenericMechanic {
             nms.getTag().setInt("itemTier", nms.getTag().getInt("itemTier") + 1);
 			pick = CraftItemStack.asBukkitCopy(nms);
 			ItemMeta meta = pick.getItemMeta();
-			ArrayList<String> lore = new ArrayList<String>();
+			ArrayList<String> lore = new ArrayList<>();
 	        String expBar = ChatColor.RED + "||||||||||" + "||||||||||" + "||||||||||";
 	        lore.add(ChatColor.GRAY.toString() + "Level: " + ChatColor.WHITE.toString() + lvl);
 	        lore.add(ChatColor.WHITE.toString() + 0 + ChatColor.GRAY + "/" + ChatColor.GRAY + Mining.getEXPNeeded(lvl));

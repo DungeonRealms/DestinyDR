@@ -1,7 +1,6 @@
 package net.dungeonrealms.shops;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.UUID;
 
@@ -20,11 +19,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-import com.google.common.collect.Lists;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.mastery.ItemSerialization;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;

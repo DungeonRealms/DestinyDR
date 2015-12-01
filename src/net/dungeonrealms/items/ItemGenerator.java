@@ -24,6 +24,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/19/2015.
@@ -453,10 +454,7 @@ public class ItemGenerator {
         List<String> itemLore = new ArrayList<>();
         
         if(meta.getLore() != null)
-        for(String lore : meta.getLore()){
-        	if(lore.startsWith(ChatColor.WHITE + "Damage: "))
-        		itemLore.add(lore);
-        }
+            itemLore.addAll(meta.getLore().stream().filter(lore -> lore.startsWith(ChatColor.WHITE + "Damage: ")).collect(Collectors.toList()));
         HashMap<Item.AttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
         ItemType type = attribute.getItemType();
         attributeTypes.stream().filter(aType -> aType != null && aType != AttributeType.DAMAGE).forEach(aType -> {
@@ -499,10 +497,7 @@ public class ItemGenerator {
             EquipmentType type = attribute.getArmorType();
             int modifierID = nmsStack.getTag().getInt("armorModifier");
             if(meta.getLore() != null)
-                for(String lore : meta.getLore()){
-                	if(lore.contains("Health Points") || lore.contains("Health Regen") || lore.contains("Energy Regen"))
-                		itemLore.add(lore);
-                }
+                itemLore.addAll(meta.getLore().stream().filter(lore -> lore.contains("Health Points") || lore.contains("Health Regen") || lore.contains("Energy Regen")).collect(Collectors.toList()));
                 
             
             

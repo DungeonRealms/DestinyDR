@@ -646,7 +646,7 @@ public class ItemManager {
     public static ItemStack createCharacterJournal(Player p) {
         ItemStack stack = createItem(Material.WRITTEN_BOOK, ChatColor.GREEN.toString() + ChatColor.BOLD + "Character Journal", new String[]{ChatColor.GREEN + "Left Click: " + ChatColor.GRAY + "Invite to Party", ChatColor.GREEN + "Sneak-Left Click: " + ChatColor.GRAY + "Setup Shop"});
         BookMeta bm = (BookMeta) stack.getItemMeta();
-        List<String> pages = new ArrayList<String>();
+        List<String> pages = new ArrayList<>();
         String page1_string = "";
         String page2_string = "";
         String page3_string = "";

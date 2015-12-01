@@ -17,7 +17,6 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.chat.GameChat;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.items.Item.ItemTier;
-import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.Armor.ArmorTier;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mechanics.ItemManager;
@@ -272,9 +271,7 @@ public class DuelOffer {
 		this.getPlayer2().teleport(centerPoint);
 		this.getPlayer1().sendMessage(ChatColor.YELLOW + "Battle begins in 10 seconds!");
 		this.getPlayer2().sendMessage(ChatColor.YELLOW + "Battle begins in 10 seconds!");
-		 timerID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-		checkArmorAndWeapon();
-		}, 0, 10);
+		 timerID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), this::checkArmorAndWeapon, 0, 10);
 		Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
 			canFight = true;
 			this.getPlayer1().sendMessage(ChatColor.YELLOW + "Fight!");

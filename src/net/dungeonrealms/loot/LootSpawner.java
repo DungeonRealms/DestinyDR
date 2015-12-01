@@ -1,6 +1,5 @@
 package net.dungeonrealms.loot;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Random;
 
@@ -13,11 +12,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.items.Item.ItemTier;
-import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.loot.types.LootType;
 import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.ItemManager;
 
 /**
  * Created by Chase on Oct 9, 2015

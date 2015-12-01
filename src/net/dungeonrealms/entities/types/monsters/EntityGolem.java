@@ -1,9 +1,7 @@
 package net.dungeonrealms.entities.types.monsters;
 
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import net.dungeonrealms.entities.EnumEntityType;
 import net.dungeonrealms.entities.types.monsters.base.DRZombie;
-import net.dungeonrealms.items.ItemGenerator;
 import net.minecraft.server.v1_8_R3.World;
 
 /**

@@ -53,7 +53,7 @@ public class BankListener implements Listener {
             			e.getPlayer().sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.YELLOW + "Collection Bin emptied once you open it.");
             			e.getPlayer().sendMessage(ChatColor.YELLOW + "Open your chest again once you're ready to empty your collection bin.");
             			e.setCancelled(true);
-            			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{prompted.remove(e.getPlayer().getUniqueId());}, 100);
+            			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()-> prompted.remove(e.getPlayer().getUniqueId()), 100);
             			return;
             		}
             		e.getPlayer().openInventory(storage.collection_bin);
@@ -249,14 +249,14 @@ public class BankListener implements Listener {
                             ItemStack accept = new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData());
                             ItemMeta acceptMeta = accept.getItemMeta();
                             acceptMeta.setDisplayName(ChatColor.GREEN.toString() + ChatColor.BOLD + "ACCEPT");
-                            acceptMeta.setLore(Arrays.asList(new String[] {ChatColor.GRAY + "Upgrade storage: " + ChatColor.GREEN.toString() + num +"g"}));
+                            acceptMeta.setLore(Arrays.asList(ChatColor.GRAY + "Upgrade storage: " + ChatColor.GREEN.toString() + num +"g"));
                             accept.setItemMeta(acceptMeta);
                             
                             
                             ItemStack deny = new ItemStack(Material.WOOL, 1, DyeColor.RED.getData());
                             ItemMeta denyMeta = deny.getItemMeta();
                             denyMeta.setDisplayName(ChatColor.RED.toString() + ChatColor.BOLD + "DENY");
-                            denyMeta.setLore(Arrays.asList(new String[] {ChatColor.GRAY + "Cancel upgrade"}));
+                            denyMeta.setLore(Arrays.asList(ChatColor.GRAY + "Cancel upgrade"));
                             deny.setItemMeta(denyMeta);
                             
                             inv.setItem(3, accept);

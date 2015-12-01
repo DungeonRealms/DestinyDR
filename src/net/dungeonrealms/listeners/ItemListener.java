@@ -180,7 +180,7 @@ public class ItemListener implements Listener {
 				stack.setItemMeta(meta);
 				gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
 				event.getPlayer().sendMessage("Opening stat reset confirmation...");
-				Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> gui.open(), 100L);
+				Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), gui::open, 100L);
     		}
     	} else if (event.getItem().getType() == Material.ENDER_CHEST ){
     		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());

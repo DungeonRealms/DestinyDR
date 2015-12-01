@@ -103,7 +103,7 @@ public class Entities implements GenericMechanic {
 		nmsUtils.registerEntity("PetSnowman", 97, EntitySnowman.class, Snowman.class);
 		nmsUtils.registerEntity("MountEnderDragon", 63, EntityEnderDragon.class, EnderDragon.class);
 
-		Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> checkForLeashedMobs(), 0,
+		Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::checkForLeashedMobs, 0,
 		        20L);
 	}
 

@@ -41,9 +41,7 @@ public class ShopMechanics implements GenericMechanic{
 	}
 
 	public static void deleteAllShops() {
-		for (Shop shop : ALLSHOPS.values()) {
-			shop.deleteShop();
-		}
+		ALLSHOPS.values().forEach(net.dungeonrealms.shops.Shop::deleteShop);
 		Bukkit.getWorlds().get(0).save();
 	}
 

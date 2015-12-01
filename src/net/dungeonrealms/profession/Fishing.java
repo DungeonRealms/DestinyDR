@@ -196,7 +196,7 @@ public class Fishing implements GenericMechanic {
 		if(RandomHelper.getRandomNumberBetween(1, 100) <= 30){
 			String[] list = new String[]{"HP Regen", "Energy Regen"};
 	    	buff = list[RandomHelper.getRandomNumberBetween(0, list.length - 1)];
-			ArrayList<String> lore = new ArrayList<String>();
+			ArrayList<String> lore = new ArrayList<>();
 			lore.add(ChatColor.GREEN + "+ " + ChatColor.RED + buff);
 			meta.setLore(lore);
 		}
@@ -225,7 +225,7 @@ public class Fishing implements GenericMechanic {
 		//TODO: Chase fix this EXP system. Based on the tier of the FISH, not the pickaxe.
 		nms.getTag().setInt("XP", xp);
 		ItemMeta meta = stack.getItemMeta();
-        ArrayList<String> lore = new ArrayList<String>();
+        ArrayList<String> lore = new ArrayList<>();
         String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
         double percentDone = 100.0 * xp / maxXP;
         double percentDoneDisplay = (percentDone / 100) * 50.0D;

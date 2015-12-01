@@ -4,13 +4,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 
-import net.dungeonrealms.mongo.achievements.AchievementManager;
 import net.dungeonrealms.mongo.achievements.Achievements;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mastery.Utils;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.md_5.bungee.api.ChatColor;
@@ -49,7 +47,7 @@ public class DuelingMechanics {
 			return;
 		}
 
-		if (Boolean.valueOf((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DUEL, requested.getUniqueId()))) {
+		if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DUEL, requested.getUniqueId())) {
 			pending.put(sender.getUniqueId(), requested.getUniqueId());
 			cooldown.add(sender.getUniqueId());
 			sender.sendMessage(ChatColor.GREEN + "Duel request sent!");

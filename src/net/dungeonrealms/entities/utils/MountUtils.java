@@ -1,14 +1,20 @@
 package net.dungeonrealms.entities.utils;
 
-import java.util.UUID;
-import java.util.concurrent.ConcurrentHashMap;
-
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.entities.EnumEntityType;
+import net.dungeonrealms.entities.types.mounts.EnumMounts;
+import net.dungeonrealms.entities.types.mounts.Horse;
+import net.dungeonrealms.mastery.ItemSerialization;
+import net.dungeonrealms.mastery.MetadataUtils;
+import net.dungeonrealms.mongo.DatabaseAPI;
+import net.dungeonrealms.mongo.EnumData;
+import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.entity.AnimalTamer;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse.Variant;
 import org.bukkit.entity.Player;
@@ -18,17 +24,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.entities.EnumEntityType;
-import net.dungeonrealms.entities.types.mounts.EnumMounts;
-import net.dungeonrealms.entities.types.mounts.Horse;
-import net.dungeonrealms.mastery.ItemSerialization;
-import net.dungeonrealms.mastery.MetadataUtils;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.EnumData;
-import net.minecraft.server.v1_8_R3.World;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Kieran on 9/18/2015.
@@ -128,7 +125,7 @@ public class MountUtils {
                 h.setTamed(true);
                 h.setLeashHolder(player);
                 
-                h.setOwner((AnimalTamer) player);
+                h.setOwner(player);
                 h.setColor(org.bukkit.entity.Horse.Color.BROWN);
             	MetadataUtils.registerEntityMetadata(((CraftEntity)h).getHandle(), EnumEntityType.MOUNT, 0, 0);
             	h.setCustomName(player.getName() + "'s Storage Mule");

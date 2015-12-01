@@ -349,7 +349,7 @@ public class API {
         }
         PlayerInventory inv = player.getInventory();
 
-        ArrayList<String> armor = new ArrayList<String>();
+        ArrayList<String> armor = new ArrayList<>();
         for (ItemStack itemStack : player.getInventory().getArmorContents()) {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
                 armor.add("null");

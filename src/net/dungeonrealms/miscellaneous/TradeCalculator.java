@@ -4,7 +4,6 @@ import net.dungeonrealms.banks.BankMechanics;
 import net.dungeonrealms.items.repairing.RepairAPI;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.profession.Mining;
-import net.dungeonrealms.world.glyph.Glyph;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -287,7 +286,7 @@ public class TradeCalculator {
                 merchant_offer.add(pouch);
             }
 
-            int payout = t2_ore * 1;
+            int payout = t2_ore;
             while (payout > 64) {
                 payout -= 64;
                 ItemStack scrap = ItemManager.createArmorScrap(2);

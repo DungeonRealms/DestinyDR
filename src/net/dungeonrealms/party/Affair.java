@@ -136,7 +136,7 @@ public class Affair implements GenericMechanic {
     }
 
     public void createParty(Player player) {
-        _parties.add(new AffairO(player, new ArrayList<Player>()));
+        _parties.add(new AffairO(player, new ArrayList<>()));
         player.sendMessage(ChatColor.GREEN + "Your party has been created!");
     }
 

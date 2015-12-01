@@ -44,9 +44,7 @@ public class CommandPChat extends BasicCommand {
                     everyone.addAll(party.getMembers());
                 }
 
-                everyone.stream().forEach(player1 -> {
-                    player1.sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + player.getName() + ": " + ChatColor.WHITE + message.toString());
-                });
+                everyone.stream().forEach(player1 -> player1.sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + player.getName() + ": " + ChatColor.WHITE + message.toString()));
             } else {
                 player.sendMessage(ChatColor.RED + "/pchat <message>");
             }

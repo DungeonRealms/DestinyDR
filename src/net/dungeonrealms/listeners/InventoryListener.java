@@ -54,6 +54,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -652,10 +653,7 @@ public class InventoryListener implements Listener {
             List<String> itemLore = new ArrayList<>();
             itemLore.add(ItemGenerator.setCorrectItemLore(AttributeType.DAMAGE, finalDmg, att.getItemTier().getTierId()));
 
-            for (String current : lore) {
-                if (!current.startsWith(ChatColor.WHITE + "Damage:"))
-                    itemLore.add(current);
-            }
+            itemLore.addAll(lore.stream().filter(current -> !current.startsWith(ChatColor.WHITE + "Damage:")).collect(Collectors.toList()));
             nmsItem.getTag().setInt("enchant", amount + 1);
             nmsItem.getTag().setInt("damage", finalDmg);
             ItemStack newItem = CraftItemStack.asBukkitCopy(nmsItem);

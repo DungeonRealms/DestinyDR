@@ -53,28 +53,24 @@ public class RiftPortal implements GenericMechanic, Listener {
     @Override
     public void startInitialization() {
 
-        DungeonRealms.getInstance().getConfig().getStringList("riftPortal").stream().forEach(portal -> {
-            addPortal(Integer.valueOf(portal.split(",")[0]),
-                    new Location(Bukkit.getWorlds().get(0),
-                            Double.valueOf(portal.split(",")[1])
-                            , Double.valueOf(portal.split(",")[2])
-                            , Double.valueOf(portal.split(",")[3])));
-        });
+        DungeonRealms.getInstance().getConfig().getStringList("riftPortal").stream().forEach(portal -> addPortal(Integer.valueOf(portal.split(",")[0]),
+                new Location(Bukkit.getWorlds().get(0),
+                        Double.valueOf(portal.split(",")[1])
+                        , Double.valueOf(portal.split(",")[2])
+                        , Double.valueOf(portal.split(",")[3]))));
 
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             /*
             Tell player when they've entered the area of the rift portal.
              */
-            Bukkit.getOnlinePlayers().stream().forEach(player -> {
-                _riftPortals.stream().forEach(portal -> {
-                    if (!portal.getLocation().getWorld().equals(player.getLocation().getWorld())) return;
-                    if (portal.getLocation().distanceSquared(player.getLocation()) < 175) {
-                        portal.addParticipating(player);
-                        portal.loadRift();
-                    }
-                });
-            });
+            Bukkit.getOnlinePlayers().stream().forEach(player -> _riftPortals.stream().forEach(portal -> {
+                if (!portal.getLocation().getWorld().equals(player.getLocation().getWorld())) return;
+                if (portal.getLocation().distanceSquared(player.getLocation()) < 175) {
+                    portal.addParticipating(player);
+                    portal.loadRift();
+                }
+            }));
 
             /*
             Remove players from participating list if they're out of range!
@@ -158,13 +154,11 @@ public class RiftPortal implements GenericMechanic, Listener {
 
     @Override
     public void stopInvocation() {
-        _riftPortals.stream().forEach(portal -> {
-            portal.getMobs().stream().forEach(entity -> {
-                if (entity.isAlive()) {
-                    entity.getBukkitEntity().remove();
-                }
-            });
-        });
+        _riftPortals.stream().forEach(portal -> portal.getMobs().stream().forEach(entity -> {
+            if (entity.isAlive()) {
+                entity.getBukkitEntity().remove();
+            }
+        }));
     }
 
 
@@ -234,9 +228,7 @@ public class RiftPortal implements GenericMechanic, Listener {
         }
 
         public void invokeParticles() {
-            getCircle(getLocation(), 2, 40).stream().forEach(location -> {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.PORTAL, location, 0, 0, 0, 0.2f, 30);
-            });
+            getCircle(getLocation(), 2, 40).stream().forEach(location -> ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.PORTAL, location, 0, 0, 0, 0.2f, 30));
         }
 
         public void unloadRift() {
@@ -264,9 +256,7 @@ public class RiftPortal implements GenericMechanic, Listener {
                     EntityStats.setMonsterRandomStats(entity, level, getTier());
                     _mobs.add(entity);
                 }
-                API.getNearbyPlayers(getLocation(), 40).stream().forEach(player -> {
-                    player.sendMessage(ChatColor.GREEN + "A rift shard is appearing near you!");
-                });
+                API.getNearbyPlayers(getLocation(), 40).stream().forEach(player -> player.sendMessage(ChatColor.GREEN + "A rift shard is appearing near you!"));
                 spawnMobs();
             }
         }
@@ -298,7 +288,7 @@ public class RiftPortal implements GenericMechanic, Listener {
     public ArrayList<Location> getCircle(Location center, double radius, int amount) {
         World world = center.getWorld();
         double increment = (2 * Math.PI) / amount;
-        ArrayList<Location> locations = new ArrayList<Location>();
+        ArrayList<Location> locations = new ArrayList<>();
         for (int i = 0; i < amount; i++) {
             double angle = i * increment;
             double x = center.getX() + (radius * Math.cos(angle));

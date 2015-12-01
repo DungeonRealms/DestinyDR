@@ -973,12 +973,8 @@ public class ClickHandler {
                                                         meta.setDisplayName("Use your ONE stat points reset?");
                                                         stack.setItemMeta(meta);
                                                         gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
-                                                        Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-                                                            player.sendMessage("Opening stat reset confirmation");
-                                                        }, 0, 20 * 3);
-                                                        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                                                            gui.open();
-                                                        }, 20 * 5);
+                                                        Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> player.sendMessage("Opening stat reset confirmation"), 0, 20 * 3);
+                                                        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), gui::open, 20 * 5);
                                                     } else {
                                                         player.sendMessage(ChatColor.RED + "You have already used your free stat reset for your character.");
                                                         player.sendMessage(ChatColor.YELLOW + "You may purchase more resets from the E-Cash vendor!.");
