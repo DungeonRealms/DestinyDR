@@ -487,22 +487,22 @@ public class ItemManager {
                 break;
             case 2:
                 rawStack = new ItemStack(Material.STONE_PICKAXE);
-                name = ChatColor.GREEN.toString() + ChatColor.BOLD + "Expert Pickaxe";
+                name = ChatColor.GREEN.toString() + "Expert Pickaxe";
                 lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of cave stone.");
                 break;
             case 3:
                 rawStack = new ItemStack(Material.IRON_PICKAXE);
-                name = ChatColor.AQUA.toString() + ChatColor.BOLD + "Expert Pickaxe";
+                name = ChatColor.AQUA.toString() + "Expert Pickaxe";
                 lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of forged iron.");
                 break;
             case 4:
                 rawStack = new ItemStack(Material.DIAMOND_PICKAXE);
-                name = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Supreme Pickaxe";
+                name = ChatColor.LIGHT_PURPLE.toString() + "Supreme Pickaxe";
                 lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of hardened diamond.");
                 break;
             case 5:
                 rawStack = new ItemStack(Material.GOLD_PICKAXE);
-                name = ChatColor.YELLOW.toString() + ChatColor.BOLD + "Master Pickaxe";
+                name = ChatColor.YELLOW.toString() + "Master Pickaxe";
                 lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of reinforced gold.");
                 break;
             default:
