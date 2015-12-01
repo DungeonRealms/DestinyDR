@@ -287,8 +287,8 @@ public class InventoryListener implements Listener {
                     } else {
                         int hpGain = HealthHandler.getInstance().getVitalityValueOfArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getNewArmorPiece()));
                         int hpRegenGain = HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getNewArmorPiece()));
-                        player.sendMessage(ChatColor.GREEN + "HP +" + hpGain + ChatColor.YELLOW + " NEW HP [" + (HealthHandler.getInstance().getPlayerHPLive(player)) + "/" + (HealthHandler.getInstance().getPlayerMaxHPLive(player)) + "HP]");
-                        player.sendMessage(ChatColor.GREEN + "HP/s +" + hpRegenGain + ChatColor.YELLOW + " NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player)) + "HP/s]");
+                        player.sendMessage(ChatColor.GREEN + "HP +" + hpGain + " NEW HP [" + (HealthHandler.getInstance().getPlayerHPLive(player)) + "/" + (HealthHandler.getInstance().getPlayerMaxHPLive(player)) + "HP]");
+                        player.sendMessage(ChatColor.GREEN + "HP/s +" + hpRegenGain + " NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player)) + "HP/s]");
                     }
                 }
             }, 10L);
@@ -315,8 +315,8 @@ public class InventoryListener implements Listener {
                 } else {
                     int hpGain = HealthHandler.getInstance().getVitalityValueOfArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getNewArmorPiece()));
                     int hpRegenGain = HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getNewArmorPiece()));
-                    player.sendMessage(ChatColor.GREEN + "HP +" + hpGain + ChatColor.YELLOW + " NEW HP [" + HealthHandler.getInstance().getPlayerHPLive(player) + "/" + (HealthHandler.getInstance().getPlayerMaxHPLive(player) + hpGain) + "HP]");
-                    player.sendMessage(ChatColor.GREEN + "HP/s +" + hpRegenGain + ChatColor.YELLOW + " NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player) + hpRegenGain) + "HP/s]");
+                    player.sendMessage(ChatColor.GREEN + "HP +" + hpGain + " NEW HP [" + HealthHandler.getInstance().getPlayerHPLive(player) + "/" + (HealthHandler.getInstance().getPlayerMaxHPLive(player) + hpGain) + "HP]");
+                    player.sendMessage(ChatColor.GREEN + "HP/s +" + hpRegenGain + " NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player) + hpRegenGain) + "HP/s]");
                 }
             }
             player.sendMessage(ChatColor.RED + "Your stats will not be updated until you exit combat!");
