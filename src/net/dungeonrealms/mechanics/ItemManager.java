@@ -482,28 +482,28 @@ public class ItemManager {
         switch (tier) {
             case 1:
                 rawStack = new ItemStack(Material.WOOD_PICKAXE);
-                name = ChatColor.WHITE + "Novice Pick";
-                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pick made out of sturdy Wood");
+                name = ChatColor.WHITE + "Novice Pickaxe";
+                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of sturdy wood.");
                 break;
             case 2:
                 rawStack = new ItemStack(Material.STONE_PICKAXE);
-                name = ChatColor.GREEN.toString() + ChatColor.BOLD + "Basic Pick";
-                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pick made out of Stone");
+                name = ChatColor.GREEN.toString() + ChatColor.BOLD + "Expert Pickaxe";
+                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of cave stone.");
                 break;
             case 3:
                 rawStack = new ItemStack(Material.IRON_PICKAXE);
-                name = ChatColor.AQUA.toString() + ChatColor.BOLD + "Intermediate Pick";
-                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pick made out of Iron");
+                name = ChatColor.AQUA.toString() + ChatColor.BOLD + "Expert Pickaxe";
+                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of forged iron.");
                 break;
             case 4:
                 rawStack = new ItemStack(Material.DIAMOND_PICKAXE);
-                name = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Strong Pick";
-                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pick made out of Diamond");
+                name = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Supreme Pickaxe";
+                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of hardened diamond.");
                 break;
             case 5:
                 rawStack = new ItemStack(Material.GOLD_PICKAXE);
-                name = ChatColor.YELLOW.toString() + ChatColor.BOLD + "Master Pick";
-                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pick made out of Gold");
+                name = ChatColor.YELLOW.toString() + ChatColor.BOLD + "Master Pickaxe";
+                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of reinforced gold.");
                 break;
             default:
                 break;
@@ -571,23 +571,23 @@ public class ItemManager {
         lore.add(ChatColor.GRAY.toString() + "Level: " + ChatColor.WHITE.toString() + lvl);
         lore.add(ChatColor.WHITE.toString() + 0 + ChatColor.GRAY + "/" + ChatColor.GRAY + Fishing.getMaxXP(lvl));
         lore.add(ChatColor.GRAY.toString() + "EXP: " + expBar);
-        lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made out of fine wood and thread");
+        lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made of wood and thread.");
 
         switch (tier) {
             case 1:
-                name = ChatColor.WHITE + "Novice Rod";
+                name = ChatColor.WHITE + "Basic Fishingrod";
                 break;
             case 2:
-                name = ChatColor.GREEN.toString() + ChatColor.BOLD + "Basic Rod";
+                name = ChatColor.GREEN.toString() + ChatColor.BOLD + "Basic Fishingrod";
                 break;
             case 3:
-                name = ChatColor.AQUA.toString() + ChatColor.BOLD + "Intermediate Rod";
+                name = ChatColor.AQUA.toString() + ChatColor.BOLD + "Advanced Fishingrod";
                 break;
             case 4:
-                name = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Strong Rod";
+                name = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Expert Fishingrod";
                 break;
             case 5:
-                name = ChatColor.YELLOW.toString() + ChatColor.BOLD + "Master Rod";
+                name = ChatColor.YELLOW.toString() + ChatColor.BOLD + "Master Fishingrod";
                 break;
             default:
                 break;
