@@ -117,6 +117,7 @@ public class NetworkAPI implements PluginMessageListener {
      * @since 1.0
      */
     public void sendAllGuildMessage(String guildName, String message) {
+        if (Bukkit.getOnlinePlayers().size() < 1) return;
         ArrayList<String> members = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, guildName);
         ArrayList<String> officers = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, guildName);
 
