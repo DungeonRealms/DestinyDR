@@ -283,7 +283,7 @@ public class InventoryListener implements Listener {
                     if (event.getNewArmorPiece().getType() == Material.AIR) {
                         int hpLoss = HealthHandler.getInstance().getVitalityValueOfArmor(event.getOldArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getOldArmorPiece()));
                         int hpRegenLoss = HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getOldArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getOldArmorPiece()));
-                        int energyRegenLoss = Math.round(EnergyHandler.getInstance().getIntellectValueOfArmor(event.getOldArmorPiece(), EnergyHandler.getInstance().getEnergyValueOfArmor(event.getOldArmorPiece()));
+                        int energyRegenLoss = Math.round(EnergyHandler.getInstance().getIntellectValueOfArmor(event.getOldArmorPiece(), EnergyHandler.getInstance().getEnergyValueOfArmor(event.getOldArmorPiece())));
                         player.sendMessage(ChatColor.RED + "HP -" + hpLoss + " NEW HP [" + (HealthHandler.getInstance().getPlayerHPLive(player)) + "/" + (HealthHandler.getInstance().getPlayerMaxHPLive(player)) + "HP]");
                         if (hpRegenLoss > 0) {
                             player.sendMessage(ChatColor.RED + "HP/s -" + hpRegenLoss + " NEW HP/s [" + HealthHandler.getInstance().getPlayerHPRegenLive(player) + "HP/s]");
