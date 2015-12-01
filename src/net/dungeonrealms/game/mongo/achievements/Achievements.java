@@ -196,7 +196,7 @@ public class Achievements {
                 "You just challenged Proxying to a duel, are you crazy?",
         }, 400, "achievement.u_wot_mate"),
 
-        GUILD_INVITE_YOURSELF(27, "krazy kat.", new String[]{
+        GUILD_INVITE_YOURSELF(27, "Krazy Kat.", new String[]{
                 "Invite yourself to your own guild!",
         }, 400, "achievement.krazy_kat"),
 
