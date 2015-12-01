@@ -662,7 +662,7 @@ public class ItemManager {
                 + " / " + gp.getPlayerMaxHP() + "" + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK.toString()
                 + "   " + gp.getStats().getDPS() + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
                 + "   " + (HealthHandler.getInstance().getPlayerHPRegenLive(p)) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n" + ChatColor.BLACK.toString() 
-                + "   " + EnergyHandler.getInstance().getPlayerEnergyRegenerationAmount(p.getUniqueId()) + " " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString() 
+                + "   " + EnergyHandler.getInstance().getPlayerEnergyPercentage(p.getUniqueId()) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString()
                 + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString() 
                 + "   " + gp.getPlayerLuck() + ChatColor.BOLD.toString() + " LUCK";
 
