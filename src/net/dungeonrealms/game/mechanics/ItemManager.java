@@ -575,7 +575,7 @@ public class ItemManager {
 
         switch (tier) {
             case 1:
-                name = ChatColor.WHITE + "Basic Fishingrod";
+                name = ChatColor.WHITE + "Novice Fishingrod";
                 break;
             case 2:
                 name = ChatColor.GREEN.toString() + "Basic Fishingrod";
