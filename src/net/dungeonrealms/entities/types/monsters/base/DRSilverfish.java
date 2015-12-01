@@ -27,8 +27,8 @@ public class DRSilverfish extends EntitySilverfish implements Monster{
 
 	public DRSilverfish(World world, EnumMonster type, int tier) {
 		super(world);
-        this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
-        this.goalSelector.a(5, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.0D, false));
+//        this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+//        this.goalSelector.a(5, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.0D, false));
 		this.enumMonster = type;
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(14d);
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);

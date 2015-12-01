@@ -219,6 +219,7 @@ public class BankListener implements Listener {
                                     }
                                 }
                                 BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
+                                player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + ChatColor.GREEN + size + ChatColor.BOLD + "G, New Balance: " + ChatColor.GREEN + size + size + " GEM(s)");
                                 ItemStack bankItem = new ItemStack(Material.EMERALD);
                                 ItemMeta meta = bankItem.getItemMeta();
                                 meta.setDisplayName(getPlayerGems(player.getUniqueId()) + size + ChatColor.BOLD.toString()
@@ -231,8 +232,6 @@ public class BankListener implements Listener {
                                 net.minecraft.server.v1_8_R3.ItemStack nmsBank = CraftItemStack.asNMSCopy(bankItem);
                                 nmsBank.getTag().setString("type", "bank");
                                 e.getInventory().setItem(8, CraftItemStack.asBukkitCopy(nmsBank));
-                                // checkOtherBankSlots(e.getInventory(),
-                                // player.getUniqueId());
                                 player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
                             }
                         }

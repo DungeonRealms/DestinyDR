@@ -708,7 +708,7 @@ public class API {
         String lvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
         int hp = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
         String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
-        entity.setCustomName(lvlName + ChatColor.RESET + customName + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
+        entity.setCustomName(lvlName + ChatColor.RESET + customName);
         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
         world.addEntity(entity, SpawnReason.CUSTOM);
         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
