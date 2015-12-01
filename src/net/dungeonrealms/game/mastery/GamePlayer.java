@@ -230,11 +230,11 @@ public class GamePlayer {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, futureExperience, true);
             if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
                 if (isSub) {
-                    T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        +" + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.GREEN + " (+" + Math.round(subBonus) + ")" + ChatColor.YELLOW + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience()) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
+                    T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        +" + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.GREEN + " (+" + Math.round(subBonus) + ")" + ChatColor.YELLOW + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience() + experienceToAdd) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
                 } else if (isSubPlus) {
-                    T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        +" + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.GOLD + " (+" + Math.round(subPlusBonus) + ")" + ChatColor.YELLOW + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience()) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
+                    T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        +" + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.GOLD + " (+" + Math.round(subPlusBonus) + ")" + ChatColor.YELLOW + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience() + experienceToAdd) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
                 } else {
-                    T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        +" + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience()) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
+                    T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        +" + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience() + experienceToAdd) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
                 }
             }
         }
