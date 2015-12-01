@@ -660,9 +660,9 @@ public class ItemManager {
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + new_line
                 + ChatColor.BLACK.toString() + gp.getPlayerAlignment().description + new_line + ChatColor.BLACK.toString() + "   " + gp.getPlayerCurrentHP()
                 + " / " + gp.getPlayerMaxHP() + "" + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK.toString()
-                + "   " + gp.getStats().getDPS() + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
+                + "   " + Math.round(gp.getStats().getDPS()) + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
                 + "   " + (HealthHandler.getInstance().getPlayerHPRegenLive(p)) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n" + ChatColor.BLACK.toString() 
-                + "   " + EnergyHandler.getInstance().getPlayerEnergyRegenerationAmount(p.getUniqueId()) + " " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString() 
+                + "   " + (100 + Math.round((100 * EnergyHandler.getInstance().getPlayerEnergyRegenerationAmount(p.getUniqueId())))) + "% " + ChatColor.BOLD.toString() + "Energy" + "\n" + ChatColor.BLACK.toString() 
                 + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString() 
                 + "   " + gp.getPlayerLuck() + ChatColor.BOLD.toString() + " LUCK";
 

@@ -512,7 +512,7 @@ public class API {
                     bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats"));
                     bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Allocate Points!").create()));
                     TextComponent test = new TextComponent(ChatColor.GREEN + "*" + ChatColor.GRAY +
-                			"You have available " + ChatColor.GREEN + "stat points." + ChatColor.GRAY +
+                			"You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
                 			"To allocate click " );
                     test.addExtra(bungeeMessage);
                     test.addExtra(ChatColor.GREEN + "*");
