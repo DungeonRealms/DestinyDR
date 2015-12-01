@@ -12,6 +12,7 @@ import net.dungeonrealms.enchantments.EnchantmentAPI;
 import net.dungeonrealms.handlers.ClickHandler;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.items.Attribute;
+import net.dungeonrealms.items.Item;
 import net.dungeonrealms.items.Item.AttributeType;
 import net.dungeonrealms.items.ItemGenerator;
 import net.dungeonrealms.items.armor.Armor.ArmorAttributeType;
@@ -43,6 +44,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.*;
+import org.bukkit.event.player.PlayerItemHeldEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -188,27 +190,28 @@ public class InventoryListener implements Listener {
      * @param event
      * @since 1.0
      */
-    /*@EventHandler(priority = EventPriority.LOWEST)
+    @EventHandler(priority = EventPriority.LOWEST)
     public void playerSwitchItem(PlayerItemHeldEvent event) {
 		if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
 		int slot = event.getNewSlot();
 		if (event.getPlayer().getInventory().getItem(slot) != null) {
+			Player p = event.getPlayer();
 			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getPlayer().getInventory().getItem(slot));
 			if (nms.hasTag()) {
 				if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon")) {
-					ItemTier tier = new Attribute(event.getPlayer().getInventory().getItem(slot)).getItemTier();
+					Item.ItemTier tier = new Attribute(p.getInventory().getItem(slot)).getItemTier();
 					int minLevel = tier.getRangeValues()[0];
-					Player p = event.getPlayer();
 					int pLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, p.getUniqueId());
 					if (pLevel < minLevel) {
-						p.sendMessage(ChatColor.RED + "You must be level " + ChatColor.YELLOW.toString() + minLevel
-								+ ChatColor.RED.toString() + " to wield this weapon!");
+						p.sendMessage(ChatColor.RED + "You must be level " + ChatColor.YELLOW.toString() + ChatColor.BOLD + minLevel + ChatColor.RED + " to wield this weapon!");
 						event.setCancelled(true);
+						return;
 					}
+					p.playSound(event.getPlayer().getLocation(), Sound.ANVIL_BREAK, 0.5F, 1F);
 				}
 			}
 		}
-	}*/
+	}
 
     /**
      * Called when a player equips armor
