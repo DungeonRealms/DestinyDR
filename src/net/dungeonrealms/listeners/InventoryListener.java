@@ -10,6 +10,7 @@ import net.dungeonrealms.duel.DuelOffer;
 import net.dungeonrealms.duel.DuelingMechanics;
 import net.dungeonrealms.enchantments.EnchantmentAPI;
 import net.dungeonrealms.handlers.ClickHandler;
+import net.dungeonrealms.handlers.EnergyHandler;
 import net.dungeonrealms.handlers.HealthHandler;
 import net.dungeonrealms.items.Attribute;
 import net.dungeonrealms.items.Item;
@@ -282,13 +283,25 @@ public class InventoryListener implements Listener {
                     if (event.getNewArmorPiece().getType() == Material.AIR) {
                         int hpLoss = HealthHandler.getInstance().getVitalityValueOfArmor(event.getOldArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getOldArmorPiece()));
                         int hpRegenLoss = HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getOldArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getOldArmorPiece()));
+                        float energyRegenLoss = EnergyHandler.getInstance().getIntellectValueOfArmor(event.getOldArmorPiece(), EnergyHandler.getInstance().getEnergyValueOfArmor(event.getOldArmorPiece()));
                         player.sendMessage(ChatColor.RED + "HP -" + hpLoss + " NEW HP [" + (HealthHandler.getInstance().getPlayerHPLive(player)) + "/" + (HealthHandler.getInstance().getPlayerMaxHPLive(player)) + "HP]");
-                        player.sendMessage(ChatColor.RED + "HP/s -" + hpRegenLoss + " NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player)) + "HP/s]");
+                        if (hpRegenLoss > 0) {
+                            player.sendMessage(ChatColor.RED + "HP/s -" + hpRegenLoss + " NEW HP/s [" + HealthHandler.getInstance().getPlayerHPRegenLive(player) + "HP/s]");
+                        }
+                        if (energyRegenLoss > 0) {
+                            player.sendMessage(ChatColor.RED + "ENERGY/s -" + energyRegenLoss + " NEW ENERGY/s [" + EnergyHandler.getInstance().getPlayerEnergyRegenerationAmount(player.getUniqueId()) + "ENERGY/s]");
+                        }
                     } else {
                         int hpGain = HealthHandler.getInstance().getVitalityValueOfArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getNewArmorPiece()));
                         int hpRegenGain = HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getNewArmorPiece()));
+                        float energyRegenGain = EnergyHandler.getInstance().getIntellectValueOfArmor(event.getOldArmorPiece(), EnergyHandler.getInstance().getEnergyValueOfArmor(event.getOldArmorPiece()));
                         player.sendMessage(ChatColor.GREEN + "HP +" + hpGain + " NEW HP [" + (HealthHandler.getInstance().getPlayerHPLive(player)) + "/" + (HealthHandler.getInstance().getPlayerMaxHPLive(player)) + "HP]");
-                        player.sendMessage(ChatColor.GREEN + "HP/s +" + hpRegenGain + " NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player)) + "HP/s]");
+                        if (hpRegenGain > 0) {
+                            player.sendMessage(ChatColor.GREEN + "HP/s +" + hpRegenGain + " NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player)) + "HP/s]");
+                        }
+                        if (energyRegenGain > 0) {
+                            player.sendMessage(ChatColor.RED + "ENERGY/s +" + energyRegenGain + " NEW ENERGY/s [" + EnergyHandler.getInstance().getPlayerEnergyRegenerationAmount(player.getUniqueId()) + "ENERGY/s]");
+                        }
                     }
                 }
             }, 10L);
@@ -310,13 +323,25 @@ public class InventoryListener implements Listener {
                 if (event.getNewArmorPiece().getType() == Material.AIR) {
                     int hpLoss = HealthHandler.getInstance().getVitalityValueOfArmor(event.getOldArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getOldArmorPiece()));
                     int hpRegenLoss = HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getOldArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getOldArmorPiece()));
+                    float energyRegenLoss = EnergyHandler.getInstance().getIntellectValueOfArmor(event.getOldArmorPiece(), EnergyHandler.getInstance().getEnergyValueOfArmor(event.getOldArmorPiece()));
                     player.sendMessage(ChatColor.RED + "HP -" + hpLoss + " NEW HP [" + (HealthHandler.getInstance().getPlayerHPLive(player) - hpLoss) + "/" + (HealthHandler.getInstance().getPlayerMaxHPLive(player) - hpLoss) + "HP]");
-                    player.sendMessage(ChatColor.RED + "HP/s -" + hpRegenLoss + " NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player) - hpRegenLoss) + "HP/s]");
+                    if (hpRegenLoss > 0) {
+                        player.sendMessage(ChatColor.RED + "HP/s -" + hpRegenLoss + " NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player) - hpRegenLoss) + "HP/s]");
+                    }
+                    if (energyRegenLoss > 0) {
+                        player.sendMessage(ChatColor.RED + "ENERGY/s -" + energyRegenLoss + " NEW ENERGY/s [" + (EnergyHandler.getInstance().getPlayerEnergyRegenerationAmount(player.getUniqueId()) - energyRegenLoss) + "ENERGY/s]");
+                    }
                 } else {
                     int hpGain = HealthHandler.getInstance().getVitalityValueOfArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getNewArmorPiece()));
                     int hpRegenGain = HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getNewArmorPiece()));
+                    float energyRegenGain = EnergyHandler.getInstance().getIntellectValueOfArmor(event.getOldArmorPiece(), EnergyHandler.getInstance().getEnergyValueOfArmor(event.getOldArmorPiece()));
                     player.sendMessage(ChatColor.GREEN + "HP +" + hpGain + " NEW HP [" + HealthHandler.getInstance().getPlayerHPLive(player) + "/" + (HealthHandler.getInstance().getPlayerMaxHPLive(player) + hpGain) + "HP]");
-                    player.sendMessage(ChatColor.GREEN + "HP/s +" + hpRegenGain + " NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player) + hpRegenGain) + "HP/s]");
+                    if (hpRegenGain > 0) {
+                        player.sendMessage(ChatColor.GREEN + "HP/s +" + hpRegenGain + " NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player) + hpRegenGain) + "HP/s]");
+                    }
+                    if (energyRegenGain > 0) {
+                        player.sendMessage(ChatColor.RED + "ENERGY/s +" + energyRegenGain + " NEW ENERGY/s [" + (EnergyHandler.getInstance().getPlayerEnergyRegenerationAmount(player.getUniqueId()) + energyRegenGain) + "ENERGY/s]");
+                    }
                 }
             }
             player.sendMessage(ChatColor.RED + "Your stats will not be updated until you exit combat!");

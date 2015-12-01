@@ -190,42 +190,66 @@ public class EnergyHandler implements GenericMechanic {
     public float getPlayerEnergyRegenerationAmount(UUID uuid) {
         float regenAmount = 0.19F;
         Player player = Bukkit.getPlayer(uuid);
-        EntityEquipment playerEquipment = player.getEquipment();
-        ItemStack[] playerArmor = playerEquipment.getArmorContents();
-        NBTTagCompound nmsTags[] = new NBTTagCompound[4];
-        if (playerArmor[3].getType() != null && playerArmor[3].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(playerArmor[3]).getTag() != null) {
-                nmsTags[0] = CraftItemStack.asNMSCopy(playerArmor[3]).getTag();
+        for (ItemStack itemStack : player.getEquipment().getArmorContents()) {
+            if (itemStack == null || itemStack.getType() == Material.AIR) {
+                continue;
             }
+            regenAmount += (regenAmount / 100F) * getEnergyValueOfArmor(itemStack);
         }
-        if (playerArmor[2].getType() != null && playerArmor[2].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(playerArmor[2]).getTag() != null) {
-                nmsTags[1] = CraftItemStack.asNMSCopy(playerArmor[2]).getTag();
+
+        for (ItemStack itemStack : player.getEquipment().getArmorContents()) {
+            if (itemStack == null || itemStack.getType() == Material.AIR) {
+                continue;
             }
+            regenAmount = getIntellectValueOfArmor(itemStack, regenAmount);
         }
-        if (playerArmor[1].getType() != null && playerArmor[1].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(playerArmor[1]).getTag() != null) {
-                nmsTags[2] = CraftItemStack.asNMSCopy(playerArmor[1]).getTag();
-            }
-        }
-        if (playerArmor[0] != null && playerArmor[0].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(playerArmor[0]).getTag() != null) {
-                nmsTags[3] = CraftItemStack.asNMSCopy(playerArmor[0]).getTag();
-            }
-        }
-        for (NBTTagCompound nmsTag : nmsTags) {
-            if (nmsTag == null) {
-                regenAmount += 0;
-            } else {
-                if (nmsTag.getInt("energyRegen") != 0) {
-                    regenAmount += (regenAmount / 100.F) * (nmsTag.getInt("energyRegen"));
-                }
-                if (nmsTag.getInt("intellect") != 0) {
-                    regenAmount += ((nmsTag.getInt("intellect") * 0.015F) / 100.0F);
-                }
-            }
-        }
+
         return regenAmount;
+    }
+
+    /**
+     * Calculates the Energy Regen value
+     * of an itemstack
+     *
+     * @param itemStack
+     * @return int
+     * @since 1.0
+     */
+    public int getEnergyValueOfArmor(ItemStack itemStack) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
+        int energyRegen = 0;
+        if (nmsItem == null || nmsItem.getTag() == null) {
+            return 0;
+        }
+        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor"))) {
+            return 0;
+        }
+        if (nmsItem.getTag().getInt("energyRegen") > 0) {
+            energyRegen += nmsItem.getTag().getInt("energyRegen");
+        }
+        return energyRegen;
+    }
+
+    /**
+     * Calculates the Intellect value
+     * of an itemstack
+     *
+     * @param itemStack
+     * @return int
+     * @since 1.0
+     */
+    public float getIntellectValueOfArmor(ItemStack itemStack, float regenTotal) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
+        if (nmsItem == null || nmsItem.getTag() == null) {
+            return (int) regenTotal;
+        }
+        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor"))) {
+            return (int) regenTotal;
+        }
+        if (nmsItem.getTag().getInt("intellect") > 0) {
+            regenTotal += regenTotal * ((nmsItem.getTag().getInt("intellect") * 0.015F) / 100.0f);
+        }
+        return regenTotal;
     }
 
 
