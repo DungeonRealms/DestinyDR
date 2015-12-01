@@ -403,7 +403,6 @@ public class MainListener implements Listener {
             event.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -378, 85, 362));
         }
     }
-
     /**
      * Handle players catching fish, gives them exp/fish
      *
