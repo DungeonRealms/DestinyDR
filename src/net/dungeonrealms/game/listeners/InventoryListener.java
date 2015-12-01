@@ -281,7 +281,7 @@ public class InventoryListener implements Listener {
                 }
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
                     player.sendMessage(ChatColor.WHITE + "" + old_armor_name + "" + ChatColor.WHITE + ChatColor.BOLD + " -> " + ChatColor.WHITE + "" + new_armor_name + "");
-                    if (event.getNewArmorPiece().getType() == Material.AIR) {
+                    if (event.getNewArmorPiece() == null || event.getNewArmorPiece().getType() == Material.AIR) {
                         int hpLoss = HealthHandler.getInstance().getVitalityValueOfArmor(event.getOldArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getOldArmorPiece()));
                         int hpRegenLoss = HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getOldArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getOldArmorPiece()));
                         int energyRegenLoss = Math.round(EnergyHandler.getInstance().getIntellectValueOfArmor(event.getOldArmorPiece(), EnergyHandler.getInstance().getEnergyValueOfArmor(event.getOldArmorPiece())));
@@ -321,7 +321,7 @@ public class InventoryListener implements Listener {
             }
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
                 player.sendMessage(ChatColor.WHITE + "" + old_armor_name + "" + ChatColor.WHITE + ChatColor.BOLD + " -> " + ChatColor.WHITE + "" + new_armor_name + "");
-                if (event.getNewArmorPiece().getType() == Material.AIR) {
+                if (event.getNewArmorPiece() == null || event.getNewArmorPiece().getType() == Material.AIR) {
                     int hpLoss = HealthHandler.getInstance().getVitalityValueOfArmor(event.getOldArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getOldArmorPiece()));
                     int hpRegenLoss = HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getOldArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getOldArmorPiece()));
                     int energyRegenLoss = Math.round(EnergyHandler.getInstance().getIntellectValueOfArmor(event.getOldArmorPiece(), EnergyHandler.getInstance().getEnergyValueOfArmor(event.getOldArmorPiece())));
