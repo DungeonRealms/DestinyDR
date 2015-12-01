@@ -226,7 +226,6 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerEquipArmor(ArmorEquipEvent event) {
         Player player = event.getPlayer();
-
         if (event.getNewArmorPiece() != null && event.getNewArmorPiece().getType() != Material.AIR) {
             Attribute a = new Attribute(event.getNewArmorPiece());
 
