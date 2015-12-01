@@ -482,28 +482,28 @@ public class ItemManager {
         switch (tier) {
             case 1:
                 rawStack = new ItemStack(Material.WOOD_PICKAXE);
-                name = ChatColor.BOLD + "Weak Pick";
-                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of sturdy Wood");
+                name = ChatColor.WHITE + "Novice Pick";
+                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pick made out of sturdy Wood");
                 break;
             case 2:
                 rawStack = new ItemStack(Material.STONE_PICKAXE);
                 name = ChatColor.GREEN.toString() + ChatColor.BOLD + "Basic Pick";
-                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Stone");
+                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pick made out of Stone");
                 break;
             case 3:
                 rawStack = new ItemStack(Material.IRON_PICKAXE);
                 name = ChatColor.AQUA.toString() + ChatColor.BOLD + "Intermediate Pick";
-                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Iron");
+                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pick made out of Iron");
                 break;
             case 4:
                 rawStack = new ItemStack(Material.DIAMOND_PICKAXE);
                 name = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Strong Pick";
-                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Diamond");
+                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pick made out of Diamond");
                 break;
             case 5:
                 rawStack = new ItemStack(Material.GOLD_PICKAXE);
                 name = ChatColor.YELLOW.toString() + ChatColor.BOLD + "Master Pick";
-                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Gold");
+                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pick made out of Gold");
                 break;
             default:
                 break;
@@ -571,10 +571,11 @@ public class ItemManager {
         lore.add(ChatColor.GRAY.toString() + "Level: " + ChatColor.WHITE.toString() + lvl);
         lore.add(ChatColor.WHITE.toString() + 0 + ChatColor.GRAY + "/" + ChatColor.GRAY + Fishing.getMaxXP(lvl));
         lore.add(ChatColor.GRAY.toString() + "EXP: " + expBar);
+        lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A fishing rod made out of fine wood and thread");
 
         switch (tier) {
             case 1:
-                name = ChatColor.BOLD + "Weak Rod";
+                name = ChatColor.WHITE + "Novice Rod";
                 break;
             case 2:
                 name = ChatColor.GREEN.toString() + ChatColor.BOLD + "Basic Rod";
