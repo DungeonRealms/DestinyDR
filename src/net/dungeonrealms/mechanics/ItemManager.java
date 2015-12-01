@@ -578,16 +578,16 @@ public class ItemManager {
                 name = ChatColor.WHITE + "Basic Fishingrod";
                 break;
             case 2:
-                name = ChatColor.GREEN.toString() + ChatColor.BOLD + "Basic Fishingrod";
+                name = ChatColor.GREEN.toString() + "Basic Fishingrod";
                 break;
             case 3:
-                name = ChatColor.AQUA.toString() + ChatColor.BOLD + "Advanced Fishingrod";
+                name = ChatColor.AQUA.toString() + "Advanced Fishingrod";
                 break;
             case 4:
-                name = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Expert Fishingrod";
+                name = ChatColor.LIGHT_PURPLE.toString() + "Expert Fishingrod";
                 break;
             case 5:
-                name = ChatColor.YELLOW.toString() + ChatColor.BOLD + "Master Fishingrod";
+                name = ChatColor.YELLOW.toString() + "Master Fishingrod";
                 break;
             default:
                 break;
