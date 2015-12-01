@@ -531,11 +531,13 @@ public class HealthHandler implements GenericMechanic {
                     player.damage(25);
                     KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, leAttacker);
                     CombatLog.removeFromCombat(player);
-                    String killerName;
+                    String killerName = "";
                     if (leAttacker instanceof Player) {
                         killerName = leAttacker.getName();
                     } else {
-                        killerName = leAttacker.getCustomName();
+                        if (leAttacker.hasMetadata("customname")) {
+                            killerName = leAttacker.getMetadata("customname").get(0).asString().trim();
+                        }
                     }
                     final String finalKillerName = killerName;
                     API.getNearbyPlayers(leAttacker.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage((GameChat.getPreMessage(player).trim().replace(":", "")  + " was killed by a(n) " + finalKillerName)));
@@ -545,11 +547,13 @@ public class HealthHandler implements GenericMechanic {
                 player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                 player.damage(25);
                 KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, leAttacker);
-                String killerName;
+                String killerName = "";
                 if (leAttacker instanceof Player) {
                     killerName = leAttacker.getName();
                 } else {
-                    killerName = leAttacker.getCustomName();
+                    if (leAttacker.hasMetadata("customname")) {
+                        killerName = leAttacker.getMetadata("customname").get(0).asString().trim();
+                    }
                 }
                 final String finalKillerName = killerName;
                 API.getNearbyPlayers(leAttacker.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage((GameChat.getPreMessage(player).trim().replace(":", "") + " was killed by a(n) " + finalKillerName)));
@@ -595,7 +599,7 @@ public class HealthHandler implements GenericMechanic {
         if (API.isPlayer(attacker)) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
             	if(!entity.hasMetadata("uuid")){
-                String customNameAppended = (entity.getMetadata("customname").get(0).asString());
+                String customNameAppended = (entity.getMetadata("customname").get(0).asString().trim());
                 attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + API.getTierColor(entity.getMetadata("tier").get(0).asInt()) + customNameAppended + ChatColor.DARK_PURPLE + ChatColor.BOLD + "[" + (int) newHP + "HP]");
             	}
             }

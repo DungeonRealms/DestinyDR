@@ -57,14 +57,12 @@ public class CombatLog implements GenericMechanic{
     public static void addToCombat(Player player) {
         if (!isInCombat(player)) {
             COMBAT.put(player, 10);
-            player.sendMessage(ChatColor.RED + "You are now in combat! (10) Seconds!");
         }
     }
 
     public static void removeFromCombat(Player player) {
         if (isInCombat(player)) {
             COMBAT.remove(player);
-            player.sendMessage(ChatColor.GREEN + "You are no longer in combat!");
         }
     }
     
