@@ -7,6 +7,7 @@ import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.Monster;
 import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.ItemGenerator;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.minecraft.server.v1_8_R3.*;
@@ -95,7 +96,7 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
     }
 
     private ItemStack getTierWeapon(int tier) {
-    	ItemStack item = new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.BOW, net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);
+    	ItemStack item = new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.values()[RandomHelper.getRandomNumberBetween(0, ItemType.values().length - 1)], net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;
     }

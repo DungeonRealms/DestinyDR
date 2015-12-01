@@ -197,12 +197,17 @@ public class Achievements {
         }, 400, "achievement.u_wot_mate"),
 
         GUILD_INVITE_YOURSELF(27, "krazy kat.", new String[]{
-                "Invite yourself to your own ugild!",
+                "Invite yourself to your own guild!",
         }, 400, "achievement.krazy_kat"),
 
         VOTE(28, "Vote for the Server", new String[]{
                 "Vote for DungeonRealms!",
-        }, 1000, "achievement.you_voted"),;
+        }, 1000, "achievement.you_voted"),
+        
+        YOURE_WELCOME(29, "You're Welcome", new String[] {
+        	"Thank Xwaffle for your first orb.",	
+        }, 200, "achievement.youre_welcome")
+        ;
 
         private int id;
         private String name;

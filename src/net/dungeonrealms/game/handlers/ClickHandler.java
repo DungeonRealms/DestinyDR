@@ -23,6 +23,7 @@ import net.dungeonrealms.game.miscellaneous.TradeCalculator;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.mongo.achievements.Achievements;
 import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.stats.StatsManager;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
@@ -480,6 +481,14 @@ public class ClickHandler {
                                         player.getInventory().setItem(player.getInventory().firstEmpty(), itemStack);
                                     }
                                     player.sendMessage(ChatColor.GREEN + "Trade Accepted.");
+                                    
+                                    for(ItemStack stack : tradeWindow.getContents()){
+                                    	if(stack != null && stack.getType() == Material.MAGMA_CREAM){
+                            				Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.YOURE_WELCOME);
+                            				break;
+                                    	}
+                                    }
+                                    
                                     player.playSound(player.getLocation(), Sound.BLAZE_HIT, 1F, 1F);
                                     tradeWindow.clear();
 
