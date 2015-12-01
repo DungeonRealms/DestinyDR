@@ -702,7 +702,7 @@ public class HealthHandler implements GenericMechanic {
      * @return int
      * @since 1.0
      */
-    private int getHealthValueOfArmor(ItemStack itemStack) {
+    public int getHealthValueOfArmor(ItemStack itemStack) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
         int healthValue = 0;
         if (nmsItem == null || nmsItem.getTag() == null) {
@@ -717,7 +717,7 @@ public class HealthHandler implements GenericMechanic {
         return healthValue;
     }
 
-    private int getVitalityValueOfArmor(ItemStack itemStack, double hpTotal) {
+    public int getVitalityValueOfArmor(ItemStack itemStack, double hpTotal) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
         if (nmsItem == null || nmsItem.getTag() == null) {
             return (int) hpTotal;
@@ -766,7 +766,7 @@ public class HealthHandler implements GenericMechanic {
      * @return int
      * @since 1.0
      */
-    private int getHealthRegenValueOfArmor(ItemStack itemStack) {
+    public int getHealthRegenValueOfArmor(ItemStack itemStack) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
         int healthRegen = 0;
         if (nmsItem == null || nmsItem.getTag() == null) {
@@ -781,7 +781,7 @@ public class HealthHandler implements GenericMechanic {
         return healthRegen;
     }
 
-    private int getHealthRegenVitalityFromArmor(ItemStack itemStack, double totalRegen) {
+    public int getHealthRegenVitalityFromArmor(ItemStack itemStack, double totalRegen) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
         if (nmsItem == null || nmsItem.getTag() == null) {
             return (int) totalRegen;

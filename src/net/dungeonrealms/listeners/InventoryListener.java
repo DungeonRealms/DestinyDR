@@ -218,23 +218,54 @@ public class InventoryListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerEquipArmor(ArmorEquipEvent event) {
+		Player player = event.getPlayer();
         //TODO: Chase do this to prevent all forms of putting on armor if they are not the correct level.
-        if (!CombatLog.isInCombat(event.getPlayer())) {
-            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.NOTE_PLING, 1f, 1f);
+        if (!CombatLog.isInCombat(player)) {
+			player.playSound(player.getLocation(), Sound.NOTE_PLING, 1f, 1f);
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-				if (API.getGamePlayer(event.getPlayer()) == null) {
+				if (API.getGamePlayer(player) == null) {
 					return;
 				}
-                HealthHandler.getInstance().setPlayerMaxHPLive(event.getPlayer(), API.getGamePlayer(event.getPlayer()).getPlayerMaxHP());
-                HealthHandler.getInstance().setPlayerHPRegenLive(event.getPlayer(), HealthHandler.getInstance().calculateHealthRegenFromItems(event.getPlayer()));
-                if (HealthHandler.getInstance().getPlayerHPLive(event.getPlayer()) > HealthHandler.getInstance().getPlayerMaxHPLive(event.getPlayer())) {
-                    HealthHandler.getInstance().setPlayerHPLive(event.getPlayer(), HealthHandler.getInstance().getPlayerMaxHPLive(event.getPlayer()));
+                HealthHandler.getInstance().setPlayerMaxHPLive(player, API.getGamePlayer(player).getPlayerMaxHP());
+                HealthHandler.getInstance().setPlayerHPRegenLive(player, HealthHandler.getInstance().calculateHealthRegenFromItems(player));
+                if (HealthHandler.getInstance().getPlayerHPLive(player) > HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
+                    HealthHandler.getInstance().setPlayerHPLive(player, HealthHandler.getInstance().getPlayerMaxHPLive(player));
                 }
+				String new_armor_name;
+				String old_armor_name;
+				if (event.getNewArmorPiece().getType() == Material.AIR) {
+					new_armor_name = "NOTHING";
+				} else {
+					new_armor_name = event.getNewArmorPiece().getItemMeta().getDisplayName();
+				}
+				if (event.getOldArmorPiece().getType() == Material.AIR) {
+					old_armor_name = "NOTHING";
+				} else {
+					old_armor_name = event.getOldArmorPiece().getItemMeta().getDisplayName();
+				}
+				player.sendMessage(ChatColor.WHITE + "" + old_armor_name + "" + ChatColor.WHITE + ChatColor.BOLD + " -> " + ChatColor.WHITE + "" + new_armor_name + "");
+				player.sendMessage(ChatColor.YELLOW + "HP ~" + HealthHandler.getInstance().getVitalityValueOfArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getNewArmorPiece())) + " NEW HP [" + HealthHandler.getInstance().getPlayerHPLive(player) + "/" + HealthHandler.getInstance().getPlayerMaxHPLive(player) + "HP]");
+				player.sendMessage(ChatColor.YELLOW + "HP/s ~" + HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getNewArmorPiece())) + " NEW HP/s [" + HealthHandler.getInstance().getPlayerHPRegenLive(player) + "HP/s]");
             }, 10L);
         } else {
-            event.getPlayer().sendMessage(ChatColor.RED + "Equipping armor while in combat will not change your stats! Please re-equip out of combat!");
-			if (!HealthHandler.COMBAT_ARMORSWITCH.contains(event.getPlayer())) {
-				HealthHandler.COMBAT_ARMORSWITCH.add(event.getPlayer());
+			String new_armor_name;
+			String old_armor_name;
+			if (event.getNewArmorPiece().getType() == Material.AIR) {
+				new_armor_name = "NOTHING";
+			} else {
+				new_armor_name = event.getNewArmorPiece().getItemMeta().getDisplayName();
+			}
+			if (event.getOldArmorPiece().getType() == Material.AIR) {
+				old_armor_name = "NOTHING";
+			} else {
+				old_armor_name = event.getOldArmorPiece().getItemMeta().getDisplayName();
+			}
+			player.sendMessage(ChatColor.WHITE + "" + old_armor_name + "" + ChatColor.WHITE + ChatColor.BOLD + " -> " + ChatColor.WHITE + "" + new_armor_name + "");
+			player.sendMessage(ChatColor.YELLOW + "HP ~" + HealthHandler.getInstance().getVitalityValueOfArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getNewArmorPiece())) + " NEW HP [" + HealthHandler.getInstance().getPlayerHPLive(player) + "/" + HealthHandler.getInstance().getPlayerMaxHPLive(player) + "HP]");
+			player.sendMessage(ChatColor.YELLOW + "HP/s ~" + HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getNewArmorPiece())) + " NEW HP/s [" + HealthHandler.getInstance().getPlayerHPRegenLive(player) + "HP/s]");
+			player.sendMessage(ChatColor.RED + "These stats will not change until you exit combat!");
+			if (!HealthHandler.COMBAT_ARMORSWITCH.contains(player)) {
+				HealthHandler.COMBAT_ARMORSWITCH.add(player);
 			}
         }
     }
