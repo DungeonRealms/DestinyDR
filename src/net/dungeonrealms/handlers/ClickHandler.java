@@ -1,8 +1,27 @@
 package net.dungeonrealms.handlers;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.banks.BankMechanics;
@@ -24,6 +43,7 @@ import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
 import net.dungeonrealms.network.NetworkAPI;
+import net.dungeonrealms.shops.Shop;
 import net.dungeonrealms.stats.StatsManager;
 import net.dungeonrealms.teleportation.TeleportAPI;
 import net.dungeonrealms.teleportation.Teleportation;
@@ -32,19 +52,6 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.Entity;
-import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryType;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Created by Nick on 10/2/2015.
@@ -1068,6 +1075,33 @@ public class ClickHandler {
                     PlayerMenus.openPlayerProfileMenu(player);
                     break;
             }
+        }else if(name.equalsIgnoreCase("Food Vendor")){
+        	if(event.getRawSlot() > 18) return;
+        	event.setCancelled(true);
+        		ItemStack stack = event.getCurrentItem();
+        		if(stack == null || stack.getType() == Material.AIR) return;
+        		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        		int price = nms.getTag().getInt("worth");
+        		if(BankMechanics.getInstance().takeGemsFromInventory(price, player)){
+        			ItemStack copy = stack.clone();
+					ArrayList<String> lore = new ArrayList<>();
+					ItemMeta meta = copy.getItemMeta();
+					if (meta.hasLore()) {
+						lore = (ArrayList<String>) meta.getLore();
+					}
+					for (int i = 0; i < lore.size(); i++) {
+						String current = lore.get(i);
+						if (current.contains("Price")) {
+							lore.remove(i);
+							break;
+						}
+					}
+					meta.setLore(lore);
+					copy.setItemMeta(meta);
+					player.getInventory().addItem(copy);
+        		}else{
+        			player.sendMessage(ChatColor.RED + "You do not have " + ChatColor.GREEN + price + "g");
+        		}
         }
     }
 }

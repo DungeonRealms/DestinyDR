@@ -5,7 +5,9 @@ import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.items.Item.ItemModifier;
 import net.dungeonrealms.miscellaneous.ItemBuilder;
+import net.dungeonrealms.shops.ShopMechanics;
 import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mechanics.ItemManager;
 import org.bukkit.*;
@@ -62,6 +64,51 @@ public class NPCMenus {
         lore2.add(ChatColor.GREEN + "Price: " + ChatColor.WHITE + "100g");
         String[] arr2 = lore2.toArray(new String[lore2.size()]);
     	inv.addItem(editItem(fishingRod, fishingRod.getItemMeta().getDisplayName(), arr2));
+        player.openInventory(inv);
+    }
+    
+    public static void openFoodVendorMenu(Player player){
+        Inventory inv = Bukkit.createInventory(null, 18, "Food Vendor");
+        ItemStack potato = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemModifier.COMMON), 2);
+        ItemStack loadedPotato = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemModifier.RARE), 4);
+        ItemStack apple = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemModifier.LEGENDARY), 8);
+        
+        ItemStack unCookedChicken = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemModifier.COMMON), 10);
+        ItemStack RoastedChicken = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemModifier.RARE), 14);
+        ItemStack pumpkinPie = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemModifier.LEGENDARY), 18);
+
+        
+        ItemStack saltedPork = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemModifier.COMMON), 20);
+        ItemStack seasonedPork = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemModifier.RARE), 25);
+        ItemStack mushroomSoup = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemModifier.LEGENDARY), 30);
+        
+        ItemStack frozenSteak = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemModifier.COMMON), 35);
+        ItemStack sizzlingSteak = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemModifier.RARE), 45);
+        ItemStack grilledRabbit = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemModifier.LEGENDARY), 55);
+
+        ItemStack kingsApple = ShopMechanics.addPrice(ItemManager.createHealingFood(5, ItemModifier.COMMON), 95);
+        ItemStack enchantedApple = ShopMechanics.addPrice(ItemManager.createHealingFood(5, ItemModifier.RARE), 100);
+        ItemStack goldCarrot = ShopMechanics.addPrice(ItemManager.createHealingFood(5, ItemModifier.LEGENDARY), 128);
+
+        inv.setItem(0, potato);
+        inv.setItem(1, loadedPotato);
+        inv.setItem(2, apple);
+        
+        inv.setItem(3, unCookedChicken);
+        inv.setItem(4, RoastedChicken);
+        inv.setItem(5, pumpkinPie);
+        
+        inv.setItem(6, saltedPork);
+        inv.setItem(7, seasonedPork);
+        inv.setItem(8, mushroomSoup);
+
+        inv.setItem(9, frozenSteak);
+        inv.setItem(10, sizzlingSteak);
+        inv.setItem(11, grilledRabbit);
+        
+        inv.setItem(12, kingsApple);
+        inv.setItem(13, enchantedApple);
+        inv.setItem(14, goldCarrot);
         player.openInventory(inv);
     }
     
