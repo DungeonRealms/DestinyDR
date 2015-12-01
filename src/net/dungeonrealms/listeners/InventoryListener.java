@@ -227,21 +227,31 @@ public class InventoryListener implements Listener {
     public void playerEquipArmor(ArmorEquipEvent event) {
         Player player = event.getPlayer();
 
-        Attribute a = new Attribute(event.getNewArmorPiece());
+        if (event.getNewArmorPiece() != null && event.getNewArmorPiece().getType() != Material.AIR) {
+            Attribute a = new Attribute(event.getNewArmorPiece());
 
-        int playerLevel = API.getGamePlayer(event.getPlayer()).getLevel();
+            int playerLevel = API.getGamePlayer(event.getPlayer()).getLevel();
 
-        switch (a.getArmorTier().getTierId()) {
-            case 4:
-                event.setCancelled(playerLevel < 40);
-                player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 40");
-                break;
-            case 5:
-                event.setCancelled(playerLevel < 60);
-                player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 60");
-                break;
-            default:
-                Utils.log.warning(event.getPlayer().getName() + " tried to equip an unknown tier level item!: " + a.getArmorTier().getTierId());
+            switch (a.getArmorTier().getTierId()) {
+                case 4:
+                    event.setCancelled(playerLevel < 40);
+                    player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 40");
+                    if (playerLevel < 40) {
+                        player.updateInventory();
+                        return;
+                    }
+                    break;
+                case 5:
+                    event.setCancelled(playerLevel < 60);
+                    player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 60");
+                    if (playerLevel < 60) {
+                        player.updateInventory();
+                        return;
+                    }
+                    break;
+                default:
+                    Utils.log.warning(event.getPlayer().getName() + " tried to equip an unknown tier level item!: " + a.getArmorTier().getTierId());
+            }
         }
 
         if (!CombatLog.isInCombat(player)) {
