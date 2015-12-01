@@ -17,6 +17,7 @@ import org.bukkit.entity.Wolf;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.commands.generic.BasicCommand;
 import net.dungeonrealms.entities.EnumEntityType;
@@ -152,10 +153,9 @@ public class CommandSpawn extends BasicCommand {
                         }
                         
                         String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET;
-                        String healthName = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt() + ChatColor.RED.toString() + "❤";
                         String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
                         
-                        entity.setCustomName(lvl + customName + healthName);
+                        entity.setCustomName(lvl + API.getTierColor(tier) + customName);
                         
                         Location location = new Location(world.getWorld(), player.getLocation().getX() + new Random().nextInt(3), player.getLocation().getY(), player.getLocation().getZ() + new Random().nextInt(3));
                         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);

@@ -205,7 +205,7 @@ public class MobSpawner {
 				}
 				
 		        if (!entity.getBukkitEntity().hasMetadata("elite"))
-					entity.setCustomName(lvlName + API.getTierColor(tier) + customName + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
+					entity.setCustomName(lvlName + API.getTierColor(tier) + customName);
 				toSpawn = true;
 				if(!firstSpawn){
 					Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -220,12 +220,10 @@ public class MobSpawner {
 					Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 					for(int i = 0; i < spawnAmount; i++){
 					    Entity newentity = SpawningMechanics.getMob(world, tier, monsEnum);
-						int newlevel = Utils.getRandomFromTier(tier, lvlRange);
-						MetadataUtils.registerEntityMetadata(newentity, type, tier, newlevel);
+						MetadataUtils.registerEntityMetadata(newentity, type, tier, level);
 						EntityStats.setMonsterRandomStats(newentity, level, tier);
 						
 				        String newlvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
-				        int newhp = newentity.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
 						String newcustomName = "";
 						try {
 							newcustomName  = newentity.getBukkitEntity().getMetadata("customname").get(0).asString();
@@ -235,7 +233,7 @@ public class MobSpawner {
 						}
 						
 				        if (!newentity.getBukkitEntity().hasMetadata("elite"))
-				        	newentity.setCustomName(newlvlName + API.getTierColor(tier) + newcustomName + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + newhp);
+				        	newentity.setCustomName(newlvlName + API.getTierColor(tier) + newcustomName);
 				        newentity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 						world.addEntity(newentity, SpawnReason.CUSTOM);
 						newentity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);

@@ -61,9 +61,9 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onPm(PlayerMessagePlayerEvent event) {
-        if(event.getSender().equals(event.getReceiver())) {
+        if (event.getSender().equals(event.getReceiver())) {
             Achievements.getInstance().giveAchievement(event.getSender().getUniqueId(), Achievements.EnumAchievements.MESSAGE_YOURSELF);
-        }else {
+        } else {
             Achievements.getInstance().giveAchievement(event.getSender().getUniqueId(), Achievements.EnumAchievements.SEND_A_PM);
         }
     }
@@ -108,11 +108,11 @@ public class MainListener implements Listener {
         Player player = event.getPlayer();
         player.getInventory().clear();
         player.setGameMode(GameMode.ADVENTURE);
-        player.teleport(new Location(Bukkit.getWorlds().get(0), -350.5, 77.5, 373.5, 0f, 0f));
+        player.teleport(new Location(Bukkit.getWorlds().get(0), 0, 0, 0, 0f, 0f));
         BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.GREEN.toString() + ChatColor.BOLD + "Fetching Data...");
         ItemStack[] armor = player.getInventory().getArmorContents();
-        for(int i = 0; i <armor.length; i++){
-        	armor[i] = new ItemStack(Material.AIR);
+        for (int i = 0; i < armor.length; i++) {
+            armor[i] = new ItemStack(Material.AIR);
         }
         player.getInventory().setArmorContents(armor);
         player.sendMessage(ChatColor.GREEN + "Loading your data.. This will only take a moment!");
@@ -205,7 +205,7 @@ public class MainListener implements Listener {
 
         // Player leaves while in duel
         if (DuelingMechanics.isDueling(player.getUniqueId())) {
-        	DuelingMechanics.getOffer(player.getUniqueId()).handleLogOut(player);
+            DuelingMechanics.getOffer(player.getUniqueId()).handleLogOut(player);
         }
         API.handleLogout(player.getUniqueId());
     }
@@ -235,7 +235,7 @@ public class MainListener implements Listener {
                                 Player p1 = theevent.getPlayer();
                                 Player p2 = playerClicked;
                                 if (API.isNonPvPRegion(p1.getLocation()) && API.isNonPvPRegion(p2.getLocation())) {
-                                	DuelingMechanics.sendDuelRequest(p1, p2);
+                                    DuelingMechanics.sendDuelRequest(p1, p2);
                                 }
                             } else if (item.getType() == Material.EMERALD) {
                                 event.setWillClose(true);
@@ -244,7 +244,7 @@ public class MainListener implements Listener {
                                 TradeManager.sendTradeRequest(theevent.getPlayer().getUniqueId(), playerClicked.getUniqueId());
                             } else if (item.getType() == Material.PAPER) {
                                 theevent.getPlayer().closeInventory();
-                                theevent.getPlayer().chat("/tell " + playerClicked.getName() + " ");
+                                theevent.getPlayer().chat("@i@ " + playerClicked.getName() + " ");
                             }
                         }
                     }
@@ -253,11 +253,11 @@ public class MainListener implements Listener {
                 gui.setOption(4, Utils.getPlayerHead(playerClicked),
                         ChatColor.AQUA.toString() + playerClicked.getName());
                 gui.setOption(8, new ItemStack(Material.IRON_SWORD), "Challenge to duel",
-                        "Challenges " + playerClicked.getName() + " to a battle!");
+                        ChatColor.GRAY + "Challenges " + playerClicked.getName() + " to a battle!");
                 gui.setOption(17, new ItemStack(Material.PAPER), "Private Message",
-                        "Privately message " + playerClicked.getName());
+                        ChatColor.GRAY + "Privately message " + playerClicked.getName());
                 gui.setOption(26, new ItemStack(Material.EMERALD), "Trade",
-                        "Send a trade request to " + playerClicked.getName());
+                        ChatColor.GRAY + "Send a trade request to " + playerClicked.getName());
                 gui.open(theevent.getPlayer());
             }
         }
@@ -275,17 +275,17 @@ public class MainListener implements Listener {
     public void onPlayerMove(PlayerMoveEvent event) {
         if (!API.isPlayer(event.getPlayer()))
             return;
-        
-        if(DuelingMechanics.isDueling(event.getPlayer().getUniqueId())){
-        	DuelOffer offer = DuelingMechanics.getOffer(event.getPlayer().getUniqueId());
-        	if(!offer.canFight) return;
-        	if(event.getTo().distance(offer.centerPoint) >= 15){
-        		event.setCancelled(true);
-        		event.getPlayer().teleport(event.getFrom());
-        		event.getPlayer().sendMessage(ChatColor.RED + "Can't leave area while in battle!");
-        	}
+
+        if (DuelingMechanics.isDueling(event.getPlayer().getUniqueId())) {
+            DuelOffer offer = DuelingMechanics.getOffer(event.getPlayer().getUniqueId());
+            if (!offer.canFight) return;
+            if (event.getTo().distance(offer.centerPoint) >= 15) {
+                event.setCancelled(true);
+                event.getPlayer().teleport(event.getFrom());
+                event.getPlayer().sendMessage(ChatColor.RED + "Can't leave area while in battle!");
+            }
         }
-        
+
         if (!(DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAILS.contains(event.getPlayer())))
             return;
         Player player = event.getPlayer();
@@ -307,8 +307,8 @@ public class MainListener implements Listener {
             player.getLocation().subtract(0, 1, 0).getBlock().setMetadata("time",
                     new FixedMetadataValue(DungeonRealms.getInstance(), 10));
         }
-        
-        
+
+
     }
 
     /**
@@ -399,6 +399,9 @@ public class MainListener implements Listener {
         if (npcNameStripped.equalsIgnoreCase("Innkeeper")) {
             NPCMenus.openHearthstoneRelocateMenu(event.getPlayer());
         }
+        if (npcNameStripped.equalsIgnoreCase("Ship Captain")) {
+            event.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -378, 85, 362));
+        }
     }
 
     /**
@@ -462,7 +465,7 @@ public class MainListener implements Listener {
                 continue;
             }
             ItemStack itemStack = event.getInventory().getItem(slot_Variable);
-            if (itemStack == null || itemStack.getType() == Material.AIR ||CraftItemStack.asNMSCopy(itemStack).hasTag() && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton") || itemStack.getType() == Material.THIN_GLASS) {
+            if (itemStack == null || itemStack.getType() == Material.AIR || CraftItemStack.asNMSCopy(itemStack).hasTag() && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton") || itemStack.getType() == Material.THIN_GLASS) {
                 continue;
             }
             if (itemStack.getType() == Material.EMERALD) {
@@ -479,22 +482,23 @@ public class MainListener implements Listener {
         player.sendMessage(ChatColor.YELLOW + "Trade Cancelled!");
     }
 
-    
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void onCraft(CraftItemEvent event){
-     event.setCancelled(true);
+    public void onCraft(CraftItemEvent event) {
+        event.setCancelled(true);
     }
-    
+
     @EventHandler
     public void onEntityImmunityAfterHit(EntityDamageByEntityEvent e) {
-        if (e.getCause() == DamageCause.PROJECTILE)return;
-        if(API.isPlayer(e.getEntity())) return;
+        if (e.getCause() == DamageCause.PROJECTILE) return;
+        if (API.isPlayer(e.getEntity())) return;
         if (e.getEntity() instanceof LivingEntity) {
             LivingEntity ent = (LivingEntity) e.getEntity();
             ent.setMaximumNoDamageTicks(0);
             ent.setNoDamageTicks(0);
         }
     }
+
     /**
      * Checks for player punching a map on a wall
      *
@@ -563,9 +567,9 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMapDrop(PlayerDropItemEvent event) {
-    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
-    	if(nms == null || !nms.hasTag())
-    		return;
+        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
+        if (nms == null || !nms.hasTag())
+            return;
         if (!(event.isCancelled())) {
             Player pl = event.getPlayer();
             // The maps gonna drop! DESTROY IT!
@@ -580,32 +584,32 @@ public class MainListener implements Listener {
                 pl.playSound(pl.getLocation(), Sound.BAT_TAKEOFF, 1F, 2F);
                 pl.updateInventory();
             } else if (nms.getTag().hasKey("subtype")) {
-            	event.getItemDrop().remove();
+                event.getItemDrop().remove();
             }
         }
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void chunkUNload(ChunkUnloadEvent event) {
-     if(event.getChunk().getEntities().length > 0){
-      for(Entity ent : event.getChunk().getEntities()){
-    	  net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity)ent).getHandle();
-    	  if((!(nms instanceof EntityItem)) && !(ent instanceof Player))
-    		  ent.remove();
-      }
-     }
+        if (event.getChunk().getEntities().length > 0) {
+            for (Entity ent : event.getChunk().getEntities()) {
+                net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity) ent).getHandle();
+                if ((!(nms instanceof EntityItem)) && !(ent instanceof Player))
+                    ent.remove();
+            }
+        }
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void chunkLoad(ChunkLoadEvent event) {
-     if(event.getChunk().getEntities().length > 0){
-      for(Entity ent : event.getChunk().getEntities()){
-    	  net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity)ent).getHandle();
-    	  if((!(nms instanceof EntityItem)) && !(ent instanceof Player)){
-    		  ent.remove();
-    	  }
-      }
-     }
+        if (event.getChunk().getEntities().length > 0) {
+            for (Entity ent : event.getChunk().getEntities()) {
+                net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity) ent).getHandle();
+                if ((!(nms instanceof EntityItem)) && !(ent instanceof Player)) {
+                    ent.remove();
+                }
+            }
+        }
     }
 
     @EventHandler
@@ -619,49 +623,50 @@ public class MainListener implements Listener {
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.CHICKEN_EGG_POP, 1f, 1f);
         }
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void avalonTP(PlayerEnterRegionEvent event){
-    	if(event.getRegion().equalsIgnoreCase("teleport_underworld")){
-    		event.getPlayer().teleport(Teleportation.Underworld);
-    	}else if(event.getRegion().equalsIgnoreCase("teleport_overworld")){
-    		event.getPlayer().teleport(Teleportation.Overworld);
-    	}
+    public void avalonTP(PlayerEnterRegionEvent event) {
+        if (event.getRegion().equalsIgnoreCase("teleport_underworld")) {
+            event.getPlayer().teleport(Teleportation.Underworld);
+        } else if (event.getRegion().equalsIgnoreCase("teleport_overworld")) {
+            event.getPlayer().teleport(Teleportation.Overworld);
+        }
     }
+
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void playerInteractMule(PlayerInteractEntityEvent event){
-    	if(!(event.getRightClicked() instanceof Horse)) return;
-    	Horse horse = (Horse) event.getRightClicked();
-    	event.setCancelled(true);
-    	Utils.log.info(horse.getVariant().name());
-    	if(horse.getVariant() != Variant.MULE) return;
-    	if(horse.getOwner() == null){
-    		horse.remove();
-    		return;
-    	}
-    	Player p = event.getPlayer();
-    	if(horse.getOwner().getUniqueId().toString().equalsIgnoreCase(event.getPlayer().getUniqueId().toString())){
-    		horse.setLeashHolder(p);
-    		Inventory inv = MountUtils.inventories.get(p.getUniqueId());
-    		p.openInventory(inv);
-    	}
+    public void playerInteractMule(PlayerInteractEntityEvent event) {
+        if (!(event.getRightClicked() instanceof Horse)) return;
+        Horse horse = (Horse) event.getRightClicked();
+        event.setCancelled(true);
+        Utils.log.info(horse.getVariant().name());
+        if (horse.getVariant() != Variant.MULE) return;
+        if (horse.getOwner() == null) {
+            horse.remove();
+            return;
+        }
+        Player p = event.getPlayer();
+        if (horse.getOwner().getUniqueId().toString().equalsIgnoreCase(event.getPlayer().getUniqueId().toString())) {
+            horse.setLeashHolder(p);
+            Inventory inv = MountUtils.inventories.get(p.getUniqueId());
+            p.openInventory(inv);
+        }
     }
-    
+
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void unLeashMule(EntityUnleashEvent event){
-    if(!(event.getEntity() instanceof Horse)) return;
-    Horse horse = (Horse)event.getEntity();
-    if(horse.getVariant() != Variant.MULE)return;
-    if(!event.getReason().equals(UnleashReason.PLAYER_UNLEASH)){
-    	horse.remove();
-    	return;
+    public void unLeashMule(EntityUnleashEvent event) {
+        if (!(event.getEntity() instanceof Horse)) return;
+        Horse horse = (Horse) event.getEntity();
+        if (horse.getVariant() != Variant.MULE) return;
+        if (!event.getReason().equals(UnleashReason.PLAYER_UNLEASH)) {
+            horse.remove();
+            return;
+        }
+        if (horse.getOwner() == null) {
+            horse.remove();
+            return;
+        }
+        horse.setLeashHolder((Player) horse.getOwner());
     }
-    	if(horse.getOwner() == null){
-    		horse.remove();
-    		return;
-    	}
-    	horse.setLeashHolder((Player)horse.getOwner());
-    }
-    
-    
+
+
 }

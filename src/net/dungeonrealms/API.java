@@ -64,7 +64,6 @@ import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
@@ -482,7 +481,10 @@ public class API {
 
             player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 10)).setNBTString("subtype", "starter").build());
 
-            player.teleport(new Location(Bukkit.getWorlds().get(0), -367 + new Random().nextInt(4), 86, 390 + new Random().nextInt(4), 0f, 0f));
+            player.teleport(new Location(Bukkit.getWorlds().get(0), 825.5, 47, -101.5, 126.9f, 6.1f));
+            player.sendMessage(new String[]{
+                    ChatColor.AQUA + "Hello new player! Please walk through this island and read the information the NPCs tell you! Make sure to remember this information as it is important to the core gameplay!"
+            });
 
         }
         PlayerManager.checkInventory(uuid);
@@ -514,13 +516,13 @@ public class API {
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + " Use " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/logout " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "to safely change your server instance."
         });
-        
-        if(API.getGamePlayer(player).getStats().freePoints > 0){
-        	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-        	player.sendMessage(ChatColor.GREEN + "*" +ChatColor.GRAY + "You have available " + ChatColor.GREEN  + "stat points." + ChatColor.GRAY + "Right click your " +ChatColor.UNDERLINE + "Character Profile " + ChatColor.GRAY + "and choose " + ChatColor.UNDERLINE + "Attributes" + ChatColor.GRAY + " to allocate." + ChatColor.GREEN + "*");
-        	}, 100);
+
+        if (API.getGamePlayer(player).getStats().freePoints > 0) {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                player.sendMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points." + ChatColor.GRAY + "Right click your " + ChatColor.UNDERLINE + "Character Profile " + ChatColor.GRAY + "and choose " + ChatColor.UNDERLINE + "Attributes" + ChatColor.GRAY + " to allocate." + ChatColor.GREEN + "*");
+            }, 100);
         }
-        
+
     }
 
     /**
@@ -706,7 +708,7 @@ public class API {
         String lvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
         int hp = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
         String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
-        entity.setCustomName(lvlName + ChatColor.RESET + customName + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
+        entity.setCustomName(lvlName + ChatColor.RESET + customName);
         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
         world.addEntity(entity, SpawnReason.CUSTOM);
         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);

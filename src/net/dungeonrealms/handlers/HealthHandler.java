@@ -649,17 +649,25 @@ public class HealthHandler implements GenericMechanic {
             if (entity.hasMetadata("type") && entity.hasMetadata("level")) {
                 int level = entity.getMetadata("level").get(0).asInt();
                 String lvlName = ChatColor.LIGHT_PURPLE + "[" + level + "] ";
-                String name = "";
-                if(!entity.hasMetadata("elite") && !entity.hasMetadata("boss") && !entity.hasMetadata("uuid"))
-                name = entity.getMetadata("customname").get(0).asString();
-                else name = entity.getCustomName();
-                int hp = entity.getMetadata("currentHP").get(0).asInt();
+//                String name = "";
+//                if(!entity.hasMetadata("elite") && !entity.hasMetadata("boss") && !entity.hasMetadata("uuid"))
+//                name = entity.getMetadata("customname").get(0).asString();
+//                else name = entity.getCustomName();
+//                int hp = entity.getMetadata("currentHP").get(0).asInt();
+                String hpBar = "||||||||||||||||||||";
+                hpBar = ChatColor.GREEN + hpBar.substring(0, convHPToDisplay) + ChatColor.DARK_GRAY + hpBar.substring(convHPToDisplay, hpBar.length() - 1);
                 if (!entity.hasMetadata("elite") && !entity.hasMetadata("boss") && !entity.hasMetadata("uuid"))
-                    entity.setCustomName(lvlName + ChatColor.RESET + name + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
+                	//"/u287/" BLOCK THING
+                	entity.setCustomName(lvlName + hpBar);
+//                    entity.setCustomName(lvlName + ChatColor.RESET + name + ChatColor.RED.toString() + "❤ " + ChatColor.RESET + hp);
                 entity.setHealth(convHPToDisplay);
                 if (!Entities.MONSTERS_LEASHED.contains(entity)) {
                     Entities.MONSTERS_LEASHED.add(entity);
                 }
+                if (Entities.MONSTER_LAST_ATTACK.containsKey(entity)) {
+                    Entities.MONSTER_LAST_ATTACK.remove(entity);
+                }
+                Entities.MONSTER_LAST_ATTACK.put(entity, 15);
             }
         }
     }

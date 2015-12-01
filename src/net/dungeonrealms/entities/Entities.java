@@ -132,6 +132,12 @@ public class Entities implements GenericMechanic {
 								}
 							}
 						}
+					} 
+					if(MONSTER_LAST_ATTACK.get(entity) == 10){
+						if(!entity.hasMetadata("elite") && !entity.hasMetadata("boss")){
+							String lvlName = ChatColor.LIGHT_PURPLE + "[" + entity.getMetadata("level").get(0).asInt() + "] " + ChatColor.RESET;
+							entity.setCustomName(lvlName + entity.getMetadata("customname").get(0).asString());
+						}
 					}
 					if (MONSTER_LAST_ATTACK.get(entity) <= 0) {
 						MONSTERS_LEASHED.remove(entity);
