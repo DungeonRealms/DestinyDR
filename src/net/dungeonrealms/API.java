@@ -499,7 +499,7 @@ public class API {
 
         player.sendMessage(new String[]{
                 "               " + ChatColor.WHITE.toString() + ChatColor.BOLD + "Dungeon Realms Patch " + ChatColor.AQUA.toString() + ChatColor.BOLD + String.valueOf(DungeonRealms.version),
-                ChatColor.GRAY + "                http://www.dungeonrealms.net/",
+                ChatColor.GRAY + "               http://www.dungeonrealms.net/",
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + " Use " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/logout " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "to safely change your server instance."
         });
@@ -510,7 +510,7 @@ public class API {
             	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     TextComponent bungeeMessage = new TextComponent(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
                     bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats"));
-                    bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Allocate Points!").create()));
+                    bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Allocate Points").create()));
                     TextComponent test = new TextComponent(ChatColor.GREEN + "*" + ChatColor.GRAY +
                 			"You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
                 			"To allocate click " );
