@@ -2,6 +2,7 @@
 
     import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.chat.GameChat;
 import net.dungeonrealms.combat.CombatLog;
 import net.dungeonrealms.duel.DuelOffer;
 import net.dungeonrealms.duel.DuelingMechanics;
@@ -20,8 +21,8 @@ import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.*;
-    import org.bukkit.event.entity.EntityDeathEvent;
-    import org.bukkit.inventory.ItemStack;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.inventivetalent.bossbar.BossBarAPI;
@@ -486,6 +487,9 @@ public class HealthHandler implements GenericMechanic {
                     break;
             }
         }
+        if (damager instanceof Player) {
+            leAttacker = (LivingEntity) damager;
+        }
 
         CombatLog.addToCombat(player);
         if (leAttacker instanceof Player) {
@@ -516,31 +520,39 @@ public class HealthHandler implements GenericMechanic {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, leAttacker.getUniqueId()).toString())) {
                 leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + "[" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
             }
-        }
-
-        if (leAttacker instanceof Player) {
             KarmaHandler.getInstance().handleAlignmentChanges((Player) leAttacker);
         }
+
         if (newHP <= 0) {
             player.playSound(player.getLocation(), Sound.WITHER_SPAWN, 1f, 1f);
             if (player.hasMetadata("last_death_time")) {
                 if (player.getMetadata("last_death_time").get(0).asLong() > 100) {
                     player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                     player.damage(25);
-                    //TODO: WATCH THIS
-                    //player.setHealth(0);
                     KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, leAttacker);
                     CombatLog.removeFromCombat(player);
-                    API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(player.getName() + " has died!"));
+                    String killerName;
+                    if (leAttacker instanceof Player) {
+                        killerName = leAttacker.getName();
+                    } else {
+                        killerName = leAttacker.getCustomName();
+                    }
+                    final String finalKillerName = killerName;
+                    API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(GameChat.getPreMessage(player) + " was killed by a(n) " + finalKillerName));
                     return;
                 }
             } else {
                 player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                 player.damage(25);
-                //TODO: WATCH THIS
-                //player.setHealth(0);
                 KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, leAttacker);
-                API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(player.getName() + " has died!"));
+                String killerName;
+                if (leAttacker instanceof Player) {
+                    killerName = leAttacker.getName();
+                } else {
+                    killerName = leAttacker.getCustomName();
+                }
+                final String finalKillerName = killerName;
+                API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(GameChat.getPreMessage(player) + " was killed by a(n) " + finalKillerName));
                 return;
             }
         }

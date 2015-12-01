@@ -128,7 +128,13 @@ public class DamageAPI {
         }
 
         if (tag.getInt("criticalHit") != 0) {
-            if (new Random().nextInt(99) < tag.getInt("criticalHit")) {
+            int critHit = tag.getInt("criticalHit");
+            if (attacker instanceof Player) {
+                if (API.getGamePlayer((Player) attacker) != null) {
+                    critHit += critHit * ((API.getGamePlayer((Player) attacker).getStats()).getCritChance() / 100);
+                }
+            }
+            if (new Random().nextInt(99) < critHit) {
                 try {
                     ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, receiver.getLocation(),
                             new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
@@ -179,8 +185,30 @@ public class DamageAPI {
                 }
             }
         }
+        if (!(attacker instanceof Player)) {
+            if (attacker.hasMetadata("attack")) {
+                damage += (damage * (attacker.getMetadata("attack").get(0).asDouble() / 100));
+            }
+        } else {
+            Player player = (Player) attacker;
+            if (API.getGamePlayer(player) != null) {
+                switch (new Attribute(((Player) attacker).getItemInHand()).getItemType()) {
+                    case POLE_ARM:
+                        damage += (damage * (API.getGamePlayer(player).getStats().getPolearmDMG()));
+                        break;
+                    case AXE:
+                        damage += (damage * (API.getGamePlayer(player).getStats().getAxeDMG()));
+                        break;
+                    case SWORD:
+                        damage += (damage * (API.getGamePlayer(player).getStats().getSwordDMG()));
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
         if (isHitCrit) {
-            damage = damage * 1.5;
+            damage *= 1.5;
         }
         return Math.round(damage);
     }
@@ -382,6 +410,25 @@ public class DamageAPI {
             } else {
                 if (nmsTag.getDouble("damage") != 0) {
                     damage += (damage * (nmsTag.getDouble("damage") / 100));
+                }
+            }
+        }
+        if (!(attacker instanceof Player)) {
+            if (attacker.hasMetadata("attack")) {
+                damage += (damage * (attacker.getMetadata("attack").get(0).asDouble() / 100));
+            }
+        } else {
+            Player player = (Player) attacker;
+            if (API.getGamePlayer(player) != null) {
+                switch (projectile.getType()) {
+                    case ARROW:
+                        damage += (damage * (API.getGamePlayer(player).getStats().getBowDMG()));
+                        break;
+                    case SNOWBALL:
+                        damage += (damage * (API.getGamePlayer(player).getStats().getStaffDMG()));
+                        break;
+                    default:
+                        break;
                 }
             }
         }

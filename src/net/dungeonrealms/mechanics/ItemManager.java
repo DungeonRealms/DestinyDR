@@ -175,23 +175,23 @@ public class ItemManager {
         switch (tier) {
             case 1:
                 rawStack = new ItemStack(Material.LEATHER, 64);
-                name = ChatColor.BOLD + "Leather";
+                name = ChatColor.WHITE + "Leather";
                 break;
             case 2:
                 rawStack = new ItemStack(Material.IRON_FENCE, 64);
-                name = ChatColor.GREEN.toString() + ChatColor.BOLD + "Chain";
+                name = ChatColor.GREEN+ "Chain";
                 break;
             case 3:
                 rawStack = new ItemStack(Material.IRON_INGOT, 64);
-                name = ChatColor.AQUA.toString() + ChatColor.BOLD + "Iron";
+                name = ChatColor.AQUA + "Iron";
                 break;
             case 4:
                 rawStack = new ItemStack(Material.DIAMOND, 64);
-                name = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Diamond";
+                name = ChatColor.LIGHT_PURPLE + "Diamond";
                 break;
             case 5:
                 rawStack = new ItemStack(Material.GOLD_INGOT, 64);
-                name = ChatColor.YELLOW.toString() + ChatColor.BOLD + "Gold";
+                name = ChatColor.YELLOW + "Gold";
                 break;
             default:
                 break;
@@ -199,7 +199,7 @@ public class ItemManager {
         if (rawStack != null) {
             ItemMeta meta = rawStack.getItemMeta();
             meta.setDisplayName(name + " Scrap");
-            meta.setLore(Collections.singletonList(ChatColor.GRAY + "Repairs 3% durability on " + name + ChatColor.GRAY + " items."));
+            meta.setLore(Collections.singletonList(ChatColor.GRAY + "Repairs 3% durability on " + name + ChatColor.GRAY + " equipment."));
             rawStack.setItemMeta(meta);
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
@@ -698,7 +698,7 @@ public class ItemManager {
                 + ChatColor.BLACK.toString() + "+" + df.format(stats.getStaffDMG() * 100) + "% Staff DMG";
 
 
-        bm.setAuthor("DungeonRealms");
+        bm.setAuthor("King Bulwark");
         pages.add(page1_string);
         pages.add(page2_string);
         pages.add(page3_string);

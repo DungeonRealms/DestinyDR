@@ -7,10 +7,7 @@ import net.dungeonrealms.commands.generic.CommandManager;
 import net.dungeonrealms.donate.DonationEffects;
 import net.dungeonrealms.entities.Entities;
 import net.dungeonrealms.entities.utils.PetUtils;
-import net.dungeonrealms.handlers.EnergyHandler;
-import net.dungeonrealms.handlers.HealthHandler;
-import net.dungeonrealms.handlers.KarmaHandler;
-import net.dungeonrealms.handlers.ScoreboardHandler;
+import net.dungeonrealms.handlers.*;
 import net.dungeonrealms.listeners.*;
 import net.dungeonrealms.loot.LootManager;
 import net.dungeonrealms.mastery.AsyncUtils;
@@ -50,9 +47,11 @@ import java.io.IOException;
  * IMPLIED WARRANTIES OF MERCHANTABILITY AND/OR FITNESS FOR A
  * PARTICULAR PURPOSE.
  *
- * Written by Nick Doran (xFinityPro) <nick@cherryio.com>, October 2015  -
- * Written by Kieran Quigley (Proxying) <Proxying@cherryio.com>, October 2015  -
- * Written by Chase Myers  (Xwaffle) <chase@cherryio.com>, October 2015  -
+ * Written by Nick Doran (xFinityPro) <nick@cherryio.com>, October 2015 -
+ * Written by Kieran Quigley (Proxying) <Proxying@cherryio.com>, October 2015 -
+ * Written by Chase Myers  (Xwaffle) <chase@cherryio.com>, October 2015 -
+ * Previous Developers -
+ *  Written by Gay Tux Boy. ("Naughty, Naughty, Naughty")
  *
  *
  * (a) Anyone who violates any of the exclusive rights of the copyright owners as
@@ -160,6 +159,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(BuffManager.getInstance());
         mm.registerMechanic(new LootManager());
         mm.registerMechanic(Affair.getInstance());
+        mm.registerMechanic(TutorialIslandHandler.getInstance());
 
         /*
         In development
@@ -196,8 +196,9 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandPRemove("premove", "/<command> [args]", "Remove player from party."));
         cm.registerCommand(new CommandPLeave("pleave", "/<command> [args]", "Remove player from party."));
         cm.registerCommand(new CommandPChat("pchat", "/<command> [args]", "Talk in party chat."));
-        cm.registerCommand(new CommandModeration("dr", "/<command> [args]", "the dr moderation command."));
-        cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "the Logout command."));
+        cm.registerCommand(new CommandModeration("dr", "/<command> [args]", "The dr moderation command."));
+        cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "The Logout command."));
+        cm.registerCommand(new CommandToggle("toggles", "/<command> [args]", "The Toggle command."));
 
         try {
             FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));
