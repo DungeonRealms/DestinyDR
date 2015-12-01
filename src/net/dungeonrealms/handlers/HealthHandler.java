@@ -538,7 +538,7 @@ public class HealthHandler implements GenericMechanic {
                         killerName = leAttacker.getCustomName();
                     }
                     final String finalKillerName = killerName;
-                    API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(GameChat.getPreMessage(player) + " was killed by a(n) " + finalKillerName));
+                    API.getNearbyPlayers(leAttacker.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage((GameChat.getPreMessage(player).trim().replace(":", "")  + " was killed by a(n) " + finalKillerName)));
                     return;
                 }
             } else {
@@ -552,7 +552,7 @@ public class HealthHandler implements GenericMechanic {
                     killerName = leAttacker.getCustomName();
                 }
                 final String finalKillerName = killerName;
-                API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(GameChat.getPreMessage(player) + " was killed by a(n) " + finalKillerName));
+                API.getNearbyPlayers(leAttacker.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage((GameChat.getPreMessage(player).trim().replace(":", "") + " was killed by a(n) " + finalKillerName)));
                 return;
             }
         }

@@ -18,10 +18,11 @@ public final class GameChat {
 
     public static final String SUB = ChatColor.GREEN.toString() + ChatColor.BOLD + "S" + ChatColor.RESET + " ";
     public static final String SUBPLUS = ChatColor.GOLD.toString() + ChatColor.BOLD + "S+" + ChatColor.RESET + " ";
-    public static final String GM = ChatColor.RED.toString() + ChatColor.BOLD + "GM" + ChatColor.RESET + " ";
+    public static final String GM = ChatColor.AQUA.toString() + ChatColor.BOLD + "GM" + ChatColor.RESET + " ";
     public static final String CM = ChatColor.BLUE.toString() + ChatColor.BOLD + "CM" + ChatColor.RESET + " ";
     public static final String DEVS = ChatColor.GOLD.toString() + ChatColor.BOLD + "DEV" + ChatColor.RESET + " ";
     public static final String YOUTUBE = ChatColor.RED.toString() + ChatColor.BOLD + "YT" + ChatColor.RESET + " ";
+    public static final String PMOD = ChatColor.RED.toString() + ChatColor.BOLD + "PMOD" + ChatColor.RESET + " ";
 
     /*
     So this bad boi..
@@ -79,6 +80,8 @@ public final class GameChat {
                 return ChatColor.BLUE + player.getName() + ChatColor.GRAY + ":" + ChatColor.RESET + " ";
             case "youtube":
                 return ChatColor.RED + player.getName() + ChatColor.GRAY + ":" + ChatColor.RESET + " ";
+            case "pmod":
+                return ChatColor.RED + player.getName() + ChatColor.GRAY + ":" + ChatColor.RESET + " ";
         }
         System.out.println(rank);
         return "NULL";
@@ -101,6 +104,8 @@ public final class GameChat {
                 return CM;
             case "youtube":
                 return YOUTUBE;
+            case "pmod":
+                return PMOD;
             default:
                 return "NULL";
         }
