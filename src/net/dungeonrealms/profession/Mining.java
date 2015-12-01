@@ -171,19 +171,19 @@ public class Mining implements GenericMechanic {
         
         switch (tier) {
         case 1:
-            lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Wood");
+            lore.add(ChatColor.GRAY.toString() + ChatColor.ITALICS + "A pickaxe made out of sturdy wood.");
             break;
         case 2:
-            lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Stone");
+            lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pickaxe made out of cave stone.");
             break;
         case 3:
-            lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Iron");
+            lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pickaxe made out of forged iron.");
             break;
         case 4:
-            lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Diamond");
+            lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pickaxe made out of hardened diamond.");
             break;
         case 5:
-            lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Gold");
+            lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pickaxe made out of reinforced gold.");
             break;
         default:
             break;
