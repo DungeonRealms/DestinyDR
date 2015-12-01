@@ -76,7 +76,7 @@ public class Armor {
 
         public static ArmorTier getById(int id) {
             for (ArmorTier it : values()) {
-                if (it.getId() == id) {
+                if (it.getTierId() == id) {
                     return it;
                 }
             }
