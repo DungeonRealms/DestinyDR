@@ -149,9 +149,8 @@ public class MainListener implements Listener {
         player.sendMessage(ChatColor.GREEN + "Loading your data.. This will only take a moment!");
 
         UUID uuid = player.getUniqueId();
-        //TODO UNCOMMENT WHEN WIPED MONGO
-//        if((boolean) DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, uuid))
-//      		player.sendMessage(ChatColor.YELLOW  + ChatColor.BOLD.toString() + "You have Combat Logged and someone killed your body while you were gone!"); 
+        if((boolean) DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, uuid))
+      		player.sendMessage(ChatColor.YELLOW  + ChatColor.BOLD.toString() + "You have Combat Logged and someone killed your body while you were gone!"); 
         CombatLog.checkCombatLog(uuid);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
                 () -> API.handleLogin(player.getUniqueId()), 20L * 3);
