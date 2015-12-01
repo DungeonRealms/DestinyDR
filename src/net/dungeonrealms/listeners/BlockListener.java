@@ -118,6 +118,9 @@ public class BlockListener implements Listener {
                     return;
                 }
                 int experienceGain = Mining.getOreEXP(stackInHand, type);
+                if (API.getGamePlayer(e.getPlayer()) != null) {
+                    API.getGamePlayer(e.getPlayer()).addExperience((experienceGain / 8));
+                }
                 RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInHand(), RandomHelper.getRandomNumberBetween(2, 5));
                 int break_chance = Mining.getBreakChance(stackInHand);
                 int do_i_break = new Random().nextInt(100);
@@ -149,6 +152,7 @@ public class BlockListener implements Listener {
         }
         }
     }
+
     @EventHandler(priority = EventPriority.HIGHEST)
     public void handleMiningFatigue(PlayerAnimationEvent event){
     	if(event.getAnimationType() != PlayerAnimationType.ARM_SWING) return;
@@ -201,8 +205,6 @@ public class BlockListener implements Listener {
     	}
     }
 
-    
-    
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerRightClickAnvil(PlayerInteractEvent event) {
         Block block = event.getClickedBlock();
@@ -409,7 +411,7 @@ public class BlockListener implements Listener {
                 } else {
                     event.setCancelled(true);
                     event.getPlayer().sendMessage(ChatColor.RED + "Sorry, you've tried to enter a null realm. Attempting to remove it!");
-                    Instance.getInstance().removeRealmViaPortalLocation(event.getFrom());
+                    //Instance.getInstance().removeRealmViaPortalLocation(event.getFrom());
                     /*event.getFrom().getBlock().setType(Material.AIR);
                     if (event.getFrom().subtract(0, 1, 0).getBlock().getType() == Material.PORTAL) {
                         event.getFrom().getBlock().setType(Material.AIR);

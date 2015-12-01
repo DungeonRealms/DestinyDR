@@ -62,7 +62,7 @@ public class Fishing implements GenericMechanic {
 		}
 	}
 	
-	public int getFishEXP(int tier) {
+	public static int getFishEXP(int tier) {
         if (tier == 1) {
             return (int) (2.5D * (250 + new Random().nextInt((int) (250 * 0.3D))));
         }
@@ -120,7 +120,7 @@ public class Fishing implements GenericMechanic {
 
 	/**
 	 * return size of fish based on tier
-	 * 
+	 *
 	 * @return integer
 	 * @since 1.0
 	 */
@@ -215,13 +215,14 @@ public class Fishing implements GenericMechanic {
 	 * 
 	 * @param stack
 	 */
-	public static void gainExp(ItemStack stack, Player p) {
+	public static void gainExp(ItemStack stack, Player p, int exp) {
 		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         int tier  = Fishing.getRodTier(stack);
 //        int lvl = nms.getTag().getInt("level")
 		int xp = nms.getTag().getInt("XP");
 		int maxXP = Fishing.getMaxXP(tier);
-		xp += 25;
+		xp += exp;
+		//TODO: Chase fix this EXP system. Based on the tier of the FISH, not the pickaxe.
 		nms.getTag().setInt("XP", xp);
 		ItemMeta meta = stack.getItemMeta();
         ArrayList<String> lore = new ArrayList<String>();

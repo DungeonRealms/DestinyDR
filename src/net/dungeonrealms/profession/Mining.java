@@ -252,7 +252,7 @@ public class Mining implements GenericMechanic {
 	        lore.add(ChatColor.GRAY.toString() + "EXP: " + expBar);
 	        switch (tier) {
 	            case 1:
-	                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pick made out of sturdy wood.");
+	                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of sturdy wood.");
 	                break;
 	            case 2:
 	                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of cave stone.");

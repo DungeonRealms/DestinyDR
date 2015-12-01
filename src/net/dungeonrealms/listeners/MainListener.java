@@ -435,7 +435,11 @@ public class MainListener implements Listener {
                         int tier = nms.getTag().getInt("itemTier");
                         if (new Random().nextInt(100) <= Fishing.getChance(tier)) {
                             ItemStack fish = Fishing.getFishItem(stack);
-                            Fishing.gainExp(stack, p);
+                            int experienceGain = Fishing.getFishEXP(tier);
+                            Fishing.gainExp(stack, p, experienceGain);
+                            if (API.getGamePlayer(event.getPlayer()) != null) {
+                                API.getGamePlayer(event.getPlayer()).addExperience((experienceGain / 8));
+                            }
                             p.getInventory().addItem(fish);
                         } else {
                             p.sendMessage("Oh no, it got away!");
