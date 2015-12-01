@@ -243,9 +243,20 @@ public class InventoryListener implements Listener {
 				} else {
 					old_armor_name = event.getOldArmorPiece().getItemMeta().getDisplayName();
 				}
-				player.sendMessage(ChatColor.WHITE + "" + old_armor_name + "" + ChatColor.WHITE + ChatColor.BOLD + " -> " + ChatColor.WHITE + "" + new_armor_name + "");
-				player.sendMessage(ChatColor.YELLOW + "HP ~" + HealthHandler.getInstance().getVitalityValueOfArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getNewArmorPiece())) + " NEW HP [" + HealthHandler.getInstance().getPlayerHPLive(player) + "/" + HealthHandler.getInstance().getPlayerMaxHPLive(player) + "HP]");
-				player.sendMessage(ChatColor.YELLOW + "HP/s ~" + HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getNewArmorPiece())) + " NEW HP/s [" + HealthHandler.getInstance().getPlayerHPRegenLive(player) + "HP/s]");
+				if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+					player.sendMessage(ChatColor.WHITE + "" + old_armor_name + "" + ChatColor.WHITE + ChatColor.BOLD + " -> " + ChatColor.WHITE + "" + new_armor_name + "");
+					if (event.getNewArmorPiece().getType() == Material.AIR) {
+						int hpLoss = HealthHandler.getInstance().getVitalityValueOfArmor(event.getOldArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getOldArmorPiece()));
+						int hpRegenLoss = HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getOldArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getOldArmorPiece()));
+						player.sendMessage(ChatColor.RED + "HP -" + hpLoss + " NEW HP [" + (HealthHandler.getInstance().getPlayerHPLive(player)) + "/" + (HealthHandler.getInstance().getPlayerMaxHPLive(player)) + "HP]");
+						player.sendMessage(ChatColor.RED + "HP/s -" + hpRegenLoss + " NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player)) + "HP/s]");
+					} else {
+						int hpGain = HealthHandler.getInstance().getVitalityValueOfArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getNewArmorPiece()));
+						int hpRegenGain = HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getNewArmorPiece()));
+						player.sendMessage(ChatColor.GREEN + "HP +" + hpGain + ChatColor.YELLOW + " NEW HP [" + (HealthHandler.getInstance().getPlayerHPLive(player)) + "/" + (HealthHandler.getInstance().getPlayerMaxHPLive(player)) + "HP]");
+						player.sendMessage(ChatColor.GREEN + "HP/s +" + hpRegenGain + ChatColor.YELLOW + " NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player)) + "HP/s]");
+					}
+				}
             }, 10L);
         } else {
 			String new_armor_name;
@@ -260,10 +271,21 @@ public class InventoryListener implements Listener {
 			} else {
 				old_armor_name = event.getOldArmorPiece().getItemMeta().getDisplayName();
 			}
-			player.sendMessage(ChatColor.WHITE + "" + old_armor_name + "" + ChatColor.WHITE + ChatColor.BOLD + " -> " + ChatColor.WHITE + "" + new_armor_name + "");
-			player.sendMessage(ChatColor.YELLOW + "HP ~" + HealthHandler.getInstance().getVitalityValueOfArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getNewArmorPiece())) + " NEW HP [" + HealthHandler.getInstance().getPlayerHPLive(player) + "/" + HealthHandler.getInstance().getPlayerMaxHPLive(player) + "HP]");
-			player.sendMessage(ChatColor.YELLOW + "HP/s ~" + HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getNewArmorPiece())) + " NEW HP/s [" + HealthHandler.getInstance().getPlayerHPRegenLive(player) + "HP/s]");
-			player.sendMessage(ChatColor.RED + "These stats will not change until you exit combat!");
+			if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+				player.sendMessage(ChatColor.WHITE + "" + old_armor_name + "" + ChatColor.WHITE + ChatColor.BOLD + " -> " + ChatColor.WHITE + "" + new_armor_name + "");
+				if (event.getNewArmorPiece().getType() == Material.AIR) {
+					int hpLoss = HealthHandler.getInstance().getVitalityValueOfArmor(event.getOldArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getOldArmorPiece()));
+					int hpRegenLoss = HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getOldArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getOldArmorPiece()));
+					player.sendMessage(ChatColor.RED + "HP -" + hpLoss + " NEW HP [" + (HealthHandler.getInstance().getPlayerHPLive(player) - hpLoss) + "/" + (HealthHandler.getInstance().getPlayerMaxHPLive(player) - hpLoss) + "HP]");
+					player.sendMessage(ChatColor.RED + "HP/s -" + hpRegenLoss + " NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player) - hpRegenLoss) + "HP/s]");
+				} else {
+					int hpGain = HealthHandler.getInstance().getVitalityValueOfArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getNewArmorPiece()));
+					int hpRegenGain = HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getNewArmorPiece()));
+					player.sendMessage(ChatColor.GREEN + "HP +" + hpGain + ChatColor.YELLOW + " NEW HP [" + HealthHandler.getInstance().getPlayerHPLive(player) + "/" + (HealthHandler.getInstance().getPlayerMaxHPLive(player) + hpGain) + "HP]");
+					player.sendMessage(ChatColor.GREEN + "HP/s +" + hpRegenGain + ChatColor.YELLOW + " NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player) + hpRegenGain) + "HP/s]");
+				}
+			}
+			player.sendMessage(ChatColor.RED + "Your stats will not be updated until you exit combat!");
 			if (!HealthHandler.COMBAT_ARMORSWITCH.contains(player)) {
 				HealthHandler.COMBAT_ARMORSWITCH.add(player);
 			}
