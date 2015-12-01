@@ -228,6 +228,53 @@ public class EnergyHandler implements GenericMechanic {
         return regenAmount;
     }
 
+
+    /**
+     * Returns the players current
+     * energy regeneration value
+     *
+     * @param uuid
+     * @return float
+     * @since 1.0
+     */
+    public float getPlayerEnergyPercentage(UUID uuid) {
+        int regenAmount = 100;
+        Player player = Bukkit.getPlayer(uuid);
+        EntityEquipment playerEquipment = player.getEquipment();
+        ItemStack[] playerArmor = playerEquipment.getArmorContents();
+        NBTTagCompound nmsTags[] = new NBTTagCompound[4];
+        if (playerArmor[3].getType() != null && playerArmor[3].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(playerArmor[3]).getTag() != null) {
+                nmsTags[0] = CraftItemStack.asNMSCopy(playerArmor[3]).getTag();
+            }
+        }
+        if (playerArmor[2].getType() != null && playerArmor[2].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(playerArmor[2]).getTag() != null) {
+                nmsTags[1] = CraftItemStack.asNMSCopy(playerArmor[2]).getTag();
+            }
+        }
+        if (playerArmor[1].getType() != null && playerArmor[1].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(playerArmor[1]).getTag() != null) {
+                nmsTags[2] = CraftItemStack.asNMSCopy(playerArmor[1]).getTag();
+            }
+        }
+        if (playerArmor[0] != null && playerArmor[0].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(playerArmor[0]).getTag() != null) {
+                nmsTags[3] = CraftItemStack.asNMSCopy(playerArmor[0]).getTag();
+            }
+        }
+        for (NBTTagCompound nmsTag : nmsTags) {
+            if (nmsTag == null) {
+                regenAmount += 0;
+            } else {
+                if (nmsTag.getInt("energyRegen") != 0) {
+                    regenAmount += nmsTag.getInt("energyRegen");
+                }
+            }
+        }
+        return regenAmount;
+    }
+
     /**
      * Adds energy to the defined player
      *

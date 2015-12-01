@@ -101,7 +101,6 @@ public class KarmaHandler implements GenericMechanic {
         for (Map.Entry<Player, EnumPlayerAlignments> alignment : PLAYER_ALIGNMENTS.entrySet()) {
             Player player = alignment.getKey();
             EnumPlayerAlignments currentAlignment = alignment.getValue();
-
             if (!(PLAYER_ALIGNMENT_TIMES.containsKey(player))) {
                 continue;
             }
