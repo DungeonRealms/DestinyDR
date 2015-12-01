@@ -301,7 +301,7 @@ public class InventoryListener implements Listener {
                             player.sendMessage(ChatColor.GREEN + "HP/s +" + hpRegenGain + " NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player)) + "HP/s]");
                         }
                         if (energyRegenGain > 0) {
-                            player.sendMessage(ChatColor.RED + "ENERGY/s +" + energyRegenGain + "% NEW ENERGY/s [" + EnergyHandler.getInstance().getPlayerEnergyPercentage(player.getUniqueId()) + "%]");
+                            player.sendMessage(ChatColor.GREEN + "ENERGY/s +" + energyRegenGain + "% NEW ENERGY/s [" + EnergyHandler.getInstance().getPlayerEnergyPercentage(player.getUniqueId()) + "%]");
                         }
                     }
                 }
@@ -341,7 +341,7 @@ public class InventoryListener implements Listener {
                         player.sendMessage(ChatColor.GREEN + "HP/s +" + hpRegenGain + "% NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player) + hpRegenGain) + "HP/s]");
                     }
                     if (energyRegenGain > 0) {
-                        player.sendMessage(ChatColor.RED + "ENERGY/s +" + energyRegenGain + "% NEW ENERGY/s [" + (EnergyHandler.getInstance().getPlayerEnergyPercentage(player.getUniqueId()) + energyRegenGain) + "%]");
+                        player.sendMessage(ChatColor.GREEN + "ENERGY/s +" + energyRegenGain + "% NEW ENERGY/s [" + (EnergyHandler.getInstance().getPlayerEnergyPercentage(player.getUniqueId()) + energyRegenGain) + "%]");
                     }
                 }
             }
