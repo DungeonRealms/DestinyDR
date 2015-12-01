@@ -150,7 +150,7 @@ public class GamePlayer {
      */
     public int getPlayerMaxHP() {
         int temp = HealthHandler.getInstance().calculateMaxHPFromItems(T);
-        return temp + ((int)(temp * getStats().getVitHP()));
+        return temp + ((int) (temp * getStats().getVitHP()));
     }
 
     /**
@@ -175,28 +175,28 @@ public class GamePlayer {
         T.setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), hp));
     }
 
-    
+
     public int getEXPNeeded(int level) {
-		if (level < 4) {
-			return (int) ((100 * Math.pow(level, 2)) * 1.3) + 1000;
-		}
-		if (level >= 101) {
-			return 0;
-		}
-		double difficulty = 1;
-		if (level >= 3 && level < 40) {
-			difficulty = 1.3;
-		} else if (level >= 40 && level < 60) {
-			difficulty = 1.6;
-		} else if (level >= 60 && level < 80) {
-			difficulty = 2.2;
-		} else if (level >= 80) {
-			difficulty = 2.6;
-		}
-		return (int) ((100 * Math.pow(level, 2)) * difficulty);
-	}
-    
-    
+        if (level < 4) {
+            return (int) ((100 * Math.pow(level, 2)) * 1.3) + 1000;
+        }
+        if (level >= 101) {
+            return 0;
+        }
+        double difficulty = 1;
+        if (level >= 3 && level < 40) {
+            difficulty = 1.3;
+        } else if (level >= 40 && level < 60) {
+            difficulty = 1.6;
+        } else if (level >= 60 && level < 80) {
+            difficulty = 2.2;
+        } else if (level >= 80) {
+            difficulty = 2.6;
+        }
+        return (int) ((100 * Math.pow(level, 2)) * difficulty);
+    }
+
+
     /**
      * Add experience to the player
      *
@@ -208,7 +208,7 @@ public class GamePlayer {
         int level = getLevel();
         double experience = getExperience();
         double subBonus = 0;
-        if (level >= 64) return;
+        if (level > 100) return;
         boolean isSub = Rank.getInstance().getRank(T.getUniqueId()).getName().contains("SUB");
         if (isSub) {
             subBonus = experienceToAdd * 0.1;
@@ -223,7 +223,7 @@ public class GamePlayer {
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(T, getPlayerAlignment().getAlignmentColor(), (level + 1));
         } else {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, futureExperience, true);
-            if((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
+            if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
                 if (!isSub) {
                     T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        +" + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience()) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
                 } else {
@@ -254,13 +254,14 @@ public class GamePlayer {
     public Player getPlayer() {
         return T;
     }
+
     /**
      * Checks Document for boolean value
-     * 
+     *
      * @return boolean
      */
-    public boolean hasShopOpen(){
-    	return (boolean) DatabaseAPI.getInstance().getData(EnumData.HASSHOP, T.getUniqueId());
+    public boolean hasShopOpen() {
+        return (boolean) DatabaseAPI.getInstance().getData(EnumData.HASSHOP, T.getUniqueId());
     }
 
     /**
@@ -269,9 +270,9 @@ public class GamePlayer {
     public PlayerStats getStats() {
         return stats;
     }
-    
-    public int getPlayerLuck(){
-    	return DamageAPI.calculatePlayerLuck(T);
+
+    public int getPlayerLuck() {
+        return DamageAPI.calculatePlayerLuck(T);
     }
 
 }

@@ -393,7 +393,7 @@ public class MainListener implements Listener {
         }
         if (npcNameStripped.equalsIgnoreCase("Guild Registrar")) {
             // TODO: Open Guild Registrar
-            event.getPlayer().sendMessage(ChatColor.RED + "JEFF");
+            event.getPlayer().sendMessage(ChatColor.RED + "Guilds are coming soon.");
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Innkeeper")) {
@@ -403,7 +403,6 @@ public class MainListener implements Listener {
             event.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -378, 85, 362));
         }
     }
-
     /**
      * Handle players catching fish, gives them exp/fish
      *
