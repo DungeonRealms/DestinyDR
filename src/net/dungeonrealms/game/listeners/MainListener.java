@@ -149,9 +149,8 @@ public class MainListener implements Listener {
         player.sendMessage(ChatColor.GREEN + "Loading your data.. This will only take a moment!");
 
         UUID uuid = player.getUniqueId();
-        //TODO UNCOMMENT WHEN WIPED MONGO
-//        if((boolean) DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, uuid))
-//      		player.sendMessage(ChatColor.YELLOW  + ChatColor.BOLD.toString() + "You have Combat Logged and someone killed your body while you were gone!"); 
+        if((boolean) DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, uuid))
+      		player.sendMessage(ChatColor.YELLOW  + ChatColor.BOLD.toString() + "You have Combat Logged and someone killed your body while you were gone!"); 
         CombatLog.checkCombatLog(uuid);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
                 () -> API.handleLogin(player.getUniqueId()), 20L * 3);
@@ -413,8 +412,7 @@ public class MainListener implements Listener {
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Food Vendor")) {
-            // TODO: Open Food Menu
-            event.getPlayer().sendMessage(ChatColor.RED + "Sorry, I'm restocking my wares!");
+        	NPCMenus.openFoodVendorMenu(event.getPlayer());
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Item Vendor")) {
@@ -447,7 +445,8 @@ public class MainListener implements Listener {
         if (event.getState().equals(State.FISHING)) {
             Location loc = Fishing.getInstance().getFishingSpot(event.getPlayer().getLocation());
             if (loc == null) {
-                event.getPlayer().sendMessage("You must be near a fishing spot to cast");
+                event.getPlayer().sendMessage(ChatColor.RED + "There are " + ChatColor.UNDERLINE + "no" + ChatColor.RED + " populated fishing spots near this location.");
+                event.getPlayer().sendMessage(ChatColor.GRAY + "Look for particles above water blocks to signify active fishing spots.");
                 event.setCancelled(true);
             }
         } else {
@@ -674,7 +673,6 @@ public class MainListener implements Listener {
         if (!(event.getRightClicked() instanceof Horse)) return;
         Horse horse = (Horse) event.getRightClicked();
         event.setCancelled(true);
-        Utils.log.info(horse.getVariant().name());
         if (horse.getVariant() != Variant.MULE) return;
         if (horse.getOwner() == null) {
             horse.remove();

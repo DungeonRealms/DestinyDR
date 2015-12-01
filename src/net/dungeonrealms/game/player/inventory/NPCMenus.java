@@ -1,21 +1,29 @@
 package net.dungeonrealms.game.player.inventory;
 
-import com.minebone.anvilapi.core.AnvilApi;
-import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
-import com.minebone.anvilapi.nms.anvil.AnvilSlot;
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.miscellaneous.ItemBuilder;
-import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.mechanics.ItemManager;
-import org.bukkit.*;
+import java.util.Arrays;
+import java.util.List;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.Arrays;
-import java.util.List;
+import com.minebone.anvilapi.core.AnvilApi;
+import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
+import com.minebone.anvilapi.nms.anvil.AnvilSlot;
+
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.miscellaneous.ItemBuilder;
+import net.dungeonrealms.game.world.items.Item.ItemModifier;
+import net.dungeonrealms.game.world.shops.ShopMechanics;
 
 /**
  * Created by Kieran on 10/26/2015.
@@ -202,4 +210,52 @@ public class NPCMenus {
         itemStack.setAmount(1);
         return itemStack;
     }
+    
+    public static void openFoodVendorMenu(Player player){
+        Inventory inv = Bukkit.createInventory(null, 18, "Food Vendor");
+        ItemStack potato = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemModifier.COMMON), 2);
+        ItemStack loadedPotato = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemModifier.RARE), 4);
+        ItemStack apple = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemModifier.LEGENDARY), 8);
+        
+        ItemStack unCookedChicken = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemModifier.COMMON), 10);
+        ItemStack RoastedChicken = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemModifier.RARE), 14);
+        ItemStack pumpkinPie = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemModifier.LEGENDARY), 18);
+
+        
+        ItemStack saltedPork = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemModifier.COMMON), 20);
+        ItemStack seasonedPork = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemModifier.RARE), 25);
+        ItemStack mushroomSoup = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemModifier.LEGENDARY), 30);
+        
+        ItemStack frozenSteak = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemModifier.COMMON), 35);
+        ItemStack sizzlingSteak = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemModifier.RARE), 45);
+        ItemStack grilledRabbit = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemModifier.LEGENDARY), 55);
+
+        ItemStack kingsApple = ShopMechanics.addPrice(ItemManager.createHealingFood(5, ItemModifier.COMMON), 95);
+        ItemStack enchantedApple = ShopMechanics.addPrice(ItemManager.createHealingFood(5, ItemModifier.RARE), 100);
+        ItemStack goldCarrot = ShopMechanics.addPrice(ItemManager.createHealingFood(5, ItemModifier.LEGENDARY), 128);
+
+        inv.setItem(0, potato);
+        inv.setItem(1, loadedPotato);
+        inv.setItem(2, apple);
+        
+        inv.setItem(3, unCookedChicken);
+        inv.setItem(4, RoastedChicken);
+        inv.setItem(5, pumpkinPie);
+        
+        inv.setItem(6, saltedPork);
+        inv.setItem(7, seasonedPork);
+        inv.setItem(8, mushroomSoup);
+
+        inv.setItem(9, frozenSteak);
+        inv.setItem(10, sizzlingSteak);
+        inv.setItem(11, grilledRabbit);
+        
+        inv.setItem(12, kingsApple);
+        inv.setItem(13, enchantedApple);
+        inv.setItem(14, goldCarrot);
+        player.openInventory(inv);
+    }
+
+    
+    
 }

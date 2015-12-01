@@ -1064,6 +1064,33 @@ public class ClickHandler {
                     PlayerMenus.openPlayerProfileMenu(player);
                     break;
             }
+        }else if(name.equalsIgnoreCase("Food Vendor")){
+        	if(event.getRawSlot() > 18) return;
+        	event.setCancelled(true);
+        		ItemStack stack = event.getCurrentItem();
+        		if(stack == null || stack.getType() == Material.AIR) return;
+        		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        		int price = nms.getTag().getInt("worth");
+        		if(BankMechanics.getInstance().takeGemsFromInventory(price, player)){
+        			ItemStack copy = stack.clone();
+					ArrayList<String> lore = new ArrayList<>();
+					ItemMeta meta = copy.getItemMeta();
+					if (meta.hasLore()) {
+						lore = (ArrayList<String>) meta.getLore();
+					}
+					for (int i = 0; i < lore.size(); i++) {
+						String current = lore.get(i);
+						if (current.contains("Price")) {
+							lore.remove(i);
+							break;
+						}
+					}
+					meta.setLore(lore);
+					copy.setItemMeta(meta);
+					player.getInventory().addItem(copy);
+        		}else{
+        			player.sendMessage(ChatColor.RED + "You do not have " + ChatColor.GREEN + price + "g");
+        		}
         }
     }
 }

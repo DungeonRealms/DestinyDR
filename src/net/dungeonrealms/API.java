@@ -137,8 +137,8 @@ public class API {
         int level = API.getGamePlayer(player).getStats().getLevel();
         int mob_level = kill.getMetadata("level").get(0).asInt();
         int xp = 0;
-        if (mob_level > level + 10) {  // limit mob xp calculation to 10 levels above player level
-            xp = calculateXP(player, kill, level + 10);
+        if (mob_level > level + 20) {  // limit mob xp calculation to 10 levels above player level
+            xp = calculateXP(player, kill, level + 20);
         } else {
             xp = calculateXP(player, kill, mob_level);
         }
@@ -200,7 +200,7 @@ public class API {
      */
     private static int calculateXP(Player player, Entity kill, int mob_level) {
         int pLevel = API.getGamePlayer(player).getStats().getLevel();
-        int xp = (int) (((pLevel * 5) + 45) * (1 + 0.05 * (pLevel + (mob_level - pLevel)))); // patch 1.9 exp formula
+        int xp = (int) (((pLevel * 5) + 45) * (1 + 0.05 * (pLevel + (mob_level - pLevel))));
         return xp;
     }
 
@@ -439,7 +439,7 @@ public class API {
         }
         player.getInventory().setArmorContents(armorContents);
 
-//TODO: MONGO WIPES  		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
 
         AchievementManager.getInstance().handleLogin(player);
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
