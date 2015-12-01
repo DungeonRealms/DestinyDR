@@ -442,85 +442,74 @@ public class PlayerMenus {
 
         Inventory inv = Bukkit.createInventory(null, 27, "Profile");
         inv.setItem(0, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GREEN + "Attributes", new String[]{
-                ChatColor.DARK_GRAY + "Player Attributes",
+                ChatColor.DARK_GRAY + "Stats",
                 "",
-                ChatColor.GRAY + "As you play throughout Dungeon Realms,",
-                ChatColor.GRAY + "your player will acquire attribute points.",
-                ChatColor.GRAY + "With Attribute points you can improve",
-                ChatColor.GRAY + "several of many individual character",
-                ChatColor.GRAY + "skills!",
+                ChatColor.GRAY + "Place obtained points into ",
+                ChatColor.GRAY + "several character stats.",
                 "",
-                ChatColor.YELLOW + "Click to view Player Attributes!"
+                ChatColor.YELLOW + "Use: View Attributes."
         }));
-        inv.setItem(1, editItem("xFinityPro", ChatColor.GREEN + "Friends", new String[]{
-                ChatColor.DARK_GRAY + "Player Friends",
+        inv.setItem(1, editItem("xFinityPro", ChatColor.GREEN + "Friend List", new String[]{
+                ChatColor.DARK_GRAY + "Friends",
                 "",
-                ChatColor.GRAY + "Its okay if you're alone!",
+                ChatColor.GRAY + "Add and remove friends.",
                 "",
-                ChatColor.YELLOW + "Click to open Friend Management!"
+                ChatColor.YELLOW + "Use: Open Friend list."
         }));
         inv.setItem(4, editItem(Utils.getPlayerHead(player), ChatColor.GREEN + "Player Profile", new String[]{
         }));
-        inv.setItem(6, editItem(new ItemStack(Material.EYE_OF_ENDER), ChatColor.GREEN + "Player Trails", new String[]{
-                ChatColor.DARK_GRAY + "Player Trails",
+        inv.setItem(6, editItem(new ItemStack(Material.EYE_OF_ENDER), ChatColor.GREEN + "Trails", new String[]{
+                ChatColor.DARK_GRAY + "Trails",
                 "",
-                ChatColor.GRAY + "Want to be the envy of your friends?",
-                ChatColor.GRAY + "Get yourself a Particle Trail!",
+                ChatColor.GRAY + "Stand out amongst the rest",
+                ChatColor.GRAY + "with a powerful trail.",
                 "",
-                ChatColor.YELLOW + "Click to view Player Trails!"
+                ChatColor.YELLOW + "Use: View available trails."
         }));
-        inv.setItem(7, editItem(new ItemStack(Material.SADDLE), ChatColor.GREEN + "Player Mounts", new String[]{
-                ChatColor.DARK_GRAY + "Player Mounts",
+        inv.setItem(7, editItem(new ItemStack(Material.SADDLE), ChatColor.GREEN + "Mounts", new String[]{
+                ChatColor.DARK_GRAY + "Mounts",
                 "",
-                ChatColor.GRAY + "Want to travel in style?",
-                ChatColor.GRAY + "Mounts are the solution!",
+                ChatColor.GRAY + "Get around quickly with",
+                ChatColor.GRAY + "your mount of choice.",
                 "",
-                ChatColor.YELLOW + "Click to view Player Mounts!"
+                ChatColor.YELLOW + "Use: View available mounts."
         }));
-        inv.setItem(8, editItem(new ItemStack(Material.NAME_TAG), ChatColor.GREEN + "Player Pets", new String[]{
-                ChatColor.DARK_GRAY + "Player Pets",
+        inv.setItem(8, editItem(new ItemStack(Material.NAME_TAG), ChatColor.GREEN + "Pets", new String[]{
+                ChatColor.DARK_GRAY + "Companions",
                 "",
-                ChatColor.GRAY + "Want a friendly companion",
-                ChatColor.GRAY + "to bring along on your",
-                ChatColor.GRAY + "adventures? Pets are the",
-                ChatColor.GRAY + "solution!",
+                ChatColor.GRAY + "Obtained through E-Cash Shop.",
+                ChatColor.GRAY + "Bring your favorite pet with you.",
                 "",
-                ChatColor.YELLOW + "Click to view Player Pets!"
+                ChatColor.YELLOW + "Use: View available pets."
         }));
-        inv.setItem(16, editItem(new ItemStack(Material.CHEST), ChatColor.GREEN + "Spawn Storage Mule", new String[]{
-                ChatColor.DARK_GRAY + "Storage",
+        inv.setItem(16, editItem(new ItemStack(Material.CHEST), ChatColor.GREEN + "Storage Mule", new String[]{
+                ChatColor.DARK_GRAY + "Storage Companion",
                 "",
-                ChatColor.GRAY + "Must own a storage mule prior to spawning!",
+                ChatColor.GRAY + "Purchase from Animal Tamer.",
                 "",
-                ChatColor.YELLOW + "Click to spawn your Storage Mule!"
+                ChatColor.YELLOW + "Use: Spawn Storage Mule."
         }));
-        inv.setItem(18, editItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Donations", new String[]{
-                ChatColor.DARK_GRAY + "Micro Transactions",
+        inv.setItem(18, editItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "E-Cash Shop", new String[]{
+                ChatColor.DARK_GRAY + "Exclusive perks",
                 "",
-                ChatColor.GRAY + "Want to access to more awesomeness?",
-                ChatColor.GRAY + "Consider donating to support Dungeon Realms",
-                ChatColor.GRAY + "in return you'll receive several in-game",
-                ChatColor.GRAY + "perks!",
+                ChatColor.GRAY + "Obtained by voting or donating.",
                 "",
-                ChatColor.YELLOW + "Click to view Micro Transactions!"
+                ChatColor.YELLOW + "Use: Open the E-Cash Shop."
         }));
         inv.setItem(22, editItem(new ItemStack(Material.QUARTZ), ChatColor.GREEN + "Hearthstone", new String[]{
-                ChatColor.DARK_GRAY + "Player Hearthstone",
+                ChatColor.DARK_GRAY + "Home location",
                 "",
-                ChatColor.GRAY + "Teleport home to your saved location of",
+                ChatColor.GRAY + "Use: Returns you to ",
                 ChatColor.YELLOW + TeleportAPI.getLocationFromDatabase(player.getUniqueId()),
                 "",
-                ChatColor.YELLOW + "Click to use your Hearthstone!"
+                ChatColor.YELLOW + "Speak to an Innkeeper to change location."
         }));
-        inv.setItem(26, editItem(new ItemStack(Material.REDSTONE_COMPARATOR), ChatColor.GREEN + "Settings & Preferences", new String[]{
-                ChatColor.DARK_GRAY + "Settings & Preferences",
+        inv.setItem(26, editItem(new ItemStack(Material.REDSTONE_COMPARATOR), ChatColor.GREEN + "Options", new String[]{
+                ChatColor.DARK_GRAY + "Toggles",
                 "",
-                ChatColor.GRAY + "Help us help you! By adjusting",
-                ChatColor.GRAY + "your player settings & preferences",
-                ChatColor.GRAY + "we can optimize your gaming experience",
-                ChatColor.GRAY + "on this RPG!",
+                ChatColor.GRAY + "Adjust preferences here.",
                 "",
-                ChatColor.YELLOW + "Click to view Settings & Preferences!"
+                ChatColor.YELLOW + "Use: Opens the toggles menu."
         }));
 
         player.openInventory(inv);
