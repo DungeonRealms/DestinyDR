@@ -33,8 +33,38 @@ public interface Monster {
 		Location loc = ent.getLocation();
 		World world = ((CraftWorld) loc.getWorld()).getHandle();
 		if (world.random.nextInt(100) <= 20) {
+            double gem_drop_amount = 0;
+            double drop_multiplier = 1;
+            boolean is_elite = false;
+            // Elite = 1.5x money chance / item chance.
+            if(ent.hasMetadata("elite"))
+                is_elite = true;
+
+            if (is_elite == true) {
+                drop_multiplier = 1.5;
+            }
+            double gold_drop_multiplier = 1;  //TODO GEM DROP ENCHANTS?
+            
+            switch(tier){
+            	case 1 :
+            		gem_drop_amount = (new Random().nextInt(3 - 1) + 1) * gold_drop_multiplier;
+            		break;
+            	case 2:
+                    gem_drop_amount = (new Random().nextInt(12 - 2) + 2) * gold_drop_multiplier;
+            		break;
+            	case 3:
+                    gem_drop_amount = (new Random().nextInt(30 - 10) + 10) * gold_drop_multiplier;
+                    break;
+            	case 4:
+                    gem_drop_amount = (new Random().nextInt(50 - 20) + 20) * gold_drop_multiplier;
+                    break;
+            	case 5:
+                    gem_drop_amount = (new Random().nextInt(200 - 75) + 75) * gold_drop_multiplier;
+                    break;
+            }
+            
 			ItemStack item = BankMechanics.gem.clone();
-			item.setAmount(((tier * 10) - 8) + new Random().nextInt(5));
+			item.setAmount((int) (gem_drop_amount * drop_multiplier));
 			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), item);
 		}
 		
