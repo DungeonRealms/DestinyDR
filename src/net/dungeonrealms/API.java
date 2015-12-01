@@ -510,7 +510,7 @@ public class API {
             	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     TextComponent bungeeMessage = new TextComponent(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
                     bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats"));
-                    bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Allocate Points!").create()));
+                    bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Allocate Points").create()));
                     TextComponent test = new TextComponent(ChatColor.GREEN + "*" + ChatColor.GRAY +
                 			"You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
                 			"To allocate click " );

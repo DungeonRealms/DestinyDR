@@ -351,8 +351,8 @@ public class DatabaseAPI {
                                 .append("guild", "")
                                 .append("shopOpen", false)
                                 .append("foodLevel", 20)
-                                .append("shopLevel", 1))
-//                				.append("loggerdied", false) TODO
+                                .append("shopLevel", 1)
+                                .append("loggerdied", false))
                         .append("attributes",
                                 new Document("bufferPoints", 6)
                                         .append("strength", 0)
