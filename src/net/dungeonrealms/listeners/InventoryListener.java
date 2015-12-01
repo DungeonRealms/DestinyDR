@@ -294,7 +294,7 @@ public class InventoryListener implements Listener {
                     } else {
                         int hpGain = HealthHandler.getInstance().getVitalityValueOfArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getNewArmorPiece()));
                         int hpRegenGain = HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getNewArmorPiece()));
-                        int energyRegenGain = Math.round(EnergyHandler.getInstance().getIntellectValueOfArmor(event.getOldArmorPiece(), EnergyHandler.getInstance().getEnergyValueOfArmor(event.getOldArmorPiece())));
+                        int energyRegenGain = Math.round(EnergyHandler.getInstance().getIntellectValueOfArmor(event.getNewArmorPiece(), EnergyHandler.getInstance().getEnergyValueOfArmor(event.getNewArmorPiece())));
                         player.sendMessage(ChatColor.GREEN + "HP +" + hpGain + " NEW HP [" + (HealthHandler.getInstance().getPlayerHPLive(player)) + "/" + (HealthHandler.getInstance().getPlayerMaxHPLive(player)) + "HP]");
                         if (hpRegenGain > 0) {
                             player.sendMessage(ChatColor.GREEN + "HP/s +" + hpRegenGain + " NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player)) + "HP/s]");
@@ -334,7 +334,7 @@ public class InventoryListener implements Listener {
                 } else {
                     int hpGain = HealthHandler.getInstance().getVitalityValueOfArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthValueOfArmor(event.getNewArmorPiece()));
                     int hpRegenGain = HealthHandler.getInstance().getHealthRegenVitalityFromArmor(event.getNewArmorPiece(), HealthHandler.getInstance().getHealthRegenValueOfArmor(event.getNewArmorPiece()));
-                    int energyRegenGain = Math.round(EnergyHandler.getInstance().getIntellectValueOfArmor(event.getOldArmorPiece(), EnergyHandler.getInstance().getEnergyValueOfArmor(event.getOldArmorPiece())));
+                    int energyRegenGain = Math.round(EnergyHandler.getInstance().getIntellectValueOfArmor(event.getNewArmorPiece(), EnergyHandler.getInstance().getEnergyValueOfArmor(event.getNewArmorPiece())));
                     player.sendMessage(ChatColor.GREEN + "HP +" + hpGain + " NEW HP [" + HealthHandler.getInstance().getPlayerHPLive(player) + "/" + (HealthHandler.getInstance().getPlayerMaxHPLive(player) + hpGain) + "HP]");
                     if (hpRegenGain > 0) {
                         player.sendMessage(ChatColor.GREEN + "HP/s +" + hpRegenGain + "% NEW HP/s [" + (HealthHandler.getInstance().getPlayerHPRegenLive(player) + hpRegenGain) + "HP/s]");
