@@ -189,7 +189,6 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandStop("stop", "/<command> [args]", "The stop command."));
         cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "The roll command."));
         cm.registerCommand(new CommandStuck("stuck", "/<command> [args]", "The stuck command."));
-        cm.registerCommand(new CommandRedeem("redeem", "/<command> [args]", "The redeem command."));
 
         cm.registerCommand(new CommandPl("pinvite", "/<command> [args]", "Will invite a player to a party and create one!"));
         cm.registerCommand(new CommandPAccept("paccept", "/<command> [args]", "Accept a party invitation."));
@@ -223,8 +222,8 @@ public class DungeonRealms extends JavaPlugin {
         API.logoutAllPlayers();
         mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
-        Database.mongoClient.close();
         AsyncUtils.pool.shutdown();
+        Database.mongoClient.close();
     }
 
 }
