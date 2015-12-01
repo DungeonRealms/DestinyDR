@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by Kieran on 10/26/2015.
@@ -49,9 +50,18 @@ public class NPCMenus {
         Inventory inv = Bukkit.createInventory(null, 9, "Profession Vendor");
         ItemStack pickAxe = ItemManager.createPickaxe(1);
         ItemStack fishingRod = ItemManager.createFishingPole(1);
-    	inv.addItem(editItem(pickAxe, pickAxe.getItemMeta().getDisplayName(), new String[]{ChatColor.GREEN + "Price: " + ChatColor.WHITE + "100g"}));
-    	inv.addItem(editItem(fishingRod, fishingRod.getItemMeta().getDisplayName(), new String[]{ ChatColor.GREEN + "Price: " + ChatColor.WHITE + "100g"}));
-
+        ItemMeta meta = pickAxe.getItemMeta();
+        List<String> lore = meta.getLore();
+//        String[] array = (String[]) lore.toArray();
+        lore.add(ChatColor.GREEN + "Price: " + ChatColor.WHITE + "100g");
+        String[] arr = lore.toArray(new String[lore.size()]);
+    	inv.addItem(editItem(pickAxe, pickAxe.getItemMeta().getDisplayName(), arr));
+    	
+        ItemMeta meta2 = fishingRod.getItemMeta();
+        List<String> lore2 = meta2.getLore();
+        lore2.add(ChatColor.GREEN + "Price: " + ChatColor.WHITE + "100g");
+        String[] arr2 = lore2.toArray(new String[lore2.size()]);
+    	inv.addItem(editItem(fishingRod, fishingRod.getItemMeta().getDisplayName(), arr2));
         player.openInventory(inv);
     }
     

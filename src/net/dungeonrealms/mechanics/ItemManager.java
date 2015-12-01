@@ -477,15 +477,13 @@ public class ItemManager {
         String expBar = ChatColor.RED + "||||||||||" + "||||||||||" + "||||||||||";
         int lvl = Mining.getTierLvl(tier);
         lore.add(ChatColor.GRAY.toString() + "Level: " + ChatColor.WHITE.toString() + lvl);
-        lore.add(ChatColor.GRAY.toString() + "EXP: " + ChatColor.WHITE+ + 0 + ChatColor.GRAY + "/" + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
-        lore.add(" ");
-        lore.add(expBar);
-        lore.add(" ");
+        lore.add(ChatColor.WHITE.toString() + 0 + ChatColor.GRAY + "/" + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
+        lore.add(ChatColor.GRAY.toString() + "EXP: " + expBar);
         switch (tier) {
             case 1:
                 rawStack = new ItemStack(Material.WOOD_PICKAXE);
                 name = ChatColor.BOLD + "Weak Pick";
-                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Wood");
+                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of sturdy Wood");
                 break;
             case 2:
                 rawStack = new ItemStack(Material.STONE_PICKAXE);
@@ -563,16 +561,16 @@ public class ItemManager {
 
 
     public static ItemStack createFishingPole(int tier) {
-        ItemStack rawStack = new ItemStack(Material.FISHING_ROD);
+        ItemStack rawStack = null;
         String name = "";
+        ArrayList<String> lore = new ArrayList<>();
+        rawStack = new ItemStack(Material.FISHING_ROD, 1);
         ItemMeta meta = rawStack.getItemMeta();
-        ArrayList<String> lore = new ArrayList<String>();
-        String expBar = "||||||||||" + "||||||||||" + "||||||||||";
-        
-        lore.add(ChatColor.GREEN.toString() + 0 + "/" + Fishing.getMaxXP(tier));
-        lore.add(" ");
-        lore.add(expBar);
-        lore.add(" ");
+        String expBar = ChatColor.RED + "||||||||||" + "||||||||||" + "||||||||||";
+        int lvl = Mining.getTierLvl(tier);
+        lore.add(ChatColor.GRAY.toString() + "Level: " + ChatColor.WHITE.toString() + lvl);
+        lore.add(ChatColor.WHITE.toString() + 0 + ChatColor.GRAY + "/" + ChatColor.GRAY + Fishing.getMaxXP(lvl));
+        lore.add(ChatColor.GRAY.toString() + "EXP: " + expBar);
 
         switch (tier) {
             case 1:

@@ -42,6 +42,11 @@ import net.dungeonrealms.mongo.achievements.AchievementManager;
 import net.dungeonrealms.notice.Notice;
 import net.dungeonrealms.rank.Rank;
 import net.dungeonrealms.teleportation.TeleportAPI;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -517,12 +522,22 @@ public class API {
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + " Use " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/logout " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "to safely change your server instance."
         });
 
-        if (API.getGamePlayer(player).getStats().freePoints > 0) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                player.sendMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points." + ChatColor.GRAY + "Right click your " + ChatColor.UNDERLINE + "Character Profile " + ChatColor.GRAY + "and choose " + ChatColor.UNDERLINE + "Attributes" + ChatColor.GRAY + " to allocate." + ChatColor.GREEN + "*");
-            }, 100);
-        }
-
+    	if(gp != null && gp.getPlayer() != null)
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
+        	if (gp.getStats().freePoints > 0) {
+            	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    TextComponent bungeeMessage = new TextComponent(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
+                    bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats"));
+                    bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Allocate Points!").create()));
+                    TextComponent test = new TextComponent(ChatColor.GREEN + "*" + ChatColor.GRAY +
+                			"You have available " + ChatColor.GREEN + "stat points." + ChatColor.GRAY +
+                			"To allocate click " );
+                    test.addExtra(bungeeMessage);
+                    test.addExtra(ChatColor.GREEN + "*");
+                    gp.getPlayer().spigot().sendMessage(test);
+            	});
+        	}
+        }, 100);
     }
 
     /**

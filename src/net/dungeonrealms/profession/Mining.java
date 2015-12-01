@@ -249,13 +249,11 @@ public class Mining implements GenericMechanic {
 			ArrayList<String> lore = new ArrayList<String>();
 	        String expBar = ChatColor.RED + "||||||||||" + "||||||||||" + "||||||||||";
 	        lore.add(ChatColor.GRAY.toString() + "Level: " + ChatColor.WHITE.toString() + lvl);
-	        lore.add(ChatColor.GRAY.toString() + "EXP: " + ChatColor.WHITE+ + 0 + ChatColor.GRAY + "/" + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
-	        lore.add(" ");
-	        lore.add(expBar);
-	        lore.add(" ");
+	        lore.add(ChatColor.WHITE.toString() + 0 + ChatColor.GRAY + "/" + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
+	        lore.add(ChatColor.GRAY.toString() + "EXP: " + expBar);
 	        switch (tier) {
 	            case 1:
-	                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Wood");
+	                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of sturdy Wood");
 	                break;
 	            case 2:
 	                lore.add(ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "A pick made out of Stone");

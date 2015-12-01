@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -14,13 +15,20 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.anticheat.AntiCheat;
+import net.dungeonrealms.mastery.GamePlayer;
 import net.dungeonrealms.mechanics.ItemManager;
 import net.dungeonrealms.mechanics.generic.EnumPriority;
 import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.mongo.DatabaseAPI;
 import net.dungeonrealms.mongo.EnumData;
 import net.dungeonrealms.mongo.EnumOperators;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
@@ -49,6 +57,33 @@ public class BankMechanics implements GenericMechanic {
     @Override
 	public void startInitialization() {
         loadCurrency();
+        
+        
+        /**
+         * Random Place for this to start.
+         */
+        
+        // VERY DANGEROUS METHOD
+        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
+        for(GamePlayer gp : API.GAMEPLAYERS){
+        	if(gp == null || gp.getPlayer() == null)
+        		continue;
+        	if (gp.getStats().freePoints > 0) {
+            	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    TextComponent bungeeMessage = new TextComponent(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
+                    bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats"));
+                    bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Allocate Points!").create()));
+                    TextComponent test = new TextComponent(ChatColor.GREEN + "*" + ChatColor.GRAY +
+                			"You have available " + ChatColor.GREEN + "stat points." + ChatColor.GRAY +
+                			"To allocate click " );
+                    test.addExtra(bungeeMessage);
+                    test.addExtra(ChatColor.GREEN + "*");
+                    gp.getPlayer().spigot().sendMessage(test);
+            	});
+        	}
+        }
+        }, (20 * 60) * 10);
+        //Free Points every 10 minutes.
     }
 
     @Override
