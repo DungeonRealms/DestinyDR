@@ -336,7 +336,7 @@ public class DatabaseAPI {
                 new Document("info",
                         new Document("uuid", uuid.toString())
                                 .append("health", 50)
-                                .append("gems", 100)
+                                .append("gems", 0)
                                 .append("ecash", 0)
                                 .append("firstLogin", System.currentTimeMillis() / 1000L)
                                 .append("lastLogin", 0l)
