@@ -209,8 +209,12 @@ public class GamePlayer {
         double experience = getExperience();
         double subBonus = 0;
         if (level > 100) return;
-        boolean isSub = Rank.getInstance().getRank(T.getUniqueId()).getName().contains("SUB");
+        boolean isSub = Rank.getInstance().getRank(T.getUniqueId()).getName().equalsIgnoreCase("SUB");
+        boolean isSubPlus = Rank.getInstance().getRank(T.getUniqueId()).getName().equalsIgnoreCase("SUB+");
         if (isSub) {
+            subBonus = experienceToAdd * 0.05;
+        }
+        if (isSubPlus) {
             subBonus = experienceToAdd * 0.1;
         }
         double futureExperience = experience + experienceToAdd + subBonus;
@@ -224,7 +228,7 @@ public class GamePlayer {
         } else {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, futureExperience, true);
             if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
-                if (!isSub) {
+                if (!isSub && !isSubPlus) {
                     T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        +" + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience()) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
                 } else {
                     T.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "        +" + ChatColor.YELLOW + Math.round(experienceToAdd) + " (+" + Math.round(subBonus) + ")" + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience()) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
