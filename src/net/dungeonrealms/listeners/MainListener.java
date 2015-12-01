@@ -76,6 +76,7 @@ public class MainListener implements Listener {
                 public void callback(Throwable failCause, UpdateResult result) {
                     if (result.wasAcknowledged()) {
                         player.sendMessage(ChatColor.GREEN + "You have received: " + ChatColor.LIGHT_PURPLE + "30 E-CASH " + ChatColor.GREEN + " for voting!");
+                        Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
                     }
                 }
             });
