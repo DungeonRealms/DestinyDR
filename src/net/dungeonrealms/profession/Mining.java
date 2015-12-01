@@ -1,9 +1,9 @@
 package net.dungeonrealms.profession;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Random;
-
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.mastery.Utils;
+import net.dungeonrealms.mechanics.generic.EnumPriority;
+import net.dungeonrealms.mechanics.generic.GenericMechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -13,10 +13,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.generic.EnumPriority;
-import net.dungeonrealms.mechanics.generic.GenericMechanic;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Random;
 
 /**
  * Created by Chase on Oct 27, 2015
@@ -253,19 +252,19 @@ public class Mining implements GenericMechanic {
 	        lore.add(ChatColor.GRAY.toString() + "EXP: " + expBar);
 	        switch (tier) {
 	            case 1:
-	                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALICS + "A pick made out of sturdy wood.");
+	                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pick made out of sturdy wood.");
 	                break;
 	            case 2:
-	                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALICS + "A pickaxe made out of cave stone.");
+	                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of cave stone.");
 	                break;
 	            case 3:
-	                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALICS + "A pickaxe made out of forged iron.");
+	                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of forged iron.");
 	                break;
 	            case 4:
-	                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALICS + "A pickaxe made out of hardened diamond.");
+	                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of hardened diamond.");
 	                break;
 	            case 5:
-	                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALICS + "A pickaxe made out of reinforced gold.");
+	                lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of reinforced gold.");
 	                break;
 	            default:
 	                break;
