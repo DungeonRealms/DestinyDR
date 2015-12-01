@@ -117,19 +117,23 @@ public class NetworkAPI implements PluginMessageListener {
      * @since 1.0
      */
     public void sendAllGuildMessage(String guildName, String message) {
-        if (Bukkit.getOnlinePlayers().size() < 1) return;
-        ArrayList<String> members = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, guildName);
-        ArrayList<String> officers = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, guildName);
+        try {
+            if (Bukkit.getOnlinePlayers().size() < 1) return;
+            ArrayList<String> members = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, guildName);
+            ArrayList<String> officers = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, guildName);
 
-        if (members.isEmpty() && officers.isEmpty()) {
-            return;
+            if (members.isEmpty() && officers.isEmpty()) {
+                return;
+            }
+
+            members.addAll(officers);
+            members.add((String) DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, guildName));
+            members.add((String) DatabaseAPI.getInstance().getData(EnumGuildData.CO_OWNER, guildName));
+
+            members.stream().filter(s -> s != null && !s.equals("") && Bukkit.getPlayer(UUID.fromString(s)) != null).forEach(s -> Bukkit.getPlayer(UUID.fromString(s)).sendMessage("[" + ChatColor.GREEN + guildName + ChatColor.RESET + "]" + " " + message));
+
+        } catch (Exception e) {
         }
-
-        members.addAll(officers);
-        members.add((String) DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, guildName));
-        members.add((String) DatabaseAPI.getInstance().getData(EnumGuildData.CO_OWNER, guildName));
-
-        members.stream().filter(s -> s != null && !s.equals("") && Bukkit.getPlayer(UUID.fromString(s)) != null).forEach(s -> Bukkit.getPlayer(UUID.fromString(s)).sendMessage("[" + ChatColor.GREEN + guildName + ChatColor.RESET + "]" + " " + message));
     }
 
 }
