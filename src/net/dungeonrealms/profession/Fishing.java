@@ -211,25 +211,35 @@ public class Fishing implements GenericMechanic {
 	}
 
 	/**
-	 * Add Expereicen to the specified stack(fishing pole)
+	 * Add Experience to the specified stack(fishing pole)
 	 * 
 	 * @param stack
 	 */
 	public static void gainExp(ItemStack stack, Player p) {
 		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        int tier  = Fishing.getRodTier(stack);
+//        int lvl = nms.getTag().getInt("level")
 		int xp = nms.getTag().getInt("XP");
-		int maxXP = nms.getTag().getInt("maxXP");
+		int maxXP = Fishing.getMaxXP(tier);
 		xp += 25;
 		nms.getTag().setInt("XP", xp);
-
 		ItemMeta meta = stack.getItemMeta();
-		
         ArrayList<String> lore = new ArrayList<String>();
-        String expBar = "||||||||||" + "||||||||||" + "||||||||||";
-        lore.add(ChatColor.GREEN.toString() + xp + "/" + maxXP);
-        lore.add(" ");
-        lore.add(expBar);
-        lore.add(" ");
+        String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
+        double percentDone = 100.0 * xp / maxXP;
+        double percentDoneDisplay = (percentDone / 100) * 50.0D;
+        int display = (int) percentDoneDisplay;
+        if (display <= 0) {
+        	display = 1;
+        }
+        if (display > 50) {
+        	display = 50;
+        }
+        expBar = ChatColor.GREEN.toString() + expBar.substring(0, display) + ChatColor.RED.toString()
+        	        + expBar.substring(display, expBar.length());
+        lore.add(ChatColor.GRAY.toString() + "Tier: " + ChatColor.WHITE.toString() + tier);
+        lore.add(ChatColor.WHITE.toString() + xp + ChatColor.GRAY + "/" + ChatColor.GRAY + maxXP);
+        lore.add(ChatColor.GRAY.toString() + "EXP: " + expBar);
 		meta.setLore(lore);
 		stack.setItemMeta(meta);
 		p.setItemInHand(stack);
