@@ -108,7 +108,7 @@ public class MainListener implements Listener {
         Player player = event.getPlayer();
         player.getInventory().clear();
         player.setGameMode(GameMode.ADVENTURE);
-        player.teleport(new Location(Bukkit.getWorlds().get(0), -350.5, 77.5, 373.5, 0f, 0f));
+        player.teleport(new Location(Bukkit.getWorlds().get(0), 0, 0, 0, 0f, 0f));
         BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.GREEN.toString() + ChatColor.BOLD + "Fetching Data...");
         ItemStack[] armor = player.getInventory().getArmorContents();
         for (int i = 0; i < armor.length; i++) {
@@ -398,6 +398,9 @@ public class MainListener implements Listener {
         }
         if (npcNameStripped.equalsIgnoreCase("Innkeeper")) {
             NPCMenus.openHearthstoneRelocateMenu(event.getPlayer());
+        }
+        if (npcNameStripped.equalsIgnoreCase("Ship Captain")) {
+            event.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -378, 85, 362));
         }
     }
 
