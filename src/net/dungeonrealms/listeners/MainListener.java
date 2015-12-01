@@ -14,6 +14,7 @@ import net.dungeonrealms.entities.utils.MountUtils;
 import net.dungeonrealms.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.events.PlayerMessagePlayerEvent;
 import net.dungeonrealms.handlers.KarmaHandler;
+import net.dungeonrealms.handlers.TutorialIslandHandler;
 import net.dungeonrealms.inventory.GUI;
 import net.dungeonrealms.inventory.NPCMenus;
 import net.dungeonrealms.mastery.Utils;
@@ -401,6 +402,7 @@ public class MainListener implements Listener {
         }
         if (npcNameStripped.equalsIgnoreCase("Ship Captain")) {
             event.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -378, 85, 362));
+            TutorialIslandHandler.getInstance().giveStarterKit(event.getPlayer());
         }
     }
     /**
