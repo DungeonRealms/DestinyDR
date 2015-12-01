@@ -49,7 +49,9 @@ import java.io.IOException;
  *
  * Written by Nick Doran (xFinityPro) <nick@cherryio.com>, October 2015 -
  * Written by Kieran Quigley (Proxying) <Proxying@cherryio.com>, October 2015 -
- * Written by Chase Myers  (Xwaffle) <chase@cherryio.com>, October 2015 -
+ *
+ * Previous Developers -
+ *   *  Written by Chase Myers  (Xwaffle) <chase@cherryio.com>, October 2015 - November 30th 2015. (11/30/2015)
  *
  *
  * (a) Anyone who violates any of the exclusive rights of the copyright owners as
