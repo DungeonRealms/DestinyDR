@@ -1,33 +1,33 @@
 package net.dungeonrealms;
 
-import net.dungeonrealms.banks.BankMechanics;
-import net.dungeonrealms.combat.CombatLog;
-import net.dungeonrealms.commands.*;
-import net.dungeonrealms.commands.generic.CommandManager;
-import net.dungeonrealms.donate.DonationEffects;
-import net.dungeonrealms.entities.Entities;
-import net.dungeonrealms.entities.utils.PetUtils;
-import net.dungeonrealms.handlers.*;
-import net.dungeonrealms.listeners.*;
-import net.dungeonrealms.loot.LootManager;
-import net.dungeonrealms.mastery.AsyncUtils;
-import net.dungeonrealms.mastery.Utils;
-import net.dungeonrealms.mechanics.DungeonManager;
-import net.dungeonrealms.mechanics.generic.MechanicManager;
-import net.dungeonrealms.mongo.Database;
-import net.dungeonrealms.mongo.DatabaseAPI;
-import net.dungeonrealms.mongo.achievements.AchievementManager;
-import net.dungeonrealms.network.NetworkAPI;
-import net.dungeonrealms.network.NetworkServer;
-import net.dungeonrealms.party.Affair;
-import net.dungeonrealms.profession.Fishing;
-import net.dungeonrealms.profession.Mining;
-import net.dungeonrealms.rank.Rank;
-import net.dungeonrealms.shops.ShopMechanics;
-import net.dungeonrealms.spawning.BuffManager;
-import net.dungeonrealms.spawning.SpawningMechanics;
-import net.dungeonrealms.teleportation.Teleportation;
-import net.dungeonrealms.world.realms.Instance;
+import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.commands.*;
+import net.dungeonrealms.game.commands.generic.CommandManager;
+import net.dungeonrealms.game.donate.DonationEffects;
+import net.dungeonrealms.game.world.entities.Entities;
+import net.dungeonrealms.game.world.entities.utils.PetUtils;
+import net.dungeonrealms.game.handlers.*;
+import net.dungeonrealms.game.listeners.*;
+import net.dungeonrealms.game.world.loot.LootManager;
+import net.dungeonrealms.game.mastery.AsyncUtils;
+import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanics.DungeonManager;
+import net.dungeonrealms.game.mechanics.generic.MechanicManager;
+import net.dungeonrealms.game.mongo.Database;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.achievements.AchievementManager;
+import net.dungeonrealms.game.network.NetworkAPI;
+import net.dungeonrealms.game.network.NetworkServer;
+import net.dungeonrealms.game.world.party.Affair;
+import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.game.world.shops.ShopMechanics;
+import net.dungeonrealms.game.world.spawning.BuffManager;
+import net.dungeonrealms.game.world.spawning.SpawningMechanics;
+import net.dungeonrealms.game.world.teleportation.Teleportation;
+import net.dungeonrealms.game.world.realms.Instance;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -189,7 +189,6 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandStop("stop", "/<command> [args]", "The stop command."));
         cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "The roll command."));
         cm.registerCommand(new CommandStuck("stuck", "/<command> [args]", "The stuck command."));
-        cm.registerCommand(new CommandRedeem("redeem", "/<command> [args]", "The redeem command."));
 
         cm.registerCommand(new CommandPl("pinvite", "/<command> [args]", "Will invite a player to a party and create one!"));
         cm.registerCommand(new CommandPAccept("paccept", "/<command> [args]", "Accept a party invitation."));
@@ -223,8 +222,8 @@ public class DungeonRealms extends JavaPlugin {
         API.logoutAllPlayers();
         mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
-        Database.mongoClient.close();
         AsyncUtils.pool.shutdown();
+        Database.mongoClient.close();
     }
 
 }
