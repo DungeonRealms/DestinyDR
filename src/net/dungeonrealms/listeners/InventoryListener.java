@@ -267,12 +267,12 @@ public class InventoryListener implements Listener {
                 }
                 String new_armor_name = "";
                 String old_armor_name = "";
-                if (event.getNewArmorPiece().getType() == Material.AIR) {
+                if (event.getOldArmorPiece() == null || event.getNewArmorPiece().getType() == Material.AIR) {
                     new_armor_name = "NOTHING";
                 } else {
                     new_armor_name = event.getNewArmorPiece().getItemMeta().getDisplayName();
                 }
-                if (event.getOldArmorPiece().getType() == Material.AIR) {
+                if (event.getOldArmorPiece() == null || event.getOldArmorPiece().getType() == Material.AIR) {
                     old_armor_name = "NOTHING";
                 } else {
                     old_armor_name = event.getOldArmorPiece().getItemMeta().getDisplayName();
