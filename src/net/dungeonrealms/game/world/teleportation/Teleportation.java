@@ -12,6 +12,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -84,6 +85,14 @@ public class Teleportation implements GenericMechanic {
         Overworld = new Location(Bukkit.getWorlds().get(0), -1158, 96, -515, 91F, 1F);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             for (Map.Entry<UUID, Integer> e : PLAYER_TELEPORT_COOLDOWNS.entrySet()) {
+                if (e.getValue() == 0) {
+                    Player player = Bukkit.getPlayer(e.getKey());
+                    if (!player.hasMetadata("hearthstoneReady")) {
+                        player.sendMessage(ChatColor.RED + "Your Hearthstone is ready.");
+                        player.setMetadata("hearthstoneReady", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+                    }
+                    continue;
+                }
                 TeleportAPI.addPlayerHearthstoneCD(e.getKey(), (e.getValue() - 1));
             }
         }, 20L, 20L);

@@ -48,7 +48,7 @@ public class Affair implements GenericMechanic {
                 updateParties();
             }
 
-        }), 0, 40);
+        }), 0, 15);
     }
 
     public void invitePlayer(Player inviting, Player invitor) {
