@@ -251,8 +251,6 @@ public class InventoryListener implements Listener {
                         return;
                     }
                     break;
-                default:
-                    Utils.log.warning(event.getPlayer().getName() + " tried to equip an unknown tier level item!: " + a.getArmorTier().getTierId());
             }
         }
 
@@ -487,6 +485,11 @@ public class InventoryListener implements Listener {
         net.minecraft.server.v1_8_R3.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
         if (cursorItem.getType() != Material.MAGMA_CREAM || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || nmsCursor.getTag().hasKey("type") && !nmsCursor.getTag().getString("type").equalsIgnoreCase("orb"))
             return;
+        if(API.getGamePlayer((Player) event.getWhoClicked()).getLevel() < 30){
+        	event.setCancelled(true);
+        	event.getWhoClicked().sendMessage(ChatColor.RED + "You must be level 30 to use Orbs of Alteration");
+        	return;
+        }
         ItemStack slotItem = event.getCurrentItem();
         if (!API.isWeapon(slotItem) && !API.isArmor(slotItem)) return;
         if (slotItem == null || slotItem.getType() == Material.AIR) return;

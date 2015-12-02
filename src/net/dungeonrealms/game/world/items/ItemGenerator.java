@@ -454,7 +454,7 @@ public class ItemGenerator {
         List<String> itemLore = new ArrayList<>();
         
         if(meta.getLore() != null)
-            itemLore.addAll(meta.getLore().stream().filter(lore -> lore.startsWith(ChatColor.WHITE + "Damage: ")).collect(Collectors.toList()));
+            itemLore.addAll(meta.getLore().stream().filter(lore -> lore.startsWith(ChatColor.WHITE + "DMG: ")).collect(Collectors.toList()));
         HashMap<Item.AttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
         ItemType type = attribute.getItemType();
         attributeTypes.stream().filter(aType -> aType != null && aType != AttributeType.DAMAGE).forEach(aType -> {
@@ -497,7 +497,7 @@ public class ItemGenerator {
             EquipmentType type = attribute.getArmorType();
             int modifierID = nmsStack.getTag().getInt("armorModifier");
             if(meta.getLore() != null)
-                itemLore.addAll(meta.getLore().stream().filter(lore -> lore.contains("Health Points") || lore.contains("Health Regen") || lore.contains("Energy Regen")).collect(Collectors.toList()));
+                itemLore.addAll(meta.getLore().stream().filter(lore -> lore.contains("HP:") || lore.contains("HP REGEN:") || lore.contains("ENERGY REGEN: ")).collect(Collectors.toList()));
                 
             
             

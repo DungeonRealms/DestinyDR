@@ -169,14 +169,14 @@ public class ShopListener implements Listener {
 									net.minecraft.server.v1_8_R3.ItemStack newNMS = CraftItemStack.asNMSCopy(stack);
 									newNMS.getTag().setInt("Price", number);
 									if (shop.inventory.firstEmpty() >= 0) {
-										shop.inventory.addItem(CraftItemStack.asBukkitCopy(newNMS));
+										int slot = shop.inventory.firstEmpty();
+										shop.inventory.setItem(slot, CraftItemStack.asBukkitCopy(newNMS));
 										clicker.playSound(clicker.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
 
 										clicker.sendMessage(new String[] {
 						                        ChatColor.YELLOW.toString() + "Price set. Right-Click item to edit.",
 						                        ChatColor.YELLOW + "Left Click the item to remove it from your shop." });
-
-										clicker.getInventory().remove(itemHeld);
+										clicker.getInventory().setItem(slot, new ItemStack(Material.AIR));
 									} else {
 										clicker.getInventory().addItem(itemHeld);
 										clicker.sendMessage("There is no room for this item in your Shop");
