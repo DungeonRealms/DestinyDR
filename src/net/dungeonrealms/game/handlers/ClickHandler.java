@@ -5,16 +5,8 @@ import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.donate.DonationEffects;
-import net.dungeonrealms.game.world.entities.utils.EntityAPI;
-import net.dungeonrealms.game.world.entities.utils.MountUtils;
-import net.dungeonrealms.game.world.entities.utils.PetUtils;
 import net.dungeonrealms.game.guild.Guild;
-import net.dungeonrealms.game.player.inventory.NPCMenus;
-import net.dungeonrealms.game.player.inventory.PlayerMenus;
-import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
@@ -23,9 +15,16 @@ import net.dungeonrealms.game.miscellaneous.TradeCalculator;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.mongo.achievements.Achievements;
 import net.dungeonrealms.game.network.NetworkAPI;
+import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.inventory.NPCMenus;
+import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.stats.StatsManager;
+import net.dungeonrealms.game.world.entities.utils.EntityAPI;
+import net.dungeonrealms.game.world.entities.utils.MountUtils;
+import net.dungeonrealms.game.world.entities.utils.PetUtils;
+import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -484,7 +483,6 @@ public class ClickHandler {
                                     
                                     for(ItemStack stack : tradeWindow.getContents()){
                                     	if(stack != null && stack.getType() == Material.MAGMA_CREAM){
-                            				Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.YOURE_WELCOME);
                             				break;
                                     	}
                                     }

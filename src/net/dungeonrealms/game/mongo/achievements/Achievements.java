@@ -204,9 +204,6 @@ public class Achievements {
                 "Vote for DungeonRealms!",
         }, 1000, "achievement.you_voted"),
         
-        YOURE_WELCOME(29, "You're Welcome", new String[] {
-        	"Thank Xwaffle for your first orb.",	
-        }, 200, "achievement.youre_welcome")
         ;
 
         private int id;
