@@ -23,6 +23,7 @@ import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.inventory.GUI;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
@@ -70,22 +71,64 @@ public class MainListener implements Listener {
     public void onVote(VotifierEvent event) {
         if (Bukkit.getPlayer(event.getVote().getUsername()) != null) {
             Player player = Bukkit.getPlayer(event.getVote().getUsername());
-            player.sendMessage(ChatColor.GREEN + "You have received: " + ChatColor.LIGHT_PURPLE + "30 E-CASH " + ChatColor.GREEN + " for voting!");
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 30, true, new Callback<UpdateResult>(UpdateResult.class) {
-                @Override
-                public void callback(Throwable failCause, UpdateResult result) {
-                    if (result.wasAcknowledged()) {
-                        player.sendMessage(ChatColor.GREEN + "You have received: " + ChatColor.LIGHT_PURPLE + "30 E-CASH " + ChatColor.GREEN + " for voting!");
-                        Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
-                    }
-                }
-            });
+
+            String rank = Rank.getInstance().getRank(player.getUniqueId()).getName();
+
+            switch (rank.toLowerCase()) {
+                case "default":
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 15, true, new Callback<UpdateResult>(UpdateResult.class) {
+                        @Override
+                        public void callback(Throwable failCause, UpdateResult result) {
+                            if (result.wasAcknowledged()) {
+                                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
+                                player.sendMessage(ChatColor.GRAY + "You received the default voting reward because you do not have a subscriber rank.");
+                                Bukkit.broadcastMessage(ChatColor.AQUA + player.getName() + ChatColor.RED + " has voted at " + ChatColor.AQUA + "http://minecraftservers.org/server/298658 " + ChatColor.RED + "and received " + ChatColor.AQUA + "15 ECASH " + ChatColor.RED + "and " + ChatColor.AQUA + "");
+                            }
+                        }
+                    });
+                    break;
+                case "sub":
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 20, true, new Callback<UpdateResult>(UpdateResult.class) {
+                        @Override
+                        public void callback(Throwable failCause, UpdateResult result) {
+                            if (result.wasAcknowledged()) {
+                                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB);
+                                player.sendMessage(ChatColor.GRAY + "You received an extra +5 ecash because of your subscriber rank.");
+                                Bukkit.broadcastMessage(ChatColor.AQUA + player.getName() + ChatColor.RED + " has voted at " + ChatColor.AQUA + "http://minecraftservers.org/server/298658 " + ChatColor.RED + "and received " + ChatColor.AQUA + "20 ECASH " + ChatColor.RED + "and " + ChatColor.AQUA + "");
+                            }
+                        }
+                    });
+                    break;
+                case "sub+":
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 25, true, new Callback<UpdateResult>(UpdateResult.class) {
+                        @Override
+                        public void callback(Throwable failCause, UpdateResult result) {
+                            if (result.wasAcknowledged()) {
+                                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB_PLUS);
+                                player.sendMessage(ChatColor.GRAY + "You received an extra 10 ecash because of your subscriber rank.");
+                                Bukkit.broadcastMessage(ChatColor.AQUA + player.getName() + ChatColor.RED + " has voted at " + ChatColor.AQUA + "http://minecraftservers.org/server/298658 " + ChatColor.RED + "and received " + ChatColor.AQUA + "25 ECASH " + ChatColor.RED + "and " + ChatColor.AQUA + "");
+                            }
+                        }
+                    });
+                    break;
+                default:
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 15, true, new Callback<UpdateResult>(UpdateResult.class) {
+                        @Override
+                        public void callback(Throwable failCause, UpdateResult result) {
+                            if (result.wasAcknowledged()) {
+                                player.sendMessage(ChatColor.GRAY + "ERROR: Please contact a[n] Developer w/ ERROR CODE b_2818z@!1-VOTE");
+                                Bukkit.broadcastMessage(ChatColor.AQUA + player.getName() + ChatColor.RED + " has voted at " + ChatColor.AQUA + "http://minecraftservers.org/server/298658 " + ChatColor.RED + "and received " + ChatColor.AQUA + "15 ECASH " + ChatColor.RED + "and " + ChatColor.AQUA + "");
+                            }
+                        }
+                    });
+            }
         } else {
             /*
             This shouldn't ever happen because the Bungee plugin passes the vote down to the
             server that the player joins, but.. if it does happen!
              */
-            DatabaseAPI.getInstance().update(UUID.fromString(event.getVote().getUsername()), EnumOperators.$INC, EnumData.ECASH, 30, false);
+            DatabaseAPI.getInstance().update(UUID.fromString(event.getVote().getUsername()), EnumOperators.$INC, EnumData.ECASH, 15, false);
+            Utils.log.warning("Unable to process rank for user: " + event.getVote().getUsername() + " the vote was passed to the server and the player ISNT ONLINE WTF?");
         }
     }
 
@@ -153,9 +196,9 @@ public class MainListener implements Listener {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
                 () -> API.handleLogin(player.getUniqueId()), 20L * 3);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                () ->{
-                    if((boolean) DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, uuid))
-                  		player.sendMessage(ChatColor.YELLOW  + ChatColor.BOLD.toString() + "You have Combat Logged and someone killed your body while you were gone!"); 
+                () -> {
+                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, uuid))
+                        player.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "You have Combat Logged and someone killed your body while you were gone!");
                 }, 20L * 7);
 
     }
@@ -416,7 +459,7 @@ public class MainListener implements Listener {
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Food Vendor")) {
-        	NPCMenus.openFoodVendorMenu(event.getPlayer());
+            NPCMenus.openFoodVendorMenu(event.getPlayer());
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Item Vendor")) {

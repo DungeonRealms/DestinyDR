@@ -24,13 +24,13 @@ public class CommandStop extends BasicCommand {
 
     @Override
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
-    	if(s instanceof Player){
-    		Player player = (Player)s;
-    		if (!player.isOp()) {
-    			player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
-    			return false;
-        	}
-    	}
+        if (s instanceof Player) {
+            Player player = (Player) s;
+            if (!player.isOp()) {
+                player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
+                return false;
+            }
+        }
         DungeonRealms.getInstance().setFinishedSetup(false);
         DungeonRealms.getInstance().saveConfig();
         ShopMechanics.deleteAllShops();

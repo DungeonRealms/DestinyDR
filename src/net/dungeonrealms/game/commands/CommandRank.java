@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -10,8 +11,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-
-import java.util.UUID;
 
 /**
  * Created by Nick on 9/27/2015.
@@ -33,7 +32,7 @@ public class CommandRank extends BasicCommand {
                     Rank.getInstance().setRank(Bukkit.getPlayer(args[1]).getUniqueId(), args[2]);
                     DatabaseAPI.getInstance().update(Bukkit.getPlayer(args[1]).getUniqueId(), EnumOperators.$SET, EnumData.RANK, args[2], true);
                 } else {
-                    DatabaseAPI.getInstance().update(UUID.fromString(args[1]), EnumOperators.$SET, EnumData.RANK, args[2], false);
+                    Utils.log.warning("Unable to rank: " + args[1] + " due to them not being online!");
                 }
             } else if (args[0].equals("create")) {
                 if (args[1] == null || args[2] == null || args[3] == null) return false;
