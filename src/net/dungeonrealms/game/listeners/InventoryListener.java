@@ -251,8 +251,6 @@ public class InventoryListener implements Listener {
                         return;
                     }
                     break;
-                default:
-                    Utils.log.warning(event.getPlayer().getName() + " tried to equip an unknown tier level item!: " + a.getArmorTier().getTierId());
             }
         }
 
