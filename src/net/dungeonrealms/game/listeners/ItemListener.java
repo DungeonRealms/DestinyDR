@@ -14,6 +14,7 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -31,6 +32,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.PotionSplashEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerItemBreakEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -295,6 +297,22 @@ public class ItemListener implements Listener {
                     HealthHandler.getInstance().healPlayerByAmount((Player) entity, nmsItem.getTag().getInt("healAmount"));
                 }
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onItemBreak(PlayerItemBreakEvent event) {
+        if (!RepairAPI.isItemArmorOrWeapon(event.getBrokenItem())) return;
+        if (RepairAPI.getCustomDurability(event.getBrokenItem()) - 1 > 0.1D) {
+            ItemStack brokenItem = event.getBrokenItem();
+            if (event.getPlayer().getInventory().contains(brokenItem)) {
+                event.getPlayer().getInventory().remove(brokenItem);
+            }
+            RepairAPI.setCustomItemDurability(brokenItem, RepairAPI.getCustomDurability(brokenItem));
+            if (event.getPlayer().getInventory().contains(brokenItem)) {
+                event.getPlayer().getInventory().remove(brokenItem);
+            }
+            event.getPlayer().getInventory().addItem(brokenItem);
         }
     }
 }
