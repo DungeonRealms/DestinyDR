@@ -323,8 +323,18 @@ public class API {
      * @since 1.0
      */
     public static List<Player> getNearbyPlayers(Location location, int radius) {
-        return location.getWorld().getPlayers().stream()
-                .filter(player -> location.distance(player.getLocation()) <= radius).collect(Collectors.toList());
+        List<Player> playersNearby = new ArrayList<>();
+        for (Player player : location.getWorld().getPlayers()) {
+            if (!API.isPlayer(player)) {
+                continue;
+            }
+            if (location.distanceSquared(player.getLocation()) <= radius * radius) {
+                if (!playersNearby.contains(player)) {
+                    playersNearby.add(player);
+                }
+            }
+        }
+        return playersNearby;
     }
 
     /**
