@@ -5,14 +5,14 @@ import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.handlers.HealthHandler;
-import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
@@ -297,4 +297,20 @@ public class ItemListener implements Listener {
             }
         }
     }
+
+    /*@EventHandler(priority = EventPriority.NORMAL)
+    public void onItemBreak(PlayerItemBreakEvent event) {
+        if (!RepairAPI.isItemArmorOrWeapon(event.getBrokenItem())) return;
+        if (RepairAPI.getCustomDurability(event.getBrokenItem()) - 1 > 0.1D) {
+            ItemStack brokenItem = event.getBrokenItem();
+            if (event.getPlayer().getInventory().contains(brokenItem)) {
+                event.getPlayer().getInventory().remove(brokenItem);
+            }
+            RepairAPI.setCustomItemDurability(brokenItem, RepairAPI.getCustomDurability(brokenItem));
+            if (event.getPlayer().getInventory().contains(brokenItem)) {
+                event.getPlayer().getInventory().remove(brokenItem);
+            }
+            event.getPlayer().getInventory().addItem(brokenItem);
+        }
+    }*/
 }

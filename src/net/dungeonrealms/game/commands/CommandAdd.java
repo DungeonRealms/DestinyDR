@@ -16,6 +16,7 @@ import net.dungeonrealms.game.mastery.RealmManager;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.world.glyph.Glyph;
+import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.realms.Instance;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
@@ -51,6 +52,9 @@ public class CommandAdd extends BasicCommand {
         if (args.length > 0) {
             int tier;
             switch (args[0]) {
+                case "pcheck":
+                    player.sendMessage(ChatColor.GREEN + "There are " + String.valueOf(Affair.getInstance()._parties.size()));
+                    break;
                 case "check":
                     player.sendMessage("YOUR REALM EXIST? " + String.valueOf(Instance.getInstance().doesRemoteRealmExist(player.getUniqueId().toString())));
                     break;
