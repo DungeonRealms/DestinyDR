@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.party;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import org.bukkit.Bukkit;
@@ -32,13 +33,12 @@ public class Affair implements GenericMechanic {
         return EnumPriority.CATHOLICS;
     }
 
-    CopyOnWriteArrayList<AffairO> _parties = new CopyOnWriteArrayList<>();
+    public CopyOnWriteArrayList<AffairO> _parties = new CopyOnWriteArrayList<>();
     public static ConcurrentHashMap<Player, AffairO> _invitations = new ConcurrentHashMap<>();
 
     @Override
     public void startInitialization() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> _parties.stream().forEach(party -> {
-
             if (party.getOwner() == null) {
                 removeParty(party);
             } else {
@@ -48,13 +48,12 @@ public class Affair implements GenericMechanic {
                 updateParties();
             }
 
-
-        }), 0, 15);
+        }), 0, 40);
     }
 
     public void invitePlayer(Player inviting, Player invitor) {
         _invitations.put(inviting, getParty(invitor).get());
-        inviting.sendMessage(ChatColor.LIGHT_PURPLE.toString() + ChatColor.UNDERLINE +  invitor.getName() + ChatColor.GRAY + " has invited you to join their party! Type " + ChatColor.LIGHT_PURPLE + "/paccept" + ChatColor.GRAY + " to join, or " + ChatColor.LIGHT_PURPLE + "/pdecline" + ChatColor.GRAY + " to decline.");
+        inviting.sendMessage(ChatColor.LIGHT_PURPLE.toString() + ChatColor.UNDERLINE + invitor.getName() + ChatColor.GRAY + " has invited you to join their party! Type " + ChatColor.LIGHT_PURPLE + "/paccept" + ChatColor.GRAY + " to join, or " + ChatColor.LIGHT_PURPLE + "/pdecline" + ChatColor.GRAY + " to decline.");
     }
 
     public void removeParty(AffairO party) {
@@ -67,6 +66,8 @@ public class Affair implements GenericMechanic {
             player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
             player.sendMessage(ChatColor.RED + "Your party has been disbanded!");
         });
+
+        Utils.log.info("Deleted Old Party: " + party.toString());
 
         _parties.remove(party);
     }
@@ -82,7 +83,7 @@ public class Affair implements GenericMechanic {
 
         party.getMembers().remove(player);
         player.sendMessage(ChatColor.RED + "You have left the party!");
-        
+
         party.getOwner().sendMessage(ChatColor.AQUA + player.getName() + " " + ChatColor.RED + "has left the party!");
         party.getMembers().stream().forEach(player1 -> player1.sendMessage(ChatColor.AQUA + player.getName() + " " + ChatColor.RED + "has left the party!"));
 
