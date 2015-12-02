@@ -711,7 +711,7 @@ public class InventoryListener implements Listener {
             List<String> itemLore = new ArrayList<>();
             itemLore.add(ItemGenerator.setCorrectItemLore(AttributeType.DAMAGE, finalDmg, att.getItemTier().getTierId()));
 
-            itemLore.addAll(lore.stream().filter(current -> !current.startsWith(ChatColor.WHITE + "Damage:")).collect(Collectors.toList()));
+            itemLore.addAll(lore.stream().filter(current -> !current.startsWith(ChatColor.WHITE + "DMG:")).collect(Collectors.toList()));
             nmsItem.getTag().setInt("enchant", amount + 1);
             nmsItem.getTag().setInt("damage", finalDmg);
             ItemStack newItem = CraftItemStack.asBukkitCopy(nmsItem);
@@ -745,7 +745,7 @@ public class InventoryListener implements Listener {
 
             int tier = nmsCursor.getTag().getInt("tier");
             int armorTier = nmsItem.getTag().getInt("armorTier");
-            if (tier > armorTier) {
+            if (tier != armorTier) {
                 event.getWhoClicked().sendMessage(ChatColor.RED + "You can not use that enchant scroll on this armor.");
                 return;
             }
@@ -858,7 +858,7 @@ public class InventoryListener implements Listener {
 
             ArrayList<String> lore = (ArrayList<String>) meta2.getLore();
             for (String current : lore) {
-                if (current.contains("Health Points") || current.contains("Health Regen") || current.contains("Energy Regen"))
+                if (current.contains("HP:") || current.contains("HP REGEN:") || current.contains("ENERGY REGEN:"))
                     continue;
                 itemLore.add(current);
             }
