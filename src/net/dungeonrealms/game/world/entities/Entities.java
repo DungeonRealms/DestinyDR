@@ -124,7 +124,7 @@ public class Entities implements GenericMechanic {
 					if (MONSTER_LAST_ATTACK.get(entity) == 14) {
 						EntityInsentient entityInsentient = (EntityInsentient) ((CraftEntity)entity).getHandle();
 						if (entityInsentient != null && entityInsentient.getGoalTarget() != null) {
-							if (entityInsentient.getGoalTarget().getBukkitEntity().getLocation().distanceSquared(entity.getLocation()) >= 4 && entityInsentient.getGoalTarget().getBukkitEntity().getLocation().distanceSquared(entity.getLocation()) <= 16) {
+							if (entityInsentient.getGoalTarget().getBukkitEntity().getLocation().distanceSquared(entity.getLocation()) >= 2 && entityInsentient.getGoalTarget().getBukkitEntity().getLocation().distanceSquared(entity.getLocation()) <= 25) {
 								if (entityInsentient.getGoalTarget().getBukkitEntity().getLocation().getBlockY() > entity.getLocation().getBlockY()) {
 									Location loc = entityInsentient.getGoalTarget().getBukkitEntity().getLocation();
 									((CraftEntity)entity).getHandle().setLocation(loc.getX(), loc.getY() + 1, loc.getZ(), loc.getYaw(), loc.getPitch());
