@@ -139,7 +139,8 @@ public class ShopListener implements Listener {
 						}
 						event.setCancelled(true);
 						event.setCursor(null);
-						clicker.getInventory().setItem(clicker.getInventory().firstEmpty(), itemHeld);
+						int playerSlot = clicker.getInventory().firstEmpty();
+						clicker.getInventory().setItem(playerSlot, itemHeld);
 						AnvilGUIInterface gui = AnvilApi.createNewGUI(clicker, event1 -> {
 							if (event1.getSlot() == AnvilSlot.OUTPUT) {
 								int number = 0;
@@ -176,7 +177,7 @@ public class ShopListener implements Listener {
 										clicker.sendMessage(new String[] {
 						                        ChatColor.YELLOW.toString() + "Price set. Right-Click item to edit.",
 						                        ChatColor.YELLOW + "Left Click the item to remove it from your shop." });
-										clicker.getInventory().setItem(slot, new ItemStack(Material.AIR));
+										clicker.getInventory().setItem(playerSlot, new ItemStack(Material.AIR));
 									} else {
 										clicker.getInventory().addItem(itemHeld);
 										clicker.sendMessage("There is no room for this item in your Shop");

@@ -345,7 +345,7 @@ public class API {
      */
     public static void handleLogout(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
-        if (CombatLog.isInCombat(player) && !DuelingMechanics.isDueling(uuid))
+        if (CombatLog.isInCombat(player) && !DuelingMechanics.isDueling(uuid) && !API.isNonPvPRegion(player.getLocation()))
             CombatLog.handleCombatLogger(player);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, false);
         if (BankMechanics.storage.containsKey(uuid)) {
