@@ -203,8 +203,10 @@ public class Achievements {
         VOTE(28, "Vote for the Server", new String[]{
                 "Vote for DungeonRealms!",
         }, 1000, "achievement.you_voted"),
-        
-        ;
+
+        VOTE_AS_SUB(29, "Vote as Subscriber", new String[]{}, 500, "achievement.vote_as_subscriber"),
+
+        VOTE_AS_SUB_PLUS(30, "Vote as Subscriber+", new String[]{}, 1000, "achievement.vote_as_subscriber+");
 
         private int id;
         private String name;

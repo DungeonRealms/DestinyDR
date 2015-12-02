@@ -59,8 +59,9 @@ public class LootSpawner {
 //			Utils.log.info(spawn_chance + " > " + do_i_spawn + " " + stack.getType());
 			if (spawn_chance >= do_i_spawn) {
 				if(stack.getType() == Material.IRON_SWORD){
-					int tier = CraftItemStack.asNMSCopy(stack).getTag().getInt("itemTier");
-					stack = LootManager.generateRandomTierItem(tier);
+//					int tier = CraftItemStack.asNMSCopy(stack).getTag().getInt("itemTier");
+//					stack = LootManager.generateRandomTierItem(tier);
+					continue;
 				}
 				count++;
 				inv.addItem(stack);
