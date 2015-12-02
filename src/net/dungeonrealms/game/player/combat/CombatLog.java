@@ -57,12 +57,18 @@ public class CombatLog implements GenericMechanic {
     public static void addToCombat(Player player) {
         if (!isInCombat(player)) {
             COMBAT.put(player, 10);
+            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+                player.sendMessage(ChatColor.RED + "Entering Combat");
+            }
         }
     }
 
     public static void removeFromCombat(Player player) {
         if (isInCombat(player)) {
             COMBAT.remove(player);
+            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
+                player.sendMessage(ChatColor.RED + "Leaving Combat");
+            }
         }
     }
 
