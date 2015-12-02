@@ -51,11 +51,11 @@ public class HealthHandler implements GenericMechanic {
     }
 
     public void startInitialization() {
-        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::updatePlayerHPBars, 40, 6L);
+        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::updatePlayerHPBars, 40, 8L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40, 20L);
     }
 
-    @Override
+        @Override
     public void stopInvocation() {
 
     }
@@ -153,7 +153,6 @@ public class HealthHandler implements GenericMechanic {
     public void setPlayerOverheadHP(Player player, int hp) {
         //Check their Max HP from wherever we decide to store it, get it as a percentage.
         //Update BarAPI thing with it.
-        ScoreboardHandler.getInstance().updatePlayerHP(player, hp);
         if (!API.isPlayer(player)) {
             return;
         }
@@ -161,6 +160,7 @@ public class HealthHandler implements GenericMechanic {
         if (gamePlayer == null) {
             return;
         }
+        ScoreboardHandler.getInstance().updatePlayerHP(player, hp);
         double maxHP = getPlayerMaxHPLive(player);
         double healthPercentage = ((double) hp / maxHP);
         if (healthPercentage * 100.0F > 100.0F) {
