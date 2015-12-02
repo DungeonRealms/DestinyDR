@@ -111,7 +111,7 @@ public class ItemManager {
 	public static ItemStack createProtectScroll(int tier){
     	String material = getMatString(tier);
     	ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() +ChatColor.BOLD.toString() + "White Scroll: " + API.getTierColor(tier) + "Protect " + material + " Equipment" , new String[]{
-    			ChatColor.GRAY.toString() + "Apply to any T" + tier + " item to " + ChatColor.UNDERLINE + " prevent " + ChatColor.GRAY + " it from being destroyed if the next enchantment scroll fails."});
+    			ChatColor.GRAY.toString() + "Apply to any T" + tier + " item to " + ChatColor.UNDERLINE + " prevent " + ChatColor.GRAY + " it from being", ChatColor.GRAY + "destroyed if the next enchantment scroll fails."});
     	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
     	nms.getTag().setString("type", "protection");
     	nms.getTag().setInt("tier", tier);

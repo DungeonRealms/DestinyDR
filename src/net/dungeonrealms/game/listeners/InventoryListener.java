@@ -218,6 +218,61 @@ public class InventoryListener implements Listener {
             }
         }
     }
+    
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void editPlayerAmor(InventoryClickEvent event){
+    	if(!event.getInventory().getTitle().contains("Armor"))return;
+    	String playerArmor = event.getInventory().getTitle().split(" ")[0];
+    	Player player = Bukkit.getPlayer(playerArmor);
+    	if(player != null){
+    		ItemStack[] contents = new ItemStack[4];
+    		for(int i = 0; i < 4; i++){
+    			if(event.getInventory().getItem(i) != null &&
+    			   event.getInventory().getItem(i).getType() != Material.AIR &&
+    			   API.isArmor(event.getInventory().getItem(i))){
+    				contents[i] = event.getInventory().getItem(i);
+    			}
+    		}
+    		player.getInventory().setArmorContents(contents);
+    		player.updateInventory();
+    	}
+    }
+    
+    
+    //Armor
+    /**
+     * Stop Shift Clicking Armor ABove Level possibility.
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void playerShiftClickArmor(InventoryClickEvent event){
+        if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
+    	if(event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+    	if(event.isShiftClick()){
+    		if(!API.isArmor(event.getCurrentItem())) return;
+            Attribute a = new Attribute(event.getCurrentItem());
+            Player player = (Player) event.getWhoClicked();
+            int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
+            switch (a.getArmorTier().getTierId()) {
+                case 4:
+                    if (playerLevel < 40) {
+                        event.setCancelled(true);
+                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 40");
+                        player.updateInventory();
+                        return;
+                    }
+                    break;
+                case 5:
+                    if (playerLevel < 60) {
+                        event.setCancelled(true);
+                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 60");
+                        player.updateInventory();
+                        return;
+                    }
+                    break;
+            }
+    	}
+    }
 
     /**
      * Called when a player equips armor
@@ -233,7 +288,7 @@ public class InventoryListener implements Listener {
             Attribute a = new Attribute(event.getNewArmorPiece());
 
             int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
-
+            
             switch (a.getArmorTier().getTierId()) {
                 case 4:
                     if (playerLevel < 40) {
@@ -893,7 +948,6 @@ public class InventoryListener implements Listener {
         int slotTier = 0;
         if (Mining.isDRPickaxe(slotItem) || Fishing.isDRFishingPole(slotItem)) {
             slotTier = Mining.getPickTier(slotItem);
-            Utils.log.info(slotTier + " != " + scrapTier);
             if (scrapTier != slotTier) return;
             if (cursorItem.getAmount() == 1) {
                 event.setCancelled(true);
@@ -948,7 +1002,6 @@ public class InventoryListener implements Listener {
         if (RepairAPI.isItemArmorOrWeapon(slotItem)) {
             slotTier = RepairAPI.getArmorOrWeaponTier(slotItem);
             if (scrapTier != slotTier) return;
-            if (slotItem.getDurability() == 0) return;
             if (cursorItem.getAmount() == 1) {
                 event.setCancelled(true);
                 event.setCursor(new ItemStack(Material.AIR));
