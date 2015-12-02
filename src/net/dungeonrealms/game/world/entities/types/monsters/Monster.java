@@ -32,7 +32,7 @@ public interface Monster {
 	public default void checkItemDrop(int tier, EnumMonster monter, Entity ent) {
 		Location loc = ent.getLocation();
 		World world = ((CraftWorld) loc.getWorld()).getHandle();
-		if (world.random.nextInt(100) <= 20) {
+		if (new Random().nextInt(100) <= 20) {
             double gem_drop_amount = 0;
             double drop_multiplier = 1;
             boolean is_elite = false;
@@ -43,7 +43,7 @@ public interface Monster {
             if (is_elite == true) {
                 drop_multiplier = 1.5;
             }
-            double gold_drop_multiplier = 1;  //TODO GEM DROP ENCHANTS?
+            double gold_drop_multiplier = 1;
             
             switch(tier){
             	case 1 :
@@ -66,6 +66,7 @@ public interface Monster {
 			ItemStack item = BankMechanics.gem.clone();
 			item.setAmount((int) (gem_drop_amount * drop_multiplier));
 			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), item);
+			return;
 		}
 		
 		if(((LivingEntity) ent).getEquipment().getItemInHand().getType() == Material.BOW){
@@ -74,6 +75,7 @@ public interface Monster {
 				int amount = (tier * 2); 
 				item.setAmount(amount);
 				world.getWorld().dropItemNaturally(loc.add(0, 2, 0), item);
+				return;
 			}
 		}
 		
@@ -95,7 +97,7 @@ public interface Monster {
 			chance = 10;
 			break;
 		}
-		if (RandomHelper.getRandomNumberBetween(0, 1000) <= chance) {
+		if (new Random().nextInt(1000) <= chance) {
 			ItemStack[] loot = new ItemStack[5];
 			ItemStack[] armor = ((LivingEntity) ent).getEquipment().getArmorContents();
 			ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
@@ -104,10 +106,12 @@ public interface Monster {
 			int number = RandomHelper.getRandomNumberBetween(0, 4);
 			ItemStack armorToDrop = loot[number];
 			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), armorToDrop);
+			return;
 		}
 		
-		if(RandomHelper.getRandomNumberBetween(1, 500) <= 2){
+		if(new Random().nextInt(500) <= 2){
 			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), ItemManager.createProtectScroll(tier));
+			return;
 		}
 	}
 }
