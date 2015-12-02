@@ -158,7 +158,7 @@ public class PetUtils implements GenericMechanic{
         switch (enumPets) {
             case CAVE_SPIDER: {
                 String customPetName = "Spider";
-                CaveSpider petCaveSpider = new CaveSpider(world, customPetName, player.getUniqueId(), EnumEntityType.PET);
+                CaveSpider petCaveSpider = new CaveSpider(world, player.getName() + "'s Pet", player.getUniqueId(), EnumEntityType.PET);
                 petCaveSpider.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petCaveSpider, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petCaveSpider.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
