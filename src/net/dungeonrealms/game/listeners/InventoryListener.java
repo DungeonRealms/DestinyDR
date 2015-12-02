@@ -586,7 +586,7 @@ public class InventoryListener implements Listener {
                 } else {
                     itemTier = nmsItem.getTag().getInt("itemTier");
                 }
-                if (tier > itemTier) {
+                if (tier != itemTier) {
                     event.getWhoClicked().sendMessage(ChatColor.RED + "This protection scroll is made for a higher tier!");
                     return;
                 }
@@ -913,8 +913,8 @@ public class InventoryListener implements Listener {
 
         if (pouchAmount < pouchMax) {
             player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
-            if (pouchAmount + amount >= pouchMax) {
-                amount = pouchMax - pouchAmount;
+            if (pouchAmount + amount > pouchMax) {
+                amount = pouchMax - (pouchAmount + amount);
                 event.setCurrentItem(BankMechanics.getInstance().createGemPouch(tier, pouchMax));
                 event.setCursor(BankMechanics.getInstance().createGems(amount));
             } else {
