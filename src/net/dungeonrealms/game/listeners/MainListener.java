@@ -607,8 +607,6 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMapDrop(PlayerDropItemEvent event) {
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
-        if (nms == null || !nms.hasTag())
-            return;
         if (!(event.isCancelled())) {
             Player pl = event.getPlayer();
             // The maps gonna drop! DESTROY IT!
@@ -619,10 +617,13 @@ public class MainListener implements Listener {
                 } else if (pl.getItemOnCursor().getType() == Material.MAP) {
                     pl.setItemOnCursor(new ItemStack(Material.AIR));
                 }
-
                 pl.playSound(pl.getLocation(), Sound.BAT_TAKEOFF, 1F, 2F);
                 pl.updateInventory();
-            } else if (nms.getTag().hasKey("subtype")) {
+                return;
+            }
+            if (nms == null || !nms.hasTag())
+                return;
+            if (nms.getTag().hasKey("subtype")) {
                 event.getItemDrop().remove();
             }
         }
