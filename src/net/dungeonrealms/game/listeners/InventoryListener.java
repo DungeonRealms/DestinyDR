@@ -1148,10 +1148,10 @@ public class InventoryListener implements Listener {
                 event.setCancelled(true);
                 event.setResult(Event.Result.DENY);
             }
-            if (event.getCurrentItem() != null && !(API.isItemTradeable(event.getCurrentItem()))) {
+            /*if (event.getCurrentItem() != null && !(API.isItemTradeable(event.getCurrentItem()))) {
                 event.setCancelled(true);
                 event.setResult(Event.Result.DENY);
-            }
+            }*/
         }
     }
 
