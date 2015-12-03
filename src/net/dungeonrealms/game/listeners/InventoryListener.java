@@ -3,15 +3,24 @@ package net.dungeonrealms.game.listeners;
 import ca.thederpygolems.armorequip.ArmorEquipEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.enchantments.EnchantmentAPI;
+import net.dungeonrealms.game.handlers.ClickHandler;
+import net.dungeonrealms.game.handlers.EnergyHandler;
+import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
-import net.dungeonrealms.game.enchantments.EnchantmentAPI;
-import net.dungeonrealms.game.handlers.ClickHandler;
-import net.dungeonrealms.game.handlers.EnergyHandler;
-import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.player.stats.PlayerStats;
+import net.dungeonrealms.game.player.stats.StatsManager;
+import net.dungeonrealms.game.player.trade.Trade;
+import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.world.glyph.Glyph;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.AttributeType;
@@ -20,16 +29,6 @@ import net.dungeonrealms.game.world.items.armor.Armor.ArmorAttributeType;
 import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
-import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanics.ItemManager;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.profession.Fishing;
-import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.player.stats.PlayerStats;
-import net.dungeonrealms.game.player.stats.StatsManager;
-import net.dungeonrealms.game.player.trade.Trade;
-import net.dungeonrealms.game.world.glyph.Glyph;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.Packet;
@@ -218,38 +217,40 @@ public class InventoryListener implements Listener {
             }
         }
     }
-    
+
     @EventHandler(priority = EventPriority.MONITOR)
-    public void editPlayerAmor(InventoryClickEvent event){
-    	if(!event.getInventory().getTitle().contains("Armor"))return;
-    	String playerArmor = event.getInventory().getTitle().split(" ")[0];
-    	Player player = Bukkit.getPlayer(playerArmor);
-    	if(player != null){
-    		ItemStack[] contents = new ItemStack[4];
-    		for(int i = 0; i < 4; i++){
-    			if(event.getInventory().getItem(i) != null &&
-    			   event.getInventory().getItem(i).getType() != Material.AIR &&
-    			   API.isArmor(event.getInventory().getItem(i))){
-    				contents[i] = event.getInventory().getItem(i);
-    			}
-    		}
-    		player.getInventory().setArmorContents(contents);
-    		player.updateInventory();
-    	}
+    public void editPlayerAmor(InventoryClickEvent event) {
+        if (!event.getInventory().getTitle().contains("Armor")) return;
+        String playerArmor = event.getInventory().getTitle().split(" ")[0];
+        Player player = Bukkit.getPlayer(playerArmor);
+        if (player != null) {
+            ItemStack[] contents = new ItemStack[4];
+            for (int i = 0; i < 4; i++) {
+                if (event.getInventory().getItem(i) != null &&
+                        event.getInventory().getItem(i).getType() != Material.AIR &&
+                        API.isArmor(event.getInventory().getItem(i))) {
+                    contents[i] = event.getInventory().getItem(i);
+                }
+            }
+            player.getInventory().setArmorContents(contents);
+            player.updateInventory();
+        }
     }
-    
-    
+
+
     //Armor
+
     /**
      * Stop Shift Clicking Armor ABove Level possibility.
+     *
      * @param event
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    public void playerShiftClickArmor(InventoryClickEvent event){
+    public void playerShiftClickArmor(InventoryClickEvent event) {
         if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
-    	if(event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
-    	if(event.isShiftClick()){
-    		if(!API.isArmor(event.getCurrentItem())) return;
+        if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+        if (event.isShiftClick()) {
+            if (!API.isArmor(event.getCurrentItem())) return;
             Attribute a = new Attribute(event.getCurrentItem());
             Player player = (Player) event.getWhoClicked();
             int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
@@ -271,7 +272,7 @@ public class InventoryListener implements Listener {
                     }
                     break;
             }
-    	}
+        }
     }
 
     /**
@@ -288,7 +289,7 @@ public class InventoryListener implements Listener {
             Attribute a = new Attribute(event.getNewArmorPiece());
 
             int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
-            
+
             switch (a.getArmorTier().getTierId()) {
                 case 4:
                     if (playerLevel < 40) {
@@ -540,10 +541,10 @@ public class InventoryListener implements Listener {
         net.minecraft.server.v1_8_R3.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
         if (cursorItem.getType() != Material.MAGMA_CREAM || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || nmsCursor.getTag().hasKey("type") && !nmsCursor.getTag().getString("type").equalsIgnoreCase("orb"))
             return;
-        if(API.getGamePlayer((Player) event.getWhoClicked()).getLevel() < 30){
-        	event.setCancelled(true);
-        	event.getWhoClicked().sendMessage(ChatColor.RED + "You must be level 30 to use Orbs of Alteration");
-        	return;
+        if (API.getGamePlayer((Player) event.getWhoClicked()).getLevel() < 30) {
+            event.setCancelled(true);
+            event.getWhoClicked().sendMessage(ChatColor.RED + "You must be level 30 to use Orbs of Alteration");
+            return;
         }
         ItemStack slotItem = event.getCurrentItem();
         if (!API.isWeapon(slotItem) && !API.isArmor(slotItem)) return;
