@@ -368,12 +368,12 @@ public class DatabaseAPI {
                                         .append("particles", new ArrayList<String>()))
                         .append("toggles",
                                 new Document("debug", true)
-                                        .append("trade", true)
-                                        .append("tradeChat", true)
-                                        .append("globalChat", true)
+                                        .append("trade", false)
+                                        .append("tradeChat", false)
+                                        .append("globalChat", false)
                                         .append("receiveMessage", true)
-                                        .append("pvp", true)
-                                        .append("duel", true)
+                                        .append("pvp", false)
+                                        .append("duel", false)
                                         .append("chaoticPrevention", true))
                         .append("portalKeyShards",
                                 new Document("tier1", 0)
@@ -401,5 +401,4 @@ public class DatabaseAPI {
             Utils.log.info("Requesting new data for : " + uuid);
         });
     }
-
 }
