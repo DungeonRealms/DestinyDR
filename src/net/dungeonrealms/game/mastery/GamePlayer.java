@@ -223,7 +223,7 @@ public class GamePlayer {
         }
         String expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "        + ";
         if (isParty) {
-            expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "              " + ChatColor.DARK_PURPLE + "P ➜ " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+";
+            expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "              " + ChatColor.AQUA.toString() + ChatColor.BOLD + "P " + ChatColor.RESET + ChatColor.GRAY + " ➜ " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+";
         }
         double futureExperience = experience + experienceToAdd + subBonus + subPlusBonus;
         int xpNeeded = getEXPNeeded(level);
