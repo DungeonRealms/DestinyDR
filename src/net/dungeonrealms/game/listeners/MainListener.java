@@ -86,7 +86,7 @@ public class MainListener implements Listener {
                                 if (API.getGamePlayer(player) == null) {
                                     return;
                                 }
-                                API.getGamePlayer(player).addExperience(500);
+                                API.getGamePlayer(player).addExperience(500, false);
                             }
                         }
                     });
@@ -102,7 +102,7 @@ public class MainListener implements Listener {
                                 if (API.getGamePlayer(player) == null) {
                                     return;
                                 }
-                                API.getGamePlayer(player).addExperience(500);
+                                API.getGamePlayer(player).addExperience(500, false);
                             }
                         }
                     });
@@ -118,7 +118,7 @@ public class MainListener implements Listener {
                                 if (API.getGamePlayer(player) == null) {
                                     return;
                                 }
-                                API.getGamePlayer(player).addExperience(500);
+                                API.getGamePlayer(player).addExperience(500, false);
                             }
                         }
                     });
@@ -133,7 +133,7 @@ public class MainListener implements Listener {
                                 if (API.getGamePlayer(player) == null) {
                                     return;
                                 }
-                                API.getGamePlayer(player).addExperience(500);
+                                API.getGamePlayer(player).addExperience(500, false);
                             }
                         }
                     });
@@ -528,7 +528,7 @@ public class MainListener implements Listener {
                             int experienceGain = Fishing.getFishEXP(tier);
                             Fishing.gainExp(stack, p, experienceGain);
                             if (API.getGamePlayer(event.getPlayer()) != null) {
-                                API.getGamePlayer(event.getPlayer()).addExperience((experienceGain / 8));
+                                API.getGamePlayer(event.getPlayer()).addExperience((experienceGain / 8), false);
                             }
                             p.getInventory().addItem(fish);
                         } else {
