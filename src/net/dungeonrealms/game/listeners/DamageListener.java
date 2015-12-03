@@ -194,15 +194,11 @@ public class DamageListener implements Listener {
                     }
                 }
             }
-            if (Affair.getInstance().isInParty((Player) event.getDamager())) {
-                if (event.getEntity() instanceof Player) {
-                    if (Affair.getInstance().isInParty((Player) event.getEntity())) {
-                        if (Affair.getInstance().getParty((Player) event.getDamager()).get().getMembers().contains(event.getEntity())) {
-                            event.setCancelled(true);
-                            event.setDamage(0);
-                            return;
-                        }
-                    }
+            if (event.getEntity() instanceof Player) {
+                if (Affair.getInstance().areInSameParty((Player) event.getDamager(), (Player) event.getEntity())) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
                 }
             }
             Player attacker = (Player) event.getDamager();
@@ -413,17 +409,11 @@ public class DamageListener implements Listener {
                 }
             }
         }
-        if (event.getDamager() instanceof Player) {
-            if (Affair.getInstance().isInParty((Player) event.getDamager())) {
-                if (event.getEntity() instanceof Player) {
-                    if (Affair.getInstance().isInParty((Player) event.getEntity())) {
-                        if (Affair.getInstance().getParty((Player) event.getDamager()).get().getMembers().contains(event.getEntity())) {
-                            event.setCancelled(true);
-                            event.setDamage(0);
-                            return;
-                        }
-                    }
-                }
+        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
+            if (Affair.getInstance().areInSameParty((Player) event.getDamager(), (Player) event.getEntity())) {
+                event.setCancelled(true);
+                event.setDamage(0);
+                return;
             }
         }
         double armourReducedDamage = 0;
@@ -465,17 +455,11 @@ public class DamageListener implements Listener {
                     return;
                 }
             }
-            if (attacker instanceof Player) {
-                if (Affair.getInstance().isInParty((Player) attacker)) {
-                    if (defender instanceof Player) {
-                        if (Affair.getInstance().isInParty((Player) defender)) {
-                            if (Affair.getInstance().getParty((Player) attacker).get().getMembers().contains(defender)) {
-                                event.setCancelled(true);
-                                event.setDamage(0);
-                                return;
-                            }
-                        }
-                    }
+            if (attacker instanceof Player && defender instanceof Player) {
+                if (Affair.getInstance().areInSameParty((Player) attacker, (Player) defender)) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
                 }
             }
             if (!(attacker instanceof Player)) {
@@ -497,17 +481,11 @@ public class DamageListener implements Listener {
                     return;
                 }
             }
-            if (attacker instanceof Player) {
-                if (Affair.getInstance().isInParty((Player) attacker)) {
-                    if (defender instanceof Player) {
-                        if (Affair.getInstance().isInParty((Player) defender)) {
-                            if (Affair.getInstance().getParty((Player) attacker).get().getMembers().contains(defender)) {
-                                event.setCancelled(true);
-                                event.setDamage(0);
-                                return;
-                            }
-                        }
-                    }
+            if (attacker instanceof Player && defender instanceof Player) {
+                if (Affair.getInstance().areInSameParty((Player) attacker, (Player) defender)) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
                 }
             }
             if (!(attacker instanceof Player)) {
