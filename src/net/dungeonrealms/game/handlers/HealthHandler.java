@@ -15,7 +15,8 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.profession.Fishing;
-import net.minecraft.server.v1_8_R3.EntityArmorStand;
+    import net.dungeonrealms.game.world.party.Affair;
+    import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
@@ -518,7 +519,7 @@ public class HealthHandler implements GenericMechanic {
 
         if (API.isPlayer(leAttacker)) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, leAttacker.getUniqueId()).toString())) {
-                leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + "[" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
+                leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + "[" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
             }
             KarmaHandler.getInstance().handleAlignmentChanges((Player) leAttacker);
         }
@@ -599,8 +600,8 @@ public class HealthHandler implements GenericMechanic {
         if (API.isPlayer(attacker)) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
             	if(!entity.hasMetadata("uuid")){
-                String customNameAppended = (entity.getMetadata("customname").get(0).asString().trim());
-                attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " Damage" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + API.getTierColor(entity.getMetadata("tier").get(0).asInt()) + customNameAppended + ChatColor.DARK_PURPLE + ChatColor.BOLD + " [" + (int) newHP + "HP]");
+                    String customNameAppended = (entity.getMetadata("customname").get(0).asString().trim());
+                    attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + API.getTierColor(entity.getMetadata("tier").get(0).asInt()) + customNameAppended + ChatColor.DARK_PURPLE + ChatColor.BOLD + " [" + (int) newHP + "HP]");
             	}
             }
         }
@@ -633,7 +634,64 @@ public class HealthHandler implements GenericMechanic {
                 ((net.dungeonrealms.game.world.entities.types.monsters.Monster) entity1).onMonsterDeath();
                 if (attacker instanceof Player) {
                     int exp = API.getMonsterExp((Player) attacker, entity);
-                    API.getGamePlayer((Player) attacker).addExperience(exp);
+                    if (API.getGamePlayer((Player) attacker) == null) {
+                        return;
+                    }
+                    if (Affair.getInstance().isInParty((Player) attacker)) {
+                        List<Player> nearbyPlayers = API.getNearbyPlayers(attacker.getLocation(), 10);
+                        List<Player> nearbyPartyMembers = new ArrayList<>();
+                        if (!nearbyPlayers.isEmpty()) {
+                            for (Player player : nearbyPlayers) {
+                                if (player.equals(attacker)) {
+                                    continue;
+                                }
+                                if (API.isPlayer(attacker)) {
+                                    continue;
+                                }
+                                if (Affair.getInstance().areInSameParty((Player) attacker, player)) {
+                                    nearbyPartyMembers.add(player);
+                                }
+                            }
+                            if (nearbyPartyMembers.size() > 0) {
+                                switch (nearbyPartyMembers.size()) {
+                                    case 1:
+                                        break;
+                                    case 2:
+                                        exp *= 1.2;
+                                        break;
+                                    case 3:
+                                        exp *= 1.3;
+                                        break;
+                                    case 4:
+                                        exp *= 1.4;
+                                        break;
+                                    case 5:
+                                        exp *= 1.5;
+                                        break;
+                                    case 6:
+                                        exp *= 1.6;
+                                        break;
+                                    case 7:
+                                        exp *= 1.8;
+                                        break;
+                                    case 8:
+                                        exp *= 1.9;
+                                        break;
+                                    default:
+                                        break;
+                                }
+                                for (Player player : nearbyPartyMembers) {
+                                    API.getGamePlayer(player).addExperience((exp / (nearbyPartyMembers.size() / 2)));
+                                }
+                            } else {
+                                API.getGamePlayer((Player) attacker).addExperience(exp);
+                            }
+                        } else {
+                            API.getGamePlayer((Player) attacker).addExperience(exp);
+                        }
+                    } else {
+                        API.getGamePlayer((Player) attacker).addExperience(exp);
+                    }
                 }
             }
             return;
