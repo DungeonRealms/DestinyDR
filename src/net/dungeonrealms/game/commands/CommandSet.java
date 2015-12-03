@@ -3,16 +3,6 @@
  */
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.world.loot.LootManager;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.world.spawning.SpawningMechanics;
-
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -20,7 +10,15 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import static net.dungeonrealms.game.world.spawning.SpawningMechanics.getSpawners;
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.world.loot.LootManager;
+import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 
 /**
  * Created by Chase on Sep 22, 2015
@@ -101,7 +99,7 @@ public class CommandSet extends BasicCommand {
 				break;
 			case "kill":
 				player.getWorld().getLivingEntities().forEach(org.bukkit.entity.Entity::remove);
-				getSpawners().forEach(net.dungeonrealms.game.world.spawning.MobSpawner::kill);
+				SpawningMechanics.ALLSPAWNERS.forEach(net.dungeonrealms.game.world.spawning.MobSpawner::kill);
 				break;
 			case "pick":
 				Mining.lvlUp(Mining.getPickTier(player.getItemInHand()), player);

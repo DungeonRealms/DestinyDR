@@ -168,12 +168,12 @@ public class CommandSpawn extends BasicCommand {
                     int tier = 1;
                     if (args.length == 3)
                         tier = Integer.parseInt(args[2]);
-                    MobSpawner spawner = new MobSpawner(player.getLocation(), monster, tier, 4, SpawningMechanics.getSpawners().size(), "high");
+                    MobSpawner spawner = new MobSpawner(player.getLocation(), monster, tier, 4, SpawningMechanics.ALLSPAWNERS.size(), "high");
                     String text = (player.getLocation().getX() + "," + player.getLocation().getY() + ","
                             + player.getLocation().getZ() + "=" + args[1] + ":" + tier);
                     SpawningMechanics.SPAWNER_CONFIG.add(text);
                     DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
-                    SpawningMechanics.add(spawner);
+                    SpawningMechanics.ALLSPAWNERS.add(spawner);
                     break;
                 case "boss":
                     String bossName = args[1];

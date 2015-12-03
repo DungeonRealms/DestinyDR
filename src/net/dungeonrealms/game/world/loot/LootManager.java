@@ -65,7 +65,6 @@ public class LootManager implements GenericMechanic {
 			 	 continue;
 			 }
 			long spawn_delay = Math.round(Double.parseDouble(line.substring(line.lastIndexOf("@") + 1, line.indexOf("#")))) + (1200);//Add a minute to all Loots Chests
-			Utils.log.info("Loot placed at " + loc);
 			LootSpawner spawner = new LootSpawner(chest, spawn_delay, LootType.getLootType(lootType));
 			LOOT_SPAWNERS.add(spawner);
 		}

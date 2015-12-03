@@ -289,6 +289,7 @@ public class MobSpawner {
      * Initialize spawner
      */
     public void init() {
+    	Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), ()->{
         boolean notEmpty = API.getNearbyPlayers(loc, 35).isEmpty();
         if (!notEmpty) {
             timerID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
@@ -307,5 +308,6 @@ public class MobSpawner {
                 }, 20);
             }
         }
+        }, 0, 80);
     }
 }
