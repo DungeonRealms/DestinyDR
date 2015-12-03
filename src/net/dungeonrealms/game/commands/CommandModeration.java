@@ -67,8 +67,10 @@ public class CommandModeration extends BasicCommand {
                     ScoreboardHandler.getInstance().matchMainScoreboard(sender);
                     sender.sendMessage(ChatColor.GREEN + " You have been unhidden");
                     sender.setCustomNameVisible(true);
+                    sender.showPlayer(sender);
                 } else {
                     sender.setCustomNameVisible(false);
+                    sender.hidePlayer(sender);
                     sender.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1));
                     sender.sendMessage(ChatColor.GREEN + " You have been hidden");
                 }
