@@ -210,9 +210,6 @@ public class GamePlayer {
         double subBonus = 0;
         double subPlusBonus = 0;
         if (level > 100) return;
-        //25% EXP Boost due to wipe until next patch.
-        //TODO: REMOVE THIS NEXT PATCH 4th of December
-        experienceToAdd *= 1.25;
         boolean isSub = Rank.getInstance().getRank(T.getUniqueId()).getName().equalsIgnoreCase("SUB");
         boolean isSubPlus = Rank.getInstance().getRank(T.getUniqueId()).getName().equalsIgnoreCase("SUB+");
         if (isSub) {
