@@ -638,9 +638,11 @@ public class HealthHandler implements GenericMechanic {
                         return;
                     }
                     if (Affair.getInstance().isInParty((Player) attacker)) {
+                        attacker.sendMessage("You're in a party!");
                         List<Player> nearbyPlayers = API.getNearbyPlayers(attacker.getLocation(), 10);
                         List<Player> nearbyPartyMembers = new ArrayList<>();
                         if (!nearbyPlayers.isEmpty()) {
+                            attacker.sendMessage("There are players nearby!");
                             for (Player player : nearbyPlayers) {
                                 if (player.equals(attacker)) {
                                     continue;
@@ -650,9 +652,11 @@ public class HealthHandler implements GenericMechanic {
                                 }
                                 if (Affair.getInstance().areInSameParty((Player) attacker, player)) {
                                     nearbyPartyMembers.add(player);
+                                    player.sendMessage("Added to the partyMembers thingy.");
                                 }
                             }
                             if (nearbyPartyMembers.size() > 0) {
+                                attacker.sendMessage("You have more than 1 person in your party " + nearbyPartyMembers.size());
                                 switch (nearbyPartyMembers.size()) {
                                     case 1:
                                         break;
