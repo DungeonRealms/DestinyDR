@@ -771,7 +771,7 @@ public class API {
         return nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("orb");
     }
 
-    public static boolean isItemTradeable(ItemStack itemStack) {
+    public static boolean isItemNonTradeable(ItemStack itemStack) {
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
         return nms != null && nms.getTag() != null && nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter");
     }
