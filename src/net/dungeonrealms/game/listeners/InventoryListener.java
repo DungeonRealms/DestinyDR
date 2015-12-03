@@ -1189,7 +1189,7 @@ public class InventoryListener implements Listener {
         if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
         if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
         if (!API.isArmor(event.getCurrentItem())) return;
-        if (!(event.getAction() == InventoryAction.PLACE_ALL)) return;
+        if (!(event.getAction() == InventoryAction.HOTBAR_SWAP)) return;
         Attribute a = new Attribute(event.getCurrentItem());
         Player player = (Player) event.getWhoClicked();
         int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
