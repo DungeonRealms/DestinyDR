@@ -1,17 +1,18 @@
 package net.dungeonrealms.game.miscellaneous;
 
-import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.dungeonrealms.game.mechanics.ItemManager;
-import net.dungeonrealms.game.profession.Mining;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
+import net.dungeonrealms.API;
+import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.world.items.repairing.RepairAPI;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
  * Created by Kieran on 11/5/2015.
@@ -177,7 +178,7 @@ public class TradeCalculator {
                 }
             }
             if (is.getType() == Material.MAGMA_CREAM) {
-                if (ISITANORBCHASE) {
+                if (API.isOrb(is)) {
                     int orbCount = is.getAmount();
                     int payout = 20 * orbCount;
                     while (payout > 64) {

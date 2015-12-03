@@ -747,4 +747,15 @@ public class API {
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("armor");
     }
+
+	/**
+	 * @param is
+	 * @return
+	 */
+	public static boolean isOrb(ItemStack is) {
+		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(is);
+		if(nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("orb"))
+			return true;
+		return false;
+	}
 }
