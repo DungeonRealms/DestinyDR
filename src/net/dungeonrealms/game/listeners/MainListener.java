@@ -122,6 +122,10 @@ public class MainListener implements Listener {
                         }
                     });
             }
+            if (API.getGamePlayer(player) == null) {
+                return;
+            }
+            API.getGamePlayer(player).addExperience(500);
         } else {
             /*
             This shouldn't ever happen because the Bungee plugin passes the vote down to the
