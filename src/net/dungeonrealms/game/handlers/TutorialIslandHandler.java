@@ -53,7 +53,7 @@ public class TutorialIslandHandler implements GenericMechanic, Listener {
     private void hideVanishedPlayers() {
         API._hiddenPlayers.stream().filter(player -> player != null).forEach(player -> {
             for (Player player1 : Bukkit.getOnlinePlayers()) {
-                if (player.getUniqueId().toString().equals(player1.getUniqueId().toString())) {
+                if (player1.getUniqueId().toString().equals(player.getUniqueId().toString())) {
                     continue;
                 }
                 player1.hidePlayer(player);
