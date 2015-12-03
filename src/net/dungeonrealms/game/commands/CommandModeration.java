@@ -1,5 +1,9 @@
 package net.dungeonrealms.game.commands;
 
+import net.dungeonrealms.API;
+import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.banks.Storage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -10,11 +14,6 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
-import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.player.banks.Storage;
-import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.handlers.ScoreboardHandler;
 
 /**
  * Created by Chase on Nov 11, 2015
@@ -62,13 +61,19 @@ public class CommandModeration extends BasicCommand {
                 }
                 break;
             case "hide":
-                if (sender.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
+                if (API._hiddenPlayers.contains(sender)) {
+                    API._hiddenPlayers.remove(sender);
+                    for (Player player1 : Bukkit.getOnlinePlayers()) {
+                        if (player1.getUniqueId().toString().equals(sender.getUniqueId().toString())) {
+                            continue;
+                        }
+                        player1.showPlayer(sender);
+                    }
                     sender.removePotionEffect(PotionEffectType.INVISIBILITY);
-                    ScoreboardHandler.getInstance().matchMainScoreboard(sender);
                     sender.sendMessage(ChatColor.GREEN + " You have been unhidden");
                     sender.setCustomNameVisible(true);
-                    sender.showPlayer(sender);
                 } else {
+                    API._hiddenPlayers.add(sender);
                     sender.setCustomNameVisible(false);
                     sender.hidePlayer(sender);
                     sender.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1));

@@ -1,13 +1,16 @@
 package net.dungeonrealms.game.handlers;
 
-import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.items.ItemGenerator;
-import net.dungeonrealms.game.world.items.armor.Armor;
-import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.mongo.achievements.AchievementManager;
+import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.items.ItemGenerator;
+import net.dungeonrealms.game.world.items.armor.Armor;
+import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -36,6 +39,7 @@ public class TutorialIslandHandler implements GenericMechanic, Listener {
 
     @Override
     public void startInitialization() {
+        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::hideVanishedPlayers, 100L, 1L);
     }
 
     @Override
@@ -44,6 +48,17 @@ public class TutorialIslandHandler implements GenericMechanic, Listener {
 
     public boolean onTutorialIsland(UUID uuid) {
         return AchievementManager.REGION_TRACKER.get(uuid).equalsIgnoreCase("tutorial_island");
+    }
+
+    private void hideVanishedPlayers() {
+        API._hiddenPlayers.stream().filter(player -> player != null).forEach(player -> {
+            for (Player player1 : Bukkit.getOnlinePlayers()) {
+                if (player.getUniqueId().toString().equals(player1.getUniqueId().toString())) {
+                    continue;
+                }
+                player1.hidePlayer(player);
+            }
+        });
     }
 
     public void giveStarterKit(Player player) {

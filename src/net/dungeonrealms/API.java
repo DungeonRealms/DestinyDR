@@ -74,6 +74,7 @@ import java.util.stream.Collectors;
 public class API {
 
     public static CopyOnWriteArrayList<GamePlayer> GAMEPLAYERS = new CopyOnWriteArrayList<>();
+    public static CopyOnWriteArrayList<Player> _hiddenPlayers = new CopyOnWriteArrayList<>();
 
     /**
      * To get the players region.
