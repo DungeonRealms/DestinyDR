@@ -680,8 +680,9 @@ public class HealthHandler implements GenericMechanic {
                                     default:
                                         break;
                                 }
+                                exp /= nearbyPartyMembers.size();
                                 for (Player player : nearbyPartyMembers) {
-                                    API.getGamePlayer(player).addExperience((exp / (nearbyPartyMembers.size() / 2)));
+                                    API.getGamePlayer(player).addExperience(exp);
                                 }
                             } else {
                                 API.getGamePlayer((Player) attacker).addExperience(exp);
