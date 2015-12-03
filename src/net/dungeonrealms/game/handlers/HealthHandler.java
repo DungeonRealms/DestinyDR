@@ -550,7 +550,6 @@ public class HealthHandler implements GenericMechanic {
                 String killerName = "";
                 if (leAttacker instanceof Player) {
                     killerName = leAttacker.getName();
-                    killerName = leAttacker.getName();
                 } else {
                     if (leAttacker.hasMetadata("customname")) {
                         killerName = leAttacker.getMetadata("customname").get(0).asString().trim();
