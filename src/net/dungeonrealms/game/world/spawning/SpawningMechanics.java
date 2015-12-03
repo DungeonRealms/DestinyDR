@@ -37,21 +37,13 @@ import net.minecraft.server.v1_8_R3.World;
  */
 public class SpawningMechanics implements GenericMechanic {
 
-    private static ArrayList<MobSpawner> ALLSPAWNERS = new ArrayList<>();
+    public static ArrayList<MobSpawner> ALLSPAWNERS = new ArrayList<>();
     public static ArrayList<String> SPAWNER_CONFIG = new ArrayList<>();
     private static SpawningMechanics instance;
 
 
     public static void initSpawners() {
         ALLSPAWNERS.forEach(MobSpawner::init);
-    }
-
-    public static ArrayList<MobSpawner> getSpawners() {
-        return ALLSPAWNERS;
-    }
-
-    public static void add(MobSpawner spawner) {
-        ALLSPAWNERS.add(spawner);
     }
 
     public static void killAll() {
@@ -112,20 +104,10 @@ public class SpawningMechanics implements GenericMechanic {
          spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "high");
         else
          spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low");
-        add(spawner);
+        ALLSPAWNERS.add(spawner);
         spawner.init();
     }
-
-    /**
-     * @param i
-     */
-    public static void remove(int i) {
-        ALLSPAWNERS.remove(i);
-    }
-
-    /**
-     * @param mobSpawner
-     */
+    
     public static void remove(MobSpawner mobSpawner) {
         ALLSPAWNERS.remove(mobSpawner);
     }

@@ -168,7 +168,7 @@ public class Entities implements GenericMechanic {
 	}
 
 	private void tryToReturnMobToBase(Entity entity) {
-		SpawningMechanics.getSpawners().stream().filter(mobSpawner -> mobSpawner.getSpawnedMonsters().contains(entity))
+		SpawningMechanics.ALLSPAWNERS.stream().filter(mobSpawner -> mobSpawner.getSpawnedMonsters().contains(entity))
 		        .forEach(mobSpawner -> {
 			        EntityInsentient entityInsentient = (EntityInsentient) entity;
 			        entityInsentient.setGoalTarget(mobSpawner.armorstand, EntityTargetEvent.TargetReason.CLOSEST_PLAYER,

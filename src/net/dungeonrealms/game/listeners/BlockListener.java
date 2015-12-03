@@ -80,7 +80,7 @@ public class BlockListener implements Listener {
         Block block = e.getBlock();
         if (block == null) return;
         if(block.getType() == Material.ARMOR_STAND) {
-            SpawningMechanics.getSpawners().stream().filter(spawner -> spawner.loc == block.getLocation()).forEach(SpawningMechanics::remove);
+            SpawningMechanics.ALLSPAWNERS.stream().filter(spawner -> spawner.loc == block.getLocation()).forEach(SpawningMechanics::remove);
         }
     }
     
