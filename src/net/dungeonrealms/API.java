@@ -424,7 +424,6 @@ public class API {
      */
     public static void handleLogin(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
-        player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
             player.kickPlayer(ChatColor.RED + "Unable to grab your data.. rejoin!");
         } else {
@@ -530,6 +529,8 @@ public class API {
                     });
                 }
             }, 100);
+
+        player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
 
         if (Rank.getInstance().getRank(uuid).getName().equalsIgnoreCase("PMOD")) {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.tempban", true);
