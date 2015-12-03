@@ -497,7 +497,8 @@ public class MainListener implements Listener {
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Food Vendor")) {
-            NPCMenus.openFoodVendorMenu(event.getPlayer());
+            //NPCMenus.openFoodVendorMenu(event.getPlayer());
+            event.getPlayer().sendMessage(ChatColor.RED + "Sorry, I'm restocking my wares!");
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Item Vendor")) {
