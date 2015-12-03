@@ -171,7 +171,7 @@ public class BlockListener implements Listener {
         if (event.getPlayer().getItemInHand() == null || event.getPlayer().getItemInHand().getType() == Material.AIR) return;
         if(!API.isWeapon(event.getPlayer().getItemInHand()) && !Mining.isDRPickaxe(event.getPlayer().getItemInHand())) return;
         if(API.isWeapon(event.getPlayer().getItemInHand())){	
-        	int tier = API.getItemTier(event.getPlayer().getItemInHand()).getTierId();
+        	int tier = CraftItemStack.asNMSCopy(event.getPlayer().getItemInHand()).getTag().getInt("itemTier");
         	int playerLvl = API.getGamePlayer(event.getPlayer()).getLevel();
         	switch(tier){
         	case 4:
