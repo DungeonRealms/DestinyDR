@@ -401,5 +401,4 @@ public class DatabaseAPI {
             Utils.log.info("Requesting new data for : " + uuid);
         });
     }
-
 }
