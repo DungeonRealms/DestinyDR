@@ -44,6 +44,7 @@ import org.bukkit.potion.PotionEffectType;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Random;
+import java.util.Set;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -266,7 +267,14 @@ public class BlockListener implements Listener {
                     switch (actionType) {
                         case RIGHT_CLICK_BLOCK:
                             e.setCancelled(true);
-                            e.getPlayer().openInventory(loot.inv);
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
+                            Block blockLook = e.getPlayer().getTargetBlock((Set<Material>) null, 7);
+                            if(blockLook.getType() != Material.CHEST){
+                            	return;
+                            }else{
+                                e.getPlayer().openInventory(loot.inv);
+                            }
+                            }, 10);
                             break;
                         case LEFT_CLICK_BLOCK:
                             e.setCancelled(true);
@@ -522,7 +530,7 @@ public class BlockListener implements Listener {
                     e.getPlayer().sendMessage(ChatColor.RED + "You already have an open shop!");
                     return;
                 }
-                if (API.isInSafeRegion(b1.getLocation()) && !API.isMaterialNearby(b1, 4, Material.CHEST) && !API.isMaterialNearby(b1, 10, Material.ENDER_CHEST)) {
+                if (API.isInSafeRegion(b1.getLocation()) && !API.isMaterialNearby(b1, 2, Material.CHEST) && !API.isMaterialNearby(b1, 10, Material.ENDER_CHEST)) {
                 	if(!API.getGamePlayer(e.getPlayer()).hasShopOpen()){
                 		if(BankMechanics.getInstance().getStorage(e.getPlayer().getUniqueId()).collection_bin != null){
                 			e.getPlayer().sendMessage(ChatColor.RED + "You must collect your items from the collection bin!");
