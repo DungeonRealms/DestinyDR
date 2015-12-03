@@ -530,6 +530,18 @@ public class API {
                     });
                 }
             }, 100);
+
+        if (Rank.getInstance().getRank(uuid).getName().equalsIgnoreCase("PMOD")) {
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.tempban", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.tempmute", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.kick", true);
+        } else if (Rank.getInstance().getRank(uuid).getName().equalsIgnoreCase("CM")) {
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.tempban", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.tempmute", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.ban", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.mute", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.kick", true);
+        }
     }
 
     /**
