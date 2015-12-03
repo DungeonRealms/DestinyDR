@@ -432,8 +432,10 @@ public class DamageListener implements Listener {
                         for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
                             if (entity instanceof LivingEntity && entity != event.getEntity() && !(entity instanceof Player)) {
                                 if ((event.getDamage() - armourReducedDamage) > 0) {
-                                    entity.playEffect(EntityEffect.HURT);
-                                    HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, attacker, (event.getDamage() - armourReducedDamage));
+                                    if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+                                        entity.playEffect(EntityEffect.HURT);
+                                        HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, attacker, (event.getDamage() - armourReducedDamage));
+                                    }
                                 }
                             } else {
                                 continue;
@@ -598,9 +600,11 @@ public class DamageListener implements Listener {
         switch (metaValue) {
             case "pet":
                 event.setCancelled(true);
+                event.setDamage(0);
                 break;
             case "mount":
                 event.setCancelled(true);
+                event.setDamage(0);
             	Player p = (Player) event.getDamager();
         		Horse horse = (Horse) event.getEntity();
         		if(!horse.getVariant().equals(Variant.MULE)) return;
