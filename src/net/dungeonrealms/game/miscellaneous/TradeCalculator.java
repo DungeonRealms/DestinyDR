@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.miscellaneous;
 
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.profession.Mining;
@@ -173,6 +174,21 @@ public class TradeCalculator {
                             merchant_offer.add(scrap5);
                             break;
                     }
+                }
+            }
+            if (is.getType() == Material.MAGMA_CREAM) {
+                if (ISITANORBCHASE) {
+                    int orbCount = is.getAmount();
+                    int payout = 20 * orbCount;
+                    while (payout > 64) {
+                        ItemStack scrap = ItemManager.createArmorScrap(5);
+                        scrap.setAmount(64);
+                        merchant_offer.add(scrap);
+                        payout -= 64;
+                    }
+                    ItemStack scrap = ItemManager.createArmorScrap(5);
+                    scrap.setAmount(payout);
+                    merchant_offer.add(scrap);
                 }
             }
         }

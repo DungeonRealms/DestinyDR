@@ -131,7 +131,7 @@ public class BlockListener implements Listener {
                 }
                 int experienceGain = Mining.getOreEXP(stackInHand, type);
                 if (API.getGamePlayer(e.getPlayer()) != null) {
-                    API.getGamePlayer(e.getPlayer()).addExperience((experienceGain / 8));
+                    API.getGamePlayer(e.getPlayer()).addExperience((experienceGain / 8), false);
                 }
                 RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInHand(), RandomHelper.getRandomNumberBetween(2, 5));
                 int break_chance = Mining.getBreakChance(stackInHand);

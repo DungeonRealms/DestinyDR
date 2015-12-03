@@ -82,7 +82,11 @@ public class MainListener implements Listener {
                             if (result.wasAcknowledged()) {
                                 Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
                                 player.sendMessage(ChatColor.GRAY + "You received the default voting reward because you do not have a subscriber rank.");
-                                Bukkit.broadcastMessage(ChatColor.AQUA + player.getName() + ChatColor.RED + " has voted at " + ChatColor.AQUA + "http://minecraftservers.org/server/298658 " + ChatColor.RED + "and received " + ChatColor.AQUA + "15 ECASH " + ChatColor.RED + "and " + ChatColor.AQUA + "");
+                                Bukkit.broadcastMessage(ChatColor.AQUA + player.getName() + ChatColor.RED + " has voted at " + ChatColor.AQUA + "http://minecraftservers.org/server/298658 " + ChatColor.RED + "and received " + ChatColor.AQUA + "15 ECASH " + ChatColor.RED + "and " + ChatColor.AQUA + "500 EXP");
+                                if (API.getGamePlayer(player) == null) {
+                                    return;
+                                }
+                                API.getGamePlayer(player).addExperience(500, false);
                             }
                         }
                     });
@@ -94,7 +98,11 @@ public class MainListener implements Listener {
                             if (result.wasAcknowledged()) {
                                 Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB);
                                 player.sendMessage(ChatColor.GRAY + "You received an extra +5 ecash because of your subscriber rank.");
-                                Bukkit.broadcastMessage(ChatColor.AQUA + player.getName() + ChatColor.RED + " has voted at " + ChatColor.AQUA + "http://minecraftservers.org/server/298658 " + ChatColor.RED + "and received " + ChatColor.AQUA + "20 ECASH " + ChatColor.RED + "and " + ChatColor.AQUA + "");
+                                Bukkit.broadcastMessage(ChatColor.AQUA + player.getName() + ChatColor.RED + " has voted at " + ChatColor.AQUA + "http://minecraftservers.org/server/298658 " + ChatColor.RED + "and received " + ChatColor.AQUA + "20 ECASH " + ChatColor.RED + "and " + ChatColor.AQUA + "500 EXP");
+                                if (API.getGamePlayer(player) == null) {
+                                    return;
+                                }
+                                API.getGamePlayer(player).addExperience(500, false);
                             }
                         }
                     });
@@ -106,7 +114,11 @@ public class MainListener implements Listener {
                             if (result.wasAcknowledged()) {
                                 Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB_PLUS);
                                 player.sendMessage(ChatColor.GRAY + "You received an extra 10 ecash because of your subscriber rank.");
-                                Bukkit.broadcastMessage(ChatColor.AQUA + player.getName() + ChatColor.RED + " has voted at " + ChatColor.AQUA + "http://minecraftservers.org/server/298658 " + ChatColor.RED + "and received " + ChatColor.AQUA + "25 ECASH " + ChatColor.RED + "and " + ChatColor.AQUA + "");
+                                Bukkit.broadcastMessage(ChatColor.AQUA + player.getName() + ChatColor.RED + " has voted at " + ChatColor.AQUA + "http://minecraftservers.org/server/298658 " + ChatColor.RED + "and received " + ChatColor.AQUA + "25 ECASH " + ChatColor.RED + "and " + ChatColor.AQUA + "500 EXP");
+                                if (API.getGamePlayer(player) == null) {
+                                    return;
+                                }
+                                API.getGamePlayer(player).addExperience(500, false);
                             }
                         }
                     });
@@ -117,7 +129,11 @@ public class MainListener implements Listener {
                         public void callback(Throwable failCause, UpdateResult result) {
                             if (result.wasAcknowledged()) {
                                 player.sendMessage(ChatColor.GRAY + "ERROR: Please contact a[n] Developer w/ ERROR CODE b_2818z@!1-VOTE");
-                                Bukkit.broadcastMessage(ChatColor.AQUA + player.getName() + ChatColor.RED + " has voted at " + ChatColor.AQUA + "http://minecraftservers.org/server/298658 " + ChatColor.RED + "and received " + ChatColor.AQUA + "15 ECASH " + ChatColor.RED + "and " + ChatColor.AQUA + "");
+                                Bukkit.broadcastMessage(ChatColor.AQUA + player.getName() + ChatColor.RED + " has voted at " + ChatColor.AQUA + "http://minecraftservers.org/server/298658 " + ChatColor.RED + "and received " + ChatColor.AQUA + "15 ECASH " + ChatColor.RED + "and " + ChatColor.AQUA + "500 EXP");
+                                if (API.getGamePlayer(player) == null) {
+                                    return;
+                                }
+                                API.getGamePlayer(player).addExperience(500, false);
                             }
                         }
                     });
@@ -512,7 +528,7 @@ public class MainListener implements Listener {
                             int experienceGain = Fishing.getFishEXP(tier);
                             Fishing.gainExp(stack, p, experienceGain);
                             if (API.getGamePlayer(event.getPlayer()) != null) {
-                                API.getGamePlayer(event.getPlayer()).addExperience((experienceGain / 8));
+                                API.getGamePlayer(event.getPlayer()).addExperience((experienceGain / 8), false);
                             }
                             p.getInventory().addItem(fish);
                         } else {

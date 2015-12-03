@@ -76,6 +76,15 @@ public class NetworkAPI implements PluginMessageListener {
         }
     }
 
+    public void sendToServer(String playerName, String serverName) {
+        ByteArrayDataOutput out = ByteStreams.newDataOutput();
+        out.writeUTF("ConnectOther");
+        out.writeUTF(playerName);
+        out.writeUTF(serverName);
+        Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
+        player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
+    }
+
     /**
      * @param channel  Type of custom Channel (actually sub)
      * @param message  Message to send.

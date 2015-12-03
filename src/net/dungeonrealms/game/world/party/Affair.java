@@ -161,7 +161,6 @@ public class Affair implements GenericMechanic {
 
     }
 
-
     public class AffairO {
         private Player owner;
         private List<Player> members;

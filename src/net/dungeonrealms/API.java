@@ -7,26 +7,11 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.player.banks.Storage;
-import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.duel.DuelingMechanics;
-import net.dungeonrealms.game.world.entities.Entities;
-import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
-import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
-import net.dungeonrealms.game.world.entities.utils.EntityAPI;
-import net.dungeonrealms.game.world.entities.utils.EntityStats;
-import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.guild.Guild;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
-import net.dungeonrealms.game.world.items.Item.ItemTier;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorModifier;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorTier;
-import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
 import net.dungeonrealms.game.mastery.*;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.PlayerManager;
@@ -35,14 +20,28 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.mongo.achievements.AchievementManager;
+import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.banks.Storage;
+import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.game.world.entities.Entities;
+import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
+import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
+import net.dungeonrealms.game.world.entities.utils.EntityAPI;
+import net.dungeonrealms.game.world.entities.utils.EntityStats;
+import net.dungeonrealms.game.world.entities.utils.MountUtils;
+import net.dungeonrealms.game.world.items.Item.ItemTier;
+import net.dungeonrealms.game.world.items.armor.Armor.ArmorModifier;
+import net.dungeonrealms.game.world.items.armor.Armor.ArmorTier;
+import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
@@ -424,7 +423,7 @@ public class API {
      */
     public static void handleLogin(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
-
+        player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
             player.kickPlayer(ChatColor.RED + "Unable to grab your data.. rejoin!");
         } else {
@@ -478,9 +477,9 @@ public class API {
              PLAYER IS NEW
              */
 
-            player.teleport(new Location(Bukkit.getWorlds().get(0), 930.5, 32, -92, -90.6f, 4.6f));
+            player.teleport(new Location(Bukkit.getWorlds().get(0), 824, 49, -103, -90.6f, 4.6f));
             player.sendMessage(new String[]{
-                    ChatColor.AQUA + "Welcome to DungeonRealms! Please right-click 'Ship Captain' to continue your journey. Or type /skip"
+                    ChatColor.AQUA + "Welcome to DungeonRealms! Talk to the guides scattered around the island to get yourself acquainted, then meet the Ship Captain at the docks. Or type /skip"
             });
 
         }

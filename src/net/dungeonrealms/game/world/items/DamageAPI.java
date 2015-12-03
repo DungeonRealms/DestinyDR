@@ -116,14 +116,32 @@ public class DamageAPI {
 
         LivingEntity leReceiver = (LivingEntity) receiver;
         if (tag.getInt("fireDamage") != 0) {
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, receiver.getLocation().add(0, 1, 0),
+                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             damage += tag.getInt("fireDamage");
         }
 
         if (tag.getInt("iceDamage") != 0) {
             damage += tag.getInt("iceDamage");
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SNOW_SHOVEL, receiver.getLocation().add(0, 1, 0),
+                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
 
         if (tag.getInt("poisonDamage") != 0) {
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, receiver.getLocation().add(0, 1, 0),
+                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
             damage += tag.getInt("poisonDamage");
         }
 
