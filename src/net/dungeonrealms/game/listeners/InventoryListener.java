@@ -217,44 +217,62 @@ public class InventoryListener implements Listener {
             }
         }
     }
-
+    
     @EventHandler(priority = EventPriority.MONITOR)
-    public void editPlayerAmor(InventoryClickEvent event) {
-        if (!event.getInventory().getTitle().contains("Armor")) return;
-        String playerArmor = event.getInventory().getTitle().split(" ")[0];
-        Player player = Bukkit.getPlayer(playerArmor);
-        if (player != null) {
-            ItemStack[] contents = new ItemStack[4];
-            for (int i = 0; i < 4; i++) {
-                if (event.getInventory().getItem(i) != null &&
-                        event.getInventory().getItem(i).getType() != Material.AIR &&
-                        API.isArmor(event.getInventory().getItem(i))) {
-                    contents[i] = event.getInventory().getItem(i);
-                }
-            }
-            player.getInventory().setArmorContents(contents);
-            player.updateInventory();
-        }
+    public void editPlayerAmor(InventoryClickEvent event){
+    	if(!event.getInventory().getTitle().contains("Armor"))return;
+    	String playerArmor = event.getInventory().getTitle().split(" ")[0];
+    	Player player = Bukkit.getPlayer(playerArmor);
+    	if(player != null){
+    		ItemStack[] contents = new ItemStack[4];
+    		for(int i = 0; i < 4; i++){
+    			if(event.getInventory().getItem(i) != null &&
+    			   event.getInventory().getItem(i).getType() != Material.AIR &&
+    			   API.isArmor(event.getInventory().getItem(i))){
+    				contents[i] = event.getInventory().getItem(i);
+    			}
+    		}
+    		player.getInventory().setArmorContents(contents);
+    		player.updateInventory();
+    	}
     }
-
-
+    
+    
     //Armor
-
     /**
      * Stop Shift Clicking Armor ABove Level possibility.
-     *
      * @param event
      */
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void playerShiftClickArmor(InventoryClickEvent event) {
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void playerShiftClickArmor(InventoryClickEvent event){
         if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
-        if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
-        if (event.isShiftClick()) {
-            if (!API.isArmor(event.getCurrentItem())) return;
-            Attribute a = new Attribute(event.getCurrentItem());
-            Player player = (Player) event.getWhoClicked();
-            int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
+    	if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+        if (!event.isShiftClick()) return;
+        if (!API.isArmor(event.getCurrentItem()) && !API.isWeapon(event.getCurrentItem())) return;
+        Attribute a = new Attribute(event.getCurrentItem());
+        Player player = (Player) event.getWhoClicked();
+        int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
+        if (API.isArmor(event.getCurrentItem())) {
             switch (a.getArmorTier().getTierId()) {
+                case 4:
+                    if (playerLevel < 40) {
+                        event.setCancelled(true);
+                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 40");
+                        player.updateInventory();
+                        return;
+                    }
+                    break;
+                case 5:
+                    if (playerLevel < 60) {
+                        event.setCancelled(true);
+                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 60");
+                        player.updateInventory();
+                           return;
+                    }
+                    break;
+            }
+        }  else if (API.isWeapon(event.getCurrentItem())) {
+            switch (a.getItemTier().getTierId()) {
                 case 4:
                     if (playerLevel < 40) {
                         event.setCancelled(true);
@@ -284,12 +302,9 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerEquipArmor(ArmorEquipEvent event) {
         Player player = event.getPlayer();
-
         if (event.getNewArmorPiece() != null && event.getNewArmorPiece().getType() != Material.AIR) {
             Attribute a = new Attribute(event.getNewArmorPiece());
-
             int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
-
             switch (a.getArmorTier().getTierId()) {
                 case 4:
                     if (playerLevel < 40) {
@@ -309,7 +324,6 @@ public class InventoryListener implements Listener {
                     break;
             }
         }
-
         if (!CombatLog.isInCombat(player)) {
             player.playSound(player.getLocation(), Sound.NOTE_PLING, 1f, 1f);
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -541,10 +555,10 @@ public class InventoryListener implements Listener {
         net.minecraft.server.v1_8_R3.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
         if (cursorItem.getType() != Material.MAGMA_CREAM || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || nmsCursor.getTag().hasKey("type") && !nmsCursor.getTag().getString("type").equalsIgnoreCase("orb"))
             return;
-        if (API.getGamePlayer((Player) event.getWhoClicked()).getLevel() < 30) {
-            event.setCancelled(true);
-            event.getWhoClicked().sendMessage(ChatColor.RED + "You must be level 30 to use Orbs of Alteration");
-            return;
+        if(API.getGamePlayer((Player) event.getWhoClicked()).getLevel() < 30){
+        	event.setCancelled(true);
+        	event.getWhoClicked().sendMessage(ChatColor.RED + "You must be level 30 to use Orbs of Alteration");
+        	return;
         }
         ItemStack slotItem = event.getCurrentItem();
         if (!API.isWeapon(slotItem) && !API.isArmor(slotItem)) return;

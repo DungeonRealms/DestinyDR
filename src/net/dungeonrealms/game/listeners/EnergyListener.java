@@ -191,20 +191,6 @@ public class EnergyListener implements Listener {
     }
 
     /**
-     * Handles players swinging their fists/items
-     * removes energy or cancels the event if they can't
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerAnimation(PlayerAnimationEvent event) {
-        return;
-        //Player player = event.getPlayer();
-        //ItemStack playerWeapon = player.getItemInHand();
-    }
-
-    /**
      * Handles players deaths, removing metadata
      * and potion effects
      *
