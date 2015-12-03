@@ -526,6 +526,9 @@ public class DamageListener implements Listener {
                         double blockDamage = event.getDamage() / 2;
                         HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (blockDamage - armourReducedDamage));
                         event.setDamage(0);
+                    } else {
+                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (event.getDamage() - armourReducedDamage));
+                        event.setDamage(0);
                     }
                 } else {
                     HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (event.getDamage() - armourReducedDamage));

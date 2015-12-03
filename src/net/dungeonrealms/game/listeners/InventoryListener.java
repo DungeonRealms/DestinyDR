@@ -721,6 +721,9 @@ public class InventoryListener implements Listener {
 
             String finalName = ChatColor.RED + "[" + "+" + (amount + 1) + "] " + newName;
             double doublenewDamage = nmsItem.getTag().getInt("damage") + ((5 * nmsItem.getTag().getInt("damage")) / 100);
+            if (tier == 1) {
+                doublenewDamage += 1;
+            }
             int finalDmg = (int) Math.round(doublenewDamage);
             Attribute att = new Attribute(slotItem);
             List<String> itemLore = new ArrayList<>();
