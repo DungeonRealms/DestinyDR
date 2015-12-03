@@ -200,7 +200,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandToggle("toggles", "/<command> [args]", "The Toggle command."));
         cm.registerCommand(new CommandSkip("skip", "/<command> [args]", "Skip the tutorial island."));
 
-        cm.registerCommand(new CommandCheck("skip", "/<command> [args]", "Check epoch time of item."));
+        cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Check epoch time of item."));
 
         try {
             FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));
