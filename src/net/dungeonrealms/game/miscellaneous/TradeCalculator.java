@@ -24,7 +24,7 @@ public class TradeCalculator {
         int t1_ore = 0, t2_ore = 0, t3_ore = 0, t4_ore = 0, t5_ore = 0;
         int t1_pot = 0, t2_pot = 0, t3_pot = 0, t4_pot = 0 , t5_pot = 0;
         int t1_Splash_pot = 0, t2_Splash_pot = 0, t3_Splash_pot = 0, t4_Splash_pot = 0 , t5_Splash_pot = 0;
-
+        int orbs = 0;
 
         //TODO: Skill Scrolls (Professions)
         //TODO: Potions
@@ -581,6 +581,15 @@ public class TradeCalculator {
             scrap.setAmount(payout);
             merchant_offer.add(scrap);
         }
+        
+        if(orbs > 0){
+        	while(orbs > 0){
+                ItemStack scrap = ItemManager.createArmorScrap(5);
+                scrap.setAmount(20);
+                merchant_offer.add(scrap);
+        	}
+        }
+        
         //TODO: Trade Enchantment Scrolls for Scraps based on upcoming poll.
         return merchant_offer;
     }

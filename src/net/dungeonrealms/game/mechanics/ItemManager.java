@@ -695,13 +695,32 @@ public class ItemManager {
                 + ChatColor.BLACK.toString() + "+" + df.format(stats.getEnergyRegen() * 100) + "% Energy" + "\n"
                 + ChatColor.BLACK.toString() + "+" + df.format(stats.getCritChance() * 100) + "% Critical Hit" + "\n"
                 + ChatColor.BLACK.toString() + "+" + df.format(stats.getStaffDMG() * 100) + "% Staff DMG";
-
-
+        
+        String page5_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Command Guide  " + new_line
+				+ ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "@<PLAYER> <MSG>" + "\n" + ChatColor.BLACK.toString() + "Sends a PM." + new_line
+				+ ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/pinvite"
+				+ "\n"
+				+ ChatColor.BLACK.toString()
+				+ "Invite to party"
+				+ new_line + ChatColor.BLACK + ChatColor.BOLD.toString() + "/premove " + "\n" + ChatColor.BLACK.toString()
+				+ "Kick player from party" + new_line + ChatColor.BLACK + ChatColor.BOLD.toString() + "/pleave " + "\n"
+				+ ChatColor.BLACK.toString() + "Leave your party" + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString());
+        
+        
+        String page6_string =(ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/roll " + "\n" + ChatColor.BLACK.toString() + "Rolls a random number."
+				+ new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/logout " + "\n" + ChatColor.BLACK.toString()
+				+ "Safetly logs out your character."
+				+ new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/stats" + "\n" + ChatColor.BLACK.toString() + "Set Attributes"
+				+ new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/toggles" + "\n" + ChatColor.BLACK.toString() + "Open Toggles Menu");
+        		
         bm.setAuthor("King Bulwark");
         pages.add(page1_string);
         pages.add(page2_string);
         pages.add(page3_string);
         pages.add(page4_string);
+        pages.add(page5_string);
+        pages.add(page6_string);
+        
         bm.setPages(pages);
         stack.setItemMeta(bm);
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);

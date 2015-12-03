@@ -1,29 +1,16 @@
 package net.dungeonrealms.game.listeners;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.world.entities.Entities;
-import net.dungeonrealms.game.world.entities.utils.EntityAPI;
-import net.dungeonrealms.game.handlers.FriendHandler;
-import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.dungeonrealms.game.world.loot.LootManager;
-import net.dungeonrealms.game.world.loot.LootSpawner;
-import net.dungeonrealms.game.mechanics.ItemManager;
-import net.dungeonrealms.game.miscellaneous.RandomHelper;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.profession.Fishing;
-import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.world.shops.Shop;
-import net.dungeonrealms.game.world.shops.ShopMechanics;
-import net.dungeonrealms.game.world.spawning.SpawningMechanics;
-import net.dungeonrealms.game.world.realms.Instance;
-import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+
+import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
@@ -31,7 +18,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.*;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.EntityBlockFormEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerInteractEvent;
@@ -41,10 +32,30 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.handlers.FriendHandler;
+import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.miscellaneous.RandomHelper;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.world.entities.Entities;
+import net.dungeonrealms.game.world.entities.utils.EntityAPI;
+import net.dungeonrealms.game.world.items.Attribute;
+import net.dungeonrealms.game.world.items.repairing.RepairAPI;
+import net.dungeonrealms.game.world.loot.LootManager;
+import net.dungeonrealms.game.world.loot.LootSpawner;
+import net.dungeonrealms.game.world.realms.Instance;
+import net.dungeonrealms.game.world.shops.Shop;
+import net.dungeonrealms.game.world.shops.ShopMechanics;
+import net.dungeonrealms.game.world.spawning.SpawningMechanics;
+import net.md_5.bungee.api.ChatColor;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -158,6 +169,36 @@ public class BlockListener implements Listener {
     public void handleMiningFatigue(PlayerAnimationEvent event){
     	if(event.getAnimationType() != PlayerAnimationType.ARM_SWING) return;
         if (event.getPlayer().getItemInHand() == null || event.getPlayer().getItemInHand().getType() == Material.AIR) return;
+        if(!API.isWeapon(event.getPlayer().getItemInHand()) && !Mining.isDRPickaxe(event.getPlayer().getItemInHand())) return;
+        if(API.isWeapon(event.getPlayer().getItemInHand())){	
+        	int tier = API.getItemTier(event.getPlayer().getItemInHand()).getTierId();
+        	int playerLvl = API.getGamePlayer(event.getPlayer()).getLevel();
+        	switch(tier){
+        	case 4:
+        		if(playerLvl < 40){
+        			event.setCancelled(true);
+        			int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
+        			if(slot < 9)
+        				event.getPlayer().getInventory().setHeldItemSlot(slot);
+        			else
+        				event.getPlayer().getInventory().setHeldItemSlot(0);
+                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 40");
+        		}
+        		break;
+        	case 5:
+        		if(playerLvl < 60){
+        			event.setCancelled(true);
+        			int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
+        			if(slot < 9)
+        				event.getPlayer().getInventory().setHeldItemSlot(slot);
+        			else
+        				event.getPlayer().getInventory().setHeldItemSlot(0);
+        			event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 60");
+        		}
+        		break;
+        	}
+        	return;
+        }
     	if(!Mining.isDRPickaxe(event.getPlayer().getItemInHand())) return;
     	ItemStack stackInHand = event.getPlayer().getItemInHand();
         Block block = event.getPlayer().getTargetBlock((HashSet<Byte>) null, 100);	
@@ -516,6 +557,7 @@ public class BlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void shiftRightClickJournal(PlayerInteractEvent e) {
+    	// MORE SHOP CODE FOR XFIN TO PULL?
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getPlayer().isSneaking()) {
             ItemStack stack = e.getItem();
             if (stack == null) return;
