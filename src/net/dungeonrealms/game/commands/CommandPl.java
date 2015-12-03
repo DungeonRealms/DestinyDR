@@ -44,6 +44,7 @@ public class CommandPl extends BasicCommand {
                     if (Affair.getInstance().isOwner(player)) {
                         if (Bukkit.getPlayer(args[0]) != null) {
                             Affair.getInstance().invitePlayer(Bukkit.getPlayer(args[0]), player);
+                            player.sendMessage(ChatColor.GREEN + "Invited " + ChatColor.AQUA + args[0] + " " + ChatColor.GREEN + " to your party!");
                         } else {
                             player.sendMessage(ChatColor.RED + "You must specify a player that isn't [NULL]!");
                         }
