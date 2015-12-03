@@ -32,7 +32,9 @@ public enum EnumMonster {
     Daemon("daemon", "Daemon", "Steve", new String[]{""}, new String[]{""}),
     Silverfish("silverfish", "Silverfish", "Steve", new String[]{""}, new String[]{""}),
 	SpawnOfInferno("spawnofinferno", "Spawn of Inferno", "Steve", new String[]{""},new String[]{""} ),
-	GreaterAbyssalDemon("demon", "Greater Abyssal Demon", "Steve", new String[]{""}, new String[] {""});
+	GreaterAbyssalDemon("demon", "Greater Abyssal Demon", "Steve", new String[]{""}, new String[] {""}),
+	Monk("monk", "Crimson Crusader", "Yhmen", new String[] {""}, new String[] {""}),
+	Lizardman("lizardman", "Lizardman", "Steve", new String[] {"Giant", "Tough"}, new String[] {""});
 
 	public String idName;
     public String name;
