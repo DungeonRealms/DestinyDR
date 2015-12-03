@@ -478,7 +478,7 @@ public class API {
              PLAYER IS NEW
              */
 
-            player.teleport(new Location(Bukkit.getWorlds().get(0), 824, 49, -103, -90.6f, 4.6f));
+            player.teleport(new Location(Bukkit.getWorlds().get(0), 824, 49, -103, 132.9f, 2.2f));
             player.sendMessage(new String[]{
                     ChatColor.AQUA + "Welcome to DungeonRealms! Talk to the guides scattered around the island to get yourself acquainted, then meet the Ship Captain at the docks. Or type /skip"
             });
@@ -749,14 +749,14 @@ public class API {
         return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("armor");
     }
 
-	/**
-	 * @param is
-	 * @return
-	 */
-	public static boolean isOrb(ItemStack is) {
-		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(is);
-		if(nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("orb"))
-			return true;
-		return false;
-	}
+    /**
+     * @param is
+     * @return
+     */
+    public static boolean isOrb(ItemStack is) {
+        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(is);
+        if (nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("orb"))
+            return true;
+        return false;
+    }
 }

@@ -341,23 +341,21 @@ public class BlockListener implements Listener {
             return;
         }
         Action actionType = e.getAction();
-        switch (actionType) {
-            case RIGHT_CLICK_BLOCK:
-                e.getPlayer().sendMessage(ChatColor.RED + "Shops have been disabled whilst a critical error is resolved.");
-                e.setCancelled(true);
-                break;
-            case LEFT_CLICK_BLOCK:
-                if (shop.ownerUUID.toString().equalsIgnoreCase(e.getPlayer().getUniqueId().toString())) {
-                    e.setCancelled(true);
-                    e.getPlayer().sendMessage(ChatColor.RED + "Shops have been disabled whilst a critical error is resolved.");
-                    shop.deleteShop();
-                }
-                break;
-            default:
-        }
+//        switch (actionType) {
+//            case RIGHT_CLICK_BLOCK:
+//                e.getPlayer().sendMessage(ChatColor.RED + "Shops have been disabled whilst a critical error is resolved.");
+//                e.setCancelled(true);
+//                break;
+//            case LEFT_CLICK_BLOCK:
+//                if (shop.ownerUUID.toString().equalsIgnoreCase(e.getPlayer().getUniqueId().toString())) {
+//                    e.setCancelled(true);
+//                    e.getPlayer().sendMessage(ChatColor.RED + "Shops have been disabled whilst a critical error is resolved.");
+//                    shop.deleteShop();
+//                }
+//                break;
+//            default:
+//        }
 
-        /*
-        Old code
         switch (actionType) {
             case RIGHT_CLICK_BLOCK:
                 if (shop.isopen || shop.ownerUUID.toString().equalsIgnoreCase(e.getPlayer().getUniqueId().toString())) {
@@ -376,7 +374,6 @@ public class BlockListener implements Listener {
                 break;
             default:
         }
-         */
     }
 
     /**
