@@ -48,6 +48,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
 import org.bukkit.event.entity.EntityUnleashEvent;
 import org.bukkit.event.entity.EntityUnleashEvent.UnleashReason;
+import org.bukkit.event.entity.ItemSpawnEvent;
 import org.bukkit.event.hanging.HangingBreakByEntityEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
@@ -790,6 +791,12 @@ public class MainListener implements Listener {
             return;
         }
         horse.setLeashHolder((Player) horse.getOwner());
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void chickenLayEgg(ItemSpawnEvent event) {
+        if (event.getEntityType() != EntityType.EGG) return;
+        event.setCancelled(true);
     }
 
 

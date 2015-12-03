@@ -377,12 +377,12 @@ public class InventoryListener implements Listener {
         } else {
             String new_armor_name;
             String old_armor_name;
-            if (event.getNewArmorPiece().getType() == Material.AIR) {
+            if (event.getNewArmorPiece() == null || event.getNewArmorPiece().getType() == Material.AIR) {
                 new_armor_name = "NOTHING";
             } else {
                 new_armor_name = event.getNewArmorPiece().getItemMeta().getDisplayName();
             }
-            if (event.getOldArmorPiece().getType() == Material.AIR) {
+            if (event.getOldArmorPiece() == null || event.getOldArmorPiece().getType() == Material.AIR) {
                 old_armor_name = "NOTHING";
             } else {
                 old_armor_name = event.getOldArmorPiece().getItemMeta().getDisplayName();
@@ -1145,6 +1145,10 @@ public class InventoryListener implements Listener {
             }
             if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
                 event.getWhoClicked().sendMessage(ChatColor.RED + "Naughty Naughty Naughty!");
+                event.setCancelled(true);
+                event.setResult(Event.Result.DENY);
+            }
+            if (event.getCurrentItem() != null && !(API.isItemTradeable(event.getCurrentItem()))) {
                 event.setCancelled(true);
                 event.setResult(Event.Result.DENY);
             }

@@ -3,6 +3,18 @@ package net.dungeonrealms.game.listeners;
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.handlers.EnergyHandler;
+import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.handlers.KarmaHandler;
+import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.mechanics.ParticleAPI;
+import net.dungeonrealms.game.mechanics.PlayerManager;
+import net.dungeonrealms.game.miscellaneous.ItemBuilder;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
@@ -10,24 +22,11 @@ import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
-import net.dungeonrealms.game.handlers.EnergyHandler;
-import net.dungeonrealms.game.handlers.HealthHandler;
-import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.ItemGenerator;
-import net.dungeonrealms.game.world.items.armor.Armor;
-import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanics.ParticleAPI;
-import net.dungeonrealms.game.mechanics.PlayerManager;
-import net.dungeonrealms.game.miscellaneous.ItemBuilder;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
@@ -798,7 +797,7 @@ public class DamageListener implements Listener {
             HealthHandler.getInstance().setPlayerMaxHPLive(player, 50);
             HealthHandler.getInstance().setPlayerHPLive(player, 50);
             PlayerManager.checkInventory(player.getUniqueId());
-            player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 10)).setNBTString("subtype", "starter").build());
+            player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString("subtype", "starter").build());
             if (finalSavedArmorContents) {
             	
 //            	for(ItemStack itemStack : savedItems){
@@ -819,11 +818,14 @@ public class DamageListener implements Listener {
                     }
                 }
             }
+            player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
+            player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
+            player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
             player.getInventory().addItem(new ItemBuilder().setItem(new ItemGenerator().getDefinedStack(Item.ItemType.AXE, Item.ItemTier.TIER_1, Item.ItemModifier.UNCOMMON)).setNBTString("subtype", "starter").build());
-            player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.HELMET, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON)).setNBTString("subtype", "starter").build());
-            player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.CHESTPLATE, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON)).setNBTString("subtype", "starter").build());
-            player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.LEGGINGS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON)).setNBTString("subtype", "starter").build());
-            player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.BOOTS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON)).setNBTString("subtype", "starter").build());
+            //player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.HELMET, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON)).setNBTString("subtype", "starter").build());
+           // player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.CHESTPLATE, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON)).setNBTString("subtype", "starter").build());
+            //player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.LEGGINGS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON)).setNBTString("subtype", "starter").build());
+            //player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.BOOTS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON)).setNBTString("subtype", "starter").build());
         }, 20L);
     }
 

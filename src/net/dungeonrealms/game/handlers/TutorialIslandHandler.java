@@ -2,6 +2,7 @@ package net.dungeonrealms.game.handlers;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
@@ -72,6 +73,9 @@ public class TutorialIslandHandler implements GenericMechanic, Listener {
                 .setNBTString("subtype", "starter").build());
         player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.BOOTS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON))
                 .setNBTString("subtype", "starter").build());
-        player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 10)).setNBTString("subtype", "starter").build());
+        player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 5)).setNBTString("subtype", "starter").build());
+        player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
+        player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
+        player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
     }
 }
