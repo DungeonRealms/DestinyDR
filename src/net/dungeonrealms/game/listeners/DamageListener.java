@@ -442,6 +442,7 @@ public class DamageListener implements Listener {
                         for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
                             if (entity instanceof LivingEntity && entity != event.getEntity() && !(entity instanceof Player)) {
                                 if ((event.getDamage() - armourReducedDamage) > 0) {
+                                    entity.playEffect(EntityEffect.HURT);
                                     HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, attacker, (event.getDamage() - armourReducedDamage));
                                 }
                             } else {
