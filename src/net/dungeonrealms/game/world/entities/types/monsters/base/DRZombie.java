@@ -109,7 +109,19 @@ public abstract class DRZombie extends EntityZombie implements Monster{
     }
 
     private ItemStack getTierWeapon(int tier) {
-    	ItemStack item = new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.getById(new Random().nextInt(net.dungeonrealms.game.world.items.Item.ItemType.values().length - 2)), net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);
+        Item.ItemType itemType = Item.ItemType.AXE;
+        switch (new Random().nextInt(2)) {
+            case 0:
+                itemType = Item.ItemType.SWORD;
+                break;
+            case 1:
+                itemType = Item.ItemType.POLE_ARM;
+                break;
+            case 2:
+                itemType = Item.ItemType.AXE;
+                break;
+        }
+    	ItemStack item = new ItemGenerator().next(itemType, net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;
     }

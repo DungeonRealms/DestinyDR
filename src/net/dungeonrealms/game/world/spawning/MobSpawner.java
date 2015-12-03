@@ -192,7 +192,6 @@ public class MobSpawner {
                 EntityStats.setMonsterRandomStats(entity, level, tier);
 
                 String lvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
-                int hp = entity.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
 
                 String customName = "";
                 try {
@@ -296,9 +295,7 @@ public class MobSpawner {
                 if (isRemoved) {
                     Bukkit.getScheduler().cancelTask(timerID);
                 } else
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        spawnIn(notEmpty);
-                    });
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> spawnIn(notEmpty));
             }, 0, 100L);
         } else {
             if (timerID != -1) {
