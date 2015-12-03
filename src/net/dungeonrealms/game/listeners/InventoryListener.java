@@ -1183,4 +1183,35 @@ public class InventoryListener implements Listener {
             }
         }
     }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void playerDoWeirdArmorThing(InventoryClickEvent event) {
+        if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
+        if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+        if (!API.isArmor(event.getCurrentItem())) return;
+        if (!(event.getAction() == InventoryAction.PLACE_ALL)) return;
+        Attribute a = new Attribute(event.getCurrentItem());
+        Player player = (Player) event.getWhoClicked();
+        int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
+        if (API.isArmor(event.getCurrentItem())) {
+            switch (a.getArmorTier().getTierId()) {
+                case 4:
+                    if (playerLevel < 40) {
+                        event.setCancelled(true);
+                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 40");
+                        player.updateInventory();
+                        return;
+                    }
+                    break;
+                case 5:
+                    if (playerLevel < 60) {
+                        event.setCancelled(true);
+                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 60");
+                        player.updateInventory();
+                        return;
+                    }
+                    break;
+            }
+        }
+    }
 }
