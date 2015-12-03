@@ -478,9 +478,9 @@ public class API {
              PLAYER IS NEW
              */
 
-            player.teleport(new Location(Bukkit.getWorlds().get(0), 825.5, 47, -101.5, 126.9f, 6.1f));
+            player.teleport(new Location(Bukkit.getWorlds().get(0), 930.5, 32, -92, -90.6f, 4.6f));
             player.sendMessage(new String[]{
-                    ChatColor.AQUA + "Hello new player! Please walk through this island and read the information the NPCs tell you! Make sure to remember this information as it is important to the core gameplay!"
+                    ChatColor.AQUA + "Welcome to DungeonRealms! Please right-click 'Ship Captain' to continue your journey. Or type /skip"
             });
 
         }
@@ -514,22 +514,22 @@ public class API {
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + " Use " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/logout " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "to safely change your server instance."
         });
 
-    	if(gp != null && gp.getPlayer() != null)
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
-        	if (gp.getStats().freePoints > 0) {
-            	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    TextComponent bungeeMessage = new TextComponent(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
-                    bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats"));
-                    bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Allocate Points").create()));
-                    TextComponent test = new TextComponent(ChatColor.GREEN + "*" + ChatColor.GRAY +
-                			"You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
-                			"To allocate click " );
-                    test.addExtra(bungeeMessage);
-                    test.addExtra(ChatColor.GREEN + "*");
-                    gp.getPlayer().spigot().sendMessage(test);
-            	});
-        	}
-        }, 100);
+        if (gp != null && gp.getPlayer() != null)
+            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                if (gp.getStats().freePoints > 0) {
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                        TextComponent bungeeMessage = new TextComponent(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
+                        bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats"));
+                        bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Allocate Points").create()));
+                        TextComponent test = new TextComponent(ChatColor.GREEN + "*" + ChatColor.GRAY +
+                                "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
+                                "To allocate click ");
+                        test.addExtra(bungeeMessage);
+                        test.addExtra(ChatColor.GREEN + "*");
+                        gp.getPlayer().spigot().sendMessage(test);
+                    });
+                }
+            }, 100);
     }
 
     /**
@@ -540,11 +540,7 @@ public class API {
      * @since 1.0
      */
     public static boolean isOnline(UUID uuid) {
-        try {
-            return Bukkit.getServer().getPlayer(uuid).isOnline();
-        } catch (Exception e) {
-            return false;
-        }
+        return Bukkit.getPlayer(uuid) != null;
     }
 
     /**

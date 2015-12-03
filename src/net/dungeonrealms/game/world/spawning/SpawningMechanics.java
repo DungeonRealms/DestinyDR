@@ -55,6 +55,7 @@ public class SpawningMechanics implements GenericMechanic {
     }
 
     public static void loadSpawners() {
+    	Utils.log.info("LOADING ALL DUNGEON REALMS MONSTERS...");
         SPAWNER_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("spawners");
         for (String line : SPAWNER_CONFIG) {
             if (line == null || line.equalsIgnoreCase("null"))
@@ -79,7 +80,7 @@ public class SpawningMechanics implements GenericMechanic {
              spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low");
             ALLSPAWNERS.add(spawner);
         }
-        Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), SpawningMechanics::initSpawners, 0, 4 * 20L);
+        SpawningMechanics.initSpawners();
         Bukkit.getWorlds().get(0).getEntities().forEach(entity -> {
             ((CraftEntity) entity).getHandle().damageEntity(DamageSource.GENERIC, 20f);
             entity.remove();

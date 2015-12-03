@@ -51,7 +51,7 @@ public class HealthHandler implements GenericMechanic {
     }
 
     public void startInitialization() {
-        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::updatePlayerHPBars, 40, 8L);
+        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::updatePlayerHPBars, 40, 10L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40, 20L);
     }
 
@@ -84,7 +84,7 @@ public class HealthHandler implements GenericMechanic {
             }
             setPlayerHPRegenLive(player, getPlayerHPRegenLive(player));
             player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-        }, 50L);
+        }, 60L);
     }
 
     /**
@@ -549,7 +549,6 @@ public class HealthHandler implements GenericMechanic {
                 KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, leAttacker);
                 String killerName = "";
                 if (leAttacker instanceof Player) {
-                    killerName = leAttacker.getName();
                     killerName = leAttacker.getName();
                 } else {
                     if (leAttacker.hasMetadata("customname")) {

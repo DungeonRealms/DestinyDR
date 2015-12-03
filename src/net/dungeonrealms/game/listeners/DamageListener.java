@@ -6,6 +6,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
+import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
@@ -193,15 +194,11 @@ public class DamageListener implements Listener {
                     }
                 }
             }
-            if (Affair.getInstance().isInParty((Player) event.getDamager())) {
-                if (event.getEntity() instanceof Player) {
-                    if (Affair.getInstance().isInParty((Player) event.getEntity())) {
-                        if (Affair.getInstance().getParty((Player) event.getDamager()).get().getMembers().contains(event.getEntity())) {
-                            event.setCancelled(true);
-                            event.setDamage(0);
-                            return;
-                        }
-                    }
+            if (event.getEntity() instanceof Player) {
+                if (Affair.getInstance().areInSameParty((Player) event.getDamager(), (Player) event.getEntity())) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
                 }
             }
             Player attacker = (Player) event.getDamager();
@@ -412,17 +409,11 @@ public class DamageListener implements Listener {
                 }
             }
         }
-        if (event.getDamager() instanceof Player) {
-            if (Affair.getInstance().isInParty((Player) event.getDamager())) {
-                if (event.getEntity() instanceof Player) {
-                    if (Affair.getInstance().isInParty((Player) event.getEntity())) {
-                        if (Affair.getInstance().getParty((Player) event.getDamager()).get().getMembers().contains(event.getEntity())) {
-                            event.setCancelled(true);
-                            event.setDamage(0);
-                            return;
-                        }
-                    }
-                }
+        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
+            if (Affair.getInstance().areInSameParty((Player) event.getDamager(), (Player) event.getEntity())) {
+                event.setCancelled(true);
+                event.setDamage(0);
+                return;
             }
         }
         double armourReducedDamage = 0;
@@ -442,6 +433,7 @@ public class DamageListener implements Listener {
                         for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
                             if (entity instanceof LivingEntity && entity != event.getEntity() && !(entity instanceof Player)) {
                                 if ((event.getDamage() - armourReducedDamage) > 0) {
+                                    entity.playEffect(EntityEffect.HURT);
                                     HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, attacker, (event.getDamage() - armourReducedDamage));
                                 }
                             } else {
@@ -463,17 +455,11 @@ public class DamageListener implements Listener {
                     return;
                 }
             }
-            if (attacker instanceof Player) {
-                if (Affair.getInstance().isInParty((Player) attacker)) {
-                    if (defender instanceof Player) {
-                        if (Affair.getInstance().isInParty((Player) defender)) {
-                            if (Affair.getInstance().getParty((Player) attacker).get().getMembers().contains(defender)) {
-                                event.setCancelled(true);
-                                event.setDamage(0);
-                                return;
-                            }
-                        }
-                    }
+            if (attacker instanceof Player && defender instanceof Player) {
+                if (Affair.getInstance().areInSameParty((Player) attacker, (Player) defender)) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
                 }
             }
             if (!(attacker instanceof Player)) {
@@ -495,17 +481,11 @@ public class DamageListener implements Listener {
                     return;
                 }
             }
-            if (attacker instanceof Player) {
-                if (Affair.getInstance().isInParty((Player) attacker)) {
-                    if (defender instanceof Player) {
-                        if (Affair.getInstance().isInParty((Player) defender)) {
-                            if (Affair.getInstance().getParty((Player) attacker).get().getMembers().contains(defender)) {
-                                event.setCancelled(true);
-                                event.setDamage(0);
-                                return;
-                            }
-                        }
-                    }
+            if (attacker instanceof Player && defender instanceof Player) {
+                if (Affair.getInstance().areInSameParty((Player) attacker, (Player) defender)) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
                 }
             }
             if (!(attacker instanceof Player)) {
@@ -579,13 +559,14 @@ public class DamageListener implements Listener {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(entityEquipment.getItemInHand()));
         if (nmsItem == null || nmsItem.getTag() == null) return;
         //Get the NBT of the item the player is holding.
-        if (!(API.isPlayer(shooter))) return;
-        if (API.isInSafeRegion(shooter.getLocation()) && event.getEntity().getType() != EntityType.SPLASH_POTION) {
+        if (!(shooter instanceof Player)) return;
+        if (API.isInSafeRegion(shooter.getLocation()) && event.getEntity().getType() != EntityType.SPLASH_POTION && event.getEntity().getType() != EntityType.FISHING_HOOK) {
             event.setCancelled(true);
             return;
         }
         int weaponTier = nmsItem.getTag().getInt("itemTier");
         Player player = (Player) shooter;
+        if (Fishing.isDRFishingPole(player.getItemInHand())) return;
         player.updateInventory();
         if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player.getUniqueId()) <= 0) {
             event.setCancelled(true);

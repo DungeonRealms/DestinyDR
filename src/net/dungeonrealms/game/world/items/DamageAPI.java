@@ -282,7 +282,7 @@ public class DamageAPI {
         LivingEntity leReceiver = (LivingEntity) receiver;
         if (projectile.getMetadata("fireDamage").get(0).asInt() != 0) {
             try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, receiver.getLocation(),
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, receiver.getLocation().add(0, 1, 0),
                         new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -309,7 +309,7 @@ public class DamageAPI {
 
         if (projectile.getMetadata("iceDamage").get(0).asInt() != 0) {
             try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SNOWBALL_POOF, receiver.getLocation(),
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SNOW_SHOVEL, receiver.getLocation().add(0, 1, 0),
                         new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -336,7 +336,7 @@ public class DamageAPI {
 
         if (projectile.getMetadata("poisonDamage").get(0).asInt() != 0) {
             try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, receiver.getLocation(),
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, receiver.getLocation().add(0, 1, 0),
                         new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
             } catch (Exception ex) {
                 ex.printStackTrace();
@@ -364,7 +364,7 @@ public class DamageAPI {
         if (projectile.getMetadata("criticalHit").get(0).asInt() != 0) {
             if (new Random().nextInt(99) < projectile.getMetadata("criticalHit").get(0).asInt()) {
                 try {
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, receiver.getLocation(),
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, receiver.getLocation().add(0, 1, 0),
                             new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
                 } catch (Exception ex) {
                     ex.printStackTrace();

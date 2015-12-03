@@ -3,15 +3,24 @@ package net.dungeonrealms.game.listeners;
 import ca.thederpygolems.armorequip.ArmorEquipEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.enchantments.EnchantmentAPI;
+import net.dungeonrealms.game.handlers.ClickHandler;
+import net.dungeonrealms.game.handlers.EnergyHandler;
+import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
-import net.dungeonrealms.game.enchantments.EnchantmentAPI;
-import net.dungeonrealms.game.handlers.ClickHandler;
-import net.dungeonrealms.game.handlers.EnergyHandler;
-import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.player.stats.PlayerStats;
+import net.dungeonrealms.game.player.stats.StatsManager;
+import net.dungeonrealms.game.player.trade.Trade;
+import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.world.glyph.Glyph;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.AttributeType;
@@ -20,16 +29,6 @@ import net.dungeonrealms.game.world.items.armor.Armor.ArmorAttributeType;
 import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
-import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanics.ItemManager;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.profession.Fishing;
-import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.player.stats.PlayerStats;
-import net.dungeonrealms.game.player.stats.StatsManager;
-import net.dungeonrealms.game.player.trade.Trade;
-import net.dungeonrealms.game.world.glyph.Glyph;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.Packet;
@@ -244,16 +243,36 @@ public class InventoryListener implements Listener {
      * Stop Shift Clicking Armor ABove Level possibility.
      * @param event
      */
-    @EventHandler(priority = EventPriority.MONITOR)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void playerShiftClickArmor(InventoryClickEvent event){
         if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
-    	if(event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
-    	if(event.isShiftClick()){
-    		if(!API.isArmor(event.getCurrentItem())) return;
-            Attribute a = new Attribute(event.getCurrentItem());
-            Player player = (Player) event.getWhoClicked();
-            int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
+    	if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+        if (!event.isShiftClick()) return;
+        if (!API.isArmor(event.getCurrentItem()) && !API.isWeapon(event.getCurrentItem())) return;
+        Attribute a = new Attribute(event.getCurrentItem());
+        Player player = (Player) event.getWhoClicked();
+        int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
+        if (API.isArmor(event.getCurrentItem())) {
             switch (a.getArmorTier().getTierId()) {
+                case 4:
+                    if (playerLevel < 40) {
+                        event.setCancelled(true);
+                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 40");
+                        player.updateInventory();
+                        return;
+                    }
+                    break;
+                case 5:
+                    if (playerLevel < 60) {
+                        event.setCancelled(true);
+                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 60");
+                        player.updateInventory();
+                           return;
+                    }
+                    break;
+            }
+        }  else if (API.isWeapon(event.getCurrentItem())) {
+            switch (a.getItemTier().getTierId()) {
                 case 4:
                     if (playerLevel < 40) {
                         event.setCancelled(true);
@@ -271,7 +290,7 @@ public class InventoryListener implements Listener {
                     }
                     break;
             }
-    	}
+        }
     }
 
     /**
@@ -283,12 +302,9 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerEquipArmor(ArmorEquipEvent event) {
         Player player = event.getPlayer();
-
         if (event.getNewArmorPiece() != null && event.getNewArmorPiece().getType() != Material.AIR) {
             Attribute a = new Attribute(event.getNewArmorPiece());
-
             int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
-            
             switch (a.getArmorTier().getTierId()) {
                 case 4:
                     if (playerLevel < 40) {
@@ -308,7 +324,6 @@ public class InventoryListener implements Listener {
                     break;
             }
         }
-
         if (!CombatLog.isInCombat(player)) {
             player.playSound(player.getLocation(), Sound.NOTE_PLING, 1f, 1f);
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

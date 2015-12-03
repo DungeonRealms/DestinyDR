@@ -73,7 +73,12 @@ public class ShopListener implements Listener {
 		default:
 		}
 	}
-
+	//RANDOM MESSAGE NIGGAA BOY!
+	
+	/**
+	 * Ex - Fin -ehty is a nigger boy.
+	 * @param event
+	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void playerClickShopInventory(InventoryClickEvent event) {
 		if (!event.getInventory().getTitle().contains("@"))

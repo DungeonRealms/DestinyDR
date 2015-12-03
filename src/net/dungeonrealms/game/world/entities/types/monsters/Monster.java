@@ -56,10 +56,10 @@ public interface Monster {
                     gem_drop_amount = (new Random().nextInt(30 - 10) + 10) * gold_drop_multiplier;
                     break;
             	case 4:
-                    gem_drop_amount = (new Random().nextInt(50 - 20) + 20) * gold_drop_multiplier;
+                    gem_drop_amount = (new Random().nextInt(40 - 20) + 20) * gold_drop_multiplier;
                     break;
             	case 5:
-                    gem_drop_amount = (new Random().nextInt(200 - 75) + 75) * gold_drop_multiplier;
+                    gem_drop_amount = (new Random().nextInt(150 - 75) + 75) * gold_drop_multiplier;
                     break;
             }
             
@@ -82,16 +82,16 @@ public interface Monster {
 		int chance = 0;
 		switch(tier){
 		case 1:
-			chance = 200;
-			break;
-		case 2:
 			chance = 100;
 			break;
-		case 3:
+		case 2:
 			chance = 75;
 			break;
+		case 3:
+			chance = 50;
+			break;
 		case 4:
-			chance = 40;
+			chance = 25;
 			break;
 		case 5:
 			chance = 10;

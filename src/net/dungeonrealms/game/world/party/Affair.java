@@ -127,6 +127,18 @@ public class Affair implements GenericMechanic {
         });
     }
 
+    public boolean areInSameParty(Player player1, Player player2) {
+        if (isInParty(player1) && isInParty(player2)) {
+            return (getParty(player1).get().getOwner().getName().equalsIgnoreCase(getParty(player2).get().getOwner().getName().toLowerCase()));
+        } else {
+            return false;
+        }
+    }
+
+    public int amountInParty(AffairO party) {
+        return party.getMembers().size() + 1;
+    }
+
     public boolean isInParty(Player player) {
         for (AffairO party : _parties) {
             if (party.getOwner().equals(player) || party.getMembers().contains(player)) {
@@ -135,7 +147,6 @@ public class Affair implements GenericMechanic {
         }
         return false;
     }
-
     public void createParty(Player player) {
         _parties.add(new AffairO(player, new ArrayList<>()));
         player.sendMessage(ChatColor.GREEN + "Your party has been created!");
