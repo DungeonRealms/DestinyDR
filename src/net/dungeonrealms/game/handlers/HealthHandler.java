@@ -658,25 +658,24 @@ public class HealthHandler implements GenericMechanic {
                                     case 1:
                                         break;
                                     case 2:
-                                        exp *= 1.2;
                                         break;
                                     case 3:
-                                        exp *= 1.3;
+                                        exp *= 1.2;
                                         break;
                                     case 4:
-                                        exp *= 1.4;
+                                        exp *= 1.3;
                                         break;
                                     case 5:
-                                        exp *= 1.5;
+                                        exp *= 1.4;
                                         break;
                                     case 6:
-                                        exp *= 1.6;
+                                        exp *= 1.5;
                                         break;
                                     case 7:
-                                        exp *= 1.8;
+                                        exp *= 1.6;
                                         break;
                                     case 8:
-                                        exp *= 1.9;
+                                        exp *= 1.7;
                                         break;
                                     default:
                                         break;
