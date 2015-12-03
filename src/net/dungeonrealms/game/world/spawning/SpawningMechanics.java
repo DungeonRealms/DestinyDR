@@ -189,6 +189,12 @@ public class SpawningMechanics implements GenericMechanic {
             case GreaterAbyssalDemon:
                 entity = new DRSilverfish(world, EnumMonster.GreaterAbyssalDemon, tier);
                 break;
+            case Monk:
+            	entity = new BasicMeleeMonster(world, EnumMonster.Monk, tier);
+            	break;
+            case Lizardman:
+            	entity = new BasicMeleeMonster(world,EnumMonster.Lizardman, tier);
+            	break;
             default:
                 Utils.log.info("[SPAWNING] Tried to create " + monsEnum.idName + " but it has failed.");
                 return null;
