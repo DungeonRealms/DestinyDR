@@ -411,6 +411,9 @@ public class API {
      */
     public static void logoutAllPlayers() {
         for (Player player : Bukkit.getOnlinePlayers()) {
+            if (CombatLog.isInCombat(player)) {
+                CombatLog.removeFromCombat(player);
+            }
             handleLogout(player.getUniqueId());
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 player.kickPlayer("Server Restarting!");

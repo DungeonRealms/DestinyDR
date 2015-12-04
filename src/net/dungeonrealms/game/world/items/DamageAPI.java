@@ -149,7 +149,7 @@ public class DamageAPI {
             int critHit = tag.getInt("criticalHit");
             if (attacker instanceof Player) {
                 if (API.getGamePlayer((Player) attacker) != null) {
-                    critHit += critHit * ((API.getGamePlayer((Player) attacker).getStats()).getCritChance() / 100);
+                    critHit += critHit * ((API.getGamePlayer((Player) attacker).getStats()).getCritChance());
                 }
             }
             if (new Random().nextInt(99) < critHit) {
