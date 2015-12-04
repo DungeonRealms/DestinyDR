@@ -11,6 +11,7 @@ import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -100,6 +101,9 @@ public interface Monster {
 			ItemStack[] loot = new ItemStack[5];
 			ItemStack[] armor = ((LivingEntity) ent).getEquipment().getArmorContents();
 			ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
+			if (weapon.getType() == Material.BOW) {
+				weapon.removeEnchantment(Enchantment.KNOCKBACK);
+			}
 			armor[3] = new ArmorGenerator().getArmor(EquipmentType.HELMET, ArmorTier.getByTier(tier), API.getArmorModifier());
 			loot = new ItemStack[]{armor[0], armor[1], armor[2], armor[3], weapon};
 			ItemStack armorToDrop;
@@ -123,7 +127,7 @@ public interface Monster {
 					armorToDrop = loot[4];
 					break;
 				default:
-					armorToDrop = loot[4];
+					armorToDrop = loot[1];
 					break;
 			}
 
