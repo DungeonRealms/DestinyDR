@@ -1,16 +1,28 @@
 package net.dungeonrealms.game.player.combat;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.mastery.NBTUtils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
+import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.world.entities.EnumEntityType;
+import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Zombie;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Map;
+import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -29,8 +41,8 @@ public class CombatLog implements GenericMechanic {
     }
 
     public static ConcurrentHashMap<Player, Integer> COMBAT = new ConcurrentHashMap<>();
-    //public static ConcurrentHashMap<UUID, Zombie> LOGGER = new ConcurrentHashMap<>();
-    //public static ConcurrentHashMap<UUID, Inventory> LOGGER_INVENTORY = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<UUID, Zombie> LOGGER = new ConcurrentHashMap<>();
+    public static ConcurrentHashMap<UUID, Inventory> LOGGER_INVENTORY = new ConcurrentHashMap<>();
 
     public static boolean isInCombat(Player player) {
         return COMBAT.containsKey(player);
@@ -60,7 +72,7 @@ public class CombatLog implements GenericMechanic {
         }
     }
 
-    /*public static void handleCombatLogger(Player p) {
+    public static void handleCombatLogger(Player p) {
         World world = p.getWorld();
         Location loc = p.getLocation();
         Zombie z = (Zombie) world.spawnEntity(loc, EntityType.ZOMBIE);
@@ -96,7 +108,7 @@ public class CombatLog implements GenericMechanic {
             LOGGER_INVENTORY.remove(p.getUniqueId());
         }, 20 * 10);
 
-    }*/
+    }
 
     @Override
     public EnumPriority startPriority() {
@@ -125,7 +137,7 @@ public class CombatLog implements GenericMechanic {
     /**
      * @param uuid
      */
-    /*public static void checkCombatLog(UUID uuid) {
+    public static void checkCombatLog(UUID uuid) {
         if (CombatLog.LOGGER.containsKey(uuid)) {
             Zombie z = CombatLog.LOGGER.get(uuid);
             if (!z.isDead()) {
@@ -139,5 +151,5 @@ public class CombatLog implements GenericMechanic {
                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, "", true);
             }
         }
-    }*/
+    }
 }

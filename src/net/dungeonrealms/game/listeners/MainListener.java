@@ -18,6 +18,7 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.mongo.achievements.Achievements;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.inventory.GUI;
@@ -229,7 +230,7 @@ public class MainListener implements Listener {
         player.sendMessage(ChatColor.GREEN + "Loading your data.. This will only take a moment!");
 
         UUID uuid = player.getUniqueId();
-        //CombatLog.checkCombatLog(uuid);
+        CombatLog.checkCombatLog(uuid);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
                 () -> API.handleLogin(player.getUniqueId()), 20L * 3);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
