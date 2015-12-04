@@ -220,6 +220,12 @@ public class DamageAPI {
                     case SWORD:
                         damage += (damage * (API.getGamePlayer(player).getStats().getSwordDMG()));
                         break;
+                    case BOW:
+                        damage /= 2;
+                        break;
+                    case STAFF:
+                        damage /= 2;
+                        break;
                     default:
                         break;
                 }
