@@ -1,18 +1,17 @@
 package net.dungeonrealms.game.miscellaneous;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.inventory.ItemStack;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Kieran on 11/5/2015.
@@ -141,7 +140,7 @@ public class TradeCalculator {
                 int payout = 0;
                 net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(is);
                 NBTTagCompound tag = nmsItem.getTag();
-                if (tag.hasKey("type")) {
+                if (tag.hasKey("type") && !API.isItemNonTradeable(is)) {
                     if (tag.getString("type").equalsIgnoreCase("weapon")) {
                         payout = 2;
                     }

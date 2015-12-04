@@ -211,7 +211,7 @@ public class DungeonRealms extends JavaPlugin {
         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
             Bukkit.broadcastMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES");
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 6000);
-        }, 354000);
+        }, 288000);
 
 
         Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");

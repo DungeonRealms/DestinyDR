@@ -377,12 +377,12 @@ public class InventoryListener implements Listener {
         } else {
             String new_armor_name;
             String old_armor_name;
-            if (event.getNewArmorPiece().getType() == Material.AIR) {
+            if (event.getNewArmorPiece() == null || event.getNewArmorPiece().getType() == Material.AIR) {
                 new_armor_name = "NOTHING";
             } else {
                 new_armor_name = event.getNewArmorPiece().getItemMeta().getDisplayName();
             }
-            if (event.getOldArmorPiece().getType() == Material.AIR) {
+            if (event.getOldArmorPiece() == null || event.getOldArmorPiece().getType() == Material.AIR) {
                 old_armor_name = "NOTHING";
             } else {
                 old_armor_name = event.getOldArmorPiece().getItemMeta().getDisplayName();
@@ -721,6 +721,9 @@ public class InventoryListener implements Listener {
 
             String finalName = ChatColor.RED + "[" + "+" + (amount + 1) + "] " + newName;
             double doublenewDamage = nmsItem.getTag().getInt("damage") + ((5 * nmsItem.getTag().getInt("damage")) / 100);
+            if (tier == 1) {
+                doublenewDamage += 1;
+            }
             int finalDmg = (int) Math.round(doublenewDamage);
             Attribute att = new Attribute(slotItem);
             List<String> itemLore = new ArrayList<>();
@@ -1148,6 +1151,10 @@ public class InventoryListener implements Listener {
                 event.setCancelled(true);
                 event.setResult(Event.Result.DENY);
             }
+            /*if (event.getCurrentItem() != null && !(API.isItemTradeable(event.getCurrentItem()))) {
+                event.setCancelled(true);
+                event.setResult(Event.Result.DENY);
+            }*/
         }
     }
 
@@ -1176,6 +1183,37 @@ public class InventoryListener implements Listener {
                 }
             } else if (event.getRawSlot() == 5) {
                 event.getWhoClicked().closeInventory();
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void playerDoWeirdArmorThing(InventoryClickEvent event) {
+        if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
+        if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+        if (!API.isArmor(event.getCurrentItem())) return;
+        if (!(event.getAction() == InventoryAction.HOTBAR_SWAP)) return;
+        Attribute a = new Attribute(event.getCurrentItem());
+        Player player = (Player) event.getWhoClicked();
+        int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
+        if (API.isArmor(event.getCurrentItem())) {
+            switch (a.getArmorTier().getTierId()) {
+                case 4:
+                    if (playerLevel < 40) {
+                        event.setCancelled(true);
+                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 40");
+                        player.updateInventory();
+                        return;
+                    }
+                    break;
+                case 5:
+                    if (playerLevel < 60) {
+                        event.setCancelled(true);
+                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 60");
+                        player.updateInventory();
+                        return;
+                    }
+                    break;
             }
         }
     }

@@ -424,7 +424,6 @@ public class API {
      */
     public static void handleLogin(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
-        player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
             player.kickPlayer(ChatColor.RED + "Unable to grab your data.. rejoin!");
         } else {
@@ -478,7 +477,7 @@ public class API {
              PLAYER IS NEW
              */
 
-            player.teleport(new Location(Bukkit.getWorlds().get(0), 824, 49, -103, -90.6f, 4.6f));
+            player.teleport(new Location(Bukkit.getWorlds().get(0), 824, 49, -103, 132.9f, 2.2f));
             player.sendMessage(new String[]{
                     ChatColor.AQUA + "Welcome to DungeonRealms! Talk to the guides scattered around the island to get yourself acquainted, then meet the Ship Captain at the docks. Or type /skip"
             });
@@ -530,6 +529,20 @@ public class API {
                     });
                 }
             }, 100);
+
+        player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
+
+        if (Rank.getInstance().getRank(uuid).getName().equalsIgnoreCase("PMOD")) {
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.tempban", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.tempmute", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.kick", true);
+        } else if (Rank.getInstance().getRank(uuid).getName().equalsIgnoreCase("CM")) {
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.tempban", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.tempmute", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.ban", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.mute", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.kick", true);
+        }
     }
 
     /**
@@ -749,14 +762,17 @@ public class API {
         return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("armor");
     }
 
-	/**
-	 * @param is
-	 * @return
-	 */
-	public static boolean isOrb(ItemStack is) {
-		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(is);
-		if(nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("orb"))
-			return true;
-		return false;
-	}
+    /**
+     * @param is
+     * @return
+     */
+    public static boolean isOrb(ItemStack is) {
+        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(is);
+        return nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("orb");
+    }
+
+    public static boolean isItemNonTradeable(ItemStack itemStack) {
+        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
+        return nms != null && nms.getTag() != null && nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter");
+    }
 }

@@ -1,12 +1,12 @@
 package net.dungeonrealms.game.mastery;
 
-import java.util.Random;
-import java.util.logging.Logger;
-
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+
+import java.util.Random;
+import java.util.logging.Logger;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -44,6 +44,7 @@ public class Utils {
         int Low = 1;
         int High = 10;
         int R;
+        //TODO: Remove the +2 from every level when we implement high/low properly
         switch (tier) {
             case 1:
                 Low = 1;
@@ -52,7 +53,7 @@ public class Utils {
                 High = 10;
                 if(lvlRange.equalsIgnoreCase("low"))
                 	High = 5;
-                R = r.nextInt(High - Low) + Low;
+                R = r.nextInt(High - Low) + Low + 2;
                 return R;
             case 2:
                 Low = 10;
@@ -61,7 +62,7 @@ public class Utils {
                 High = 20;
                 if(lvlRange.equalsIgnoreCase("low"))
                 	High = 15;
-                R = r.nextInt(High - Low) + Low;
+                R = r.nextInt(High - Low) + Low + 2;
                 return R;
             case 3:
                 Low = 20;
@@ -70,7 +71,7 @@ public class Utils {
                 High = 30;
                 if(lvlRange.equalsIgnoreCase("low"))
                 	High = 25;
-                R = r.nextInt(High - Low) + Low;
+                R = r.nextInt(High - Low) + Low + 2;
                 return R;
             case 4:
                 Low = 30;
@@ -79,7 +80,7 @@ public class Utils {
                 High = 40;
                 if(lvlRange.equalsIgnoreCase("low"))
                 	High = 35;
-                R = r.nextInt(High - Low) + Low;
+                R = r.nextInt(High - Low) + Low + 2;
                 return R;
             case 5:
                 Low = 40;
@@ -88,7 +89,7 @@ public class Utils {
                 High = 50;
                 if(lvlRange.equalsIgnoreCase("low"))
                 	High = 45;
-                R = r.nextInt(High - Low) + Low;
+                R = r.nextInt(High - Low) + Low + 2;
                 return R;
         }
         return 1;

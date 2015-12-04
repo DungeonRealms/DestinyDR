@@ -110,7 +110,13 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     private void updatePlayerHPBars() {
-        Bukkit.getOnlinePlayers().stream().filter(player -> getPlayerHPLive(player) > 0).forEach(player -> setPlayerOverheadHP(player, getPlayerHPLive(player)));
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            int playerHP = getPlayerHPLive(player);
+            if (playerHP <= 0) {
+                continue;
+            }
+            setPlayerOverheadHP(player, playerHP);
+        }
     }
 
     /**
@@ -151,12 +157,9 @@ public class HealthHandler implements GenericMechanic {
      * @param hp
      * @since 1.0
      */
-    public void setPlayerOverheadHP(Player player, int hp) {
+    private void setPlayerOverheadHP(Player player, int hp) {
         //Check their Max HP from wherever we decide to store it, get it as a percentage.
         //Update BarAPI thing with it.
-        if (!API.isPlayer(player)) {
-            return;
-        }
         GamePlayer gamePlayer = API.getGamePlayer(player);
         if (gamePlayer == null) {
             return;
@@ -176,11 +179,9 @@ public class HealthHandler implements GenericMechanic {
         String playerHPInfo = "";
         if (API.isInSafeRegion(player.getLocation())) {
             playerHPInfo = ChatColor.GREEN.toString() + ChatColor.BOLD + "HP " + ChatColor.GREEN + hp + ChatColor.BOLD + " / " + ChatColor.GREEN + (int) maxHP;
-        }
-        if (!API.isInSafeRegion(player.getLocation()) && API.isNonPvPRegion(player.getLocation())) {
+        } else if (!API.isInSafeRegion(player.getLocation()) && API.isNonPvPRegion(player.getLocation())) {
             playerHPInfo = ChatColor.YELLOW.toString() + ChatColor.BOLD + "HP " + ChatColor.YELLOW + hp + ChatColor.BOLD + " / " + ChatColor.YELLOW + (int) maxHP;
-        }
-        if (!API.isInSafeRegion(player.getLocation()) && !API.isNonPvPRegion(player.getLocation())) {
+        } else if (!API.isInSafeRegion(player.getLocation()) && !API.isNonPvPRegion(player.getLocation())) {
             playerHPInfo = ChatColor.RED.toString() + ChatColor.BOLD + "HP " + ChatColor.RED + hp + ChatColor.BOLD + " / " + ChatColor.RED + (int) maxHP;
         }
         String playerEXPInfo = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "EXP " + ChatColor.LIGHT_PURPLE + Math.round((currentEXP / expToLevel) * 100.0) + "%";
@@ -498,9 +499,7 @@ public class HealthHandler implements GenericMechanic {
             SoundAPI.getInstance().playSoundAtLocation("damage.hit", player.getLocation(), 6);
         }
         if (newHP <= 0 && DuelingMechanics.isDueling(player.getUniqueId())) {
-        	damage = 0;
-            newHP = 1;
-        	DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
+            DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
             offer.endDuel((Player) leAttacker, player);
             return;
         }
@@ -597,6 +596,12 @@ public class HealthHandler implements GenericMechanic {
         double newHP = currentHP - damage;
     	if (currentHP <= 0) return;
         if (entity instanceof EntityArmorStand) return;
+        if (currentHP <= 0) {
+            if (!entity.isDead()) {
+                entity.setHealth(0);
+            }
+            return;
+        }
         
         if (API.isPlayer(attacker)) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {

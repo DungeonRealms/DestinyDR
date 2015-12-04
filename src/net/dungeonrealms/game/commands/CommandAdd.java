@@ -18,6 +18,10 @@ import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.world.glyph.Glyph;
 import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.realms.Instance;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Bukkit;
@@ -182,6 +186,14 @@ public class CommandAdd extends BasicCommand {
                 case "pouch":
                     tier = Integer.parseInt(args[1]);
                     player.getInventory().addItem(BankMechanics.getInstance().createGemPouch(tier, 0));
+                    break;
+                case "votemessage":
+                    TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
+                    bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/server/298658"));
+                    bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
+                    TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 500 EXP @ vote ");
+                    test.addExtra(bungeeMessage);
+                    Bukkit.spigot().broadcast(test);
                     break;
             }
         }

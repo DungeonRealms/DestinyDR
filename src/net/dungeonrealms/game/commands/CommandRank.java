@@ -24,7 +24,7 @@ public class CommandRank extends BasicCommand {
     @Override
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
 
-        if (!(s instanceof ConsoleCommandSender)) return false;
+        if (!(s instanceof ConsoleCommandSender) && !(s.isOp())) return false;
 
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("set")) {
