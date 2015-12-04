@@ -4,6 +4,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -38,7 +39,7 @@ public class DRWitherSkeleton extends EntitySkeleton implements Monster{
 	public DRWitherSkeleton(World world, EnumMonster mon, int tier) {
 		super(world);
 		enumMonster = mon;
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(14d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(16d);
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
         this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
 		this.setSkeletonType(1);
@@ -97,6 +98,7 @@ public class DRWitherSkeleton extends EntitySkeleton implements Monster{
 	   private ItemStack getTierWeapon(int tier) {
 	    	ItemStack item = new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.BOW, net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(tier), ItemModifier.COMMON);
 	        AntiCheat.getInstance().applyAntiDupe(item);
+		   	item.addEnchantment(Enchantment.KNOCKBACK, 1);
 	        return item;
 	    }
 	@Override

@@ -99,8 +99,8 @@ public class MobSpawner {
                         if (API.isInSafeRegion(monster.getBukkitEntity().getLocation())) {
                             monster.setPosition(loc.getX(), loc.getY(), loc.getZ());
                         }
-                        double num = monster.getBukkitEntity().getLocation().distance(loc);
-                        if (num > 32) {
+                        double num = monster.getBukkitEntity().getLocation().distanceSquared(loc);
+                        if (num > 1600) {
                             monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
                         }
 
