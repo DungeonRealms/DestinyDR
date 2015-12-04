@@ -95,7 +95,7 @@ public class DRWitherSkeleton extends EntitySkeleton implements Monster{
 	}
 
 	   private ItemStack getTierWeapon(int tier) {
-	    	ItemStack item = new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.BOW, net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(tier), ItemModifier.COMMON);
+	    	ItemStack item = new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.BOW, net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(tier), API.getItemModifier());
 	        AntiCheat.getInstance().applyAntiDupe(item);
 	        return item;
 	    }

@@ -33,6 +33,7 @@ import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
+import net.dungeonrealms.game.world.items.Item.ItemModifier;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.armor.Armor.ArmorModifier;
 import net.dungeonrealms.game.world.items.armor.Armor.ArmorTier;
@@ -776,4 +777,21 @@ public class API {
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
         return nms != null && nms.getTag() != null && nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter");
     }
+
+	/**
+	 * @return
+	 */
+	public static ItemModifier getItemModifier() {
+        int chance = RandomHelper.getRandomNumberBetween(1, 500);
+        if (chance == 1) {
+            return ItemModifier.LEGENDARY;
+        } else if (chance <= 10) {
+            return ItemModifier.UNIQUE;
+        } else if (chance > 10 && chance <= 50) {
+            return ItemModifier.RARE;
+        } else if (chance > 50 && chance <= 200) {
+            return ItemModifier.UNCOMMON;
+        } else {
+            return ItemModifier.COMMON;
+        }	}
 }

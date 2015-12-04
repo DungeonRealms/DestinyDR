@@ -286,7 +286,6 @@ public class MobSpawner {
         if (entity == null){
             return;
         }
-        
         location.getWorld().loadChunk(location.getChunk());
         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
         ((CraftWorld)loc.getWorld()).getHandle().addEntity(entity, SpawnReason.CUSTOM);

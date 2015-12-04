@@ -261,7 +261,7 @@ public class DungeonManager implements GenericMechanic{
         			spawner.setDungeonSpawner(true);
         			spawner.spawnIn(true);
         			}
-        		}, 60l);
+        		}, 40);
         	}
         }
 

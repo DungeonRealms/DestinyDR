@@ -121,7 +121,7 @@ public abstract class DRZombie extends EntityZombie implements Monster{
                 itemType = Item.ItemType.AXE;
                 break;
         }
-    	ItemStack item = new ItemGenerator().next(itemType, net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);
+    	ItemStack item = new ItemGenerator().next(itemType, net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(tier), API.getItemModifier());
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;
     }

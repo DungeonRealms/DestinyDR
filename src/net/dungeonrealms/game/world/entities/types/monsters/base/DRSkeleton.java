@@ -96,7 +96,7 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
     }
 
     private ItemStack getTierWeapon(int tier) {
-    	ItemStack item = new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.values()[RandomHelper.getRandomNumberBetween(0, ItemType.values().length - 1)], net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(tier), Item.ItemModifier.COMMON);
+    	ItemStack item = new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.values()[RandomHelper.getRandomNumberBetween(0, ItemType.values().length - 1)], net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(tier), API.getItemModifier());
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;
     }

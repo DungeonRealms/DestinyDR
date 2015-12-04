@@ -34,7 +34,7 @@ public interface Monster {
 		World world = ((CraftWorld) loc.getWorld()).getHandle();
 		if (new Random().nextInt(100) <= 20) {
             double gem_drop_amount = 0;
-            double drop_multiplier = 1;
+            double drop_multiplier = 1;	
             boolean is_elite = false;
             // Elite = 1.5x money chance / item chance.
             if(ent.hasMetadata("elite"))

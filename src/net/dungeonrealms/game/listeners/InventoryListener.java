@@ -635,7 +635,7 @@ public class InventoryListener implements Listener {
             }
 
             boolean failed = false;
-            if (amount < 3) {
+            if (amount < 4) {
                 failed = false;
             } else {
                 if (amount >= 12) {
@@ -774,7 +774,7 @@ public class InventoryListener implements Listener {
             }
 
             boolean failed = false;
-            if (amount < 3) {
+            if (amount < 4) {
                 failed = false;
             } else {
                 if (amount >= 12) {
@@ -825,12 +825,6 @@ public class InventoryListener implements Listener {
             }
             if (failed) {
 
-                if (EnchantmentAPI.isItemProtected(slotItem)) {
-                    event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your protection scroll saved your item from vanishing");
-                    event.setCurrentItem(EnchantmentAPI.removeItemProtection(event.getCurrentItem()));
-                    return;
-                }
-
                 event.setCancelled(true);
                 if (cursorItem.getAmount() == 1) {
                     event.setCursor(new ItemStack(Material.AIR));
@@ -839,11 +833,21 @@ public class InventoryListener implements Listener {
                     newStack.setAmount(newStack.getAmount() - 1);
                     event.setCursor(newStack);
                 }
+                
+                if (EnchantmentAPI.isItemProtected(slotItem)) {
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your protection scroll saved your item from vanishing");
+                    event.setCurrentItem(EnchantmentAPI.removeItemProtection(event.getCurrentItem()));
+                    return;
+                }
+
                 event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your item VANISHED");
                 event.setCurrentItem(new ItemStack(Material.AIR));
                 return;
             }
-
+            
+            if (EnchantmentAPI.isItemProtected(slotItem)) {
+                event.setCurrentItem(EnchantmentAPI.removeItemProtection(event.getCurrentItem()));
+            }
             ItemMeta meta2 = slotItem.getItemMeta();
             String itemName = meta2.getDisplayName();
             String newName = "";
