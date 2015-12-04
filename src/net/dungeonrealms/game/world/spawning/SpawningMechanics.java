@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.world.spawning;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Random;
 
 import org.bukkit.Bukkit;
@@ -9,6 +10,9 @@ import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanics.generic.EnumPriority;
+import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.BasicEntityBlaze;
 import net.dungeonrealms.game.world.entities.types.monsters.BasicEntitySkeleton;
@@ -25,9 +29,6 @@ import net.dungeonrealms.game.world.entities.types.monsters.base.DRPigman;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRSilverfish;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRSpider;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRWitherSkeleton;
-import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanics.generic.EnumPriority;
-import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.World;
@@ -39,6 +40,7 @@ public class SpawningMechanics implements GenericMechanic {
 
     public static ArrayList<MobSpawner> ALLSPAWNERS = new ArrayList<>();
     public static ArrayList<String> SPAWNER_CONFIG = new ArrayList<>();
+    public static ArrayList<MobSpawner> BanditTroveSpawns = new ArrayList<>();
     private static SpawningMechanics instance;
 
 
@@ -80,6 +82,32 @@ public class SpawningMechanics implements GenericMechanic {
              spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low");
             ALLSPAWNERS.add(spawner);
         }
+        ArrayList<String> BANDIT_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("banditTrove");
+        Utils.log.info("LOADING DUNGEON SPAWNS...");
+        for(String line : BANDIT_CONFIG){
+            if (line == null || line.equalsIgnoreCase("null"))
+                continue;
+            String[] coords = line.split("=")[0].split(",");
+            double x, y, z;
+            x = Double.parseDouble(coords[0]);
+            y = Double.parseDouble(coords[1]);
+            z = Double.parseDouble(coords[2]);
+            String tierString = line.substring(line.indexOf(":"), line.indexOf(";"));
+            tierString = tierString.substring(1);
+            int tier = Integer.parseInt(tierString);
+            String stringAmount = line.split(";")[1].replace("-", "");
+            stringAmount = stringAmount.replace("+", "");
+            int spawnAmount = Integer.parseInt(stringAmount);
+            String monster = line.split("=")[1].split(":")[0];
+            String spawnRange = String.valueOf(line.charAt(line.length() - 1));
+            MobSpawner spawner;
+            if(spawnRange.equalsIgnoreCase("+"))
+             spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, BanditTroveSpawns.size(), "high");
+            else
+             spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, BanditTroveSpawns.size(), "low");
+            BanditTroveSpawns.add(spawner);
+        }
+        Utils.log.info("FINISHED LOADING DUNGEON SPAWNS");
         SpawningMechanics.initSpawners();
         Bukkit.getWorlds().get(0).getEntities().forEach(entity -> {
             ((CraftEntity) entity).getHandle().damageEntity(DamageSource.GENERIC, 20f);
@@ -193,7 +221,7 @@ public class SpawningMechanics implements GenericMechanic {
             	entity = new BasicMeleeMonster(world, EnumMonster.Monk, tier);
             	break;
             case Lizardman:
-            	entity = new BasicMeleeMonster(world,EnumMonster.Lizardman, tier);
+            	entity = new BasicMeleeMonster(world, EnumMonster.Lizardman, tier);
             	break;
             case Zombie:
             	entity = new BasicMeleeMonster(world, EnumMonster.Zombie, tier);

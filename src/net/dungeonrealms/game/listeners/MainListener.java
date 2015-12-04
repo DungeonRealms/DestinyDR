@@ -714,20 +714,27 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void chunkUNload(ChunkUnloadEvent event) {
+    	if(event.getWorld().getName().contains("DUNGEON")){
+    		event.setCancelled(true);
+    		return;
+    	}
+    	if(event.getWorld() == Bukkit.getWorlds().get(0)){
         if (event.getChunk().getEntities().length > 0) {
             for (Entity ent : event.getChunk().getEntities()) {
                 net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity) ent).getHandle();
                 if ((!(nms instanceof EntityItem)) && !(ent instanceof Player)) {
                     if (!(ent instanceof ItemFrame) && !(ent instanceof Painting)) {
                         ent.remove();
-                    }
-                }
-            }
-        }
+                    	}
+                	}
+            	}
+        	}
+    	}
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void chunkLoad(ChunkLoadEvent event) {
+    	if(event.getWorld() == Bukkit.getWorlds().get(0)){
         if (event.getChunk().getEntities().length > 0) {
             for (Entity ent : event.getChunk().getEntities()) {
                 net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity) ent).getHandle();
@@ -738,6 +745,7 @@ public class MainListener implements Listener {
                 }
             }
         }
+    	}
     }
 
     @EventHandler

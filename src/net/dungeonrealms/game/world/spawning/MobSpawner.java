@@ -42,6 +42,7 @@ public class MobSpawner {
     public String eliteName;
     boolean firstSpawn = true;
     public boolean toSpawn;
+    public boolean isDungeonSpawner;
 
     public MobSpawner(Location location, String type, int tier, int spawnAmount, int configid, String lvlRange) {
         if (type.contains("("))
@@ -91,6 +92,10 @@ public class MobSpawner {
      * Does 1 rotation of spawning for this mob spawner.
      */
     public void spawnIn(boolean not) {
+    	if(isDungeonSpawner){
+    		dungeonSpawn();
+    		return;
+    	}
         if (toSpawn) return;
         if (!not) {
             if (!SPAWNED_MONSTERS.isEmpty()) {
@@ -252,6 +257,45 @@ public class MobSpawner {
     }
 
     /**
+	 * Custom Spawning for dungeons
+	 */
+	private void dungeonSpawn() {
+        while(SPAWNED_MONSTERS.size() < spawnAmount){
+           Location location = loc.add(new Random().nextInt(3), 1, new Random().nextInt(3));
+        if (location.getBlock().getType() != Material.AIR
+                || location.add(0, 1, 0).getBlock().getType() != Material.AIR)
+            return;
+        String mob = spawnType;
+        EnumMonster monsEnum = EnumMonster.getMonsterByString(mob);
+        if (monsEnum == null)
+            return;
+        Entity entity = SpawningMechanics.getMob(((CraftWorld)loc.getWorld()).getHandle(), tier, monsEnum);
+        String customName = monsEnum.getPrefix() +  " " + monsEnum.name + " " + monsEnum.getSuffix();
+        if(eliteName == null){
+        	entity.setCustomName(customName);
+            entity.getBukkitEntity().setMetadata("customentity", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
+        }else{
+        	entity.setCustomName(eliteName);
+            entity.getBukkitEntity().setMetadata("customentity", new FixedMetadataValue(DungeonRealms.getInstance(), eliteName));
+        }
+        
+        Utils.log.info(mob + " SPAWNING at " + location);
+        int level = Utils.getRandomFromTier(tier, lvlRange);
+        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
+        EntityStats.setMonsterElite(entity, level, tier);
+        if (entity == null){
+            return;
+        }
+        
+        location.getWorld().loadChunk(location.getChunk());
+        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+        ((CraftWorld)loc.getWorld()).getHandle().addEntity(entity, SpawnReason.CUSTOM);
+        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+        SPAWNED_MONSTERS.add(entity);
+        }
+	}
+
+	/**
      * Kill all spawnedMonsters for this Mob Spawner
      */
     public void kill() {
@@ -307,4 +351,11 @@ public class MobSpawner {
         }
         }, 0, 80);
     }
+
+	/**
+	 * @param b
+	 */
+	public void setDungeonSpawner(boolean b) {
+		isDungeonSpawner = b;
+	}
 }

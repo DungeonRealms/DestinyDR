@@ -15,6 +15,7 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.WorldCreator;
 import org.bukkit.entity.Player;
@@ -26,6 +27,8 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.game.world.spawning.MobSpawner;
+import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 
 /**
  * Created by Nick on 10/19/2015.
@@ -248,8 +251,19 @@ public class DungeonManager implements GenericMechanic{
             player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + type.getBossName() + ChatColor.WHITE + "] " + ChatColor.GREEN + "You have invoked a[n] Instance Dungeon. This Instance Dungeon is on " +
                     "a timer of 45 minutes!");
         });
-
-    }
+        
+        if(type.equals(DungeonType.BANDIT_TROVE)){
+        	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
+        		for(MobSpawner spawner : SpawningMechanics.BanditTroveSpawns){
+        			Location loc = spawner.loc;
+        			loc.setWorld(w);
+        			spawner.loc = loc;
+        			spawner.setDungeonSpawner(true);
+        			spawner.spawnIn(true);
+        			}
+        		}, 60l);
+        	}
+        }
 
     /**
      * Enum type of dungeons includes, zip locations & bossNames

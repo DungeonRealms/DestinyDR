@@ -242,7 +242,7 @@ public class BlockListener implements Listener {
         if (block == null) return;
         if(event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE)return;
         Material mat = block.getType();
-        if (mat == Material.FURNACE || mat == Material.HOPPER || mat == Material.DISPENSER || mat == Material.HOPPER_MINECART)
+        if (mat == Material.FURNACE || mat == Material.HOPPER || mat == Material.DISPENSER || mat == Material.HOPPER_MINECART || mat == Material.TRAPPED_CHEST)
         	event.setCancelled(true);
     	}
     }
