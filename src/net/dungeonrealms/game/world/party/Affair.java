@@ -45,7 +45,24 @@ public class Affair implements GenericMechanic {
             /*
             Scoreboards
              */
-                updateParties();
+                ScoreboardManager manager = Bukkit.getScoreboardManager();
+                Scoreboard board = manager.getNewScoreboard();
+                Objective objective = board.registerNewObjective("test", "dummy");
+                objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+                objective.setDisplayName(ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY");
+
+                List<Player> allPlayers = new ArrayList<>();
+                {
+                    allPlayers.add(party.getOwner());
+                    allPlayers.addAll(party.getMembers());
+                }
+
+                allPlayers.stream().filter(player1 -> player1 != null).forEach(player -> {
+                    Score score = objective.getScore(player.getName());
+                    score.setScore(HealthHandler.getInstance().getPlayerHPLive(player));
+                });
+
+                allPlayers.stream().filter(player1 -> player1 != null).forEach(player -> player.setScoreboard(board));
             }
 
         }), 0, 15);
@@ -95,38 +112,6 @@ public class Affair implements GenericMechanic {
         return isInParty(player) && getParty(player).get().getOwner().equals(player);
     }
 
-
-    public void updateParties() {
-        _parties.stream().forEach(party -> {
-
-            if (party.getOwner() == null) {
-                removeParty(party);
-                return;
-            }
-
-            ScoreboardManager manager = Bukkit.getScoreboardManager();
-            Scoreboard board = manager.getNewScoreboard();
-            Objective objective = board.registerNewObjective("test", "dummy");
-            objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-            objective.setDisplayName(ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY");
-
-            List<Player> allPlayers = new ArrayList<>();
-            {
-                allPlayers.add(party.getOwner());
-                allPlayers.addAll(party.getMembers());
-            }
-
-            allPlayers.stream().filter(player1 -> player1 != null).forEach(player -> {
-                Score score = objective.getScore(player.getName());
-                score.setScore(HealthHandler.getInstance().getPlayerHPLive(player));
-            });
-
-            allPlayers.stream().filter(player1 -> player1 != null).forEach(player -> player.setScoreboard(board));
-
-
-        });
-    }
-
     public boolean areInSameParty(Player player1, Player player2) {
         if (isInParty(player1) && isInParty(player2)) {
             return (getParty(player1).get().getOwner().getName().equalsIgnoreCase(getParty(player2).get().getOwner().getName().toLowerCase()));
@@ -147,6 +132,7 @@ public class Affair implements GenericMechanic {
         }
         return false;
     }
+
     public void createParty(Player player) {
         _parties.add(new AffairO(player, new ArrayList<>()));
         player.sendMessage(ChatColor.GREEN + "Your party has been created!");
