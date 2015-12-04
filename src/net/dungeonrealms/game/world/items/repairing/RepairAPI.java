@@ -39,7 +39,7 @@ public class RepairAPI {
 //			avg_armor = avg_armor / 2; // Get the average of the two added values.
 			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(i);
 			double avg_armor = nms.getTag().getInt("armor");
-			double percent_durability_left =   (getCustomDurability(i) / 1550);  // getDurabilityValueAsPercent(i, getCustomDurability(i));
+			double percent_durability_left =   (getCustomDurability(i) / 1550) * 100;  // getDurabilityValueAsPercent(i, getCustomDurability(i));
 			if(percent_durability_left > 99) {
 				percent_durability_left = 99;
 			}
