@@ -91,7 +91,7 @@ public class DungeonRealms extends JavaPlugin {
 
     public MechanicManager mm = null;
     boolean hasFinishedSetup = false;
-    public static String version = "2.6";
+    public static String version = "2.7";
 
     public boolean hasFinishedSetup() {
         return hasFinishedSetup;
