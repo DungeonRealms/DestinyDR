@@ -75,7 +75,6 @@ public interface Monster {
 				int amount = (tier * 2); 
 				item.setAmount(amount);
 				world.getWorld().dropItemNaturally(loc.add(0, 2, 0), item);
-				return;
 			}
 		}
 		
@@ -103,15 +102,37 @@ public interface Monster {
 			ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
 			armor[3] = new ArmorGenerator().getArmor(EquipmentType.HELMET, ArmorTier.getByTier(tier), API.getArmorModifier());
 			loot = new ItemStack[]{armor[0], armor[1], armor[2], armor[3], weapon};
-			int number = RandomHelper.getRandomNumberBetween(0, 4);
-			ItemStack armorToDrop = loot[number];
+			ItemStack armorToDrop;
+			switch (new Random().nextInt(6)) {
+				case 0:
+					armorToDrop = loot[0];
+					break;
+				case 1:
+					armorToDrop = loot[1];
+					break;
+				case 2:
+					armorToDrop = loot[2];
+					break;
+				case 3:
+					armorToDrop = loot[3];
+					break;
+				case 4:
+					armorToDrop = loot[4];
+					break;
+				case 5:
+					armorToDrop = loot[4];
+					break;
+				default:
+					armorToDrop = loot[4];
+					break;
+			}
+
 			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), armorToDrop);
 			return;
 		}
 		
-		if(new Random().nextInt(500) <= 2){
+		if(new Random().nextInt(1000) <= 2){
 			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), ItemManager.createProtectScroll(tier));
-			return;
 		}
 	}
 }

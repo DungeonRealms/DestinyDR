@@ -91,7 +91,7 @@ public class DungeonRealms extends JavaPlugin {
 
     public MechanicManager mm = null;
     boolean hasFinishedSetup = false;
-    public static String version = "2.6";
+    public static String version = "2.7";
 
     public boolean hasFinishedSetup() {
         return hasFinishedSetup;
@@ -210,7 +210,20 @@ public class DungeonRealms extends JavaPlugin {
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
             Bukkit.broadcastMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES");
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 6000);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                DungeonRealms.getInstance().setFinishedSetup(false);
+                DungeonRealms.getInstance().saveConfig();
+                ShopMechanics.deleteAllShops();
+                API.logoutAllPlayers();
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    DungeonRealms.getInstance().mm.stopInvocation();
+                    Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
+                    AsyncUtils.pool.shutdown();
+                    Database.mongoClient.close();
+                    Bukkit.getWorlds().get(0).save();
+                }, 400);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 1200);
+            }, 6000);
         }, 288000);
 
 

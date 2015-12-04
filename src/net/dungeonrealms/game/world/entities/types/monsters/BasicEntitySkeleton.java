@@ -53,8 +53,6 @@ public class BasicEntitySkeleton extends DRSkeleton {
 
     @Override
     protected void getRareDrop() {
-        switch (this.random.nextInt(3)) {
-        }
     }
 
     @Override

@@ -23,7 +23,6 @@ import net.dungeonrealms.game.mongo.achievements.AchievementManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.Entities;
@@ -33,7 +32,6 @@ import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
-import net.dungeonrealms.game.world.items.Item.ItemModifier;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.armor.Armor.ArmorModifier;
 import net.dungeonrealms.game.world.items.armor.Armor.ArmorTier;
@@ -346,8 +344,8 @@ public class API {
      */
     public static void handleLogout(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
-        if (CombatLog.isInCombat(player) && !DuelingMechanics.isDueling(uuid) && !API.isNonPvPRegion(player.getLocation()))
-            CombatLog.handleCombatLogger(player);
+        /*if (CombatLog.isInCombat(player) && !DuelingMechanics.isDueling(uuid) && !API.isNonPvPRegion(player.getLocation()))
+            CombatLog.handleCombatLogger(player);*/
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, false);
         if (BankMechanics.storage.containsKey(uuid)) {
             Inventory inv = BankMechanics.storage.get(uuid).inv;
@@ -412,9 +410,13 @@ public class API {
      */
     public static void logoutAllPlayers() {
         for (Player player : Bukkit.getOnlinePlayers()) {
+            if (CombatLog.isInCombat(player)) {
+                CombatLog.removeFromCombat(player);
+            }
             handleLogout(player.getUniqueId());
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->
-            player.kickPlayer("Server Restarting!"), 40);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                player.kickPlayer("Server Restarting!");
+            }, 40L);
         }
     }
 
@@ -777,21 +779,4 @@ public class API {
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
         return nms != null && nms.getTag() != null && nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter");
     }
-
-	/**
-	 * @return
-	 */
-	public static ItemModifier getItemModifier() {
-        int chance = RandomHelper.getRandomNumberBetween(1, 500);
-        if (chance == 1) {
-            return ItemModifier.LEGENDARY;
-        } else if (chance <= 10) {
-            return ItemModifier.UNIQUE;
-        } else if (chance > 10 && chance <= 50) {
-            return ItemModifier.RARE;
-        } else if (chance > 50 && chance <= 200) {
-            return ItemModifier.UNCOMMON;
-        } else {
-            return ItemModifier.COMMON;
-        }	}
 }
