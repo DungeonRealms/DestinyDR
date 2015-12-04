@@ -1,11 +1,5 @@
 package net.dungeonrealms.game.commands;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
@@ -13,6 +7,11 @@ import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.Database;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
 
 /**
  * Created by Chase on Nov 6, 2015
@@ -39,8 +38,8 @@ public class CommandStop extends BasicCommand {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             DungeonRealms.getInstance().mm.stopInvocation();
             Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
-            Database.mongoClient.close();
             AsyncUtils.pool.shutdown();
+            Database.mongoClient.close();
             Bukkit.getWorlds().get(0).save();
         }, 40);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 100);

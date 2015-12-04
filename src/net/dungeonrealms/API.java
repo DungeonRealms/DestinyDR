@@ -412,7 +412,9 @@ public class API {
     public static void logoutAllPlayers() {
         for (Player player : Bukkit.getOnlinePlayers()) {
             handleLogout(player.getUniqueId());
-            player.kickPlayer("Server Restarting!");
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                player.kickPlayer("Server Restarting!");
+            }, 40L);
         }
     }
 
