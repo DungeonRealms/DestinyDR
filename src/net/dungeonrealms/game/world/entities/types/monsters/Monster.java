@@ -82,19 +82,19 @@ public interface Monster {
 		int chance = 0;
 		switch(tier){
 		case 1:
-			chance = 100;
+			chance = 125;
 			break;
 		case 2:
 			chance = 75;
 			break;
 		case 3:
-			chance = 50;
+			chance = 30;
 			break;
 		case 4:
-			chance = 25;
+			chance = 20;
 			break;
 		case 5:
-			chance = 10;
+			chance = 5;
 			break;
 		}
 		if (new Random().nextInt(1000) <= chance) {
