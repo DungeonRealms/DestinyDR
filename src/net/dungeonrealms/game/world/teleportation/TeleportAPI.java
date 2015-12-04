@@ -146,6 +146,23 @@ public class TeleportAPI {
         }
     }
 
+    public static boolean canTeleportToLocation(Player player, NBTTagCompound nbt) {
+        String locationName;
+        if (API.getGamePlayer(player) == null) {
+            return false;
+        }
+        if (API.getGamePlayer(player).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+            return true;
+        }
+        if (nbt != null) {
+            locationName = nbt.getString("usage").toLowerCase();
+        } else {
+            locationName = "cyrennica";
+        }
+        Location location = TeleportAPI.getLocationFromString(locationName);
+        return location.equals(Teleportation.Deadpeaks_Mountain_Camp);
+    }
+
     /**
      * Gets the location of a teleport from a given string
      *

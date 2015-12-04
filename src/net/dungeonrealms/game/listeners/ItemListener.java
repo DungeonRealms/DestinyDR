@@ -74,11 +74,15 @@ public class ItemListener implements Listener {
             }
             if (TeleportAPI.isTeleportBook(itemStack)) {
                 net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
-                Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, nmsItem.getTag());
-                if (player.getItemInHand().getAmount() == 1) {
-                    player.setItemInHand(new ItemStack(Material.AIR));
+                if (TeleportAPI.canTeleportToLocation(player, nmsItem.getTag())) {
+                    Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, nmsItem.getTag());
+                    if (player.getItemInHand().getAmount() == 1) {
+                        player.setItemInHand(new ItemStack(Material.AIR));
+                    } else {
+                        player.getItemInHand().setAmount((player.getItemInHand().getAmount() - 1));
+                    }
                 } else {
-                    player.getItemInHand().setAmount((player.getItemInHand().getAmount() - 1));
+                    player.sendMessage(ChatColor.RED + "You cannot teleport to Safe Zones while Chaotic!");
                 }
             } else {
                 player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "This item cannot be used to Teleport!");
