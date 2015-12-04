@@ -7,6 +7,8 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
+import java.util.Random;
+
 /**
  * Created by Nick on 10/1/2015.
  */
@@ -81,7 +83,7 @@ public class AntiCheat {
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null || tag.hasKey("u")) return item;
-        tag.set("u", new NBTTagString(System.currentTimeMillis() + item.getType().toString() + item.getType().getMaxStackSize() + item.getType().getMaxDurability() + item.getDurability()));
+        tag.set("u", new NBTTagString(System.currentTimeMillis() + item.getType().toString() + item.getType().getMaxStackSize() + item.getType().getMaxDurability() + item.getDurability() + new Random().nextInt(999) + "R"));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
