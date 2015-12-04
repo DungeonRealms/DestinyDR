@@ -720,7 +720,7 @@ public class MainListener implements Listener {
                 net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity) ent).getHandle();
                 if ((!(nms instanceof EntityItem)) && !(ent instanceof Player)) {
                     if (!(ent instanceof ItemFrame) && !(ent instanceof Painting)) {
-                    	Utils.log.info("Deleted Entity 2");
+                    	Utils.log.info("Deleted Entity while chunk unloading!");
                         ent.remove();
                     	}
                 	}
@@ -737,7 +737,7 @@ public class MainListener implements Listener {
                 net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity) ent).getHandle();
                 if ((!(nms instanceof EntityItem)) && !(ent instanceof Player)) {
                     if (!(ent instanceof ItemFrame) && !(ent instanceof Painting)) {
-                    	Utils.log.info("Deleted Entity1");
+                    	Utils.log.info("Deleted Entity while chunk loading");
                         ent.remove();
                     }
                 }

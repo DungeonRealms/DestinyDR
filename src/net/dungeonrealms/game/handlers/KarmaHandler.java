@@ -206,6 +206,8 @@ public class KarmaHandler implements GenericMechanic {
             if (alignment == EnumPlayerAlignments.CHAOTIC) {
                 if (getSecondsPassed(player) >= 1200) {
                     alignment = EnumPlayerAlignments.LAWFUL;
+                } else if (getSecondsPassed(player) > 1000 && getSecondsPassed(player) < 1200) {
+                    seconds = getSecondsPassed(player);
                 } else {
                     seconds = getSecondsPassed(player);
                 }
