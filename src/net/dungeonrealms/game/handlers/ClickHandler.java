@@ -1072,6 +1072,8 @@ public class ClickHandler {
                     break;
             }
         }else if(name.equalsIgnoreCase("Food Vendor")){
+        	if(event.isShiftClick()){event.setCancelled(true);return;}
+        	if(event.getAction() == InventoryAction.COLLECT_TO_CURSOR){event.setCancelled(true);return;}
         	if(event.getRawSlot() > 18) return;
         	event.setCancelled(true);
         		ItemStack stack = event.getCurrentItem();
