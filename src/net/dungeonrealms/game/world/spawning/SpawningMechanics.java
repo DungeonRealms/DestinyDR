@@ -195,6 +195,9 @@ public class SpawningMechanics implements GenericMechanic {
             case Lizardman:
             	entity = new BasicMeleeMonster(world,EnumMonster.Lizardman, tier);
             	break;
+            case Zombie:
+            	entity = new BasicMeleeMonster(world, EnumMonster.Zombie, tier);
+            	break;
             default:
                 Utils.log.info("[SPAWNING] Tried to create " + monsEnum.idName + " but it has failed.");
                 return null;
