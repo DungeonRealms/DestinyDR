@@ -302,7 +302,7 @@ public class BlockListener implements Listener {
         if (block.getType() != Material.CHEST) return;
         LootSpawner loot = LootManager.getSpawner(e.getClickedBlock().getLocation());
         if(loot != null){
-                Collection<Entity> list = API.getNearbyMonsters(loot.location, 5);
+                Collection<Entity> list = API.getNearbyMonsters(loot.location, 8);
                 if (list.isEmpty()) {
                     Action actionType = e.getAction();
                     switch (actionType) {
