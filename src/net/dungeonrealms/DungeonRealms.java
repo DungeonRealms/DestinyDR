@@ -221,8 +221,8 @@ public class DungeonRealms extends JavaPlugin {
                     AsyncUtils.pool.shutdown();
                     Database.mongoClient.close();
                     Bukkit.getWorlds().get(0).save();
-                }, 40);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 100);
+                }, 400);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 1200);
             }, 6000);
         }, 288000);
 
