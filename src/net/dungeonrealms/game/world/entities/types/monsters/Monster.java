@@ -1,17 +1,16 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.items.armor.Armor.ArmorTier;
 import net.dungeonrealms.game.world.items.armor.Armor.EquipmentType;
-import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
-import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;

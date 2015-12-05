@@ -40,7 +40,7 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
 //        this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
 //        this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
 //        this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(32d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(18d);
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
         this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
         monsterType = monster;
