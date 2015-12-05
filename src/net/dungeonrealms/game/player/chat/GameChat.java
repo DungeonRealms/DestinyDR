@@ -31,7 +31,6 @@ public final class GameChat {
     AsyncPlayerPreChatEvent?
 
     event.setFormat(getPreMessage(player) + event.getMessage());
-
      */
     public static String getPreMessage(Player player) {
 
