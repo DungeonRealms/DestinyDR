@@ -346,8 +346,12 @@ public class Instance implements GenericMechanic, Listener {
      */
     public void removeRealm(RealmObject realmObject, boolean playerLoggingOut) {
         realmObject.isRealmPortalOpen = false;
-        realmObject.getLocation().add(0, 1, 0).getBlock().setType(Material.AIR);
-        realmObject.getLocation().add(0, 1, 0).getBlock().setType(Material.AIR);
+        Location portalLocation = realmObject.getLocation();
+        realmObject.portalLocation.setX(0);
+        realmObject.portalLocation.setY(0);
+        realmObject.portalLocation.setZ(0);
+        portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
+        portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
         realmObject.getRealmHologram().delete();
         if (playerLoggingOut) {
             realmObject.getPlayerList().stream().forEach(player -> {

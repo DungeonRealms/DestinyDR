@@ -514,7 +514,7 @@ public class HealthHandler implements GenericMechanic {
 
         if (API.isPlayer(leAttacker)) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, leAttacker.getUniqueId()).toString())) {
-                leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " ➜ " + ChatColor.DARK_PURPLE + player.getName() + "[" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
+                leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " ➜ " + ChatColor.DARK_PURPLE + player.getName() + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
             }
             KarmaHandler.getInstance().handleAlignmentChanges((Player) leAttacker);
         }

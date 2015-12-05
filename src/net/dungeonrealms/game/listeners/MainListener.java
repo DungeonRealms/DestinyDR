@@ -43,6 +43,7 @@ import org.bukkit.entity.Horse.Variant;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.BlockFromToEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent.DamageCause;
@@ -514,11 +515,13 @@ public class MainListener implements Listener {
         }
         if (npcNameStripped.equalsIgnoreCase("Innkeeper")) {
             NPCMenus.openHearthstoneRelocateMenu(event.getPlayer());
+            return;
         }
         if (npcNameStripped.equalsIgnoreCase("Ship Captain")) {
             event.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -378, 85, 362));
             TutorialIslandHandler.getInstance().giveStarterKit(event.getPlayer());
         }
+
     }
 
     /**
@@ -807,5 +810,10 @@ public class MainListener implements Listener {
         event.setCancelled(true);
     }
 
-
+    @EventHandler(priority = EventPriority.LOW)
+    public void onDragonEggMove(BlockFromToEvent event) {
+        if (event.getBlock().getType() == Material.DRAGON_EGG) {
+            event.setCancelled(true);
+        }
+    }
 }
