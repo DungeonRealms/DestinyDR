@@ -709,7 +709,7 @@ public class HealthHandler implements GenericMechanic {
             double monsterHPPercent = (newHP / maxHP);
             double newMonsterHPToDisplay = monsterHPPercent * 20.0D;
             int convHPToDisplay = (int) newMonsterHPToDisplay;
-            if (convHPToDisplay <= 0) {
+            if (convHPToDisplay <= 1) {
                 convHPToDisplay = 1;
             }
             if (convHPToDisplay > 20) {
