@@ -16,7 +16,6 @@ import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -101,7 +100,6 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
     private ItemStack getTierWeapon(int tier) {
     	ItemStack item = new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.values()[RandomHelper.getRandomNumberBetween(0, ItemType.values().length - 1)], net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(tier), API.getItemModifier());
         AntiCheat.getInstance().applyAntiDupe(item);
-        item.addUnsafeEnchantment(Enchantment.KNOCKBACK, 1);
         return item;
     }
 
