@@ -1,29 +1,21 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.metadata.FixedMetadataValue;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.Monster;
-import net.dungeonrealms.game.world.items.Item.ItemModifier;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.ItemGenerator;
-import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.EntitySkeleton;
-import net.minecraft.server.v1_8_R3.GenericAttributes;
-import net.minecraft.server.v1_8_R3.Item;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_8_R3.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * Created by Chase on Oct 3, 2015
@@ -39,7 +31,7 @@ public class DRWitherSkeleton extends EntitySkeleton implements Monster{
 	public DRWitherSkeleton(World world, EnumMonster mon, int tier) {
 		super(world);
 		enumMonster = mon;
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(16d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(18d);
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
         this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
 		this.setSkeletonType(1);
@@ -96,10 +88,9 @@ public class DRWitherSkeleton extends EntitySkeleton implements Monster{
 	}
 
 	   private ItemStack getTierWeapon(int tier) {
-	    	ItemStack item = new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.BOW, net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(tier), API.getItemModifier());
-	        AntiCheat.getInstance().applyAntiDupe(item);
-		   	item.addEnchantment(Enchantment.KNOCKBACK, 1);
-	        return item;
+		   ItemStack item = new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.BOW, net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(tier), API.getItemModifier());
+		   AntiCheat.getInstance().applyAntiDupe(item);
+		   return item;
 	    }
 	@Override
 	public void onMonsterAttack(Player p) {

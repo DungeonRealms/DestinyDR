@@ -62,7 +62,7 @@ public class DonationEffects implements GenericMechanic {
     private void spawnPlayerParticleEffects() {
         Bukkit.getOnlinePlayers().stream().filter(PLAYER_PARTICLE_EFFECTS::containsKey).forEach(player -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             try {
-                ParticleAPI.sendParticleToLocation(PLAYER_PARTICLE_EFFECTS.get(player), player.getLocation().add(0, 0.22, 0), (new Random().nextFloat()) - 0.4F, (new Random().nextFloat()) - 0.5F, (new Random().nextFloat()) - 0.5F, 0.02F, 6);
+                ParticleAPI.sendParticleToLocation(PLAYER_PARTICLE_EFFECTS.get(player), player.getLocation().add(0, 0.22, 0), (new Random().nextFloat()) - 0.4F, (new Random().nextFloat()) - 0.5F, (new Random().nextFloat()) - 0.5F, 1F, 6);
             } catch (Exception e) {
                 e.printStackTrace();
                 Utils.log.warning("[Donations] [ASYNC] Could not spawn donation particle " + PLAYER_PARTICLE_EFFECTS.get(player).name() + " for player " + player.getName());
@@ -89,7 +89,7 @@ public class DonationEffects implements GenericMechanic {
         MinecraftServer.getServer().getWorld().entityList.stream().filter(ENTITY_PARTICLE_EFFECTS::containsKey).forEach(entity -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             Location location = new Location(Bukkit.getWorlds().get(0), entity.locX, entity.locY, entity.locZ);
             try {
-                ParticleAPI.sendParticleToLocation(ENTITY_PARTICLE_EFFECTS.get(entity), location.add(0, 0.22, 0), (new Random().nextFloat()) - 0.4F, (new Random().nextFloat()) - 0.5F, (new Random().nextFloat()) - 0.5F, 0.02F, 6);
+                ParticleAPI.sendParticleToLocation(ENTITY_PARTICLE_EFFECTS.get(entity), location.add(0, 0.22, 0), (new Random().nextFloat()) - 0.4F, (new Random().nextFloat()) - 0.5F, (new Random().nextFloat()) - 0.5F, 1F, 6);
             } catch (Exception e) {
                 e.printStackTrace();
                 Utils.log.warning("[Donations] [ASYNC] Could not spawn donation particle " + ENTITY_PARTICLE_EFFECTS.get(entity).name() + " for entity " + entity.getName());

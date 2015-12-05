@@ -52,7 +52,7 @@ public class HealthHandler implements GenericMechanic {
     }
 
     public void startInitialization() {
-        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::updatePlayerHPBars, 40, 10L);
+        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::updatePlayerHPBars, 40, 6L);
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40, 20L);
     }
 
@@ -110,13 +110,7 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     private void updatePlayerHPBars() {
-        for (Player player : Bukkit.getOnlinePlayers()) {
-            int playerHP = getPlayerHPLive(player);
-            if (playerHP <= 0) {
-                continue;
-            }
-            setPlayerOverheadHP(player, playerHP);
-        }
+        Bukkit.getOnlinePlayers().stream().filter(player -> getPlayerHPLive(player) > 0).forEach(player -> setPlayerOverheadHP(player, getPlayerHPLive(player)));
     }
 
     /**
@@ -160,11 +154,11 @@ public class HealthHandler implements GenericMechanic {
     private void setPlayerOverheadHP(Player player, int hp) {
         //Check their Max HP from wherever we decide to store it, get it as a percentage.
         //Update BarAPI thing with it.
+        ScoreboardHandler.getInstance().updatePlayerHP(player, hp);
         GamePlayer gamePlayer = API.getGamePlayer(player);
         if (gamePlayer == null) {
             return;
         }
-        ScoreboardHandler.getInstance().updatePlayerHP(player, hp);
         double maxHP = getPlayerMaxHPLive(player);
         double healthPercentage = ((double) hp / maxHP);
         if (healthPercentage * 100.0F > 100.0F) {
@@ -179,9 +173,11 @@ public class HealthHandler implements GenericMechanic {
         String playerHPInfo = "";
         if (API.isInSafeRegion(player.getLocation())) {
             playerHPInfo = ChatColor.GREEN.toString() + ChatColor.BOLD + "HP " + ChatColor.GREEN + hp + ChatColor.BOLD + " / " + ChatColor.GREEN + (int) maxHP;
-        } else if (!API.isInSafeRegion(player.getLocation()) && API.isNonPvPRegion(player.getLocation())) {
+        }
+        if (!API.isInSafeRegion(player.getLocation()) && API.isNonPvPRegion(player.getLocation())) {
             playerHPInfo = ChatColor.YELLOW.toString() + ChatColor.BOLD + "HP " + ChatColor.YELLOW + hp + ChatColor.BOLD + " / " + ChatColor.YELLOW + (int) maxHP;
-        } else if (!API.isInSafeRegion(player.getLocation()) && !API.isNonPvPRegion(player.getLocation())) {
+        }
+        if (!API.isInSafeRegion(player.getLocation()) && !API.isNonPvPRegion(player.getLocation())) {
             playerHPInfo = ChatColor.RED.toString() + ChatColor.BOLD + "HP " + ChatColor.RED + hp + ChatColor.BOLD + " / " + ChatColor.RED + (int) maxHP;
         }
         String playerEXPInfo = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "EXP " + ChatColor.LIGHT_PURPLE + Math.round((currentEXP / expToLevel) * 100.0) + "%";
@@ -709,7 +705,7 @@ public class HealthHandler implements GenericMechanic {
             double monsterHPPercent = (newHP / maxHP);
             double newMonsterHPToDisplay = monsterHPPercent * 20.0D;
             int convHPToDisplay = (int) newMonsterHPToDisplay;
-            if (convHPToDisplay <= 0) {
+            if (convHPToDisplay <= 1) {
                 convHPToDisplay = 1;
             }
             if (convHPToDisplay > 20) {

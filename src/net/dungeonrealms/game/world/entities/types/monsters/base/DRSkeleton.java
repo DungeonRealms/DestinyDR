@@ -7,7 +7,6 @@ import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.Monster;
-import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.ItemGenerator;
 import net.minecraft.server.v1_8_R3.EntityLiving;
@@ -17,7 +16,6 @@ import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
@@ -42,7 +40,7 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
 //        this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
 //        this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
 //        this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(16d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(18d);
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
         this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
         monsterType = monster;
@@ -102,7 +100,6 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
     private ItemStack getTierWeapon(int tier) {
     	ItemStack item = new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.values()[RandomHelper.getRandomNumberBetween(0, ItemType.values().length - 1)], net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(tier), API.getItemModifier());
         AntiCheat.getInstance().applyAntiDupe(item);
-        item.addEnchantment(Enchantment.KNOCKBACK, 1);
         return item;
     }
 
