@@ -201,6 +201,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "The Logout command."));
         cm.registerCommand(new CommandToggle("toggles", "/<command> [args]", "The Toggle command."));
         cm.registerCommand(new CommandSkip("skip", "/<command> [args]", "Skip the tutorial island."));
+        cm.registerCommand(new CommandTell("tell", "/<command> [args]", "Send player a message."));
 
         cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Check epoch time of item."));
 
