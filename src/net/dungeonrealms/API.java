@@ -20,6 +20,7 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.mongo.achievements.AchievementManager;
+import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -355,12 +356,10 @@ public class API {
             if (inv != null) {
                 String serializedInv = ItemSerialization.toString(inv);
                 BankMechanics.storage.remove(uuid);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv,
-                        false);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, false);
             }
         }
-        PlayerInventory inv = player.getInventory();
-
+        Inventory inv = player.getInventory();
         ArrayList<String> armor = new ArrayList<>();
         for (ItemStack itemStack : player.getInventory().getArmorContents()) {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
@@ -370,9 +369,7 @@ public class API {
             }
         }
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, false);
-
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, ItemSerialization.toString(inv),
-                false);
+        
         if (MountUtils.inventories.containsKey(uuid)) {
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_MULE, ItemSerialization.toString(MountUtils.inventories.get(uuid)), false);
             MountUtils.inventories.remove(uuid);
@@ -404,6 +401,9 @@ public class API {
                 gPlayer.getStats().updateDatabase();
                 GAMEPLAYERS.remove(gPlayer);
             });
+        String inventory = ItemSerialization.toString(inv);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
+
     }
 
     /**
@@ -415,10 +415,9 @@ public class API {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (CombatLog.isInCombat(player)) {
                 CombatLog.removeFromCombat(player);
-            }
-            handleLogout(player.getUniqueId());
+            }            
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                player.kickPlayer("Server Restarting!");
+                NetworkAPI.getInstance().sendToServer(player.getName(), "drhub");
             }, 40L);
         }
     }
