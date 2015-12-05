@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.player.chat;
 
 import net.dungeonrealms.game.guild.Guild;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumGuildData;
@@ -107,6 +108,9 @@ public final class GameChat {
             case "pmod":
                 return PMOD;
             default:
+                for (int i = 0; i < 5; i++) {
+                    Utils.log.warning("getRankPrefix() FAILED for rank: " + rank);
+                }
                 return "NULL";
         }
     }
