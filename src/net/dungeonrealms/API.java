@@ -461,6 +461,8 @@ public class API {
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
             ItemStack[] items = ItemSerialization.fromString(playerInv).getContents();
             player.getInventory().setContents(items);
+        }else{
+        	Utils.log.info(player.getName() + " HAS NULL/EMPTY INVENTORY");
         }
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
         if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {

@@ -938,7 +938,8 @@ public class InventoryListener implements Listener {
             if (pouchAmount + amount > pouchMax) {
                 amount = pouchMax - (pouchAmount + amount);
                 event.setCurrentItem(BankMechanics.getInstance().createGemPouch(tier, pouchMax));
-                event.setCursor(BankMechanics.getInstance().createGems(amount));
+                if(amount > 0)
+                	event.setCursor(BankMechanics.getInstance().createGems(amount));
             } else {
                 event.setCursor(null);
                 event.setCurrentItem(BankMechanics.getInstance().createGemPouch(tier, pouchAmount + amount));

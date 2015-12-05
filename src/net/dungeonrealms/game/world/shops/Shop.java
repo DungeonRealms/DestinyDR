@@ -25,6 +25,8 @@ import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.rank.Rank;
 
 /**
  * Created by Chase on Nov 17, 2015
@@ -144,7 +146,9 @@ public class Shop {
 				if(stack.getType() == Material.INK_SACK && nms.hasTag() && nms.getTag().hasKey("status"))
 					continue;
     			ItemMeta meta = stack.getItemMeta();
+    			if(meta != null){
     			List<String> lore = meta.getLore();
+    			if(meta != null && lore != null)
     			for (int j = 0; j < lore.size(); j++) {
     				String currentStr = lore.get(j);
     				if (currentStr.contains("Price")) {
@@ -156,7 +160,7 @@ public class Shop {
     			nms.getTag().remove("worth");
     			meta.setLore(lore);
     			stack.setItemMeta(meta);
-    			
+    			}
 				inv.addItem(stack);
 				count++;
 			}
@@ -208,5 +212,86 @@ public class Shop {
 			hologram.appendTextLine(ChatColor.GREEN.toString() + "[S] " + shopName);
 		}
 	}
+
+	
+	public boolean promptUpgrade = false;
+	
+	/**
+	 * ;^)
+	 */
+	public void promptUpgrade() {
+		Player p = getOwner();
+		if(p == null)
+			return;
+		int new_tier = (int) DatabaseAPI.getInstance().getData(EnumData.SHOPLEVEL, ownerUUID) + 1;
+		
+		if(Rank.getInstance().getRank(p.getUniqueId()).getName().equalsIgnoreCase("DEFAULT")){
+			if(new_tier >= 4){
+				p.sendMessage(ChatColor.RED + "You must be a " + ChatColor.YELLOW + " Subscriber " + ChatColor.RED + "to upgrade your shop any further.");
+				return;
+			}
+		}
+		
+		if(new_tier > 7) {
+			p.sendMessage(ChatColor.RED + "You cannot upgrade your shop; already at highest available tier.");
+			return;
+		}
+		int cost = getShopUpgradeCost(new_tier);
+		if(!promptUpgrade){
+			promptUpgrade = true;
+			p.sendMessage(ChatColor.YELLOW + "You can upgrade your shop for " + ChatColor.GREEN + cost + ChatColor.WHITE + "g");
+			p.sendMessage(ChatColor.YELLOW + "Shift Right Click your shop again to accept.");
+			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()-> promptUpgrade = false, 20 * 10);
+			return;
+		}
+		if(BankMechanics.getInstance().takeGemsFromInventory(cost, p)){
+		upgradeShop(p, new_tier);
+		p.sendMessage("");
+		p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "*** SHOP UPGRADE TO LEVEL " + new_tier + " COMPLETE ***");
+		p.sendMessage(ChatColor.GRAY + "You now have " + (new_tier * 9) + " shop slots available.");
+		p.playSound(p.getLocation(), Sound.LEVEL_UP, 1F, 1.25F);
+		}else{
+			p.sendMessage(ChatColor.RED + "You do not have enough gems to purchase this upgrade. Upgrade cancelled.");
+			p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "COST: " + ChatColor.RED + cost + ChatColor.BOLD + "G");
+		}
+	}
+
+	/**
+	 * @param p
+	 * @param new_tier
+	 * @param b
+	 */
+	private void upgradeShop(Player p, int new_tier) {
+		DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.SHOPLEVEL, new_tier, true);
+		Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
+		ItemStack[] items = inventory.getContents();
+		inventory = createNewInv(p.getUniqueId());
+		for(ItemStack stack : items){
+			if(stack == null || stack.getType() == Material.AIR)
+				continue;
+				net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+				if (nms.hasTag()) {
+					if (nms.getTag().hasKey("status"))
+						continue;
+				}
+				inventory.addItem(stack);
+			}
+		}, 20);
+	}
+
+	/**
+	 * @param new_tier
+	 * @return
+	 */
+	public int getShopUpgradeCost(int new_tier) {
+		if(new_tier == 2) { return 200; }
+		if(new_tier == 3) { return 450; }
+		if(new_tier == 4) { return 800; }
+		if(new_tier == 5) { return 1200; }
+		if(new_tier == 6) { return 1500; }
+		if(new_tier == 7) { return 2000; }
+		return 0;
+	}
+
 
 }

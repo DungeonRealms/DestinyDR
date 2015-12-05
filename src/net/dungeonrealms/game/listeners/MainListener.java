@@ -240,7 +240,7 @@ public class MainListener implements Listener {
                         player.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "You have Combat Logged and someone killed your body while you were gone!");
                         player.teleport(Teleportation.Cyrennica);
                     }
-                }, 20L * 7);
+                }, 20L * 10);
 
     }
 

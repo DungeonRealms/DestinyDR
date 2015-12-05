@@ -1,13 +1,13 @@
 package net.dungeonrealms.game.player.chat;
 
 import net.dungeonrealms.API;
-import net.dungeonrealms.game.events.PlayerMessagePlayerEvent;
-import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.player.json.JSONMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
@@ -32,7 +32,7 @@ public class Chat {
 
     public static List<String> bannedWords = new ArrayList<>(Arrays.asList("shit", "fuck", "cunt", "bitch", "whore", "slut", "wank", "asshole", "cock",
             "dick", "clit", "homo", "fag", "queer", "nigger", "dike", "dyke", "retard", "motherfucker", "vagina", "boob", "pussy", "rape", "gay", "penis",
-            "cunt", "titty", "anus", "faggot", "gay", "f@g", "d1ck", "nig", "titanrift", "socialconquer", "wynncraft", "titan rift"));
+            "cunt", "titty", "anus", "faggot", "gay", "f@g", "d1ck", "nig", "titanrift", "socialconquer", "wynncraft", "titan rift", "titanrift"));
 
 
     /**
@@ -49,10 +49,13 @@ public class Chat {
 
         if (fixedMessage.startsWith("@") && !fixedMessage.contains("@i@")) {
             String playerName = fixedMessage.replace("@", "").split(" ")[0];
-            Bukkit.getOnlinePlayers().stream().filter(player -> player.getName().equalsIgnoreCase(playerName)).forEach(player1 -> {
-                event.getPlayer().sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO " + GameChat.getPreMessage(Bukkit.getPlayer(playerName)) + fixedMessage.toLowerCase().replace("@" + playerName.toLowerCase(), ""));
-                player1.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "FROM " + GameChat.getPreMessage(event.getPlayer()) + fixedMessage.toLowerCase().replace("@" + event.getPlayer().getName().toLowerCase(), ""));
-                Bukkit.getPluginManager().callEvent(new PlayerMessagePlayerEvent(event.getPlayer(), Bukkit.getPlayer(playerName), fixedMessage));
+            fixedMessage = fixedMessage.replace("@" + playerName, "");
+            String tempFixedMessage = fixedMessage.replace("@" + playerName, "");
+            Bukkit.getOnlinePlayers().stream().filter(player -> player.getName().equalsIgnoreCase(playerName)).limit(1).forEach(theTargetPlayer -> {
+                theTargetPlayer.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "FROM: " + ChatColor.AQUA + event.getPlayer().getName() + ChatColor.GRAY + ": " + ChatColor.WHITE + tempFixedMessage);
+                event.getPlayer().sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO: " + ChatColor.AQUA + theTargetPlayer.getName() + ChatColor.GRAY + ": " + ChatColor.WHITE + tempFixedMessage);
+                theTargetPlayer.playSound(theTargetPlayer.getLocation(), Sound.NOTE_PLING, 1f, 63f);
+                event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.NOTE_PLING, 1f, 63f);
             });
             event.setCancelled(true);
             return;
@@ -111,7 +114,8 @@ public class Chat {
                     return;
                 }
                 event.setCancelled(true);
-                API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + fixedMessage));
+                final String finalFixedMessage = fixedMessage;
+                API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
             } else {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.GRAY + "No one heard you...");
