@@ -22,6 +22,7 @@ import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 
 /**
@@ -78,12 +79,13 @@ public class ShopMechanics implements GenericMechanic{
 					Bukkit.getPlayer(event.getPlayerName()).sendMessage("Please enter a valid number");
 					return;
 				}
+				
 				Block b = player.getWorld().getBlockAt(block.getLocation().add(0, 1, 0));
 				Block block2 = block.getWorld().getBlockAt(block.getLocation().add(1, 1, 0));
 				if (b.getType() == Material.AIR && block2.getType() == Material.AIR) {
 					block2.setType(Material.CHEST);
 					b.setType(Material.CHEST);
-					Shop shop = new Shop(uniqueId, b.getLocation(), shopName);
+					Shop shop = new Shop(uniqueId, b.getLocation(), Chat.getInstance().checkForBannedWords(shopName));
 					DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$SET, EnumData.HASSHOP, true, true);
 					ALLSHOPS.put(player.getName(), shop);
 					player.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "YOU'VE CREATED A SHOP!");

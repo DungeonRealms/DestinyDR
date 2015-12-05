@@ -108,6 +108,10 @@ public class CommandSet extends BasicCommand {
 			case "shopoff":
 				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
 				break;
+			case "shoplvl":
+				 invlvl = Integer.parseInt(args[1]);
+				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.SHOPLEVEL, invlvl, true);
+				break;
 			}
 		}
 		return true;

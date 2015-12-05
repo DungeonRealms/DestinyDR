@@ -1,16 +1,58 @@
 package net.dungeonrealms;
 
-import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.commands.*;
+import java.io.File;
+import java.io.IOException;
+
+import org.apache.commons.io.FileUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+
+import net.dungeonrealms.game.commands.CommandAccept;
+import net.dungeonrealms.game.commands.CommandAdd;
+import net.dungeonrealms.game.commands.CommandCheck;
+import net.dungeonrealms.game.commands.CommandEss;
+import net.dungeonrealms.game.commands.CommandGlobalChat;
+import net.dungeonrealms.game.commands.CommandGuild;
+import net.dungeonrealms.game.commands.CommandInvoke;
+import net.dungeonrealms.game.commands.CommandLag;
+import net.dungeonrealms.game.commands.CommandList;
+import net.dungeonrealms.game.commands.CommandLogout;
+import net.dungeonrealms.game.commands.CommandMail;
+import net.dungeonrealms.game.commands.CommandModeration;
+import net.dungeonrealms.game.commands.CommandPAccept;
+import net.dungeonrealms.game.commands.CommandPChat;
+import net.dungeonrealms.game.commands.CommandPLeave;
+import net.dungeonrealms.game.commands.CommandPRemove;
+import net.dungeonrealms.game.commands.CommandPl;
+import net.dungeonrealms.game.commands.CommandRank;
+import net.dungeonrealms.game.commands.CommandRoll;
+import net.dungeonrealms.game.commands.CommandSet;
+import net.dungeonrealms.game.commands.CommandShopClose;
+import net.dungeonrealms.game.commands.CommandSkip;
+import net.dungeonrealms.game.commands.CommandSpawn;
+import net.dungeonrealms.game.commands.CommandStats;
+import net.dungeonrealms.game.commands.CommandStop;
+import net.dungeonrealms.game.commands.CommandStuck;
+import net.dungeonrealms.game.commands.CommandToggle;
 import net.dungeonrealms.game.commands.generic.CommandManager;
 import net.dungeonrealms.game.donate.DonationEffects;
-import net.dungeonrealms.game.world.entities.Entities;
-import net.dungeonrealms.game.world.entities.utils.PetUtils;
-import net.dungeonrealms.game.world.items.NamedItems;
-import net.dungeonrealms.game.handlers.*;
-import net.dungeonrealms.game.listeners.*;
-import net.dungeonrealms.game.world.loot.LootManager;
+import net.dungeonrealms.game.handlers.EnergyHandler;
+import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.handlers.KarmaHandler;
+import net.dungeonrealms.game.handlers.ScoreboardHandler;
+import net.dungeonrealms.game.handlers.TutorialIslandHandler;
+import net.dungeonrealms.game.listeners.AntiCheatListener;
+import net.dungeonrealms.game.listeners.BankListener;
+import net.dungeonrealms.game.listeners.BlockListener;
+import net.dungeonrealms.game.listeners.BossListener;
+import net.dungeonrealms.game.listeners.DamageListener;
+import net.dungeonrealms.game.listeners.EnergyListener;
+import net.dungeonrealms.game.listeners.InventoryListener;
+import net.dungeonrealms.game.listeners.ItemListener;
+import net.dungeonrealms.game.listeners.MainListener;
+import net.dungeonrealms.game.listeners.ShopListener;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.DungeonManager;
@@ -20,23 +62,21 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.achievements.AchievementManager;
 import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.network.NetworkServer;
-import net.dungeonrealms.game.world.party.Affair;
+import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.game.world.entities.Entities;
+import net.dungeonrealms.game.world.entities.utils.PetUtils;
+import net.dungeonrealms.game.world.items.NamedItems;
+import net.dungeonrealms.game.world.loot.LootManager;
+import net.dungeonrealms.game.world.party.Affair;
+import net.dungeonrealms.game.world.realms.Instance;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
-import net.dungeonrealms.game.world.realms.Instance;
-import org.apache.commons.io.FileUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-
-import java.io.File;
-import java.io.IOException;
 
 /* Copyright (C) 2015 CherryIO, LLC - All Rights Reserved http://cherryio.com
 
@@ -201,7 +241,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "The Logout command."));
         cm.registerCommand(new CommandToggle("toggles", "/<command> [args]", "The Toggle command."));
         cm.registerCommand(new CommandSkip("skip", "/<command> [args]", "Skip the tutorial island."));
-
+        cm.registerCommand(new CommandShopClose("closeshop", "/<command>", "Close Shop on all shards."));
         cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Check epoch time of item."));
 
         try {

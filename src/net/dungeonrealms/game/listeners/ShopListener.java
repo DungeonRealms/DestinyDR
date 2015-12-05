@@ -58,7 +58,16 @@ public class ShopListener implements Listener {
 		case RIGHT_CLICK_BLOCK:
 			if (shop.isopen || shop.ownerUUID.toString().equalsIgnoreCase(event.getPlayer().getUniqueId().toString())) {
 				event.setCancelled(true);
-				event.getPlayer().openInventory(shop.getInventory());
+				if(shop.ownerName.equalsIgnoreCase(event.getPlayer().getName()) && event.getPlayer().isSneaking()){
+					if(shop.isopen){
+						event.getPlayer().sendMessage(ChatColor.RED + "You must close your shop to upgrade it!");
+						return;
+					}
+					shop.promptUpgrade();
+					return;
+				}else{
+					event.getPlayer().openInventory(shop.getInventory());
+				}
 			} else if (!shop.isopen) {
 				event.setCancelled(true);
 				event.getPlayer().sendMessage(ChatColor.RED.toString() + "This shop is closed!");
@@ -169,7 +178,7 @@ public class ShopListener implements Listener {
 										lore = (ArrayList<String>) meta.getLore();
 									}
 									lore.add(ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "Price: "
-						                    + ChatColor.WHITE.toString() + number + "g");
+						                    + ChatColor.WHITE.toString() + number + "g" + ChatColor.GREEN + " each");
 									meta.setLore(lore);
 									stack.setItemMeta(meta);
 									net.minecraft.server.v1_8_R3.ItemStack newNMS = CraftItemStack.asNMSCopy(stack);
@@ -256,7 +265,7 @@ public class ShopListener implements Listener {
 									}
 								}
 								lore.add(ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "Price: "
-					                    + ChatColor.WHITE.toString() + number + "g");
+					                    + ChatColor.WHITE.toString() + number + "g " + ChatColor.GREEN + "each");
 								meta.setLore(lore);
 								stack.setItemMeta(meta);
 								net.minecraft.server.v1_8_R3.ItemStack nms1 = CraftItemStack.asNMSCopy(stack);
