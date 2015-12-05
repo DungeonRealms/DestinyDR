@@ -27,10 +27,10 @@ public class CommandPurchase extends BasicCommand {
         }
 
         if (args.length == 1) {
-            TextComponent bungeeMessage = new TextComponent(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
+            TextComponent bungeeMessage = new TextComponent(ChatColor.GOLD.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
             bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://shop.dungeonrealms.net"));
-            bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to purchase!").create()));
-            TextComponent test = new TextComponent(ChatColor.GRAY + "Thank you " + ChatColor.GREEN + args[0] + ChatColor.RESET + ChatColor.GRAY + " for donating @ store ");
+            bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to view shop!").create()));
+            TextComponent test = new TextComponent(ChatColor.GRAY + "Thank you " + ChatColor.GOLD.toString() + ChatColor.UNDERLINE + args[0] + ChatColor.RESET + ChatColor.GRAY + " for donating @ shop ");
             test.addExtra(bungeeMessage);
             Bukkit.spigot().broadcast(test);
         } else {
