@@ -20,6 +20,7 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.mongo.achievements.AchievementManager;
+import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -416,10 +417,7 @@ public class API {
                 CombatLog.removeFromCombat(player);
             }            
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            	handleLogout(player.getUniqueId());
-            	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                	player.kickPlayer(ChatColor.GREEN + "Server Rebooting!");
-            	}, 40L);
+                NetworkAPI.getInstance().sendToServer(player.getName(), "drhub");
             }, 40L);
         }
     }

@@ -109,11 +109,6 @@ public class MobSpawner {
                             monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
                         }
 
-                        if (monster.getBukkitEntity().getLocation().getBlock().getType() == Material.WATER ||
-                                monster.getBukkitEntity().getLocation().getBlock().getType() == Material.STATIONARY_WATER) {
-                            monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
-                        }
-
                     } else {
                         SPAWNED_MONSTERS.remove(monster);
                     }
