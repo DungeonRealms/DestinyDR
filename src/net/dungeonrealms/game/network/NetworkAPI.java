@@ -9,7 +9,11 @@ import net.dungeonrealms.game.guild.Guild;
 import net.dungeonrealms.game.handlers.MailHandler;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumGuildData;
+import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.world.shops.ShopMechanics;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -72,6 +76,15 @@ public class NetworkAPI implements PluginMessageListener {
                     sendAllGuildMessage(guildName, in.readUTF());
                 }
                 break;
+            case "shop":
+            	if(in.readUTF().equalsIgnoreCase("close")){
+                    Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> {
+                    	if(ShopMechanics.getShop(p.getName()) != null){
+                    		ShopMechanics.getShop(p.getName()).deleteShop();
+                    	}
+                    	DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
+                    });
+            	}
             default:
         }
     }

@@ -83,7 +83,7 @@ public class SpawningMechanics implements GenericMechanic {
             ALLSPAWNERS.add(spawner);
         }
 //        ArrayList<String> BANDIT_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("banditTrove");
-        Utils.log.info("LOADING DUNGEON SPAWNS...");
+//        Utils.log.info("LOADING DUNGEON SPAWNS...");
 //        for(String line : BANDIT_CONFIG){
 //            if (line == null || line.equalsIgnoreCase("null"))
 //                continue;

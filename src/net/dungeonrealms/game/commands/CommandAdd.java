@@ -9,6 +9,7 @@ import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.ItemGenerator;
+import net.dungeonrealms.game.world.items.NamedItems;
 import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
 import net.dungeonrealms.game.world.items.armor.Armor.ArmorTier;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
@@ -195,6 +196,9 @@ public class CommandAdd extends BasicCommand {
                     test.addExtra(bungeeMessage);
                     Bukkit.spigot().broadcast(test);
                     break;
+                case "blayshan":
+                	player.getInventory().addItem(NamedItems.blayshanAxe);
+                	break;
             }
         }
 

@@ -7,6 +7,7 @@ import net.dungeonrealms.game.commands.generic.CommandManager;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
+import net.dungeonrealms.game.world.items.NamedItems;
 import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.listeners.*;
 import net.dungeonrealms.game.world.loot.LootManager;
@@ -146,6 +147,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(DungeonManager.getInstance());
         mm.registerMechanic(new Entities());
         mm.registerMechanic(ScoreboardHandler.getInstance());
+        mm.registerMechanic(new NamedItems());
         /*
         Working on instance
         mm.registerMechanic(RealmManager.getInstance());

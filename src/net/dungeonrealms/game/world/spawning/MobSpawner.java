@@ -271,21 +271,21 @@ public class MobSpawner {
             return;
         Entity entity = SpawningMechanics.getMob(((CraftWorld)loc.getWorld()).getHandle(), tier, monsEnum);
         String customName = monsEnum.getPrefix() +  " " + monsEnum.name + " " + monsEnum.getSuffix();
-        if(eliteName == null){
-        	entity.setCustomName(customName);
-            entity.getBukkitEntity().setMetadata("customentity", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
-        }else{
-        	entity.setCustomName(eliteName);
-            entity.getBukkitEntity().setMetadata("customentity", new FixedMetadataValue(DungeonRealms.getInstance(), eliteName));
-        }
-        
         Utils.log.info(mob + " SPAWNING at " + location);
         int level = Utils.getRandomFromTier(tier, lvlRange);
         MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
-        EntityStats.setMonsterElite(entity, level, tier);
+        EntityStats.setMonsterRandomStats(entity, level, tier);
         if (entity == null){
             return;
         }
+        if(eliteName == null){
+        	entity.setCustomName(customName);
+            entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
+        }else{
+        	entity.setCustomName(eliteName);
+            entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), eliteName));
+        }
+        
         location.getWorld().loadChunk(location.getChunk());
         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
         ((CraftWorld)loc.getWorld()).getHandle().addEntity(entity, SpawnReason.CUSTOM);

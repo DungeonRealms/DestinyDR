@@ -128,7 +128,7 @@ public class ShopListener implements Listener {
 				if (event.isLeftClick()) {
 					if (stackInSlot == null || stackInSlot.getType() == Material.AIR) {
 						//Setting new Item in SHop
-						if (itemHeld.getType() == Material.AIR || itemHeld == null)
+						if (itemHeld.getType() == Material.AIR || itemHeld == null || itemHeld.getType() == Material.EMERALD)
 							return;
 						if (clicker.getInventory().firstEmpty() < 0) {
 							clicker.sendMessage("Make more room in your inventory");
