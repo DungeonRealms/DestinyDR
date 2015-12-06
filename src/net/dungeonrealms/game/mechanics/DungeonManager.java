@@ -5,6 +5,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -29,6 +30,7 @@ import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
+import net.minecraft.server.v1_8_R3.Entity;
 
 /**
  * Created by Nick on 10/19/2015.
@@ -36,7 +38,6 @@ import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 public class DungeonManager implements GenericMechanic{
 
     static DungeonManager instance = null;
-
     public static DungeonManager getInstance() {
         if (instance == null) {
             instance = new DungeonManager();
@@ -46,6 +47,14 @@ public class DungeonManager implements GenericMechanic{
 
     public CopyOnWriteArrayList<DungeonObject> Dungeons = new CopyOnWriteArrayList<>();
 
+    public DungeonObject getDungeon(World world){
+    	for(DungeonObject dungeon : Dungeons){
+    		if(world.getName().equalsIgnoreCase(dungeon.getWorldName()))
+    			return dungeon;
+    	}
+		return null;
+    }
+    
     @Override
     public EnumPriority startPriority() {
         return EnumPriority.ARCHBISHOPS;
@@ -181,13 +190,15 @@ public class DungeonManager implements GenericMechanic{
         }
     }
 
-    private class DungeonObject {
+    public class DungeonObject {
 
         private DungeonType type;
         private Integer time;
         private List<Player> playerList;
         private String worldName;
-
+        public ArrayList<Entity> aliveMonsters = new ArrayList<Entity>();
+		public boolean canSpawnBoss = false;
+        
         public DungeonObject(DungeonType type, Integer time, List<Player> playerList, String worldName) {
             this.type = type;
             this.time = time;
@@ -251,16 +262,19 @@ public class DungeonManager implements GenericMechanic{
             player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + type.getBossName() + ChatColor.WHITE + "] " + ChatColor.GREEN + "You have invoked a[n] Instance Dungeon. This Instance Dungeon is on " +
                     "a timer of 45 minutes!");
         });
-        
         if(type.equals(DungeonType.BANDIT_TROVE)){
         	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
+    			DungeonObject object = this.getDungeon(w);
         		for(MobSpawner spawner : SpawningMechanics.BanditTroveSpawns){
         			Location loc = spawner.loc;
         			loc.setWorld(w);
         			spawner.loc = loc;
         			spawner.setDungeonSpawner(true);
-        			spawner.spawnIn(true);
+//        			spawner.spawnIn(true);
+        			Utils.log.info("Spawner spawning.");
+        			spawner.dungeonSpawn(object);
         			}
+        		
         		}, 40);
         	}
         }

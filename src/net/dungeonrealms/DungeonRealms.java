@@ -230,9 +230,6 @@ public class DungeonRealms extends JavaPlugin {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 1200);
             }, 6000);
         }, 288000);
-
-
-        Utils.log.info("DungeonRealms Registering Commands() ... FINISHED!");
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> this.hasFinishedSetup = true, 600L);
     }
