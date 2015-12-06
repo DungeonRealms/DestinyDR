@@ -71,7 +71,7 @@ public class Teleportation implements GenericMechanic {
 
     @Override
 	public void startInitialization() {
-        Cyrennica = new Location(Bukkit.getWorlds().get(0), -378, 85, 362);
+        Cyrennica = new Location(Bukkit.getWorlds().get(0), -378, 85, 357);
         Harrison_Field = new Location(Bukkit.getWorlds().get(0), -594, 59, 687, 92.0F, 1F);
         Dark_Oak_Tavern = new Location(Bukkit.getWorlds().get(0), 280, 59, 1132, 2.0F, 1F);
         Deadpeaks_Mountain_Camp = new Location(Bukkit.getWorlds().get(0), -1173, 106, 1030, -88.0F, 1F);
