@@ -16,7 +16,7 @@ public class CommandTell extends BasicCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-        if (args.length > 1) {
+        if (args.length >= 1) {
             String targetPlayer = args[0];
 
             Bukkit.getOnlinePlayers().stream().limit(1).filter(player -> player.getName().equalsIgnoreCase(targetPlayer)).forEach(player1 -> {
