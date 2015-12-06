@@ -1075,7 +1075,11 @@ public class ClickHandler {
         	if(event.isShiftClick()){event.setCancelled(true);return;}
         	if(event.getAction() == InventoryAction.COLLECT_TO_CURSOR){event.setCancelled(true);return;}
         	if(event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY){event.setCancelled(true); return;}
+        	if(event.getRawSlot() >= 18){
         		event.setCancelled(true);
+        		return;
+        	}
+    			event.setCancelled(true);
         		ItemStack stack = event.getCurrentItem();
         		if(stack == null || stack.getType() == Material.AIR) return;
         		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
