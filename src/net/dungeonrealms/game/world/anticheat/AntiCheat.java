@@ -1,9 +1,13 @@
 package net.dungeonrealms.game.world.anticheat;
 
+import net.dungeonrealms.DungeonRealms;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -23,6 +27,12 @@ public class AntiCheat {
         return instance;
     }
 
+    public void startInitialization() {
+        Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            Bukkit.getOnlinePlayers().stream().forEach(this::checkPlayer);
+        }, 0, 20);
+    }
+
     /**
      * Will be placed inside an eventlistener to make sure
      * the player isn't duplicating.
@@ -32,7 +42,7 @@ public class AntiCheat {
      * @since 1.0
      */
     public boolean watchForDupes(InventoryClickEvent event) {
-        ItemStack checkItem = event.getCursor();
+        ItemStack checkItem = event.getCurrentItem();
         if (checkItem == null) return false;
         if (!isRegistered(checkItem)) return false;
         String check = getUniqueEpochIdentifier(checkItem);
@@ -43,7 +53,32 @@ public class AntiCheat {
                 return true;
             }
         }
+        checkPlayer(((Player) event.getWhoClicked()));
         return false;
+    }
+
+    public void checkPlayer(Player player) {
+
+        for (ItemStack item : player.getInventory().getContents()) {
+            if (item != null && item.getType() != null && !item.getType().equals(Material.AIR)) {
+                if (item.getAmount() > 1) {
+                    if (isRegistered(item)) {
+                        player.getInventory().remove(item);
+                        player.sendMessage(ChatColor.RED + "Duplication detected in your inventory! Action has been logged and most certainly prevented you from any future opportunities.");
+                        Bukkit.broadcastMessage(ChatColor.RED + "Detected Duplicated Items in: " + ChatColor.AQUA + player.getName() + "'s" + ChatColor.RED + " inventory. Duplicated Items Removed.");
+                    }
+                }
+            }
+        }
+
+
+        if (player.getItemOnCursor() != null && !player.getItemOnCursor().getType().equals(Material.AIR)) {
+            if (player.getItemOnCursor().getAmount() > 1) {
+                if (isRegistered(player.getItemOnCursor())) {
+                    player.setItemOnCursor(new ItemStack(Material.AIR));
+                }
+            }
+        }
     }
 
     /**

@@ -199,7 +199,7 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onAsyncJoin(AsyncPlayerPreLoginEvent event) {
-        if (!DungeonRealms.getInstance().hasFinishedSetup() && !event.getName().contentEquals("Xwaffle")) {
+        if (!DungeonRealms.getInstance().hasFinishedSetup() && !event.getName().equalsIgnoreCase("xFinityPro")) {
             event.disallow(Result.KICK_OTHER, ChatColor.GREEN + "The server is still setting up reconnect shortly!");
             return;
         }
