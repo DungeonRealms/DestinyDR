@@ -3,10 +3,11 @@ package net.dungeonrealms.game.world.items;
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
-import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
+import net.dungeonrealms.game.mechanics.SoundAPI;
+import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_8_R3.EntityMonster;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.GameMode;
@@ -116,6 +117,7 @@ public class DamageAPI {
 
         LivingEntity leReceiver = (LivingEntity) receiver;
         if (tag.getInt("fireDamage") != 0) {
+            SoundAPI.getInstance().playSoundAtLocation("game.potion.smash", receiver.getLocation(), 8);
             try {
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, receiver.getLocation().add(0, 1, 0),
                         new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
@@ -126,6 +128,7 @@ public class DamageAPI {
         }
 
         if (tag.getInt("iceDamage") != 0) {
+            SoundAPI.getInstance().playSoundAtLocation("game.potion.smash", receiver.getLocation(), 8);
             damage += tag.getInt("iceDamage");
             try {
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SNOW_SHOVEL, receiver.getLocation().add(0, 1, 0),
@@ -136,6 +139,7 @@ public class DamageAPI {
         }
 
         if (tag.getInt("poisonDamage") != 0) {
+            SoundAPI.getInstance().playSoundAtLocation("game.potion.smash", receiver.getLocation(), 8);
             try {
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, receiver.getLocation().add(0, 1, 0),
                         new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
@@ -305,6 +309,7 @@ public class DamageAPI {
 
         LivingEntity leReceiver = (LivingEntity) receiver;
         if (projectile.getMetadata("fireDamage").get(0).asInt() != 0) {
+            SoundAPI.getInstance().playSoundAtLocation("game.potion.smash", receiver.getLocation(), 8);
             try {
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, receiver.getLocation().add(0, 1, 0),
                         new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
@@ -332,6 +337,7 @@ public class DamageAPI {
         }
 
         if (projectile.getMetadata("iceDamage").get(0).asInt() != 0) {
+            SoundAPI.getInstance().playSoundAtLocation("game.potion.smash", receiver.getLocation(), 8);
             try {
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SNOW_SHOVEL, receiver.getLocation().add(0, 1, 0),
                         new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
@@ -359,6 +365,7 @@ public class DamageAPI {
         }
 
         if (projectile.getMetadata("poisonDamage").get(0).asInt() != 0) {
+            SoundAPI.getInstance().playSoundAtLocation("game.potion.smash", receiver.getLocation(), 8);
             try {
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, receiver.getLocation().add(0, 1, 0),
                         new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);

@@ -212,7 +212,7 @@ public class InventoryListener implements Listener {
                         event.setCancelled(true);
                         return;
                     }
-                    p.playSound(event.getPlayer().getLocation(), Sound.ANVIL_BREAK, 0.5F, 1F);
+                    p.playSound(event.getPlayer().getLocation(), Sound.ITEM_BREAK, 0.5F, 1F);
                 }
             }
         }
@@ -325,7 +325,7 @@ public class InventoryListener implements Listener {
             }
         }
         if (!CombatLog.isInCombat(player)) {
-            player.playSound(player.getLocation(), Sound.NOTE_PLING, 1f, 1f);
+            player.playSound(player.getLocation(), Sound.ITEM_BREAK, 1f, 1f);
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 if (API.getGamePlayer(player) == null) {
                     return;
