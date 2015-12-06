@@ -61,8 +61,12 @@ public class DonationEffects implements GenericMechanic {
 
     private void spawnPlayerParticleEffects() {
         Bukkit.getOnlinePlayers().stream().filter(PLAYER_PARTICLE_EFFECTS::containsKey).forEach(player -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            float moveSpeed = 0.02F;
+            if (PLAYER_PARTICLE_EFFECTS.get(player) == ParticleAPI.ParticleEffect.RED_DUST || PLAYER_PARTICLE_EFFECTS.get(player) == ParticleAPI.ParticleEffect.NOTE) {
+                moveSpeed = -1F;
+            }
             try {
-                ParticleAPI.sendParticleToLocation(PLAYER_PARTICLE_EFFECTS.get(player), player.getLocation().add(0, 0.22, 0), (new Random().nextFloat()) - 0.4F, (new Random().nextFloat()) - 0.5F, (new Random().nextFloat()) - 0.5F, 1F, 6);
+                ParticleAPI.sendParticleToLocation(PLAYER_PARTICLE_EFFECTS.get(player), player.getLocation().add(0, 0.22, 0), (new Random().nextFloat()) - 0.4F, (new Random().nextFloat()) - 0.5F, (new Random().nextFloat()) - 0.5F, moveSpeed, 6);
             } catch (Exception e) {
                 e.printStackTrace();
                 Utils.log.warning("[Donations] [ASYNC] Could not spawn donation particle " + PLAYER_PARTICLE_EFFECTS.get(player).name() + " for player " + player.getName());

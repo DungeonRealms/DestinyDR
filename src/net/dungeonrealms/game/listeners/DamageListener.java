@@ -445,6 +445,9 @@ public class DamageListener implements Listener {
                     }
                 }
             }
+            if (attacker instanceof Player) {
+                KarmaHandler.getInstance().handleAlignmentChanges((Player) attacker);
+            }
         } else if (event.getDamager().getType() == EntityType.ARROW) {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof LivingEntity)) return;
@@ -454,6 +457,9 @@ public class DamageListener implements Listener {
                     event.setCancelled(true);
                     event.setDamage(0);
                     return;
+                }
+                if (attacker instanceof Player) {
+                    KarmaHandler.getInstance().handleAlignmentChanges((Player) attacker);
                 }
             }
             if (attacker instanceof Player && defender instanceof Player) {
@@ -480,6 +486,9 @@ public class DamageListener implements Listener {
                     event.setCancelled(true);
                     event.setDamage(0);
                     return;
+                }
+                if (attacker instanceof Player) {
+                    KarmaHandler.getInstance().handleAlignmentChanges((Player) attacker);
                 }
             }
             if (attacker instanceof Player && defender instanceof Player) {
