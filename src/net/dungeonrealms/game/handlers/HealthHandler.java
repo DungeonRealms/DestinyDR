@@ -155,13 +155,13 @@ public class HealthHandler implements GenericMechanic {
     private void setPlayerOverheadHP(Player player, int hp) {
         //Check their Max HP from wherever we decide to store it, get it as a percentage.
         //Update BarAPI thing with it.
-        boolean safeRegion = false;
-        if (API.isInSafeRegion(player.getLocation())) {
+        boolean safeRegion = API.isInSafeRegion(player.getLocation());
+        boolean nonPvPRegion = API.isNonPvPRegion(player.getLocation());
+        if (safeRegion) {
             //Save a little bit while in safe zones?
             if (new Random().nextInt(4) <= 2) {
                 return;
             }
-            safeRegion = true;
         }
         GamePlayer gamePlayer = API.getGamePlayer(player);
         if (gamePlayer == null) {
@@ -177,12 +177,12 @@ public class HealthHandler implements GenericMechanic {
         int playerLevel = gamePlayer.getLevel();
         String playerLevelInfo = ChatColor.AQUA.toString() + ChatColor.BOLD + "LVL " + ChatColor.AQUA + playerLevel;
         String separator = ChatColor.BLACK.toString() + ChatColor.BOLD + " - ";
-        String playerHPInfo = "";
+        String playerHPInfo;
         if (safeRegion) {
             playerHPInfo = ChatColor.GREEN.toString() + ChatColor.BOLD + "HP " + ChatColor.GREEN + hp + ChatColor.BOLD + " / " + ChatColor.GREEN + (int) maxHP;
-        } else if (!API.isInSafeRegion(player.getLocation()) && API.isNonPvPRegion(player.getLocation())) {
+        } else if (nonPvPRegion) {
             playerHPInfo = ChatColor.YELLOW.toString() + ChatColor.BOLD + "HP " + ChatColor.YELLOW + hp + ChatColor.BOLD + " / " + ChatColor.YELLOW + (int) maxHP;
-        } else if (!API.isInSafeRegion(player.getLocation()) && !API.isNonPvPRegion(player.getLocation())) {
+        } else {
             playerHPInfo = ChatColor.RED.toString() + ChatColor.BOLD + "HP " + ChatColor.RED + hp + ChatColor.BOLD + " / " + ChatColor.RED + (int) maxHP;
         }
         String playerEXPInfo = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "EXP " + ChatColor.LIGHT_PURPLE + Math.round((gamePlayer.getExperience() / gamePlayer.getEXPNeeded(playerLevel)) * 100.0) + "%";
