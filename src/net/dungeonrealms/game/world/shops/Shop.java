@@ -27,6 +27,10 @@ import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.rank.Rank;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 /**
  * Created by Chase on Nov 17, 2015
@@ -227,7 +231,14 @@ public class Shop {
 		
 		if(Rank.getInstance().getRank(p.getUniqueId()).getName().equalsIgnoreCase("DEFAULT")){
 			if(new_tier >= 4){
-				p.sendMessage(ChatColor.RED + "You must be a " + ChatColor.YELLOW + " Subscriber " + ChatColor.RED + "to upgrade your shop any further.");
+				//Click to view shop!
+	            TextComponent bungeeMessage = new TextComponent(ChatColor.YELLOW.toString() + ChatColor.UNDERLINE + ChatColor.BOLD + "SHOP");
+	            bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://shop.dungeonrealms.net/category/566366"));
+	            bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to view shop!").create()));
+	            TextComponent test = new TextComponent(ChatColor.RED + "Purchase Subscriber @ ");
+	            test.addExtra(bungeeMessage);
+	            test.addExtra(ChatColor.RED + " to upgrade further." );
+	            p.spigot().sendMessage(test);
 				return;
 			}
 		}
@@ -239,8 +250,7 @@ public class Shop {
 		int cost = getShopUpgradeCost(new_tier);
 		if(!promptUpgrade){
 			promptUpgrade = true;
-			p.sendMessage(ChatColor.YELLOW + "You can upgrade your shop for " + ChatColor.GREEN + cost + ChatColor.WHITE + "g");
-			p.sendMessage(ChatColor.YELLOW + "Shift Right Click your shop again to accept.");
+			p.sendMessage(ChatColor.GREEN + "Upgrade " + ChatColor.BOLD + "COST: " + cost + ChatColor.GREEN + ChatColor.BOLD.toString() + "G");
 			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()-> promptUpgrade = false, 20 * 10);
 			return;
 		}
