@@ -10,6 +10,7 @@ import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -461,7 +462,20 @@ public class InventoryListener implements Listener {
             }
             stat.reset = true;
         } else if (event.getInventory().getTitle().contains("Collection Bin")) {
-
+            Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
+            Inventory bin = storage.collection_bin;
+            if(bin	 == null)
+            	return;
+            int i = 0;
+            for(ItemStack stack : bin.getContents()){
+            	if(stack == null || stack.getType() == Material.AIR)
+            		continue;
+            	i++;
+            }
+            if(i == 0){
+        		DatabaseAPI.getInstance().update(storage.ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
+        		storage.collection_bin = null;
+            }
         }
     }
 

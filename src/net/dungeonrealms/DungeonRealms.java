@@ -226,12 +226,12 @@ public class DungeonRealms extends JavaPlugin {
                     AsyncUtils.pool.shutdown();
                     Database.mongoClient.close();
                     Bukkit.getWorlds().get(0).save();
-                }, 400);
+                }, 200);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 1200);
             }, 6000);
         }, 288000);
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> this.hasFinishedSetup = true, 600L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> this.hasFinishedSetup = true, 240L);
     }
 
     public void onDisable() {

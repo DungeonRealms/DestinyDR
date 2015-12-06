@@ -47,21 +47,21 @@ public class BankListener implements Listener {
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
                 Storage storage = BankMechanics.getInstance().getStorage(e.getPlayer().getUniqueId());
-            	if(storage.collection_bin != null){
-            		if(!prompted.contains(e.getPlayer().getUniqueId())){
-            			prompted.add(e.getPlayer().getUniqueId());
-            			e.getPlayer().sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.YELLOW + "Collection Bin emptied once you open it.");
-            			e.getPlayer().sendMessage(ChatColor.YELLOW + "Open your chest again once you're ready to empty your collection bin.");
-            			e.setCancelled(true);
-            			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()-> prompted.remove(e.getPlayer().getUniqueId()), 100);
-            			return;
-            		}
-            		e.getPlayer().openInventory(storage.collection_bin);
-            		DatabaseAPI.getInstance().update(e.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
-            		storage.collection_bin = null;
-            		e.setCancelled(true);
-            		return;
-            	}
+//            	if(storage.collection_bin != null){
+//            		if(!prompted.contains(e.getPlayer().getUniqueId())){
+//            			prompted.add(e.getPlayer().getUniqueId());
+//            			e.getPlayer().sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.YELLOW + "Collection Bin emptied once you open it.");
+//            			e.getPlayer().sendMessage(ChatColor.YELLOW + "Open your chest again once you're ready to empty your collection bin.");
+//            			e.setCancelled(true);
+//            			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()-> prompted.remove(e.getPlayer().getUniqueId()), 100);
+//            			return;
+//            		}
+//            		e.getPlayer().openInventory(storage.collection_bin);
+//            		DatabaseAPI.getInstance().update(e.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
+//            		storage.collection_bin = null;
+//            		e.setCancelled(true);
+//            		return;
+//            	}
             	
                 Block b = e.getClickedBlock();
                 ItemStack stack = new ItemStack(b.getType(), 1);
@@ -181,7 +181,7 @@ public class BankListener implements Listener {
                             }
 
                         }
-                    } else if (e.getRawSlot() != 0) {
+                    } else if (e.getRawSlot() != 0 && e.getRawSlot() != 1) {
                         if (nms == null)
                             return;
                         e.setCancelled(true);
@@ -236,7 +236,7 @@ public class BankListener implements Listener {
                                 player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
                             }
                         }
-                    } else {
+                    } else if(e.getRawSlot() == 0){
                         e.setCancelled(true);
                         Storage storage = BankMechanics.getInstance().getStorage(player.getUniqueId());
                         if (e.isLeftClick()) {
@@ -265,6 +265,27 @@ public class BankListener implements Listener {
 
                             // Upgrade Storage
                         }
+                    }else if(e.getRawSlot() == 1){
+                    	//Collection Bin
+                    	e.setCancelled(true);
+                        Storage storage = BankMechanics.getInstance().getStorage(player.getUniqueId());
+                    	if(storage.collection_bin != null){
+//                    		if(!prompted.contains(player.getUniqueId())){
+//                    			prompted.add(player.getUniqueId());
+//                    			player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.YELLOW + "Collection Bin emptied once you open it.");
+//                    			player.sendMessage(ChatColor.YELLOW + "Open your chest again once you're ready to empty your collection bin.");
+//                    			e.setCancelled(true);
+//                    			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()-> prompted.remove(player.getUniqueId()), 100);
+//                    			return;
+//                    		}
+                    		player.openInventory(storage.collection_bin);
+//                    		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
+//                    		storage.collection_bin = null;
+                    		e.setCancelled(true);
+                    		return;
+                    	}else{
+                    		player.sendMessage(ChatColor.RED + "Collection Bin is empty.");
+                    	}
                     }
                 } else {
                     if (e.isShiftClick()) {
@@ -442,6 +463,19 @@ public class BankListener implements Listener {
         			player.sendMessage(ChatColor.RED.toString() + "Not enough Gems in your inventory!");
         		}
         	}
+        }else if(e.getInventory().getTitle().equalsIgnoreCase("Collection Bin")){
+            Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
+        	e.setCancelled(true);
+            if(e.getRawSlot() > e.getInventory().getSize()){
+            	e.setCancelled(true);
+            	return;
+            }else if(e.getCurrentItem() != null && e.getCurrentItem().getType() != Material.AIR){
+            	ItemStack stack = e.getCurrentItem();
+            	if(e.getWhoClicked().getInventory().firstEmpty() >= 0){
+            		e.setCurrentItem(new ItemStack(Material.AIR));
+            		e.getWhoClicked().getInventory().addItem(stack);
+            	}
+            }
         }
     }
 
@@ -514,6 +548,7 @@ public class BankListener implements Listener {
         Inventory inv = Bukkit.createInventory(null, 9, "Bank Chest");
         ItemStack bankItem = new ItemStack(Material.EMERALD);
         ItemStack storage = new ItemStack(Material.CHEST, 1);
+        ItemStack collection_bin = new ItemStack(Material.CHEST, 1);
         ItemMeta storagetMeta = storage.getItemMeta();
         storagetMeta.setDisplayName(ChatColor.AQUA.toString() + ChatColor.BOLD + "STORAGE");
         ArrayList<String> storelore = new ArrayList<>();
@@ -535,6 +570,22 @@ public class BankListener implements Listener {
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(bankItem);
         nms.getTag().setString("type", "bank");
         inv.setItem(8, CraftItemStack.asBukkitCopy(nms));
+        
+        
+        
+        ItemMeta collectionMeta = storage.getItemMeta();
+        collectionMeta.setDisplayName(ChatColor.RED.toString() + ChatColor.BOLD + "Collection Bin");
+        ArrayList<String> collectionlore = new ArrayList<>();
+        collectionlore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to open " + ChatColor.GREEN.toString() + ChatColor.BOLD + "Collection Bin");
+        collectionMeta.setLore(collectionlore);
+        storage.setItemMeta(collectionMeta);
+        net.minecraft.server.v1_8_R3.ItemStack collectionBin = CraftItemStack.asNMSCopy(storage);
+        collectionBin.getTag().setString("type", "collection");
+        inv.setItem(1, CraftItemStack.asBukkitCopy(collectionBin));
+
+        
+        
+        
         return inv;
     }
 
