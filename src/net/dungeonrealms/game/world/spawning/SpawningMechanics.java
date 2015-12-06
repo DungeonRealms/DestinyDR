@@ -82,27 +82,27 @@ public class SpawningMechanics implements GenericMechanic {
              spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low");
             ALLSPAWNERS.add(spawner);
         }
-//        ArrayList<String> BANDIT_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("banditTrove");
+        ArrayList<String> BANDIT_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("banditTrove");
         Utils.log.info("LOADING DUNGEON SPAWNS...");
-//        for(String line : BANDIT_CONFIG){
-//            if (line == null || line.equalsIgnoreCase("null"))
-//                continue;
-//            String[] coords = line.split("=")[0].split(",");
-//            double x, y, z;
-//            x = Double.parseDouble(coords[0]);
-//            y = Double.parseDouble(coords[1]);
-//            z = Double.parseDouble(coords[2]);
-//            String tierString = line.substring(line.indexOf(":"), line.indexOf(";"));
-//            tierString = tierString.substring(1);
-//            int tier = Integer.parseInt(tierString);
-//            String stringAmount = line.split(";")[1].replace("-", "");
-//            stringAmount = stringAmount.replace("+", "");
-//            int spawnAmount = Integer.parseInt(stringAmount);
-//            String monster = line.split("=")[1].split(":")[0];
-//            MobSpawner spawner;
-//            spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, BanditTroveSpawns.size(), "high");
-//            BanditTroveSpawns.add(spawner);
-//        }
+        for(String line : BANDIT_CONFIG){
+            if (line == null || line.equalsIgnoreCase("null"))
+                continue;
+            String[] coords = line.split("=")[0].split(",");
+            double x, y, z;
+            x = Double.parseDouble(coords[0]);
+            y = Double.parseDouble(coords[1]);
+            z = Double.parseDouble(coords[2]);
+            String tierString = line.substring(line.indexOf(":"), line.indexOf(";"));
+            tierString = tierString.substring(1);
+            int tier = Integer.parseInt(tierString);
+            String stringAmount = line.split(";")[1].replace("-", "");
+            stringAmount = stringAmount.replace("+", "");
+            int spawnAmount = Integer.parseInt(stringAmount);
+            String monster = line.split("=")[1].split(":")[0];
+            MobSpawner spawner;
+            spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, BanditTroveSpawns.size(), "high");
+            BanditTroveSpawns.add(spawner);
+        }
         Utils.log.info("FINISHED LOADING DUNGEON SPAWNS");
         SpawningMechanics.initSpawners();
         Bukkit.getWorlds().get(0).getEntities().forEach(entity -> {
