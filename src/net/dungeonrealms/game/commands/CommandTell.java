@@ -13,7 +13,6 @@ public class CommandTell extends BasicCommand {
     public CommandTell(String command, String usage, String description) {
         super(command, usage, description);
     }
-
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
