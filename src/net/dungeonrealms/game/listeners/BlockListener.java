@@ -290,7 +290,10 @@ public class BlockListener implements Listener {
         if (block == null) return;
         if (block.getType() != Material.CHEST) return;
         LootSpawner loot = LootManager.getSpawner(e.getClickedBlock().getLocation());
-        if(loot != null){
+        if(loot == null){
+        	e.setCancelled(true);
+        	return;
+        }
                 Collection<Entity> list = API.getNearbyMonsters(loot.location, 10);
                 if (list.isEmpty()) {
                     Action actionType = e.getAction();
@@ -322,7 +325,6 @@ public class BlockListener implements Listener {
                     e.getPlayer().sendMessage(ChatColor.RED + "You can't open this while monsters are around!");
                     e.setCancelled(true);
                 }
-        }
 
 //        Shop shop = ShopMechanics.getShop(block);
 //        if (shop == null){
