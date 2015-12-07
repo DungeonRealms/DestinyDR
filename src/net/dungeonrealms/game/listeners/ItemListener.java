@@ -160,7 +160,7 @@ public class ItemListener implements Listener {
     	if (event.getItem() != null) {
     	if (event.getItem().getType() == Material.ENCHANTED_BOOK) {
     		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
-    		if (nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("reset")) {
+    		if (nms.hasTag() && nms.getTag().hasKey("retrainingBook")) {
     			AnvilGUIInterface gui = AnvilApi.createNewGUI(event.getPlayer(), e -> {
 					if (e.getSlot() == AnvilSlot.OUTPUT) {
 						if (e.getName().equalsIgnoreCase("Yes") || e.getName().equalsIgnoreCase("y")) {

@@ -7,6 +7,7 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.items.armor.Armor.ArmorTier;
 import net.dungeonrealms.game.world.items.armor.Armor.EquipmentType;
 import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
+import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -126,7 +127,7 @@ public interface Monster {
 					armorToDrop = loot[1];
 					break;
 			}
-
+			RepairAPI.setCustomItemDurability(armorToDrop, RandomHelper.getRandomNumberBetween(200, 1000));
 			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), armorToDrop);
 			return;
 		}

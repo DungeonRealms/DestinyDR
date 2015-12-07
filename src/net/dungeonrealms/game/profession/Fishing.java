@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.profession;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
@@ -28,8 +29,6 @@ public class Fishing implements GenericMechanic {
 	public enum EnumFish {
 		Bass("Bass", 1), Cod("Cod", 1), Trout("Trout", 2);
 
-		// TODO All this shit
-
 		int regenLvl;
 		String fishName;
 
@@ -47,6 +46,7 @@ public class Fishing implements GenericMechanic {
 
 	public static int getMaxXP(int tier) {
 		switch (tier) {
+		case 0:
 		case 1:
 			return T1Exp;
 		case 2:
@@ -61,25 +61,25 @@ public class Fishing implements GenericMechanic {
 			return -1;
 		}
 	}
-	
+
 	public static int getFishEXP(int tier) {
-        if (tier == 1) {
-            return (int) (2.5D * (250 + new Random().nextInt((int) (250 * 0.3D))));
-        }
-        if (tier == 2) {
-            return (int) (2.5D * (430 + new Random().nextInt((int) (430 * 0.3D))));
-        }
-        if (tier == 3) {
-            return (int) (2.5D * (820 + new Random().nextInt((int) (820 * 0.3D))));
-        }
-        if (tier == 4) {
-            return (int) (2.5D * (1050 + new Random().nextInt((int) (1050 * 0.3D))));
-        }
-        if (tier == 5) {
-            return (int) (2.5D * (1230 + new Random().nextInt((int) (1230 * 0.3D))));
-        }
-        return 1;
-    }
+		if (tier == 1) {
+			return (int) (2.5D * (250 + new Random().nextInt((int) (250 * 0.3D))));
+		}
+		if (tier == 2) {
+			return (int) (2.5D * (430 + new Random().nextInt((int) (430 * 0.3D))));
+		}
+		if (tier == 3) {
+			return (int) (2.5D * (820 + new Random().nextInt((int) (820 * 0.3D))));
+		}
+		if (tier == 4) {
+			return (int) (2.5D * (1050 + new Random().nextInt((int) (1050 * 0.3D))));
+		}
+		if (tier == 5) {
+			return (int) (2.5D * (1230 + new Random().nextInt((int) (1230 * 0.3D))));
+		}
+		return 1;
+	}
 
 	/**
 	 * Check if itemstack is a DR fishing pole.
@@ -90,7 +90,7 @@ public class Fishing implements GenericMechanic {
 	 */
 	public static boolean isDRFishingPole(ItemStack stack) {
 		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-		if(!nms.hasTag())
+		if (!nms.hasTag())
 			return false;
 		return nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("rod");
 	}
@@ -173,9 +173,8 @@ public class Fishing implements GenericMechanic {
 		return list[new Random().nextInt(list.length - 1)];
 	}
 
-	
 	public static HashMap<UUID, String> fishBuffs = new HashMap<>();
-	
+
 	/**
 	 * Return new Fish caught by stack(fishing pole)
 	 * 
@@ -186,16 +185,16 @@ public class Fishing implements GenericMechanic {
 	public static ItemStack getFishItem(ItemStack stack) {
 		ItemStack fish = new ItemStack(Material.RAW_FISH);
 		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-		int tier = nms.getTag().getInt("itemTier");
+		int rodTier = nms.getTag().getInt("itemTier");
 		ItemMeta meta = fish.getItemMeta();
-		Utils.log.info(tier + "tier");
+		int tier = getFishTier(rodTier);
 		int size = Fishing.getSize(tier);
 		String type = Fishing.getFish(tier);
-		meta.setDisplayName(size + "in. " + type);
+		meta.setDisplayName(ChatColor.GRAY.toString() + size + "in. " + API.getTierColor(tier) + type);
 		String buff = "none";
-		if(RandomHelper.getRandomNumberBetween(1, 100) <= 30){
-			String[] list = new String[]{"HP Regen", "Energy Regen"};
-	    	buff = list[RandomHelper.getRandomNumberBetween(0, list.length - 1)];
+		if (RandomHelper.getRandomNumberBetween(1, 100) <= 30) {
+			String[] list = new String[] { "HP Regen", "Energy Regen" };
+			buff = list[RandomHelper.getRandomNumberBetween(0, list.length - 1)];
 			ArrayList<String> lore = new ArrayList<>();
 			lore.add(ChatColor.GREEN + "+ " + ChatColor.RED + buff);
 			meta.setLore(lore);
@@ -205,9 +204,80 @@ public class Fishing implements GenericMechanic {
 		nms.getTag().setInt("size", size);
 		nms.getTag().setString("fishType", type);
 		nms.getTag().setString("type", "fishBuff");
-		if(!buff.equalsIgnoreCase("none"))
+		if (!buff.equalsIgnoreCase("none"))
 			nms.getTag().setString("buff", buff);
 		return CraftItemStack.asBukkitCopy(nms);
+	}
+
+	/**
+	 * @param rodTier
+	 * @return
+	 */
+	private static int getFishTier(int rodTier) {
+		int chance = new Random().nextInt(100);
+		switch(rodTier){
+		case 1:
+			if(chance <= 85){
+				return 1;
+			}else if(chance > 85 && chance <= 90){
+				return 2;
+			}else if(chance > 90 && chance <= 95){
+				return 3;
+			}else if(chance > 95 && chance <= 99){
+				return 4;
+			}else{
+				return 5;
+			}
+		case 2:
+			if(chance <= 80){
+				return 1;
+			}else if(chance > 80 && chance <= 85){
+				return 2;
+			}else if(chance > 85 && chance <= 95){
+				return 3;
+			}else if(chance > 95 && chance <= 99){
+				return 4;
+			}else{
+				return 5;
+			}
+		case 3:
+			if(chance <= 70){
+				return 1;
+			}else if(chance > 70 && chance <= 80){
+				return 2;
+			}else if(chance > 80 && chance <= 90){
+				return 3;
+			}else if(chance > 90 && chance <= 95){
+				return 4;
+			}else{
+				return 5;
+			}
+		case 4:
+			if(chance <= 60){
+				return 1;
+			}else if(chance > 60 && chance <= 70){
+				return 2;
+			}else if(chance > 70 && chance <= 80){
+				return 3;
+			}else if(chance > 80 && chance <= 95){
+				return 4;
+			}else{
+				return 5;
+			}
+		case 5:
+			if(chance <= 50){
+				return 1;
+			}else if(chance > 50 && chance <= 65){
+				return 2;
+			}else if(chance > 65 && chance <= 75){
+				return 3;
+			}else if(chance > 75 && chance <= 85){
+				return 4;
+			}else{
+				return 5;
+			}
+		}
+		return 100;
 	}
 
 	/**
@@ -217,30 +287,28 @@ public class Fishing implements GenericMechanic {
 	 */
 	public static void gainExp(ItemStack stack, Player p, int exp) {
 		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        int tier  = Fishing.getRodTier(stack);
-//        int lvl = nms.getTag().getInt("level")
+		int tier = Fishing.getRodTier(stack);
 		int xp = nms.getTag().getInt("XP");
-		int maxXP = Fishing.getMaxXP(tier);
+		int maxXP = nms.getTag().getInt("maxXP");
 		xp += exp;
-		//TODO: Chase fix this EXP system. Based on the tier of the FISH, not the pickaxe.
 		nms.getTag().setInt("XP", xp);
 		ItemMeta meta = stack.getItemMeta();
-        ArrayList<String> lore = new ArrayList<>();
-        String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
-        double percentDone = 100.0 * xp / maxXP;
-        double percentDoneDisplay = (percentDone / 100) * 50.0D;
-        int display = (int) percentDoneDisplay;
-        if (display <= 0) {
-        	display = 1;
-        }
-        if (display > 50) {
-        	display = 50;
-        }
-        expBar = ChatColor.GREEN.toString() + expBar.substring(0, display) + ChatColor.RED.toString()
-        	        + expBar.substring(display, expBar.length());
-        lore.add(ChatColor.GRAY.toString() + "Tier: " + ChatColor.WHITE.toString() + tier);
-        lore.add(ChatColor.WHITE.toString() + xp + ChatColor.GRAY + "/" + ChatColor.GRAY + maxXP);
-        lore.add(ChatColor.GRAY.toString() + "EXP: " + expBar);
+		ArrayList<String> lore = new ArrayList<>();
+		String expBar = "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
+		double percentDone = 100.0 * xp / maxXP;
+		double percentDoneDisplay = (percentDone / 100) * 50.0D;
+		int display = (int) percentDoneDisplay;
+		if (display <= 0) {
+			display = 1;
+		}
+		if (display > 50) {
+			display = 50;
+		}
+		expBar = ChatColor.GREEN.toString() + expBar.substring(0, display) + ChatColor.RED.toString()
+		        + expBar.substring(display, expBar.length());
+		lore.add(ChatColor.GRAY.toString() + "Tier: " + ChatColor.WHITE.toString() + tier);
+		lore.add(ChatColor.WHITE.toString() + xp + ChatColor.GRAY + "/" + ChatColor.GRAY + maxXP);
+		lore.add(ChatColor.GRAY.toString() + "EXP: " + expBar);
 		meta.setLore(lore);
 		stack.setItemMeta(meta);
 		p.setItemInHand(stack);
@@ -260,36 +328,36 @@ public class Fishing implements GenericMechanic {
 	private HashMap<Location, Integer> FISHING_LOCATIONS = new HashMap<>();
 	public HashMap<Location, List<Location>> FISHING_PARTICLES = new HashMap<>();
 
-    public void generateFishingParticleBlockList() {
-        int count = 0;
+	public void generateFishingParticleBlockList() {
+		int count = 0;
 
-        for (Entry<Location, Integer> data : FISHING_LOCATIONS.entrySet()) {
-            Location epicenter = data.getKey();
-            List<Location> lfishingParticles = new ArrayList<>();
-            int radius = 10;
+		for (Entry<Location, Integer> data : FISHING_LOCATIONS.entrySet()) {
+			Location epicenter = data.getKey();
+			List<Location> lfishingParticles = new ArrayList<>();
+			int radius = 10;
 			for (int x = -(radius); x <= radius; x++) {
-                for (int y = -(radius); y <= radius; y++) {
-                    for (int z = -(radius); z <= radius; z++) {
-                        Location loc = epicenter.getBlock().getRelative(x, y, z).getLocation();
-                        if (loc.getBlock().getType() == Material.WATER || loc.getBlock().getType() == Material.STATIONARY_WATER) {
-                            if (loc.add(0, 1, 0).getBlock().getType() == Material.AIR) {
-                                if (!(lfishingParticles.contains(loc))) {
-                                    lfishingParticles.add(loc);
-                                    count++;
-                                }
-                            }
-                        }
-                    }
-                }
-            }
+				for (int y = -(radius); y <= radius; y++) {
+					for (int z = -(radius); z <= radius; z++) {
+						Location loc = epicenter.getBlock().getRelative(x, y, z).getLocation();
+						if (loc.getBlock().getType() == Material.WATER
+						        || loc.getBlock().getType() == Material.STATIONARY_WATER) {
+							if (loc.add(0, 1, 0).getBlock().getType() == Material.AIR) {
+								if (!(lfishingParticles.contains(loc))) {
+									lfishingParticles.add(loc);
+									count++;
+								}
+							}
+						}
+					}
+				}
+			}
 
-            FISHING_PARTICLES.put(epicenter, lfishingParticles);
-        }
+			FISHING_PARTICLES.put(epicenter, lfishingParticles);
+		}
 
-        Utils.log.info("[Professions] Loaded a total of " + count + " possible FISHING PARTICLE locations.");
-    }
-	
-	
+		Utils.log.info("[Professions] Loaded a total of " + count + " possible FISHING PARTICLE locations.");
+	}
+
 	public Location getFishingSpot(Location loc) {
 		Location closest_loc = null;
 		for (Location fish_loc : FISHING_LOCATIONS.keySet()) {
@@ -308,18 +376,19 @@ public class Fishing implements GenericMechanic {
 
 	public void loadFishingLocations() {
 		int count = 0;
-        ArrayList<String> CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("fishingspawns");
-			for(String line : CONFIG) {
-				if (line.contains("=")) {
-					String[] cords = line.split("=")[0].split(",");
-					Location loc = new Location(Bukkit.getWorlds().get(0), Double.parseDouble(cords[0]),
-					        Double.parseDouble(cords[1]), Double.parseDouble(cords[2]));
+		ArrayList<String> CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig()
+		        .getStringList("fishingspawns");
+		for (String line : CONFIG) {
+			if (line.contains("=")) {
+				String[] cords = line.split("=")[0].split(",");
+				Location loc = new Location(Bukkit.getWorlds().get(0), Double.parseDouble(cords[0]),
+				        Double.parseDouble(cords[1]), Double.parseDouble(cords[2]));
 
-					int tier = Integer.parseInt(line.split("=")[1]);
-					FISHING_LOCATIONS.put(loc, tier);
-					count++;
-				}
+				int tier = Integer.parseInt(line.split("=")[1]);
+				FISHING_LOCATIONS.put(loc, tier);
+				count++;
 			}
+		}
 		Utils.log.info("[Professions] " + count + " FISHING SPOT locations have been LOADED.");
 	}
 
@@ -336,42 +405,55 @@ public class Fishing implements GenericMechanic {
 	public EnumPriority startPriority() {
 		return EnumPriority.CATHOLICS;
 	}
-    public static int splashCounter = 10;
+
+	public static int splashCounter = 10;
 
 	@Override
 	public void startInitialization() {
 		loadFishingLocations();
 		generateFishingParticleBlockList();
-		 DungeonRealms.getInstance().getServer().getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), () -> {
-             int chance = splashCounter * splashCounter;
-             if (splashCounter == 1) {
-                 splashCounter = 21;
-             }
-             splashCounter--;
-             Random r = new Random();
-             if (FISHING_PARTICLES.size() <= 0) {
-                 return;
-             }
-             try {
-                 for (Entry<Location, List<Location>> data : FISHING_PARTICLES.entrySet()) {
-                     Location epicenter = data.getKey();
-                     try {
-						 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> ParticleAPI.sendParticleToLocation(ParticleEffect.SPLASH, epicenter, r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.4F, 20),0L);
-                     } catch (Exception e1) {
-                         e1.printStackTrace();
-                     }
-                     data.getValue().stream().filter(loc -> r.nextInt(chance) == 1).forEach(loc -> {
-                         try {
-							 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> ParticleAPI.sendParticleToLocation(ParticleEffect.SPLASH, epicenter, r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.4F, 20), 0L);
-                         } catch (Exception e1) {
-                             e1.printStackTrace();
-                         }
-                     });
-                 }
-             } catch (ConcurrentModificationException cme) {
-                 Utils.log.info("[Professions] [ASYNC] Something went wrong checking a fishing spot and adding particles!");
-             }
-         }, 200L, 15L);
+		DungeonRealms.getInstance().getServer().getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(),
+		        () -> {
+			        int chance = splashCounter * splashCounter;
+			        if (splashCounter == 1) {
+				        splashCounter = 21;
+			        }
+			        splashCounter--;
+			        Random r = new Random();
+			        if (FISHING_PARTICLES.size() <= 0) {
+				        return;
+			        }
+			        try {
+				        for (Entry<Location, List<Location>> data : FISHING_PARTICLES.entrySet()) {
+					        Location epicenter = data.getKey();
+					        try {
+						        Bukkit.getScheduler()
+		                                .scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+		                                        () -> ParticleAPI.sendParticleToLocation(ParticleEffect.SPLASH,
+		                                                epicenter, r.nextFloat(), r.nextFloat(), r.nextFloat(), 0.4F,
+		                                                20),
+		                                        0L);
+					        } catch (Exception e1) {
+						        e1.printStackTrace();
+					        }
+					        data.getValue().stream().filter(loc -> r.nextInt(chance) == 1).forEach(loc -> {
+						        try {
+							        Bukkit.getScheduler()
+		                                    .scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+		                                            () -> ParticleAPI.sendParticleToLocation(ParticleEffect.SPLASH,
+		                                                    epicenter, r.nextFloat(), r.nextFloat(), r.nextFloat(),
+		                                                    0.4F, 20),
+		                                            0L);
+						        } catch (Exception e1) {
+							        e1.printStackTrace();
+						        }
+					        });
+				        }
+			        } catch (ConcurrentModificationException cme) {
+				        Utils.log.info(
+		                        "[Professions] [ASYNC] Something went wrong checking a fishing spot and adding particles!");
+			        }
+		        } , 200L, 15L);
 	}
 
 	@Override
