@@ -3,6 +3,7 @@
  */
 package net.dungeonrealms.game.commands;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -13,6 +14,7 @@ import org.bukkit.entity.Player;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -41,10 +43,14 @@ public class CommandSet extends BasicCommand {
 		if (args.length > 0) {
 			switch (args[0]) {
 			case "level":
-				int lvl = Integer.parseInt(args[1]);
-				API.getGamePlayer(player).getStats().setPlayerLevel(lvl);
-				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, lvl, true);
-				s.sendMessage("Level set to " + lvl);
+				String playerName = args[0];
+				Player p = Bukkit.getPlayer(playerName);
+				if(p != null){
+					int lvl = Integer.parseInt(args[1]);
+					API.getGamePlayer(p).getStats().setPlayerLevel(lvl);
+					DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, lvl, true);
+					s.sendMessage(p.getName() + " lvl set to "+ lvl);
+				}
 				break;
 			case "gems":
 				int gems = Integer.parseInt(args[1]);
@@ -70,7 +76,7 @@ public class CommandSet extends BasicCommand {
 				}
 				int tier = 0;
 				int spawnAmount = 0;
-				String range = "-";
+				String range = "-";	
 				try{
 				 tier = Integer.parseInt(args[2]);
 				 spawnAmount = Integer.parseInt(args[3]);
@@ -106,11 +112,17 @@ public class CommandSet extends BasicCommand {
 				player.updateInventory();
 				break;
 			case "shopoff":
-				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
+				 playerName = args[0];
+				 p = Bukkit.getPlayer(playerName);
+				if(p != null)
+					DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
 				break;
 			case "shoplvl":
 				 invlvl = Integer.parseInt(args[1]);
 				DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.SHOPLEVEL, invlvl, true);
+				break;
+			case "chaotic":
+				KarmaHandler.getInstance().setPlayerAlignment(player, "chaotic", false);
 				break;
 			}
 		}
