@@ -545,7 +545,7 @@ public class ItemManager {
             case RetrainingBook:
                 stack = createItem(Material.ENCHANTED_BOOK, ChatColor.GREEN + "Retraining Book", new String[]{ChatColor.GRAY + "Right click to reset your stat", ChatColor.GRAY + "allocated points to free points."});
                 nms = CraftItemStack.asNMSCopy(stack);
-                nms.getTag().setString("type", "reset");
+                nms.getTag().setString("retrainingBook", "_Atlassie");
                 break;
             case MedalOfGathering:
                 stack = createItem(Material.YELLOW_FLOWER, ChatColor.GREEN + "Medal of Gathering", new String[]{ChatColor.GRAY + "Increase storage space by 1 row." + ChatColor.RED + ChatColor.BOLD + "Max of 6"});

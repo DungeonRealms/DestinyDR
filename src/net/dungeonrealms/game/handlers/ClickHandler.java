@@ -222,17 +222,15 @@ public class ClickHandler {
                     }*/
                         }
                         if (nmsStack.getTag().hasKey("retrainingBook")) {
-                            player.sendMessage(ChatColor.RED + "This is currently not implemented!");
-                            player.closeInventory();
-                    /*if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                        player.getInventory().addItem(ItemManager.createItem(EnumItem.RetrainingBook));
-                        player.sendMessage(ChatColor.GREEN + "You have purchased a Retraining Book.");
-                        player.closeInventory();
-                        return;
-                    } else {
-                        player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
-                        return;
-                    }*/
+                        	if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
+                        		player.getInventory().addItem(ItemManager.createItem(EnumItem.RetrainingBook));
+                        		player.sendMessage(ChatColor.GREEN + "You have purchased a Retraining Book.");
+                        		player.closeInventory();
+                       			return;
+                    		} else {
+                        		player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
+                        		return;
+                    		}
                         }
                         if (nmsStack.getTag().hasKey("medalOfGathering")) {
                             player.sendMessage(ChatColor.RED + "This is currently not implemented!");
