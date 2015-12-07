@@ -32,7 +32,7 @@ public class Chat {
 
     public static List<String> bannedWords = new ArrayList<>(Arrays.asList("shit", "fuck", "cunt", "bitch", "whore", "slut", "wank", "asshole", "cock",
             "dick", "clit", "homo", "fag", "queer", "nigger", "dike", "dyke", "retard", "motherfucker", "vagina", "boob", "pussy", "rape", "gay", "penis",
-            "cunt", "titty", "anus", "faggot", "gay", "f@g", "d1ck", "nig", "titanrift", "socialconquer", "wynncraft", "titan rift", "titanrift"));
+            "cunt", "titty", "anus", "faggot", "gay", "f@g", "d1ck", "nig", "titanrift", "socialconquer", "wynncraft", "titan rift", "titanrift", "fucked"));
 
 
     /**

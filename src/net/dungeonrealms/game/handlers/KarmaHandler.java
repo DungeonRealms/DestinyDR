@@ -202,95 +202,94 @@ public class KarmaHandler implements GenericMechanic {
         if (API.getGamePlayer(player) == null) {
             return;
         }
-        EnumPlayerAlignments alignment = EnumPlayerAlignments.getByName(alignmentRawName);
-        String playerAlignment = getPlayerRawAlignment(player);
+        EnumPlayerAlignments alignmentTo = EnumPlayerAlignments.getByName(alignmentRawName);
+        EnumPlayerAlignments alignmentPlayer = API.getGamePlayer(player).getPlayerAlignment();
         int seconds = 0;
         if (Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, player.getUniqueId()))) != 0) {
-            if (alignment == EnumPlayerAlignments.CHAOTIC) {
+            if (alignmentTo == EnumPlayerAlignments.CHAOTIC) {
                 if (getSecondsPassed(player) >= 1200) {
-                    alignment = EnumPlayerAlignments.LAWFUL;
+                    alignmentTo = EnumPlayerAlignments.LAWFUL;
                 } else if (getSecondsPassed(player) > 1000 && getSecondsPassed(player) < 1200) {
                     seconds = getSecondsPassed(player);
                 } else {
                     seconds = getSecondsPassed(player);
                 }
-            } else if (alignment == EnumPlayerAlignments.NEUTRAL) {
+            } else if (alignmentTo == EnumPlayerAlignments.NEUTRAL) {
                 if (getSecondsPassed(player) >= 120) {
-                    alignment = EnumPlayerAlignments.LAWFUL;
+                    alignmentTo = EnumPlayerAlignments.LAWFUL;
                 } else {
                     seconds = getSecondsPassed(player);
                 }
             }
         }
-        if (alignment != null) {
-            switch (alignment) {
-                case LAWFUL:
-                    if (!(playerAlignment.equalsIgnoreCase(EnumPlayerAlignments.LAWFUL.name))) {
-                        player.sendMessage(new String[]{
-                                "",
-                                ChatColor.GREEN + "              " + "* YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + "LAWFUL" + ChatColor.RESET + ChatColor.GREEN + " ALIGNMENT *",
-                                ChatColor.GRAY + "While lawful, you will not lose any equipped armor on death, instead, all armor will lose 30% of its durability when you die.",
-                                ""
-                        });
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.LAWFUL.name, true);
-                    }
-                    if(API.getGamePlayer(player) == null) {
-                        Bukkit.broadcastMessage("player is null!");
-                    }
-                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, API.getGamePlayer(player).getLevel());
-                    /*if (Instance.getInstance().getPlayerRealm(player) != null && Instance.getInstance().getPlayerRealm(player).isRealmPortalOpen()) {
-                        Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + " [" + ChatColor.WHITE + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
-                    }*/
-                    PLAYER_ALIGNMENTS.put(player, alignment);
-                    break;
-                case NEUTRAL:
-                    if (!(playerAlignment.equalsIgnoreCase(EnumPlayerAlignments.NEUTRAL.name))) {
-                        player.sendMessage(new String[]{
-                                "",
-                                ChatColor.YELLOW + "              " + "* YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + "NEUTRAL" + ChatColor.RESET + ChatColor.YELLOW + " ALIGNMENT *",
-                                ChatColor.GRAY + "While neutral, you have a 50% chance of dropping your weapon, and a 25% chance of dropping each piece of equipped armor on death.",
-                                ""
-                        });
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.NEUTRAL.name, true);
-                    }
-                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.YELLOW, API.getGamePlayer(player).getLevel());
-                    /*if (Instance.getInstance().getPlayerRealm(player) != null && Instance.getInstance().getPlayerRealm(player).isRealmPortalOpen()) {
-                        Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + " [" + ChatColor.YELLOW + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
-                    }*/
-                    if (seconds == 0) {
-                        seconds = 120;
-                    } else {
-                        seconds = 120 - seconds;
-                    }
-                    PLAYER_ALIGNMENT_TIMES.put(player, seconds);
-                    PLAYER_ALIGNMENTS.put(player, alignment);
-                    break;
-                case CHAOTIC:
-                    if (!(playerAlignment.equalsIgnoreCase(EnumPlayerAlignments.CHAOTIC.name))) {
-                        player.sendMessage(new String[]{
-                                "",
-                                ChatColor.RED + "              " + "* YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + "CHAOTIC" + ChatColor.RESET + ChatColor.RED + " ALIGNMENT *",
-                                ChatColor.GRAY + "While chaotic, you cannot enter any major cities or safe zones. If you are killed while chaotic, you will lose everything in your inventory.",
-                                ""
-                        });
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.CHAOTIC.name, true);
-                    }
-                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.RED, API.getGamePlayer(player).getLevel());
-                    /*if (Instance.getInstance().getPlayerRealm(player) != null && Instance.getInstance().getPlayerRealm(player).isRealmPortalOpen()) {
-                        Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + " [" + ChatColor.RED + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
-                    }*/
-                    if (seconds == 0) {
-                        seconds = 1200;
-                    } else {
-                        seconds = 1200 - seconds;
-                    }
-                    PLAYER_ALIGNMENT_TIMES.put(player, seconds);
-                    PLAYER_ALIGNMENTS.put(player, alignment);
-                    break;
-                default:
-                    Utils.log.info("[KARMA] Could not set player " + player.getName() + "'s alignment! UH OH");
-                    break;
-            }
+        if (alignmentTo == null || alignmentTo.equals(EnumPlayerAlignments.NONE)) {
+            alignmentTo = EnumPlayerAlignments.LAWFUL;
+        }
+        switch (alignmentTo) {
+            case LAWFUL:
+                player.sendMessage(new String[]{
+                            "",
+                            ChatColor.GREEN + "              " + "* YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + "LAWFUL" + ChatColor.RESET + ChatColor.GREEN + " ALIGNMENT *",
+                            ChatColor.GRAY + "While lawful, you will not lose any equipped armor on death, instead, all armor will lose 30% of its durability when you die.",
+                            ""
+                    });
+                if(API.getGamePlayer(player) == null) {
+                    Bukkit.broadcastMessage("player is null!");
+                }
+                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, API.getGamePlayer(player).getLevel());
+                /*if (Instance.getInstance().getPlayerRealm(player) != null && Instance.getInstance().getPlayerRealm(player).isRealmPortalOpen()) {
+                    Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + " [" + ChatColor.WHITE + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
+                }*/
+                PLAYER_ALIGNMENTS.put(player, alignmentTo);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.LAWFUL.name, true);
+                break;
+            case NEUTRAL:
+                if (!(alignmentPlayer.equals(EnumPlayerAlignments.NEUTRAL))) {
+                    player.sendMessage(new String[]{
+                            "",
+                            ChatColor.YELLOW + "              " + "* YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + "NEUTRAL" + ChatColor.RESET + ChatColor.YELLOW + " ALIGNMENT *",
+                            ChatColor.GRAY + "While neutral, you have a 50% chance of dropping your weapon, and a 25% chance of dropping each piece of equipped armor on death.",
+                            ""
+                    });
+                }
+                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.YELLOW, API.getGamePlayer(player).getLevel());
+                /*if (Instance.getInstance().getPlayerRealm(player) != null && Instance.getInstance().getPlayerRealm(player).isRealmPortalOpen()) {
+                    Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + " [" + ChatColor.YELLOW + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
+                }*/
+                if (seconds == 0) {
+                    seconds = 120;
+                } else {
+                    seconds = 120 - seconds;
+                }
+                PLAYER_ALIGNMENT_TIMES.put(player, seconds);
+                PLAYER_ALIGNMENTS.put(player, alignmentTo);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.NEUTRAL.name, true);
+                break;
+            case CHAOTIC:
+                if (!(alignmentPlayer.equals(EnumPlayerAlignments.CHAOTIC))) {
+                    player.sendMessage(new String[]{
+                            "",
+                            ChatColor.RED + "              " + "* YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + "CHAOTIC" + ChatColor.RESET + ChatColor.RED + " ALIGNMENT *",
+                            ChatColor.GRAY + "While chaotic, you cannot enter any major cities or safe zones. If you are killed while chaotic, you will lose everything in your inventory.",
+                            ""
+                    });
+                }
+                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.RED, API.getGamePlayer(player).getLevel());
+                /*if (Instance.getInstance().getPlayerRealm(player) != null && Instance.getInstance().getPlayerRealm(player).isRealmPortalOpen()) {
+                    Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + " [" + ChatColor.RED + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
+                }*/
+                if (seconds == 0) {
+                    seconds = 1200;
+                } else {
+                    seconds = 1200 - seconds;
+                }
+                PLAYER_ALIGNMENT_TIMES.put(player, seconds);
+                PLAYER_ALIGNMENTS.put(player, alignmentTo);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.CHAOTIC.name, true);
+                break;
+            default:
+                Utils.log.info("[KARMA] Could not set player " + player.getName() + "'s alignment! UH OH");
+                break;
         }
     }
 
