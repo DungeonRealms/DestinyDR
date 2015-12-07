@@ -18,7 +18,6 @@ import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.loot.LootSpawner;
 import net.dungeonrealms.game.world.realms.Instance;
-import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.md_5.bungee.api.ChatColor;
@@ -163,30 +162,52 @@ public class BlockListener implements Listener {
         	int tier = CraftItemStack.asNMSCopy(event.getPlayer().getItemInHand()).getTag().getInt("itemTier");
         	int playerLvl = API.getGamePlayer(event.getPlayer()).getLevel();
         	switch(tier){
-        	case 4:
-        		if(playerLvl < 40){
-        			event.setCancelled(true);
-        			int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
-        			if(slot < 9)
-        				event.getPlayer().getInventory().setHeldItemSlot(slot);
-        			else
-        				event.getPlayer().getInventory().setHeldItemSlot(0);
-                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 40");
-        		}
-        		break;
-        	case 5:
-        		if(playerLvl < 60){
-        			event.setCancelled(true);
-        			int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
-        			if(slot < 9)
-        				event.getPlayer().getInventory().setHeldItemSlot(slot);
-        			else
-        				event.getPlayer().getInventory().setHeldItemSlot(0);
-        			event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 60");
-        		}
-        		break;
-        	}
-        	return;
+                case 2:
+                    if(playerLvl < 10){
+                        event.setCancelled(true);
+                        int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
+                        if(slot < 9)
+                            event.getPlayer().getInventory().setHeldItemSlot(slot);
+                        else
+                            event.getPlayer().getInventory().setHeldItemSlot(0);
+                        event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 10");
+                    }
+                    break;
+                case 3:
+                    if(playerLvl < 25){
+                        event.setCancelled(true);
+                        int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
+                        if(slot < 9)
+                            event.getPlayer().getInventory().setHeldItemSlot(slot);
+                        else
+                            event.getPlayer().getInventory().setHeldItemSlot(0);
+                        event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 25");
+                    }
+                    break;
+                case 4:
+                    if(playerLvl < 40){
+                        event.setCancelled(true);
+                        int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
+                        if(slot < 9)
+                            event.getPlayer().getInventory().setHeldItemSlot(slot);
+                        else
+                            event.getPlayer().getInventory().setHeldItemSlot(0);
+                        event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 40");
+                    }
+                    break;
+                case 5:
+                    if(playerLvl < 60){
+                        event.setCancelled(true);
+                        int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
+                        if(slot < 9)
+                            event.getPlayer().getInventory().setHeldItemSlot(slot);
+                        else
+                            event.getPlayer().getInventory().setHeldItemSlot(0);
+                        event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 60");
+                    }
+                    break;
+            }
+            return;
         }
     	if(!Mining.isDRPickaxe(event.getPlayer().getItemInHand())) return;
     	ItemStack stackInHand = event.getPlayer().getItemInHand();
