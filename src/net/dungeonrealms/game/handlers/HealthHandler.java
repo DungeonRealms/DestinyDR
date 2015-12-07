@@ -600,6 +600,7 @@ public class HealthHandler implements GenericMechanic {
         if (currentHP <= 0) {
             if (!entity.isDead()) {
                 entity.setHealth(0);
+                entity.remove();
             }
             return;
         }
