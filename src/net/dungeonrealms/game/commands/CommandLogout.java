@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.md_5.bungee.api.ChatColor;
@@ -21,13 +22,16 @@ public class CommandLogout extends BasicCommand {
         if (s instanceof Player) {
             Player player = (Player) s;
 
-            if (CombatLog.isInCombat(player)) {
-                player.sendMessage(ChatColor.RED + "You can not use /logout while in combat.");
-                return false;
+            if (DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
+                if (CombatLog.isInCombat(player)) {
+                    player.sendMessage(ChatColor.RED + "You can not use /logout while in combat.");
+                    return false;
+                }
+
+                player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Starting Logout...");
+                NetworkAPI.getInstance().sendToServer(player.getName(), "drhub");
             }
 
-            player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Starting Logout...");
-            NetworkAPI.getInstance().sendToServer(player.getName(), "drhub");
         }
         return true;
     }

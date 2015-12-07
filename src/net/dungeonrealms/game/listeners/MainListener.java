@@ -199,7 +199,7 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onAsyncJoin(AsyncPlayerPreLoginEvent event) {
-        if (!DungeonRealms.getInstance().hasFinishedSetup() && !event.getName().contentEquals("Xwaffle")) {
+        if (!DungeonRealms.getInstance().hasFinishedSetup() && !event.getName().equalsIgnoreCase("xFinityPro")) {
             event.disallow(Result.KICK_OTHER, ChatColor.GREEN + "The server is still setting up reconnect shortly!");
             return;
         }
@@ -236,11 +236,11 @@ public class MainListener implements Listener {
                 () -> API.handleLogin(player.getUniqueId()), 20L * 3);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
                 () -> {
-                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, uuid)) {
+                    if ((Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, uuid).toString()))) {
                         player.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "You have Combat Logged and someone killed your body while you were gone!");
                         player.teleport(Teleportation.Cyrennica);
                     }
-                }, 20L * 10);
+                }, 20L * 5);
 
     }
 

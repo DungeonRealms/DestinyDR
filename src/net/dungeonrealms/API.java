@@ -151,13 +151,13 @@ public class API {
         int chance = RandomHelper.getRandomNumberBetween(1, 1000);
         if (chance == 1) {
             return new ArmorGenerator().nextArmor(tier, ArmorModifier.LEGENDARY);
-        }
-        if (chance <= 10)
+        }else if (chance <= 10){
             return new ArmorGenerator().nextArmor(tier, ArmorModifier.RARE);
-        else if (chance > 10 && chance <= 50)
+    	}else if (chance > 10 && chance <= 50){
             return new ArmorGenerator().nextArmor(tier, ArmorModifier.UNCOMMON);
-        else
+    	}else{
             return new ArmorGenerator().nextArmor(tier, ArmorModifier.COMMON);
+    	}
     }
 
     public static ArmorModifier getArmorModifier() {
@@ -417,7 +417,11 @@ public class API {
                 CombatLog.removeFromCombat(player);
             }            
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                NetworkAPI.getInstance().sendToServer(player.getName(), "drhub");
+            	try{
+            		NetworkAPI.getInstance().sendToServer(player.getName(), "drhub");
+            	}catch(Exception exc){
+            		exc.printStackTrace();
+            	}
             }, 40L);
         }
     }

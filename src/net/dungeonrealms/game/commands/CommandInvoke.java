@@ -10,6 +10,7 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
 import java.util.Collections;
+import java.util.List;
 
 /**
  * Created by Nick on 10/20/2015.
@@ -32,8 +33,12 @@ public class CommandInvoke extends BasicCommand {
         if (args.length > 0) {
             if (args[0].equalsIgnoreCase("bandittrove")) {
                 if (Affair.getInstance().isInParty(player)) {
+                	List<Player> list = Affair.getInstance().getParty(player).get().getMembers();
+                	list.add( Affair.getInstance().getParty(player).get().getOwner());
+                    DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, list);
+                }else{
+                	DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, Collections.singletonList(player));
                 }
-                DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, Collections.singletonList(player));
             } else if (args[0].equalsIgnoreCase("varenglade")) {
             }
         }
