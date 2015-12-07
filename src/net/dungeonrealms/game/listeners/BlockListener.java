@@ -113,7 +113,7 @@ public class BlockListener implements Listener {
                 int tier = Mining.getBlockTier(type);
                 int pickTier = Mining.getPickTier(stackInHand);
                 if (pickTier < tier) {
-                    p.sendMessage(ChatColor.RED + "Your pick not strong enough to mine this ore!");
+                    p.sendMessage(ChatColor.RED + "Your pick is not strong enough to mine this ore!");
                     e.setCancelled(true);
                     return;
                 }

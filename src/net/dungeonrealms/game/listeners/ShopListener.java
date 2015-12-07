@@ -44,7 +44,7 @@ public class ShopListener implements Listener {
 	 * @since 1.0
 	 */
 	@EventHandler(priority = EventPriority.HIGHEST)
-	public void playerRightClickChest(PlayerInteractEvent event) {
+	public void playerClickChest(PlayerInteractEvent event) {
 		Block block = event.getClickedBlock();
 		if (block == null)
 			return;
@@ -74,7 +74,7 @@ public class ShopListener implements Listener {
 			}
 			break;
 		case LEFT_CLICK_BLOCK:
-			if (shop.ownerUUID.toString().equalsIgnoreCase(event.getPlayer().getUniqueId().toString())) {
+			if (shop.ownerUUID.toString().equalsIgnoreCase(event.getPlayer().getUniqueId().toString()) || event.getPlayer().isOp()) {
 				event.setCancelled(true);
 				shop.deleteShop();
 			}
