@@ -54,7 +54,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.plugin.Plugin;
 
 import java.io.File;
@@ -347,6 +346,9 @@ public class API {
      */
     public static void handleLogout(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
+        if(!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
+            return;
+        }
         if (CombatLog.isInCombat(player) && !DuelingMechanics.isDueling(uuid) && !API.isNonPvPRegion(player.getLocation())) {
             CombatLog.handleCombatLogger(player);
         }
