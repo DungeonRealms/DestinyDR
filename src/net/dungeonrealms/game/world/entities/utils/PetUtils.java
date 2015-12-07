@@ -272,7 +272,7 @@ public class PetUtils implements GenericMechanic{
                 break;
             }
             case ENDERMITE: {
-                Endermite petEndermite = new Endermite(world,player.getName() + "'s Pet", player.getUniqueId(), EnumEntityType.PET);
+                Endermite petEndermite = new Endermite(world, player.getName() + "'s Pet", player.getUniqueId(), EnumEntityType.PET);
                 petEndermite.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petEndermite, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petEndermite.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
@@ -283,7 +283,7 @@ public class PetUtils implements GenericMechanic{
                 break;
             }
             case SNOWMAN: {
-                Snowman petSnowman = new Snowman(world, "Pet Snowman", player.getUniqueId(), EnumEntityType.PET);
+                Snowman petSnowman = new Snowman(world, player.getName() + "'s Pet", player.getUniqueId(), EnumEntityType.PET);
                 petSnowman.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petSnowman, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petSnowman.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
