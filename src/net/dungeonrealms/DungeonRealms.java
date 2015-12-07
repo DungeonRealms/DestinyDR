@@ -243,7 +243,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
         AsyncUtils.pool.shutdown();
-        Database.mongoClient.close();
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Database.mongoClient.close(), 20);
     }
 
 }
