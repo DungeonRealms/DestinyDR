@@ -396,4 +396,12 @@ public class KarmaHandler implements GenericMechanic {
             PLAYER_LOCATIONS.put(player, EnumPlayerAlignments.CHAOTIC);
         }
     }
+
+    public int getAlignmentTime(Player player) {
+        if (!PLAYER_ALIGNMENT_TIMES.containsKey(player)) {
+            return 0;
+        } else {
+            return PLAYER_ALIGNMENT_TIMES.get(player);
+        }
+    }
 }
