@@ -129,6 +129,10 @@ public class Shop {
 			meta.setLore(lore);
 			current.setItemMeta(meta);
 			if (getOwner() != null) {
+				if(getOwner().getInventory().firstEmpty() < 0){
+					saveCollectionBin();
+					break;
+				}
 				getOwner().getInventory().addItem(current);
 			}
 		}
