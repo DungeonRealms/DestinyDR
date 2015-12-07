@@ -114,10 +114,10 @@ public class KarmaHandler implements GenericMechanic {
             if (timeLeft <= 0) {
                 try {
                     if (currentAlignment.equals(EnumPlayerAlignments.CHAOTIC)) {
-                        setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL.name);
+                        setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL.name, false);
                         PLAYER_ALIGNMENT_TIMES.put(player, 120);
                     } else if (currentAlignment.equals(EnumPlayerAlignments.NEUTRAL)) {
-                        setPlayerAlignment(player, EnumPlayerAlignments.LAWFUL.name);
+                        setPlayerAlignment(player, EnumPlayerAlignments.LAWFUL.name, false);
                         toRemove.add(player);
                     }
                 } catch (NullPointerException npe) {
@@ -142,7 +142,7 @@ public class KarmaHandler implements GenericMechanic {
         if (PLAYER_ALIGNMENT_TIMES.containsKey(player)) {
             PLAYER_ALIGNMENT_TIMES.remove(player);
         }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> setPlayerAlignment(player, getAlignmentOnLogin(player.getUniqueId())), 40L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> setPlayerAlignment(player, getAlignmentOnLogin(player.getUniqueId()), true), 40L);
     }
 
     /**
@@ -198,27 +198,29 @@ public class KarmaHandler implements GenericMechanic {
      * @param alignmentRawName
      * @since 1.0
      */
-    public void setPlayerAlignment(Player player, String alignmentRawName) {
+    public void setPlayerAlignment(Player player, String alignmentRawName, boolean login) {
         if (API.getGamePlayer(player) == null) {
             return;
         }
         EnumPlayerAlignments alignmentTo = EnumPlayerAlignments.getByName(alignmentRawName);
         EnumPlayerAlignments alignmentPlayer = API.getGamePlayer(player).getPlayerAlignment();
         int seconds = 0;
-        if (Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, player.getUniqueId()))) != 0) {
-            if (alignmentTo == EnumPlayerAlignments.CHAOTIC) {
-                if (getSecondsPassed(player) >= 1200) {
-                    alignmentTo = EnumPlayerAlignments.LAWFUL;
-                } else if (getSecondsPassed(player) > 1000 && getSecondsPassed(player) < 1200) {
-                    seconds = getSecondsPassed(player);
-                } else {
-                    seconds = getSecondsPassed(player);
-                }
-            } else if (alignmentTo == EnumPlayerAlignments.NEUTRAL) {
-                if (getSecondsPassed(player) >= 120) {
-                    alignmentTo = EnumPlayerAlignments.LAWFUL;
-                } else {
-                    seconds = getSecondsPassed(player);
+        if (login) {
+            if (Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, player.getUniqueId()))) != 0) {
+                if (alignmentTo == EnumPlayerAlignments.CHAOTIC) {
+                    if (getSecondsPassed(player) >= 1200) {
+                        alignmentTo = EnumPlayerAlignments.LAWFUL;
+                    } else if (getSecondsPassed(player) > 1000 && getSecondsPassed(player) < 1200) {
+                        seconds = getSecondsPassed(player);
+                    } else {
+                        seconds = getSecondsPassed(player);
+                    }
+                } else if (alignmentTo == EnumPlayerAlignments.NEUTRAL) {
+                    if (getSecondsPassed(player) >= 120) {
+                        alignmentTo = EnumPlayerAlignments.LAWFUL;
+                    } else {
+                        seconds = getSecondsPassed(player);
+                    }
                 }
             }
         }
@@ -344,9 +346,9 @@ public class KarmaHandler implements GenericMechanic {
             String alignmentPlayer = getPlayerRawAlignment(player);
             String alignmentKiller = getPlayerRawAlignment(killerPlayer);
             if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.LAWFUL.name)) {
-                setPlayerAlignment(killerPlayer, EnumPlayerAlignments.CHAOTIC.name);
+                setPlayerAlignment(killerPlayer, EnumPlayerAlignments.CHAOTIC.name, false);
             } else if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.NEUTRAL.name) || alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.CHAOTIC.name)) {
-                setPlayerAlignment(killerPlayer, alignmentKiller);
+                setPlayerAlignment(killerPlayer, alignmentKiller, false);
             }
         }
     }
@@ -362,9 +364,9 @@ public class KarmaHandler implements GenericMechanic {
     public void handleAlignmentChanges(Player player) {
         String alignmentPlayer = getPlayerRawAlignment(player);
         if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.LAWFUL.name)) {
-            setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL.name);
+            setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL.name, false);
         } else if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.NEUTRAL.name)) {
-            setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL.name);
+            setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL.name, false);
         } else {
             return;
         }
