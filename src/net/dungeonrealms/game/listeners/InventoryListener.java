@@ -1256,47 +1256,10 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerDoWeirdArmorThing(InventoryClickEvent event) {
         if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
-        if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
-        if (!API.isArmor(event.getCurrentItem())) return;
         if (!(event.getAction() == InventoryAction.HOTBAR_SWAP)) return;
-        Attribute a = new Attribute(event.getCurrentItem());
-        Player player = (Player) event.getWhoClicked();
-        int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
-        if (API.isArmor(event.getCurrentItem())) {
-            switch (a.getArmorTier().getTierId()) {
-                case 2:
-                    if (playerLevel < 10) {
-                        event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 10");
-                        player.updateInventory();
-                        return;
-                    }
-                    break;
-                case 3:
-                    if (playerLevel < 25) {
-                        event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 25");
-                        player.updateInventory();
-                        return;
-                    }
-                    break;
-                case 4:
-                    if (playerLevel < 40) {
-                        event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 40");
-                        player.updateInventory();
-                        return;
-                    }
-                    break;
-                case 5:
-                    if (playerLevel < 60) {
-                        event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 60");
-                        player.updateInventory();
-                        return;
-                    }
-                    break;
-            }
-        }
+        if (!(event.getSlotType() == InventoryType.SlotType.ARMOR)) return;
+        event.setCancelled(true);
+        event.setResult(Event.Result.DENY);
+        event.getWhoClicked().sendMessage(ChatColor.RED + "Please do not try to equip armor this way!");
     }
 }
