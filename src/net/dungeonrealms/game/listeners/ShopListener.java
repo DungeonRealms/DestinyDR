@@ -140,9 +140,8 @@ public class ShopListener implements Listener {
 						if (itemHeld.getType() == Material.AIR || itemHeld == null || itemHeld.getType() == Material.EMERALD)
 							return;
 						if (clicker.getInventory().firstEmpty() < 0) {
-							clicker.sendMessage("Make more room in your inventory");
+							clicker.sendMessage(ChatColor.RED + "Make more room in your inventory");
 							event.setCancelled(true);
-							event.setCursor(null);
 							return;
 						}
 						if (nms.hasTag() && nms.getTag().hasKey("subtype")
@@ -208,6 +207,13 @@ public class ShopListener implements Listener {
 						gui.open();
 						return;
 					}
+					
+					if(event.getWhoClicked().getInventory().firstEmpty() < 0){
+						event.getWhoClicked().sendMessage(ChatColor.RED + "Make room in your inventory.");
+						event.setCancelled(true);
+						return;
+					}
+					
 					// Removing item from Shop
 					ItemStack stack = stackInSlot.clone();
 					ItemMeta meta = stack.getItemMeta();

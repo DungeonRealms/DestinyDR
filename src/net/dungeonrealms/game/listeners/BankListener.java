@@ -465,6 +465,10 @@ public class BankListener implements Listener {
         	}
         }else if(e.getInventory().getTitle().equalsIgnoreCase("Collection Bin")){
             Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
+            if(e.isShiftClick()){
+            	e.setCancelled(true);
+            	return;
+            }
         	e.setCancelled(true);
             if(e.getRawSlot() > e.getInventory().getSize()){
             	e.setCancelled(true);

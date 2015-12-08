@@ -3,6 +3,7 @@ package net.dungeonrealms.game.world.shops;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,6 +20,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import com.gmail.filoghost.holographicdisplays.api.Hologram;
 import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
+import com.google.common.collect.Lists;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.ItemSerialization;
@@ -106,37 +108,58 @@ public class Shop {
 			block1.getWorld().save();
 			ShopMechanics.ALLSHOPS.remove(ownerName);
 		}else{
-		for (int i = 0; i < inventory.getSize(); i++) {
-			ItemStack current = inventory.getItem(i);
-			if (current == null)
-				continue;
-			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(current);
-			if (nms.hasTag()) {
-				if (nms.getTag().hasKey("status"))
+			
+			
+			
+			
+			
+//			if(getOwner().getInventory().firstEmpty() < 0){
+//				saveCollectionBin();
+//				break;
+//			}
+			CopyOnWriteArrayList<ItemStack> contents = new CopyOnWriteArrayList<>();
+			for(ItemStack stack : inventory.getContents()){
+				if(stack == null || stack.getType() == Material.AIR)
 					continue;
+				net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+				if (nms.hasTag()) {
+					if (nms.getTag().hasKey("status"))
+						continue;
+				}
+				contents.add(stack);
 			}
-			inventory.setItem(i, null);
-			ItemMeta meta = current.getItemMeta();
-			List<String> lore = meta.getLore();
-			for (int j = 0; j < lore.size(); j++) {
-				String currentStr = lore.get(j);
-				if (currentStr.contains("Price")) {
-					lore.remove(j);
-					break;
+			if(contents.size() > 0){
+				for(ItemStack stack : contents){
+					if(getOwner() != null){
+						if(getOwner().getInventory().firstEmpty() < 0){
+							getOwner().sendMessage(ChatColor.YELLOW + "Some of your shop items have been sent to the collection bin.");
+							saveCollectionBin();
+						}else{
+							contents.remove(stack);
+							ItemMeta meta = stack.getItemMeta();
+							List<String> lore = meta.getLore();
+							for (int j = 0; j < lore.size(); j++) {
+								String currentStr = lore.get(j);
+								if (currentStr.contains("Price")) {
+									lore.remove(j);
+									break;
+								}
+							}
+							meta.setLore(lore);
+							stack.setItemMeta(meta);
+							net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+							nms.getTag().remove("worth");
+							getOwner().getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
+							inventory.setContents(contents.toArray(new ItemStack[contents.size()]));
+						}
+						
+					}else{
+						saveCollectionBin();
+					}
 				}
 			}
-			nms.getTag().remove("worth");
-			meta.setLore(lore);
-			current.setItemMeta(meta);
-			if (getOwner() != null) {
-				if(getOwner().getInventory().firstEmpty() < 0){
-					saveCollectionBin();
-					break;
-				}
-				getOwner().getInventory().addItem(current);
-			}
-		}
-
+			
+			
 		block1.getWorld().save();
 		ShopMechanics.ALLSHOPS.remove(ownerName);
 		}
@@ -174,6 +197,8 @@ public class Shop {
 			}
 		}
 		if(count > 0){
+			if(BankMechanics.getInstance().getStorage(ownerUUID) != null)
+				BankMechanics.getInstance().getStorage(ownerUUID).collection_bin = inv;
 			String invToString = ItemSerialization.toString(inv);
 			DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, invToString, true);
 		}else{
