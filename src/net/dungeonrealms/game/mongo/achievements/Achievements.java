@@ -206,7 +206,8 @@ public class Achievements {
 
         VOTE_AS_SUB(29, "Vote as Subscriber", new String[]{}, 500, "achievement.vote_as_subscriber"),
 
-        VOTE_AS_SUB_PLUS(30, "Vote as Subscriber+", new String[]{}, 1000, "achievement.vote_as_subscriber+");
+        VOTE_AS_SUB_PLUS(30, "Vote as Subscriber+", new String[]{}, 1000, "achievement.vote_as_subscriber+"),
+        PM_XWAFFLE(31, "Message Xwaffle", new String[]{"You attempted to message Xwaffle, although he may be busy."}, 450, "achievement.pmxwaffle");
 
         private int id;
         private String name;

@@ -3,6 +3,9 @@ package net.dungeonrealms.game.player.chat;
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.mongo.achievements.AchievementManager;
+import net.dungeonrealms.game.mongo.achievements.Achievements;
+import net.dungeonrealms.game.mongo.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -49,6 +52,9 @@ public class Chat {
 
         if (fixedMessage.startsWith("@") && !fixedMessage.contains("@i@")) {
             String playerName = fixedMessage.replace("@", "").split(" ")[0];
+            if(playerName.equalsIgnoreCase("Xwaffle")){
+            	Achievements.getInstance().giveAchievement(uuid, EnumAchievements.PM_XWAFFLE);
+            }
             fixedMessage = fixedMessage.replace("@" + playerName, "");
             String tempFixedMessage = fixedMessage.replace("@" + playerName, "");
             Bukkit.getOnlinePlayers().stream().filter(player -> player.getName().equalsIgnoreCase(playerName)).limit(1).forEach(theTargetPlayer -> {

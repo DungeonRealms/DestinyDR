@@ -113,7 +113,7 @@ public class BlockListener implements Listener {
                 int tier = Mining.getBlockTier(type);
                 int pickTier = Mining.getPickTier(stackInHand);
                 if (pickTier < tier) {
-                    p.sendMessage(ChatColor.RED + "Your pick not strong enough to mine this ore!");
+                    p.sendMessage(ChatColor.RED + "Your pick is not strong enough to mine this ore!");
                     e.setCancelled(true);
                     return;
                 }
@@ -133,7 +133,7 @@ public class BlockListener implements Listener {
                     p.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "You fail to gather any ore.");
                 }
                 e.getBlock().setType(Material.STONE);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> e.getBlock().setType(type), (Mining.getOreRespawnTime(type) * 20L));
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> e.getBlock().setType(type), (Mining.getOreRespawnTime(type)));
             }
         }
     }
@@ -218,8 +218,6 @@ public class BlockListener implements Listener {
           Material type = block.getType();
           int tier = Mining.getBlockTier(type);
           int pickTier = Mining.getPickTier(stackInHand);
-          
-          int diff = pickTier - tier;
           
           switch(pickTier){
           case 1:
