@@ -10,6 +10,7 @@ import net.dungeonrealms.game.mechanics.SoundAPI;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_8_R3.EntityMonster;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.Effect;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
@@ -118,34 +119,19 @@ public class DamageAPI {
         LivingEntity leReceiver = (LivingEntity) receiver;
         if (tag.getInt("fireDamage") != 0) {
             SoundAPI.getInstance().playSoundAtLocation("game.potion.smash", receiver.getLocation(), 8);
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, receiver.getLocation().add(0, 1, 0),
-                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8195);
             damage += tag.getInt("fireDamage");
         }
 
         if (tag.getInt("iceDamage") != 0) {
             SoundAPI.getInstance().playSoundAtLocation("game.potion.smash", receiver.getLocation(), 8);
+            receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8194);
             damage += tag.getInt("iceDamage");
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SNOW_SHOVEL, receiver.getLocation().add(0, 1, 0),
-                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
         }
 
         if (tag.getInt("poisonDamage") != 0) {
             SoundAPI.getInstance().playSoundAtLocation("game.potion.smash", receiver.getLocation(), 8);
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, receiver.getLocation().add(0, 1, 0),
-                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
+            receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8196);
             damage += tag.getInt("poisonDamage");
         }
 
@@ -310,85 +296,19 @@ public class DamageAPI {
         LivingEntity leReceiver = (LivingEntity) receiver;
         if (projectile.getMetadata("fireDamage").get(0).asInt() != 0) {
             SoundAPI.getInstance().playSoundAtLocation("game.potion.smash", receiver.getLocation(), 8);
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.FLAME, receiver.getLocation().add(0, 1, 0),
-                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            switch (projectile.getMetadata("itemTier").get(0).asInt()) {
-                case 1:
-                    leReceiver.setFireTicks(15);
-                    break;
-                case 2:
-                    leReceiver.setFireTicks(25);
-                    break;
-                case 3:
-                    leReceiver.setFireTicks(30);
-                    break;
-                case 4:
-                    leReceiver.setFireTicks(35);
-                    break;
-                case 5:
-                    leReceiver.setFireTicks(40);
-                    break;
-            }
+            receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8195);
             damage += projectile.getMetadata("fireDamage").get(0).asInt();
         }
 
         if (projectile.getMetadata("iceDamage").get(0).asInt() != 0) {
             SoundAPI.getInstance().playSoundAtLocation("game.potion.smash", receiver.getLocation(), 8);
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SNOW_SHOVEL, receiver.getLocation().add(0, 1, 0),
-                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            switch (projectile.getMetadata("itemTier").get(0).asInt()) {
-                case 1:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 30, 0));
-                    break;
-                case 2:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 0));
-                    break;
-                case 3:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 0));
-                    break;
-                case 4:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 40, 1));
-                    break;
-                case 5:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.SLOW, 50, 1));
-                    break;
-            }
+            receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8194);
             damage += projectile.getMetadata("iceDamage").get(0).asInt();
         }
 
         if (projectile.getMetadata("poisonDamage").get(0).asInt() != 0) {
             SoundAPI.getInstance().playSoundAtLocation("game.potion.smash", receiver.getLocation(), 8);
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.HAPPY_VILLAGER, receiver.getLocation().add(0, 1, 0),
-                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            switch (projectile.getMetadata("itemTier").get(0).asInt()) {
-                case 1:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 30, 0));
-                    break;
-                case 2:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 0));
-                    break;
-                case 3:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 0));
-                    break;
-                case 4:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 40, 1));
-                    break;
-                case 5:
-                    leReceiver.addPotionEffect(new PotionEffect(PotionEffectType.POISON, 50, 1));
-                    break;
-            }
+            receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8196);
             damage += projectile.getMetadata("poisonDamage").get(0).asInt();
         }
 
