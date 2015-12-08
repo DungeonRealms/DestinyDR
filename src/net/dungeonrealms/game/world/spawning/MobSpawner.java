@@ -62,8 +62,6 @@ public class MobSpawner {
             type = type.substring(0, type.indexOf("("));
             if (type.contains("*"))
                 type = type.replace("*", "");
-            Utils.log.info(monsterCustomName + " Loaded");
-            Utils.log.info(isElite + " isElite ");
             if(isElite)
             spawnAmount = 1;
         }

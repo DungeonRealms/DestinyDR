@@ -768,7 +768,6 @@ public class InventoryListener implements Listener {
 
             if (EnchantmentAPI.isItemProtected(slotItem)) {
                 event.setCurrentItem(EnchantmentAPI.removeItemProtection(event.getCurrentItem()));
-                return;
             }
             ItemMeta meta2 = slotItem.getItemMeta();
             String itemName = meta2.getDisplayName();

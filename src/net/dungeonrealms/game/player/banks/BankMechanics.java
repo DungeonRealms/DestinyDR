@@ -361,7 +361,7 @@ public class BankMechanics implements GenericMechanic {
         stack.setItemMeta(meta);
         net.minecraft.server.v1_8_R3.ItemStack nms1 = CraftItemStack.asNMSCopy(stack);
         nms1.getTag().setInt("worth", amount);
-        return CraftItemStack.asBukkitCopy(nms1);
+		return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms1));
     }
 
     /**

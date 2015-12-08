@@ -4,6 +4,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Material;
@@ -555,7 +556,7 @@ public class TradeCalculator {
             while (t4_scraps >= 60) {
                 t4_scraps -= 60;
                 ItemStack orb = ItemManager.createOrbofAlteration();
-                merchant_offer.add(orb);
+                merchant_offer.add(AntiCheat.getInstance().applyAntiDupe(orb));
             }
             int payout = 2 * t4_scraps;
             while (payout > 64) {
@@ -572,19 +573,19 @@ public class TradeCalculator {
             while (t5_scraps >= 33) {
                 t5_scraps -= 33;
                 ItemStack scroll = ItemManager.createWeaponEnchant(5);
-                merchant_offer.add(scroll);
+                merchant_offer.add(AntiCheat.getInstance().applyAntiDupe(scroll));
             }
 
             while (t5_scraps >= 30) {
                 t5_scraps -= 30;
                 ItemStack scroll = ItemManager.createArmorEnchant(5);
-                merchant_offer.add(scroll);
+                merchant_offer.add(AntiCheat.getInstance().applyAntiDupe(scroll));
             }
 
             while (t5_scraps >= 20) {
                 t5_scraps -= 20;
                 ItemStack orb = ItemManager.createOrbofAlteration();
-                merchant_offer.add(orb);
+                merchant_offer.add(AntiCheat.getInstance().applyAntiDupe(orb));
             }
             int payout = 3 * t5_scraps;
             while (payout > 64) {
