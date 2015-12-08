@@ -1,18 +1,5 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.miscellaneous.RandomHelper;
-import net.dungeonrealms.game.world.anticheat.AntiCheat;
-import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.Monster;
-import net.dungeonrealms.game.world.items.Item.ItemType;
-import net.dungeonrealms.game.world.items.ItemGenerator;
-import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.EntitySkeleton;
-import net.minecraft.server.v1_8_R3.GenericAttributes;
-import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -20,6 +7,27 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.miscellaneous.RandomHelper;
+import net.dungeonrealms.game.world.anticheat.AntiCheat;
+import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.game.world.entities.types.monsters.Monster;
+import net.dungeonrealms.game.world.items.Attribute;
+import net.dungeonrealms.game.world.items.Item.ItemType;
+import net.dungeonrealms.game.world.items.ItemGenerator;
+import net.minecraft.server.v1_8_R3.EntityHuman;
+import net.minecraft.server.v1_8_R3.EntityLiving;
+import net.minecraft.server.v1_8_R3.EntitySkeleton;
+import net.minecraft.server.v1_8_R3.GenericAttributes;
+import net.minecraft.server.v1_8_R3.PathfinderGoalArrowAttack;
+import net.minecraft.server.v1_8_R3.PathfinderGoalFloat;
+import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
+import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
+import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Sep 19, 2015
@@ -48,6 +56,13 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
         this.mobHead = monster.mobHead;
         this.entityType = entityType;
         setArmor(tier);
+        if(new Attribute(CraftItemStack.asBukkitCopy(this.getEquipment(0))).getItemType().equals(ItemType.STAFF)){
+            this.goalSelector.a(1, new PathfinderGoalFloat(this));
+            this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
+            this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+            this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
+            this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+        }
         this.getBukkitEntity().setCustomNameVisible(true);
         String customName = monster.getPrefix() + " " + name + " " + monster.getSuffix() + " ";
         this.setCustomName(customName);

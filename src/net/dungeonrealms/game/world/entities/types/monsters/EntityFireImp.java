@@ -8,8 +8,14 @@ import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.ItemGenerator;
 import net.dungeonrealms.game.world.items.armor.Armor;
 import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
+import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityLiving;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.PathfinderGoalArrowAttack;
+import net.minecraft.server.v1_8_R3.PathfinderGoalFloat;
+import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
+import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
+import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -36,6 +42,11 @@ public class EntityFireImp extends DRSkeleton {
     
     public EntityFireImp(World world, int tier, EnumEntityType entityType) {
         super(world, EnumMonster.FireImp, tier, entityType);
+        this.goalSelector.a(1, new PathfinderGoalFloat(this));
+        this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
+        this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+        this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
+        this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
         this.tier = tier;
         this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().getDefinedStack(ItemType.STAFF, ItemTier.getByTier(tier), ItemGenerator.getRandomItemModifier())));
     }

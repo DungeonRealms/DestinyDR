@@ -94,7 +94,7 @@ public class EntityStats {
     }
 
     public static void setMonsterElite(Entity entity ,int lvl, int tier) {
-    	String name = ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "*" + API.getTierColor(tier) +  entity.getCustomName() + ChatColor.GREEN.toString() + "*";
+    	String name = ChatColor.BOLD.toString() + API.getTierColor(tier) +  entity.getCustomName();
     	Stats stat = Stats.getRandomStats(lvl,tier);
     	stat.atk *= 2.5;
     	stat.hp *= 5;

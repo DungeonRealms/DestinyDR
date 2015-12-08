@@ -63,17 +63,17 @@ public class EntityRangedPirate extends DRSkeleton {
 	
     @Override
     protected String z() {
-        return "mob.zombie.say";
+        return "";
     }
 
     @Override
     protected String bo() {
-        return "game.player.hurt";
+        return "";
     }
 
     @Override
     protected String bp() {
-        return "mob.zombie.death";
+        return "";
     }
 
 }

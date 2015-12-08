@@ -57,7 +57,7 @@ public class BasicEntitySkeleton extends DRSkeleton {
 
     @Override
     protected String z() {
-        return "mob.zombie.say";
+        return "";
     }
 
     @Override
@@ -67,7 +67,7 @@ public class BasicEntitySkeleton extends DRSkeleton {
 
     @Override
     protected String bp() {
-        return "mob.zombie.death";
+        return "";
     }
 
 	@Override

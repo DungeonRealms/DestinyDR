@@ -43,7 +43,7 @@ public class CommandSet extends BasicCommand {
 		if (args.length > 0) {
 			switch (args[0]) {
 			case "level":
-				String playerName = args[0];
+				String playerName = args[1];
 				Player p = Bukkit.getPlayer(playerName);
 				if(p != null){
 					int lvl = Integer.parseInt(args[1]);
@@ -112,7 +112,7 @@ public class CommandSet extends BasicCommand {
 				player.updateInventory();
 				break;
 			case "shopoff":
-				 playerName = args[0];
+				 playerName = args[1];
 				 p = Bukkit.getPlayer(playerName);
 				if(p != null)
 					DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);

@@ -9,6 +9,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -23,8 +24,10 @@ import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.Pyromancer;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
+import net.dungeonrealms.game.world.items.NamedItems;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
+import net.minecraft.server.v1_8_R3.EntityInsentient;
 import net.minecraft.server.v1_8_R3.World;
 
 /**
@@ -42,22 +45,26 @@ public class MobSpawner {
     public int id;
     public int timerID = -1;
     public String lvlRange;
-    public String eliteName;
+    public String monsterCustomName;
     boolean firstSpawn = true;
     public boolean toSpawn;
     public boolean isDungeonSpawner;
-
+    public boolean hasCustomName = false;
     public MobSpawner(Location location, String type, int tier, int spawnAmount, int configid, String lvlRange) {
-        if (type.contains("("))
+        if (type.contains("(") && type.contains("*")){
             isElite = true;
-        if (isElite) {
-            eliteName = type.substring(type.indexOf("(") + 1, type.indexOf(")"));
-            eliteName = eliteName.replace("_", " ");
-
+        }else if(type.contains("(")){
+        	hasCustomName = true;
+        }
+        if (isElite || hasCustomName) {
+        	monsterCustomName = type.substring(type.indexOf("(") + 1, type.indexOf(")"));
+        	monsterCustomName = monsterCustomName.replace("_", " ");
             type = type.substring(0, type.indexOf("("));
             if (type.contains("*"))
                 type = type.replace("*", "");
-
+            Utils.log.info(monsterCustomName + " Loaded");
+            Utils.log.info(isElite + " isElite ");
+            if(isElite)
             spawnAmount = 1;
         }
         if (type.contains("*")) {
@@ -140,33 +147,25 @@ public class MobSpawner {
                     if (monsEnum == null)
                         return;
                     Entity entity = SpawningMechanics.getMob(world, tier, monsEnum);
-                    String customName = eliteName;
-                    entity.setCustomName(customName.trim());
+                    if(entity == null)
+                    	return;
+                    String customName = monsterCustomName.trim();
+                    entity.setCustomName(ChatColor.BOLD.toString() + API.getTierColor(tier) + customName.trim());
                     int level = Utils.getRandomFromTier(tier, lvlRange);
                     MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
                     EntityStats.setMonsterElite(entity, level, tier);
-
-                    if (entity == null)
-                        return;
+                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), ChatColor.BOLD.toString() + API.getTierColor(tier) + monsterCustomName.trim()));
+                    giveCustomEquipment(entity);
                     toSpawn = true;
-                    if (!firstSpawn) {
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                            world.addEntity(entity, SpawnReason.CUSTOM);
-                            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                            toSpawn = false;
-                            SPAWNED_MONSTERS.add(entity);
-                        }, 1200 * 2L);
-                    } else {
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                            world.addEntity(entity, SpawnReason.CUSTOM);
-                            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                            toSpawn = false;
-                            firstSpawn = false;
-                            SPAWNED_MONSTERS.add(entity);
-                        });
-                    }
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    	entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                    	world.addEntity(entity, SpawnReason.CUSTOM);
+                    	entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                    	toSpawn = false;
+                    	SPAWNED_MONSTERS.add(entity);
+                    	if(firstSpawn)
+                    	firstSpawn = false;
+                    }, firstSpawn ? 0 : 1200 * 2L);
                 }
             } else if (SPAWNED_MONSTERS.size() < spawnAmount) {
                 Location location = new Location(Bukkit.getWorlds().get(0), loc.getBlockX() + new Random().nextInt(6),
@@ -196,55 +195,104 @@ public class MobSpawner {
 
                 String lvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
 
-                String customName = "";
+                String mobName = "";
                 try {
-                    customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
+                	mobName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
                 } catch (Exception exc) {
-                    Utils.log.info(entity.getCustomName() + " doesn't have metadata 'customname' ");
-                    customName = monsEnum.name;
+                    mobName = monsEnum.name;
                 }
+                if(this.hasCustomName){
+                	entity.setCustomName(lvlName + API.getTierColor(tier) + monsterCustomName);
+                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString()  + monsterCustomName));
 
-                if (!entity.getBukkitEntity().hasMetadata("elite"))
-                    entity.setCustomName(lvlName + API.getTierColor(tier) + customName);
+                }else{
+                    entity.setCustomName(lvlName + API.getTierColor(tier) + mobName);
+                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + mobName));
+                }
+                
                 toSpawn = true;
-                if (!firstSpawn) {
+//                if (!firstSpawn) {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                        world.addEntity(entity, SpawnReason.CUSTOM);
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                        entity.getBukkitEntity().setVelocity(new Vector(0.25, 0.5, 0.25));
+                        if(firstSpawn){
+                        	firstSpawn = false;
+                        	for(int i = 0; i < spawnAmount; i++){
+                                Entity newEntity = SpawningMechanics.getMob(world, tier, monsEnum);
+                                int newLevel = Utils.getRandomFromTier(tier, lvlRange);
+                                MetadataUtils.registerEntityMetadata(newEntity, type, tier, newLevel);
+                                EntityStats.setMonsterRandomStats(newEntity, newLevel, tier);
+
+                                String newlvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + newLevel + "] ";
+
+                                String newmobName = "";
+                                try {
+                                	newmobName = newEntity.getBukkitEntity().getMetadata("customname").get(0).asString();
+                                } catch (Exception exc) {
+                                    newmobName = monsEnum.name;
+                                }
+                                if(this.hasCustomName){
+                                	newEntity.setCustomName(newlvlName + API.getTierColor(tier) + monsterCustomName);
+                                	newEntity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString()  + monsterCustomName));
+
+                                }else{
+                                	newEntity.setCustomName(newlvlName + API.getTierColor(tier) + newmobName);
+                                	newEntity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + newmobName));
+                                }
+                        		
+                                newEntity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                        		world.addEntity(newEntity, SpawnReason.CUSTOM);
+                        		newEntity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                        		newEntity.getBukkitEntity().setVelocity(new Vector(0.25, 0.5, 0.25));
+                        	}
+                        }else{
+                        	entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                        	world.addEntity(entity, SpawnReason.CUSTOM);
+                        	entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                        	entity.getBukkitEntity().setVelocity(new Vector(0.25, 0.5, 0.25));
+                        }
                         SPAWNED_MONSTERS.add(entity);
                         toSpawn = false;
-                    }, 400L);
-                } else {
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        for (int i = 0; i < spawnAmount; i++) {
-                            Entity newentity = SpawningMechanics.getMob(world, tier, monsEnum);
-                            MetadataUtils.registerEntityMetadata(newentity, type, tier, level);
-                            EntityStats.setMonsterRandomStats(newentity, level, tier);
-
-                            String newlvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
-                            String newcustomName = "";
-                            try {
-                                newcustomName = newentity.getBukkitEntity().getMetadata("customname").get(0).asString();
-                            } catch (Exception exc) {
-                                Utils.log.info(newentity.getCustomName() + " doesn't have metadata 'customname' ");
-                                newcustomName = monsEnum.name;
-                            }
-
-                            if (!newentity.getBukkitEntity().hasMetadata("elite"))
-                                newentity.setCustomName(newlvlName + API.getTierColor(tier) + newcustomName);
-                            newentity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                            world.addEntity(newentity, SpawnReason.CUSTOM);
-                            newentity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                            newentity.getBukkitEntity().setVelocity(new Vector(0.1, 0, 0.1));
-                            SPAWNED_MONSTERS.add(newentity);
-
-                        }
-                        firstSpawn = false;
-                        toSpawn = false;
-                    });
-                }
+                    }, firstSpawn ? 0 : 400);
+//                }
+//                else {
+//                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+//                        for (int i = 0; i < spawnAmount; i++) {
+//                            Entity newentity = SpawningMechanics.getMob(world, tier, monsEnum);
+//                            int newlevel = Utils.getRandomFromTier(tier, lvlRange);
+//                            MetadataUtils.registerEntityMetadata(newentity, type, tier, newlevel);
+//                            EntityStats.setMonsterRandomStats(newentity, newlevel, tier);
+//
+//                            String newlvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + newlevel + "] ";
+//                            String newcustomName = "";
+//                            try {
+//                                newcustomName = newentity.getBukkitEntity().getMetadata("customname").get(0).asString();
+//                            } catch (Exception exc) {
+//                                Utils.log.info(newentity.getCustomName() + " doesn't have metadata 'customname' ");
+//                                newcustomName = monsEnum.name;
+//                            }
+//                            
+//                            if(this.hasCustomName){
+//                                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString()  + monsterCustomName));
+//                            	entity.setCustomName(newlvlName + API.getTierColor(tier)  + ChatColor.BOLD + monsterCustomName);
+//                            	Utils.log.info("setCustomName FIRST SPAWN " + newlvlName + API.getTierColor(tier)  + ChatColor.BOLD + monsterCustomName);
+//                            }else{
+//                                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + newcustomName));
+//                                entity.setCustomName(newlvlName + API.getTierColor(tier) + newcustomName);
+//                            	Utils.log.info("setMobName FIRST SPAWN " +  newlvlName + API.getTierColor(tier) + newcustomName);
+//                            }
+//                            
+//                            
+//                            
+//                            newentity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+//                            world.addEntity(newentity, SpawnReason.CUSTOM);
+//                            newentity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+//                            newentity.getBukkitEntity().setVelocity(new Vector(0.1, 0, 0.1));
+//                            SPAWNED_MONSTERS.add(newentity);
+//
+//                        }
+//                        firstSpawn = false;
+//                        toSpawn = false;
+//                    });
+//                }
             }
         } else {
             if (!SPAWNED_MONSTERS.isEmpty()) {
@@ -255,6 +303,16 @@ public class MobSpawner {
     }
 
     /**
+	 * @param entity
+	 */
+	private void giveCustomEquipment(Entity entity) {
+		if(monsterCustomName.equalsIgnoreCase("Blayshan The Naga")){
+			EntityInsentient ent = (EntityInsentient) entity;
+			ent.setEquipment(0, CraftItemStack.asNMSCopy(NamedItems.blayshanAxe));
+		}
+	}
+
+	/**
 	 * Custom Spawning for dungeons
      * @param dungeonManager 
 	 */
@@ -270,25 +328,24 @@ public class MobSpawner {
         if (monsEnum == null)
             return;
         Entity entity = SpawningMechanics.getMob(((CraftWorld)loc.getWorld()).getHandle(), tier, monsEnum);
-        if(eliteName != null)
-    	if(eliteName.contains("Pyromancer")){
+        if(hasCustomName)
+    	if(monsterCustomName.contains("Pyromancer")){
     		entity = new Pyromancer(((CraftWorld)loc.getWorld()).getHandle(), location);
     	}
         String customName = monsEnum.getPrefix() +  " " + monsEnum.name + " " + monsEnum.getSuffix();
-        Utils.log.info(mob + " SPAWNING at " + location);
         int level = Utils.getRandomFromTier(tier, lvlRange);
         MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
         EntityStats.setMonsterRandomStats(entity, level, tier);
+        String lvlName = ChatColor.LIGHT_PURPLE + "[" + level + "] ";
         if (entity == null){
             return;
         }
-        if(eliteName == null){
-        	entity.setCustomName(customName);
-            entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
+        if(!hasCustomName){
+        	entity.setCustomName(lvlName + API.getTierColor(tier) + customName);
+            entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + customName));
         }else{
-
-        	entity.setCustomName(eliteName);
-            entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), eliteName));
+        	entity.setCustomName(API.getTierColor(tier) + monsterCustomName);
+            entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + monsterCustomName));
         }
         location.getWorld().loadChunk(location.getChunk());
         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);

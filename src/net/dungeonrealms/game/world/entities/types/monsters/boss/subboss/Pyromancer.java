@@ -40,26 +40,6 @@ public class Pyromancer extends EntitySkeleton implements Boss {
 	public Pyromancer(World world, Location loc) {
 		super(world);
 		this.loc = loc;
-		try {
-			Field bField = PathfinderGoalSelector.class.getDeclaredField("b");
-			bField.setAccessible(true);
-			Field cField = PathfinderGoalSelector.class.getDeclaredField("c");
-			cField.setAccessible(true);
-			bField.set(goalSelector, new UnsafeList<PathfinderGoalSelector>());
-			bField.set(targetSelector, new UnsafeList<PathfinderGoalSelector>());
-			cField.set(goalSelector, new UnsafeList<PathfinderGoalSelector>());
-			cField.set(targetSelector, new UnsafeList<PathfinderGoalSelector>());
-		} catch (Exception exc) {
-			exc.printStackTrace();
-		}
-		this.goalSelector.a(1, new PathfinderGoalFloat(this));
-		this.goalSelector.a(7, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
-		this.goalSelector.a(3, new PathfinderGoalRandomStroll(this, 1.0D));
-		this.goalSelector.a(6, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-		this.goalSelector.a(4, new PathfinderGoalRandomLookaround(this));
-		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
-		this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
-
 		this.setSkeletonType(1);
 		setArmor(getEnumBoss().tier);
 		this.getBukkitEntity().setCustomNameVisible(true);
@@ -70,16 +50,17 @@ public class Pyromancer extends EntitySkeleton implements Boss {
 		EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
 		this.getBukkitEntity()
 		        .setCustomName(ChatColor.YELLOW.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
-		for (Player p : API.getNearbyPlayers(loc, 50)) {
+		Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
+		for (Player p : API.getNearbyPlayers(loc, 400)) {
 			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().greeting);
 		}
+		}, 20 * 20);
 	}
 
 	protected void setArmor(int tier) {
 		ItemStack[] armor = getArmor();
 		// weapon, boots, legs, chest, helmet/head
 		ItemStack weapon = getWeapon();
-		weapon.addEnchantment(Enchantment.ARROW_DAMAGE, 1);
 		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
 		this.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
 		this.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
@@ -91,7 +72,7 @@ public class Pyromancer extends EntitySkeleton implements Boss {
 	 * @return
 	 */
 	private ItemStack getWeapon() {
-		return new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.BOW,
+		return new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.STAFF,
 		        net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(1));
 	}
 
@@ -130,13 +111,13 @@ public class Pyromancer extends EntitySkeleton implements Boss {
 
 	@Override
 	public void onBossDeath() {
-		this.getBukkitEntity().getWorld().getBlockAt(641, 55, -457).setType(Material.REDSTONE_TORCH_ON);
 		
 		for (Player p : API.getNearbyPlayers(this.getBukkitEntity().getLocation(), 50)) {
 			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().death);
 		}
-		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> world.getWorld().dropItemNaturally(loc.add(0, 2, 0), ItemManager.createItem(Material.GLOWSTONE_DUST, ChatColor.GREEN + "Magical Dust", new String[] {ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "A strange substance that animates objects.", ChatColor.RED + "Dungeon Item"})), 10);
-		
+		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation().add(0, 2, 0), ItemManager.createItem(Material.GLOWSTONE_DUST, ChatColor.GREEN + "Magical Dust", new String[] {ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "A strange substance that animates objects.", ChatColor.RED + "Dungeon Item"})), 10);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->
+		this.getBukkitEntity().getWorld().getBlockAt(641, 55, -457).setType(Material.REDSTONE_TORCH_ON), 40);
 	}
 
 	@Override

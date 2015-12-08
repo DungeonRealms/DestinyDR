@@ -7,7 +7,9 @@ import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.guild.Guild;
 import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.items.Item.ItemModifier;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
+import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.ItemGenerator;
 import net.dungeonrealms.game.world.items.NamedItems;
 import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
@@ -34,7 +36,9 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -198,6 +202,25 @@ public class CommandAdd extends BasicCommand {
                     break;
                 case "blayshan":
                 	player.getInventory().addItem(NamedItems.blayshanAxe);
+                	break;
+                case "xwaffle":
+                	ItemStack xwaffleItem = new ItemGenerator().getDefinedStack(ItemType.AXE, ItemTier.TIER_5, ItemModifier.LEGENDARY);
+                	ItemMeta meta = xwaffleItem.getItemMeta();
+                	meta.setDisplayName(ChatColor.YELLOW + "Xwaffle's Cock");
+                	List<String> lore = meta.getLore();
+                	int i = 0;
+                	for(String str : lore){
+                		if(str.startsWith("DMG: ")){
+                			lore.set(i, ChatColor.RED + "DMG: " + 1000);
+                			lore.add("Xwaffle is the best.");
+                			break;	
+                		}
+                		i++;
+                	}
+                	xwaffleItem.setItemMeta(meta);
+                	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(xwaffleItem);
+                	nms.getTag().setInt("damage", 1000);
+                	player.getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
                 	break;
             }
         }

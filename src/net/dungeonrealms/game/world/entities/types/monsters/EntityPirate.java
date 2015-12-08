@@ -42,7 +42,7 @@ public class EntityPirate extends DRZombie{
     
     @Override
     protected String z() {
-        return "mob.zombie.say";
+        return "";
     }
 
     @Override
@@ -52,7 +52,7 @@ public class EntityPirate extends DRZombie{
 
     @Override
     protected String bp() {
-        return "mob.zombie.death";
+        return "";
     }
     
 //    @Override

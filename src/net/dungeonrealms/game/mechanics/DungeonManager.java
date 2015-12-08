@@ -8,6 +8,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Enumeration;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -28,8 +29,12 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
+import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.Entity;
 
 /**
@@ -198,12 +203,26 @@ public class DungeonManager implements GenericMechanic{
         private String worldName;
         public ArrayList<Entity> aliveMonsters = new ArrayList<Entity>();
 		public boolean canSpawnBoss = false;
+        public int tier;
         
         public DungeonObject(DungeonType type, Integer time, List<Player> playerList, String worldName) {
             this.type = type;
             this.time = time;
             this.playerList = playerList;
             this.worldName = worldName;
+            switch(type){
+            case BANDIT_TROVE:
+            	tier = 1;
+            	break;
+			case VARENGLADE:
+				tier = 3;
+				break;
+			case THE_INFERNAL_ABYSS:
+				tier = 4;
+				break;	
+			default:
+				break;
+            }
         }
 
         public DungeonType getType() {
@@ -234,6 +253,52 @@ public class DungeonManager implements GenericMechanic{
             }
             loadInWorld(getWorldName(), getPlayerList(), getType());
         }
+
+		/**
+		 * 
+		 */
+		public void teleportPlayersOut() {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
+				for(Player p : getPlayerList()){
+					if(p != null && p.isOnline())
+						p.teleport(Teleportation.Cyrennica);
+					}
+			}, 20 * 15);
+			for(Player p : getPlayerList()){
+				if(p != null && p.isOnline())
+				p.sendMessage(ChatColor.YELLOW + "You will be teleported out in 15 seconds...");
+			}
+		}
+
+		/**
+		 * 
+		 */
+		public void giveShards() {
+			int shardsToGive = 100;
+			
+			switch(tier){
+			case 1:
+				shardsToGive = 750 + new Random().nextInt(150);
+				break;
+			case 2:
+				shardsToGive = 900 + new Random().nextInt(300);
+				break;
+			case 3:
+				shardsToGive = 1000 + new Random().nextInt(500);
+				break;
+			case 4:
+				shardsToGive = 1200 + new Random().nextInt(750);
+				break;
+			case 5:
+				shardsToGive = 1500 + new Random().nextInt(1000);
+				break;
+			}
+			
+			for(Player p : Bukkit.getWorld(worldName).getPlayers()){
+		        p.sendMessage(API.getTierColor(tier) + "You have gained " + ChatColor.UNDERLINE + shardsToGive + " Portal Shards" + API.getTierColor(tier) + " for completing this Dungeon.");
+				DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T1, shardsToGive, true);
+			}
+		}
     }
 
     /**
