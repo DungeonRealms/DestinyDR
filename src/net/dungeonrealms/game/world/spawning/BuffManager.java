@@ -2,11 +2,14 @@ package net.dungeonrealms.game.world.spawning;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.world.entities.types.EnderCrystal;
-import net.dungeonrealms.game.world.entities.utils.BuffUtils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.world.entities.types.EnderCrystal;
+import net.dungeonrealms.game.world.entities.utils.BuffUtils;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.Random;
@@ -52,6 +55,11 @@ public class BuffManager implements GenericMechanic {
             }
             if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
                 continue;
+            }
+            if (player.getItemInHand().getType() != Material.AIR && player.getItemInHand() != null) {
+                if (Mining.isDRPickaxe(player.getItemInHand()) || Fishing.isDRFishingPole(player.getItemInHand())) {
+                    continue;
+                }
             }
             if (API.getNearbyPlayers(player.getLocation(), 15).size() > 2) {
                 if (new Random().nextInt(21) < 10) {
