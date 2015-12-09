@@ -95,7 +95,7 @@ public class DungeonRealms extends JavaPlugin {
 
     public MechanicManager mm = null;
     boolean hasFinishedSetup = false;
-    public static String version = "2.7";
+    public static String version = "2.8";
 
     public boolean hasFinishedSetup() {
         return hasFinishedSetup;
@@ -218,7 +218,7 @@ public class DungeonRealms extends JavaPlugin {
         }
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-        	Bukkit.getOnlinePlayers().stream().forEach(player ->BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES"));
+            Bukkit.getOnlinePlayers().stream().forEach(player -> BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES"));
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 DungeonRealms.getInstance().setFinishedSetup(false);
                 DungeonRealms.getInstance().saveConfig();
@@ -231,10 +231,10 @@ public class DungeonRealms extends JavaPlugin {
                     Database.mongoClient.close();
                     Bukkit.getWorlds().get(0).save();
                 }, 200);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-                Bukkit.getOnlinePlayers().stream().forEach(player ->BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE"));
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    Bukkit.getOnlinePlayers().stream().forEach(player -> BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE"));
                 }, (20 * 60) * 4);
-                
+
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 1200);
             }, 6000);
         }, 288000);

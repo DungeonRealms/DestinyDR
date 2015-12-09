@@ -7,6 +7,7 @@ import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handlers.ClickHandler;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -280,9 +281,9 @@ public class InventoryListener implements Listener {
                     }
                     break;
                 case 5:
-                    if (playerLevel < 60) {
+                    if (playerLevel < 50) {
                         event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 60");
+                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 50");
                         player.updateInventory();
                            return;
                     }
@@ -315,9 +316,9 @@ public class InventoryListener implements Listener {
                     }
                     break;
                 case 5:
-                    if (playerLevel < 60) {
+                    if (playerLevel < 50) {
                         event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 60");
+                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 50");
                         player.updateInventory();
                         return;
                     }
@@ -364,9 +365,9 @@ public class InventoryListener implements Listener {
                     }
                     break;
                 case 5:
-                    if (playerLevel < 60) {
+                    if (playerLevel < 50) {
                         event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 60");
+                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 50");
                         player.updateInventory();
                         return;
                     }
@@ -1026,7 +1027,11 @@ public class InventoryListener implements Listener {
         int scrapTier = RepairAPI.getScrapTier(cursorItem);
         int slotTier = 0;
         if (Mining.isDRPickaxe(slotItem) || Fishing.isDRFishingPole(slotItem)) {
-            slotTier = Mining.getPickTier(slotItem);
+        	if(Mining.isDRPickaxe(slotItem))
+        		slotTier = Mining.getPickTier(slotItem);
+        	else{
+        		slotTier = Fishing.getRodTier(slotItem);
+        	}
             if (scrapTier != slotTier) return;
             if (cursorItem.getAmount() == 1) {
                 event.setCancelled(true);

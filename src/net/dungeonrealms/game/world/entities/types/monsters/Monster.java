@@ -48,19 +48,19 @@ public interface Monster {
             
             switch(tier){
             	case 1 :
-            		gem_drop_amount = (new Random().nextInt(3 - 1) + 1) * gold_drop_multiplier;
+            		gem_drop_amount = (new Random().nextInt(8 - 1) + 1) * gold_drop_multiplier;
             		break;
             	case 2:
-                    gem_drop_amount = (new Random().nextInt(12 - 2) + 2) * gold_drop_multiplier;
+                    gem_drop_amount = (new Random().nextInt(18 - 2) + 2) * gold_drop_multiplier;
             		break;
             	case 3:
-                    gem_drop_amount = (new Random().nextInt(30 - 10) + 10) * gold_drop_multiplier;
+                    gem_drop_amount = (new Random().nextInt(34 - 10) + 10) * gold_drop_multiplier;
                     break;
             	case 4:
-                    gem_drop_amount = (new Random().nextInt(40 - 20) + 20) * gold_drop_multiplier;
+                    gem_drop_amount = (new Random().nextInt(64 - 20) + 20) * gold_drop_multiplier;
                     break;
             	case 5:
-                    gem_drop_amount = (new Random().nextInt(150 - 75) + 75) * gold_drop_multiplier;
+                    gem_drop_amount = (new Random().nextInt(175 - 75) + 75) * gold_drop_multiplier;
                     break;
             }
             

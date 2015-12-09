@@ -427,4 +427,13 @@ public class BankMechanics implements GenericMechanic {
 		}
 	}
 
+	/**
+	 * @param stack
+	 * @return
+	 */
+	public boolean isBankNote(ItemStack stack) {
+        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        return stack.getType() == Material.PAPER && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money");
+	}
+
 }

@@ -46,7 +46,7 @@ public class CommandSet extends BasicCommand {
 				String playerName = args[1];
 				Player p = Bukkit.getPlayer(playerName);
 				if(p != null){
-					int lvl = Integer.parseInt(args[1]);
+					int lvl = Integer.parseInt(args[2]);
 					API.getGamePlayer(p).getStats().setPlayerLevel(lvl);
 					DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, lvl, true);
 					s.sendMessage(p.getName() + " lvl set to "+ lvl);
@@ -123,6 +123,9 @@ public class CommandSet extends BasicCommand {
 				break;
 			case "chaotic":
 				KarmaHandler.getInstance().setPlayerAlignment(player, "chaotic", false);
+				break;
+			case "lawful":
+				KarmaHandler.getInstance().setPlayerAlignment(player, "lawful", false);
 				break;
 			}
 		}

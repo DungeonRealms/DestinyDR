@@ -187,6 +187,9 @@ public class MobSpawner {
                     return;
                 }
                 Entity entity = SpawningMechanics.getMob(world, tier, monsEnum);
+                if(entity == null){
+                	return;
+                }
                 int level = Utils.getRandomFromTier(tier, lvlRange);
                 MetadataUtils.registerEntityMetadata(entity, type, tier, level);
                 EntityStats.setMonsterRandomStats(entity, level, tier);

@@ -114,7 +114,7 @@ public class RepairAPI {
 			repair_cost += repair_cost * global_multiplier;
 		}
 		
-		if(Mining.isDRPickaxe(i) || Fishing.isDRFishingPole(i) ) {
+		if(Mining.isDRPickaxe(i)) {
 			int item_tier = Mining.getPickTier(i);
 			double dmg_cost = Math.pow(Mining.getLvl(i), 2) / 100D; // This is the cost PER PERCENT
 			double percent_durability_left = getDurabilityValueAsPercent(i, getCustomDurability(i));
@@ -147,15 +147,47 @@ public class RepairAPI {
 				multiplier = 3.0;
 				repair_cost = total_dmg_cost * multiplier;
 			}
-			
 			repair_cost += repair_cost * global_multiplier;
 		}
 		
+		if(Fishing.isDRFishingPole(i) ){
+			int item_tier = Fishing.getRodTier(i);
+			double dmg_cost = 2; // This is the cost PER PERCENT
+			double percent_durability_left = getDurabilityValueAsPercent(i, getCustomDurability(i));
+			double global_multiplier = 0.8;
+			double multiplier = 1.0; // 100%
+			double missing_percent = 100 - percent_durability_left;
+			double total_dmg_cost = missing_percent * dmg_cost;
+
+			if(percent_durability_left > 99) {
+				percent_durability_left = 99;
+			}
+			if(item_tier == 1) {
+				multiplier = 0.5;
+				repair_cost = total_dmg_cost * multiplier;
+			}
+			if(item_tier == 2) {
+				multiplier = 0.75;
+				repair_cost = total_dmg_cost * multiplier;
+			}
+			if(item_tier == 3) {
+				multiplier = 1.0;
+				repair_cost = total_dmg_cost * multiplier;
+			}
+			if(item_tier == 4) {
+				multiplier = 2.0;
+				repair_cost = total_dmg_cost * multiplier;
+			}
+			if(item_tier == 5) {
+				multiplier = 3.0;
+				repair_cost = total_dmg_cost * multiplier;
+			}
+			repair_cost += repair_cost * global_multiplier;
+		}
 		if(repair_cost < 1) {
 			repair_cost = 1;
 		}
-		
-		return (int) Math.round(repair_cost);
+		return ((int) Math.round(repair_cost) )/ 2;
 	}
 	
 	
@@ -234,13 +266,18 @@ public class RepairAPI {
                 durabilityPercent = getItemDurabilityValue(itemStack);
                 setCustomItemDurability(itemStack, (durabilityPercent * 15));
                 durabilityPercent = durabilityPercent * 15;
-            }
-            if (tag.getString("type").equalsIgnoreCase("armor")) {
+            }else if (tag.getString("type").equalsIgnoreCase("armor")) {
+                durabilityPercent = getItemDurabilityValue(itemStack);
+                setCustomItemDurability(itemStack, (durabilityPercent * 15));
+                durabilityPercent = durabilityPercent * 15;
+            }else{
                 durabilityPercent = getItemDurabilityValue(itemStack);
                 setCustomItemDurability(itemStack, (durabilityPercent * 15));
                 durabilityPercent = durabilityPercent * 15;
             }
-
+            
+            
+            
             return durabilityPercent;
         } catch (Exception ex) {
             Utils.log.warning("[REPAIR] Item durability was not registered! Registering it now for item " + itemStack.toString());
@@ -378,6 +415,7 @@ public class RepairAPI {
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return false;
         if(Mining.isDRPickaxe(itemStack)|| Fishing.isDRFishingPole(itemStack)){
+        	Utils.log.info(getCustomDurability(itemStack) + " "  + "< 1500");
             if (getCustomDurability(itemStack) < 1500) 
         	return true;
         }

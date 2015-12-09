@@ -28,6 +28,7 @@ import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
+import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -543,7 +544,7 @@ public class MainListener implements Listener {
             Player p = event.getPlayer();
             ItemStack stack = p.getItemInHand();
             if (stack != null && stack.getType() == Material.FISHING_ROD) {
-                p.getItemInHand().setDurability((short) (stack.getDurability() + 1));
+            	RepairAPI.subtractCustomDurability(p, stack, 2);
                 if (event.getState() == State.CAUGHT_FISH) {
                     if (Fishing.isDRFishingPole(stack)) {
                         event.getCaught().remove();
@@ -755,6 +756,34 @@ public class MainListener implements Listener {
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.SUCCESSFUL_HIT, 1f, 1f);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getPlayer().getUniqueId()).toString())) {
                 event.getPlayer().sendMessage("                      " + ChatColor.GREEN + "+" + event.getItem().getItemStack().getAmount() + ChatColor.BOLD + "G");
+            }
+            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem().getItemStack());
+            if(nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")){
+            	int gems = event.getItem().getItemStack().getAmount();
+            	
+            	for(int i = 0; i < event.getPlayer().getInventory().getSize(); i++){
+            		ItemStack gemPouch = event.getPlayer().getInventory().getItem(i);
+            		if(gemPouch == null || gemPouch.getType() == Material.AIR)
+            			continue;
+            		if(gemPouch.getType() != Material.INK_SACK)
+            			continue;
+            		net.minecraft.server.v1_8_R3.ItemStack nmsPouch = CraftItemStack.asNMSCopy(gemPouch);
+                	int currentAmount = nmsPouch.getTag().getInt("worth");
+                	int tier = nmsPouch.getTag().getInt("tier");
+                	int max = BankMechanics.getInstance().getPouchMax(tier);
+            		event.getItem().remove();
+                	event.setCancelled(true);
+                	if(currentAmount < max){
+                		while(currentAmount < max && gems > 0){
+                			currentAmount += 1;
+                			gems -= 1;
+                		}
+                		event.getPlayer().getInventory().setItem(i, BankMechanics.getInstance().createGemPouch(tier, currentAmount));
+                	}
+                	
+                	if(gems > 0)
+                		event.getPlayer().getInventory().addItem(BankMechanics.createGems(gems));
+            	}
             }
         } else {
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.CHICKEN_EGG_POP, 1f, 1f);

@@ -42,7 +42,7 @@ public class TradeManager {
 		}
 
 		cooldown.add(p1);
-		sender.sendMessage(ChatColor.GREEN + "Trade request sent!");
+		sender.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "Trade request sent.");
 		Bukkit.getPlayer(p2).sendMessage(ChatColor.AQUA + Bukkit.getPlayer(p1).getName() +ChatColor.YELLOW +  " Would like to trade!");
 		Bukkit.getPlayer(p2).sendMessage(ChatColor.AQUA + Bukkit.getPlayer(p1).getName()
 		        + ChatColor.YELLOW + " Shift right click them and choose trade to accept!");

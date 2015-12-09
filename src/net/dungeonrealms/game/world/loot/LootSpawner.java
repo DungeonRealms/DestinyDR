@@ -11,9 +11,12 @@ import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.loot.types.LootType;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.player.banks.BankMechanics;
 
 /**
  * Created by Chase on Oct 9, 2015
@@ -62,7 +65,22 @@ public class LootSpawner {
 //					int tier = CraftItemStack.asNMSCopy(stack).getTag().getInt("itemTier");
 //					stack = LootManager.generateRandomTierItem(tier);
 					continue;
+				}else if(API.isOrb(stack)){
+					stack = ItemManager.createOrbofAlteration();
+				}else if(ItemManager.isEnchantScroll(stack)){
+					int tier = CraftItemStack.asNMSCopy(stack).getTag().getInt("tier");
+					String type = CraftItemStack.asNMSCopy(stack).getTag().getString("type");
+					if(type.equalsIgnoreCase("armorenchant"))
+						stack = ItemManager.createArmorEnchant(tier);
+					else
+						stack = ItemManager.createWeaponEnchant(tier);
+				}else if(ItemManager.isProtectScroll(stack)){
+					int tier = CraftItemStack.asNMSCopy(stack).getTag().getInt("tier");
+					stack = ItemManager.createProtectScroll(tier);
+				}else if(BankMechanics.getInstance().isBankNote(stack)){
+					stack = BankMechanics.createBankNote(CraftItemStack.asNMSCopy(stack).getTag().getInt("worth"));
 				}
+					
 				count++;
 				inv.addItem(stack);
 			}
