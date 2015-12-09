@@ -676,6 +676,8 @@ public class InventoryListener implements Listener {
                     newStack.setAmount(newStack.getAmount() - 1);
                     event.setCursor(newStack);
                 }
+            }else{
+            	event.getWhoClicked().sendMessage(ChatColor.RED + "Item already protected.");
             }
             return;
         }
@@ -766,9 +768,6 @@ public class InventoryListener implements Listener {
                 return;
             }
 
-            if (EnchantmentAPI.isItemProtected(slotItem)) {
-                event.setCurrentItem(EnchantmentAPI.removeItemProtection(event.getCurrentItem()));
-            }
             ItemMeta meta2 = slotItem.getItemMeta();
             String itemName = meta2.getDisplayName();
             ArrayList<String> lore = (ArrayList<String>) meta2.getLore();
@@ -800,7 +799,9 @@ public class InventoryListener implements Listener {
             meta.setDisplayName(finalName);
             meta.setLore(itemLore);
             newItem.setItemMeta(meta);
-
+            if (EnchantmentAPI.isItemProtected(slotItem)) {
+               newItem = EnchantmentAPI.removeItemProtection(newItem);
+             }
             if (cursorItem.getAmount() == 1) {
                 event.setCursor(new ItemStack(Material.AIR));
             } else {
@@ -815,13 +816,9 @@ public class InventoryListener implements Listener {
             event.getWhoClicked().getInventory().addItem(newItem);
             ((Player) event.getWhoClicked()).updateInventory();
         } else if (API.isArmor(slotItem)) {
-
-
             if (!nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || !nmsCursor.getTag().getString("type").equalsIgnoreCase("armorenchant")) {
                 return;
             }
-
-
             int tier = nmsCursor.getTag().getInt("tier");
             int armorTier = nmsItem.getTag().getInt("armorTier");
             if (tier != armorTier) {
@@ -906,9 +903,6 @@ public class InventoryListener implements Listener {
                 return;
             }
             
-            if (EnchantmentAPI.isItemProtected(slotItem)) {
-                event.setCurrentItem(EnchantmentAPI.removeItemProtection(event.getCurrentItem()));
-            }
             ItemMeta meta2 = slotItem.getItemMeta();
             String itemName = meta2.getDisplayName();
             String newName = "";
@@ -954,7 +948,9 @@ public class InventoryListener implements Listener {
             meta.setDisplayName(finalName);
             meta.setLore(itemLore);
             newItem.setItemMeta(meta);
-
+            if (EnchantmentAPI.isItemProtected(slotItem)) {
+            	newItem = EnchantmentAPI.removeItemProtection(newItem);
+            }
             if (cursorItem.getAmount() == 1) {
                 event.setCursor(new ItemStack(Material.AIR));
             } else {
@@ -964,7 +960,7 @@ public class InventoryListener implements Listener {
             }
             event.getCurrentItem().setType(Material.AIR);
             event.setCurrentItem(new ItemStack(Material.AIR));
-            if ((amount + 1) >= 3)
+            if ((amount + 1) >= 4)
                 EnchantmentAPI.addGlow(newItem);
             event.getWhoClicked().getInventory().addItem(newItem);
             ((Player) event.getWhoClicked()).updateInventory();
