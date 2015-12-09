@@ -1,6 +1,11 @@
 package net.dungeonrealms.game.world.entities;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.mastery.NMSUtils;
+import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanics.generic.EnumPriority;
+import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.world.entities.types.monsters.*;
 import net.dungeonrealms.game.world.entities.types.monsters.EntityGolem;
 import net.dungeonrealms.game.world.entities.types.monsters.base.*;
@@ -13,11 +18,6 @@ import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.Pyroman
 import net.dungeonrealms.game.world.entities.types.mounts.EnderDragon;
 import net.dungeonrealms.game.world.entities.types.mounts.Horse;
 import net.dungeonrealms.game.world.entities.types.pets.*;
-import net.dungeonrealms.game.handlers.HealthHandler;
-import net.dungeonrealms.game.mastery.NMSUtils;
-import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanics.generic.EnumPriority;
-import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
@@ -65,8 +65,7 @@ public class Entities implements GenericMechanic {
 		nmsUtils.registerEntity("RangedPirate", 54, EntityZombie.class, EntityRangedPirate.class);
 		nmsUtils.registerEntity("Fire Imp", 54, EntityZombie.class, EntityFireImp.class);
 		nmsUtils.registerEntity("Bandit", 51, EntitySkeleton.class, EntityBandit.class);
-		nmsUtils.registerEntity("Enchanted Golem", 99, net.minecraft.server.v1_8_R3.EntityGolem.class,
-		        EntityGolem.class);
+		nmsUtils.registerEntity("Enchanted Golem", 99, net.minecraft.server.v1_8_R3.EntityGolem.class, EntityGolem.class);
 		nmsUtils.registerEntity("DR Spider", 59, net.minecraft.server.v1_8_R3.EntitySpider.class, DRSpider.class);
 		nmsUtils.registerEntity("CustomEntity", 54, EntityZombie.class, BasicMeleeMonster.class);
 		nmsUtils.registerEntity("BasicMage", 54, EntityZombie.class, BasicMageMonster.class);
@@ -103,8 +102,7 @@ public class Entities implements GenericMechanic {
 		nmsUtils.registerEntity("PetSnowman", 97, EntitySnowman.class, Snowman.class);
 		nmsUtils.registerEntity("MountEnderDragon", 63, EntityEnderDragon.class, EnderDragon.class);
 
-		Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::checkForLeashedMobs, 0,
-		        20L);
+		Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::checkForLeashedMobs, 0, 20L);
 	}
 
 	@Override
@@ -121,7 +119,7 @@ public class Entities implements GenericMechanic {
 				}
 				
 				if (MONSTER_LAST_ATTACK.containsKey(entity)) {
-					if (MONSTER_LAST_ATTACK.get(entity) == 14) {
+					if (MONSTER_LAST_ATTACK.get(entity) == 13) {
 						EntityInsentient entityInsentient = (EntityInsentient) ((CraftEntity)entity).getHandle();
 						if (entityInsentient != null && entityInsentient.getGoalTarget() != null) {
 							if (entityInsentient.getGoalTarget().getBukkitEntity().getLocation().distance(entity.getLocation()) >= 2 && entityInsentient.getGoalTarget().getBukkitEntity().getLocation().distance(entity.getLocation()) <= 6) {
@@ -188,3 +186,4 @@ public class Entities implements GenericMechanic {
 		        });
 	}
 }
+
