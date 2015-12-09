@@ -52,7 +52,7 @@ public class TradeManager {
 			if (pending.containsKey(p1))
 				pending.remove(p1);
 			cooldown.remove(p1);
-		} , 100l);// Remove Pending Request after 10 seconds.
+		} , 200l);// Remove Pending Request after 10 seconds.
 
 	}
 
