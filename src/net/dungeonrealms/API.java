@@ -550,7 +550,7 @@ public class API {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.tempban", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.tempmute", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.kick", true);
-        } else if (Rank.getInstance().getRank(uuid).getName().equalsIgnoreCase("CM")) {
+        } else if (Rank.getInstance().getRank(uuid).getName().equalsIgnoreCase("CM") || Rank.getInstance().getRank(uuid).getName().equalsIgnoreCase("GM")) {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.tempban", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.tempmute", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.ban", true);
