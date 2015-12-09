@@ -172,6 +172,7 @@ public class SpawningMechanics implements GenericMechanic {
                 break;
             case Spider:
             case Spider1:
+            case Spider2:
                 entity = new DRSpider(world, EnumMonster.Spider, tier);
                 break;
             case Golem:
