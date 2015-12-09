@@ -56,7 +56,8 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
         this.mobHead = monster.mobHead;
         this.entityType = entityType;
         setArmor(tier);
-        if(new Attribute(CraftItemStack.asBukkitCopy(this.getEquipment(0))).getItemType().equals(ItemType.STAFF)){
+        if(this.getEquipment(0) != null && this.getEquipment(0).hasTag())
+        if(this.getEquipment(0).getTag().hasKey("itemType") && this.getEquipment(0).getTag().getInt("itemType") == 3){
             this.goalSelector.a(1, new PathfinderGoalFloat(this));
             this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
             this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));

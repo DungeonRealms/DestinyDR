@@ -28,6 +28,7 @@ import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
+import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -543,7 +544,7 @@ public class MainListener implements Listener {
             Player p = event.getPlayer();
             ItemStack stack = p.getItemInHand();
             if (stack != null && stack.getType() == Material.FISHING_ROD) {
-                p.getItemInHand().setDurability((short) (stack.getDurability() + 1));
+            	RepairAPI.subtractCustomDurability(p, stack, 2);
                 if (event.getState() == State.CAUGHT_FISH) {
                     if (Fishing.isDRFishingPole(stack)) {
                         event.getCaught().remove();

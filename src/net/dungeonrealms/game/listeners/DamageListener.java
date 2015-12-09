@@ -32,6 +32,7 @@ import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
+import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
@@ -882,6 +883,56 @@ public class DamageListener implements Listener {
             if (System.currentTimeMillis() - event.getPlayer().getMetadata("last_Staff_Use").get(0).asLong() < 400)
                 return;
         }
+        
+    	int tier = CraftItemStack.asNMSCopy(event.getPlayer().getItemInHand()).getTag().getInt("itemTier");
+    	int playerLvl = API.getGamePlayer(event.getPlayer()).getLevel();
+    	switch(tier){
+            case 2:
+                if(playerLvl < 10){
+                    event.setCancelled(true);
+                    int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
+                    if(slot < 9)
+                        event.getPlayer().getInventory().setHeldItemSlot(slot);
+                    else
+                        event.getPlayer().getInventory().setHeldItemSlot(0);
+                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 10");
+                }
+                break;
+            case 3:
+                if(playerLvl < 25){
+                    event.setCancelled(true);
+                    int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
+                    if(slot < 9)
+                        event.getPlayer().getInventory().setHeldItemSlot(slot);
+                    else
+                        event.getPlayer().getInventory().setHeldItemSlot(0);
+                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 25");
+                }
+                break;
+            case 4:
+                if(playerLvl < 40){
+                    event.setCancelled(true);
+                    int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
+                    if(slot < 9)
+                        event.getPlayer().getInventory().setHeldItemSlot(slot);
+                    else
+                        event.getPlayer().getInventory().setHeldItemSlot(0);
+                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 40");
+                }
+                break;
+            case 5:
+                if(playerLvl < 50){
+                    event.setCancelled(true);
+                    int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
+                    if(slot < 9)
+                        event.getPlayer().getInventory().setHeldItemSlot(slot);
+                    else
+                        event.getPlayer().getInventory().setHeldItemSlot(0);
+                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 50");
+                }
+                break;
+        }
+        
         if (event.getPlayer().hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(event.getPlayer().getUniqueId()) <= 0) {
             event.setCancelled(true);
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.WOLF_PANT, 12F, 1.5F);

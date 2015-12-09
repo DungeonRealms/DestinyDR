@@ -133,7 +133,7 @@ public class BlockListener implements Listener {
                     p.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "You fail to gather any ore.");
                 }
                 e.getBlock().setType(Material.STONE);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> e.getBlock().setType(type), (Mining.getOreRespawnTime(type)));
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> e.getBlock().setType(type), (Mining.getOreRespawnTime(type) * 15));
             }
         }
     }
@@ -196,14 +196,14 @@ public class BlockListener implements Listener {
                     }
                     break;
                 case 5:
-                    if(playerLvl < 60){
+                    if(playerLvl < 50){
                         event.setCancelled(true);
                         int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
                         if(slot < 9)
                             event.getPlayer().getInventory().setHeldItemSlot(slot);
                         else
                             event.getPlayer().getInventory().setHeldItemSlot(0);
-                        event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 60");
+                        event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 50");
                     }
                     break;
             }

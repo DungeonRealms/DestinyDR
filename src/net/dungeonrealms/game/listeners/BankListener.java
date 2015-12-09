@@ -47,22 +47,6 @@ public class BankListener implements Listener {
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
                 Storage storage = BankMechanics.getInstance().getStorage(e.getPlayer().getUniqueId());
-//            	if(storage.collection_bin != null){
-//            		if(!prompted.contains(e.getPlayer().getUniqueId())){
-//            			prompted.add(e.getPlayer().getUniqueId());
-//            			e.getPlayer().sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.YELLOW + "Collection Bin emptied once you open it.");
-//            			e.getPlayer().sendMessage(ChatColor.YELLOW + "Open your chest again once you're ready to empty your collection bin.");
-//            			e.setCancelled(true);
-//            			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()-> prompted.remove(e.getPlayer().getUniqueId()), 100);
-//            			return;
-//            		}
-//            		e.getPlayer().openInventory(storage.collection_bin);
-//            		DatabaseAPI.getInstance().update(e.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
-//            		storage.collection_bin = null;
-//            		e.setCancelled(true);
-//            		return;
-//            	}
-            	
                 Block b = e.getClickedBlock();
                 ItemStack stack = new ItemStack(b.getType(), 1);
                 NBTTagCompound nbt = CraftItemStack.asNMSCopy(stack).getTag();
@@ -181,7 +165,7 @@ public class BankListener implements Listener {
                             }
 
                         }
-                    } else if (e.getRawSlot() != 0 && e.getRawSlot() != 1) {
+                    } else if (e.getRawSlot() != 0 && e.getRawSlot() != 4 || e.getRawSlot() == 4 && e.getInventory().getItem(4) == null || e.getInventory().getItem(4) != null && e.getInventory().getItem(4).getType() == Material.AIR) {
                         if (nms == null)
                             return;
                         e.setCancelled(true);
@@ -265,22 +249,12 @@ public class BankListener implements Listener {
 
                             // Upgrade Storage
                         }
-                    }else if(e.getRawSlot() == 1){
+                    }else if(e.getRawSlot() == 4 && e.getInventory().getItem(4) != null && e.getInventory().getItem(4).getType() == Material.CHEST){
                     	//Collection Bin
                     	e.setCancelled(true);
                         Storage storage = BankMechanics.getInstance().getStorage(player.getUniqueId());
                     	if(storage.collection_bin != null){
-//                    		if(!prompted.contains(player.getUniqueId())){
-//                    			prompted.add(player.getUniqueId());
-//                    			player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.YELLOW + "Collection Bin emptied once you open it.");
-//                    			player.sendMessage(ChatColor.YELLOW + "Open your chest again once you're ready to empty your collection bin.");
-//                    			e.setCancelled(true);
-//                    			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()-> prompted.remove(player.getUniqueId()), 100);
-//                    			return;
-//                    		}
                     		player.openInventory(storage.collection_bin);
-//                    		DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
-//                    		storage.collection_bin = null;
                     		e.setCancelled(true);
                     		return;
                     	}else{
@@ -578,18 +552,15 @@ public class BankListener implements Listener {
         
         
         ItemMeta collectionMeta = storage.getItemMeta();
-        collectionMeta.setDisplayName(ChatColor.RED.toString() + ChatColor.BOLD + "Collection Bin");
+        collectionMeta.setDisplayName(ChatColor.RED.toString() + ChatColor.BOLD + "COLLECTION BIN");
         ArrayList<String> collectionlore = new ArrayList<>();
-        collectionlore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to open " + ChatColor.GREEN.toString() + ChatColor.BOLD + "Collection Bin");
+        collectionlore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to open " + ChatColor.GREEN.toString() + ChatColor.BOLD + "COLLECTION BIN");
         collectionMeta.setLore(collectionlore);
         storage.setItemMeta(collectionMeta);
         net.minecraft.server.v1_8_R3.ItemStack collectionBin = CraftItemStack.asNMSCopy(storage);
         collectionBin.getTag().setString("type", "collection");
-        inv.setItem(1, CraftItemStack.asBukkitCopy(collectionBin));
-
-        
-        
-        
+        if(BankMechanics.getInstance().getStorage(uuid).collection_bin != null)
+        	inv.setItem(4, CraftItemStack.asBukkitCopy(collectionBin));
         return inv;
     }
 

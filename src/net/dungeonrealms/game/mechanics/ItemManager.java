@@ -544,7 +544,7 @@ public class ItemManager {
                 nms.getTag().setString("type", "repair");
                 break;
             case RetrainingBook:
-                stack = createItem(Material.ENCHANTED_BOOK, ChatColor.GREEN + "Retraining Book", new String[]{ChatColor.GRAY + "Right click to reset your stat", ChatColor.GRAY + "allocated points to free points."});
+                stack = createItem(Material.ENCHANTED_BOOK, ChatColor.GREEN + "Retraining Book", new String[]{ChatColor.GRAY + "Right click to reset your stat", ChatColor.GRAY + "allocated points to free points.", ChatColor.DARK_GRAY + "One time use."});
                 nms = CraftItemStack.asNMSCopy(stack);
                 nms.getTag().setString("retrainingBook", "_Atlassie");
                 break;
@@ -599,7 +599,7 @@ public class ItemManager {
         RepairAPI.setCustomItemDurability(rawStack, 1500);
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-        tag.set("type", new NBTTagString("rod"));
+        tag.setString("type", "rod");
         tag.setInt("itemTier", tier);
         tag.setInt("XP", 0);
         tag.setInt("maxXP", Fishing.getMaxXP(tier));

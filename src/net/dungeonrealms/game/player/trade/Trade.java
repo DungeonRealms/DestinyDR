@@ -160,6 +160,8 @@ public class Trade {
 				p1.getInventory().addItem(item);
 			}
 		}
+		p1.sendMessage(ChatColor.GREEN + "Trade successful.");
+		p2.sendMessage(ChatColor.GREEN + "Trade successful.");
 		remove();
 	}
 	
