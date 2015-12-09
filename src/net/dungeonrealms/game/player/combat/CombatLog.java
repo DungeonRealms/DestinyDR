@@ -14,6 +14,7 @@ import net.dungeonrealms.game.world.entities.EnumEntityType;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.Inventory;
@@ -61,6 +62,14 @@ public class CombatLog implements GenericMechanic {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
                 player.sendMessage(ChatColor.RED + "Entering Combat");
             }
+
+            /*
+            Knock player off of horse, if they're tagged in combat.
+             */
+            if (player.getVehicle() != null && player.getVehicle() instanceof Horse) {
+                player.getVehicle().remove();
+            }
+
         }
     }
 
@@ -147,7 +156,7 @@ public class CombatLog implements GenericMechanic {
                 z.remove();
             } else {
                 //TP TO CYRENN
-          		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, new ArrayList<String>(), true);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, new ArrayList<String>(), true);
                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, "-367,90,390,0,0", true);
                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, "", true);
             }
