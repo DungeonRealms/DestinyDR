@@ -429,16 +429,12 @@ public class DamageListener implements Listener {
                 if (nmsItem != null && nmsItem.getTag() != null) {
                     if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.POLE_ARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
                         DamageAPI.polearmAOEProcessing.add(attacker);
-                        int i = 0;
                         for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
                             if (entity instanceof LivingEntity && entity != event.getEntity() && !(entity instanceof Player)) {
                                 if ((event.getDamage() - armourReducedDamage) > 0) {
                                     if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-                                        i++;
                                         entity.playEffect(EntityEffect.HURT);
-                                        final LivingEntity finalAttacker = attacker;
-                                        final double finalArmourReducedDamage = armourReducedDamage;
-                                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, finalAttacker, (event.getDamage() - finalArmourReducedDamage)), 1 + (i + 1));
+                                        HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) entity, attacker, (event.getDamage() - armourReducedDamage));
                                     }
                                 }
                             } else {
