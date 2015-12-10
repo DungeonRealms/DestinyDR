@@ -42,6 +42,12 @@ public class CommandPl extends BasicCommand {
                 Check if player is owner of the party they're in.
                  */
                     if (Affair.getInstance().isOwner(player)) {
+
+                        if(Affair.getInstance().getParty(player).get().getMembers().size() >= 7) {
+                            player.sendMessage(ChatColor.RED + "Your party has reached the max player count!");
+                            return true;
+                        }
+
                         if (Bukkit.getPlayer(args[0]) != null) {
                             Affair.getInstance().invitePlayer(Bukkit.getPlayer(args[0]), player);
                             player.sendMessage(ChatColor.GREEN + "Invited " + ChatColor.AQUA + args[0] + " " + ChatColor.GREEN + " to your party!");
