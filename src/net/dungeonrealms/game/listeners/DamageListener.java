@@ -504,9 +504,6 @@ public class DamageListener implements Listener {
                 String defenderName;
                 if (defender instanceof Player) {
                     defenderName = defender.getName();
-                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, defender.getUniqueId()).toString())) {
-                        defender.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *DODGE SUCCESSFUL* (" + org.bukkit.ChatColor.RED + ")");
-                    }
                 } else if (defender.hasMetadata("customname")) {
                     defenderName = defender.getMetadata("customname").get(0).asString().trim();
                 } else {
@@ -514,6 +511,19 @@ public class DamageListener implements Listener {
                 }
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
                     attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT DODGED* (" + defenderName + org.bukkit.ChatColor.RED + ")");
+                }
+            }
+            if (defender instanceof Player) {
+                String attackerName;
+                if (attacker instanceof Player) {
+                    attackerName = attacker.getName();
+                } else if (attacker.hasMetadata("customname")) {
+                    attackerName = attacker.getMetadata("customname").get(0).asString().trim();
+                } else {
+                    attackerName = "Enemy";
+                }
+                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, defender.getUniqueId()).toString())) {
+                    defender.sendMessage(org.bukkit.ChatColor.GREEN + "" + org.bukkit.ChatColor.BOLD + "                        *DODGE* (" + org.bukkit.ChatColor.RED + attackerName + org.bukkit.ChatColor.GREEN + ")");
                 }
             }
             //The defender dodged the attack
@@ -532,9 +542,6 @@ public class DamageListener implements Listener {
                 String defenderName;
                 if (defender instanceof Player) {
                     defenderName = defender.getName();
-                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, defender.getUniqueId()).toString())) {
-                        defender.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *BLOCK SUCCESSFUL* (" + org.bukkit.ChatColor.RED + ")");
-                    }
                 } else if (defender.hasMetadata("customname")) {
                     defenderName = defender.getMetadata("customname").get(0).asString().trim();
                 } else {
@@ -542,6 +549,19 @@ public class DamageListener implements Listener {
                 }
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
                     attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + org.bukkit.ChatColor.RED + ")");
+                }
+            }
+            if (defender instanceof Player) {
+                String attackerName;
+                if (attacker instanceof Player) {
+                    attackerName = attacker.getName();
+                } else if (attacker.hasMetadata("customname")) {
+                    attackerName = attacker.getMetadata("customname").get(0).asString().trim();
+                } else {
+                    attackerName = "Enemy";
+                }
+                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, defender.getUniqueId()).toString())) {
+                    defender.sendMessage(org.bukkit.ChatColor.DARK_GREEN + "" + org.bukkit.ChatColor.BOLD + "                        *BLOCK* (" + org.bukkit.ChatColor.RED + attackerName + org.bukkit.ChatColor.DARK_GREEN + ")");
                 }
             }
             event.setDamage(0);
