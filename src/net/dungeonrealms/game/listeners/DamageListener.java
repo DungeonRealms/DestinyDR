@@ -500,6 +500,22 @@ public class DamageListener implements Listener {
             armourReducedDamage = DamageAPI.calculateArmorReduction(staffProjectile, defender, defenderArmor);
         }
         if (armourReducedDamage == -1) {
+            if (attacker instanceof Player) {
+                String defenderName;
+                if (defender instanceof Player) {
+                    defenderName = defender.getName();
+                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, defender.getUniqueId()).toString())) {
+                        defender.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *DODGE SUCCESSFUL* (" + org.bukkit.ChatColor.RED + ")");
+                    }
+                } else if (defender.hasMetadata("customname")) {
+                    defenderName = defender.getMetadata("customname").get(0).asString().trim();
+                } else {
+                    defenderName = "Enemy";
+                }
+                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
+                    attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT DODGED* (" + defenderName + org.bukkit.ChatColor.RED + ")");
+                }
+            }
             //The defender dodged the attack
             event.setDamage(0);
             LivingEntity leDefender = (LivingEntity) event.getEntity();
@@ -512,6 +528,22 @@ public class DamageListener implements Listener {
             return;
         }
         if (event.getDamage() - armourReducedDamage <= 0 || armourReducedDamage == -2) {
+            if (attacker instanceof Player) {
+                String defenderName;
+                if (defender instanceof Player) {
+                    defenderName = defender.getName();
+                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, defender.getUniqueId()).toString())) {
+                        defender.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *BLOCK SUCCESSFUL* (" + org.bukkit.ChatColor.RED + ")");
+                    }
+                } else if (defender.hasMetadata("customname")) {
+                    defenderName = defender.getMetadata("customname").get(0).asString().trim();
+                } else {
+                    defenderName = "Enemy";
+                }
+                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
+                    attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + org.bukkit.ChatColor.RED + ")");
+                }
+            }
             event.setDamage(0);
             LivingEntity leDefender = (LivingEntity) event.getEntity();
             if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
@@ -729,21 +761,21 @@ public class DamageListener implements Listener {
                 }
             }
         } else if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.NEUTRAL.name())) {
-            if (new Random().nextInt(99) <= 50) {
+            if (new Random().nextInt(99) <= 75) {
                 if (player.getInventory().getItem(0)!= null && player.getInventory().getItem(0).getType() != Material.AIR) {
                     armorToSave[4] = player.getInventory().getItem(0);
                 }
             }
-            if (new Random().nextInt(99) <= 25) {
+            if (new Random().nextInt(99) <= 75) {
                 armorToSave[0] = player.getEquipment().getBoots();
             }
-            if (new Random().nextInt(99) <= 25) {
+            if (new Random().nextInt(99) <= 75) {
                 armorToSave[1] = player.getEquipment().getLeggings();
             }
-            if (new Random().nextInt(99) <= 25) {
+            if (new Random().nextInt(99) <= 75) {
                 armorToSave[2] = player.getEquipment().getChestplate();
             }
-            if (new Random().nextInt(99) <= 25) {
+            if (new Random().nextInt(99) <= 75) {
                 armorToSave[3] = player.getEquipment().getHelmet();
             }
             for (ItemStack itemStack : armorToSave) {
