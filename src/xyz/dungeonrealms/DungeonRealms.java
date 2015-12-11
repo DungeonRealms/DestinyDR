@@ -1,6 +1,7 @@
 package xyz.dungeonrealms;
 
 import org.bukkit.plugin.java.JavaPlugin;
+import xyz.dungeonrealms.apis.Database;
 import xyz.dungeonrealms.mechanics.MechanicManager;
 
 import java.util.logging.Logger;
@@ -28,7 +29,7 @@ public final class DungeonRealms extends JavaPlugin {
 
         manager = new MechanicManager();
 
-        manager.registerMechanic(null);
+        manager.registerMechanic(Database.getInstance());
 
 
         manager.loadMechanics();
