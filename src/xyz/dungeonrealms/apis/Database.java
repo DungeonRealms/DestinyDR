@@ -73,7 +73,7 @@ public class Database implements DRMechanic {
                     statement.execute("CREATE TABLE players (" +
                             "uuid VARCHAR(35) NOT NULL," +
                             "name VARCHAR(17) NOT NULL," +
-                            "base64Json MEDIUMBLOB)");
+                            "data MEDIUMBLOB)");
                 }
             }
         } catch (SQLException e) {
@@ -83,7 +83,7 @@ public class Database implements DRMechanic {
 
     public void handlePlayerLogin(UUID uuid) {
         Executors.newSingleThreadExecutor().submit(() -> {
-            try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery("SELECT name, base64Json FROM players")) {
+            try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery("SELECT name, data FROM players");) {
 
                 if (!resultSet.next()) {
                     //PLAYER DOESN'T EXIST?
@@ -91,7 +91,7 @@ public class Database implements DRMechanic {
                 } else {
                     while (resultSet.next()) {
                         String name = resultSet.getString("name");
-                        JSONObject jsonObject = (JSONObject) API.getInstance().convertFromBytes(resultSet.getString("base64Json").getBytes());
+                        JSONObject jsonObject = (JSONObject) API.getInstance().convertFromBytes(resultSet.getString("data").getBytes());
                     }
 
                 }
@@ -107,8 +107,7 @@ public class Database implements DRMechanic {
             try (Statement statement = connection.createStatement();) {
 
                 String name = UUIDFetcher.getName(uuid);
-                //API.getInstance().convertToBytes(getNewPlayerJson(uuid, name)
-                statement.executeUpdate("INSERT INTO players VALUES (" + uuid.toString() + ", " + name + ", " + "12398712309817230198237");
+                statement.executeUpdate("INSERT INTO players VALUES (" + uuid.toString() + ", " + name + ", " + getNewPlayerJson(uuid, name).toJSONString());
                 ;
 
             } catch (SQLException e) {
@@ -124,6 +123,9 @@ public class Database implements DRMechanic {
         temp.put("name", name);
         temp.put("level", 1);
         temp.put("experience", 0);
+
+
+        temp.put("guild", "");
 
         return temp;
     }
