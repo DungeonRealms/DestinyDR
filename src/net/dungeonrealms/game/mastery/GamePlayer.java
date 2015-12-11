@@ -231,7 +231,7 @@ public class GamePlayer {
             T.sendMessage(ChatColor.GREEN + "You have reached level " + ChatColor.AQUA + (level + 1) + ChatColor.GREEN + " and have gained " + ChatColor.AQUA + Integer.toString(PlayerStats.POINTS_PER_LEVEL) + ChatColor.GREEN + " Attribute Points!");
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(T, getPlayerAlignment().getAlignmentColor(), (level + 1));
         } else {
-            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, futureExperience, true);
+            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.EXPERIENCE, (experienceToAdd + subBonus + subPlusBonus), true);
             if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
                 if (isSub) {
                     T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.GREEN + " (+" + Math.round(subBonus) + ")" + ChatColor.YELLOW + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience() + experienceToAdd) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
