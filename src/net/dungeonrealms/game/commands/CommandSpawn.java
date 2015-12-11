@@ -31,6 +31,7 @@ import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.NBTUtils;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.Entity;
@@ -97,7 +98,10 @@ public class CommandSpawn extends BasicCommand {
                     }
                     if (entity == null)
                         return false;
-
+                    if(DungeonManager.getInstance().getDungeon(loc.getWorld()) != null){
+                    	if(!DungeonManager.getInstance().getDungeon(loc.getWorld()).canSpawnBoss)
+                    		return false;
+                    }
                     Location location = loc;
                     entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                     world.addEntity(entity, SpawnReason.CUSTOM);

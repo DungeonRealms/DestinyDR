@@ -73,8 +73,28 @@ public class DungeonManager implements GenericMechanic{
         } catch (IOException e) {
             e.printStackTrace();
         }
+        
+        Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeon -> {
+            dungeon.aliveMonsters.stream().forEach(mob -> {
+            	if(mob != null)
+            	if(!mob.isAlive() || mob.dead){
+            		dungeon.aliveMonsters.remove(mob);
+            	}
+            });
+        }), 0, 10);
+        
+        
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeonObject -> {
             int time = dungeonObject.getTime();
+            
+            int monstersAlive = dungeonObject.aliveMonsters.size();
+            int maxAlive = dungeonObject.maxAlive;
+            int NinetyPercent = (int) (maxAlive - (maxAlive * 1.9));
+            if(!dungeonObject.canSpawnBoss)
+            if((maxAlive - monstersAlive) <= (maxAlive - NinetyPercent)){
+            	dungeonObject.canSpawnBoss = true;
+                dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.YELLOW + "You really want to fight me?"));
+            }
             if (dungeonObject.getPlayerList().size() <= 0 || Bukkit.getWorld(dungeonObject.worldName).getPlayers().size() <= 0) {
                 removeInstance(dungeonObject);
                 return;
@@ -115,7 +135,7 @@ public class DungeonManager implements GenericMechanic{
      * @since 1.0
      */
     public void updateDungeonBoard(DungeonObject dungeonObject) {
-        dungeonObject.getPlayerList().stream().forEach(player -> BountifulAPI.sendActionBar(player, ChatColor.AQUA + "Time: " + ChatColor.WHITE + ChatColor.GOLD + String.valueOf(dungeonObject.getTime() / 60) + "/45" + " " + ChatColor.AQUA + "Boss: " + ChatColor.GOLD + dungeonObject.getType().getBossName()));
+        dungeonObject.getPlayerList().stream().forEach(player -> BountifulAPI.sendActionBar(player, ChatColor.AQUA + "Time: " + ChatColor.WHITE + ChatColor.GOLD + String.valueOf(dungeonObject.getTime() / 60) + "/45" + " " +ChatColor.AQUA + "Alive: " + ChatColor.WHITE + dungeonObject.aliveMonsters.size() + ChatColor.GRAY +  "/"  + ChatColor.RED + dungeonObject.maxAlive));
     }
 
     /**
@@ -157,6 +177,10 @@ public class DungeonManager implements GenericMechanic{
         DungeonObject dungeonObject = new DungeonObject(type, 0, playerList, "DUNGEON_" + String.valueOf(System.currentTimeMillis() / 1000l));
         Dungeons.add(dungeonObject);
         dungeonObject.load();
+    }
+    
+    public boolean canCreateInstance(){
+    	return Dungeons.size() < 6;
     }
 
     /**
@@ -201,9 +225,10 @@ public class DungeonManager implements GenericMechanic{
         private Integer time;
         private List<Player> playerList;
         private String worldName;
-        public ArrayList<Entity> aliveMonsters = new ArrayList<Entity>();
+        public CopyOnWriteArrayList<Entity> aliveMonsters = new CopyOnWriteArrayList<Entity>();
 		public boolean canSpawnBoss = false;
         public int tier;
+		public int maxAlive = 0;
         
         public DungeonObject(DungeonType type, Integer time, List<Player> playerList, String worldName) {
             this.type = type;
@@ -320,6 +345,7 @@ public class DungeonManager implements GenericMechanic{
         w.setPVP(false);
         w.setStorm(false);
         w.setMonsterSpawnLimit(300);
+        w.setGameRuleValue("doFireTick", "false");
         Bukkit.getWorlds().add(w);
 
         playerList.stream().forEach(player -> {
@@ -335,10 +361,9 @@ public class DungeonManager implements GenericMechanic{
         			loc.setWorld(w);
         			spawner.loc = loc;
         			spawner.setDungeonSpawner(true);
-//        			spawner.spawnIn(true);
-        			Utils.log.info("Spawner spawning.");
         			spawner.dungeonSpawn(object);
         			}
+        		object.maxAlive = object.aliveMonsters.size();
         		
         		}, 40);
         	}

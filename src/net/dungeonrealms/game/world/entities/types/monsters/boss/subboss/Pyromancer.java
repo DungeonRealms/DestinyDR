@@ -1,26 +1,11 @@
 package net.dungeonrealms.game.world.entities.types.monsters.boss.subboss;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
-import net.dungeonrealms.game.world.entities.utils.EntityStats;
-import net.dungeonrealms.game.world.items.DamageAPI;
-import net.dungeonrealms.game.world.items.ItemGenerator;
-import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
-import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.dungeonrealms.game.mechanics.ItemManager;
-import net.minecraft.server.v1_8_R3.*;
-
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -28,7 +13,21 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.lang.reflect.Field;
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
+import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
+import net.dungeonrealms.game.world.entities.utils.EntityStats;
+import net.dungeonrealms.game.world.items.DamageAPI;
+import net.dungeonrealms.game.world.items.ItemGenerator;
+import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
+import net.minecraft.server.v1_8_R3.EntityLiving;
+import net.minecraft.server.v1_8_R3.EntitySkeleton;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Oct 19, 2015
@@ -50,11 +49,7 @@ public class Pyromancer extends EntitySkeleton implements Boss {
 		EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
 		this.getBukkitEntity()
 		        .setCustomName(ChatColor.YELLOW.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
-		Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
-		for (Player p : API.getNearbyPlayers(loc, 400)) {
-			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().greeting);
-		}
-		}, 20 * 20);
+
 	}
 
 	protected void setArmor(int tier) {
@@ -81,16 +76,6 @@ public class Pyromancer extends EntitySkeleton implements Boss {
 	 */
 	@Override
 	public void a(EntityLiving entityliving, float f) {
-		/*EntityArrow entityarrow = new EntityArrow(this.world, this, entityliving, 1.6F, 14 - 2 * 4);
-		entityarrow.setOnFire(10);
-		entityarrow.b(f * 2.0F + this.random.nextGaussian() * 0.25D + 2 * 0.11F);
-		Projectile arrowProjectile = (Projectile) entityarrow.getBukkitEntity();
-		net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
-		NBTTagCompound tag = nmsItem.getTag();
-		MetadataUtils.registerProjectileMetadata(tag, arrowProjectile, 2);
-		this.makeSound("random.bow", 1.0F, 1.0F / (0.8F));
-		this.world.addEntity(entityarrow);*/
-
 		net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
 		NBTTagCompound tag = nmsItem.getTag();
 		DamageAPI.fireArrowFromMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entityliving.getBukkitEntity());
@@ -115,9 +100,12 @@ public class Pyromancer extends EntitySkeleton implements Boss {
 		for (Player p : API.getNearbyPlayers(this.getBukkitEntity().getLocation(), 50)) {
 			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().death);
 		}
+//		641, 55, -457
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation().add(0, 2, 0), ItemManager.createItem(Material.GLOWSTONE_DUST, ChatColor.GREEN + "Magical Dust", new String[] {ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "A strange substance that animates objects.", ChatColor.RED + "Dungeon Item"})), 10);
-		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->
-		this.getBukkitEntity().getWorld().getBlockAt(641, 55, -457).setType(Material.REDSTONE_TORCH_ON), 40);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
+			this.getBukkitEntity().getWorld().createExplosion(new Location(this.getBukkitEntity().getWorld(), 641, 55, -457), 20);
+		}
+		, 20 * 40);
 	}
 
 	@Override

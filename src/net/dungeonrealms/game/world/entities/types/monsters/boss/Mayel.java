@@ -177,7 +177,7 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 				canSpawn = false;
 			}
 			say(this.getBukkitEntity(), "Come to my call, brothers!");
-			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> canSpawn = true, 20 * 3);
+			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> canSpawn = true, 20 * 5);
 		}
 
 	}

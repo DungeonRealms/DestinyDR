@@ -730,6 +730,8 @@ public class MainListener implements Listener {
                 	}
             	}
         	}
+    	}else if(event.getWorld().getName().contains("DUNGEON")){
+    		event.setCancelled(true);
     	}
     }
 

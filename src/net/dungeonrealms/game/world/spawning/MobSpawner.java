@@ -11,6 +11,7 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.util.Vector;
@@ -21,6 +22,7 @@ import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.DungeonManager.DungeonObject;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.Pyromancer;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
@@ -332,6 +334,11 @@ public class MobSpawner {
         if(hasCustomName)
     	if(monsterCustomName.contains("Pyromancer")){
     		entity = new Pyromancer(((CraftWorld)loc.getWorld()).getHandle(), location);
+    		Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
+    			for (Player p : API.getNearbyPlayers(loc, 400)) {
+    				p.sendMessage(EnumBoss.Pyromancer.name + ChatColor.RESET.toString() + ": " + EnumBoss.Pyromancer.greeting);
+    			}
+    			}, 20 * 60);
     	}
         String customName = monsEnum.getPrefix() +  " " + monsEnum.name + " " + monsEnum.getSuffix();
         int level = Utils.getRandomFromTier(tier, lvlRange);
