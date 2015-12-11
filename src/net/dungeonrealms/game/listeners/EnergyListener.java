@@ -83,6 +83,9 @@ public class EnergyListener implements Listener {
         if (weapon.getType() != Material.AIR && Mining.isDRPickaxe(weapon)) {
             return;
         }
+        if (weapon.getType() == Material.POTION) {
+            return;
+        }
         if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player.getUniqueId()) <= 0) {
             event.setUseItemInHand(Event.Result.DENY);
             event.setCancelled(true);
