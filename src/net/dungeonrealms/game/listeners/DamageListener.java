@@ -410,18 +410,20 @@ public class DamageListener implements Listener {
             }
         }
         if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, event.getDamager().getUniqueId()).toString())) {
-                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString())) {
-                    event.getDamager().sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP enabled. You currently cannot attack players.");
+            if (!DuelingMechanics.isDuelPartner(event.getDamager().getUniqueId(), event.getEntity().getUniqueId())) {
+                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, event.getDamager().getUniqueId()).toString())) {
+                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString())) {
+                        event.getDamager().sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP enabled. You currently cannot attack players.");
+                    }
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
                 }
-                event.setCancelled(true);
-                event.setDamage(0);
-                return;
-            }
-            if (Affair.getInstance().areInSameParty((Player) event.getDamager(), (Player) event.getEntity())) {
-                event.setCancelled(true);
-                event.setDamage(0);
-                return;
+                if (Affair.getInstance().areInSameParty((Player) event.getDamager(), (Player) event.getEntity())) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
+                }
             }
         }
         double armourReducedDamage = 0;
@@ -473,18 +475,20 @@ public class DamageListener implements Listener {
                 }
             }
             if (attacker instanceof Player && defender instanceof Player) {
-                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, attacker.getUniqueId()).toString())) {
-                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
-                        attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP enabled. You currently cannot attack players.");
+                if (!DuelingMechanics.isDuelPartner(attacker.getUniqueId(), defender.getUniqueId())) {
+                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, attacker.getUniqueId()).toString())) {
+                        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
+                            attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP enabled. You currently cannot attack players.");
+                        }
+                        event.setCancelled(true);
+                        event.setDamage(0);
+                        return;
                     }
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
-                if (Affair.getInstance().areInSameParty((Player) attacker, (Player) defender)) {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
+                    if (Affair.getInstance().areInSameParty((Player) attacker, (Player) defender)) {
+                        event.setCancelled(true);
+                        event.setDamage(0);
+                        return;
+                    }
                 }
             }
             if (!(attacker instanceof Player)) {
@@ -514,18 +518,20 @@ public class DamageListener implements Listener {
                 }
             }
             if (attacker instanceof Player && defender instanceof Player) {
-                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, attacker.getUniqueId()).toString())) {
-                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
-                        attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP enabled. You currently cannot attack players.");
+                if (!DuelingMechanics.isDuelPartner(attacker.getUniqueId(), defender.getUniqueId())) {
+                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, attacker.getUniqueId()).toString())) {
+                        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
+                            attacker.sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP enabled. You currently cannot attack players.");
+                        }
+                        event.setCancelled(true);
+                        event.setDamage(0);
+                        return;
                     }
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
-                if (Affair.getInstance().areInSameParty((Player) attacker, (Player) defender)) {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
+                    if (Affair.getInstance().areInSameParty((Player) attacker, (Player) defender)) {
+                        event.setCancelled(true);
+                        event.setDamage(0);
+                        return;
+                    }
                 }
             }
             if (!(attacker instanceof Player)) {
@@ -576,6 +582,7 @@ public class DamageListener implements Listener {
             return;
         }
         if (event.getDamage() - armourReducedDamage <= 0 || armourReducedDamage == -2) {
+            Bukkit.broadcastMessage(event.getDamage() + "" + (event.getDamage() - armourReducedDamage) + ";" + armourReducedDamage);
             if (attacker instanceof Player) {
                 String defenderName;
                 if (defender instanceof Player) {

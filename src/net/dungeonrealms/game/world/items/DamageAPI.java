@@ -438,82 +438,76 @@ public class DamageAPI {
             if (nmsTags[i] == null) {
                 damageToBlock[i] += 0;
             } else {
-                if (attacker.getType() != EntityType.ARROW) {
-                    if (nmsTags[i].getInt("block") != 0) {
-                        int blockChance = nmsTags[i].getInt("block");
-                        if (nmsTags[i].getInt("strength") != 0) {
-                            blockChance += (blockChance * (nmsTags[i].getInt("strength") * 0.017));
-                        }
-                        if (API.isPlayer(attacker)) {
-                            net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
-                            if (nmsItem != null && nmsItem.getTag() != null) {
-                                NBTTagCompound tag = nmsItem.getTag();
-                                if (tag.getInt("accuracy") != 0) {
-                                    blockChance -= tag.getInt("accuracy");
-                                    if (blockChance < 0) {
-                                        blockChance = 0;
-                                    }
+                if (nmsTags[i].getInt("block") != 0) {
+                    int blockChance = nmsTags[i].getInt("block");
+                    if (nmsTags[i].getInt("strength") != 0) {
+                        blockChance += (blockChance * (nmsTags[i].getInt("strength") * 0.017));
+                    }
+                    if (API.isPlayer(attacker)) {
+                        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
+                        if (nmsItem != null && nmsItem.getTag() != null) {
+                            NBTTagCompound tag = nmsItem.getTag();
+                            if (tag.getInt("accuracy") != 0) {
+                                blockChance -= tag.getInt("accuracy");
+                                if (blockChance < 0) {
+                                    blockChance = 0;
                                 }
                             }
-                        }
-                        if (new Random().nextInt(99) < blockChance) {
-                            if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
-                                leDefender.removePotionEffect(PotionEffectType.SLOW);
-                            }
-                            if (leDefender.hasPotionEffect(PotionEffectType.POISON)) {
-                                leDefender.removePotionEffect(PotionEffectType.POISON);
-                            }
-                            if (leDefender.getFireTicks() > 0) {
-                                leDefender.setFireTicks(0);
-                            }
-                            try {
-                                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, defender.getLocation(),
-                                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                            damageToBlock[i] = -2;
                         }
                     }
-                }
-                if (attacker.getType() != EntityType.ARROW) {
-                    if (nmsTags[i].getInt("dodge") != 0) {
-                        int dodgeChance = nmsTags[i].getInt("dodge");
-                        if (nmsTags[i].getInt("dexterity") != 0) {
-                            dodgeChance += (dodgeChance * (nmsTags[i].getInt("dexterity") * 0.017));
+                    if (new Random().nextInt(99) < blockChance) {
+                        if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
+                            leDefender.removePotionEffect(PotionEffectType.SLOW);
                         }
-                        if (API.isPlayer(attacker)) {
-                            if (((Player) attacker).getItemInHand() != null && ((Player) attacker).getItemInHand().getType() != Material.AIR) {
-                                net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
-                                NBTTagCompound tag = nmsItem.getTag();
-                                if (tag != null) {
-                                    if (tag.getInt("accuracy") != 0) {
-                                        dodgeChance -= tag.getInt("accuracy");
-                                        if (dodgeChance < 0) {
-                                            dodgeChance = 0;
-                                        }
+                        if (leDefender.hasPotionEffect(PotionEffectType.POISON)) {
+                            leDefender.removePotionEffect(PotionEffectType.POISON);
+                        }
+                        if (leDefender.getFireTicks() > 0) {
+                               leDefender.setFireTicks(0);
+                        }
+                        try {
+                            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.RED_DUST, defender.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        damageToBlock[i] = -2;
+                    }
+                }
+                if (nmsTags[i].getInt("dodge") != 0) {
+                    int dodgeChance = nmsTags[i].getInt("dodge");
+                    if (nmsTags[i].getInt("dexterity") != 0) {
+                        dodgeChance += (dodgeChance * (nmsTags[i].getInt("dexterity") * 0.017));
+                    }
+                    if (API.isPlayer(attacker)) {
+                        if (((Player) attacker).getItemInHand() != null && ((Player) attacker).getItemInHand().getType() != Material.AIR) {
+                            net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
+                            NBTTagCompound tag = nmsItem.getTag();
+                            if (tag != null) {
+                                if (tag.getInt("accuracy") != 0) {
+                                    dodgeChance -= tag.getInt("accuracy");
+                                    if (dodgeChance < 0) {
+                                        dodgeChance = 0;
                                     }
                                 }
                             }
                         }
-                        if (new Random().nextInt(99) < dodgeChance) {
-                            if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
-                                leDefender.removePotionEffect(PotionEffectType.SLOW);
-                            }
-                            if (leDefender.hasPotionEffect(PotionEffectType.POISON)) {
-                                leDefender.removePotionEffect(PotionEffectType.POISON);
-                            }
-                            if (leDefender.getFireTicks() > 0) {
-                                leDefender.setFireTicks(0);
-                            }
-                            try {
-                                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, defender.getLocation(),
-                                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-                            } catch (Exception ex) {
-                                ex.printStackTrace();
-                            }
-                            damageToBlock[i] = -1;
+                    }
+                    if (new Random().nextInt(99) < dodgeChance) {
+                        if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
+                            leDefender.removePotionEffect(PotionEffectType.SLOW);
                         }
+                        if (leDefender.hasPotionEffect(PotionEffectType.POISON)) {
+                            leDefender.removePotionEffect(PotionEffectType.POISON);
+                        }
+                        if (leDefender.getFireTicks() > 0) {
+                            leDefender.setFireTicks(0);
+                        }
+                        try {
+                            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, defender.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                           damageToBlock[i] = -1;
                     }
                 }
                 if (nmsTags[i].getInt("strength") != 0) {
