@@ -1232,7 +1232,6 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void playerClickRepairInv(InventoryClickEvent event) {
         if (!event.getInventory().getTitle().contains("Repair your item for")) return;
-        if (event.getRawSlot() < 9) {
             event.setCancelled(true);
             if (event.getRawSlot() == 3) {
                 String string = event.getInventory().getTitle().substring(event.getInventory().getTitle().indexOf(ChatColor.BOLD.toString()) + 2);
@@ -1250,7 +1249,6 @@ public class InventoryListener implements Listener {
             } else if (event.getRawSlot() == 5) {
                 event.getWhoClicked().closeInventory();
             }
-        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

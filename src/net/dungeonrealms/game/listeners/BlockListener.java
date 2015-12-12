@@ -229,16 +229,11 @@ public class BlockListener implements Listener {
                   p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 0));
         	  break;
           case 4:
-        	  if(tier == 3 || tier == 4)
-              p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 1));
-        	  if(tier == 2 || tier == 1)
-                  p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 0));
+              p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 0));
              break;
           case 5:
-        	  if(tier == 4 || tier == 5){
-              p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 1));
-        	  }else
               p.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 40, 0));
+              break;
           }
         }
     }

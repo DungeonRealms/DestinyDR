@@ -205,24 +205,26 @@ public class GamePlayer {
      * @since 1.0
      */
     public void addExperience(double experienceToAdd, boolean isParty) {
-        int level = getLevel();
-        double experience = getExperience();
-        double subBonus = 0;
-        double subPlusBonus = 0;
-        if (level > 100) return;
-        boolean isSub = Rank.getInstance().getRank(T.getUniqueId()).getName().equalsIgnoreCase("SUB");
-        boolean isSubPlus = Rank.getInstance().getRank(T.getUniqueId()).getName().equalsIgnoreCase("SUB+");
-        if (isSub) {
-            subBonus = experienceToAdd * 0.05;
-        }
-        if (isSubPlus) {
-            subPlusBonus = experienceToAdd * 0.1;
-        }
-        String expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "        + ";
-        if (isParty) {
-            expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "            " + ChatColor.AQUA.toString() + ChatColor.BOLD + "P " + ChatColor.RESET + ChatColor.GRAY + "➜ " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+";
-        }
-        double futureExperience = experience + experienceToAdd + subBonus + subPlusBonus;
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () ->{
+            int level = getLevel();
+            double experience = getExperience();
+            if (level > 100) return;
+            boolean isSub = Rank.getInstance().getRank(T.getUniqueId()).getName().equalsIgnoreCase("SUB");
+            boolean isSubPlus = Rank.getInstance().getRank(T.getUniqueId()).getName().equalsIgnoreCase("SUB+");
+            String expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "        + ";
+            if (isParty) {
+                expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "            " + ChatColor.AQUA.toString() + ChatColor.BOLD + "P " + ChatColor.RESET + ChatColor.GRAY + "➜ " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+";
+            }
+            double subBonus = 0;
+            double subPlusBonus = 0;
+
+            if (isSub) {
+                subBonus = experienceToAdd * 0.05;
+            }
+            if (isSubPlus) {
+                subPlusBonus = experienceToAdd * 0.1;
+            }
+            double futureExperience = experience + experienceToAdd + subBonus + subPlusBonus;
         int xpNeeded = getEXPNeeded(level);
         if (futureExperience >= xpNeeded) {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, 0, true);
@@ -242,6 +244,7 @@ public class GamePlayer {
                 }
             }
         }
+        }, 10l);
 
     }
 

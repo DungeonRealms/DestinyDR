@@ -42,9 +42,9 @@ public class RepairAPI {
 			if(percent_durability_left > 99) {
 				percent_durability_left = 99;
 			}
-			double armor_cost = avg_armor * 1; // This is the cost PER PERCENT kinda
+			double armor_cost = avg_armor * 0.8; // This is the cost PER PERCENT kinda
 			
-			double global_multiplier = 0.30 - 0.06; // Additional 0.06 less
+			double global_multiplier = 0.20; // Additional 0.06 less
 			double multiplier = 1;
 			double missing_percent = 100 - percent_durability_left;
 			double total_armor_cost = missing_percent * armor_cost;
@@ -62,11 +62,11 @@ public class RepairAPI {
 				repair_cost = total_armor_cost * multiplier;
 			}
 			if(item_tier == 4) {
-				multiplier = 3.75;
+				multiplier = 2;
 				repair_cost = total_armor_cost * multiplier;
 			}
 			if(item_tier == 5) {
-				multiplier = 6.0;
+				multiplier = 2.75;
 				repair_cost = total_armor_cost * multiplier;
 			}
 
@@ -80,14 +80,14 @@ public class RepairAPI {
 			int item_tier = nms.getTag().getInt("itemTier");
 	        NBTTagCompound tag = CraftItemStack.asNMSCopy(i).getTag();
 	        double avg_dmg = tag.getInt("damage");//Utils.randInt((int) Math.round(tag.getDouble("damage")  / damageRandomizer), (int) Math.round(tag.getDouble("damage")/ (damageRandomizer - 1)));
-			double dmg_cost = avg_dmg * 0.1; // This is the cost PER PERCENT
+			double dmg_cost = avg_dmg * 0.02; // This is the cost PER PERCENT
 
 			double percent_durability_left =   (getCustomDurability(i) / 1550) * 100;  // getDurabilityValueAsPercent(i, getCustomDurability(i));
 			if(percent_durability_left > 99) {
 				percent_durability_left = 99;
 			}
 			
-			double global_multiplier = 0.25 - 0.05;
+			double global_multiplier = 0.20;
 			double multiplier = 1.0; // 100%
 			double missing_percent = 100 - percent_durability_left;
 			double total_dmg_cost = missing_percent * dmg_cost;
@@ -100,15 +100,15 @@ public class RepairAPI {
 				repair_cost = total_dmg_cost * multiplier;
 			}
 			if(item_tier == 3) {
-				multiplier = 2.0;
+				multiplier = 1.75;
 				repair_cost = total_dmg_cost * multiplier;
 			}
 			if(item_tier == 4) {
-				multiplier = 6.0;
+				multiplier = 2.5;
 				repair_cost = total_dmg_cost * multiplier;
 			}
 			if(item_tier == 5) {
-				multiplier = 8.0;
+				multiplier = 3.75;
 				repair_cost = total_dmg_cost * multiplier;
 			}
 			repair_cost += repair_cost * global_multiplier;
@@ -117,7 +117,7 @@ public class RepairAPI {
 		if(Mining.isDRPickaxe(i)) {
 			int item_tier = Mining.getPickTier(i);
 			double dmg_cost = Math.pow(Mining.getLvl(i), 2) / 100D; // This is the cost PER PERCENT
-			double percent_durability_left = getDurabilityValueAsPercent(i, getCustomDurability(i));
+			double percent_durability_left =   (getCustomDurability(i) / 1550) * 100; 
 			if(percent_durability_left > 99) {
 				percent_durability_left = 99;
 			}
@@ -128,15 +128,15 @@ public class RepairAPI {
 			double total_dmg_cost = missing_percent * dmg_cost;
 			
 			if(item_tier == 1) {
-				multiplier = 0.5;
-				repair_cost = total_dmg_cost * multiplier;
-			}
-			if(item_tier == 2) {
 				multiplier = 0.75;
 				repair_cost = total_dmg_cost * multiplier;
 			}
-			if(item_tier == 3) {
+			if(item_tier == 2) {
 				multiplier = 1.0;
+				repair_cost = total_dmg_cost * multiplier;
+			}
+			if(item_tier == 3) {
+				multiplier = 1.5;
 				repair_cost = total_dmg_cost * multiplier;
 			}
 			if(item_tier == 4) {
@@ -153,8 +153,8 @@ public class RepairAPI {
 		if(Fishing.isDRFishingPole(i) ){
 			int item_tier = Fishing.getRodTier(i);
 			double dmg_cost = 2; // This is the cost PER PERCENT
-			double percent_durability_left = getDurabilityValueAsPercent(i, getCustomDurability(i));
-			double global_multiplier = 0.8;
+			double percent_durability_left =   (getCustomDurability(i) / 1550) * 100; 
+			double global_multiplier = 0.4;
 			double multiplier = 1.0; // 100%
 			double missing_percent = 100 - percent_durability_left;
 			double total_dmg_cost = missing_percent * dmg_cost;
@@ -187,7 +187,7 @@ public class RepairAPI {
 		if(repair_cost < 1) {
 			repair_cost = 1;
 		}
-		return ((int) Math.round(repair_cost) )/ 2;
+		return (int) Math.round(repair_cost);
 	}
 	
 	
