@@ -54,6 +54,7 @@ import java.io.IOException;
  * Written by Nick Doran (xFinityPro) <nick@cherryio.com>, October 2015 -
  * Written by Kieran Quigley (Proxying) <Proxying@cherryio.com>, October 2015 -
  * Written by Chase Myers  (Xwaffle) <chase@cherryio.com>, October 2015 -
+ * Written by Casey Keeling  (Atlas_) <casey@amrillocollege.com>, October 2015 -
  * Previous Developers -
  *  Written by Gay Tux Boy. ("Naughty, Naughty, Naughty")
  *

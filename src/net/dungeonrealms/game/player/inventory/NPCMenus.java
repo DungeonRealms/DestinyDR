@@ -1,22 +1,8 @@
 package net.dungeonrealms.game.player.inventory;
 
-import java.util.Arrays;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import com.minebone.anvilapi.core.AnvilApi;
 import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
 import com.minebone.anvilapi.nms.anvil.AnvilSlot;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -24,6 +10,14 @@ import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.world.items.Item.ItemModifier;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * Created by Kieran on 10/26/2015.
@@ -41,12 +35,12 @@ public class NPCMenus {
                 ChatColor.RED + "Speed 140%",
                 ChatColor.RED + "Jump 110%",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "A well versed travelling companion.",
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "15000g"}).setNBTString("mountType", "DIAMONDHORSE").setNBTInt("mountCost", 12500).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "15000g"}).setNBTString("mountType", "DIAMONDHORSE").setNBTInt("mountCost", 15000).build());
         inv.setItem(2, new ItemBuilder().setItem(new ItemStack(Material.GOLD_BARDING), ChatColor.YELLOW + "Knight's Horse Mount", new String[]{
                 ChatColor.RED + "Speed 160%",
                 ChatColor.RED + "Jump 110%",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "A mount fit for even the best of adventurers.",
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "35000g"}).setNBTString("mountType", "GOLDHORSE").setNBTInt("mountCost", 25000).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "35000g"}).setNBTString("mountType", "GOLDHORSE").setNBTInt("mountCost", 35000).build());
         inv.setItem(9, new ItemBuilder().setItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Storage Mule", new String[]{
                 ChatColor.RED + "Storage Size: 9 Items",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "An old worn-out storage mule.",

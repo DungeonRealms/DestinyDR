@@ -457,6 +457,13 @@ public class DamageListener implements Listener {
                     return;
                 }
             }
+            if (attacker instanceof Player) {
+                if (API.isNonPvPRegion(attacker.getLocation()) && defender instanceof Player) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
+                }
+            }
             if (attacker instanceof Player && defender instanceof Player) {
                 if (Affair.getInstance().areInSameParty((Player) attacker, (Player) defender)) {
                     event.setCancelled(true);
@@ -478,6 +485,13 @@ public class DamageListener implements Listener {
             attacker = (LivingEntity) staffProjectile.getShooter();
             if (defender instanceof Player) {
                 if (API.isNonPvPRegion(defender.getLocation()) && attacker instanceof Player) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
+                }
+            }
+            if (attacker instanceof Player) {
+                if (API.isNonPvPRegion(attacker.getLocation()) && defender instanceof Player) {
                     event.setCancelled(true);
                     event.setDamage(0);
                     return;

@@ -2,24 +2,23 @@
 
     import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.player.chat.GameChat;
-import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.duel.DuelOffer;
-import net.dungeonrealms.game.player.duel.DuelingMechanics;
-import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.mechanics.DungeonManager;
-import net.dungeonrealms.game.mechanics.SoundAPI;
-import net.dungeonrealms.game.mechanics.generic.EnumPriority;
+    import net.dungeonrealms.game.mechanics.SoundAPI;
+    import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.player.chat.GameChat;
+import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.duel.DuelOffer;
+import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.profession.Fishing;
-    import net.dungeonrealms.game.world.party.Affair;
-    import net.minecraft.server.v1_8_R3.EntityArmorStand;
-import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import net.dungeonrealms.game.world.entities.Entities;
+import net.dungeonrealms.game.world.party.Affair;
+import net.minecraft.server.v1_8_R3.EntityArmorStand;
+    import org.bukkit.*;
+    import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.*;
@@ -31,7 +30,7 @@ import org.inventivetalent.bossbar.BossBarAPI;
 
 import java.util.ArrayList;
 import java.util.List;
-    import java.util.Random;
+import java.util.Random;
 
     /**
  * Created by Kieran on 10/3/2015.
@@ -493,36 +492,35 @@ public class HealthHandler implements GenericMechanic {
         }
         if (damager instanceof Player) {
             leAttacker = (LivingEntity) damager;
-            KarmaHandler.getInstance().handleAlignmentChanges((Player) damager);
         }
 
         CombatLog.addToCombat(player);
-        if (leAttacker instanceof Player) {
-            player.playEffect(EntityEffect.HURT);
-            SoundAPI.getInstance().playSoundAtLocation("damage.hit", player.getLocation(), 6);
-        }
         if (newHP <= 0 && DuelingMechanics.isDueling(player.getUniqueId())) {
             DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
             offer.endDuel((Player) leAttacker, player);
             return;
         }
 
-        if (newHP <= 0 && API.isPlayer(leAttacker) && Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, leAttacker.getUniqueId()).toString())) {
-            if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.LAWFUL.name())) {
-                newHP = 1;
-                leAttacker.sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + player.getName() + "!");
-                player.sendMessage(ChatColor.YELLOW + leAttacker.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
+        if (leAttacker instanceof Player) {
+            if (!DuelingMechanics.isDuelPartner(player.getUniqueId(), leAttacker.getUniqueId())) {
+                KarmaHandler.getInstance().handleAlignmentChanges((Player) leAttacker);
+                if (newHP <= 0 && API.isPlayer(leAttacker) && Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, leAttacker.getUniqueId()).toString())) {
+                    if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.LAWFUL.name())) {
+                        newHP = 1;
+                        leAttacker.sendMessage(ChatColor.YELLOW + "Your Chaotic Prevention Toggle has activated preventing the death of " + player.getName() + "!");
+                        player.sendMessage(ChatColor.YELLOW + leAttacker.getName() + " has their Chaotic Prevention Toggle ON, your life has been spared!");
+                    }
+                }
             }
+            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, leAttacker.getUniqueId()).toString())) {
+                leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " ➜ " + ChatColor.DARK_PURPLE + player.getName() + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
+            }
+            player.playEffect(EntityEffect.HURT);
+            SoundAPI.getInstance().playSoundAtLocation("damage.hit", player.getLocation(), 6);
         }
 
         if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
             player.sendMessage(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.RED + " ➜ " + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
-        }
-
-        if (API.isPlayer(leAttacker)) {
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, leAttacker.getUniqueId()).toString())) {
-                leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " ➜ " + ChatColor.DARK_PURPLE + player.getName() + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
-            }
         }
 
         if (newHP <= 0) {
@@ -600,7 +598,6 @@ public class HealthHandler implements GenericMechanic {
         if (currentHP <= 0) {
             if (!entity.isDead()) {
                 entity.setHealth(0);
-                entity.remove();
             }
             return;
         }

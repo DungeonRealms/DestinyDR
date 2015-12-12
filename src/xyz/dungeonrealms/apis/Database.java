@@ -2,19 +2,23 @@ package xyz.dungeonrealms.apis;
 
 import org.bukkit.Bukkit;
 import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 import xyz.dungeonrealms.DungeonRealms;
 import xyz.dungeonrealms.mechanics.DRMechanic;
 import xyz.dungeonrealms.utilities.UUIDFetcher;
 
-import java.io.IOException;
 import java.sql.*;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.UUID;
 import java.util.concurrent.Executors;
+import java.util.function.Consumer;
 
 /**
  * Created by Nick on 12/10/2015.
  */
+@SuppressWarnings("unchecked")
 public class Database implements DRMechanic {
 
     private static Database instance = null;
@@ -39,7 +43,6 @@ public class Database implements DRMechanic {
 
     @Override
     public void onDisable() {
-
     }
 
     public synchronized void connectToMysql() {
@@ -53,11 +56,11 @@ public class Database implements DRMechanic {
             Bukkit.shutdown();
         }
 
-        verifyDatabaseInegrity();
+        verifyDatabaseIntegrity();
 
     }
 
-    void verifyDatabaseInegrity() {
+    void verifyDatabaseIntegrity() {
         DungeonRealms.log.info("DR | Verifying Database Integrity... CHECKING ...");
         try {
             DatabaseMetaData dbm = connection.getMetaData();
@@ -73,7 +76,7 @@ public class Database implements DRMechanic {
                     statement.execute("CREATE TABLE players (" +
                             "uuid VARCHAR(35) NOT NULL," +
                             "name VARCHAR(17) NOT NULL," +
-                            "data MEDIUMBLOB)");
+                            "data MEDIUMBLOB);");
                 }
             }
         } catch (SQLException e) {
@@ -83,19 +86,15 @@ public class Database implements DRMechanic {
 
     public void handlePlayerLogin(UUID uuid) {
         Executors.newSingleThreadExecutor().submit(() -> {
-            try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery("SELECT name, data FROM players");) {
-
+            try (Statement statement = connection.createStatement(); ResultSet resultSet = statement.executeQuery("SELECT data FROM players WHERE uuid=" + uuid.toString() + ";");) {
                 if (!resultSet.next()) {
-                    //PLAYER DOESN'T EXIST?
                     createNewPlayer(uuid);
                 } else {
-                    while (resultSet.next()) {
-                        String name = resultSet.getString("name");
-                        JSONObject jsonObject = (JSONObject) API.getInstance().convertFromBytes(resultSet.getString("data").getBytes());
-                    }
-
+                    //Removed the while(resultSet.next())
+                    JSONObject jsonObject = (JSONObject) new JSONParser().parse(resultSet.getString("data"));
+                    players.put(uuid, jsonObject);
                 }
-            } catch (SQLException | ClassNotFoundException | IOException e) {
+            } catch (SQLException | ParseException e) {
                 e.printStackTrace();
             }
         });
@@ -103,15 +102,13 @@ public class Database implements DRMechanic {
 
     public void createNewPlayer(UUID uuid) {
         Executors.newSingleThreadExecutor().submit(() -> {
-
             try (Statement statement = connection.createStatement();) {
-
                 String name = UUIDFetcher.getName(uuid);
-                statement.executeUpdate("INSERT INTO players VALUES (" + uuid.toString() + ", " + name + ", " + getNewPlayerJson(uuid, name).toJSONString());
-                ;
-
+                statement.executeUpdate("INSERT INTO players VALUES (" + uuid.toString() + ", " + name + ", " + getNewPlayerJson(uuid, name).toJSONString() + ");");
             } catch (SQLException e) {
                 e.printStackTrace();
+            } finally {
+                handlePlayerLogin(uuid);
             }
         });
     }
@@ -124,11 +121,28 @@ public class Database implements DRMechanic {
         temp.put("level", 1);
         temp.put("experience", 0);
 
-
         temp.put("guild", "");
+        temp.put("achievements", new ArrayList<String>());
 
         return temp;
     }
 
+    public void fetchOfflineGuild(String guildName, Consumer<JSONObject> object) {
+        Executors.newSingleThreadExecutor().submit(() -> {
+            try (
+                    Statement statement = connection.createStatement();
+                    ResultSet resultSet = statement.executeQuery("SELECT data FROM guilds WHERE name=" + guildName + ";");
+            ) {
+                if (!resultSet.next()) {
+                    object.accept(null);
+                } else {
+                    object.accept((JSONObject) new JSONParser().parse(resultSet.getString("data")));
+                }
+
+            } catch (SQLException | ParseException e) {
+                e.printStackTrace();
+            }
+        });
+    }
 
 }
