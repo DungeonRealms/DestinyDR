@@ -582,7 +582,6 @@ public class DamageListener implements Listener {
             return;
         }
         if (event.getDamage() - armourReducedDamage <= 0 || armourReducedDamage == -2) {
-            Bukkit.broadcastMessage(event.getDamage() + "" + (event.getDamage() - armourReducedDamage) + ";" + armourReducedDamage);
             if (attacker instanceof Player) {
                 String defenderName;
                 if (defender instanceof Player) {
