@@ -119,7 +119,7 @@ public class Entities implements GenericMechanic {
 				}
 				
 				if (MONSTER_LAST_ATTACK.containsKey(entity)) {
-					if (MONSTER_LAST_ATTACK.get(entity) == 13) {
+					if (MONSTER_LAST_ATTACK.get(entity) == 11) {
 						EntityInsentient entityInsentient = (EntityInsentient) ((CraftEntity)entity).getHandle();
 						if (entityInsentient != null && entityInsentient.getGoalTarget() != null) {
 							if (entityInsentient.getGoalTarget().getBukkitEntity().getLocation().distance(entity.getLocation()) >= 2 && entityInsentient.getGoalTarget().getBukkitEntity().getLocation().distance(entity.getLocation()) <= 6) {

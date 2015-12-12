@@ -7,7 +7,6 @@ import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handlers.ClickHandler;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -1078,7 +1077,7 @@ public class InventoryListener implements Listener {
             Packet particles = new PacketPlayOutWorldEvent(2001, new BlockPosition((int) Math.round(player.getLocation().getX()), (int) Math.round(player.getLocation().getY() + 2), (int) Math.round(player.getLocation().getZ())), particleID, false);
             ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, particles);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-                player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + newPercent + "/1500");
+                player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + (int) newPercent + "/1500");
             }
             return;
         }
@@ -1131,7 +1130,7 @@ public class InventoryListener implements Listener {
             Packet particles = new PacketPlayOutWorldEvent(2001, new BlockPosition((int) Math.round(player.getLocation().getX()), (int) Math.round(player.getLocation().getY() + 2), (int) Math.round(player.getLocation().getZ())), particleID, false);
             ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, particles);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-                player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + newPercent + "/1500");
+                player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + (int) newPercent + "/1500");
             }
         }
     }
