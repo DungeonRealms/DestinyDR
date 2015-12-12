@@ -354,12 +354,17 @@ public class API {
         }
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, false);
         if (BankMechanics.storage.containsKey(uuid)) {
-            Inventory inv = BankMechanics.storage.get(uuid).inv;
+            Inventory inv = BankMechanics.getInstance().getStorage(uuid).inv;
             if (inv != null) {
                 String serializedInv = ItemSerialization.toString(inv);
-                BankMechanics.storage.remove(uuid);
                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, false);
             }
+            inv = BankMechanics.getInstance().getStorage(uuid).collection_bin;
+            if (inv != null) {
+                String serializedInv = ItemSerialization.toString(inv);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, serializedInv, false);
+            }
+            BankMechanics.storage.remove(uuid);
         }
         Inventory inv = player.getInventory();
         ArrayList<String> armor = new ArrayList<>();
@@ -376,6 +381,9 @@ public class API {
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_MULE, ItemSerialization.toString(MountUtils.inventories.get(uuid)), false);
             MountUtils.inventories.remove(uuid);
         }
+        
+        
+        
         String locationAsString = "-367,86,390,0,0"; // Cyrennica
         if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
             locationAsString = player.getLocation().getX() + "," + (player.getLocation().getY() + 0.5) + ","
