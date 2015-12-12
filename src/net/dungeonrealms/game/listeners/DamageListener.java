@@ -633,6 +633,7 @@ public class DamageListener implements Listener {
         if (!(shooter instanceof Player)) return;
         if (API.isInSafeRegion(shooter.getLocation()) && event.getEntity().getType() != EntityType.SPLASH_POTION && event.getEntity().getType() != EntityType.FISHING_HOOK) {
             event.setCancelled(true);
+            event.getEntity().remove();
             return;
         }
         int weaponTier = nmsItem.getTag().getInt("itemTier");
