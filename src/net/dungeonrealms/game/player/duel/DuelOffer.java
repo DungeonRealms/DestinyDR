@@ -1,26 +1,21 @@
 package net.dungeonrealms.game.player.duel;
 
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.player.chat.GameChat;
+import net.dungeonrealms.game.world.items.Item.ItemTier;
+import net.dungeonrealms.game.world.items.armor.Armor.ArmorTier;
+import net.dungeonrealms.game.world.items.repairing.RepairAPI;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.player.chat.GameChat;
-import net.dungeonrealms.game.handlers.HealthHandler;
-import net.dungeonrealms.game.world.items.Item.ItemTier;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorTier;
-import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.dungeonrealms.game.mechanics.ItemManager;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import java.util.UUID;
 
 /**
  * Created by Chase on Nov 13, 2015
@@ -94,8 +89,8 @@ public class DuelOffer {
 		}
 //		Bukkit.broadcastMessage(ChatColor.AQUA + winner.getName() + ChatColor.YELLOW + " has defeated "
 //		        + loser.getName() + " in a duel");
-		
-		Bukkit.broadcastMessage(GameChat.getPreMessage(winner) + ChatColor.GREEN + " has " + ChatColor.UNDERLINE + "DEFEATED" + ChatColor.RESET + GameChat.getPreMessage(loser) + ChatColor.GREEN  + " in a duel");
+
+		API.getNearbyPlayers(winner.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage((GameChat.getPreMessage(winner).trim().replace(":", "") + ChatColor.GREEN + " has " + ChatColor.UNDERLINE + "DEFEATED" + ChatColor.RESET + " " + GameChat.getPreMessage(loser).trim().replace(":", "") + ChatColor.GREEN + " in a duel!")));
 		DuelingMechanics.removeOffer(this);
 	}
 
@@ -153,7 +148,7 @@ public class DuelOffer {
 	}
 
 	/**
-	 * @param uniqueId
+	 * @param logOut
 	 */
 	public void handleLogOut(Player logOut) {
 		Player winner = null;
