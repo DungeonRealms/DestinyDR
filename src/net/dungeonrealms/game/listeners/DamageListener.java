@@ -195,14 +195,6 @@ public class DamageListener implements Listener {
                 }
             }
             if (event.getEntity() instanceof Player) {
-                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, event.getDamager().getUniqueId()).toString())) {
-                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getDamager().getUniqueId()).toString())) {
-                        event.getDamager().sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP enabled. You currently cannot attack players.");
-                    }
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
                 if (Affair.getInstance().areInSameParty((Player) event.getDamager(), (Player) event.getEntity())) {
                     event.setCancelled(true);
                     event.setDamage(0);
@@ -258,16 +250,6 @@ public class DamageListener implements Listener {
             Arrow attackingArrow = (Arrow) event.getDamager();
             if (!(attackingArrow.getShooter() instanceof Player)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((Player) attackingArrow.getShooter(), event.getEntity(), attackingArrow);
-            if (event.getEntity() instanceof Player) {
-                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, ((Player) attackingArrow.getShooter()).getUniqueId()).toString())) {
-                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, ((Player) attackingArrow.getShooter()).getUniqueId()).toString())) {
-                        ((Player) attackingArrow.getShooter()).sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP enabled. You currently cannot attack players.");
-                    }
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
-            }
             if (CombatLog.isInCombat(((Player) attackingArrow.getShooter()))) {
                 CombatLog.updateCombat(((Player) attackingArrow.getShooter()));
             } else {
@@ -277,16 +259,6 @@ public class DamageListener implements Listener {
             Snowball staffProjectile = (Snowball) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof Player)) return;
             finalDamage = DamageAPI.calculateProjectileDamage((Player) staffProjectile.getShooter(), event.getEntity(), staffProjectile);
-            if (event.getEntity() instanceof Player) {
-                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, ((Player) staffProjectile.getShooter()).getUniqueId()).toString())) {
-                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, ((Player) staffProjectile.getShooter()).getUniqueId()).toString())) {
-                        ((Player) staffProjectile.getShooter()).sendMessage(org.bukkit.ChatColor.YELLOW + "You have toggle PvP enabled. You currently cannot attack players.");
-                    }
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
-            }
             if (CombatLog.isInCombat(((Player) staffProjectile.getShooter()))) {
                 CombatLog.updateCombat(((Player) staffProjectile.getShooter()));
             } else {
@@ -417,7 +389,6 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR, ignoreCancelled = false)
     public void onArmorReduceBaseDamage(EntityDamageByEntityEvent event) {
-        if (event.isCancelled()) return;
         if ((!(event.getDamager() instanceof LivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL) && (event.getDamager().getType() != EntityType.WITHER_SKULL)))
             return;
         if (!(event.getEntity() instanceof LivingEntity)) return;
