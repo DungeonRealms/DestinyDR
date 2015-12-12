@@ -1,4 +1,4 @@
-package xyz.dungeonrealms.mechanics.world;
+package xyz.dungeonrealms.mechanics.world.interfaces;
 
 /**
  * Created by Nick on 12/11/2015.

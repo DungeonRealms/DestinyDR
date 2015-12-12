@@ -1,11 +1,14 @@
-package xyz.dungeonrealms.mechanics.world;
+package xyz.dungeonrealms.mechanics.world.entities;
 
 import net.minecraft.server.v1_8_R3.*;
+import xyz.dungeonrealms.mechanics.world.Tier;
+import xyz.dungeonrealms.mechanics.world.interfaces.DRMob;
+import xyz.dungeonrealms.mechanics.world.interfaces.Playable;
 
 /**
  * Created by Nick on 12/11/2015.
  */
-public class FakePig extends EntityPig implements Playable {
+public class FakePig extends EntityPig implements Playable, DRMob {
 
     public FakePig(World world) {
         super(world);
@@ -39,5 +42,10 @@ public class FakePig extends EntityPig implements Playable {
     @Override
     public String getIdentifier() {
         return "FakePig";
+    }
+
+    @Override
+    public Tier getMobTier() {
+        return Tier.TIER_1;
     }
 }
