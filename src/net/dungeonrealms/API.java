@@ -201,7 +201,7 @@ public class API {
      */
     private static int calculateXP(Player player, Entity kill, int mob_level) {
         int pLevel = API.getGamePlayer(player).getStats().getLevel();
-        int xp = (int) (((pLevel * 5) + 45) * (1.09 * (pLevel + (mob_level - pLevel))));
+        int xp = (int) (((pLevel * 5) + 45) * (1 + (0.07 * (pLevel + (mob_level - pLevel)))));
         return xp;
     }
 
