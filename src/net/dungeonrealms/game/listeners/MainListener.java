@@ -782,10 +782,9 @@ public class MainListener implements Listener {
                 		}
                 		event.getPlayer().getInventory().setItem(i, BankMechanics.getInstance().createGemPouch(tier, currentAmount));
                 	}
-                	
-                	if(gems > 0)
-                		event.getPlayer().getInventory().addItem(BankMechanics.createGems(gems));
             	}
+            	if(gems > 0)
+            		event.getPlayer().getInventory().addItem(BankMechanics.createGems(gems));
             }
         } else {
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.CHICKEN_EGG_POP, 1f, 1f);
