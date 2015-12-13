@@ -1,12 +1,13 @@
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.guild.Guild;
-import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumGuildData;
+import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.player.chat.GameChat;
+import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -43,6 +44,8 @@ public class CommandGlobalChat extends BasicCommand {
             chatMessage.append(arg + " ");
         }
 
+        String finalChat = Chat.getInstance().checkForBannedWords(chatMessage.toString());
+
         Player player = (Player) sender;
 
         UUID uuid = player.getUniqueId();
@@ -66,31 +69,29 @@ public class CommandGlobalChat extends BasicCommand {
             prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.WHITE + " [" + clanTag + ChatColor.RESET + "]"));
         }
 
-       	if(chatMessage.toString().contains("@i@") && player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR){
-            String message = chatMessage.toString();
-           final Player p = player;
-           String aprefix = GameChat.getPreMessage(p);
-           String[] split = message.split("@i@");
-           String after = "";
-           String before = "";
-           if (split.length > 0)
-               before = split[0];
-           if (split.length > 1)
-               after = split[1];
-           
-           final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
-           normal.addText(before + "");
-           normal.addItem(p.getItemInHand(), ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOW" + ChatColor.WHITE, ChatColor.UNDERLINE);
-           normal.addText(after);
-           Bukkit.getOnlinePlayers().stream().forEach(newPlayer ->{
-         	  if((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, newPlayer.getUniqueId())){
-         		  normal.sendToPlayer(newPlayer);
-         	  }
-           });
-           return true;
-     	}
+       	if(finalChat.contains("@i@") && player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR){
+            String aprefix = GameChat.getPreMessage(player);
+            String[] split = finalChat.split("@i@");
+            String after = "";
+            String before = "";
+            if (split.length > 0)
+                before = split[0];
+            if (split.length > 1)
+                after = split[1];
+
+            final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
+            normal.addText(before + "");
+            normal.addItem(player.getItemInHand(), ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOW" + ChatColor.WHITE, ChatColor.UNDERLINE);
+            normal.addText(after);
+            Bukkit.getOnlinePlayers().stream().forEach(newPlayer ->{
+                if((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, newPlayer.getUniqueId())){
+                    normal.sendToPlayer(newPlayer);
+                }
+            });
+            return true;
+        }
         
-        Bukkit.broadcastMessage(prefix.toString().trim() + " " + player.getName() + ChatColor.GRAY + ": " + chatMessage.toString());
+        Bukkit.broadcastMessage(prefix.toString().trim() + " " + player.getName() + ChatColor.GRAY + ": " + finalChat);
 
         return true;
     }
