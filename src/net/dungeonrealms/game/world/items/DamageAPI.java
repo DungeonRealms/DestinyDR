@@ -386,7 +386,7 @@ public class DamageAPI {
         if (isHitCrit) {
             damage = damage * 1.5;
         }
-        return Math.round(damage);
+        return Math.round(damage) + 1;
     }
 
     /**
