@@ -796,7 +796,7 @@ public class ItemManager {
 	 */
 	public static boolean isEnchantScroll(ItemStack stack) {
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        return stack.getType() == Material.PAPER && nms.getTag() != null && nms.getTag().hasKey("type") &&(nms.getTag().getString("type").equalsIgnoreCase("armorenchant") || nms.getTag().getString("type").equalsIgnoreCase("weaponenchant"));
+        return stack.getType() == Material.EMPTY_MAP && nms.getTag() != null && nms.getTag().hasKey("type") &&(nms.getTag().getString("type").equalsIgnoreCase("armorenchant") || nms.getTag().getString("type").equalsIgnoreCase("weaponenchant"));
 	}
 
 	/**
