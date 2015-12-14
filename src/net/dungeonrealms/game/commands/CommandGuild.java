@@ -5,6 +5,7 @@ import net.dungeonrealms.game.guild.Guild;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.player.chat.GameChat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -30,10 +31,6 @@ public class CommandGuild extends BasicCommand {
         if (s instanceof ConsoleCommandSender) return false;
 
         Player player = (Player) s;
-        if (!player.isOp()) {
-            player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
-            return false;
-        }
 
         /*
         if (Guild.getInstance().isGuildNull(player.getUniqueId())) {
@@ -46,16 +43,55 @@ public class CommandGuild extends BasicCommand {
         if (args.length > 0) {
 
             /*
+            Guild chat, /g <message>
+             */
+            if (args[0].equalsIgnoreCase("c") || args[0].equalsIgnoreCase("chat")) {
+                if (args.length > 1) {
+                    StringBuilder message = new StringBuilder();
+
+                    for (int i = 1; i < args.length; i++) {
+                        message.append(args[i]).append(" ");
+                    }
+
+                    String guildName = DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString();
+                    Guild.getInstance().sendAlert(guildName, ChatColor.GREEN.toString() + ChatColor.BOLD + "G" + " " + GameChat.getPreMessage(player) + message.toString());
+                } else {
+                    player.sendMessage(ChatColor.RED + "Make your message longer.");
+                }
+            }
+
+            /*
+            Guild Set Desc, /guild desc <shit>
+             */
+            if (args[0].equalsIgnoreCase("desc") || args[0].equalsIgnoreCase("d") || args[0].equalsIgnoreCase("motd")) {
+                //Make sure the person setting the motd is the owner.
+                if (Guild.getInstance().isOwnerOfGuild(player)) {
+                    if (args.length > 1) {
+                        StringBuilder motd = new StringBuilder();
+
+                        for (int i = 1; i < args.length; i++) {
+                            motd.append(args[i]).append(" ");
+                        }
+
+                        Guild.getInstance().setMotdOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString(), motd.toString());
+
+                    } else {
+                        player.sendMessage(ChatColor.RED + "Make your description longer!?");
+                    }
+                }
+            }
+
+            /*
             Guild Accept, /guild accept <guildName>
              */
             if (args[0].equalsIgnoreCase("accept") || args[0].equalsIgnoreCase("a")) {
                 if (args.length == 2) {
                     if (Guild.getInstance().isGuildNull(player.getUniqueId())) {
 
-                        if (Guild.invitations.containsKey(player)) {
-                            if (Guild.invitations.get(player).contains(args[1])) {
-                                DatabaseAPI.getInstance().update(Bukkit.getPlayer(args[1]).getUniqueId(), EnumOperators.$SET, EnumData.GUILD, args[1], true);
-                                Guild.getInstance().sendAlert(args[1], ChatColor.GREEN + args[1] + " " + ChatColor.YELLOW + "has accepted the guild invitation!");
+                        if (Guild.invitations.containsKey(player.getUniqueId())) {
+                            if (Guild.invitations.get(player.getUniqueId()).contains(args[1])) {
+                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, args[1], true);
+                                Guild.getInstance().sendAlert(args[1], ChatColor.GREEN + player.getName() + " " + ChatColor.YELLOW + "has joined the guild!");
                             }
                         } else {
                             player.sendMessage(ChatColor.RED + "You have no pending guild invitations!");
@@ -79,16 +115,17 @@ public class CommandGuild extends BasicCommand {
 
                             String guildName = DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString();
 
-                            if (!Guild.invitations.containsKey(Bukkit.getPlayer(args[1]))) {
-                                Guild.invitations.put(Bukkit.getPlayer(args[1]), new ArrayList<String>() {{
+                            if (!Guild.invitations.containsKey(Bukkit.getPlayer(args[1]).getUniqueId())) {
+                                Guild.invitations.put(Bukkit.getPlayer(args[1]).getUniqueId(), new ArrayList<String>() {{
                                     add(guildName);
                                 }});
+                                Guild.getInstance().sendAlert(guildName, ChatColor.YELLOW + player.getName() + " " + ChatColor.GREEN + " has invited " + args[1] + " " + "to the guild!");
                                 Bukkit.getPlayer(args[1]).sendMessage(ChatColor.GREEN + "You have been invited to: " + ChatColor.GOLD + guildName + " " + ChatColor.GREEN + "type /guild accept " + guildName + " to accept!");
                             } else {
-                                if (!Guild.invitations.get(player).contains(guildName)) {
-                                    ArrayList<String> temp = Guild.invitations.get(Bukkit.getPlayer(args[1]));
+                                if (!Guild.invitations.get(player.getUniqueId()).contains(guildName)) {
+                                    ArrayList<String> temp = Guild.invitations.get(Bukkit.getPlayer(args[1]).getUniqueId());
                                     temp.add(guildName);
-                                    Guild.invitations.put(Bukkit.getPlayer(args[1]), temp);
+                                    Guild.invitations.put(Bukkit.getPlayer(args[1]).getUniqueId(), temp);
                                 } else {
                                     player.sendMessage(ChatColor.RED + "That player already has a pending invitation to " + ChatColor.GOLD + guildName);
                                 }
@@ -112,10 +149,10 @@ public class CommandGuild extends BasicCommand {
                 player.sendMessage(new String[]{
                         ChatColor.BLUE + "___________________> " + ChatColor.GREEN + guild.get("name").toString() + ChatColor.BLUE + " <___________________",
                         ChatColor.WHITE + "Motd: " + ChatColor.GRAY + guild.get("motd").toString(),
-                        ChatColor.WHITE + "Level: " + ChatColor.GOLD + guild.get("level").toString(),
-                        ChatColor.WHITE + "Experience: " + ChatColor.YELLOW + guild.get("experience").toString(),
-                        ChatColor.WHITE + "Allies: " + ChatColor.GREEN + Guild.getInstance().getAlliesOf(guild.get("name").toString()),
-                        ChatColor.WHITE + "Enemies: " + ChatColor.RED + Guild.getInstance().getEnemiesOf(guild.get("name").toString()),
+                        //ChatColor.WHITE + "Level: " + ChatColor.GOLD + guild.get("level").toString(),
+                        //ChatColor.WHITE + "Experience: " + ChatColor.YELLOW + guild.get("experience").toString(),
+                        //ChatColor.WHITE + "Allies: " + ChatColor.GREEN + Guild.getInstance().getAlliesOf(guild.get("name").toString()),
+                        //ChatColor.WHITE + "Enemies: " + ChatColor.RED + Guild.getInstance().getEnemiesOf(guild.get("name").toString()),
                         ChatColor.WHITE + "Members Online: " + ChatColor.GREEN + Guild.getInstance().getAllOnlineOf(guild.get("name").toString()),
                         ChatColor.WHITE + "Members Offline: " + ChatColor.GREEN + Guild.getInstance().getAllOfflineOf(guild.get("name").toString()),
                         ChatColor.WHITE + "Achievements: " + ChatColor.RED + "None."

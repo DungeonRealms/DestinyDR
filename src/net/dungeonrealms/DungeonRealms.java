@@ -4,6 +4,7 @@ import net.dungeonrealms.core.Core;
 import net.dungeonrealms.game.commands.*;
 import net.dungeonrealms.game.commands.generic.CommandManager;
 import net.dungeonrealms.game.donate.DonationEffects;
+import net.dungeonrealms.game.guild.Guild;
 import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.listeners.*;
 import net.dungeonrealms.game.mastery.AsyncUtils;
@@ -224,7 +225,6 @@ public class DungeonRealms extends JavaPlugin {
             Bukkit.getOnlinePlayers().stream().forEach(player -> BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES"));
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 DungeonRealms.getInstance().setFinishedSetup(false);
-                DungeonRealms.getInstance().saveConfig();
                 ShopMechanics.deleteAllShops();
                 API.logoutAllPlayers();
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -232,7 +232,6 @@ public class DungeonRealms extends JavaPlugin {
                     Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
                     AsyncUtils.pool.shutdown();
                     Database.mongoClient.close();
-                    Bukkit.getWorlds().get(0).save();
                 }, 200);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     Bukkit.getOnlinePlayers().stream().forEach(player -> BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE"));
@@ -247,12 +246,13 @@ public class DungeonRealms extends JavaPlugin {
 
     public void onDisable() {
         saveConfig();
+        Guild.getInstance().saveAllGuilds();
         ShopMechanics.deleteAllShops();
         API.logoutAllPlayers();
         mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
         AsyncUtils.pool.shutdown();
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Database.mongoClient.close(), 20);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Database.mongoClient::close, 20);
     }
 
 }

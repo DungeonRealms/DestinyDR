@@ -41,7 +41,7 @@ public class Guild {
 
     public HashMap<String, JSONObject> guilds = new HashMap<>();
 
-    public static HashMap<Player, ArrayList<String>> invitations = new HashMap<>();
+    public static HashMap<UUID, ArrayList<String>> invitations = new HashMap<>();
 
     public boolean isGuildNull(UUID uuid) {
         return DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid).toString().isEmpty();
@@ -68,6 +68,36 @@ public class Guild {
                 sendAlert(guildName, ChatColor.GREEN + player.getName() + " " + ChatColor.GRAY + "is now online!");
             }
         }
+    }
+
+    /**
+     * Saves all guilds.
+     */
+    public void saveAllGuilds() {
+        guilds.entrySet().stream().forEach(e -> {
+            saveGuild(e.getKey());
+        });
+    }
+
+    /**
+     * @param guildName name of guild.
+     * @param motd      the motd
+     */
+    public void setMotdOf(String guildName, String motd) {
+        guilds.get(guildName).put("motd", motd);
+        sendAlert(guildName, ChatColor.YELLOW + motd);
+    }
+
+    /**
+     * @param player target player
+     * @return boolean
+     */
+    public boolean isOwnerOfGuild(Player player) {
+        if (!isGuildNull(player.getUniqueId())) {
+            String guildName = DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString();
+            return guilds.get(guildName).get("owner").toString().equals(player.getUniqueId().toString());
+        }
+        return false;
     }
 
     /**
@@ -103,6 +133,22 @@ public class Guild {
      */
     public String getMotdOf(String guildName) {
         return guilds.get(guildName).get("motd").toString();
+    }
+
+    /**
+     * @param guildName the name of guild.
+     */
+    public void saveGuild(String guildName) {
+        try (
+                PreparedStatement statement = Core.getInstance().connection.prepareStatement("UPDATE `guilds` SET data='" + guilds.get(guildName).toString() + "' WHERE guildName='" + guildName + "';");
+        ) {
+            statement.executeUpdate();
+
+            Utils.log.info("DR | Saved Guild = " + guildName);
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
     }
 
     /**
@@ -262,6 +308,8 @@ public class Guild {
         temp.put("sound", Sound.ARROW_HIT.toString());
         temp.put("origin", (System.currentTimeMillis() / 1000l));
         temp.put("motd", "This is my MOTD, change this.");
+        temp.put("banner", "");
+        temp.put("color", "");
         return temp;
     }
 }
