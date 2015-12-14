@@ -726,7 +726,7 @@ public class ItemManager {
 				+ new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/stats" + "\n" + ChatColor.BLACK.toString() + "Set Attributes"
 				+ new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/toggles" + "\n" + ChatColor.BLACK.toString() + "Open Toggles Menu");
         		
-        bm.setAuthor("King Bulwark");
+        bm.setAuthor("King Bulwar");
         pages.add(page1_string);
         pages.add(page2_string);
         pages.add(page3_string);

@@ -3,6 +3,8 @@ package net.dungeonrealms.game.world.entities.types.monsters;
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.armor.Armor.ArmorTier;
@@ -10,6 +12,7 @@ import net.dungeonrealms.game.world.items.armor.Armor.EquipmentType;
 import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_8_R3.World;
+import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
@@ -35,7 +38,13 @@ public interface Monster {
 		int killerLuck = DamageAPI.calculatePlayerLuck(killer);
 		Location loc = ent.getLocation();
 		World world = ((CraftWorld) loc.getWorld()).getHandle();
-		if (new Random().nextInt(100) <= (20 + (20 * killerLuck / 100))) {
+		int gemRoll = new Random().nextInt(99);
+		if (gemRoll <= (20 + (20 * killerLuck / 100))) {
+			if (gemRoll > 20) {
+				if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId()).toString())) {
+					killer.sendMessage(ChatColor.GREEN + "Your " + killerLuck + "% Luck has resulted in a drop.");
+				}
+			}
             double gem_drop_amount = 0;
             double drop_multiplier = 1;	
             boolean is_elite = false;
@@ -48,7 +57,7 @@ public interface Monster {
             }
             double gold_drop_multiplier = 1;
             
-            switch(tier){
+            switch (tier) {
             	case 1 :
             		gem_drop_amount = (new Random().nextInt(8 - 1) + 1) * gold_drop_multiplier;
             		break;
@@ -68,16 +77,17 @@ public interface Monster {
             
 			ItemStack item = BankMechanics.gem.clone();
 			item.setAmount((int) (gem_drop_amount * drop_multiplier));
-			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), item);
+			world.getWorld().dropItemNaturally(loc.add(0, 1, 0), item);
 			return;
 		}
 		
-		if(((LivingEntity) ent).getEquipment().getItemInHand().getType() == Material.BOW){
-			if(RandomHelper.getRandomNumberBetween(1, 100) <= (25 + (25 * killerLuck / 100))){
+		if(((LivingEntity) ent).getEquipment().getItemInHand().getType() == Material.BOW) {
+			int arrowRoll = new Random().nextInt(99);
+			if (arrowRoll <= (25 + (25 * killerLuck / 100))) {
 				ItemStack item = new ItemStack(Material.ARROW);
 				int amount = (tier * 2); 
 				item.setAmount(amount);
-				world.getWorld().dropItemNaturally(loc.add(0, 2, 0), item);
+				world.getWorld().dropItemNaturally(loc.add(0, 1, 0), item);
 			}
 		}
 		
@@ -99,8 +109,13 @@ public interface Monster {
 			chance = 6;
 			break;
 		}
-		chance += chance * (killerLuck / 100);
-		if (new Random().nextInt(1000) <= chance) {
+		int armorRoll = new Random().nextInt(1000);
+		if (armorRoll <= chance + (chance * killerLuck / 100)) {
+			if (armorRoll > chance) {
+				if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId()).toString())) {
+					killer.sendMessage(ChatColor.GREEN + "Your " + killerLuck + "% Luck has resulted in a drop.");
+				}
+			}
 			ItemStack[] loot = new ItemStack[5];
 			ItemStack[] armor = ((LivingEntity) ent).getEquipment().getArmorContents();
 			ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
@@ -131,12 +146,18 @@ public interface Monster {
 					break;
 			}
 			RepairAPI.setCustomItemDurability(armorToDrop, RandomHelper.getRandomNumberBetween(200, 1000));
-			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), armorToDrop);
+			world.getWorld().dropItemNaturally(loc.add(0, 1, 0), armorToDrop);
 			return;
 		}
-		
-		if(new Random().nextInt(1000) <= (2 + (2 * killerLuck / 100))){
-			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), ItemManager.createProtectScroll(tier));
+
+		int protectionRoll = new Random().nextInt(99);
+		if (protectionRoll <= (2 + (2 * killerLuck / 100))) {
+			if (protectionRoll > 2) {
+				if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId()).toString())) {
+					killer.sendMessage(ChatColor.GREEN + "Your " + killerLuck + "% Luck has resulted in a drop.");
+				}
+			}
+			world.getWorld().dropItemNaturally(loc.add(0, 1, 0), ItemManager.createProtectScroll(tier));
 		}
 	}
 }
