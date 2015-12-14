@@ -140,6 +140,11 @@ public class DamageAPI {
 
         if (tag.getInt("criticalHit") != 0) {
             int critHit = tag.getInt("criticalHit");
+            if (attacker.getEquipment().getItemInHand() != null) {
+                if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.AXE) {
+                    critHit += 3;
+                }
+            }
             if (attacker instanceof Player) {
                 if (API.getGamePlayer((Player) attacker) != null) {
                     critHit += critHit * ((API.getGamePlayer((Player) attacker).getStats()).getCritChance());
