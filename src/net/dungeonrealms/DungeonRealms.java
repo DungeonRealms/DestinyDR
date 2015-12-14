@@ -1,5 +1,6 @@
 package net.dungeonrealms;
 
+import net.dungeonrealms.core.Core;
 import net.dungeonrealms.game.commands.*;
 import net.dungeonrealms.game.commands.generic.CommandManager;
 import net.dungeonrealms.game.donate.DonationEffects;
@@ -139,6 +140,7 @@ public class DungeonRealms extends JavaPlugin {
 
         mm = new MechanicManager();
 
+        mm.registerMechanic(Core.getInstance());
         mm.registerMechanic(PetUtils.getInstance());
         mm.registerMechanic(Teleportation.getInstance());
         mm.registerMechanic(CombatLog.getInstance());

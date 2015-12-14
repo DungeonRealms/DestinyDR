@@ -235,55 +235,6 @@ public class DatabaseAPI {
     }
 
     /**
-     * Returns the object that's requested.
-     *
-     * @param data
-     * @param guildName
-     * @return
-     * @since 1.0
-     */
-    public Object getData(EnumGuildData data, String guildName) {
-        switch (data) {
-            case NAME:
-                return ((Document) GUILDS.get(guildName).get("info")).get("name", String.class);
-            case MOTD:
-                return ((Document) GUILDS.get(guildName).get("info")).get("motd", String.class);
-            case CLAN_TAG:
-                return ((Document) GUILDS.get(guildName).get("info")).get("clanTag", String.class);
-            case OWNER:
-                return ((Document) GUILDS.get(guildName).get("info")).get("owner", String.class);
-            case CO_OWNER:
-                return ((Document) GUILDS.get(guildName).get("info")).get("coOwner", String.class);
-            case OFFICERS:
-                return ((Document) GUILDS.get(guildName).get("info")).get("officers", ArrayList.class);
-            case MEMBERS:
-                return ((Document) GUILDS.get(guildName).get("info")).get("members", ArrayList.class);
-            case CREATION_UNIX_DATA:
-                return ((Document) GUILDS.get(guildName).get("info")).get("unixCreation");
-            case INVITATIONS:
-                return ((Document) GUILDS.get(guildName).get("info")).get("invitations", ArrayList.class);
-            case ICON:
-                return ((Document) GUILDS.get(guildName).get("info")).get("icon", String.class);
-            /*
-             * Levels
-             */
-            case LEVEL:
-                return ((Document) GUILDS.get(guildName).get("info")).get("netLevel", Integer.class);
-            case EXPERIENCE:
-                return ((Document) GUILDS.get(guildName).get("info")).get("experience", Double.class);
-            /*
-            Boosters
-             */
-            case BOOSTERS_ACTIVE:
-                return ((Document) GUILDS.get(guildName).get("boosters")).get("active", String.class);
-            case BOOSTERS_AVAILABLE:
-                return ((Document) GUILDS.get(guildName).get("available")).get("experience", ArrayList.class);
-            default:
-        }
-        return null;
-    }
-
-    /**
      * Starts the Initialization of DatabaseAPI.
      *
      * @since 1.0

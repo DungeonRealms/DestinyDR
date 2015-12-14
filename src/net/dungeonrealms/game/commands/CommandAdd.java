@@ -80,9 +80,6 @@ public class CommandAdd extends BasicCommand {
                 case "gw":
                     player.getInventory().addItem(Glyph.getInstance().getBaseGlyph(args[1], Integer.valueOf(args[2]), Glyph.GlyphType.WEAPON));
                     break;
-                case "guild":
-                    Guild.getInstance().createGuild(args[1], args[2], player.getUniqueId());
-                    break;
                 case "uploadrealm":
                     new RealmManager().uploadRealm(player.getUniqueId());
                     break;

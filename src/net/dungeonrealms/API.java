@@ -513,7 +513,6 @@ public class API {
         //Subscription.getInstance().handleJoin(player);
         Rank.getInstance().doGet(uuid);
         // Guilds
-        Guild.getInstance().doGet(uuid);
         Guild.getInstance().doLogin(player);
 
         // Notices

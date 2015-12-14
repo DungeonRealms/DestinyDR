@@ -40,7 +40,6 @@ public class CommandStop extends BasicCommand {
             Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
             AsyncUtils.pool.shutdown();
             Database.mongoClient.close();
-            Bukkit.getWorlds().get(0).save();
         }, 200);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 1200);
         return false;
