@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.items.armor;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.items.DamageMeta;
 import net.dungeonrealms.game.world.items.armor.Armor.ArmorModifier;
@@ -144,7 +145,7 @@ public class ArmorGenerator {
 	 * @since 1.0
 	 */
 	public static Armor.ArmorModifier getRandomItemModifier() {
-		return Armor.ArmorModifier.getById(new Random().nextInt(Armor.ArmorModifier.values().length));
+		return API.getArmorModifier();
 	}
 
 	/**

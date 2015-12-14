@@ -11,6 +11,7 @@ import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.events.PlayerMessagePlayerEvent;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.handlers.TutorialIslandHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -88,16 +89,20 @@ public class MainListener implements Listener {
                         public void callback(Throwable failCause, UpdateResult result) {
                             if (result.wasAcknowledged()) {
                                 Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
-                                TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
-                                bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/server/298658"));
-                                bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote").create()));
-                                TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 500 EXP @ vote ");
-                                test.addExtra(bungeeMessage);
-                                Bukkit.spigot().broadcast(test);
                                 if (API.getGamePlayer(player) == null) {
                                     return;
                                 }
-                                API.getGamePlayer(player).addExperience(500, false);
+                                GamePlayer gamePlayer = API.getGamePlayer(player);
+                                int expToLevel = gamePlayer.getEXPNeeded(gamePlayer.getLevel());
+                                int expToGive = expToLevel / 20;
+                                expToGive += 100;
+                                gamePlayer.addExperience(expToGive, false);
+                                TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
+                                bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/server/298658"));
+                                bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
+                                TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ");
+                                test.addExtra(bungeeMessage);
+                                Bukkit.spigot().broadcast(test);
                             }
                         }
                     });
@@ -108,16 +113,20 @@ public class MainListener implements Listener {
                         public void callback(Throwable failCause, UpdateResult result) {
                             if (result.wasAcknowledged()) {
                                 Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB);
-                                TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
-                                bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/server/298658"));
-                                bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote").create()));
-                                TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 20 ECASH & 500 EXP @ vote ");
-                                test.addExtra(bungeeMessage);
-                                Bukkit.spigot().broadcast(test);
                                 if (API.getGamePlayer(player) == null) {
                                     return;
                                 }
-                                API.getGamePlayer(player).addExperience(500, false);
+                                GamePlayer gamePlayer = API.getGamePlayer(player);
+                                int expToLevel = gamePlayer.getEXPNeeded(gamePlayer.getLevel());
+                                int expToGive = expToLevel / 20;
+                                expToGive += 100;
+                                gamePlayer.addExperience(expToGive, false);
+                                TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
+                                bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/server/298658"));
+                                bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
+                                TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 20 ECASH & 5% EXP @ vote ");
+                                test.addExtra(bungeeMessage);
+                                Bukkit.spigot().broadcast(test);
                             }
                         }
                     });
@@ -128,16 +137,20 @@ public class MainListener implements Listener {
                         public void callback(Throwable failCause, UpdateResult result) {
                             if (result.wasAcknowledged()) {
                                 Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB_PLUS);
-                                TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
-                                bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/server/298658"));
-                                bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote").create()));
-                                TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 25 ECASH & 500 EXP @ vote ");
-                                test.addExtra(bungeeMessage);
-                                Bukkit.spigot().broadcast(test);
                                 if (API.getGamePlayer(player) == null) {
                                     return;
                                 }
-                                API.getGamePlayer(player).addExperience(500, false);
+                                GamePlayer gamePlayer = API.getGamePlayer(player);
+                                int expToLevel = gamePlayer.getEXPNeeded(gamePlayer.getLevel());
+                                int expToGive = expToLevel / 20;
+                                expToGive += 100;
+                                gamePlayer.addExperience(expToGive, false);
+                                TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
+                                bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/server/298658"));
+                                bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
+                                TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 25 ECASH & 5% EXP @ vote ");
+                                test.addExtra(bungeeMessage);
+                                Bukkit.spigot().broadcast(test);
                             }
                         }
                     });
@@ -148,16 +161,20 @@ public class MainListener implements Listener {
                         public void callback(Throwable failCause, UpdateResult result) {
                             if (result.wasAcknowledged()) {
                                 Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
-                                TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
-                                bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/server/298658"));
-                                bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote").create()));
-                                TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 500 EXP @ vote ");
-                                test.addExtra(bungeeMessage);
-                                Bukkit.spigot().broadcast(test);
                                 if (API.getGamePlayer(player) == null) {
                                     return;
                                 }
-                                API.getGamePlayer(player).addExperience(500, false);
+                                GamePlayer gamePlayer = API.getGamePlayer(player);
+                                int expToLevel = gamePlayer.getEXPNeeded(gamePlayer.getLevel());
+                                int expToGive = expToLevel / 20;
+                                expToGive += 100;
+                                gamePlayer.addExperience(expToGive, false);
+                                TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
+                                bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/server/298658"));
+                                bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
+                                TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ");
+                                test.addExtra(bungeeMessage);
+                                Bukkit.spigot().broadcast(test);
                             }
                         }
                     });

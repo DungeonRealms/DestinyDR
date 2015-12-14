@@ -128,9 +128,9 @@ public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze i
 	public abstract EnumMonster getEnum();
 
 	@Override
-	public void onMonsterDeath() {
+	public void onMonsterDeath(Player killer) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-			this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity());
+			this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity(), killer);
 			if (new Random().nextInt(99) < 3) {
 				this.getRareDrop();
 			}

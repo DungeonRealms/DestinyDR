@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.donate.DonationEffects;
@@ -193,10 +194,18 @@ public class CommandAdd extends BasicCommand {
                     player.getInventory().addItem(BankMechanics.getInstance().createGemPouch(tier, 0));
                     break;
                 case "votemessage":
+                    if (API.getGamePlayer(player) == null) {
+                        break;
+                    }
+                    GamePlayer gamePlayer = API.getGamePlayer(player);
+                    int expToLevel = gamePlayer.getEXPNeeded(gamePlayer.getLevel());
+                    int expToGive = expToLevel / 20;
+                    expToGive += 100;
+                    gamePlayer.addExperience(expToGive, false);
                     TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
                     bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/server/298658"));
                     bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
-                    TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 500 EXP @ vote ");
+                    TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ");
                     test.addExtra(bungeeMessage);
                     Bukkit.spigot().broadcast(test);
                     break;

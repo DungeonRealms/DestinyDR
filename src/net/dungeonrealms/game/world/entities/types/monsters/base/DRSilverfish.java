@@ -81,9 +81,9 @@ public class DRSilverfish extends EntitySilverfish implements Monster{
 	}
 
 	@Override
-	public void onMonsterDeath() {
+	public void onMonsterDeath(Player killer) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), enumMonster, this.getBukkitEntity());
+		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), enumMonster, this.getBukkitEntity(), killer);
 		if(this.random.nextInt(100) < 33)
 			this.getRareDrop();
 		});

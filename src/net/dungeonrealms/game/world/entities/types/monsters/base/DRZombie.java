@@ -2,14 +2,16 @@ package net.dungeonrealms.game.world.entities.types.monsters.base;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.Monster;
-import net.dungeonrealms.game.world.items.*;
 import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.mechanics.ParticleAPI;
-import net.minecraft.server.v1_8_R3.*;
+import net.dungeonrealms.game.world.items.ItemGenerator;
+import net.minecraft.server.v1_8_R3.EntityZombie;
+import net.minecraft.server.v1_8_R3.GenericAttributes;
+import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -20,7 +22,6 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.lang.reflect.Field;
 import java.util.Random;
 
 /**
@@ -204,9 +205,9 @@ public abstract class DRZombie extends EntityZombie implements Monster{
 	public abstract EnumMonster getEnum();
 	
 	@Override
-	public void onMonsterDeath() {
+	public void onMonsterDeath(Player killer) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity());
+		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity(), killer);
 		if(this.random.nextInt(100) < 33)
 			this.getRareDrop();
 		});

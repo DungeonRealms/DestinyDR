@@ -4,6 +4,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.armor.Armor.ArmorTier;
 import net.dungeonrealms.game.world.items.armor.Armor.EquipmentType;
 import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
@@ -26,14 +27,15 @@ public interface Monster {
 
 	public void onMonsterAttack(Player p);
 
-	public void onMonsterDeath();
+	public void onMonsterDeath(Player killer);
 
 	public EnumMonster getEnum();
 
-	public default void checkItemDrop(int tier, EnumMonster monter, Entity ent) {
+	public default void checkItemDrop(int tier, EnumMonster monter, Entity ent, Player killer) {
+		int killerLuck = DamageAPI.calculatePlayerLuck(killer);
 		Location loc = ent.getLocation();
 		World world = ((CraftWorld) loc.getWorld()).getHandle();
-		if (new Random().nextInt(100) <= 20) {
+		if (new Random().nextInt(100) <= (20 + (20 * killerLuck / 100))) {
             double gem_drop_amount = 0;
             double drop_multiplier = 1;	
             boolean is_elite = false;
@@ -71,7 +73,7 @@ public interface Monster {
 		}
 		
 		if(((LivingEntity) ent).getEquipment().getItemInHand().getType() == Material.BOW){
-			if(RandomHelper.getRandomNumberBetween(1, 100) <= 25){
+			if(RandomHelper.getRandomNumberBetween(1, 100) <= (25 + (25 * killerLuck / 100))){
 				ItemStack item = new ItemStack(Material.ARROW);
 				int amount = (tier * 2); 
 				item.setAmount(amount);
@@ -82,7 +84,7 @@ public interface Monster {
 		int chance = 0;
 		switch(tier){
 		case 1:
-			chance = 125;
+			chance = 120;
 			break;
 		case 2:
 			chance = 75;
@@ -94,9 +96,10 @@ public interface Monster {
 			chance = 20;
 			break;
 		case 5:
-			chance = 5;
+			chance = 6;
 			break;
 		}
+		chance += chance * (killerLuck / 100);
 		if (new Random().nextInt(1000) <= chance) {
 			ItemStack[] loot = new ItemStack[5];
 			ItemStack[] armor = ((LivingEntity) ent).getEquipment().getArmorContents();
@@ -132,7 +135,7 @@ public interface Monster {
 			return;
 		}
 		
-		if(new Random().nextInt(1000) <= 2){
+		if(new Random().nextInt(1000) <= (2 + (2 * killerLuck / 100))){
 			world.getWorld().dropItemNaturally(loc.add(0, 2, 0), ItemManager.createProtectScroll(tier));
 		}
 	}

@@ -181,7 +181,7 @@ public class ItemGenerator {
      * @since 1.0
      */
     public static Item.ItemModifier getRandomItemModifier() {
-        return Item.ItemModifier.getById(new Random().nextInt(Item.ItemModifier.values().length));
+        return API.getItemModifier();
     }
 
     /**
