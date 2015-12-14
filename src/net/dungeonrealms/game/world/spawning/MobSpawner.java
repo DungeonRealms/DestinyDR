@@ -336,7 +336,7 @@ public class MobSpawner {
     		entity = new Pyromancer(((CraftWorld)loc.getWorld()).getHandle(), location);
     		Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
     			for (Player p : API.getNearbyPlayers(loc, 400)) {
-    				p.sendMessage(EnumBoss.Pyromancer.name + ChatColor.RESET.toString() + ": " + EnumBoss.Pyromancer.greeting);
+    				p.sendMessage(ChatColor.GREEN + EnumBoss.Pyromancer.name + ChatColor.RESET.toString() + ": " + EnumBoss.Pyromancer.greeting);
     			}
     			}, 20 * 60);
     	}

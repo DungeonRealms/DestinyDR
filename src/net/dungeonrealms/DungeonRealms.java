@@ -211,6 +211,7 @@ public class DungeonRealms extends JavaPlugin {
 
         cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Check epoch time of item."));
         cm.registerCommand(new CommandTell("tell", "/<command> [args]", "tell a player something."));
+        cm.registerCommand(new CommandTell("isay", "/<command> [args]", "Prints message to players in dungeon world from command block."));
 
         try {
             FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));

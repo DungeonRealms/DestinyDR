@@ -9,10 +9,12 @@ import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.ItemGenerator;
+import net.dungeonrealms.game.world.items.Item.ItemModifier;
 import net.dungeonrealms.game.world.items.armor.Armor.ArmorModifier;
 import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.*;
@@ -76,7 +78,6 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 		ItemStack[] armor = getArmor();
 		// weapon, boots, legs, chest, helmet/head
 		ItemStack weapon = getWeapon();
-		weapon.addEnchantment(Enchantment.ARROW_DAMAGE, 1);
 		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
 		this.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
 		this.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
@@ -88,8 +89,8 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 	 * @return
 	 */
 	private ItemStack getWeapon() {
-		return new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.BOW,
-		        net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(2));
+		return new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.SWORD,
+		        net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(1), ItemModifier.LEGENDARY);
 	}
 
 	/**
@@ -126,15 +127,11 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 	@Override
 	public void onBossDeath() {
 		say(this.getBukkitEntity(), getEnumBoss().death);
-//		List<Player> list = API.getNearbyPlayers(this.getBukkitEntity().getLocation(), 50);
-//		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-//			for(Player p : list){
-//			p.teleport(Teleportation.Cyrennica);
-//			}
-//		}, 20*30);
-//		for(Player p : list){
-//			p.sendMessage("You will be teleported out in 30 seconds");
-//		}
+		int droppedGems = 64 * this.getBukkitEntity().getWorld().getPlayers().size();
+		for(int i = 0; i < droppedGems; i++){
+			this.getBukkitEntity().getWorld().dropItemNaturally(this.getBukkitEntity().getLocation().add(0, 4, 0), BankMechanics.createGems(1));
+		}
+		
 	}
 
 	public boolean canSpawn = true;

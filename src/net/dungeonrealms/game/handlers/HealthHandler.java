@@ -636,7 +636,7 @@ public class HealthHandler implements GenericMechanic {
             if (Entities.MONSTERS_LEASHED.contains(entity)) {
                 Entities.MONSTERS_LEASHED.remove(entity);
             }
-            if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile") && !entity.hasMetadata("uuid")) {
+            if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile") && !entity.hasMetadata("uuid") && !entity.hasMetadata("boss")) {
                 if (attacker instanceof Player) {
                     ((net.dungeonrealms.game.world.entities.types.monsters.Monster) entity1).onMonsterDeath((Player) attacker);
                     int exp = API.getMonsterExp((Player) attacker, entity);
