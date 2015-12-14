@@ -1,26 +1,18 @@
 package net.dungeonrealms.game.player.inventory;
 
-import com.mongodb.Block;
-import com.mongodb.async.SingleResultCallback;
-import com.mongodb.client.model.Filters;
-import com.mongodb.client.model.Sorts;
 import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
-import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.handlers.MailHandler;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
-import net.dungeonrealms.game.mongo.Database;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumGuildData;
+import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
+import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
-import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
@@ -155,180 +147,6 @@ public class PlayerMenus {
             if (slot >= 44) break;
             slot++;
         }
-
-        player.openInventory(inv);
-
-    }
-
-    public static void openGuildManagement(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 45, "Guild Management");
-        UUID uuid = player.getUniqueId();
-        String guildName = (String) DatabaseAPI.getInstance().getData(EnumGuildData.NAME, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-        List<String> officers = (List<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, guildName);
-        List<String> members = (List<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, guildName);
-
-        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
-
-
-        inv.setItem(8, editItem(new ItemStack(Material.BEDROCK), ChatColor.RED + "Delete Guild", new String[]{
-                ChatColor.RED + "This action CANNOT be undone!",
-                "",
-                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to purge guild!",
-                "",
-                ChatColor.RED + "You must be rank " + ChatColor.GREEN + "Owner" + ChatColor.RED + "!",
-        }));
-
-        inv.setItem(10, editItem("Nemanja011sl", ChatColor.GREEN + "Invite a player", new String[]{
-                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to add a player!",
-                "",
-                ChatColor.RED + "You must be rank " + ChatColor.GREEN + "Officer" + ChatColor.RED + "!",
-        }));
-
-        inv.setItem(11, editItem("rarest_of_pepes", ChatColor.GREEN + "Remove a player", new String[]{
-                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to remove a player!",
-                "",
-                ChatColor.RED + "You must be rank " + ChatColor.GREEN + "Officer" + ChatColor.RED + "!",
-        }));
-
-        inv.setItem(13, editItem("TeaZ", ChatColor.GREEN + "Promote a player", new String[]{
-                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to promote a player!",
-                "",
-                ChatColor.RED + "You must be ranked >=" + ChatColor.GREEN + "CoOwner" + ChatColor.RED + "!",
-        }));
-
-        inv.setItem(14, editItem("Arcaniax", ChatColor.GREEN + "Demote a player", new String[]{
-                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to demote a player!",
-                "",
-                ChatColor.RED + "You must be ranked >=" + ChatColor.GREEN + "CoOwner" + ChatColor.RED + "!",
-        }));
-
-        inv.setItem(36, editItem(new ItemStack(Material.WOOL, 1, (short) 5), ChatColor.GREEN + "Pick a Guild Icon!", new String[]{
-                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to edit the Guild Icon!",
-                "",
-                ChatColor.RED + "You must be ranked " + ChatColor.AQUA + "Owner" + ChatColor.RED + "!"
-        }));
-
-        player.openInventory(inv);
-    }
-
-    public static void openGuildMembers(Player player) {
-        String guildName = (String) DatabaseAPI.getInstance().getData(EnumGuildData.NAME, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()));
-        String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, guildName);
-        List<String> members = (List<String>) DatabaseAPI.getInstance().getData(EnumGuildData.MEMBERS, guildName);
-
-
-        if (members.size() >= 50) {
-            Inventory tooMuch = Bukkit.createInventory(null, 0, ChatColor.RED + "Too many members to list!");
-            player.openInventory(tooMuch);
-            return;
-        }
-
-        Inventory inv = Bukkit.createInventory(null, 54, "Guild - " + ChatColor.translateAlternateColorCodes('&', clanTag) + ChatColor.RESET + " - Members");
-
-        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
-
-        for (String s : members) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                String name = API.getNameFromUUID(UUID.fromString(s));
-                inv.addItem(editItem(name, ChatColor.GREEN + "Member " + name, new String[]{}));
-            }, 0l);
-        }
-
-        player.openInventory(inv);
-    }
-
-    public static void openGuildOfficers(Player player) {
-        String guildName = (String) DatabaseAPI.getInstance().getData(EnumGuildData.NAME, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()));
-        String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, guildName);
-        List<String> members = (List<String>) DatabaseAPI.getInstance().getData(EnumGuildData.OFFICERS, guildName);
-
-
-        if (members.size() >= 50) {
-            Inventory tooMuch = Bukkit.createInventory(null, 0, ChatColor.RED + "Too many officers to list!");
-            player.openInventory(tooMuch);
-            return;
-        }
-
-        Inventory inv = Bukkit.createInventory(null, 54, "Guild - " + ChatColor.translateAlternateColorCodes('&', clanTag) + ChatColor.RESET + " - Officers");
-
-        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
-
-        for (String s : members) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> inv.addItem(editItem(API.getNameFromUUID(UUID.fromString(s)), ChatColor.GREEN + "Officer " + API.getNameFromUUID(UUID.fromString(s)), new String[]{})), 0l);
-        }
-
-        player.openInventory(inv);
-    }
-
-    public static void openGuildRankingBoard(Player player) {
-
-        Inventory inv = Bukkit.createInventory(null, 18, "Top Guilds");
-
-        inv.addItem(editItem("Mapparere", ChatColor.GREEN + "Top Ranked Guilds", new String[]{
-                ChatColor.GRAY + "Filter:" + ChatColor.AQUA + " Level"
-        }));
-
-        Block<Document> printDocumentBlock = document -> {
-            Object info = document.get("info");
-
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () ->
-            {
-                Date creationDate = new Date(Long.valueOf(String.valueOf(((Document) info).get("unixCreation"))) * 1000);
-                SimpleDateFormat sdf = new SimpleDateFormat("MMMM d, yyyy 'at' h:mm a");
-                String date = sdf.format(creationDate);
-
-                Material m = Material.valueOf(((String) ((Document) info).get("icon")));
-
-                inv.addItem(editItem(new ItemStack(m), ChatColor.GREEN + String.valueOf(((Document) info).get("name")), new String[]{
-                        ChatColor.GRAY + "ClanTag: " + ChatColor.translateAlternateColorCodes('&', String.valueOf(((Document) info).get("clanTag"))),
-                        ChatColor.GRAY + "Level: " + ChatColor.AQUA + String.valueOf(((Document) info).get("netLevel")),
-                        ChatColor.GRAY + "Officers: " + ChatColor.AQUA + ((ArrayList<String>) ((Document) info).get("officers")).size(),
-                        ChatColor.GRAY + "Members: " + ChatColor.AQUA + ((ArrayList<String>) ((Document) info).get("members")).size(),
-                        ChatColor.GRAY + "Created: " + ChatColor.AQUA + date,
-                }));
-
-            }, 0l);
-        };
-        SingleResultCallback<Void> callbackWhenFinished = (result, t) -> Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.openInventory(inv), 1l);
-
-        Database.guilds.find(Filters.exists("info.netLevel")).sort(Sorts.descending("info.netLevel")).limit(16).forEach(printDocumentBlock, callbackWhenFinished);
-    }
-
-    public static void openPlayerGuildInventory(Player player) {
-        UUID uuid = player.getUniqueId();
-
-        String owner = (String) DatabaseAPI.getInstance().getData(EnumGuildData.OWNER, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-        String guildName = (String) DatabaseAPI.getInstance().getData(EnumGuildData.NAME, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid));
-        String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, guildName);
-        Integer netLevel = (Integer) DatabaseAPI.getInstance().getData(EnumGuildData.LEVEL, guildName);
-
-        Inventory inv = Bukkit.createInventory(null, 54, "Guild - " + ChatColor.translateAlternateColorCodes('&', clanTag));
-
-        inv.setItem(0, editItem("MHF_WSkeleton ", ChatColor.GREEN + "Guild Management", new String[]{
-                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click" + ChatColor.GRAY + " for guild Management.",
-                "",
-                ChatColor.RED + "You must " + ChatColor.GREEN + "Officer " + ChatColor.RED + "or higher!"
-        }));
-
-        inv.setItem(4, editItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "Guild Name" + ChatColor.GRAY + ": " + ChatColor.RESET + guildName, new String[]{
-                ChatColor.GRAY + "ClanTag: " + ChatColor.translateAlternateColorCodes('&', clanTag),
-                ChatColor.GRAY + "Guild Master: " + ChatColor.AQUA + Bukkit.getOfflinePlayer(UUID.fromString(owner)).getName(),
-                ChatColor.GRAY + "Level: " + ChatColor.AQUA + netLevel
-        }));
-
-        inv.setItem(8, editItem(new ItemStack(Material.DIAMOND_SWORD), ChatColor.RED + "Guild Wars", new String[]{
-                ChatColor.RED + "This feature is upcoming!",
-        }));
-        inv.setItem(17, editItem("Seska_Rotan", ChatColor.GREEN + "Guild Ranking", new String[]{
-                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click" + ChatColor.GRAY + " to view highest Guilds!",
-        }));
-
-        inv.setItem(53, editItem("CruXXx", ChatColor.GREEN + "Guild Spoils", new String[]{
-                ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click" + ChatColor.GRAY + " to claim Guild Spoils!",
-        }));
-
-        inv.setItem(18, editItem("Turmfalke2000", ChatColor.GREEN + "Guild Officers", new String[]{}));
-        inv.setItem(27, editItem("Miner", ChatColor.GREEN + "Guild Members", new String[]{}));
 
         player.openInventory(inv);
 

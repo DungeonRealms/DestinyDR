@@ -6,7 +6,6 @@ import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.donate.DonationEffects;
-import net.dungeonrealms.game.guild.Guild;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
@@ -15,7 +14,6 @@ import net.dungeonrealms.game.miscellaneous.TradeCalculator;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
@@ -222,15 +220,15 @@ public class ClickHandler {
                     }*/
                         }
                         if (nmsStack.getTag().hasKey("retrainingBook")) {
-                        	if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                        		player.getInventory().addItem(ItemManager.createItem(EnumItem.RetrainingBook));
-                        		player.sendMessage(ChatColor.GREEN + "You have purchased a Retraining Book.");
-                        		player.closeInventory();
-                       			return;
-                    		} else {
-                        		player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
-                        		return;
-                    		}
+                            if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
+                                player.getInventory().addItem(ItemManager.createItem(EnumItem.RetrainingBook));
+                                player.sendMessage(ChatColor.GREEN + "You have purchased a Retraining Book.");
+                                player.closeInventory();
+                                return;
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
+                                return;
+                            }
                         }
                         if (nmsStack.getTag().hasKey("medalOfGathering")) {
                             player.sendMessage(ChatColor.RED + "This is currently not implemented!");
@@ -478,13 +476,13 @@ public class ClickHandler {
                                         player.getInventory().setItem(player.getInventory().firstEmpty(), itemStack);
                                     }
                                     player.sendMessage(ChatColor.GREEN + "Trade Accepted.");
-                                    
-                                    for(ItemStack stack : tradeWindow.getContents()){
-                                    	if(stack != null && stack.getType() == Material.MAGMA_CREAM){
-                            				break;
-                                    	}
+
+                                    for (ItemStack stack : tradeWindow.getContents()) {
+                                        if (stack != null && stack.getType() == Material.MAGMA_CREAM) {
+                                            break;
+                                        }
                                     }
-                                    
+
                                     player.playSound(player.getLocation(), Sound.BLAZE_HIT, 1F, 1F);
                                     tradeWindow.clear();
 
@@ -847,265 +845,130 @@ public class ClickHandler {
                                         return;
                                     } else
 
+        /*Reset Stats Wizard*/
+                                        if (name.equalsIgnoreCase("Wizard")) {
+                                            GamePlayer gp = API.getGamePlayer(player);
+                                            if (gp.getLevel() >= 10) {
+                                                if (gp.getStats().resetAmounts > 0) {
+                                                    player.sendMessage(ChatColor.GREEN + "ONE stat reset available.");
+                                                    AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
+                                                        if (e.getSlot() == AnvilSlot.OUTPUT) {
+                                                            if (e.getName().equalsIgnoreCase("Yes") || e.getName().equalsIgnoreCase("y")) {
+                                                                gp.getStats().freeResets -= 1;
+                                                            } else {
+                                                                e.destroy();
+                                                            }
+                                                        }
+                                                    });
+                                                    ItemStack stack = new ItemStack(Material.INK_SACK, 1, DyeColor.GREEN.getDyeData());
+                                                    ItemMeta meta = stack.getItemMeta();
+                                                    meta.setDisplayName("Use your ONE stat points reset?");
+                                                    stack.setItemMeta(meta);
+                                                    gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
+                                                    Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> player.sendMessage("Opening stat reset confirmation"), 0, 20 * 3);
+                                                    Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), gui::open, 20 * 5);
+                                                } else {
+                                                    player.sendMessage(ChatColor.RED + "You have already used your free stat reset for your character.");
+                                                    player.sendMessage(ChatColor.YELLOW + "You may purchase more resets from the E-Cash vendor!.");
+                                                }
+                                            } else {
+                                                player.sendMessage(ChatColor.RED + "You need to be level 10 to use your ONE reset.");
+                                            }
 
-        /*
-        Guilds Below
-         */
-                                        if (name.equals("Guild Management")) {
-                                            String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
+                                        } else if (name.equalsIgnoreCase("Toggles")) {
                                             event.setCancelled(true);
+                                            if (slot > 9) return;
                                             switch (slot) {
                                                 case 0:
-                                                    PlayerMenus.openPlayerGuildInventory(player);
+                                                    boolean bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, player.getUniqueId());
+                                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_CHAOTIC_PREVENTION, !bool, true);
+                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
+                                                    break;
+                                                case 1:
+                                                    bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId());
+                                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_DEBUG, !bool, true);
+                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
+                                                    break;
+                                                case 2:
+                                                    bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DUEL, player.getUniqueId());
+                                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_DUEL, !bool, true);
+                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
+                                                    break;
+                                                case 3:
+                                                    bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
+                                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_GLOBAL_CHAT, !bool, true);
+                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
+                                                    break;
+                                                case 4:
+                                                    bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, player.getUniqueId());
+                                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_PVP, !bool, true);
+                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
+                                                    break;
+                                                case 5:
+                                                    bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, player.getUniqueId());
+                                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_RECEIVE_MESSAGE, !bool, true);
+                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
+                                                    break;
+                                                case 6:
+                                                    bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, player.getUniqueId());
+                                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_TRADE, !bool, true);
+                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
+                                                    break;
+                                                case 7:
+                                                    bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, player.getUniqueId());
+                                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_TRADE_CHAT, !bool, true);
+                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
                                                     break;
                                                 case 8:
-                                                    Guild.getInstance().disbandGuild(player, guildName);
-                                                    break;
-                                                case 10:
-                                                    if (Guild.getInstance().isOfficer(guildName, player.getUniqueId()) || Guild.getInstance().isOwner(player.getUniqueId(), guildName) || Guild.getInstance().isCoOwner(player.getUniqueId(), guildName)) {
-                                                        AnvilGUIInterface invitePlayerGUI = AnvilApi.createNewGUI(player, anvilClick -> {
-                                                            switch (anvilClick.getSlot()) {
-                                                                case OUTPUT:
-                                                                    anvilClick.setWillClose(true);
-                                                                    anvilClick.setWillDestroy(true);
-                                                                    Guild.getInstance().invitePlayer(player, anvilClick.getName());
-                                                                    break;
-                                                            }
-                                                        });
-                                                        invitePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, PlayerMenus.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
-                                                        invitePlayerGUI.open();
-                                                    } else {
-                                                        player.sendMessage(ChatColor.RED + "You do not have the required permissions to invite a player!");
-                                                    }
-                                                    break;
-                                                case 11:
-                                                    if (Guild.getInstance().isOfficer(guildName, player.getUniqueId()) || Guild.getInstance().isOwner(player.getUniqueId(), guildName) || Guild.getInstance().isCoOwner(player.getUniqueId(), guildName)) {
-                                                        AnvilGUIInterface removePlayerGUI = AnvilApi.createNewGUI(player, anvilClick -> {
-                                                            switch (anvilClick.getSlot()) {
-                                                                case OUTPUT:
-                                                                    anvilClick.setWillClose(true);
-                                                                    anvilClick.setWillDestroy(true);
-                                                                    Guild.getInstance().removePlayer(player, anvilClick.getName());
-                                                                    break;
-                                                            }
-                                                        });
-                                                        removePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, PlayerMenus.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
-                                                        removePlayerGUI.open();
-                                                    } else {
-                                                        player.sendMessage(ChatColor.RED + "You do not have the required permissions to remove a player!");
-                                                    }
-                                                    break;
-                                                case 13:
-                                                    if (Guild.getInstance().isOwner(player.getUniqueId(), guildName) || Guild.getInstance().isCoOwner(player.getUniqueId(), guildName)) {
-                                                        AnvilGUIInterface promotePlayerGUI = AnvilApi.createNewGUI(player, anvilClick -> {
-                                                            switch (anvilClick.getSlot()) {
-                                                                case OUTPUT:
-                                                                    anvilClick.setWillClose(true);
-                                                                    anvilClick.setWillDestroy(true);
-                                                                    Guild.getInstance().promotePlayer(player, anvilClick.getName());
-                                                            }
-                                                        });
-                                                        promotePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, PlayerMenus.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
-                                                        promotePlayerGUI.open();
-                                                    } else {
-                                                        player.sendMessage(ChatColor.RED + "You do not have the required permissions to promote a player!");
-                                                    }
-                                                    break;
-                                                case 14:
-                                                    if (Guild.getInstance().isOwner(player.getUniqueId(), guildName) || Guild.getInstance().isCoOwner(player.getUniqueId(), guildName)) {
-
-                                                        AnvilGUIInterface demotePlayerGUI = AnvilApi.createNewGUI(player, anvilClick -> {
-                                                            switch (anvilClick.getSlot()) {
-                                                                case OUTPUT:
-                                                                    anvilClick.setWillClose(true);
-                                                                    anvilClick.setWillDestroy(true);
-                                                                    Guild.getInstance().demotePlayer(player, anvilClick.getName());
-                                                            }
-                                                        });
-                                                        demotePlayerGUI.setSlot(AnvilSlot.INPUT_LEFT, PlayerMenus.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
-                                                        demotePlayerGUI.open();
-                                                    } else {
-                                                        player.sendMessage(ChatColor.RED + "You do not have the required permissions to demote a player!");
-                                                    }
-                                                    break;
-                                                case 36:
-                                                    if (Guild.getInstance().isOwner(player.getUniqueId(), guildName) || Guild.getInstance().isCoOwner(player.getUniqueId(), guildName)) {
-                                                        AnvilGUIInterface pickIconGUI = AnvilApi.createNewGUI(player, anvilClick -> {
-                                                            switch (anvilClick.getSlot()) {
-                                                                case OUTPUT:
-                                                                    anvilClick.setWillClose(true);
-                                                                    anvilClick.setWillDestroy(true);
-                                                                    if (Material.getMaterial(anvilClick.getName().toUpperCase()) == null) {
-                                                                        player.sendMessage(ChatColor.RED + "The material you specified is invalid! Examples: DIRT, DIAMOND_SWORD, DIAMOND_PICKAXE, DIRT");
-                                                                    } else {
-                                                                        Guild.getInstance().setGuildIcon(guildName, Material.getMaterial(anvilClick.getName().toUpperCase()));
-                                                                        NetworkAPI.getInstance().sendAllGuildMessage(guildName, ChatColor.GREEN + "Icon has been set to " + anvilClick.getName());
-                                                                    }
-                                                            }
-                                                        });
-                                                        pickIconGUI.setSlot(AnvilSlot.INPUT_LEFT, PlayerMenus.editItem(new ItemStack(Material.DIAMOND), "Type material here..", new String[]{
-                                                                ChatColor.GRAY + "",
-                                                                ChatColor.GRAY + "How to use:",
-                                                                ChatColor.GRAY + "dirt -> dirt block",
-                                                                ChatColor.GRAY + "diamond_axe -> diamond axe",
-                                                        }));
-                                                        pickIconGUI.open();
-                                                    } else {
-                                                        player.sendMessage(ChatColor.RED + "You do not have the required permissions to set the Guild Icon!");
-                                                    }
+                                                    PlayerMenus.openPlayerProfileMenu(player);
                                                     break;
                                             }
-                                            return;
-                                        } else
-
-        /*Reset Stats Wizard*/
-                                            if (name.equalsIgnoreCase("Wizard")) {
-                                                GamePlayer gp = API.getGamePlayer(player);
-                                                if (gp.getLevel() >= 10) {
-                                                    if (gp.getStats().resetAmounts > 0) {
-                                                        player.sendMessage(ChatColor.GREEN + "ONE stat reset available.");
-                                                        AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
-                                                            if (e.getSlot() == AnvilSlot.OUTPUT) {
-                                                                if (e.getName().equalsIgnoreCase("Yes") || e.getName().equalsIgnoreCase("y")) {
-                                                                    gp.getStats().freeResets -= 1;
-                                                                } else {
-                                                                    e.destroy();
-                                                                }
-                                                            }
-                                                        });
-                                                        ItemStack stack = new ItemStack(Material.INK_SACK, 1, DyeColor.GREEN.getDyeData());
-                                                        ItemMeta meta = stack.getItemMeta();
-                                                        meta.setDisplayName("Use your ONE stat points reset?");
-                                                        stack.setItemMeta(meta);
-                                                        gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
-                                                        Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> player.sendMessage("Opening stat reset confirmation"), 0, 20 * 3);
-                                                        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), gui::open, 20 * 5);
-                                                    } else {
-                                                        player.sendMessage(ChatColor.RED + "You have already used your free stat reset for your character.");
-                                                        player.sendMessage(ChatColor.YELLOW + "You may purchase more resets from the E-Cash vendor!.");
-                                                    }
-                                                } else {
-                                                    player.sendMessage(ChatColor.RED + "You need to be level 10 to use your ONE reset.");
+                                        } else if (name.equalsIgnoreCase("Food Vendor")) {
+                                            if (event.isShiftClick()) {
+                                                event.setCancelled(true);
+                                                return;
+                                            }
+                                            if (event.getAction() == InventoryAction.COLLECT_TO_CURSOR) {
+                                                event.setCancelled(true);
+                                                return;
+                                            }
+                                            if (event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY) {
+                                                event.setCancelled(true);
+                                                return;
+                                            }
+                                            if (event.getRawSlot() >= 18) {
+                                                event.setCancelled(true);
+                                                return;
+                                            }
+                                            event.setCancelled(true);
+                                            ItemStack stack = event.getCurrentItem();
+                                            if (stack == null || stack.getType() == Material.AIR) return;
+                                            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+                                            if (!nms.getTag().hasKey("worth")) {
+                                                event.setCancelled(true);
+                                                return;
+                                            }
+                                            int price = nms.getTag().getInt("worth");
+                                            if (BankMechanics.getInstance().takeGemsFromInventory(price, player)) {
+                                                ItemStack copy = stack.clone();
+                                                ArrayList<String> lore = new ArrayList<>();
+                                                ItemMeta meta = copy.getItemMeta();
+                                                if (meta.hasLore()) {
+                                                    lore = (ArrayList<String>) meta.getLore();
                                                 }
-
+                                                for (int i = 0; i < lore.size(); i++) {
+                                                    String current = lore.get(i);
+                                                    if (current.contains("Price")) {
+                                                        lore.remove(i);
+                                                        break;
+                                                    }
+                                                }
+                                                meta.setLore(lore);
+                                                copy.setItemMeta(meta);
+                                                player.getInventory().addItem(copy);
+                                            } else {
+                                                player.sendMessage(ChatColor.RED + "You do not have " + ChatColor.GREEN + price + "g");
                                             }
-
-        if (name.endsWith("- Officers")) {
-            event.setCancelled(true);
-            if (slot == 0) {
-                PlayerMenus.openPlayerGuildInventory(player);
-            }
-        } else if (name.endsWith("- Members")) {
-            event.setCancelled(true);
-            if (slot == 0) {
-                PlayerMenus.openPlayerGuildInventory(player);
-            }
-        } else if (name.equals("Top Guilds")) {
-            event.setCancelled(true);
-        } else if (name.equals("Guild Management")) {
-            event.setCancelled(true);
-        } else if (name.startsWith("Guild - ")) {
-            event.setCancelled(true);
-            if (slot > 54) return;
-            switch (slot) {
-                case 0:
-                    PlayerMenus.openGuildManagement(player);
-                    break;
-                case 17:
-                    PlayerMenus.openGuildRankingBoard(player);
-                    break;
-                case 18:
-                    PlayerMenus.openGuildOfficers(player);
-                    break;
-                case 27:
-                    PlayerMenus.openGuildMembers(player);
-                    break;
-            }
-        } else if (name.equalsIgnoreCase("Toggles")) {
-            event.setCancelled(true);
-            if (slot > 9) return;
-            switch (slot) {
-                case 0:
-                    boolean bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, player.getUniqueId());
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_CHAOTIC_PREVENTION, !bool, true);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
-                    break;
-                case 1:
-                    bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId());
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_DEBUG, !bool, true);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
-                    break;
-                case 2:
-                    bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DUEL, player.getUniqueId());
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_DUEL, !bool, true);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
-                    break;
-                case 3:
-                    bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_GLOBAL_CHAT, !bool, true);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
-                    break;
-                case 4:
-                    bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, player.getUniqueId());
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_PVP, !bool, true);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
-                    break;
-                case 5:
-                    bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, player.getUniqueId());
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_RECEIVE_MESSAGE, !bool, true);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
-                    break;
-                case 6:
-                    bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, player.getUniqueId());
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_TRADE, !bool, true);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
-                    break;
-                case 7:
-                    bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, player.getUniqueId());
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_TRADE_CHAT, !bool, true);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
-                    break;
-                case 8:
-                    PlayerMenus.openPlayerProfileMenu(player);
-                    break;
-            }
-        }else if(name.equalsIgnoreCase("Food Vendor")){
-        	if(event.isShiftClick()){event.setCancelled(true);return;}
-        	if(event.getAction() == InventoryAction.COLLECT_TO_CURSOR){event.setCancelled(true);return;}
-        	if(event.getAction() == InventoryAction.MOVE_TO_OTHER_INVENTORY){event.setCancelled(true); return;}
-        	if(event.getRawSlot() >= 18){
-        		event.setCancelled(true);
-        		return;
-        	}
-    			event.setCancelled(true);
-        		ItemStack stack = event.getCurrentItem();
-        		if(stack == null || stack.getType() == Material.AIR) return;
-        		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        		if(!nms.getTag().hasKey("worth")){
-        			event.setCancelled(true);
-        			return;
-        		}
-        		int price = nms.getTag().getInt("worth");
-        		if(BankMechanics.getInstance().takeGemsFromInventory(price, player)){
-        			ItemStack copy = stack.clone();
-					ArrayList<String> lore = new ArrayList<>();
-					ItemMeta meta = copy.getItemMeta();
-					if (meta.hasLore()) {
-						lore = (ArrayList<String>) meta.getLore();
-					}
-					for (int i = 0; i < lore.size(); i++) {
-						String current = lore.get(i);
-						if (current.contains("Price")) {
-							lore.remove(i);
-							break;
-						}
-					}
-					meta.setLore(lore);
-					copy.setItemMeta(meta);
-					player.getInventory().addItem(copy);
-        		}else{
-        			player.sendMessage(ChatColor.RED + "You do not have " + ChatColor.GREEN + price + "g");
-        		}
-        }
+                                        }
     }
 }

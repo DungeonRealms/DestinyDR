@@ -4,7 +4,6 @@ import net.dungeonrealms.game.guild.Guild;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumGuildData;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
@@ -37,7 +36,7 @@ public final class GameChat {
         StringBuilder message = new StringBuilder();
 
         if (!Guild.getInstance().isGuildNull(player.getUniqueId())) {
-            String clanTag = (String) DatabaseAPI.getInstance().getData(EnumGuildData.CLAN_TAG, (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()));
+            String clanTag = Guild.getInstance().getClanTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
             message.append(ChatColor.GRAY + "<").append(ChatColor.DARK_AQUA.toString()).append(ChatColor.BOLD).append(clanTag).append(ChatColor.GRAY).append(">").append(ChatColor.RESET).append(" ");
         }
 
