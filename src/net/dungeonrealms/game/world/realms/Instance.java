@@ -5,15 +5,15 @@ import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
 import me.Bogdacutu.VoidGenerator.VoidGeneratorGenerator;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.handlers.KarmaHandler;
-import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
@@ -23,16 +23,21 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerDropItemEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.util.Vector;
 
 import java.io.*;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -51,6 +56,7 @@ public class Instance implements GenericMechanic, Listener {
     }
 
     public CopyOnWriteArrayList<RealmObject> CURRENT_REALMS = new CopyOnWriteArrayList<>();
+    public List<Player> PENDING_REALMS = new ArrayList<>();
 
     String host = "167.114.65.102", user = "dr.23", password = "devpass123";
     int port = 21;
@@ -130,16 +136,33 @@ public class Instance implements GenericMechanic, Listener {
         removePlayerRealm(event.getPlayer(), true);
     }
 
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void playerDropItemInRealm(PlayerDropItemEvent event) {
+        if (API.getGamePlayer(event.getPlayer()) == null) return;
+        if (!API.getGamePlayer(event.getPlayer()).isInRealm()) return;
+        event.setCancelled(true);
+        event.getPlayer().sendMessage(ChatColor.RED + "You cannot drop items in Realms. If you wish give them to another player, please trade them.");
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void cancelPlayersBlockOpenInRealm(PlayerInteractEvent event) {
+        if (API.getGamePlayer(event.getPlayer()) == null) return;
+        if (!API.getGamePlayer(event.getPlayer()).isInRealm()) return;
+        if (event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        Block block = event.getClickedBlock();
+        if (block == null) return;
+        if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
+        Material mat = block.getType();
+        if (mat != Material.CHEST) return;
+        event.setCancelled(true);
+        event.getPlayer().sendMessage(ChatColor.RED + "This block shouldn't be in a Realm... How'd it get here?");
+    }
 
     public void openRealm(Player player) {
-
         if (!doesRemoteRealmExist(player.getUniqueId().toString())) {
             player.sendMessage(ChatColor.RED + "Your realm does not exist remotely! Creating you a new realm!");
-
             createTemplate(player);
-
             generateBlankRealmWorld(player);
-
         } else {
             player.sendMessage(ChatColor.RED + "Your realm exist remotely! Downloading it now ...");
             downloadRealm(player.getUniqueId());
@@ -159,7 +182,6 @@ public class Instance implements GenericMechanic, Listener {
     }
 
     public void generateBlankRealmWorld(Player owner) {
-
         WorldCreator worldCreator = new WorldCreator(owner.getUniqueId().toString());
         worldCreator.type(WorldType.FLAT);
         worldCreator.generateStructures(false);
@@ -450,10 +472,6 @@ public class Instance implements GenericMechanic, Listener {
                 player.sendMessage(ChatColor.RED + "You cannot place a portal so close to another! (Min 3 Blocks)");
                 return;
             }
-            if (!API.isInSafeRegion(player.getLocation()) && !API.isNonPvPRegion(player.getLocation())) {
-                player.sendMessage(ChatColor.RED + "You cannot place a portal in a Chaotic Zone!");
-                return;
-            }
             for (Player player1 : Bukkit.getWorlds().get(0).getPlayers()) {
                 if (player1.getName().equals(player.getName())) {
                     continue;
@@ -466,6 +484,11 @@ public class Instance implements GenericMechanic, Listener {
                     return;
                 }
             }
+            if (PENDING_REALMS.contains(player)) {
+                player.sendMessage(ChatColor.RED + "Your realm is currently being generated, please be patient.");
+                return;
+            }
+            PENDING_REALMS.add(player);
             player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "REALMS" + ChatColor.WHITE + "] " + ChatColor.YELLOW + "Your realm is loading now!");
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 portalLocation.add(0, 1, 0).getBlock().setType(Material.PORTAL);
@@ -479,7 +502,10 @@ public class Instance implements GenericMechanic, Listener {
                 realmObject.getPlayerList().add(player);
                 CURRENT_REALMS.add(realmObject);
                 player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "REALMS" + ChatColor.WHITE + "] " + ChatColor.YELLOW + "Your realm is ready!");
-            }, 200L);
+                if (PENDING_REALMS.contains(player)) {
+                    PENDING_REALMS.remove(player);
+                }
+            }, 100L);
             if (!doesRemoteRealmExist(player.getUniqueId().toString())) {
                 player.sendMessage(ChatColor.RED + "Your realm does not exist remotely! Creating you a new realm!");
                 createTemplate(player);
