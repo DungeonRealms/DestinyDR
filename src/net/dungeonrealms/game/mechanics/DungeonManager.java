@@ -1,29 +1,6 @@
 package net.dungeonrealms.game.mechanics;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Random;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.World;
-import org.bukkit.WorldCreator;
-import org.bukkit.entity.Player;
-
 import com.connorlinfoot.bountifulapi.BountifulAPI;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
@@ -36,6 +13,18 @@ import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.Entity;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.bukkit.*;
+import org.bukkit.entity.Player;
+
+import java.io.*;
+import java.util.Enumeration;
+import java.util.List;
+import java.util.Random;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipFile;
 
 /**
  * Created by Nick on 10/19/2015.
@@ -225,7 +214,7 @@ public class DungeonManager implements GenericMechanic{
         private Integer time;
         private List<Player> playerList;
         private String worldName;
-        public CopyOnWriteArrayList<Entity> aliveMonsters = new CopyOnWriteArrayList<Entity>();
+        public CopyOnWriteArrayList<Entity> aliveMonsters = new CopyOnWriteArrayList<>();
 		public boolean canSpawnBoss = false;
         public int tier;
 		public int maxAlive = 0;
@@ -321,7 +310,27 @@ public class DungeonManager implements GenericMechanic{
 			
 			for(Player p : Bukkit.getWorld(worldName).getPlayers()){
 		        p.sendMessage(API.getTierColor(tier) + "You have gained " + ChatColor.UNDERLINE + shardsToGive + " Portal Shards" + API.getTierColor(tier) + " for completing this Dungeon.");
-				DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T1, shardsToGive, true);
+                switch (tier) {
+                    case 1:
+                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T1, shardsToGive, true);
+                        break;
+                    case 2:
+                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T2, shardsToGive, true);
+                        break;
+                    case 3:
+                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T3, shardsToGive, true);
+                        break;
+                    case 4:
+                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T4, shardsToGive, true);
+                        break;
+                    case 5:
+                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T5, shardsToGive, true);
+                        break;
+                    default:
+                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$INC, EnumData.PORTAL_SHARDS_T1, shardsToGive, true);
+                        break;
+
+                }
 			}
 		}
     }
