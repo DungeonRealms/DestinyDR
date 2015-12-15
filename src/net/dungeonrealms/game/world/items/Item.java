@@ -117,8 +117,7 @@ public class Item {
         UNCOMMON(1, ChatColor.GREEN.toString() + ChatColor.ITALIC + "Uncommon" + ChatColor.RESET),
         RARE(2, ChatColor.AQUA.toString() + ChatColor.ITALIC + "Rare" + ChatColor.RESET),
         UNIQUE(3, ChatColor.YELLOW.toString() + ChatColor.ITALIC + "Unique" + ChatColor.RESET),
-        //not used, for the lols.
-        LEGENDARY(4, ChatColor.DARK_PURPLE.toString() + ChatColor.ITALIC + "Legendary" + ChatColor.RESET),;
+        LEGENDARY(4, ChatColor.GOLD.toString() + ChatColor.ITALIC + "Legendary" + ChatColor.RESET),;
 
         private int id;
         private String name;

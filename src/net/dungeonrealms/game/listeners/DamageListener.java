@@ -973,7 +973,7 @@ public class DamageListener implements Listener {
         }
         if (event.getPlayer().hasMetadata("last_Staff_Use")) {
             event.setCancelled(true);
-            if (System.currentTimeMillis() - event.getPlayer().getMetadata("last_Staff_Use").get(0).asLong() < 400)
+            if (System.currentTimeMillis() - event.getPlayer().getMetadata("last_Staff_Use").get(0).asLong() < 250)
                 return;
         }
         

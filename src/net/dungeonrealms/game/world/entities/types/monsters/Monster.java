@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
 import net.dungeonrealms.API;
-import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -49,10 +48,11 @@ public interface Monster {
             double drop_multiplier = 1;	
             boolean is_elite = false;
             // Elite = 1.5x money chance / item chance.
-            if(ent.hasMetadata("elite"))
-                is_elite = true;
+            if (ent.hasMetadata("elite")) {
+				is_elite = true;
+			}
 
-            if (is_elite == true) {
+            if (is_elite) {
                 drop_multiplier = 1.5;
             }
             double gold_drop_multiplier = 1;
@@ -94,16 +94,16 @@ public interface Monster {
 		int chance = 0;
 		switch(tier){
 		case 1:
-			chance = 120;
+			chance = 100;
 			break;
 		case 2:
-			chance = 75;
+			chance = 60;
 			break;
 		case 3:
 			chance = 30;
 			break;
 		case 4:
-			chance = 20;
+			chance = 15;
 			break;
 		case 5:
 			chance = 6;
@@ -147,17 +147,6 @@ public interface Monster {
 			}
 			RepairAPI.setCustomItemDurability(armorToDrop, RandomHelper.getRandomNumberBetween(200, 1000));
 			world.getWorld().dropItemNaturally(loc.add(0, 1, 0), armorToDrop);
-			return;
-		}
-
-		int protectionRoll = new Random().nextInt(99);
-		if (protectionRoll <= (2 + (2 * killerLuck / 100))) {
-			if (protectionRoll > 2) {
-				if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId()).toString())) {
-					killer.sendMessage(ChatColor.GREEN + "Your " + killerLuck + "% Luck has resulted in a drop.");
-				}
-			}
-			world.getWorld().dropItemNaturally(loc.add(0, 1, 0), ItemManager.createProtectScroll(tier));
 		}
 	}
 }
