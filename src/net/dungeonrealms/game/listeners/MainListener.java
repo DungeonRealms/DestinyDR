@@ -469,7 +469,13 @@ public class MainListener implements Listener {
         if (!(player.getWorld().equals(Bukkit.getWorlds().get(0)))) {
             return;
         }
-        if (API.isInSafeRegion(event.getTo())) {
+        if (API.isInSafeRegion(event.getFrom()) || API.isNonPvPRegion(event.getFrom())) {
+            event.setCancelled(true);
+            player.teleport(KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1)));
+            player.sendMessage(ChatColor.RED + "The guards have kicked you of of this area due to your alignment");
+            return;
+        }
+        if (API.isInSafeRegion(event.getTo()) || API.isNonPvPRegion(event.getTo())) {
             event.setCancelled(true);
             player.teleport(new Location(player.getWorld(), event.getFrom().getX(), event.getFrom().getY(), event.getFrom().getZ(), player.getLocation().getPitch() * -1, player.getLocation().getPitch() * -1));
             player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " enter " + ChatColor.BOLD.toString() + "NON-PVP" + ChatColor.RED + " zones with a Chaotic alignment.");
