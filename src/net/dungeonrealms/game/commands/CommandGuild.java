@@ -41,7 +41,7 @@ public class CommandGuild extends BasicCommand {
         }
          */
 
-        String guildName = DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString();
+        String guildName = Guild.getInstance().getGuildOf(player.getUniqueId());
 
         if (args.length > 0) {
 
@@ -260,7 +260,11 @@ public class CommandGuild extends BasicCommand {
                     }
                 });
                 break;
-            case "leave":
+            case "check":
+                player.sendMessage(Guild.getInstance().getGuildOf(player.getUniqueId()));
+                break;
+            case "save":
+                Guild.getInstance().saveAllGuilds();
                 break;
         }
         return true;

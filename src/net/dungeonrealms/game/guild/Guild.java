@@ -21,7 +21,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -45,31 +47,71 @@ public class Guild {
     public static HashMap<UUID, ArrayList<String>> invitations = new HashMap<>();
 
     public boolean isGuildNull(UUID uuid) {
-        return DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid).toString().isEmpty();
+        return getGuildOf(uuid) == null;
     }
 
     public void doLogin(Player player) {
         if (!isGuildNull(player.getUniqueId())) {
-            //TODO: We get guild infromation from Mongo. get it from MYSQL
-            String guildName = DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString();
+            String guildName = getGuildOf(player.getUniqueId());
             if (!guilds.containsKey(guildName)) {
                 doesGuildNameExist(guildName, exist -> {
                     if (!exist) {
                         player.sendMessage(ChatColor.RED + "Your guild no longer exist in the database, this could be a result in it being disbanded.");
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, "", true);
+                        setGuild(player.getUniqueId(), null);
                         return;
                     }
                     fetchOfflineGuild(guildName, jsonObject -> {
                         if (jsonObject != null) {
                             guilds.put(guildName, jsonObject);
+                            if (!((ArrayList<String>) guilds.get(guildName).get("members")).contains(player.getUniqueId().toString()) && !((ArrayList<String>) guilds.get(guildName).get("officers")).contains(player.getUniqueId().toString()) && !guilds.get(guildName).get("owner").toString().equals(player.getUniqueId().toString())) {
+                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, "", true);
+                                player.sendMessage(ChatColor.RED + "Apparently you were removed from your guild.");
+                                return;
+                            }
                             player.sendMessage(getClanTagOf(guildName).toUpperCase() + " " + ChatColor.GRAY + getMotdOf(guildName));
                         }
                     });
                 });
             } else {
+                if (!((ArrayList<String>) guilds.get(guildName).get("members")).contains(player.getUniqueId().toString()) && !((ArrayList<String>) guilds.get(guildName).get("officers")).contains(player.getUniqueId().toString()) && !guilds.get(guildName).get("owner").toString().equals(player.getUniqueId().toString())) {
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, "", true);
+                    player.sendMessage(ChatColor.RED + "Apparently you were removed from your guild.");
+                    return;
+                }
                 sendAlert(guildName, ChatColor.GREEN + player.getName() + " " + ChatColor.GRAY + "is now online!");
             }
+        } else {
+            System.out.println("\n PLAYER IS NOT IN GUILD\n ");
         }
+    }
+
+    /**
+     * Gets the guild of a player.
+     *
+     * @param uuid
+     * @return
+     */
+    public String getGuildOf(UUID uuid) {
+        Future<?> guildName = Executors.newSingleThreadExecutor().submit(() -> {
+            String rname = "";
+            try (
+                    PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT guild FROM `players` WHERE uuid='" + uuid.toString() + "';");
+                    ResultSet resultSet = statement.executeQuery();
+            ) {
+                if (resultSet.next()) {
+                    rname = resultSet.getString("guild");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return rname;
+        });
+        try {
+            return (String) guildName.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 
     /**
@@ -363,6 +405,7 @@ public class Guild {
                 action.accept(false);
             }
         });
+        setGuild(owner, guildName);
     }
 
     /**
