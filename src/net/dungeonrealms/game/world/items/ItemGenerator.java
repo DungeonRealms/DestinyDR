@@ -467,7 +467,7 @@ public class ItemGenerator {
         stack.setItemMeta(meta);
 
         RepairAPI.setCustomItemDurability(stack, 1500);
-        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        NBTTagCompound tag = new NBTTagCompound();
         tag.set("type", new NBTTagString("weapon"));
 
         //Settings NBT for the Attribute Class. () -> itemType, itemTier, itemModifier
@@ -484,7 +484,7 @@ public class ItemGenerator {
         for (Map.Entry<Item.AttributeType, Integer> entry : attributeTypeIntegerHashMap.entrySet()) {
             tag.set(entry.getKey().getNBTName(), new NBTTagInt(entry.getValue()));
         }
-
+        
         nmsStack.setTag(tag);
 
         return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
@@ -512,7 +512,7 @@ public class ItemGenerator {
             stack.setItemMeta(meta);
 
             RepairAPI.setCustomItemDurability(stack, 1500);
-            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+            NBTTagCompound tag = new NBTTagCompound();
             tag.set("type", new NBTTagString("armor"));
 
             //Settings NBT for the Attribute Class. () -> itemType, itemTier, itemModifier

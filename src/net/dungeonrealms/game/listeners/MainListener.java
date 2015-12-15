@@ -248,17 +248,16 @@ public class MainListener implements Listener {
         player.getInventory().setArmorContents(armor);
         player.sendMessage(ChatColor.GREEN + "Loading your data.. This will only take a moment!");
 
-        UUID uuid = player.getUniqueId();
-        CombatLog.checkCombatLog(uuid);
+//        CombatLog.checkCombatLog(uuid);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
                 () -> API.handleLogin(player.getUniqueId()), 20L * 3);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                () -> {
-                    if ((Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, uuid).toString()))) {
-                        player.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "You have Combat Logged and someone killed your body while you were gone!");
-                        player.teleport(Teleportation.Cyrennica);
-                    }
-                }, 20L * 5);
+//        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+//                () -> {
+//                    if ((Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, uuid).toString()))) {
+//                        player.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "You have Combat Logged and someone killed your body while you were gone!");
+//                        player.teleport(Teleportation.Cyrennica);
+//                    }
+//                }, 20L * 5);
 
     }
 
