@@ -633,8 +633,9 @@ public class InventoryListener implements Listener {
             newStack.setAmount(newStack.getAmount() - 1);
             event.setCursor(newStack);
         }
-        event.getCurrentItem().setType(Material.AIR);
-        event.getInventory().addItem(new ItemGenerator().reRoll(slotItem));
+        ItemStack item = new ItemGenerator().reRoll(slotItem);
+        event.setCurrentItem(new ItemStack(Material.AIR));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> event.getWhoClicked().getInventory().addItem(item));
     }
 
 

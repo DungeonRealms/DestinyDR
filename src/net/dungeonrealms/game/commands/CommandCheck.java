@@ -1,13 +1,18 @@
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+
+import net.dungeonrealms.API;
+import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.items.Item.AttributeType;
+import net.dungeonrealms.game.world.items.armor.Armor.ArmorAttributeType;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
  * Created by Nick on 12/2/2015.
@@ -39,10 +44,31 @@ public class CommandCheck extends BasicCommand {
         ItemStack inHand = player.getItemInHand();
 
         NBTTagCompound tag = CraftItemStack.asNMSCopy(inHand).getTag();
-
-
-        player.sendMessage(ChatColor.RED + "EpochIdentifier: " + tag.getString("u"));
-
+        
+        
+        if(args.length == 1){
+        	if(args[0].equalsIgnoreCase("nbt")){
+        		if(API.isWeapon(inHand)){
+        			for(AttributeType type : Item.AttributeType.values()){
+        				if(tag.hasKey(type.getNBTName())){
+        					sender.sendMessage(type.getName() + ": " + tag.getInt(type.getNBTName()));
+        				}else{
+        					sender.sendMessage("Doesn't contain " + type.getName());
+        				}
+        			}
+        		}else if(API.isArmor(inHand)){
+        			for(ArmorAttributeType type : ArmorAttributeType.values()){
+        				if(tag.hasKey(type.getNBTName())){
+        					sender.sendMessage(type.getName() + ": " + tag.getInt(type.getNBTName()));
+        				}else{
+        					sender.sendMessage("Doesn't contain " + type.getName());
+        				}
+        			}
+        		}
+        	}
+        }else{
+        	player.sendMessage(ChatColor.RED + "EpochIdentifier: " + tag.getString("u"));
+        }
         return false;
     }
 }
