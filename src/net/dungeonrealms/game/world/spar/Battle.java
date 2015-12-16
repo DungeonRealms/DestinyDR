@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.spar;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -16,6 +17,8 @@ public class Battle {
     private Player player2;
     private ArrayList<ItemStack> player2Bet;
 
+    private Location bannerLocation;
+
     private Spar.SparWorlds sparWorld;
     private String worldName;
 
@@ -27,11 +30,12 @@ public class Battle {
 
     private ArrayList<Player> spectators;
 
-    public Battle(Player player1, ArrayList<ItemStack> player1Bet, Player player2, ArrayList<ItemStack> player2Bet, Spar.SparWorlds sparWorld, String worldName, SparArmor armorTier, SparWeapon weaponTier, long startTime, long time, ArrayList<Player> spectators) {
+    public Battle(Player player1, ArrayList<ItemStack> player1Bet, Player player2, ArrayList<ItemStack> player2Bet, Location bannerLocation, Spar.SparWorlds sparWorld, String worldName, SparArmor armorTier, SparWeapon weaponTier, long startTime, long time, ArrayList<Player> spectators) {
         this.player1 = player1;
         this.player1Bet = player1Bet;
         this.player2 = player2;
         this.player2Bet = player2Bet;
+        this.bannerLocation = bannerLocation;
         this.sparWorld = sparWorld;
         this.worldName = worldName;
         this.armorTier = armorTier;
@@ -42,8 +46,12 @@ public class Battle {
     }
 
     public Battle start() {
-        new Spar().readyWorld(this);
+        new Spar().startBattle(this);
         return this;
+    }
+
+    public void incTime() {
+        this.time += 1;
     }
 
     public Player getPlayer1() {
@@ -60,6 +68,10 @@ public class Battle {
 
     public ArrayList<ItemStack> getPlayer2Bet() {
         return player2Bet;
+    }
+
+    public Location getBannerLocation() {
+        return bannerLocation;
     }
 
     public Spar.SparWorlds getSparWorld() {
@@ -80,10 +92,6 @@ public class Battle {
 
     public long getStartTime() {
         return startTime;
-    }
-
-    public void increaseTime() {
-        this.time += 1;
     }
 
     public long getTime() {

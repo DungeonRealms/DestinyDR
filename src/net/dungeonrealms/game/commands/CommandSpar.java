@@ -7,6 +7,7 @@ import net.dungeonrealms.game.world.spar.SparArmor;
 import net.dungeonrealms.game.world.spar.SparWeapon;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -38,7 +39,10 @@ public class CommandSpar extends BasicCommand {
 
             if (Bukkit.getPlayer(personToFight) != null) {
 
-                new Battle(player, new ArrayList<ItemStack>(), Bukkit.getPlayer(personToFight), new ArrayList<ItemStack>(), Spar.SparWorlds.CYREN_BATTLE, "DUEL_" + (System.currentTimeMillis() / 1000l),
+                new Battle(player, new ArrayList<ItemStack>(), Bukkit.getPlayer(personToFight), new ArrayList<ItemStack>(), new Location[]{
+                        player.getLocation(),
+                        Bukkit.getPlayer(args[1]).getLocation()
+                }, Spar.SparWorlds.CYREN_BATTLE, "DUEL_" + (System.currentTimeMillis() / 1000l),
                         SparArmor.TIER_1, SparWeapon.TIER_1, 2323, 0, new ArrayList<Player>()).start();
 
             } else {

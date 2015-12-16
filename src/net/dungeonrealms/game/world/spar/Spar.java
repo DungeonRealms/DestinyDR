@@ -6,6 +6,7 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.world.spar.sparworlds.SparWorldCyren;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -27,11 +28,13 @@ public class Spar implements GenericMechanic {
     @Override
     public void startInitialization() {
 
+        Utils.log.info("[SPAR] STARTING ON ... STARTING");
+
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             spars.stream().forEach(battle -> {
-                battle.increaseTime();
+                battle.incTime();
 
-                List<Player> all = new ArrayList<Player>();
+                List<Player> all = new ArrayList<>();
                 all.add(battle.getPlayer1());
                 all.add(battle.getPlayer2());
 
@@ -51,8 +54,7 @@ public class Spar implements GenericMechanic {
                     case 180:
                         all.stream().forEach(player -> player.sendMessage(ChatColor.AQUA.toString() + ChatColor.BOLD + "SPAR" + " " + ChatColor.YELLOW.toString() + ChatColor.BOLD +
                                 "➜" + " " + ChatColor.GRAY + "Spar has reached maximum time and expired!"));
-                        battle.getPlayer1().teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
-                        battle.getPlayer2().teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+                        removeBattle(battle);
                         break;
                 }
 
@@ -66,8 +68,26 @@ public class Spar implements GenericMechanic {
 
     }
 
+    public void removeBattle(Battle battle) {
+        battle.getPlayer1().teleport(battle.getBannerLocation());
+        battle.getPlayer2().teleport(battle.getBannerLocation());
 
-    public void readyWorld(Battle battle) {
+        battle.getSpectators().forEach(player -> player.teleport(battle.getBannerLocation()));
+
+        Bukkit.getWorlds().remove(Bukkit.getWorld(battle.getWorldName()));
+        Utils.log.info("[SPAR] Removing world: " + battle.getWorldName() + " from worldList().");
+        Bukkit.unloadWorld(battle.getWorldName(), false);
+
+        try {
+            FileUtils.deleteDirectory(new File(battle.getWorldName()));
+            Utils.log.info("[SPAR] Deleted world: " + battle.getWorldName() + " final stage.");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+
+    public void startBattle(Battle battle) {
 
         try {
             unZip(new ZipFile(DungeonRealms.getInstance().getDataFolder() + SparWorlds.CYREN_BATTLE.getZipName()), battle.getWorldName());
@@ -78,11 +98,9 @@ public class Spar implements GenericMechanic {
         World w = Bukkit.getServer().createWorld(new WorldCreator(battle.getWorldName()));
         w.setKeepSpawnInMemory(false);
         w.setAutoSave(false);
-        w.setPVP(false);
+        w.setPVP(true);
         w.setStorm(false);
-        w.setMonsterSpawnLimit(300);
-        w.setGameRuleValue("doFireTick", "false");
-        w.setGameRuleValue("randomTickSpeed", "0");
+        w.setMonsterSpawnLimit(0);
         Bukkit.getWorlds().add(w);
 
         SparWorldCyren s = new SparWorldCyren();
