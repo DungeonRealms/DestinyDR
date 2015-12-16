@@ -205,9 +205,9 @@ public class Achievements {
         }, 1000, "achievement.you_voted"),
 
         VOTE_AS_SUB(29, "Vote as Subscriber", new String[]{}, 500, "achievement.vote_as_subscriber"),
-
         VOTE_AS_SUB_PLUS(30, "Vote as Subscriber+", new String[]{}, 1000, "achievement.vote_as_subscriber+"),
-        PM_XWAFFLE(31, "Message Xwaffle", new String[]{"You attempted to message Xwaffle, although he may be busy."}, 450, "achievement.pmxwaffle");
+        PM_XWAFFLE(31, "Message Xwaffle", new String[]{"You attempted to message Xwaffle, although he may be busy."}, 450, "achievement.pmxwaffle"),
+        CREATE_A_GUILD(32, "Create a Guild", new String[]{"Congratulations on the creation of your new guild!."}, 750, "achievement.create_a_guild"),;
 
         private int id;
         private String name;

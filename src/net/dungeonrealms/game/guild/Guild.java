@@ -1,11 +1,13 @@
 package net.dungeonrealms.game.guild;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.core.Core;
 import net.dungeonrealms.game.mastery.UUIDFetcher;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.mongo.achievements.Achievements;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -25,7 +27,6 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/29/2015.
@@ -122,20 +123,17 @@ public class Guild {
      */
     public void demotePlayer(String guildName, UUID uuid) {
 
-        ((ArrayList<String>) guilds.get(guildName).get("officers")).remove(uuid.toString());
-        ((ArrayList<String>) guilds.get(guildName).get("member")).add(uuid.toString());
+        if (isMember(uuid, guildName)) {
+            ((ArrayList<String>) guilds.get(guildName).get("members")).remove(uuid.toString());
+            sendAlert(guildName, ChatColor.RED + Core.getInstance().getNameFromUUID(uuid) + " has been demoted from [MEMBER] to [OUT OF THE GUILD]");
+            setGuild(uuid, null);
+        } else if (isOfficer(uuid, guildName)) {
+            ((ArrayList<String>) guilds.get(guildName).get("officers")).remove(uuid.toString());
+            ((ArrayList<String>) guilds.get(guildName).get("members")).add(uuid.toString());
+            sendAlert(guildName, ChatColor.RED + Core.getInstance().getNameFromUUID(uuid) + " has been demoted to [MEMBER]!");
+        }
 
-        sendAlert(guildName, ChatColor.RED + Core.getInstance().getNameFromUUID(uuid) + " has been demoted to [MEMBER]!");
-
-        Executors.newSingleThreadExecutor().submit(() -> {
-            try (
-                    PreparedStatement statement = Core.getInstance().connection.prepareStatement("UPDATE `players` SET guild=" + null + " WHERE uuid='" + uuid.toString() + "';");
-            ) {
-                statement.executeUpdate();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+        saveGuild(guildName);
 
     }
 
@@ -149,6 +147,8 @@ public class Guild {
         ((ArrayList<String>) guilds.get(guildName).get("officers")).add(uuid.toString());
 
         sendAlert(guildName, ChatColor.RED + Core.getInstance().getNameFromUUID(uuid) + " has been promoted to [OFFICER]!");
+
+        saveGuild(guildName);
 
     }
 
@@ -175,6 +175,8 @@ public class Guild {
         } else {
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.GUILD, "", false);
         }
+
+        saveGuild(guildName);
 
     }
 
@@ -351,6 +353,34 @@ public class Guild {
      * @param guildName name wanting the players.
      * @return The online players of a guild.
      */
+    public List<String> getAllOnlineNamesOf(String guildName) {
+        List<String> temp = new ArrayList<>();
+
+        JSONObject jsonObject = guilds.get(guildName);
+
+        if (Bukkit.getPlayer(UUID.fromString(jsonObject.get("owner").toString())) != null) {
+            temp.add(Bukkit.getPlayer(UUID.fromString(jsonObject.get("owner").toString())).getName());
+        }
+
+        ((ArrayList<String>) jsonObject.get("officers")).stream().forEach(s1 -> {
+            if (Bukkit.getPlayer(UUID.fromString(s1)) != null) {
+                temp.add(Bukkit.getPlayer(UUID.fromString(s1)).getName());
+            }
+        });
+
+        ((ArrayList<String>) jsonObject.get("members")).stream().forEach(s1 -> {
+            if (Bukkit.getPlayer(UUID.fromString(s1)) != null) {
+                temp.add(Bukkit.getPlayer(UUID.fromString(s1)).getName());
+            }
+        });
+
+        return temp;
+    }
+
+    /**
+     * @param guildName name wanting the players.
+     * @return The online players of a guild.
+     */
     public List<Player> getAllOnlineOf(String guildName) {
         List<Player> temp = new ArrayList<>();
 
@@ -360,8 +390,21 @@ public class Guild {
             temp.add(Bukkit.getPlayer(UUID.fromString(jsonObject.get("owner").toString())));
         }
 
-        temp.addAll(((ArrayList<String>) jsonObject.get("officers")).stream().filter(officer -> Bukkit.getPlayer(UUID.fromString(officer)) != null).map(Bukkit::getPlayer).collect(Collectors.toList()));
-        temp.addAll(((ArrayList<String>) jsonObject.get("members")).stream().filter(member -> Bukkit.getPlayer(UUID.fromString(member)) != null).map(Bukkit::getPlayer).collect(Collectors.toList()));
+        if (((ArrayList<String>) jsonObject.get("officers")).size() > 0) {
+            ((ArrayList<String>) jsonObject.get("officers")).stream().forEach(s -> {
+                if (Bukkit.getPlayer(UUID.fromString(s)) != null) {
+                    temp.add(Bukkit.getPlayer(UUID.fromString(s)));
+                }
+            });
+        }
+
+        if (((ArrayList<String>) jsonObject.get("members")).size() > 0) {
+            ((ArrayList<String>) jsonObject.get("members")).stream().forEach(s -> {
+                if (Bukkit.getPlayer(UUID.fromString(s)) != null) {
+                    temp.add(Bukkit.getPlayer(UUID.fromString(s)));
+                }
+            });
+        }
 
         return temp;
 
@@ -374,15 +417,34 @@ public class Guild {
      * @param guildName
      */
     public void setGuild(UUID uuid, String guildName) {
-        Executors.newSingleThreadExecutor().submit(() -> {
-            try (
-                    PreparedStatement statement = Core.getInstance().connection.prepareStatement("UPDATE `players` SET guild='" + guildName == null ? null : guildName + "' WHERE uuid='" + uuid.toString() + "';");
-            ) {
-                statement.executeUpdate();
-            } catch (SQLException e) {
-                e.printStackTrace();
+        if (guildName == null) {
+            Executors.newSingleThreadExecutor().submit(() -> {
+                try (
+                        PreparedStatement statement = Core.getInstance().connection.prepareStatement("UPDATE `players` SET guild=" + null + " WHERE uuid='" + uuid.toString() + "';");
+                ) {
+                    statement.executeUpdate();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            });
+        } else {
+            Executors.newSingleThreadExecutor().submit(() -> {
+                try (
+                        PreparedStatement statement = Core.getInstance().connection.prepareStatement("UPDATE `players` SET guild='" + guildName + "' WHERE uuid='" + uuid.toString() + "';");
+                ) {
+                    statement.executeUpdate();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            });
+        }
+        if (guilds.containsKey(guildName)) {
+            ((ArrayList<String>) guilds.get(guildName).get("members")).add(uuid.toString());
+            if (Bukkit.getPlayer(uuid) != null) {
+                doLogin(Bukkit.getPlayer(uuid));
             }
-        });
+        }
+        saveGuild(guildName);
     }
 
     /**
@@ -398,14 +460,21 @@ public class Guild {
             ) {
                 statement.executeUpdate();
                 Utils.log.info("DR | Created new guildName: " + guildName + " | clanTag: " + clanTag + " | ownerUUID: " + owner.toString());
-                DatabaseAPI.getInstance().update(owner, EnumOperators.$SET, EnumData.GUILD, guildName, true);
+                setGuild(owner, guildName);
                 action.accept(true);
             } catch (SQLException e) {
                 e.printStackTrace();
                 action.accept(false);
             }
         });
-        setGuild(owner, guildName);
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            if (Bukkit.getPlayer(owner) != null) {
+                doLogin(Bukkit.getPlayer(owner));
+                Achievements.getInstance().giveAchievement(owner, Achievements.EnumAchievements.CREATE_A_GUILD);
+            }
+        }, 10);
+
     }
 
     /**

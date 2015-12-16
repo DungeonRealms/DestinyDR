@@ -65,7 +65,6 @@ public class Spar implements GenericMechanic {
 
             });
         }, 0, 20);
-
     }
 
     public void removeBattle(Battle battle) {
@@ -85,7 +84,6 @@ public class Spar implements GenericMechanic {
             e.printStackTrace();
         }
     }
-
 
     public void startBattle(Battle battle) {
 
