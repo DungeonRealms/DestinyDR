@@ -1,11 +1,11 @@
 package net.dungeonrealms.game.handlers;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.core.Core;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.network.NetworkAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Bukkit;
@@ -94,9 +94,7 @@ public class MailHandler {
     public void sendMail(Player player, String to, ItemStack itemStack) {
 
         UUID fromUUID = player.getUniqueId();
-        UUID toUUID = API.getUUIDFromName(to);
-
-        String toPlayer = API.getNameFromUUID(toUUID);
+        UUID toUUID = Core.getInstance().getUUIDFromName(to);
 
         String serializedItem = ItemSerialization.itemStackToBase64(itemStack);
 
@@ -107,7 +105,6 @@ public class MailHandler {
             sendMailMessage(Bukkit.getPlayer(toUUID), ChatColor.GREEN + "You have received a present from " + ChatColor.GOLD + player.getName());
         } else {
             DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification, false);
-            NetworkAPI.getInstance().sendNetworkMessage("mail", "update", toPlayer);
         }
 
         sendMailMessage(player, ChatColor.GREEN + "You have sent " + ChatColor.GOLD + to + ChatColor.GREEN + " a present!");
