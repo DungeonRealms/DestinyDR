@@ -29,6 +29,7 @@ import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.realms.Instance;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
+import net.dungeonrealms.game.world.spar.Spar;
 import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
@@ -170,6 +171,7 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(new LootManager());
         mm.registerMechanic(Affair.getInstance());
         mm.registerMechanic(TutorialIslandHandler.getInstance());
+        mm.registerMechanic(new Spar());
 
         /*
         In development
@@ -215,6 +217,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Check epoch time of item."));
         cm.registerCommand(new CommandTell("tell", "/<command> [args]", "tell a player something."));
         cm.registerCommand(new CommandTell("isay", "/<command> [args]", "Prints message to players in dungeon world from command block."));
+        cm.registerCommand(new CommandSpar("spar", "/<command> [args]", "The spar command, basically duels recoded."));
 
         try {
             FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));

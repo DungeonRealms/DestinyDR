@@ -376,7 +376,7 @@ public class Guild {
     public void setGuild(UUID uuid, String guildName) {
         Executors.newSingleThreadExecutor().submit(() -> {
             try (
-                    PreparedStatement statement = Core.getInstance().connection.prepareStatement("UPDATE `players` SET guild='" + guildName + "' WHERE uuid='" + uuid.toString() + "';");
+                    PreparedStatement statement = Core.getInstance().connection.prepareStatement("UPDATE `players` SET guild='" + guildName == null ? null : guildName + "' WHERE uuid='" + uuid.toString() + "';");
             ) {
                 statement.executeUpdate();
             } catch (SQLException e) {

@@ -436,75 +436,74 @@ public class ItemGenerator {
         }
         return null;
     }
-    
-    
-    
+
+
     /**
      * reroll stats on weapons and armor
+     *
      * @param stack
      * @return
      */
-    public ItemStack reRoll(ItemStack stack){
-    	net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
-      	Attribute attribute = new Attribute(stack);
-      	if(API.isWeapon(stack)){
-      	ArrayList<Item.AttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(attribute.getItemTier().getAttributeRange()), attribute.getItemType());
-        ItemTier tier = attribute.getItemTier();
-      	ItemMeta meta = stack.getItemMeta();
-        List<String> itemLore = new ArrayList<>();
-        
-        if(meta.getLore() != null)
-            itemLore.addAll(meta.getLore().stream().filter(lore -> lore.startsWith(ChatColor.WHITE + "DMG: ")).collect(Collectors.toList()));
-        HashMap<Item.AttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
-        ItemType type = attribute.getItemType();
-        attributeTypes.stream().filter(aType -> aType != null && aType != AttributeType.DAMAGE).forEach(aType -> {
-            int i = new DamageMeta().nextWeapon(attribute.getItemTier(), attribute.getItemModifier(), aType);
-            attributeTypeIntegerHashMap.put(aType, i);
-            itemLore.add(setCorrectItemLore(aType, i, tier.getTierId()));
-        });
-        itemLore.add(attribute.getItemModifier().getChatColorOfModifier(attribute.getItemModifier()) + attribute.getItemModifier().getName());
-        meta.setLore(itemLore);
-        stack.setItemMeta(meta);
+    public ItemStack reRoll(ItemStack stack) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+        Attribute attribute = new Attribute(stack);
+        if (API.isWeapon(stack)) {
+            ArrayList<Item.AttributeType> attributeTypes = getRandomAttributes(new Random().nextInt(attribute.getItemTier().getAttributeRange()), attribute.getItemType());
+            ItemTier tier = attribute.getItemTier();
+            ItemMeta meta = stack.getItemMeta();
+            List<String> itemLore = new ArrayList<>();
 
-        RepairAPI.setCustomItemDurability(stack, 1500);
-        NBTTagCompound tag = new NBTTagCompound();
-        tag.set("type", new NBTTagString("weapon"));
+            if (meta.getLore() != null)
+                itemLore.addAll(meta.getLore().stream().filter(lore -> lore.startsWith(ChatColor.WHITE + "DMG: ")).collect(Collectors.toList()));
+            HashMap<Item.AttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
+            ItemType type = attribute.getItemType();
+            attributeTypes.stream().filter(aType -> aType != null && aType != AttributeType.DAMAGE).forEach(aType -> {
+                int i = new DamageMeta().nextWeapon(attribute.getItemTier(), attribute.getItemModifier(), aType);
+                attributeTypeIntegerHashMap.put(aType, i);
+                itemLore.add(setCorrectItemLore(aType, i, tier.getTierId()));
+            });
+            itemLore.add(attribute.getItemModifier().getChatColorOfModifier(attribute.getItemModifier()) + attribute.getItemModifier().getName());
+            meta.setLore(itemLore);
+            stack.setItemMeta(meta);
 
-        //Settings NBT for the Attribute Class. () -> itemType, itemTier, itemModifier
-        tag.set("itemType", new NBTTagInt(type.getId()));
-        tag.set("itemTier", new NBTTagInt(tier.getTierId()));
-        tag.set("itemModifier", new NBTTagInt(attribute.getItemModifier().getId()));
+            RepairAPI.setCustomItemDurability(stack, 1500);
+            NBTTagCompound tag = new NBTTagCompound();
+            tag.set("type", new NBTTagString("weapon"));
+
+            //Settings NBT for the Attribute Class. () -> itemType, itemTier, itemModifier
+            tag.set("itemType", new NBTTagInt(type.getId()));
+            tag.set("itemTier", new NBTTagInt(tier.getTierId()));
+            tag.set("itemModifier", new NBTTagInt(attribute.getItemModifier().getId()));
 
         /*
         The line below removes the weapons attributes.
         E.g. Diamond Sword says, "+7 Attack Damage"
          */
-        tag.set("AttributeModifiers", new NBTTagList());
+            tag.set("AttributeModifiers", new NBTTagList());
 
-        for (Map.Entry<Item.AttributeType, Integer> entry : attributeTypeIntegerHashMap.entrySet()) {
-            tag.set(entry.getKey().getNBTName(), new NBTTagInt(entry.getValue()));
-        }
-        
-        nmsStack.setTag(tag);
+            for (Map.Entry<Item.AttributeType, Integer> entry : attributeTypeIntegerHashMap.entrySet()) {
+                tag.set(entry.getKey().getNBTName(), new NBTTagInt(entry.getValue()));
+            }
 
-        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
-      	}else if(API.isArmor(stack)){
-          	ArrayList<ArmorAttributeType> attributeTypes = new ArmorGenerator().getRandomAttributes(new Random().nextInt(attribute.getArmorTier().getAttributeRange()));
+            nmsStack.setTag(tag);
+
+            return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+        } else if (API.isArmor(stack)) {
+            ArrayList<ArmorAttributeType> attributeTypes = new ArmorGenerator().getRandomAttributes(new Random().nextInt(attribute.getArmorTier().getAttributeRange()));
             List<String> itemLore = new ArrayList<>();
             ArmorTier tier = attribute.getArmorTier();
-          	ItemMeta meta = stack.getItemMeta();
+            ItemMeta meta = stack.getItemMeta();
             HashMap<ArmorAttributeType, Integer> attributeTypeIntegerHashMap = new HashMap<>();
             EquipmentType type = attribute.getArmorType();
             int modifierID = nmsStack.getTag().getInt("armorModifier");
-            if(meta.getLore() != null)
+            if (meta.getLore() != null)
                 itemLore.addAll(meta.getLore().stream().filter(lore -> lore.contains("HP:") || lore.contains("HP REGEN:") || lore.contains("ENERGY REGEN: ")).collect(Collectors.toList()));
-                
-            
-            
+
+
             attributeTypes.stream().filter(aType -> aType != null && aType != ArmorAttributeType.HEALTH_POINTS && aType != ArmorAttributeType.HEALTH_REGEN && aType != ArmorAttributeType.ENERGY_REGEN).forEach(aType -> {
                 int i = new DamageMeta().nextArmor(tier, ArmorModifier.getById(modifierID), aType);
                 attributeTypeIntegerHashMap.put(aType, i);
-				itemLore.add(ArmorGenerator.setCorrectArmorLore(aType, i));
+                itemLore.add(ArmorGenerator.setCorrectArmorLore(aType, i));
             });
             ArmorModifier modifier = ArmorModifier.getById(modifierID);
             itemLore.add(modifier.getChatColorOfModifier(modifier) + modifier.getName());
@@ -516,27 +515,27 @@ public class ItemGenerator {
             tag.set("type", new NBTTagString("armor"));
 
             //Settings NBT for the Attribute Class. () -> itemType, itemTier, itemModifier
-    		tag.set("armorType", new NBTTagInt(type.getId()));
-    		tag.set("armorTier", new NBTTagInt(tier.getTierId()));
-    		tag.set("armorModifier", new NBTTagInt(modifier.getId()));
+            tag.set("armorType", new NBTTagInt(type.getId()));
+            tag.set("armorTier", new NBTTagInt(tier.getTierId()));
+            tag.set("armorModifier", new NBTTagInt(modifier.getId()));
 
             /*
             The line below removes the weapons attributes.
             E.g. Diamond Sword says, "+7 Attack Damage"
              */
-    		tag.set("AttributeModifiers", new NBTTagList());
+            tag.set("AttributeModifiers", new NBTTagList());
 
-    		for (Map.Entry<Armor.ArmorAttributeType, Integer> entry : attributeTypeIntegerHashMap.entrySet()) {
-    			tag.set(entry.getKey().getNBTName(), new NBTTagInt(entry.getValue()));
-    		}
-    		
+            for (Map.Entry<Armor.ArmorAttributeType, Integer> entry : attributeTypeIntegerHashMap.entrySet()) {
+                tag.set(entry.getKey().getNBTName(), new NBTTagInt(entry.getValue()));
+            }
+
             nmsStack.setTag(tag);
 
             return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
-      		
-      		
-      	}
-      	return stack;
+
+
+        }
+        return stack;
     }
-    
+
 }
