@@ -104,13 +104,13 @@ public class MailHandler {
 
         if (API.isOnline(toUUID)) {
             DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification, true);
-            sendMailMessage(Bukkit.getPlayer(toUUID), ChatColor.GREEN + "You have received a present from " + ChatColor.AQUA + player.getName());
+            sendMailMessage(Bukkit.getPlayer(toUUID), ChatColor.GREEN + "You have received a present from " + ChatColor.GOLD + player.getName());
         } else {
             DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification, false);
             NetworkAPI.getInstance().sendNetworkMessage("mail", "update", toPlayer);
         }
 
-        sendMailMessage(player, ChatColor.GREEN + "You have sent " + ChatColor.AQUA + to + ChatColor.GREEN + " mail!");
+        sendMailMessage(player, ChatColor.GREEN + "You have sent " + ChatColor.GOLD + to + ChatColor.GREEN + " a present!");
     }
 
     /**
