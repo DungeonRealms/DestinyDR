@@ -123,7 +123,8 @@ public final class Core implements GenericMechanic {
             ) {
 
                 if (!resultSet.next()) {
-                    PreparedStatement addPlayer = Core.getInstance().connection.prepareStatement("INSERT INTO players VALUES(" + "'" + name + "'" + ", " + "'" + uuid.toString() + "'" + ", " + null + ");");
+                    PreparedStatement addPlayer = Core.getInstance().connection.prepareStatement(
+                            "INSERT INTO players VALUES(" + "'" + name + "'" + ", " + "'" + uuid.toString() + "'" + ", " + null + ");");
                     addPlayer.executeUpdate();
                     Utils.log.info("DR | Added new player: " + name + " " + uuid.toString());
                 } else {

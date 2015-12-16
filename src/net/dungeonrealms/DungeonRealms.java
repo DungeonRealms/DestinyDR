@@ -118,6 +118,7 @@ public class DungeonRealms extends JavaPlugin {
         DatabaseAPI.getInstance().startInitialization();
         NetworkAPI.getInstance().startInitialization();
         AntiCheat.getInstance().startInitialization();
+        new Spar().startInitialization();
 
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
@@ -171,7 +172,6 @@ public class DungeonRealms extends JavaPlugin {
         mm.registerMechanic(new LootManager());
         mm.registerMechanic(Affair.getInstance());
         mm.registerMechanic(TutorialIslandHandler.getInstance());
-        mm.registerMechanic(new Spar());
 
         /*
         In development

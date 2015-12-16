@@ -3,8 +3,6 @@ package net.dungeonrealms.game.world.spar;
 import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanics.generic.EnumPriority;
-import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.world.spar.sparworlds.SparWorldCyren;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -21,11 +19,10 @@ import java.util.zip.ZipFile;
 /**
  * Created by Nick on 12/15/2015.
  */
-public class Spar implements GenericMechanic {
+public class Spar {
 
     ArrayList<Battle> spars = new ArrayList<>();
 
-    @Override
     public void startInitialization() {
 
         Utils.log.info("[SPAR] STARTING ON ... STARTING");
@@ -138,16 +135,6 @@ public class Spar implements GenericMechanic {
                 e.printStackTrace();
             }
         }
-    }
-
-    @Override
-    public EnumPriority startPriority() {
-        return EnumPriority.CATHOLICS;
-    }
-
-    @Override
-    public void stopInvocation() {
-
     }
 
     /*
