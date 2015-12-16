@@ -1,5 +1,39 @@
 package net.dungeonrealms.game.listeners;
 
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
+import org.bukkit.Bukkit;
+import org.bukkit.DyeColor;
+import org.bukkit.Effect;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPhysicsEvent;
+import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.EntityBlockFormEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.player.PlayerAnimationEvent;
+import org.bukkit.event.player.PlayerAnimationType;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanics.ItemManager;
@@ -17,27 +51,6 @@ import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.*;
-import org.bukkit.event.player.PlayerAnimationEvent;
-import org.bukkit.event.player.PlayerAnimationType;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -81,10 +94,24 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void breakBlock(BlockBreakEvent e) {
     	if(e.getPlayer().isOp() || e.getPlayer().getGameMode() == GameMode.CREATIVE) return;
-    	if(e.getBlock().getWorld() == Bukkit.getWorlds().get(0))
+    	if(e.getBlock().getWorld() == Bukkit.getWorlds().get(0) || e.getBlock().getWorld().getName().contains("DUNGEON"))
     		e.setCancelled(true);
     }
 
+    
+    @EventHandler(priority = EventPriority.LOW)
+    public void onEntityExplode(EntityExplodeEvent event) {
+    	if(event.getLocation().getWorld().getName().contains("DUNGEON")){
+        	event.setCancelled(true);
+        	event.getLocation().getWorld().playEffect(event.getLocation(), Effect.EXPLOSION_HUGE, 10);
+    		List<Block> list = event.blockList();
+        	for(Block b : list){
+        		b.setType(Material.AIR);
+        	}
+        	event.blockList().clear();
+    	}
+    }
+    
     /**
      * Handles breaking ore
      *
@@ -257,7 +284,6 @@ public class BlockListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
         ItemStack item = event.getPlayer().getItemInHand();
         if(!API.isWeapon(item) && !API.isArmor(item) && !Mining.isDRPickaxe(item) && !Fishing.isDRFishingPole(item)){
         	event.setCancelled(true);
@@ -278,12 +304,20 @@ public class BlockListener implements Listener {
             	inv.setItem(5, ItemManager.createItemWithData(Material.WOOL, ChatColor.YELLOW + "Deny", new String[] {ChatColor.GRAY + "Deny the repair of your item."}, DyeColor.RED.getData()));
             	
             	player.openInventory(inv);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
+                    int finalCost = RepairAPI.getItemRepairCost(event.getPlayer().getItemInHand());
+                	Inventory finalinv = Bukkit.createInventory(null, 9, "Repair your item for " + ChatColor.BOLD + finalCost + "g?");	
+                	finalinv.setItem(3, ItemManager.createItemWithData(Material.WOOL, ChatColor.YELLOW + "Accept", new String[] {ChatColor.GRAY + "Repairs your item fully for specified amount."}, DyeColor.LIME.getData()));
+                	finalinv.setItem(5, ItemManager.createItemWithData(Material.WOOL, ChatColor.YELLOW + "Deny", new String[] {ChatColor.GRAY + "Deny the repair of your item."}, DyeColor.RED.getData()));
+                	
+                	player.openInventory(finalinv);
+                }, 10l);
+
             	
             } else {
                 event.setCancelled(true);
                 event.getPlayer().sendMessage(ChatColor.RED + "This item is already repaired all the way!");
             }
-        }, 20l);
     }
 
     /**

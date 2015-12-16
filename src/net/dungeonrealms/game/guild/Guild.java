@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.guild;
 
 import net.dungeonrealms.core.Core;
+import net.dungeonrealms.game.mastery.UUIDFetcher;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -20,7 +21,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -44,30 +47,162 @@ public class Guild {
     public static HashMap<UUID, ArrayList<String>> invitations = new HashMap<>();
 
     public boolean isGuildNull(UUID uuid) {
-        return DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid).toString().isEmpty();
+        return getGuildOf(uuid) == null;
     }
 
     public void doLogin(Player player) {
         if (!isGuildNull(player.getUniqueId())) {
-            String guildName = DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString();
+            String guildName = getGuildOf(player.getUniqueId());
             if (!guilds.containsKey(guildName)) {
                 doesGuildNameExist(guildName, exist -> {
                     if (!exist) {
                         player.sendMessage(ChatColor.RED + "Your guild no longer exist in the database, this could be a result in it being disbanded.");
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, "", true);
+                        setGuild(player.getUniqueId(), null);
                         return;
                     }
                     fetchOfflineGuild(guildName, jsonObject -> {
                         if (jsonObject != null) {
                             guilds.put(guildName, jsonObject);
-                            player.sendMessage(getClanTagOf(guildName) + ChatColor.GRAY + getMotdOf(guildName));
+                            if (!((ArrayList<String>) guilds.get(guildName).get("members")).contains(player.getUniqueId().toString()) && !((ArrayList<String>) guilds.get(guildName).get("officers")).contains(player.getUniqueId().toString()) && !guilds.get(guildName).get("owner").toString().equals(player.getUniqueId().toString())) {
+                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, "", true);
+                                player.sendMessage(ChatColor.RED + "Apparently you were removed from your guild.");
+                                return;
+                            }
+                            player.sendMessage(getClanTagOf(guildName).toUpperCase() + " " + ChatColor.GRAY + getMotdOf(guildName));
                         }
                     });
                 });
             } else {
+                if (!((ArrayList<String>) guilds.get(guildName).get("members")).contains(player.getUniqueId().toString()) && !((ArrayList<String>) guilds.get(guildName).get("officers")).contains(player.getUniqueId().toString()) && !guilds.get(guildName).get("owner").toString().equals(player.getUniqueId().toString())) {
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, "", true);
+                    player.sendMessage(ChatColor.RED + "Apparently you were removed from your guild.");
+                    return;
+                }
                 sendAlert(guildName, ChatColor.GREEN + player.getName() + " " + ChatColor.GRAY + "is now online!");
             }
+        } else {
+            System.out.println("\n PLAYER IS NOT IN GUILD\n ");
         }
+    }
+
+    /**
+     * Gets the guild of a player.
+     *
+     * @param uuid
+     * @return
+     */
+    public String getGuildOf(UUID uuid) {
+        Future<?> guildName = Executors.newSingleThreadExecutor().submit(() -> {
+            String rname = "";
+            try (
+                    PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT guild FROM `players` WHERE uuid='" + uuid.toString() + "';");
+                    ResultSet resultSet = statement.executeQuery();
+            ) {
+                if (resultSet.next()) {
+                    rname = resultSet.getString("guild");
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+            return rname;
+        });
+        try {
+            return (String) guildName.get();
+        } catch (InterruptedException | ExecutionException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    /**
+     * Demotes a player from [OFFICER] to [MEMBER]
+     *
+     * @param guildName
+     * @param uuid
+     */
+    public void demotePlayer(String guildName, UUID uuid) {
+
+        ((ArrayList<String>) guilds.get(guildName).get("officers")).remove(uuid.toString());
+        ((ArrayList<String>) guilds.get(guildName).get("member")).add(uuid.toString());
+
+        sendAlert(guildName, ChatColor.RED + Core.getInstance().getNameFromUUID(uuid) + " has been demoted to [MEMBER]!");
+
+        Executors.newSingleThreadExecutor().submit(() -> {
+            try (
+                    PreparedStatement statement = Core.getInstance().connection.prepareStatement("UPDATE `players` SET guild=" + null + " WHERE uuid='" + uuid.toString() + "';");
+            ) {
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+
+    }
+
+    /**
+     * Promotes a player, like [MEMBER] to [OFFICER]
+     *
+     * @param uuid
+     */
+    public void promotePlayer(String guildName, UUID uuid) {
+        ((ArrayList<String>) guilds.get(guildName).get("members")).remove(uuid.toString());
+        ((ArrayList<String>) guilds.get(guildName).get("officers")).add(uuid.toString());
+
+        sendAlert(guildName, ChatColor.RED + Core.getInstance().getNameFromUUID(uuid) + " has been promoted to [OFFICER]!");
+
+    }
+
+    /**
+     * @param executor
+     * @param guildName
+     * @param uuid
+     */
+    public void kickFrom(UUID executor, String guildName, UUID uuid) {
+
+        if (isOwner(executor, guildName) && isOfficer(uuid, guildName)) {
+            ((ArrayList<String>) guilds.get(guildName).get("officers")).remove(uuid.toString());
+            sendAlert(guildName, ChatColor.RED + Core.getInstance().getNameFromUUID(executor) + " " + "has removed " + Core.getInstance().getNameFromUUID(uuid) + " from the guild!");
+        }
+
+        if (isOfficer(executor, guildName) || isOwner(executor, guildName) && isMember(uuid, guildName)) {
+            ((ArrayList<String>) guilds.get(guildName).get("members")).remove(uuid.toString());
+            sendAlert(guildName, ChatColor.RED + Core.getInstance().getNameFromUUID(executor) + " " + "has removed " + Core.getInstance().getNameFromUUID(uuid) + " from the guild!");
+        }
+
+        if (Bukkit.getPlayer(uuid) != null) {
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.GUILD, "", true);
+            Bukkit.getPlayer(uuid).sendMessage(ChatColor.RED + "You have been removed from the guild!");
+        } else {
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.GUILD, "", false);
+        }
+
+    }
+
+    /**
+     * @param uuid
+     * @param guildName
+     * @return
+     */
+    public boolean isOwner(UUID uuid, String guildName) {
+        return guilds.get(guildName).get("owner").toString().equals(uuid.toString());
+    }
+
+    /**
+     * @param uuid
+     * @param guildName
+     * @return
+     */
+    public boolean isMember(UUID uuid, String guildName) {
+        return ((ArrayList<String>) guilds.get(guildName).get("members")).contains(uuid.toString());
+    }
+
+    /**
+     * @param uuid
+     * @param guildName
+     * @return
+     */
+    public boolean isOfficer(UUID uuid, String guildName) {
+        return ((ArrayList<String>) guilds.get(guildName).get("officers")).contains(uuid.toString());
     }
 
     /**
@@ -233,6 +368,24 @@ public class Guild {
     }
 
     /**
+     * Sets the players guild.
+     *
+     * @param uuid
+     * @param guildName
+     */
+    public void setGuild(UUID uuid, String guildName) {
+        Executors.newSingleThreadExecutor().submit(() -> {
+            try (
+                    PreparedStatement statement = Core.getInstance().connection.prepareStatement("UPDATE `players` SET guild='" + guildName + "' WHERE uuid='" + uuid.toString() + "';");
+            ) {
+                statement.executeUpdate();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    /**
      * @param guildName Guild Name.
      * @param clanTag   Clan Tag.
      * @param owner     owner UUID
@@ -252,6 +405,7 @@ public class Guild {
                 action.accept(false);
             }
         });
+        setGuild(owner, guildName);
     }
 
     /**

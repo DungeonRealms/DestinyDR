@@ -27,7 +27,7 @@ public interface Boss {
 	}
 	public default void say(Entity ent, Location location, String msg){
 		for (Player p : API.getNearbyPlayers(location, 50)) {
-			p.sendMessage(ent.getCustomName() + ChatColor.RESET.toString() + ": " + msg);
+			p.sendMessage(ChatColor.GREEN + ent.getCustomName() + ChatColor.RESET.toString() + ": " + msg);
 		}
 	}
 }

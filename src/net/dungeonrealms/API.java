@@ -24,7 +24,6 @@ import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.Entities;
@@ -349,9 +348,9 @@ public class API {
         if(!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
             return;
         }
-        if (CombatLog.isInCombat(player) && !DuelingMechanics.isDueling(uuid) && !API.isNonPvPRegion(player.getLocation())) {
-            CombatLog.handleCombatLogger(player);
-        }
+//        if (CombatLog.isInCombat(player) && !DuelingMechanics.isDueling(uuid) && !API.isNonPvPRegion(player.getLocation())) {
+//            CombatLog.handleCombatLogger(player);
+//        }
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, false);
         if (BankMechanics.storage.containsKey(uuid)) {
             Inventory inv = BankMechanics.getInstance().getStorage(uuid).inv;
@@ -468,7 +467,7 @@ public class API {
         }
         player.getInventory().setArmorContents(armorContents);
 
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
+//        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
 
         AchievementManager.getInstance().handleLogin(player);
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);

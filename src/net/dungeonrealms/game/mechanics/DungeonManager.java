@@ -355,6 +355,7 @@ public class DungeonManager implements GenericMechanic{
         w.setStorm(false);
         w.setMonsterSpawnLimit(300);
         w.setGameRuleValue("doFireTick", "false");
+        w.setGameRuleValue("randomTickSpeed", "0");
         Bukkit.getWorlds().add(w);
 
         playerList.stream().forEach(player -> {

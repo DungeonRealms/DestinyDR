@@ -4,7 +4,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -19,20 +18,19 @@ import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.game.world.entities.types.monsters.Monster;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
-import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.ItemGenerator;
 import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
-import net.minecraft.server.v1_8_R3.EntityLiving;
 import net.minecraft.server.v1_8_R3.EntitySkeleton;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Oct 19, 2015
  */
-public class Pyromancer extends EntitySkeleton implements Boss {
+public class Pyromancer extends EntitySkeleton implements Boss{
 
 	public Location loc;
 
@@ -74,13 +72,13 @@ public class Pyromancer extends EntitySkeleton implements Boss {
 	/**
 	 * Called when entity fires a projectile.
 	 */
-	@Override
-	public void a(EntityLiving entityliving, float f) {
-		net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
-		NBTTagCompound tag = nmsItem.getTag();
-		DamageAPI.fireArrowFromMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entityliving.getBukkitEntity());
-
-	}
+//	@Override
+//	public void a(EntityLiving entityliving, float f) {
+//		net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
+//		NBTTagCompound tag = nmsItem.getTag();
+//		DamageAPI.fireArrowFromMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entityliving.getBukkitEntity());
+//
+//	}
 
 	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
 		ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
@@ -103,9 +101,11 @@ public class Pyromancer extends EntitySkeleton implements Boss {
 //		641, 55, -457
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation().add(0, 2, 0), ItemManager.createItem(Material.GLOWSTONE_DUST, ChatColor.GREEN + "Magical Dust", new String[] {ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "A strange substance that animates objects.", ChatColor.RED + "Dungeon Item"})), 10);
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-			this.getBukkitEntity().getWorld().createExplosion(new Location(this.getBukkitEntity().getWorld(), 641, 55, -457), 20);
-		}
-		, 20 * 40);
+			this.getBukkitEntity().getWorld().getBlockAt(641, 55, -457).setType(Material.REDSTONE_TORCH_ON);
+			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () ->
+			this.getBukkitEntity().getWorld().getBlockAt(641, 55, -457).setType(Material.AIR), 20);
+
+		}, 20 * 5);
 	}
 
 	@Override
