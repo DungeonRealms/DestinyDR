@@ -19,6 +19,11 @@ import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.mastery.NBTUtils;
+import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanics.DungeonManager;
+import net.dungeonrealms.game.mechanics.DungeonManager.DungeonObject;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
@@ -28,10 +33,6 @@ import net.dungeonrealms.game.world.entities.types.monsters.boss.Mayel;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.Pyromancer;
 import net.dungeonrealms.game.world.entities.utils.BuffUtils;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
-import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.dungeonrealms.game.mastery.NBTUtils;
-import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.Entity;
@@ -99,8 +100,14 @@ public class CommandSpawn extends BasicCommand {
                     if (entity == null)
                         return false;
                     if(DungeonManager.getInstance().getDungeon(loc.getWorld()) != null){
-                    	if(!DungeonManager.getInstance().getDungeon(loc.getWorld()).canSpawnBoss)
+                    	DungeonObject d = DungeonManager.getInstance().getDungeon(loc.getWorld());
+                    	if(!d.canSpawnBoss){
+                    		for(Player p : block.getBlock().getWorld().getPlayers()){
+                    			int NinetyPercent = (int) (d.maxAlive - (d.maxAlive * 1.9));
+                    			p.sendMessage(ChatColor.RED + "You need to kill " + ChatColor.UNDERLINE + (d.aliveMonsters.size() - NinetyPercent) + ChatColor.RED + " monsters to spawn the boss.");
+                    		}
                     		return false;
+                    	}
                     }
                     Location location = loc;
                     entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);

@@ -79,7 +79,7 @@ public class DungeonManager implements GenericMechanic{
             int monstersAlive = dungeonObject.aliveMonsters.size();
             int maxAlive = dungeonObject.maxAlive;
             int NinetyPercent = (int) (maxAlive - (maxAlive * 1.9));
-            if(!dungeonObject.canSpawnBoss)
+            if(!dungeonObject.canSpawnBoss && maxAlive > 0 && monstersAlive > 0)
             if((maxAlive - monstersAlive) <= (maxAlive - NinetyPercent)){
             	dungeonObject.canSpawnBoss = true;
                 dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.YELLOW + "You really want to fight me?"));
