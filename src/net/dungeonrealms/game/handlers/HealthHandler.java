@@ -533,14 +533,22 @@ public class HealthHandler implements GenericMechanic {
                     CombatLog.removeFromCombat(player);
                     String killerName = "";
                     if (leAttacker instanceof Player) {
-                        killerName = leAttacker.getName();
+                        killerName = GameChat.getPreMessage((Player) leAttacker).replaceAll(":", "").trim();
+                        if (ChatColor.stripColor(killerName).startsWith("<G>")) {
+                            killerName = killerName.split(">")[1];
+                        }
                     } else {
                         if (leAttacker.hasMetadata("customname")) {
                             killerName = leAttacker.getMetadata("customname").get(0).asString().trim();
                         }
                     }
+                    String deadPlayerName = GameChat.getPreMessage(player).replaceAll(":", "").trim();
+                    if (ChatColor.stripColor(deadPlayerName).startsWith("<G>")) {
+                        deadPlayerName = deadPlayerName.split(">")[1];
+                    }
+                    final String finalDeadPlayerName = deadPlayerName;
                     final String finalKillerName = killerName;
-                    API.getNearbyPlayers(leAttacker.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage((GameChat.getPreMessage(player).trim().replace(":", "")  + " was killed by a(n) " + finalKillerName)));
+                    API.getNearbyPlayers(leAttacker.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(finalDeadPlayerName  + " was killed by a(n) " + finalKillerName));
                     return;
                 }
             } else {
