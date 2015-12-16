@@ -3,7 +3,6 @@ package net.dungeonrealms.game.player.chat;
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.achievements.AchievementManager;
 import net.dungeonrealms.game.mongo.achievements.Achievements;
 import net.dungeonrealms.game.mongo.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.player.json.JSONMessage;
@@ -35,7 +34,7 @@ public class Chat {
 
     public static List<String> bannedWords = new ArrayList<>(Arrays.asList("shit", "fuck", "cunt", "bitch", "whore", "slut", "wank", "asshole", "cock",
             "dick", "clit", "homo", "fag", "queer", "nigger", "dike", "dyke", "retard", "motherfucker", "vagina", "boob", "pussy", "rape", "gay", "penis",
-            "cunt", "titty", "anus", "faggot", "gay", "f@g", "d1ck", "nig", "titanrift", "socialconquer", "wynncraft", "titan rift", "titanrift", "fucked"));
+            "cunt", "titty", "anus", "faggot", "gay", "f@g", "d1ck", "titanrift", "socialconquer", "wynncraft", "titan rift", "titanrift", "fucked"));
 
 
     /**

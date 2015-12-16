@@ -4,7 +4,6 @@ import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.guild.Guild;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumGuildData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.network.NetworkAPI;
 import org.bukkit.ChatColor;
@@ -55,10 +54,6 @@ public class CommandAccept extends BasicCommand {
 
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.GUILD_INVITES, guildName + "," + invitation.split(",")[1], true);
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, guildName, true);
-
-
-                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.INVITATIONS, player.getUniqueId().toString(), true);
-                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PUSH, EnumGuildData.MEMBERS, player.getUniqueId().toString(), true);
 
 
                     NetworkAPI.getInstance().sendNetworkMessage("guild", "update", guildName);

@@ -25,7 +25,6 @@ public class DatabaseAPI {
     }
 
     public volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
-    public volatile ConcurrentHashMap<String, Document> GUILDS = new ConcurrentHashMap<>();
 
     /**
      * Updates a players information in Mongo and returns the updated result.
@@ -65,26 +64,6 @@ public class DatabaseAPI {
                     Utils.log.info("DatabaseAPI update() called ...");
                     if (exception == null && requestNew) {
                         requestPlayer(uuid);
-                    }
-                });
-    }
-
-    /**
-     * Updates specified Guild
-     *
-     * @param guildName  Name of the Guild.
-     * @param EO         Type of Operation
-     * @param variable   Variable to change i.e (info.icon)
-     * @param object     New Data
-     * @param requestNew Pull new guild once injected?
-     * @since 1.0
-     */
-    public void updateGuild(String guildName, EnumOperators EO, EnumGuildData variable, Object object, boolean requestNew) {
-        Database.guilds.updateOne(Filters.eq("info.name", guildName.toUpperCase()), new Document(EO.getUO(), new Document(variable.getKey(), object)),
-                (result, exception) -> {
-                    Utils.log.info("DatabaseAPI update() called ...");
-                    if (exception == null && requestNew) {
-                        requestGuild(guildName);
                     }
                 });
     }
@@ -256,21 +235,6 @@ public class DatabaseAPI {
                 PLAYERS.put(uuid, document);
             } else {
                 addNewPlayer(uuid);
-            }
-        });
-    }
-
-    /**
-     * Gets the requested GuildName and puts in Guild.YAVA
-     * class.
-     *
-     * @param guildName
-     * @since 1.0
-     */
-    public void requestGuild(String guildName) {
-        Database.guilds.find(Filters.eq("info.name", guildName)).first((document, throwable) -> {
-            if (document != null) {
-                GUILDS.put(guildName, document);
             }
         });
     }

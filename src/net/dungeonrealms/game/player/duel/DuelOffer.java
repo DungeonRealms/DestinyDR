@@ -90,7 +90,17 @@ public class DuelOffer {
 //		Bukkit.broadcastMessage(ChatColor.AQUA + winner.getName() + ChatColor.YELLOW + " has defeated "
 //		        + loser.getName() + " in a duel");
 
-		API.getNearbyPlayers(winner.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage((GameChat.getPreMessage(winner).trim().replace(":", "") + ChatColor.GREEN + " has " + ChatColor.UNDERLINE + "DEFEATED" + ChatColor.RESET + " " + GameChat.getPreMessage(loser).trim().replace(":", "") + ChatColor.GREEN + " in a duel!")));
+		String winnerName = GameChat.getPreMessage(winner).replaceAll(":", "").trim().intern();
+		if (ChatColor.stripColor(winnerName).startsWith("<G>")) {
+			winnerName = winnerName.split(">")[1];
+		}
+		String loserName = GameChat.getPreMessage(loser).replaceAll(":", "").trim();
+		if (ChatColor.stripColor(loserName).startsWith("<G>")) {
+			loserName = loserName.split(">")[1];
+		}
+		final String finalWinnerName = winnerName;
+		final String finalLoserName = loserName;
+		API.getNearbyPlayers(winner.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(finalWinnerName + ChatColor.GREEN + " has " + ChatColor.UNDERLINE + "DEFEATED" + ChatColor.RESET + " " + finalLoserName + ChatColor.GREEN + " in a duel!"));
 		DuelingMechanics.removeOffer(this);
 	}
 

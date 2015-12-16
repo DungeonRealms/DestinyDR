@@ -7,7 +7,6 @@ import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.handlers.MailHandler;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumGuildData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -43,29 +42,7 @@ public class Notice {
     public void doLogin(Player player) {
 
         ArrayList<String> friendRequests = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.FRIEND_REQUSTS, player.getUniqueId());
-        ArrayList<String> guildInvitations = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.GUILD_INVITES, player.getUniqueId());
         ArrayList<String> mailbox = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MAILBOX, player.getUniqueId());
-
-        if (guildInvitations.size() > 0) {
-            for (String s : guildInvitations) {
-                String guildName = s.split(",")[0];
-
-                long inviteSent = Long.valueOf(s.split(",")[1]) * 1000;
-
-                long currentTime = System.currentTimeMillis();
-
-                long differenceInTime = currentTime - inviteSent;
-                long diffHours = differenceInTime / (60 * 60 * 1000);
-
-                if (24 - diffHours >= 0) {
-                    player.sendMessage(ChatColor.YELLOW + "You have been invited to " + ChatColor.GREEN + guildName + ChatColor.YELLOW + " you have " + (24 - diffHours) + " hours to accept!");
-                } else {
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.GUILD_INVITES, guildName + "," + inviteSent, true);
-                    DatabaseAPI.getInstance().updateGuild(guildName, EnumOperators.$PULL, EnumGuildData.INVITATIONS, player.getUniqueId().toString(), true);
-                    player.sendMessage(ChatColor.YELLOW + "Your invite from " + ChatColor.GREEN + guildName + ChatColor.YELLOW + " has expired!");
-                }
-            }
-        }
 
         if (friendRequests.size() > 0) {
             for (String s : friendRequests) {

@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.guild;
+package net.dungeonrealms.game.mastery;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;

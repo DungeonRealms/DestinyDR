@@ -1,10 +1,12 @@
 package net.dungeonrealms.game.commands;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -29,7 +31,9 @@ public class CommandLogout extends BasicCommand {
                 }
 
                 player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Starting Logout...");
-                NetworkAPI.getInstance().sendToServer(player.getName(), "drhub");
+                Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+                    NetworkAPI.getInstance().sendToServer(player.getName(), "drhub");
+                }, 0, 20 * 4);
             }
 
         }
