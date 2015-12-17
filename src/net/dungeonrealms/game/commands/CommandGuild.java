@@ -33,6 +33,10 @@ public class CommandGuild extends BasicCommand {
 
         Player player = (Player) s;
 
+        if(!player.isOp()) {
+            return true;
+        }
+
         /*
         if (Guild.getInstance().isGuildNull(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "You are not in a guild, or we're having trouble finding it.");
