@@ -65,7 +65,7 @@ public class Guild {
                         if (jsonObject != null) {
                             guilds.put(guildName, jsonObject);
                             if (!((ArrayList<String>) guilds.get(guildName).get("members")).contains(player.getUniqueId().toString()) && !((ArrayList<String>) guilds.get(guildName).get("officers")).contains(player.getUniqueId().toString()) && !guilds.get(guildName).get("owner").toString().equals(player.getUniqueId().toString())) {
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, "", true);
+                                setGuild(player.getUniqueId(), null);
                                 player.sendMessage(ChatColor.RED + "Apparently you were removed from your guild.");
                                 return;
                             }
@@ -81,8 +81,6 @@ public class Guild {
                 }
                 sendAlert(guildName, ChatColor.GREEN + player.getName() + " " + ChatColor.GRAY + "is now online!");
             }
-        } else {
-            System.out.println("\n PLAYER IS NOT IN GUILD\n ");
         }
     }
 

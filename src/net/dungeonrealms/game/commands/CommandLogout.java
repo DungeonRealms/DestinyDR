@@ -31,9 +31,9 @@ public class CommandLogout extends BasicCommand {
                 }
 
                 player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Starting Logout...");
-                Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     NetworkAPI.getInstance().sendToServer(player.getName(), "drhub");
-                }, 0, 20 * 4);
+                }, 20 * 4);
             }
 
         }
