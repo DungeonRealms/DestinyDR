@@ -206,12 +206,14 @@ public class InventoryListener implements Listener {
             if (nms.hasTag()) {
                 if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon")) {
                     Item.ItemTier tier = new Attribute(p.getInventory().getItem(slot)).getItemTier();
-                    int minLevel = tier.getRangeValues()[0];
-                    int pLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, p.getUniqueId());
-                    if (pLevel < minLevel) {
-                        p.sendMessage(ChatColor.RED + "You must be level " + ChatColor.YELLOW.toString() + ChatColor.BOLD + minLevel + ChatColor.RED + " to wield this weapon!");
-                        event.setCancelled(true);
-                        return;
+                    if(tier.getTierId() == 5){
+                    	int minLevel = tier.getRangeValues()[0];
+                    	int pLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, p.getUniqueId());
+                    	if (pLevel < minLevel) {
+                    		p.sendMessage(ChatColor.RED + "You must be level " + ChatColor.YELLOW.toString() + ChatColor.BOLD + minLevel + ChatColor.RED + " to wield this weapon!");
+                    		event.setCancelled(true);
+                    		return;
+                    	}
                     }
                     p.playSound(event.getPlayer().getLocation(), Sound.ITEM_BREAK, 0.5F, 1F);
                 }
@@ -255,69 +257,21 @@ public class InventoryListener implements Listener {
         int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
         if (API.isArmor(event.getCurrentItem())) {
             switch (a.getArmorTier().getTierId()) {
-                case 2:
+                case 5:
                     if (playerLevel < 10) {
                         event.setCancelled(true);
                         player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 10");
                         player.updateInventory();
                         return;
-                    }
-                    break;
-                case 3:
-                    if (playerLevel < 25) {
-                        event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 25");
-                        player.updateInventory();
-                        return;
-                    }
-                    break;
-                case 4:
-                    if (playerLevel < 40) {
-                        event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 40");
-                        player.updateInventory();
-                        return;
-                    }
-                    break;
-                case 5:
-                    if (playerLevel < 50) {
-                        event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 50");
-                        player.updateInventory();
-                           return;
                     }
                     break;
             }
         }  else if (API.isWeapon(event.getCurrentItem())) {
             switch (a.getItemTier().getTierId()) {
-                case 2:
+                case 5:
                     if (playerLevel < 10) {
                         event.setCancelled(true);
                         player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 10");
-                        player.updateInventory();
-                        return;
-                    }
-                    break;
-                case 3:
-                    if (playerLevel < 25) {
-                        event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 25");
-                        player.updateInventory();
-                        return;
-                    }
-                    break;
-                case 4:
-                    if (playerLevel < 40) {
-                        event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 40");
-                        player.updateInventory();
-                        return;
-                    }
-                    break;
-                case 5:
-                    if (playerLevel < 50) {
-                        event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 50");
                         player.updateInventory();
                         return;
                     }
@@ -339,34 +293,10 @@ public class InventoryListener implements Listener {
             Attribute a = new Attribute(event.getNewArmorPiece());
             int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
             switch (a.getArmorTier().getTierId()) {
-                case 2:
+                case 5:
                     if (playerLevel < 10) {
                         event.setCancelled(true);
                         player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 10");
-                        player.updateInventory();
-                        return;
-                    }
-                    break;
-                case 3:
-                    if (playerLevel < 25) {
-                        event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 25");
-                        player.updateInventory();
-                        return;
-                    }
-                    break;
-                case 4:
-                    if (playerLevel < 40) {
-                        event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 40");
-                        player.updateInventory();
-                        return;
-                    }
-                    break;
-                case 5:
-                    if (playerLevel < 50) {
-                        event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 50");
                         player.updateInventory();
                         return;
                     }
