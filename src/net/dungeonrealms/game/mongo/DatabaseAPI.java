@@ -25,6 +25,7 @@ public class DatabaseAPI {
     }
 
     public volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
+    public volatile ConcurrentHashMap<UUID, Integer> PLAYER_TIME = new ConcurrentHashMap<>();
 
     /**
      * Updates a players information in Mongo and returns the updated result.

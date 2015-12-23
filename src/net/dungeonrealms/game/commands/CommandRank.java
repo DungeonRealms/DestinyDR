@@ -30,7 +30,7 @@ public class CommandRank extends BasicCommand {
             if (args[0].equalsIgnoreCase("set")) {
                 if (Bukkit.getPlayer(args[1]) != null) {
                     Rank.getInstance().setRank(Bukkit.getPlayer(args[1]).getUniqueId(), args[2]);
-                    DatabaseAPI.getInstance().update(Bukkit.getPlayer(args[1]).getUniqueId(), EnumOperators.$SET, EnumData.RANK, args[2], true);
+                    DatabaseAPI.getInstance().update(Bukkit.getPlayer(args[1]).getUniqueId(), EnumOperators.$SET, EnumData.RANK, args[2].toUpperCase(), true);
                 } else {
                     Utils.log.warning("Unable to rank: " + args[1] + " due to them not being online!");
                 }

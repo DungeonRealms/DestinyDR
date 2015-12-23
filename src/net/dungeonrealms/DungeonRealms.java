@@ -1,5 +1,6 @@
 package net.dungeonrealms;
 
+import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.core.Core;
 import net.dungeonrealms.game.commands.*;
 import net.dungeonrealms.game.commands.generic.CommandManager;
@@ -38,8 +39,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.connorlinfoot.bountifulapi.BountifulAPI;
 
 import java.io.File;
 import java.io.IOException;
@@ -246,6 +245,13 @@ public class DungeonRealms extends JavaPlugin {
         }, 288000);
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> this.hasFinishedSetup = true, 240L);
+
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
+            DatabaseAPI.getInstance().PLAYER_TIME.entrySet().stream().forEach(e -> {
+                DatabaseAPI.getInstance().PLAYER_TIME.put(e.getKey(), (e.getValue() + 1));
+            });
+        }, 0, 20);
+
     }
 
     public void onDisable() {

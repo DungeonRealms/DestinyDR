@@ -235,6 +235,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onJoin(PlayerJoinEvent event) {
         event.setJoinMessage(null);
+        DatabaseAPI.getInstance().PLAYER_TIME.put(event.getPlayer().getUniqueId(), 0);
         Player player = event.getPlayer();
         Core.getInstance().verifyPlayerIntegrity(player.getUniqueId(), player.getName());
         player.getInventory().clear();
@@ -312,38 +313,42 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
         event.setQuitMessage(null);
-        Player player = event.getPlayer();
-        if (EntityAPI.hasPetOut(player.getUniqueId())) {
-            net.minecraft.server.v1_8_R3.Entity playerPet = EntityAPI.getPlayerPet(player.getUniqueId());
-            if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(playerPet)) {
-                DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(playerPet);
-            }
-            if (playerPet.isAlive()) { // Safety check
-                playerPet.dead = true;
-            }
-            // .damageEntity(DamageSource.GENERIC, 20);
-            EntityAPI.removePlayerPetList(player.getUniqueId());
-        }
-
-        if (EntityAPI.hasMountOut(player.getUniqueId())) {
-            net.minecraft.server.v1_8_R3.Entity playerMount = EntityAPI.getPlayerMount(player.getUniqueId());
-            if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(playerMount)) {
-                DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(playerMount);
-            }
-            if (playerMount.isAlive()) { // Safety check
-                if (playerMount.passenger != null) {
-                    playerMount.passenger = null;
+        //Ensures the player has played at least 5 seconds before saving to the database.
+        if (DatabaseAPI.getInstance().PLAYER_TIME.containsKey(event.getPlayer().getUniqueId()) && DatabaseAPI.getInstance().PLAYER_TIME.get(event.getPlayer().getUniqueId()) > 5) {
+            DatabaseAPI.getInstance().PLAYER_TIME.remove(event.getPlayer().getUniqueId());
+            Player player = event.getPlayer();
+            if (EntityAPI.hasPetOut(player.getUniqueId())) {
+                net.minecraft.server.v1_8_R3.Entity playerPet = EntityAPI.getPlayerPet(player.getUniqueId());
+                if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(playerPet)) {
+                    DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(playerPet);
                 }
-                playerMount.dead = true;
+                if (playerPet.isAlive()) { // Safety check
+                    playerPet.dead = true;
+                }
+                // .damageEntity(DamageSource.GENERIC, 20);
+                EntityAPI.removePlayerPetList(player.getUniqueId());
             }
-            EntityAPI.removePlayerMountList(player.getUniqueId());
-        }
 
-        // Player leaves while in duel
-        if (DuelingMechanics.isDueling(player.getUniqueId())) {
-            DuelingMechanics.getOffer(player.getUniqueId()).handleLogOut(player);
+            if (EntityAPI.hasMountOut(player.getUniqueId())) {
+                net.minecraft.server.v1_8_R3.Entity playerMount = EntityAPI.getPlayerMount(player.getUniqueId());
+                if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(playerMount)) {
+                    DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(playerMount);
+                }
+                if (playerMount.isAlive()) { // Safety check
+                    if (playerMount.passenger != null) {
+                        playerMount.passenger = null;
+                    }
+                    playerMount.dead = true;
+                }
+                EntityAPI.removePlayerMountList(player.getUniqueId());
+            }
+
+            // Player leaves while in duel
+            if (DuelingMechanics.isDueling(player.getUniqueId())) {
+                DuelingMechanics.getOffer(player.getUniqueId()).handleLogOut(player);
+            }
+            API.handleLogout(player.getUniqueId());
         }
-        API.handleLogout(player.getUniqueId());
     }
 
     /**
@@ -567,7 +572,7 @@ public class MainListener implements Listener {
             Player p = event.getPlayer();
             ItemStack stack = p.getItemInHand();
             if (stack != null && stack.getType() == Material.FISHING_ROD) {
-            	RepairAPI.subtractCustomDurability(p, stack, 2);
+                RepairAPI.subtractCustomDurability(p, stack, 2);
                 if (event.getState() == State.CAUGHT_FISH) {
                     if (Fishing.isDRFishingPole(stack)) {
                         event.getCaught().remove();
@@ -741,38 +746,38 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void chunkUNload(ChunkUnloadEvent event) {
-    	if(event.getWorld() == Bukkit.getWorlds().get(0)){
-        if (event.getChunk().getEntities().length > 0) {
-            for (Entity ent : event.getChunk().getEntities()) {
-                net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity) ent).getHandle();
-                if ((!(nms instanceof EntityItem)) && !(ent instanceof Player)) {
-                    if (!(ent instanceof ItemFrame) && !(ent instanceof Painting) && !(ent instanceof Hanging)) {
-                    	Utils.log.info("REMOVED " + ent.getName() + " at " + ent.getLocation());
-                        ent.remove();
-                    	}	
-                	}
-            	}
-        	}
-    	}else if(event.getWorld().getName().contains("DUNGEON")){
-    		event.setCancelled(true);
-    	}
+        if (event.getWorld() == Bukkit.getWorlds().get(0)) {
+            if (event.getChunk().getEntities().length > 0) {
+                for (Entity ent : event.getChunk().getEntities()) {
+                    net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity) ent).getHandle();
+                    if ((!(nms instanceof EntityItem)) && !(ent instanceof Player)) {
+                        if (!(ent instanceof ItemFrame) && !(ent instanceof Painting) && !(ent instanceof Hanging)) {
+                            Utils.log.info("REMOVED " + ent.getName() + " at " + ent.getLocation());
+                            ent.remove();
+                        }
+                    }
+                }
+            }
+        } else if (event.getWorld().getName().contains("DUNGEON")) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void chunkLoad(ChunkLoadEvent event) {
-    	if(event.getWorld() == Bukkit.getWorlds().get(0)){
-        if (event.getChunk().getEntities().length > 0) {
-            for (Entity ent : event.getChunk().getEntities()) {
-                net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity) ent).getHandle();
-                if ((!(nms instanceof EntityItem)) && !(ent instanceof Player)) {
-                    if (!(ent instanceof ItemFrame) && !(ent instanceof Painting) && !(ent instanceof Hanging)) {
-                    	Utils.log.info("REMOVED " + ent.getName() + " at " + ent.getLocation());
-                        ent.remove();
+        if (event.getWorld() == Bukkit.getWorlds().get(0)) {
+            if (event.getChunk().getEntities().length > 0) {
+                for (Entity ent : event.getChunk().getEntities()) {
+                    net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity) ent).getHandle();
+                    if ((!(nms instanceof EntityItem)) && !(ent instanceof Player)) {
+                        if (!(ent instanceof ItemFrame) && !(ent instanceof Painting) && !(ent instanceof Hanging)) {
+                            Utils.log.info("REMOVED " + ent.getName() + " at " + ent.getLocation());
+                            ent.remove();
+                        }
                     }
                 }
             }
         }
-    	}
     }
 
     @EventHandler
@@ -783,34 +788,34 @@ public class MainListener implements Listener {
                 event.getPlayer().sendMessage("                      " + ChatColor.GREEN + "+" + event.getItem().getItemStack().getAmount() + ChatColor.BOLD + "G");
             }
             net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem().getItemStack());
-            if(nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")){
-            	int gems = event.getItem().getItemStack().getAmount();
-            	
-            	for(int i = 0; i < event.getPlayer().getInventory().getSize(); i++){
-            		ItemStack gemPouch = event.getPlayer().getInventory().getItem(i);
-            		if(gemPouch == null || gemPouch.getType() == Material.AIR)
-            			continue;
-            		if(gemPouch.getType() != Material.INK_SACK)
-            			continue;
-            		net.minecraft.server.v1_8_R3.ItemStack nmsPouch = CraftItemStack.asNMSCopy(gemPouch);
-                	int currentAmount = nmsPouch.getTag().getInt("worth");
-                	int tier = nmsPouch.getTag().getInt("tier");
-                	int max = BankMechanics.getInstance().getPouchMax(tier);
-            		event.getItem().remove();
-                	event.setCancelled(true);
-                	if(currentAmount < max){
-                		while(currentAmount < max && gems > 0){
-                			currentAmount += 1;
-                			gems -= 1;
-                		}
-                		event.getPlayer().getInventory().setItem(i, BankMechanics.getInstance().createGemPouch(tier, currentAmount));
-                	}
-            	}
-            	if(gems > 0){
-            		event.getItem().remove();
-                	event.setCancelled(true);
-            		event.getPlayer().getInventory().addItem(BankMechanics.createGems(gems));
-            	}
+            if (nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
+                int gems = event.getItem().getItemStack().getAmount();
+
+                for (int i = 0; i < event.getPlayer().getInventory().getSize(); i++) {
+                    ItemStack gemPouch = event.getPlayer().getInventory().getItem(i);
+                    if (gemPouch == null || gemPouch.getType() == Material.AIR)
+                        continue;
+                    if (gemPouch.getType() != Material.INK_SACK)
+                        continue;
+                    net.minecraft.server.v1_8_R3.ItemStack nmsPouch = CraftItemStack.asNMSCopy(gemPouch);
+                    int currentAmount = nmsPouch.getTag().getInt("worth");
+                    int tier = nmsPouch.getTag().getInt("tier");
+                    int max = BankMechanics.getInstance().getPouchMax(tier);
+                    event.getItem().remove();
+                    event.setCancelled(true);
+                    if (currentAmount < max) {
+                        while (currentAmount < max && gems > 0) {
+                            currentAmount += 1;
+                            gems -= 1;
+                        }
+                        event.getPlayer().getInventory().setItem(i, BankMechanics.getInstance().createGemPouch(tier, currentAmount));
+                    }
+                }
+                if (gems > 0) {
+                    event.getItem().remove();
+                    event.setCancelled(true);
+                    event.getPlayer().getInventory().addItem(BankMechanics.createGems(gems));
+                }
             }
         } else {
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.CHICKEN_EGG_POP, 1f, 1f);
