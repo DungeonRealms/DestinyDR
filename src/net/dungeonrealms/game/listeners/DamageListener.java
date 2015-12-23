@@ -932,8 +932,10 @@ public class DamageListener implements Listener {
                     if (itemStack != null && itemStack.getType() != Material.AIR) {
                         if (RepairAPI.getCustomDurability(itemStack) - 400 > 0.1D) {
                             RepairAPI.subtractCustomDurability(player, itemStack, 400);
+                            player.getInventory().addItem(itemStack);
+                        } else {
+                            continue;
                         }
-                        player.getInventory().addItem(itemStack);
                     }
                 }
             }
@@ -1123,5 +1125,41 @@ public class DamageListener implements Listener {
   		}
   		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, true, true);
         CombatLog.LOGGER_INVENTORY.remove(uuid);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void onEntityHurtByNonCombat(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof Player) && !(event.getEntity() instanceof CraftLivingEntity)) return;
+        if (event.getDamage() <= 0) return;
+        if (event.getEntity() instanceof Player) {
+            if (!API.isPlayer(event.getEntity())) {
+                event.setDamage(0);
+                event.setCancelled(true);
+                return;
+            }
+            if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION || event.getCause() == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION
+                    || event.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION || event.getCause() == EntityDamageEvent.DamageCause.DROWNING
+                    || event.getCause() == EntityDamageEvent.DamageCause.LAVA || event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+                double actualDamage = ((Player) event.getEntity()).getMaxHealth() / event.getDamage();
+                int damageToHarmBy = (int) (HealthHandler.getInstance().getPlayerMaxHPLive((Player) event.getEntity()) / actualDamage);
+                if (damageToHarmBy > 0) {
+                    HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, damageToHarmBy);
+                }
+                event.setDamage(0);
+            }
+        } else if (event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+            if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION || event.getCause() == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION
+                    || event.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION || event.getCause() == EntityDamageEvent.DamageCause.DROWNING
+                    || event.getCause() == EntityDamageEvent.DamageCause.LAVA || event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+                double actualDamage = ((CraftLivingEntity) event.getEntity()).getMaxHealth() / event.getDamage();
+                int damageToHarmBy = (int) (HealthHandler.getInstance().getMonsterHPLive((LivingEntity) event.getEntity()) / actualDamage);
+                if (damageToHarmBy > 0) {
+                    HealthHandler.getInstance().handleMonsterBeingDamaged((Player) event.getEntity(), null, damageToHarmBy);
+                }
+                event.setDamage(0);
+            }
+        } else {
+            event.setDamage(event.getDamage());
+        }
     }
 }

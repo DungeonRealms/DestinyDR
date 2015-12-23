@@ -467,34 +467,39 @@ public class HealthHandler implements GenericMechanic {
         double newHP = currentHP - damage;
 
         LivingEntity leAttacker = null;
-        if (damager instanceof CraftLivingEntity) {
-            leAttacker = (LivingEntity) damager;
-        } else {
-            switch (damager.getType()) {
-                case ARROW:
-                    if (((Arrow) damager).getShooter() instanceof LivingEntity) {
-                        leAttacker = (LivingEntity) ((Arrow) damager).getShooter();
-                    }
-                    break;
-                case SNOWBALL:
-                    if (((Snowball) damager).getShooter() instanceof LivingEntity) {
-                        leAttacker = (LivingEntity) ((Snowball) damager).getShooter();
-                    }
-                    break;
-                case WITHER_SKULL:
-                    if (((WitherSkull) damager).getShooter() instanceof LivingEntity) {
-                        leAttacker = (LivingEntity) ((WitherSkull) damager).getShooter();
-                    }
-                    break;
-                default:
-                    break;
+        if (damager != null) {
+            if (damager instanceof CraftLivingEntity) {
+                leAttacker = (LivingEntity) damager;
+            } else {
+                switch (damager.getType()) {
+                    case ARROW:
+                        if (((Arrow) damager).getShooter() instanceof LivingEntity) {
+                            leAttacker = (LivingEntity) ((Arrow) damager).getShooter();
+                        }
+                        break;
+                    case SNOWBALL:
+                        if (((Snowball) damager).getShooter() instanceof LivingEntity) {
+                            leAttacker = (LivingEntity) ((Snowball) damager).getShooter();
+                        }
+                        break;
+                    case WITHER_SKULL:
+                        if (((WitherSkull) damager).getShooter() instanceof LivingEntity) {
+                            leAttacker = (LivingEntity) ((WitherSkull) damager).getShooter();
+                        }
+                        break;
+                    default:
+                        break;
+                }
             }
         }
+
         if (damager instanceof Player) {
             leAttacker = (LivingEntity) damager;
         }
+        if (leAttacker != null) {
+            CombatLog.addToCombat(player);
+        }
 
-        CombatLog.addToCombat(player);
         if (newHP <= 0 && DuelingMechanics.isDueling(player.getUniqueId())) {
             DuelOffer offer = DuelingMechanics.getOffer(player.getUniqueId());
             offer.endDuel((Player) leAttacker, player);
@@ -527,10 +532,6 @@ public class HealthHandler implements GenericMechanic {
             player.playSound(player.getLocation(), Sound.WITHER_SPAWN, 1f, 1f);
             if (player.hasMetadata("last_death_time")) {
                 if (player.getMetadata("last_death_time").get(0).asLong() > 100) {
-                    player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-                    player.damage(25);
-                    KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, leAttacker);
-                    CombatLog.removeFromCombat(player);
                     String killerName = "";
                     if (leAttacker instanceof Player) {
                         killerName = GameChat.getPreMessage((Player) leAttacker).replaceAll(":", "").trim();
@@ -538,8 +539,12 @@ public class HealthHandler implements GenericMechanic {
                             killerName = killerName.split(">")[1];
                         }
                     } else {
-                        if (leAttacker.hasMetadata("customname")) {
-                            killerName = leAttacker.getMetadata("customname").get(0).asString().trim();
+                        if (leAttacker != null) {
+                            if (leAttacker.hasMetadata("customname")) {
+                                killerName = leAttacker.getMetadata("customname").get(0).asString().trim();
+                            }
+                        } else {
+                            killerName = "The World";
                         }
                     }
                     String deadPlayerName = GameChat.getPreMessage(player).replaceAll(":", "").trim();
@@ -548,23 +553,42 @@ public class HealthHandler implements GenericMechanic {
                     }
                     final String finalDeadPlayerName = deadPlayerName;
                     final String finalKillerName = killerName;
-                    API.getNearbyPlayers(leAttacker.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(finalDeadPlayerName  + " was killed by a(n) " + finalKillerName));
+                    API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage(finalDeadPlayerName  + " was killed by a(n) " + finalKillerName));
+                    final LivingEntity finalLeAttacker = leAttacker;
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                        player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+                        player.damage(25);
+                        if (finalLeAttacker != null) {
+                            KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, finalLeAttacker);
+                        }
+                        CombatLog.removeFromCombat(player);
+                    }, 20l);
                     return;
                 }
             } else {
-                player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-                player.damage(25);
-                KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, leAttacker);
                 String killerName = "";
                 if (leAttacker instanceof Player) {
                     killerName = leAttacker.getName();
                 } else {
-                    if (leAttacker.hasMetadata("customname")) {
-                        killerName = leAttacker.getMetadata("customname").get(0).asString().trim();
+                    if (leAttacker != null) {
+                        if (leAttacker.hasMetadata("customname")) {
+                            killerName = leAttacker.getMetadata("customname").get(0).asString().trim();
+                        }
+                    } else {
+                        killerName = "The World";
                     }
                 }
                 final String finalKillerName = killerName;
-                API.getNearbyPlayers(leAttacker.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage((GameChat.getPreMessage(player).trim().replace(":", "") + " was killed by a(n) " + finalKillerName)));
+                API.getNearbyPlayers(player.getLocation(), 100).stream().forEach(player1 -> player1.sendMessage((GameChat.getPreMessage(player).trim().replace(":", "") + " was killed by a(n) " + finalKillerName)));
+                final LivingEntity finalLeAttacker = leAttacker;
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+                    player.damage(25);
+                    if (finalLeAttacker != null) {
+                        KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, finalLeAttacker);
+                    }
+                    CombatLog.removeFromCombat(player);
+                }, 20l);
                 return;
             }
         }
@@ -609,13 +633,15 @@ public class HealthHandler implements GenericMechanic {
             }
             return;
         }
-        
-        if (API.isPlayer(attacker)) {
-            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
-            	if(!entity.hasMetadata("uuid")){
-                    String customNameAppended = (entity.getMetadata("customname").get(0).asString().trim());
-                    attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " ➜ " + ChatColor.DARK_PURPLE + API.getTierColor(entity.getMetadata("tier").get(0).asInt()) + customNameAppended + ChatColor.DARK_PURPLE + ChatColor.BOLD + " [" + (int) newHP + "HP]");
-            	}
+
+        if (attacker != null) {
+            if (API.isPlayer(attacker)) {
+                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
+                    if (!entity.hasMetadata("uuid")) {
+                        String customNameAppended = (entity.getMetadata("customname").get(0).asString().trim());
+                        attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " ➜ " + ChatColor.DARK_PURPLE + API.getTierColor(entity.getMetadata("tier").get(0).asInt()) + customNameAppended + ChatColor.DARK_PURPLE + ChatColor.BOLD + " [" + (int) newHP + "HP]");
+                    }
+                }
             }
         }
 
@@ -645,58 +671,62 @@ public class HealthHandler implements GenericMechanic {
                 Entities.MONSTERS_LEASHED.remove(entity);
             }
             if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile") && !entity.hasMetadata("uuid") && !entity.hasMetadata("boss")) {
-                if (attacker instanceof Player) {
-                    ((net.dungeonrealms.game.world.entities.types.monsters.Monster) entity1).onMonsterDeath((Player) attacker);
-                    int exp = API.getMonsterExp((Player) attacker, entity);
-                    if (API.getGamePlayer((Player) attacker) == null) {
-                        return;
-                    }
-                    if (Affair.getInstance().isInParty((Player) attacker)) {
-                        List<Player> nearbyPlayers = API.getNearbyPlayers(attacker.getLocation(), 10);
-                        List<Player> nearbyPartyMembers = new ArrayList<>();
-                        if (!nearbyPlayers.isEmpty()) {
-                            for (Player player : nearbyPlayers) {
-                                if (player.equals(attacker)) {
-                                    continue;
+                if (attacker != null) {
+                    if (attacker instanceof Player) {
+                        ((net.dungeonrealms.game.world.entities.types.monsters.Monster) entity1).onMonsterDeath((Player) attacker);
+                        int exp = API.getMonsterExp((Player) attacker, entity);
+                        if (API.getGamePlayer((Player) attacker) == null) {
+                            return;
+                        }
+                        if (Affair.getInstance().isInParty((Player) attacker)) {
+                            List<Player> nearbyPlayers = API.getNearbyPlayers(attacker.getLocation(), 10);
+                            List<Player> nearbyPartyMembers = new ArrayList<>();
+                            if (!nearbyPlayers.isEmpty()) {
+                                for (Player player : nearbyPlayers) {
+                                    if (player.equals(attacker)) {
+                                        continue;
+                                    }
+                                    if (!API.isPlayer(attacker)) {
+                                        continue;
+                                    }
+                                    if (Affair.getInstance().areInSameParty((Player) attacker, player)) {
+                                        nearbyPartyMembers.add(player);
+                                    }
                                 }
-                                if (!API.isPlayer(attacker)) {
-                                    continue;
-                                }
-                                if (Affair.getInstance().areInSameParty((Player) attacker, player)) {
-                                    nearbyPartyMembers.add(player);
-                                }
-                            }
-                            if (nearbyPartyMembers.size() > 0) {
-                                nearbyPartyMembers.add((Player) attacker);
-                                switch (nearbyPartyMembers.size()) {
-                                    case 1:
-                                        break;
-                                    case 2:
-                                        break;
-                                    case 3:
-                                        exp *= 1.2;
-                                        break;
-                                    case 4:
-                                        exp *= 1.3;
-                                        break;
-                                    case 5:
-                                        exp *= 1.4;
-                                        break;
-                                    case 6:
-                                        exp *= 1.5;
-                                        break;
-                                    case 7:
-                                        exp *= 1.6;
-                                        break;
-                                    case 8:
-                                        exp *= 1.7;
-                                        break;
-                                    default:
-                                        break;
-                                }
-                                exp /= nearbyPartyMembers.size();
-                                for (Player player : nearbyPartyMembers) {
-                                    API.getGamePlayer(player).addExperience(exp, true);
+                                if (nearbyPartyMembers.size() > 0) {
+                                    nearbyPartyMembers.add((Player) attacker);
+                                    switch (nearbyPartyMembers.size()) {
+                                        case 1:
+                                            break;
+                                        case 2:
+                                            break;
+                                        case 3:
+                                            exp *= 1.2;
+                                            break;
+                                        case 4:
+                                            exp *= 1.3;
+                                            break;
+                                        case 5:
+                                            exp *= 1.4;
+                                            break;
+                                        case 6:
+                                            exp *= 1.5;
+                                            break;
+                                        case 7:
+                                            exp *= 1.6;
+                                            break;
+                                        case 8:
+                                            exp *= 1.7;
+                                            break;
+                                        default:
+                                            break;
+                                    }
+                                    exp /= nearbyPartyMembers.size();
+                                    for (Player player : nearbyPartyMembers) {
+                                        API.getGamePlayer(player).addExperience(exp, true);
+                                    }
+                                } else {
+                                    API.getGamePlayer((Player) attacker).addExperience(exp, false);
                                 }
                             } else {
                                 API.getGamePlayer((Player) attacker).addExperience(exp, false);
@@ -704,8 +734,6 @@ public class HealthHandler implements GenericMechanic {
                         } else {
                             API.getGamePlayer((Player) attacker).addExperience(exp, false);
                         }
-                    } else {
-                        API.getGamePlayer((Player) attacker).addExperience(exp, false);
                     }
                 }
             }
