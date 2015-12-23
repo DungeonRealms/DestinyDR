@@ -763,13 +763,13 @@ public class DamageListener implements Listener {
                     break;
             }
         }
-        if (event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.DROWNING
+        /*if (event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.DROWNING
                 || event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FALL
                 || event.getCause() == DamageCause.ENTITY_EXPLOSION || event.getCause() == DamageCause.BLOCK_EXPLOSION || event.getCause() == DamageCause.FIRE_TICK) {
             event.setCancelled(true);
             event.setDamage(0);
             event.getEntity().setFireTicks(0);
-        }
+        }*/
         if (event.getEntity() instanceof Player && event.getCause() == DamageCause.VOID) {
             event.setCancelled(true);
             event.getEntity().teleport(event.getEntity().getWorld().getSpawnLocation());
