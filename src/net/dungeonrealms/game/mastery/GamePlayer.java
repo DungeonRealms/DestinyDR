@@ -111,7 +111,7 @@ public class GamePlayer {
      * @return Is player in Realm?
      */
     public boolean isInRealm() {
-        return !T.getWorld().getName().contains("DUNGEON") && !T.getWorld().equals(Bukkit.getWorlds().get(0));
+        return !T.getWorld().getName().contains("DUNGEON") && !T.getWorld().getName().contains("DUEL") && !T.getWorld().equals(Bukkit.getWorlds().get(0));
     }
 
     /**

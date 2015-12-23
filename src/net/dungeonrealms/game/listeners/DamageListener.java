@@ -18,7 +18,6 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
-import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
@@ -649,7 +648,7 @@ public class DamageListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    /*@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onLivingEntityFireProjectile(ProjectileLaunchEvent event) {
         if ((!(event.getEntity().getShooter() instanceof Player)) && ((event.getEntityType() != EntityType.ARROW) && (event.getEntityType() != EntityType.SNOWBALL)))
             return;
@@ -681,8 +680,23 @@ public class DamageListener implements Listener {
             }
             return;
         }
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(player.getItemInHand()));
-        MetadataUtils.registerProjectileMetadata(nmsItem.getTag(), event.getEntity(), weaponTier);
+
+    }*/
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    public void onPlayerFireBow(EntityShootBowEvent event) {
+        if (event.getEntity().getType() != EntityType.PLAYER) return;
+        Player player = (Player) event.getEntity();
+        if (player.getExp() <= 0 || EnergyHandler.getPlayerCurrentEnergy(player.getUniqueId()) <= 0) {
+            event.setCancelled(true);
+            return;
+        }
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(player.getItemInHand()));
+        if (nmsItem == null || nmsItem.getTag() == null) return;
+        float energyCost = EnergyHandler.getWeaponSwingEnergyCost(player.getItemInHand());
+        int weaponTier = nmsItem.getTag().getInt("itemTier");
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), energyCost);
+        MetadataUtils.registerProjectileMetadata(nmsItem.getTag(), (Projectile) event.getProjectile(), weaponTier);
     }
 
     /**

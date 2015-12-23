@@ -175,11 +175,12 @@ public class Instance implements GenericMechanic, Listener {
     public void onPlayerBreakBlockInRealm(BlockBreakEvent event) {
         if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
         if (event.getPlayer().getWorld().getName().contains("DUNGEON")) return;
-        if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
+        if (event.getPlayer().getWorld().getName().contains("DUEL")) return;
         if (event.getBlock().getType() == Material.PORTAL) {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "You cannot break Portal blocks!");
         }
+        if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         if (!FriendHandler.getInstance().areFriends(event.getPlayer(), Instance.getInstance().getPlayersCurrentRealm(event.getPlayer()).getRealmOwner().getUniqueId())) {
             event.setCancelled(true);
             event.setExpToDrop(0);

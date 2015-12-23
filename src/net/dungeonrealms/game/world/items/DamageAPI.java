@@ -138,27 +138,28 @@ public class DamageAPI {
             damage += tag.getInt("poisonDamage");
         }
 
+        int critHit = 0;
         if (tag.getInt("criticalHit") != 0) {
-            int critHit = tag.getInt("criticalHit");
-            if (attacker.getEquipment().getItemInHand() != null) {
-                if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.AXE) {
-                    critHit += 3;
-                }
+            critHit += tag.getInt("criticalHit");
+        }
+        if (attacker.getEquipment().getItemInHand() != null) {
+            if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.AXE) {
+                critHit += 3;
             }
-            if (attacker instanceof Player) {
-                if (API.getGamePlayer((Player) attacker) != null) {
-                    critHit += ((API.getGamePlayer((Player) attacker).getStats()).getCritChance() * 100);
-                }
+        }
+        if (attacker instanceof Player) {
+            if (API.getGamePlayer((Player) attacker) != null) {
+                critHit += ((API.getGamePlayer((Player) attacker).getStats()).getCritChance() * 100);
             }
-            if (new Random().nextInt(99) < critHit) {
-                try {
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, receiver.getLocation(),
-                            new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                isHitCrit = true;
+        }
+        if (new Random().nextInt(99) < critHit) {
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, receiver.getLocation(),
+                        new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+            } catch (Exception ex) {
+                ex.printStackTrace();
             }
+            isHitCrit = true;
         }
 
         if (tag.getDouble("lifesteal") != 0) {
@@ -275,7 +276,7 @@ public class DamageAPI {
         }
         int damageRandomizer = ItemGenerator.getRandomDamageVariable(projectile.getMetadata("itemTier").get(0).asInt());
         damage = Utils.randInt(((int) Math.round(projectile.getMetadata("damage").get(0).asDouble() - projectile.getMetadata("damage").get(0).asDouble() / damageRandomizer)),
-                (int) Math.round(projectile.getMetadata("damage").get(0).asDouble() + projectile.getMetadata("damage").get(0).asDouble() / (damageRandomizer - 1)));
+                (int) Math.round(projectile.getMetadata("damage").get(0).asDouble() + projectile.getMetadata("damage").get(0).asDouble() / damageRandomizer));
 
         boolean isHitCrit = false;
         if (API.isPlayer(receiver)) {
@@ -634,7 +635,6 @@ public class DamageAPI {
 
     public static void fireStaffProjectile(Player player, ItemStack itemStack, NBTTagCompound tag) {
         RepairAPI.subtractCustomDurability(player, itemStack, 1);
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(itemStack));
         int weaponTier = tag.getInt("itemTier");
         Projectile projectile = player.launchProjectile(Snowball.class);
         switch (weaponTier) {
@@ -654,6 +654,7 @@ public class DamageAPI {
                 projectile.setVelocity(projectile.getVelocity().multiply(2.5));
                 break;
         }
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(itemStack));
         projectile.setShooter(player);
         MetadataUtils.registerProjectileMetadata(tag, projectile, weaponTier);
     }

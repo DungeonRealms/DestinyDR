@@ -323,7 +323,7 @@ public class EnergyHandler implements GenericMechanic {
      */
     private void removePlayerEnergySprint() {
         Bukkit.getOnlinePlayers().stream().filter(player -> player.isSprinting() || player.hasMetadata("sprinting")).forEach(player -> {
-            removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 0.125F);
+            removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 0.12F);
             if (getPlayerCurrentEnergy(player.getUniqueId()) <= 0 || player.hasMetadata("starving")) {
                 player.setSprinting(false);
                 player.removeMetadata("sprinting", DungeonRealms.getInstance());
@@ -368,7 +368,7 @@ public class EnergyHandler implements GenericMechanic {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 50, 4)), 0L);
             return;
         }
-        player.setExp((getPlayerCurrentEnergy(uuid) - amountToRemove));
+        player.setExp(getPlayerCurrentEnergy(uuid) - amountToRemove);
         updatePlayerEnergyBar(uuid);
     }
 
