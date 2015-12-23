@@ -994,7 +994,7 @@ public class DamageListener implements Listener {
     	int tier = CraftItemStack.asNMSCopy(event.getPlayer().getItemInHand()).getTag().getInt("itemTier");
     	int playerLvl = API.getGamePlayer(event.getPlayer()).getLevel();
     	switch(tier){
-            case 2:
+            case 5:
                 if(playerLvl < 10){
                     event.setCancelled(true);
                     int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
@@ -1003,39 +1003,6 @@ public class DamageListener implements Listener {
                     else
                         event.getPlayer().getInventory().setHeldItemSlot(0);
                     event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 10");
-                }
-                break;
-            case 3:
-                if(playerLvl < 25){
-                    event.setCancelled(true);
-                    int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
-                    if(slot < 9)
-                        event.getPlayer().getInventory().setHeldItemSlot(slot);
-                    else
-                        event.getPlayer().getInventory().setHeldItemSlot(0);
-                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 25");
-                }
-                break;
-            case 4:
-                if(playerLvl < 40){
-                    event.setCancelled(true);
-                    int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
-                    if(slot < 9)
-                        event.getPlayer().getInventory().setHeldItemSlot(slot);
-                    else
-                        event.getPlayer().getInventory().setHeldItemSlot(0);
-                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 40");
-                }
-                break;
-            case 5:
-                if(playerLvl < 50){
-                    event.setCancelled(true);
-                    int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
-                    if(slot < 9)
-                        event.getPlayer().getInventory().setHeldItemSlot(slot);
-                    else
-                        event.getPlayer().getInventory().setHeldItemSlot(0);
-                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 50");
                 }
                 break;
         }
