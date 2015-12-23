@@ -194,7 +194,7 @@ public class EnergyHandler implements GenericMechanic {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
                 continue;
             }
-            regenAmount += (regenAmount / 100F) * getEnergyValueOfArmor(itemStack);
+            regenAmount += (regenAmount / 100F) * (getEnergyValueOfArmor(itemStack) + 1);
         }
 
         for (ItemStack itemStack : player.getEquipment().getArmorContents()) {
@@ -322,7 +322,7 @@ public class EnergyHandler implements GenericMechanic {
      * @since 1.0
      */
     private void removePlayerEnergySprint() {
-        Bukkit.getOnlinePlayers().stream().filter(player -> player.isSprinting() || player.hasMetadata("sprinting")).forEach(player -> {
+        Bukkit.getOnlinePlayers().stream().filter(Player::isSprinting).forEach(player -> {
             removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 0.12F);
             if (getPlayerCurrentEnergy(player.getUniqueId()) <= 0 || player.hasMetadata("starving")) {
                 player.setSprinting(false);

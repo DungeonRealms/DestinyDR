@@ -119,16 +119,16 @@ public class EnergyListener implements Listener {
     public void onPlayerToggleSprint(PlayerToggleSprintEvent event) {
         if (!(event.getPlayer().isSprinting())) {
             if (!(event.getPlayer().hasMetadata("starving"))) {
-                EnergyHandler.removeEnergyFromPlayerAndUpdate(event.getPlayer().getUniqueId(), 0.15F);
+                EnergyHandler.removeEnergyFromPlayerAndUpdate(event.getPlayer().getUniqueId(), 0.14F);
                 event.getPlayer().setMetadata("sprinting", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
+                event.getPlayer().setSprinting(true);
             } else {
                 event.setCancelled(true);
                 event.getPlayer().setSprinting(false);
-                return;
             }
-        }
-        if (event.getPlayer().isSprinting()) {
+        } else {
             event.getPlayer().removeMetadata("sprinting", DungeonRealms.getInstance());
+            event.getPlayer().setSprinting(false);
         }
     }
 
