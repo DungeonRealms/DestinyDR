@@ -433,7 +433,7 @@ public class DamageListener implements Listener {
         ItemStack[] defenderArmor = defenderEquipment.getArmorContents();
         if (event.getDamager() instanceof LivingEntity) {
             attacker = (LivingEntity) event.getDamager();
-            armourReducedDamage = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor);
+            armourReducedDamage = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor, event.getDamage());
             if (attacker.getEquipment().getItemInHand() != null && attacker.getEquipment().getItemInHand().getType() != Material.AIR) {
                 net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attacker.getEquipment().getItemInHand()));
                 if (nmsItem != null && nmsItem.getTag() != null) {
@@ -497,7 +497,7 @@ public class DamageListener implements Listener {
                     return;
                 }
             }
-            armourReducedDamage = DamageAPI.calculateArmorReduction(attackingArrow, defender, defenderArmor);
+            armourReducedDamage = DamageAPI.calculateArmorReduction(attackingArrow, defender, defenderArmor, event.getDamage());
         } else if (event.getDamager().getType() == EntityType.SNOWBALL) {
             Snowball staffProjectile = (Snowball) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof LivingEntity)) return;
@@ -540,7 +540,7 @@ public class DamageListener implements Listener {
                     return;
                 }
             }
-            armourReducedDamage = DamageAPI.calculateArmorReduction(staffProjectile, defender, defenderArmor);
+            armourReducedDamage = DamageAPI.calculateArmorReduction(staffProjectile, defender, defenderArmor, event.getDamage());
         }
         if (armourReducedDamage == -1) {
             if (attacker instanceof Player) {
