@@ -1107,7 +1107,7 @@ public class DamageListener implements Listener {
                 double actualDamage = ((Player) event.getEntity()).getMaxHealth() / event.getDamage();
                 int damageToHarmBy = (int) (HealthHandler.getInstance().getPlayerMaxHPLive((Player) event.getEntity()) / actualDamage);
                 if (damageToHarmBy > 0) {
-                    HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, (damageToHarmBy / 2));
+                    HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, (damageToHarmBy / 4));
                 }
                 event.setDamage(0);
             }
@@ -1117,7 +1117,7 @@ public class DamageListener implements Listener {
                 double actualDamage = ((CraftLivingEntity) event.getEntity()).getMaxHealth() / event.getDamage();
                 int damageToHarmBy = (int) (HealthHandler.getInstance().getMonsterHPLive((LivingEntity) event.getEntity()) / actualDamage);
                 if (damageToHarmBy > 0) {
-                    HealthHandler.getInstance().handleMonsterBeingDamaged((Player) event.getEntity(), null, (damageToHarmBy / 2));
+                    HealthHandler.getInstance().handleMonsterBeingDamaged((Player) event.getEntity(), null, (damageToHarmBy / 4));
                 }
                 event.setDamage(0);
             }
