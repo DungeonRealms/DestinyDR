@@ -156,11 +156,11 @@ public class PlayerStats {
 	}
 	
 	public double getVitHP(){
-		return (vitPoints * 0.034);
+		return (vitPoints * 0.034) / 100;
 	}
 	
 	public double getHPRegen(){
-		return (vitPoints * 0.03) / 100;
+		return (vitPoints * 0.03);
 	}
 	
 //	public double getEleResist(){
