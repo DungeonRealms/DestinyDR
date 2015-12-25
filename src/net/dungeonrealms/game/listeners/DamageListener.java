@@ -768,7 +768,7 @@ public class DamageListener implements Listener {
             event.setDamage(0);
             event.getEntity().setFireTicks(0);
         }
-        if (event.getCause() == DamageCause.LAVA) {
+        if (event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FIRE_TICK) {
             if (event.getEntity() instanceof Player) {
                 event.setDamage(0);
                 event.setCancelled(true);
@@ -1105,6 +1105,11 @@ public class DamageListener implements Listener {
         if (event.getDamage() <= 0) return;
         if (event.getEntity() instanceof Player) {
             if (!API.isPlayer(event.getEntity())) {
+                event.setDamage(0);
+                event.setCancelled(true);
+                return;
+            }
+            if (API.isInSafeRegion(event.getEntity().getLocation())) {
                 event.setDamage(0);
                 event.setCancelled(true);
                 return;
