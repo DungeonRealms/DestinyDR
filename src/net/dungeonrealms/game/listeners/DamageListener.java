@@ -1102,12 +1102,12 @@ public class DamageListener implements Listener {
                 event.setCancelled(true);
                 return;
             }
-            if (event.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION || event.getCause() == EntityDamageEvent.DamageCause.DROWNING
-                    || event.getCause() == EntityDamageEvent.DamageCause.LAVA || event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+            if (event.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION || event.getCause() == EntityDamageEvent.DamageCause.DROWNING || event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                 if (event.getEntity().hasMetadata("last_environment_damage")) {
-                    if (System.currentTimeMillis() - event.getEntity().getMetadata("last_environment_damage").get(0).asLong() < 100) {
+                    if (System.currentTimeMillis() - event.getEntity().getMetadata("last_environment_damage").get(0).asLong() < 500) {
                         event.setCancelled(true);
                         event.setDamage(0);
+                        event.getEntity().setFireTicks(0);
                         return;
                     }
                 }
@@ -1118,14 +1118,16 @@ public class DamageListener implements Listener {
                     HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, (damageToHarmBy / 10));
                 }
                 event.setDamage(0);
+                event.setCancelled(true);
             }
         } else if (event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
             if (event.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION || event.getCause() == EntityDamageEvent.DamageCause.DROWNING
                     || event.getCause() == EntityDamageEvent.DamageCause.LAVA || event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                 if (event.getEntity().hasMetadata("last_environment_damage")) {
-                    if (System.currentTimeMillis() - event.getEntity().getMetadata("last_environment_damage").get(0).asLong() < 100) {
+                    if (System.currentTimeMillis() - event.getEntity().getMetadata("last_environment_damage").get(0).asLong() < 500) {
                         event.setCancelled(true);
                         event.setDamage(0);
+                        event.getEntity().setFireTicks(0);
                         return;
                     }
                 }
@@ -1136,6 +1138,7 @@ public class DamageListener implements Listener {
                     HealthHandler.getInstance().handleMonsterBeingDamaged((Player) event.getEntity(), null, (damageToHarmBy / 10));
                 }
                 event.setDamage(0);
+                event.setCancelled(true);
             }
         } else {
             event.setDamage(event.getDamage());
