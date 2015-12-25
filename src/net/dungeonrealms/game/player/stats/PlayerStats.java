@@ -156,7 +156,7 @@ public class PlayerStats {
 	}
 	
 	public double getVitHP(){
-		return (vitPoints * 0.034) / 100;
+		return (vitPoints * 0.034);
 	}
 	
 	public double getHPRegen(){
