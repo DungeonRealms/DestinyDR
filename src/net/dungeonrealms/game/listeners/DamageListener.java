@@ -1104,20 +1104,36 @@ public class DamageListener implements Listener {
             }
             if (event.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION || event.getCause() == EntityDamageEvent.DamageCause.DROWNING
                     || event.getCause() == EntityDamageEvent.DamageCause.LAVA || event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+                if (event.getEntity().hasMetadata("last_environment_damage")) {
+                    if (System.currentTimeMillis() - event.getEntity().getMetadata("last_environment_damage").get(0).asLong() < 100) {
+                        event.setCancelled(true);
+                        event.setDamage(0);
+                        return;
+                    }
+                }
+                event.getEntity().setMetadata("last_environment_damage", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                 double actualDamage = ((Player) event.getEntity()).getMaxHealth() / event.getDamage();
                 int damageToHarmBy = (int) (HealthHandler.getInstance().getPlayerMaxHPLive((Player) event.getEntity()) / actualDamage);
                 if (damageToHarmBy > 0) {
-                    HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, (damageToHarmBy / 4));
+                    HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, (damageToHarmBy / 10));
                 }
                 event.setDamage(0);
             }
         } else if (event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
             if (event.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION || event.getCause() == EntityDamageEvent.DamageCause.DROWNING
                     || event.getCause() == EntityDamageEvent.DamageCause.LAVA || event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+                if (event.getEntity().hasMetadata("last_environment_damage")) {
+                    if (System.currentTimeMillis() - event.getEntity().getMetadata("last_environment_damage").get(0).asLong() < 100) {
+                        event.setCancelled(true);
+                        event.setDamage(0);
+                        return;
+                    }
+                }
+                event.getEntity().setMetadata("last_environment_damage", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
                 double actualDamage = ((CraftLivingEntity) event.getEntity()).getMaxHealth() / event.getDamage();
                 int damageToHarmBy = (int) (HealthHandler.getInstance().getMonsterHPLive((LivingEntity) event.getEntity()) / actualDamage);
                 if (damageToHarmBy > 0) {
-                    HealthHandler.getInstance().handleMonsterBeingDamaged((Player) event.getEntity(), null, (damageToHarmBy / 4));
+                    HealthHandler.getInstance().handleMonsterBeingDamaged((Player) event.getEntity(), null, (damageToHarmBy / 10));
                 }
                 event.setDamage(0);
             }
