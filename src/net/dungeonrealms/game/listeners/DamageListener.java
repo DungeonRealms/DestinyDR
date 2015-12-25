@@ -763,13 +763,11 @@ public class DamageListener implements Listener {
                     break;
             }
         }
-        /*if (event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.CONTACT || event.getCause() == DamageCause.DROWNING
-                || event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FALL
-                || event.getCause() == DamageCause.ENTITY_EXPLOSION || event.getCause() == DamageCause.BLOCK_EXPLOSION || event.getCause() == DamageCause.FIRE_TICK) {
+        if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION || event.getCause() == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION) {
             event.setCancelled(true);
             event.setDamage(0);
             event.getEntity().setFireTicks(0);
-        }*/
+        }
         if (event.getEntity() instanceof Player && event.getCause() == DamageCause.VOID) {
             event.setCancelled(true);
             event.getEntity().teleport(event.getEntity().getWorld().getSpawnLocation());
@@ -1110,18 +1108,17 @@ public class DamageListener implements Listener {
                 double actualDamage = ((Player) event.getEntity()).getMaxHealth() / event.getDamage();
                 int damageToHarmBy = (int) (HealthHandler.getInstance().getPlayerMaxHPLive((Player) event.getEntity()) / actualDamage);
                 if (damageToHarmBy > 0) {
-                    HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, damageToHarmBy);
+                    HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, (damageToHarmBy / 2));
                 }
                 event.setDamage(0);
             }
         } else if (event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-            if (event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION || event.getCause() == EntityDamageEvent.DamageCause.BLOCK_EXPLOSION
-                    || event.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION || event.getCause() == EntityDamageEvent.DamageCause.DROWNING
+            if (event.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION || event.getCause() == EntityDamageEvent.DamageCause.DROWNING
                     || event.getCause() == EntityDamageEvent.DamageCause.LAVA || event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                 double actualDamage = ((CraftLivingEntity) event.getEntity()).getMaxHealth() / event.getDamage();
                 int damageToHarmBy = (int) (HealthHandler.getInstance().getMonsterHPLive((LivingEntity) event.getEntity()) / actualDamage);
                 if (damageToHarmBy > 0) {
-                    HealthHandler.getInstance().handleMonsterBeingDamaged((Player) event.getEntity(), null, damageToHarmBy);
+                    HealthHandler.getInstance().handleMonsterBeingDamaged((Player) event.getEntity(), null, (damageToHarmBy / 2));
                 }
                 event.setDamage(0);
             }
