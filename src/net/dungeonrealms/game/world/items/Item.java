@@ -43,10 +43,10 @@ public class Item {
 
     public enum ItemTier {
         TIER_1(0, 1, new Integer[]{1, 10}, 2),
-        TIER_2(1, 2, new Integer[]{10, 25}, 3),
-        TIER_3(2, 3, new Integer[]{25, 40}, 4),
-        TIER_4(3, 4, new Integer[]{40, 50}, 5),
-        TIER_5(4, 5, new Integer[]{50, 100}, 6),;
+        TIER_2(1, 2, new Integer[]{1, 10}, 3),
+        TIER_3(2, 3, new Integer[]{1, 10}, 4),
+        TIER_4(3, 4, new Integer[]{1, 10}, 5),
+        TIER_5(4, 5, new Integer[]{10, 20}, 6),;
 
         private int id;
         private int tierId;
