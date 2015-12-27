@@ -740,28 +740,30 @@ public class HealthHandler implements GenericMechanic {
             return;
         }
 
-        if (entity != null) {
-            setMonsterHPLive(entity, (int) newHP);
-            double monsterHPPercent = (newHP / maxHP);
-            double newMonsterHPToDisplay = monsterHPPercent * 20.0D;
-            int convHPToDisplay = (int) newMonsterHPToDisplay;
-            if (convHPToDisplay <= 1) {
-                convHPToDisplay = 1;
-            }
-            if (convHPToDisplay > 20) {
-                convHPToDisplay = 20;
-            }
-            if (entity.hasMetadata("type") && entity.hasMetadata("level")) {
-                int level = entity.getMetadata("level").get(0).asInt();
-                String lvlName = ChatColor.LIGHT_PURPLE + "[" + level + "] ";
-                String hpBar = "||||||||||||||||||||";
-                hpBar = ChatColor.GREEN + hpBar.substring(0, convHPToDisplay) + ChatColor.DARK_GRAY + hpBar.substring(convHPToDisplay, hpBar.length() - 1);
-                if (!entity.hasMetadata("elite") && !entity.hasMetadata("boss") && !entity.hasMetadata("uuid"))
-                	//"/u287/" BLOCK THING
-                	entity.setCustomName(lvlName + hpBar);
-                entity.setHealth(convHPToDisplay);
-                if (!Entities.MONSTERS_LEASHED.contains(entity)) {
-                    Entities.MONSTERS_LEASHED.add(entity);
+        if (attacker != null) {
+            if (entity != null) {
+                setMonsterHPLive(entity, (int) newHP);
+                double monsterHPPercent = (newHP / maxHP);
+                double newMonsterHPToDisplay = monsterHPPercent * 20.0D;
+                int convHPToDisplay = (int) newMonsterHPToDisplay;
+                if (convHPToDisplay <= 1) {
+                    convHPToDisplay = 1;
+                }
+                if (convHPToDisplay > 20) {
+                    convHPToDisplay = 20;
+                }
+                if (entity.hasMetadata("type") && entity.hasMetadata("level")) {
+                    int level = entity.getMetadata("level").get(0).asInt();
+                    String lvlName = ChatColor.LIGHT_PURPLE + "[" + level + "] ";
+                    String hpBar = "||||||||||||||||||||";
+                    hpBar = ChatColor.GREEN + hpBar.substring(0, convHPToDisplay) + ChatColor.DARK_GRAY + hpBar.substring(convHPToDisplay, hpBar.length() - 1);
+                    if (!entity.hasMetadata("elite") && !entity.hasMetadata("boss") && !entity.hasMetadata("uuid"))
+                        //"/u287/" BLOCK THING
+                        entity.setCustomName(lvlName + hpBar);
+                    entity.setHealth(convHPToDisplay);
+                    if (!Entities.MONSTERS_LEASHED.contains(entity)) {
+                        Entities.MONSTERS_LEASHED.add(entity);
+                    }
                 }
             }
         }

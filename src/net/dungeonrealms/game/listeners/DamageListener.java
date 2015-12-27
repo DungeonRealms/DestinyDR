@@ -1103,6 +1103,9 @@ public class DamageListener implements Listener {
     public void onEntityHurtByNonCombat(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player) && !(event.getEntity() instanceof CraftLivingEntity)) return;
         if (event.getDamage() <= 0) return;
+        if (event.getCause() != EntityDamageEvent.DamageCause.SUFFOCATION && event.getCause() != EntityDamageEvent.DamageCause.DROWNING && event.getCause() != EntityDamageEvent.DamageCause.LAVA && event.getCause() != EntityDamageEvent.DamageCause.FALL) {
+            return;
+        }
         if (event.getEntity() instanceof Player) {
             if (!API.isPlayer(event.getEntity())) {
                 event.setDamage(0);
@@ -1147,7 +1150,7 @@ public class DamageListener implements Listener {
                 double actualDamage = ((CraftLivingEntity) event.getEntity()).getMaxHealth() / event.getDamage();
                 int damageToHarmBy = (int) (HealthHandler.getInstance().getMonsterHPLive((LivingEntity) event.getEntity()) / actualDamage);
                 if (damageToHarmBy > 0) {
-                    HealthHandler.getInstance().handleMonsterBeingDamaged((Player) event.getEntity(), null, (damageToHarmBy / 10));
+                    HealthHandler.getInstance().handleMonsterBeingDamaged((LivingEntity) event.getEntity(), null, (damageToHarmBy / 10));
                 }
                 event.setDamage(0);
                 event.setCancelled(true);

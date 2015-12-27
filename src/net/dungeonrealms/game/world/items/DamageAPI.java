@@ -496,83 +496,83 @@ public class DamageAPI {
                     damageAfterArmor = -2;
                     block = true;
                 }
-            }
-            int dodgeChance = 0;
-            if (nmsTag.getInt("dodge") != 0) {
-                dodgeChance += nmsTag.getInt("dodge");
-            }
-            if (nmsTag.getInt("dexterity") != 0) {
-                dodgeChance += (nmsTag.getInt("dexterity") * 0.017);
-            }
-            if (defender instanceof Player) {
-                if (API.getGamePlayer((Player) defender) != null) {
-                    dodgeChance += ((API.getGamePlayer((Player) defender).getStats()).getDodge() * 100);
+                int dodgeChance = 0;
+                if (nmsTag.getInt("dodge") != 0) {
+                    dodgeChance += nmsTag.getInt("dodge");
                 }
-            }
-            if (attacker instanceof Player) {
-                if (((Player) attacker).getItemInHand() != null && ((Player) attacker).getItemInHand().getType() != Material.AIR) {
-                    net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
-                    NBTTagCompound tag = nmsItem.getTag();
-                    if (tag != null) {
-                        if (tag.getInt("accuracy") != 0) {
-                            dodgeChance -= tag.getInt("accuracy");
-                            if (dodgeChance < 0) {
-                                dodgeChance = 0;
-                            }
-                        }
+                if (nmsTag.getInt("dexterity") != 0) {
+                    dodgeChance += (nmsTag.getInt("dexterity") * 0.017);
+                }
+                if (defender instanceof Player) {
+                    if (API.getGamePlayer((Player) defender) != null) {
+                        dodgeChance += ((API.getGamePlayer((Player) defender).getStats()).getDodge() * 100);
                     }
                 }
-            }
-            if (new Random().nextInt(99) < dodgeChance) {
-                if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
-                    leDefender.removePotionEffect(PotionEffectType.SLOW);
-                }
-                if (leDefender.hasPotionEffect(PotionEffectType.POISON)) {
-                    leDefender.removePotionEffect(PotionEffectType.POISON);
-                }
-                if (leDefender.getFireTicks() > 0) {
-                    leDefender.setFireTicks(0);
-                }
-                try {
-                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, defender.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                damageAfterArmor = -1;
-                dodge = true;
-            }
-            if (nmsTag.getInt("strength") != 0) {
-                damageAfterArmor -= (attackingDamage / 100) * (nmsTag.getInt("strength") * 0.023D);
-            }
-            if (nmsTag.getInt("thorns") != 0) {
                 if (attacker instanceof Player) {
-                    if (((Player) attacker).getGameMode() == GameMode.SURVIVAL) {
-                        if (((Player) attacker).getItemInHand() != null && ((Player) attacker).getItemInHand().getType() != Material.AIR) {
-                            net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
-                            NBTTagCompound tag = nmsItem.getTag();
-                            if (tag != null) {
-                                if (tag.getDouble("damage") != 0) {
-                                    int damageFromThorns = (int) ((tag.getDouble("damage") / 100) * (nmsTag.getInt("thorns") / 2));
-                                    HealthHandler.getInstance().healPlayerByAmount((Player) attacker, -damageFromThorns);
+                    if (((Player) attacker).getItemInHand() != null && ((Player) attacker).getItemInHand().getType() != Material.AIR) {
+                        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
+                        NBTTagCompound tag = nmsItem.getTag();
+                        if (tag != null) {
+                            if (tag.getInt("accuracy") != 0) {
+                                dodgeChance -= tag.getInt("accuracy");
+                                if (dodgeChance < 0) {
+                                    dodgeChance = 0;
                                 }
                             }
                         }
                     }
                 }
-            }
-            if (nmsTag.getInt("fireResistance") != 0) {
-                if (leDefender.getFireTicks() > 0) {
+                if (new Random().nextInt(99) < dodgeChance) {
+                    if (leDefender.hasPotionEffect(PotionEffectType.SLOW)) {
+                        leDefender.removePotionEffect(PotionEffectType.SLOW);
+                    }
+                    if (leDefender.hasPotionEffect(PotionEffectType.POISON)) {
+                        leDefender.removePotionEffect(PotionEffectType.POISON);
+                    }
+                    if (leDefender.getFireTicks() > 0) {
+                        leDefender.setFireTicks(0);
+                    }
                     try {
-                        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPLASH, defender.getLocation(),
-                                new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+                        ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CLOUD, defender.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
                     } catch (Exception ex) {
                         ex.printStackTrace();
                     }
-                    leDefender.setFireTicks(0);
-                    damageAfterArmor -= nmsTag.getInt("fireResistance");
+                    damageAfterArmor = -1;
+                    dodge = true;
                 }
+                if (nmsTag.getInt("strength") != 0) {
+                    damageAfterArmor -= (attackingDamage / 100) * (nmsTag.getInt("strength") * 0.023D);
+                }
+                if (nmsTag.getInt("thorns") != 0) {
+                    if (attacker instanceof Player) {
+                        if (((Player) attacker).getGameMode() == GameMode.SURVIVAL) {
+                            if (((Player) attacker).getItemInHand() != null && ((Player) attacker).getItemInHand().getType() != Material.AIR) {
+                                net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
+                                NBTTagCompound tag = nmsItem.getTag();
+                                if (tag != null) {
+                                    if (tag.getDouble("damage") != 0) {
+                                        int damageFromThorns = (int) ((tag.getDouble("damage") / 100) * (nmsTag.getInt("thorns") / 2));
+                                        HealthHandler.getInstance().healPlayerByAmount((Player) attacker, -damageFromThorns);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                if (nmsTag.getInt("fireResistance") != 0) {
+                    if (leDefender.getFireTicks() > 0) {
+                        try {
+                            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPLASH, defender.getLocation(),
+                                    new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.5F, 10);
+                        } catch (Exception ex) {
+                            ex.printStackTrace();
+                        }
+                        leDefender.setFireTicks(0);
+                        damageAfterArmor -= nmsTag.getInt("fireResistance");
+                    }
+                }
+                damageAfterArmor -= (damageAfterArmor / 100) * (nmsTag.getInt("armor"));
             }
-            damageAfterArmor -= (damageAfterArmor / 100) * (nmsTag.getInt("armor"));
         }
         if (dodge) {
             totalArmorReduction = -1;
