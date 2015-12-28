@@ -57,43 +57,43 @@ public class NPCMenus {
 //        String[] array = (String[]) lore.toArray();
         lore.add(ChatColor.GREEN + "Price: " + ChatColor.WHITE + "100g");
         String[] arr = lore.toArray(new String[lore.size()]);
-    	inv.addItem(editItem(pickAxe, pickAxe.getItemMeta().getDisplayName(), arr));
-    	
+        inv.addItem(editItem(pickAxe, pickAxe.getItemMeta().getDisplayName(), arr));
+
         ItemMeta meta2 = fishingRod.getItemMeta();
         List<String> lore2 = meta2.getLore();
         lore2.add(ChatColor.GREEN + "Price: " + ChatColor.WHITE + "100g");
         String[] arr2 = lore2.toArray(new String[lore2.size()]);
-    	inv.addItem(editItem(fishingRod, fishingRod.getItemMeta().getDisplayName(), arr2));
+        inv.addItem(editItem(fishingRod, fishingRod.getItemMeta().getDisplayName(), arr2));
         player.openInventory(inv);
     }
-    
+
     public static void openWizardMenu(Player player) {
-    	GamePlayer gp = API.getGamePlayer(player);
-    	if (gp.getLevel() >= 10) {
-    		if (gp.getStats().resetAmounts > 0) {
+        GamePlayer gp = API.getGamePlayer(player);
+        if (gp.getLevel() >= 10) {
+            if (gp.getStats().resetAmounts > 0) {
                 player.sendMessage(ChatColor.GREEN + "You have a free stat reset available!");
                 AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
-					if (e.getSlot() == AnvilSlot.OUTPUT) {
-						if (e.getName().equalsIgnoreCase("Yes") || e.getName().equalsIgnoreCase("y")) {
+                    if (e.getSlot() == AnvilSlot.OUTPUT) {
+                        if (e.getName().equalsIgnoreCase("Yes") || e.getName().equalsIgnoreCase("y")) {
                             gp.getStats().freeResets -= 1;
-						} else {
+                        } else {
                             e.destroy();
-						}
-					}
-				});
+                        }
+                    }
+                });
                 ItemStack stack = new ItemStack(Material.INK_SACK, 1, DyeColor.GREEN.getDyeData());
-				ItemMeta meta = stack.getItemMeta();
-				meta.setDisplayName("Use your ONE stat points reset?");
-				stack.setItemMeta(meta);
-				gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
-				Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), gui::open, 50L);
-    		} else {
+                ItemMeta meta = stack.getItemMeta();
+                meta.setDisplayName("Use your ONE stat points reset?");
+                stack.setItemMeta(meta);
+                gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
+                Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), gui::open, 50L);
+            } else {
                 player.sendMessage(ChatColor.RED + "You have already used your free stat reset for your character.");
                 player.sendMessage(ChatColor.YELLOW + "You may purchase more resets from the E-Cash vendor!.");
-    		}
-    	} else {
-    		player.sendMessage(ChatColor.RED + "You need to be level 10 to use your ONE reset.");
-    	}
+            }
+        } else {
+            player.sendMessage(ChatColor.RED + "You need to be level 10 to use your ONE reset.");
+        }
     }
 
     public static void openECashPurchaseMenu(Player player) {
@@ -119,7 +119,7 @@ public class NPCMenus {
                 ChatColor.AQUA + "749 E-Cash"}).setNBTString("petType", "RABBIT").setNBTInt("ecashCost", 749).build());
         inv.setItem(7, new ItemBuilder().setItem(Material.MONSTER_EGG, (short) 98, ChatColor.YELLOW + "Ocelot Pet", new String[]{
                 ChatColor.AQUA + "749 E-Cash"}).setNBTString("petType", "OCELOT").setNBTInt("ecashCost", 749).build());
-        inv.setItem(8, new ItemBuilder().setItem(new ItemStack(Material.ENDER_CHEST), ChatColor.GREEN + "Storage Expansion", new String[] {
+        inv.setItem(8, new ItemBuilder().setItem(new ItemStack(Material.ENDER_CHEST), ChatColor.GREEN + "Storage Expansion", new String[]{
                 ChatColor.RED + "Expand Your Bank!",
                 ChatColor.AQUA + "999 E-Cash"}).setNBTString("storageExpansion", "xFiniTEAPro").setNBTInt("ecashCost", 999).build());
         inv.setItem(9, new ItemBuilder().setItem(new ItemStack(Material.ENCHANTED_BOOK), ChatColor.GREEN + "Retraining Book", new String[]{
@@ -181,7 +181,7 @@ public class NPCMenus {
         inv.setItem(4, new ItemStack(Material.THIN_GLASS));
         inv.setItem(13, new ItemStack(Material.THIN_GLASS));
         inv.setItem(22, new ItemStack(Material.THIN_GLASS));
-        inv.setItem(0, new ItemBuilder().setItem(Material.INK_SACK, (short) 8, ChatColor.YELLOW + "Click to ACCEPT", new String[] {
+        inv.setItem(0, new ItemBuilder().setItem(Material.INK_SACK, (short) 8, ChatColor.YELLOW + "Click to ACCEPT", new String[]{
                 ""
         }).setNBTString("acceptButton", "whynot").build());
         player.playSound(player.getLocation(), Sound.WOOD_CLICK, 1.f, 1.f);
@@ -197,22 +197,22 @@ public class NPCMenus {
         itemStack.setAmount(1);
         return itemStack;
     }
-    
-    public static void openFoodVendorMenu(Player player){
+
+    public static void openFoodVendorMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 18, "Food Vendor");
         ItemStack potato = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemModifier.COMMON), 2);
         ItemStack loadedPotato = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemModifier.RARE), 4);
         ItemStack apple = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemModifier.LEGENDARY), 8);
-        
+
         ItemStack unCookedChicken = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemModifier.COMMON), 10);
         ItemStack RoastedChicken = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemModifier.RARE), 14);
         ItemStack pumpkinPie = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemModifier.LEGENDARY), 18);
 
-        
+
         ItemStack saltedPork = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemModifier.COMMON), 20);
         ItemStack seasonedPork = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemModifier.RARE), 25);
         ItemStack mushroomSoup = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemModifier.LEGENDARY), 30);
-        
+
         ItemStack frozenSteak = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemModifier.COMMON), 35);
         ItemStack sizzlingSteak = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemModifier.RARE), 45);
         ItemStack grilledRabbit = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemModifier.LEGENDARY), 55);
@@ -224,11 +224,11 @@ public class NPCMenus {
         inv.setItem(0, potato);
         inv.setItem(1, loadedPotato);
         inv.setItem(2, apple);
-        
+
         inv.setItem(3, unCookedChicken);
         inv.setItem(4, RoastedChicken);
         inv.setItem(5, pumpkinPie);
-        
+
         inv.setItem(6, saltedPork);
         inv.setItem(7, seasonedPork);
         inv.setItem(8, mushroomSoup);
@@ -236,13 +236,12 @@ public class NPCMenus {
         inv.setItem(9, frozenSteak);
         inv.setItem(10, sizzlingSteak);
         inv.setItem(11, grilledRabbit);
-        
+
         inv.setItem(12, kingsApple);
         inv.setItem(13, enchantedApple);
         inv.setItem(14, goldCarrot);
         player.openInventory(inv);
     }
 
-    
-    
+
 }

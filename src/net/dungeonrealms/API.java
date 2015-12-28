@@ -149,13 +149,13 @@ public class API {
         int chance = RandomHelper.getRandomNumberBetween(1, 1000);
         if (chance == 1) {
             return new ArmorGenerator().nextArmor(tier, ArmorModifier.LEGENDARY);
-        }else if (chance <= 10){
+        } else if (chance <= 10) {
             return new ArmorGenerator().nextArmor(tier, ArmorModifier.RARE);
-    	}else if (chance > 10 && chance <= 50){
+        } else if (chance > 10 && chance <= 50) {
             return new ArmorGenerator().nextArmor(tier, ArmorModifier.UNCOMMON);
-    	}else{
+        } else {
             return new ArmorGenerator().nextArmor(tier, ArmorModifier.COMMON);
-    	}
+        }
     }
 
     public static ArmorModifier getArmorModifier() {
@@ -345,7 +345,7 @@ public class API {
      */
     public static void handleLogout(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
-        if(!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
+        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
             return;
         }
 //        if (CombatLog.isInCombat(player) && !DuelingMechanics.isDueling(uuid) && !API.isNonPvPRegion(player.getLocation())) {
@@ -375,14 +375,13 @@ public class API {
             }
         }
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, false);
-        
+
         if (MountUtils.inventories.containsKey(uuid)) {
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_MULE, ItemSerialization.toString(MountUtils.inventories.get(uuid)), false);
             MountUtils.inventories.remove(uuid);
         }
-        
-        
-        
+
+
         String locationAsString = "-367,86,390,0,0"; // Cyrennica
         if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
             locationAsString = player.getLocation().getX() + "," + (player.getLocation().getY() + 0.5) + ","
@@ -424,13 +423,13 @@ public class API {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (CombatLog.isInCombat(player)) {
                 CombatLog.removeFromCombat(player);
-            }            
+            }
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            	try{
-            		NetworkAPI.getInstance().sendToServer(player.getName(), "drhub");
-            	}catch(Exception exc){
-            		exc.printStackTrace();
-            	}
+                try {
+                    NetworkAPI.getInstance().sendToServer(player.getName(), "drhub");
+                } catch (Exception exc) {
+                    exc.printStackTrace();
+                }
             }, 40L);
         }
     }
@@ -442,6 +441,9 @@ public class API {
      * @since 1.0
      */
     public static void handleLogin(UUID uuid) {
+        if (Bukkit.getPlayer(uuid) == null) {
+            return;
+        }
         Player player = Bukkit.getPlayer(uuid);
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
             player.kickPlayer(ChatColor.RED + "Unable to grab your data.. rejoin!");
@@ -474,8 +476,8 @@ public class API {
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
             ItemStack[] items = ItemSerialization.fromString(playerInv).getContents();
             player.getInventory().setContents(items);
-        }else{
-        	Utils.log.info(player.getName() + " HAS NULL/EMPTY INVENTORY");
+        } else {
+            Utils.log.info(player.getName() + " HAS NULL/EMPTY INVENTORY");
         }
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
         if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
@@ -787,7 +789,7 @@ public class API {
      * @return
      */
     public static boolean isOrb(ItemStack is) {
-    	
+
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(is);
         return is.getType() == Material.MAGMA_CREAM && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("orb");
     }
@@ -797,21 +799,21 @@ public class API {
         return nms != null && nms.getTag() != null && nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter");
     }
 
-	/**
-	 * @return
-	 */
-	public static ItemModifier getItemModifier() {
-	        int chance = RandomHelper.getRandomNumberBetween(1, 500);
-	        if (chance == 1) {
-	            return ItemModifier.LEGENDARY;
-	        } else if (chance <= 10) {
-	            return ItemModifier.UNIQUE;
-	        } else if (chance > 10 && chance <= 50) {
-	            return ItemModifier.RARE;
-	        } else if (chance > 50 && chance <= 200) {
-	            return ItemModifier.UNCOMMON;
-	        } else {
-	            return ItemModifier.COMMON;
-	        }
-	    }	
+    /**
+     * @return
+     */
+    public static ItemModifier getItemModifier() {
+        int chance = RandomHelper.getRandomNumberBetween(1, 500);
+        if (chance == 1) {
+            return ItemModifier.LEGENDARY;
+        } else if (chance <= 10) {
+            return ItemModifier.UNIQUE;
+        } else if (chance > 10 && chance <= 50) {
+            return ItemModifier.RARE;
+        } else if (chance > 50 && chance <= 200) {
+            return ItemModifier.UNCOMMON;
+        } else {
+            return ItemModifier.COMMON;
+        }
+    }
 }

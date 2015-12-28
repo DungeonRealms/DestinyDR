@@ -1,16 +1,15 @@
 package net.dungeonrealms.game.player.banks;
 
-import java.util.UUID;
-
+import net.dungeonrealms.game.mastery.ItemSerialization;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
-import net.dungeonrealms.game.mastery.ItemSerialization;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
+import java.util.UUID;
 
 /**
  * Created by Chase on Sep 25, 2015
@@ -19,8 +18,8 @@ public class Storage {
 
     public UUID ownerUUID;
     public Inventory inv;
-	public Inventory collection_bin = null;
-	
+    public Inventory collection_bin = null;
+
     public Storage(UUID owner) {
         ownerUUID = owner;
         inv = getNewStorage();
@@ -33,22 +32,22 @@ public class Storage {
     public Storage(UUID uuid, Inventory inventory) {
         ownerUUID = uuid;
         this.inv = getNewStorage();
-        for(org.bukkit.inventory.ItemStack stack : inventory.getContents()){
-        	if(stack != null && stack.getType() != org.bukkit.Material.AIR)
-        	if(inv.firstEmpty() >= 0)
-        		inv.addItem(stack);
+        for (org.bukkit.inventory.ItemStack stack : inventory.getContents()) {
+            if (stack != null && stack.getType() != org.bukkit.Material.AIR)
+                if (inv.firstEmpty() >= 0)
+                    inv.addItem(stack);
         }
         String stringInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_COLLECTION_BIN, ownerUUID);
-        if(stringInv.length() > 1){
-        	Inventory inv = ItemSerialization.fromString(stringInv);
-        	for(ItemStack item : inv.getContents()){
-        		if(item != null && item.getType() == Material.AIR){
-        			inv.addItem(item);
-        		}
-        	}
-        	this.collection_bin = inv;
+        if (stringInv.length() > 1) {
+            Inventory inv = ItemSerialization.fromString(stringInv);
+            for (ItemStack item : inv.getContents()) {
+                if (item != null && item.getType() == Material.AIR) {
+                    inv.addItem(item);
+                }
+            }
+            this.collection_bin = inv;
         }
-        
+
     }
 
     /**
@@ -65,16 +64,16 @@ public class Storage {
      * @return
      */
     private int getStorageSize(Player p) {
-    	int lvl = (Integer) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, p.getUniqueId());
+        int lvl = (Integer) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, p.getUniqueId());
         return 9 * lvl;
     }
 
-	/**
-	 * Used to update inventory size when upgraded.
-	 */
-	public void update() {
-		Inventory inventory = getNewStorage();
-		inventory.setContents(inv.getContents());
-		this.inv = inventory;
-	}
+    /**
+     * Used to update inventory size when upgraded.
+     */
+    public void update() {
+        Inventory inventory = getNewStorage();
+        inventory.setContents(inv.getContents());
+        this.inv = inventory;
+    }
 }

@@ -59,14 +59,14 @@ public class NetworkAPI implements PluginMessageListener {
                 }
                 break;
             case "shop":
-            	if(in.readUTF().equalsIgnoreCase("close")){
+                if (in.readUTF().equalsIgnoreCase("close")) {
                     Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> {
-                    	if(ShopMechanics.getShop(p.getName()) != null){
-                    		ShopMechanics.getShop(p.getName()).deleteShop();
-                    	}
-                    	DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
+                        if (ShopMechanics.getShop(p.getName()) != null) {
+                            ShopMechanics.getShop(p.getName()).deleteShop();
+                        }
+                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
                     });
-            	}
+                }
             default:
         }
     }
