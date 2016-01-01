@@ -183,7 +183,7 @@ public class KarmaHandler implements GenericMechanic {
      * @since 1.0
      */
     public int getSecondsPassed(Player player) {
-        long currentTime = System.currentTimeMillis() / 1000l;
+        long currentTime = System.currentTimeMillis() / 1000L;
         long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, player.getUniqueId())));
         return (int) (currentTime - endTime);
     }
@@ -205,7 +205,7 @@ public class KarmaHandler implements GenericMechanic {
         EnumPlayerAlignments alignmentTo = EnumPlayerAlignments.getByName(alignmentRawName);
         EnumPlayerAlignments alignmentPlayer = API.getGamePlayer(player).getPlayerAlignment();
         int seconds = 0;
-        if (login) {
+        /*if (login) {
             if (Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.LAST_LOGOUT, player.getUniqueId()))) != 0) {
                 if (alignmentTo == EnumPlayerAlignments.CHAOTIC) {
                     if (getSecondsPassed(player) >= 1200) {
@@ -223,7 +223,7 @@ public class KarmaHandler implements GenericMechanic {
                     }
                 }
             }
-        }
+        }*/
         if (alignmentTo == null || alignmentTo.equals(EnumPlayerAlignments.NONE)) {
             alignmentTo = EnumPlayerAlignments.LAWFUL;
         }
