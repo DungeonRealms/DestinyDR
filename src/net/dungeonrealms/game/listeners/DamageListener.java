@@ -779,6 +779,14 @@ public class DamageListener implements Listener {
             event.setCancelled(true);
             event.getEntity().teleport(event.getEntity().getWorld().getSpawnLocation());
         }
+        
+        if(!(event.getEntity() instanceof Player) && event.getCause() == DamageCause.FALL){
+            event.setDamage(0);
+        	event.setCancelled(true);
+        }
+        if((event.getEntity() instanceof Player) && event.getCause() == DamageCause.CONTACT){
+        	event.setDamage(1);
+        }
     }
 
     /**
