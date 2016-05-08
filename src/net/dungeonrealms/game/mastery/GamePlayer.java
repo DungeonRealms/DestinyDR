@@ -38,15 +38,15 @@ public class GamePlayer {
      */
     public Tier getPlayerTier() {
         int level = getLevel();
-        if (level >= 1 || level <= 10) {
+        if (level >= 1 || level <= 9) {
             return Tier.TIER1;
-        } else if (level >= 11 || level <= 20) {
+        } else if (level >= 10 || level <= 19) {
             return Tier.TIER2;
-        } else if (level >= 21 || level <= 30) {
+        } else if (level >= 20 || level <= 29) {
             return Tier.TIER3;
-        } else if (level >= 31 || level <= 40) {
+        } else if (level >= 30 || level <= 39) {
             return Tier.TIER4;
-        } else if (level >= 41 || level <= 64) {
+        } else if (level >= 40 || level <= 100) {
             return Tier.TIER5;
         } else
             return Tier.TIER1;
@@ -208,21 +208,12 @@ public class GamePlayer {
         int level = getLevel();
         double experience = getExperience();
         if (level > 100) return;
-        boolean isSub = Rank.getInstance().getRank(T.getUniqueId()).getName().equalsIgnoreCase("SUB");
-        boolean isSubPlus = Rank.getInstance().getRank(T.getUniqueId()).getName().equalsIgnoreCase("SUB+");
         String expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "        + ";
         if (isParty) {
-            expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "            " + ChatColor.AQUA.toString() + ChatColor.BOLD + "P " + ChatColor.RESET + ChatColor.GRAY + "➜ " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+";
+            expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "            " + ChatColor.AQUA.toString() + ChatColor.BOLD + "P " + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+";
         }
         double subBonus = 0;
         double subPlusBonus = 0;
-
-        if (isSub) {
-            subBonus = experienceToAdd * 0.05;
-        }
-        if (isSubPlus) {
-            subPlusBonus = experienceToAdd * 0.1;
-        }
         double futureExperience = experience + experienceToAdd + subBonus + subPlusBonus;
         int xpNeeded = getEXPNeeded(level);
         if (futureExperience >= xpNeeded) {
@@ -234,13 +225,7 @@ public class GamePlayer {
         } else {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.EXPERIENCE, (experienceToAdd + subBonus + subPlusBonus), true);
             if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
-                if (isSub) {
-                    T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.GREEN + " (+" + Math.round(subBonus) + ")" + ChatColor.YELLOW + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience() + experienceToAdd) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
-                } else if (isSubPlus) {
-                    T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.GOLD + " (+" + Math.round(subPlusBonus) + ")" + ChatColor.YELLOW + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience() + experienceToAdd) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
-                } else {
                     T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience() + experienceToAdd) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
-                }
             }
         }
     }

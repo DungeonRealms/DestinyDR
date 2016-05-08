@@ -48,7 +48,7 @@ public class RealmManager implements GenericMechanic {
     int port = 21;
     String USER = "dr.23";
     String PASSWORD = "devpass123";
-    String ROOT_DIR = "";
+    String ROOT_DIR = "19584!cK";
 
     @Override
     public EnumPriority startPriority() {
@@ -427,6 +427,33 @@ public class RealmManager implements GenericMechanic {
             removeRealm(getPlayerRealm(player), playerLoggingOut);
         }
     }
+    
+    /**
+     * Opens a players realm for an Instance.
+     *
+     * @since 1.0
+     */
+    public void tryToOpenRealmInstance(Player player) {
+        if (getPlayerRealm(player) == null || !getPlayerRealm(player).isRealmPortalOpen()) {
+            if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+                player.sendMessage(ChatColor.RED + "You can only open a realm portal in the main world!");
+                return;
+            }
+            if (doesRealmExistLocally(player.getUniqueId()) && !isRealmLoaded(player.getUniqueId())) {
+                Utils.log.info("[REALMS] Player " + player.getUniqueId().toString() + "'s Realm existed locally, loading it!");
+                Bukkit.createWorld(new WorldCreator(player.getUniqueId().toString()));
+                return;
+            }
+            if (!doesRealmExistLocally(player.getUniqueId()) && !isRealmLoaded(player.getUniqueId())) {
+                Utils.log.info("[REALMS] Player " + player.getUniqueId().toString() + "'s Realm doesn't exist locally, downloading it from FTP!");
+                downloadRealm(player.getUniqueId());
+            }
+        	player.teleport(Bukkit.getWorld(player.getUniqueId()).getSpawnLocation());
+        } else {
+            player.sendMessage(ChatColor.RED + "You already have a Realm Portal in the world, please destroy it!");
+        }
+    }
+
 
     /**
      * Opens a players realm and creates
@@ -612,7 +639,7 @@ public class RealmManager implements GenericMechanic {
         AsyncUtils.pool.submit(() -> {
             FTPClient ftpClient = new FTPClient();
             FileOutputStream fos = null;
-            String REMOTE_FILE = "/" + "realms" + "/" + "REALM_TEMPLATE" + ".zip";
+            String REMOTE_FILE = "realms" + "/" + "REALM_TEMPLATE" + ".zip";
             try {
                 ftpClient.connect(HOST, port);
                 boolean login = ftpClient.login(USER, PASSWORD);

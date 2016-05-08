@@ -32,7 +32,7 @@ public final class Core implements GenericMechanic {
     public synchronized void connectToMysql() {
         Utils.log.warning("DR | Connecting to MySQL ... This might take a moment ...");
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://192.99.43.236:3306/dungeonrealms?user=dungeonrealms&password=8aQbrSTsVDG7UWQh");
+            connection = DriverManager.getConnection("jdbc:mysql://192.99.200.110:3306/drnew?user=root&password=19584!cK");
         } catch (SQLException e) {
             e.printStackTrace();
             Bukkit.shutdown();

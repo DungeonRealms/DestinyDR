@@ -3,6 +3,8 @@ package net.dungeonrealms.game.mongo;
 import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
 import net.dungeonrealms.Callback;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.core.Core;
 import net.dungeonrealms.game.mastery.Utils;
 import org.bson.Document;
 
@@ -122,7 +124,10 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("shopLevel", Integer.class);
             case LOGGERDIED:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("loggerdied", Boolean.class);
-
+            case CURRENTSERVER:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("current", String.class);
+            case ENTERINGREALM:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("enteringrealm", String.class);
             /*
             Rank Things. Different Sub-Document().
              */
@@ -268,7 +273,9 @@ public class DatabaseAPI {
                                 .append("shopOpen", false)
                                 .append("foodLevel", 20)
                                 .append("shopLevel", 1)
-                                .append("loggerdied", false))
+                                .append("loggerdied", false)
+                				.append("current", DungeonRealms.getInstance().bungeeName)
+                				.append("enteringrealm", ""))
                         .append("attributes",
                                 new Document("bufferPoints", 6)
                                         .append("strength", 0)

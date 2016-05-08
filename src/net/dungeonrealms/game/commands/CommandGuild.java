@@ -171,7 +171,7 @@ public class CommandGuild extends BasicCommand {
                                                     add(guildName);
                                                 }});
                                                 Guild.getInstance().sendAlert(guildName, ChatColor.RED + player.getName() + " has invited " + args[1] + " " + "to the guild!");
-                                                Bukkit.getPlayer(args[1]).sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "GUILD INVITATION" + ChatColor.RED + " ➜ " + ChatColor.GOLD + guildName + " " + ChatColor.GRAY + "Type /guild accept " + guildName);
+                                                Bukkit.getPlayer(args[1]).sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "GUILD INVITATION" + ChatColor.RED + " >> " + ChatColor.GOLD + guildName + " " + ChatColor.GRAY + "Type /guild accept " + guildName);
                                                 //Bukkit.getPlayer(args[1]).sendMessage(ChatColor.GREEN + "You have been invited to: " + ChatColor.GOLD + guildName + " " + ChatColor.GREEN + "type /guild accept " + guildName + " to accept!");
                                             } else {
                                                 if (!Guild.invitations.get(player.getUniqueId()).contains(guildName)) {

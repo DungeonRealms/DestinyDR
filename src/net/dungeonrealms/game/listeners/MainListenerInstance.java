@@ -73,7 +73,7 @@ import java.util.UUID;
 /**
  * Created by Nick on 9/17/2015.
  */
-public class MainListener implements Listener {
+public class MainListenerInstance implements Listener {
 
     @EventHandler(priority = EventPriority.LOWEST)
     public void onVote(VotifierEvent event) {
@@ -242,7 +242,7 @@ public class MainListener implements Listener {
         player.setGameMode(GameMode.ADVENTURE);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 4));
         player.teleport(new Location(Bukkit.getWorlds().get(0), 0, 255, 0, 0f, 0f));
-        BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.GREEN.toString() + ChatColor.BOLD + "Fetching Data...");
+        BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.GREEN.toString() + ChatColor.BOLD + "Loading...");
         ItemStack[] armor = player.getInventory().getArmorContents();
         for (int i = 0; i < armor.length; i++) {
             armor[i] = new ItemStack(Material.AIR);
@@ -251,8 +251,14 @@ public class MainListener implements Listener {
         player.sendMessage(ChatColor.GREEN + "Loading your data.. This will only take a moment!");
 
 //        CombatLog.checkCombatLog(uuid);
+        if(!DungeonRealms.getInstance().isInstanceServer)
+        {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
                 () -> API.handleLogin(player.getUniqueId()), 20L * 3);
+        } else {
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+                    () -> API.handleInstanceLogin(player.getUniqueId()), 20L * 3);
+        }
 //        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
 //                () -> {
 //                    if ((Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, uuid).toString()))) {
@@ -347,7 +353,12 @@ public class MainListener implements Listener {
             if (DuelingMechanics.isDueling(player.getUniqueId())) {
                 DuelingMechanics.getOffer(player.getUniqueId()).handleLogOut(player);
             }
-            API.handleLogout(player.getUniqueId());
+            if(!DungeonRealms.getInstance().isInstanceServer)
+            {
+                API.handleLogout(player.getUniqueId());
+            } else {
+                API.handleInstanceLogout(player.getUniqueId());
+            }
         }
     }
 
@@ -368,17 +379,7 @@ public class MainListener implements Listener {
                         if (event.getInventory().getItem(slot) != null
                                 && event.getInventory().getItem(slot).getType() != Material.AIR) {
                             ItemStack item = event.getInventory().getItem(slot);
-                            // Duel Request
-                            if (item.getType() == Material.IRON_SWORD) {
-                                event.setWillClose(true);
-                                event.setWillDestroy(true);
-                                theevent.getPlayer().closeInventory();
-                                Player p1 = theevent.getPlayer();
-                                Player p2 = playerClicked;
-                                if (API.isNonPvPRegion(p1.getLocation()) && API.isNonPvPRegion(p2.getLocation())) {
-                                    DuelingMechanics.sendDuelRequest(p1, p2);
-                                }
-                            } else if (item.getType() == Material.EMERALD) {
+                            if (item.getType() == Material.EMERALD) {
                                 event.setWillClose(true);
                                 event.setWillDestroy(true);
                                 event.willDestroy();
@@ -393,8 +394,6 @@ public class MainListener implements Listener {
 
                 gui.setOption(4, Utils.getPlayerHead(playerClicked),
                         ChatColor.AQUA.toString() + playerClicked.getName());
-                gui.setOption(8, new ItemStack(Material.IRON_SWORD), "Challenge to duel",
-                        ChatColor.GRAY + "Challenges " + playerClicked.getName() + " to a battle!");
                 gui.setOption(17, new ItemStack(Material.PAPER), "Private Message",
                         ChatColor.GRAY + "Privately message " + playerClicked.getName());
                 gui.setOption(26, new ItemStack(Material.EMERALD), "Trade",
@@ -403,239 +402,6 @@ public class MainListener implements Listener {
             }
         }
     }
-
-
-    /**
-     * Checks player movement, adds a trail of gold blocks if they have the perk
-     * and the situation is correct.
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void onPlayerMove(PlayerMoveEvent event) {
-        if (!API.isPlayer(event.getPlayer()))
-            return;
-
-        if (DuelingMechanics.isDueling(event.getPlayer().getUniqueId())) {
-            DuelOffer offer = DuelingMechanics.getOffer(event.getPlayer().getUniqueId());
-            if (!offer.canFight) return;
-            if (event.getTo().distance(offer.centerPoint) >= 15) {
-                event.setCancelled(true);
-                event.getPlayer().teleport(event.getFrom());
-                event.getPlayer().sendMessage(ChatColor.RED + "Can't leave area while in battle!");
-            }
-        }
-
-        if (!(DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAILS.contains(event.getPlayer())))
-            return;
-        Player player = event.getPlayer();
-        if (!(player.getWorld().getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName())))
-            return;
-        if (player.getLocation().getBlock().getType() != Material.AIR)
-            return;
-        Material material = player.getLocation().subtract(0, 1, 0).getBlock().getType();
-        if (material == Material.DIRT || material == Material.GRASS || material == Material.STONE
-                || material == Material.COBBLESTONE || material == Material.GRAVEL || material == Material.LOG
-                || material == Material.SMOOTH_BRICK || material == Material.BEDROCK || material == Material.GLASS
-                || material == Material.SANDSTONE || material == Material.SAND || material == Material.BOOKSHELF
-                || material == Material.MOSSY_COBBLESTONE || material == Material.OBSIDIAN
-                || material == Material.SNOW_BLOCK || material == Material.CLAY || material == Material.STAINED_CLAY
-                || material == Material.WOOL) {
-            DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAIL_INFO
-                    .put(player.getLocation().subtract(0, 1, 0).getBlock().getLocation(), material);
-            player.getLocation().subtract(0, 1, 0).getBlock().setType(Material.GOLD_BLOCK);
-            player.getLocation().subtract(0, 1, 0).getBlock().setMetadata("time",
-                    new FixedMetadataValue(DungeonRealms.getInstance(), 10));
-        }
-
-
-    }
-
-    /**
-     * Checks player movement, if they are chaotic and entering or currently in
-     * a Non-PvP zone, remove them from it.
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void onPlayerMoveWhileChaotic(PlayerMoveEvent event) {
-        if (!API.isPlayer(event.getPlayer())) {
-            return;
-        }
-        Player player = event.getPlayer();
-        if (API.getGamePlayer(player) == null) {
-            return;
-        }
-        if (API.getGamePlayer(player).getPlayerAlignment() != KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
-            return;
-        }
-        if (!(player.getWorld().equals(Bukkit.getWorlds().get(0)))) {
-            return;
-        }
-        if (API.isInSafeRegion(event.getFrom()) || API.isNonPvPRegion(event.getFrom())) {
-            event.setCancelled(true);
-            player.teleport(KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1)));
-            player.sendMessage(ChatColor.RED + "The guards have kicked you of of this area due to your alignment");
-            return;
-        }
-        if (API.isInSafeRegion(event.getTo()) || API.isNonPvPRegion(event.getTo())) {
-            event.setCancelled(true);
-            player.teleport(new Location(player.getWorld(), event.getFrom().getX(), event.getFrom().getY(), event.getFrom().getZ(), player.getLocation().getPitch() * -1, player.getLocation().getPitch() * -1));
-            player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " enter " + ChatColor.BOLD.toString() + "NON-PVP" + ChatColor.RED + " zones with a Chaotic alignment.");
-        }
-    }
-
-    /**
-     * Checks for player interacting with NPC Players, opens an inventory if
-     * they have one.
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.LOWEST)
-    public void playerInteractWithNPC(PlayerInteractEntityEvent event) {
-        if (!(event.getRightClicked() instanceof Player))
-            return;
-        if (API.isPlayer(event.getRightClicked()))
-            return;
-        String npcNameStripped = ChatColor.stripColor(event.getRightClicked().getName());
-        if (npcNameStripped.equals(""))
-            return;
-        if (npcNameStripped.equalsIgnoreCase("Animal Tamer")) {
-            NPCMenus.openMountPurchaseMenu(event.getPlayer());
-            return;
-        }
-        if (npcNameStripped.equalsIgnoreCase("Merchant")) {
-            NPCMenus.openMerchantMenu(event.getPlayer());
-            return;
-        }
-        if (npcNameStripped.equalsIgnoreCase("E-Cash Vendor")) {
-            NPCMenus.openECashPurchaseMenu(event.getPlayer());
-            return;
-        }
-        if (npcNameStripped.equalsIgnoreCase("Wizard")) {
-            NPCMenus.openWizardMenu(event.getPlayer());
-            return;
-        }
-        if (npcNameStripped.equalsIgnoreCase("Dungeoneer")) {
-            //NPCMenus.openDungeoneerMenu(event.getPlayer());
-            event.getPlayer().sendMessage(ChatColor.RED + "Sorry, I'm restocking my wares!");
-            return;
-        }
-        if (npcNameStripped.equalsIgnoreCase("Skill Trainer")) {
-            NPCMenus.openProfessionPurchaseMenu(event.getPlayer());
-            return;
-        }
-        if (npcNameStripped.equalsIgnoreCase("Food Vendor")) {
-            NPCMenus.openFoodVendorMenu(event.getPlayer());
-            return;
-        }
-        if (npcNameStripped.equalsIgnoreCase("Item Vendor")) {
-            // TODO: Open Item Vendor
-            event.getPlayer().sendMessage(ChatColor.RED + "Sorry, I'm restocking my wares!");
-            return;
-        }
-        if (npcNameStripped.equalsIgnoreCase("Guild Registrar")) {
-            // TODO: Open Guild Registrar
-            event.getPlayer().sendMessage(ChatColor.RED + "Guilds are coming soon.");
-            return;
-        }
-        if (npcNameStripped.equalsIgnoreCase("Innkeeper")) {
-            NPCMenus.openHearthstoneRelocateMenu(event.getPlayer());
-            return;
-        }
-        if (npcNameStripped.equalsIgnoreCase("Ship Captain")) {
-            event.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -378, 85, 362));
-            TutorialIslandHandler.getInstance().giveStarterKit(event.getPlayer());
-        }
-
-    }
-
-    /**
-     * Handle players catching fish, gives them exp/fish
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void catchFish(PlayerFishEvent event) {
-        if (event.getState().equals(State.FISHING)) {
-            Location loc = Fishing.getInstance().getFishingSpot(event.getPlayer().getLocation());
-            if (loc == null) {
-                event.getPlayer().sendMessage(ChatColor.RED + "There are " + ChatColor.UNDERLINE + "no" + ChatColor.RED + " populated fishing spots near this location.");
-                event.getPlayer().sendMessage(ChatColor.GRAY + "Look for particles above water blocks to signify active fishing spots.");
-                event.setCancelled(true);
-            }
-        } else {
-            Player p = event.getPlayer();
-            ItemStack stack = p.getItemInHand();
-            if (stack != null && stack.getType() == Material.FISHING_ROD) {
-                RepairAPI.subtractCustomDurability(p, stack, 2);
-                if (event.getState() == State.CAUGHT_FISH) {
-                    if (Fishing.isDRFishingPole(stack)) {
-                        event.getCaught().remove();
-                        event.setExpToDrop(0);
-                        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-                        int tier = nms.getTag().getInt("itemTier");
-                        if (new Random().nextInt(100) <= Fishing.getChance(tier)) {
-                            ItemStack fish = Fishing.getFishItem(stack);
-                            int experienceGain = Fishing.getFishEXP(tier);
-                            Fishing.gainExp(stack, p, experienceGain);
-                            if (API.getGamePlayer(event.getPlayer()) != null) {
-                                API.getGamePlayer(event.getPlayer()).addExperience((experienceGain / 8), false);
-                            }
-                            p.getInventory().addItem(fish);
-                        } else {
-                            p.sendMessage("Oh no, it got away!");
-                        }
-                    }
-                }
-            }
-        }
-    }
-
-    /**
-     * Checks for players quitting the merchant NPC
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerCloseInventory(InventoryCloseEvent event) {
-        if (!event.getInventory().getName().equalsIgnoreCase("Merchant")) {
-            return;
-        }
-        Player player = (Player) event.getPlayer();
-        if (!API.isPlayer(player)) {
-            return;
-        }
-        int slot_Variable = -1;
-        while (slot_Variable < 26) {
-            slot_Variable++;
-            if (!(slot_Variable == 0 || slot_Variable == 1 || slot_Variable == 2 || slot_Variable == 3 || slot_Variable == 9 || slot_Variable == 10 || slot_Variable == 11
-                    || slot_Variable == 12 || slot_Variable == 18 || slot_Variable == 19 || slot_Variable == 20 || slot_Variable == 21)) {
-                continue;
-            }
-            ItemStack itemStack = event.getInventory().getItem(slot_Variable);
-            if (itemStack == null || itemStack.getType() == Material.AIR || CraftItemStack.asNMSCopy(itemStack).hasTag() && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton") || itemStack.getType() == Material.THIN_GLASS) {
-                continue;
-            }
-            if (itemStack.getType() == Material.EMERALD) {
-                itemStack = BankMechanics.createBankNote(itemStack.getAmount());
-            }
-            if (player.getInventory().firstEmpty() == -1) {
-                player.getWorld().dropItemNaturally(player.getLocation(), itemStack);
-            } else {
-                player.getInventory().setItem(player.getInventory().firstEmpty(), itemStack);
-            }
-        }
-        player.getOpenInventory().getTopInventory().clear();
-        player.updateInventory();
-        player.sendMessage(ChatColor.YELLOW + "Trade Cancelled!");
-    }
-
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onCraft(CraftItemEvent event) {
@@ -820,49 +586,6 @@ public class MainListener implements Listener {
         } else {
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.CHICKEN_EGG_POP, 1f, 1f);
         }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void avalonTP(PlayerEnterRegionEvent event) {
-        if (event.getRegion().equalsIgnoreCase("teleport_underworld")) {
-            event.getPlayer().teleport(Teleportation.Underworld);
-        } else if (event.getRegion().equalsIgnoreCase("teleport_overworld")) {
-            event.getPlayer().teleport(Teleportation.Overworld);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
-    public void playerInteractMule(PlayerInteractEntityEvent event) {
-        if (!(event.getRightClicked() instanceof Horse)) return;
-        Horse horse = (Horse) event.getRightClicked();
-        event.setCancelled(true);
-        if (horse.getVariant() != Variant.MULE) return;
-        if (horse.getOwner() == null) {
-            horse.remove();
-            return;
-        }
-        Player p = event.getPlayer();
-        if (horse.getOwner().getUniqueId().toString().equalsIgnoreCase(event.getPlayer().getUniqueId().toString())) {
-            horse.setLeashHolder(p);
-            Inventory inv = MountUtils.inventories.get(p.getUniqueId());
-            p.openInventory(inv);
-        }
-    }
-
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void unLeashMule(EntityUnleashEvent event) {
-        if (!(event.getEntity() instanceof Horse)) return;
-        Horse horse = (Horse) event.getEntity();
-        if (horse.getVariant() != Variant.MULE) return;
-        if (!event.getReason().equals(UnleashReason.PLAYER_UNLEASH)) {
-            horse.remove();
-            return;
-        }
-        if (horse.getOwner() == null) {
-            horse.remove();
-            return;
-        }
-        horse.setLeashHolder((Player) horse.getOwner());
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)

@@ -34,7 +34,7 @@ public class Chat {
 
     public static List<String> bannedWords = new ArrayList<>(Arrays.asList("shit", "fuck", "cunt", "bitch", "whore", "slut", "wank", "asshole", "cock",
             "dick", "clit", "homo", "fag", "queer", "nigger", "dike", "dyke", "retard", "motherfucker", "vagina", "boob", "pussy", "rape", "gay", "penis",
-            "cunt", "titty", "anus", "faggot", "gay", "f@g", "d1ck", "titanrift", "socialconquer", "wynncraft", "titan rift", "titanrift", "fucked"));
+            "cunt", "titty", "anus", "faggot", "gay", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "titanrift", "fucked"));
 
 
     /**
@@ -51,8 +51,10 @@ public class Chat {
 
         if (fixedMessage.startsWith("@") && !fixedMessage.contains("@i@")) {
             String playerName = fixedMessage.replace("@", "").split(" ")[0];
-            if(playerName.equalsIgnoreCase("Xwaffle")){
-            	Achievements.getInstance().giveAchievement(uuid, EnumAchievements.PM_XWAFFLE);
+            if(playerName.equalsIgnoreCase("Kayaba")){
+            	Achievements.getInstance().giveAchievement(uuid, EnumAchievements.PM_KAYABA);
+                event.setCancelled(true);
+            	return;
             }
             fixedMessage = fixedMessage.replace("@" + playerName, "");
             String tempFixedMessage = fixedMessage.replace("@" + playerName, "");

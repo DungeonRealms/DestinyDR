@@ -22,6 +22,8 @@ public enum EnumData {
     SHOPLEVEL("info.shopLevel"), 
     CURRENT_FOOD("info.foodLevel"),
     LOGGERDIED("info.loggerdied"),
+    ENTERINGREALM("info.enteringrealm"),
+    CURRENTSERVER("info.current"),
 
     ACHIEVEMENTS("collectibles.achievements"),
 

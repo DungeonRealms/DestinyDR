@@ -31,7 +31,7 @@ public class Database {
 
     public void startInitialization() {
         Utils.log.info("DungeonRealms Starting [MONGODB] Connection...");
-        mongoClient = MongoClients.create("mongodb://dungeonrealms:hN5tPQ4K5fVJryEQ@167.114.118.135:27017/dungeonrealms");
+        mongoClient = MongoClients.create("mongodb://104.236.116.27:27017/dungeonrealms");
         database = mongoClient.getDatabase("dungeonrealms");
         collection = database.getCollection("player_data");
         guilds = database.getCollection("guilds");
