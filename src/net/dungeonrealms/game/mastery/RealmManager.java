@@ -15,12 +15,14 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.bukkit.*;
+import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
 
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -428,12 +430,15 @@ public class RealmManager implements GenericMechanic {
         }
     }
     
+	static HashMap<UUID, Integer> realm_transferpending = new HashMap<UUID, Integer>();
+    
     /**
      * Opens a players realm for an Instance.
      *
      * @since 1.0
      */
-    public void tryToOpenRealmInstance(Player player) {
+    @SuppressWarnings("deprecation")
+	public void tryToOpenRealmInstance(Player player) {
         if (getPlayerRealm(player) == null || !getPlayerRealm(player).isRealmPortalOpen()) {
             if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
                 player.sendMessage(ChatColor.RED + "You can only open a realm portal in the main world!");
@@ -448,12 +453,19 @@ public class RealmManager implements GenericMechanic {
                 Utils.log.info("[REALMS] Player " + player.getUniqueId().toString() + "'s Realm doesn't exist locally, downloading it from FTP!");
                 downloadRealm(player.getUniqueId());
             }
-        	player.teleport(Bukkit.getWorld(player.getUniqueId()).getSpawnLocation());
+            realm_transferpending.put(player.getUniqueId(), Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            	if(Bukkit.getWorld(player.getUniqueId().toString()) != null)
+            	{
+            		player.teleport(Bukkit.getWorld(player.getUniqueId().toString()).getSpawnLocation());
+            		Bukkit.getScheduler().cancelTask(realm_transferpending.get(player.getUniqueId()));
+            		realm_transferpending.remove(player.getUniqueId());
+            	}
+            	
+            }, 0, 20L));
         } else {
             player.sendMessage(ChatColor.RED + "You already have a Realm Portal in the world, please destroy it!");
         }
     }
-
 
     /**
      * Opens a players realm and creates
@@ -639,7 +651,7 @@ public class RealmManager implements GenericMechanic {
         AsyncUtils.pool.submit(() -> {
             FTPClient ftpClient = new FTPClient();
             FileOutputStream fos = null;
-            String REMOTE_FILE = "realms" + "/" + "REALM_TEMPLATE" + ".zip";
+            String REMOTE_FILE = "realm_template.zip";
             try {
                 ftpClient.connect(HOST, port);
                 boolean login = ftpClient.login(USER, PASSWORD);

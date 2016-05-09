@@ -631,7 +631,8 @@ public class API {
      *
      * @since 1.0
      */
-    public static void handleInstanceLogin(UUID uuid) {
+    @SuppressWarnings("deprecation")
+	public static void handleInstanceLogin(UUID uuid) {
         if (Bukkit.getPlayer(uuid) == null) {
             return;
         }

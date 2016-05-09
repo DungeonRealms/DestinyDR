@@ -163,7 +163,7 @@ public class DungeonRealms extends JavaPlugin {
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
         
-        if(realmnumber == -1)
+        if(!isInstanceServer)
         {
             pm.registerEvents(new MainListener(), this);
             pm.registerEvents(new DamageListener(), this);
@@ -185,6 +185,7 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new AntiCheatListener(), this);
             pm.registerEvents(new AchievementManager(), this);
         }
+        pm.registerEvents(Instance.getInstance(), this);
         
         
         //pm.registerEvents(new MainListener(), this);

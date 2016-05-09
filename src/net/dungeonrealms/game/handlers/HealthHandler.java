@@ -1,10 +1,35 @@
 	package net.dungeonrealms.game.handlers;
 
-    import net.dungeonrealms.API;
+    import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.EntityEffect;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Arrow;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Snowball;
+import org.bukkit.entity.WitherSkull;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+
+import com.connorlinfoot.actionbarapi.ActionBarAPI;
+
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.GamePlayer;
-    import net.dungeonrealms.game.mechanics.SoundAPI;
-    import net.dungeonrealms.game.mechanics.generic.EnumPriority;
+import net.dungeonrealms.game.mechanics.SoundAPI;
+import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -17,20 +42,6 @@ import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.party.Affair;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
-    import org.bukkit.*;
-    import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.*;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-import org.inventivetalent.bossbar.BossBarAPI;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
 
     /**
  * Created by Kieran on 10/3/2015.
@@ -53,8 +64,14 @@ public class HealthHandler implements GenericMechanic {
     }
 
     public void startInitialization() {
-        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::updatePlayerHPBars, 40, 6L);
-        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40, 20L);
+		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), new Runnable() {
+			public void run() {
+				for(Player pl : Bukkit.getServer().getOnlinePlayers()) {
+					setPlayerOverheadHP(pl, getPlayerHPLive(pl));
+				}
+			}
+		}, 0L, 5L);
+		Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40, 20L);
     }
 
         @Override
@@ -104,15 +121,9 @@ public class HealthHandler implements GenericMechanic {
         }
     }
 
-    /**
-     * Updates players "HP Bars"
-     * using the bossbar API
-     *
-     * @since 1.0
-     */
-    private void updatePlayerHPBars() {
-        Bukkit.getOnlinePlayers().stream().filter(player -> getPlayerHPLive(player) > 0).forEach(player -> setPlayerOverheadHP(player, getPlayerHPLive(player)));
-    }
+    //private void updatePlayerHPBars() {
+    //    Bukkit.getOnlinePlayers().stream().filter(player -> getPlayerHPLive(player) > 0).forEach(player -> setPlayerOverheadHP(player, getPlayerHPLive(player)));
+    //}
 
     /**
      * Returns the players current HP
@@ -157,12 +168,6 @@ public class HealthHandler implements GenericMechanic {
         //Update BarAPI thing with it.
         boolean safeRegion = API.isInSafeRegion(player.getLocation());
         boolean nonPvPRegion = API.isNonPvPRegion(player.getLocation());
-        if (safeRegion) {
-            //Save a little bit while in safe zones?
-            if (new Random().nextInt(4) <= 2) {
-                return;
-            }
-        }
         GamePlayer gamePlayer = API.getGamePlayer(player);
         if (gamePlayer == null) {
             return;
@@ -173,7 +178,6 @@ public class HealthHandler implements GenericMechanic {
         if (healthPercentage * 100.0F > 100.0F) {
             healthPercentage = 1.0;
         }
-        float healthToDisplay = (float) (healthPercentage * 100.F);
         int playerLevel = gamePlayer.getLevel();
         String playerLevelInfo = ChatColor.AQUA.toString() + ChatColor.BOLD + "LVL " + ChatColor.AQUA + playerLevel;
         String separator = ChatColor.BLACK.toString() + ChatColor.BOLD + " - ";
@@ -186,9 +190,7 @@ public class HealthHandler implements GenericMechanic {
             playerHPInfo = ChatColor.RED.toString() + ChatColor.BOLD + "HP " + ChatColor.RED + hp + ChatColor.BOLD + " / " + ChatColor.RED + (int) maxHP;
         }
         String playerEXPInfo = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "EXP " + ChatColor.LIGHT_PURPLE + Math.round((gamePlayer.getExperience() / gamePlayer.getEXPNeeded(playerLevel)) * 100.0) + "%";
-
-        BossBarAPI.setMessage(player, playerLevelInfo + separator + playerHPInfo + separator + playerEXPInfo, 100F);
-        BossBarAPI.setHealth(player, healthToDisplay);
+        ActionBarAPI.sendActionBar(player, playerLevelInfo + separator + playerHPInfo + separator + playerEXPInfo);
     }
 
     /**
