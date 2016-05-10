@@ -71,6 +71,8 @@ import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.RealmManager;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.MechanicManager;
+import net.dungeonrealms.game.menus.HearthStone;
+import net.dungeonrealms.game.menus.Profile;
 import net.dungeonrealms.game.mongo.Database;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.achievements.AchievementManager;
@@ -109,6 +111,13 @@ public class DungeonRealms extends JavaPlugin {
     public MechanicManager mm = null;
     boolean hasFinishedSetup = false;
     public static String version = "3.0";
+    
+    // Menus
+    
+    private static HearthStone hs;
+    private static Profile ps;
+    
+    // End of Menus
     
     // Shard Config
     
@@ -153,6 +162,11 @@ public class DungeonRealms extends JavaPlugin {
 			Utils.log.info("IOException in shard config!");
 		}
         Utils.log.info("Done reading shard config!");
+        
+        hs = new HearthStone();
+        ps = new Profile();
+        hs.onEnable();
+        ps.onEnable();
         
         Database.getInstance().startInitialization();
         DatabaseAPI.getInstance().startInitialization();
@@ -375,6 +389,8 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     public void onDisable() {
+    	ps.onDisable();
+    	hs.onDisable();
         saveConfig();
         Guild.getInstance().saveAllGuilds();
         ShopMechanics.deleteAllShops();

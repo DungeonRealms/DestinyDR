@@ -92,24 +92,6 @@ public class ItemListener implements Listener {
                     ChatColor.GREEN.toString() + ChatColor.BOLD + "TELEPORT " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player.getUniqueId()) + "s" + ChatColor.RED + ")");
         }
     }
-
-    /**
-     * Handles player clicking with their profile
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerUseProfileItem(PlayerInteractEvent event) {
-        if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
-        Player player = event.getPlayer();
-        if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.SKULL_ITEM) return;
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(player.getItemInHand());
-        NBTTagCompound tag = nmsStack.getTag();
-        if (tag == null) return;
-        if (!(tag.getString("type").equalsIgnoreCase("important")) && !(tag.getString("usage").equalsIgnoreCase("profile"))) return;
-        PlayerMenus.openPlayerProfileMenu(player);
-    }
     
     /**
      * Handles Right Click of Character Journal

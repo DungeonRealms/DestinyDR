@@ -314,14 +314,6 @@ public class PlayerMenus {
                 "",
                 ChatColor.YELLOW + "Use: Open the E-Cash Shop."
         }));
-        inv.setItem(22, editItem(new ItemStack(Material.QUARTZ), ChatColor.GREEN + "Hearthstone", new String[]{
-                ChatColor.DARK_GRAY + "Home location",
-                "",
-                ChatColor.GRAY + "Use: Returns you to ",
-                ChatColor.YELLOW + TeleportAPI.getLocationFromDatabase(player.getUniqueId()),
-                "",
-                ChatColor.YELLOW + "Speak to an Innkeeper to change location."
-        }));
         inv.setItem(26, editItem(new ItemStack(Material.REDSTONE_COMPARATOR), ChatColor.GREEN + "Options", new String[]{
                 ChatColor.DARK_GRAY + "Toggles",
                 "",

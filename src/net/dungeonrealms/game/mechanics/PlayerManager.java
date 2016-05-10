@@ -1,10 +1,12 @@
 package net.dungeonrealms.game.mechanics;
 
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
-
-import java.util.UUID;
+import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -21,9 +23,14 @@ public class PlayerManager {
     public static void checkInventory(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         player.getInventory().setItem(7, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
-        player.getInventory().setItem(8, ItemManager.getPlayerProfile(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Character Profile", new String[]{
-                ChatColor.GREEN + "Right Click: " + ChatColor.GRAY + "Open Profile"
-        }));
+        for(ItemStack is : player.getInventory().getContents())
+        {
+        	if(is == ItemManager.getPlayerProfile(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Character Profile", new String[]{
+                    ChatColor.GREEN + "Right Click: " + ChatColor.GRAY + "Open Profile"}))
+        	{
+        		is.setType(Material.AIR);
+        	}
+        }
 
     }
 

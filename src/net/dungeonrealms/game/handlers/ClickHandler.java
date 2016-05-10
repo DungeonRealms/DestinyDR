@@ -818,24 +818,6 @@ public class ClickHandler {
                                             case 18:
                                                 NPCMenus.openECashPurchaseMenu(player);
                                                 break;
-                                            case 22:
-                                                if (!(CombatLog.isInCombat(player))) {
-                                                    if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
-                                                        player.sendMessage("You cannot restart a teleport during a cast!");
-                                                        return;
-                                                    }
-                                                    if (TeleportAPI.canUseHearthstone(player.getUniqueId())) {
-                                                        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                                                        Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.HEARTHSTONE, nmsItem.getTag());
-                                                        break;
-                                                    } else {
-                                                        player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because of Alignment, World or Cooldown issues!" + " (" + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s)");
-                                                        break;
-                                                    }
-                                                } else {
-                                                    player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "TELEPORT " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player) + "s" + ChatColor.RED + ")");
-                                                    break;
-                                                }
                                             case 26:
                                                 PlayerMenus.openToggleMenu(player);
                                                 break;
