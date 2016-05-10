@@ -1,7 +1,4 @@
 *.class
 *.idea
-*.project
-*.classpath
-*.settings
 /DungeonRealms.jar
 /bin
