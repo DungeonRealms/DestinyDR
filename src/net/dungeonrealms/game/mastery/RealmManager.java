@@ -697,42 +697,6 @@ public class RealmManager implements GenericMechanic {
 
     public void generateBlankRealm(UUID ownerUUID) {
     	
-    	/*
-        downloadRealmTemplate(ownerUUID);
-
-        WorldCreator worldCreator = new WorldCreator(ownerUUID.toString());
-        worldCreator.type(WorldType.FLAT);
-        worldCreator.generateStructures(false);
-        worldCreator.generator(new VoidGeneratorGenerator());
-        World world = Bukkit.createWorld(worldCreator);
-        world.setSpawnLocation(24, 130, 24);
-        world.getBlockAt(0, 64, 0).setType(Material.AIR);
-        int x, y = 128, z;
-        Vector vector = new Vector(16, 128, 16);
-
-        for (x = vector.getBlockX(); x < 32; x++) {
-            for (z = vector.getBlockZ(); z < 32; z++) {
-                world.getBlockAt(new Location(world, x, y, z)).setType(Material.GRASS);
-            }
-        }
-        for (x = vector.getBlockX(); x < 32; x++) {
-            for (y = 127; y >= 112; y--) {
-                for (z = vector.getBlockZ(); z < 32; z++) {
-                    world.getBlockAt(new Location(world, x, y, z)).setType(Material.DIRT);
-                }
-            }
-        }
-        for (x = vector.getBlockX(); x < 32; x++) {
-            for (z = vector.getBlockZ(); z < 32; z++) {
-                world.getBlockAt(new Location(world, x, y, z)).setType(Material.BEDROCK);
-            }
-        }
-
-        Location portalLocation = world.getSpawnLocation().clone();
-        portalLocation.getBlock().setType(Material.PORTAL);
-        portalLocation.subtract(0, 1, 0).getBlock().setType(Material.PORTAL);
-        portalLocation.add(0, 1, 0); */
-    	
 		WorldCreator wc = new WorldCreator(ownerUUID.toString());
 		wc.type(WorldType.FLAT);
 		wc.generateStructures(false);
