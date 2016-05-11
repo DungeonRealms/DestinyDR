@@ -49,8 +49,8 @@ public class RealmManager implements GenericMechanic {
     String HOST = "167.114.65.102";
     int port = 21;
     String USER = "dr.23";
-    String PASSWORD = "devpass123";
-    String ROOT_DIR = "19584!cK";
+    String PASSWORD = "19584!cK";
+    String ROOT_DIR = "testing";
 
     @Override
     public EnumPriority startPriority() {
