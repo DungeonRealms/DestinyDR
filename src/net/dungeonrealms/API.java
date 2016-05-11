@@ -50,7 +50,10 @@ import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
@@ -424,6 +427,13 @@ public class API {
         Player player = Bukkit.getPlayer(uuid);
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
             return;
+        }
+        if(DungeonRealms.getInstance().realmnumber != -1)
+        {
+        	if(Bukkit.getWorld(player.getUniqueId().toString()) != null)
+        	{
+                 RealmManager.getInstance().removePlayerRealm(player, true); // Only called if the server is a realm server & they have a realm open!       	
+        	}
         }
 //        if (CombatLog.isInCombat(player) && !DuelingMechanics.isDueling(uuid) && !API.isNonPvPRegion(player.getLocation())) {
 //            CombatLog.handleCombatLogger(player);

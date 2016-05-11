@@ -168,57 +168,7 @@ public class DungeonRealms extends JavaPlugin {
         NetworkAPI.getInstance().startInitialization();
         AntiCheat.getInstance().startInitialization();
         //new Spar().startInitialization();
-
-        PluginManager pm = Bukkit.getPluginManager();
-        Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
         
-        if(!isInstanceServer)
-        {
-            pm.registerEvents(new MainListener(), this);
-            pm.registerEvents(new DamageListener(), this);
-            pm.registerEvents(new ItemListener(), this);
-            pm.registerEvents(new InventoryListener(), this);
-            pm.registerEvents(new BlockListener(), this);
-            pm.registerEvents(new BankListener(), this);
-            pm.registerEvents(new EnergyListener(), this);
-            pm.registerEvents(new AntiCheatListener(), this);
-            pm.registerEvents(new ShopListener(), this);
-            pm.registerEvents(new AchievementManager(), this);         
-            hs = new HearthStone();
-            ps = new Profile();
-            hs.onEnable();
-            ps.onEnable();
-        } else {
-            pm.registerEvents(new MainListenerInstance(), this);
-            pm.registerEvents(new DamageListener(), this);
-            pm.registerEvents(new ItemListener(), this);
-            pm.registerEvents(new InventoryListener(), this);
-            pm.registerEvents(new BlockListener(), this);
-            pm.registerEvents(new EnergyListener(), this);
-            pm.registerEvents(new AntiCheatListener(), this);
-            pm.registerEvents(new AchievementManager(), this);
-        }
-        pm.registerEvents(Instance.getInstance(), this);
-        
-        
-        //pm.registerEvents(new MainListener(), this);
-        //pm.registerEvents(new DamageListener(), this);
-        //pm.registerEvents(new ItemListener(), this);
-        //pm.registerEvents(new InventoryListener(), this);
-        //pm.registerEvents(new BlockListener(), this);
-        //pm.registerEvents(new BankListener(), this);
-        //pm.registerEvents(new EnergyListener(), this);
-        //pm.registerEvents(new AntiCheatListener(), this);
-        //pm.registerEvents(new BossListener(), this);
-        //pm.registerEvents(new ShopListener(), this);
-        //pm.registerEvents(new AchievementManager(), this);
-        //pm.registerEvents(Instance.getInstance(), this);
-        /*
-        In development
-        pm.registerEvents(new RiftPortal(), this);
-        pm.registerEvents(new Runes(), this);
-         */
-        Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
 
         mm = new MechanicManager();
         if(!isInstanceServer)
@@ -283,6 +233,55 @@ public class DungeonRealms extends JavaPlugin {
          */
 
         mm.loadMechanics();
+
+        PluginManager pm = Bukkit.getPluginManager();
+        Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
+        
+        if(!isInstanceServer)
+        {
+            pm.registerEvents(new MainListener(), this);
+            pm.registerEvents(new DamageListener(), this);
+            pm.registerEvents(new ItemListener(), this);
+            pm.registerEvents(new InventoryListener(), this);
+            pm.registerEvents(new BlockListener(), this);
+            pm.registerEvents(new BankListener(), this);
+            pm.registerEvents(new EnergyListener(), this);
+            pm.registerEvents(new AntiCheatListener(), this);
+            pm.registerEvents(new ShopListener(), this);
+            pm.registerEvents(new AchievementManager(), this);         
+            hs = new HearthStone();
+            ps = new Profile();
+            hs.onEnable();
+            ps.onEnable();
+        } else {
+            pm.registerEvents(new MainListenerInstance(), this);
+            pm.registerEvents(new DamageListener(), this);
+            pm.registerEvents(new ItemListener(), this);
+            pm.registerEvents(new InventoryListener(), this);
+            pm.registerEvents(new BlockListener(), this);
+            pm.registerEvents(new EnergyListener(), this);
+            pm.registerEvents(new AntiCheatListener(), this);
+            pm.registerEvents(new AchievementManager(), this);
+        }        
+        
+        //pm.registerEvents(new MainListener(), this);
+        //pm.registerEvents(new DamageListener(), this);
+        //pm.registerEvents(new ItemListener(), this);
+        //pm.registerEvents(new InventoryListener(), this);
+        //pm.registerEvents(new BlockListener(), this);
+        //pm.registerEvents(new BankListener(), this);
+        //pm.registerEvents(new EnergyListener(), this);
+        //pm.registerEvents(new AntiCheatListener(), this);
+        //pm.registerEvents(new BossListener(), this);
+        //pm.registerEvents(new ShopListener(), this);
+        //pm.registerEvents(new AchievementManager(), this);
+        //pm.registerEvents(Instance.getInstance(), this);
+        /*
+        In development
+        pm.registerEvents(new RiftPortal(), this);
+        pm.registerEvents(new Runes(), this);
+         */
+        Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
 
         CommandManager cm = new CommandManager();
 
