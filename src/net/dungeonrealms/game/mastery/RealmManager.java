@@ -8,11 +8,15 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.net.ftp.FTP;
@@ -33,6 +37,7 @@ import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.lingala.zip4j.core.ZipFile;
 import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.io.ZipOutputStream;
 import net.lingala.zip4j.model.ZipParameters;
 import net.lingala.zip4j.util.Zip4jConstants;
 
@@ -118,30 +123,114 @@ public class RealmManager implements GenericMechanic {
 
     }
 
-    private void zipDirectory(File directory, File zip) throws IOException {
-        zip(directory, directory, zipPass);
+    private void zipRealm(UUID uuid) throws IOException {
+    	File destination = new File("/realms/up/" + uuid.toString() + ".zip");
+        zip(uuid, destination, zipPass);
     }
 
-    public static void zip(File targetFolderPath, File destinationFilePath, String password) {
-        try {
-            ZipParameters parameters = new ZipParameters();
-            parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
-            parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
+    public static void zip(UUID uuid, File destinationFilePath, String password) {
+        
+		// Input and OutputStreams are defined outside of the try/catch block
+		// to use them in the finally block
+		ZipOutputStream outputStream = null;
+		InputStream inputStream = null;
+		
+		try {
+			// Prepare the realm files that will be added later in the code
+			 ArrayList<File> filesToAdd = new ArrayList<File>();
+		     try (Stream<Path> filePathStream=Files.walk(Paths.get(uuid.toString()))) {
+		    	    filePathStream.forEach(filePath -> {
+		    	        if (Files.isRegularFile(filePath)) {
+		    	            filesToAdd.add(filePath.toFile());
+		    	        }
+		    	    });
+		    	}
+			
+			//Initiate output stream with the path/file of the zip file
+			//Please note that ZipOutputStream will overwrite zip file if it already exists so no need to worry about the Realm already existing in the upload folder
+			outputStream = new ZipOutputStream(new FileOutputStream(destinationFilePath));
+			
+			// Initiate Zip Parameters which define various properties such
+			// as compression method, etc.
+			ZipParameters parameters = new ZipParameters();
+			
+			//Deflate compression or store(no compression) can be set below
+			parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
+			
+			// Set the compression level. This value has to be in between 0 to 9
+			// Several predefined compression levels are available
+			// DEFLATE_LEVEL_FASTEST - Lowest compression level but higher speed of compression
+			// DEFLATE_LEVEL_FAST - Low compression level but higher speed of compression
+			// DEFLATE_LEVEL_NORMAL - Optimal balance between compression level/speed
+			// DEFLATE_LEVEL_MAXIMUM - High compression level with a compromise of speed
+			// DEFLATE_LEVEL_ULTRA - Highest compression level but low speed
+			parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
+			
+			//This flag defines if the realm files have to be encrypted.
+			parameters.setEncryptFiles(true);
 
-            if (password.length() > 0) {
-                parameters.setEncryptFiles(true);
-                parameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
-                parameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
-
-                parameters.setPassword(password);
-            }
-
-            ZipFile zipFile = new ZipFile(destinationFilePath);
-            zipFile.addFolder(targetFolderPath, parameters);
-
-        } catch (ZipException e) {
-            e.printStackTrace();
-        }
+			
+			// Lets set the Encryption Now for the Realm
+			parameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
+			parameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
+			parameters.setPassword(password);
+			
+			//Now we loop through each file and read this file with an inputstream
+			//and write it to the ZipOutputStream.
+			for (int i = 0; i < filesToAdd.size(); i++) {
+				File file = (File)filesToAdd.get(i);
+				
+				//This will initiate ZipOutputStream to include the file
+				//with the input parameters
+				outputStream.putNextEntry(file,parameters);
+				
+				//If this file is a directory, then no further processing is required
+				//and we close the entry (Please note that we do not want to close the outputstream yet.. This will cause realm zipping errors)
+				if (file.isDirectory()) {
+					outputStream.closeEntry();
+					continue;
+				}
+				
+				//Initialize inputstream
+				inputStream = new FileInputStream(file);
+				byte[] readBuff = new byte[4096];
+				int readLen = -1;
+				
+				//Read the file content and write it to the OutputStream
+				while ((readLen = inputStream.read(readBuff)) != -1) {
+					outputStream.write(readBuff, 0, readLen);
+				}
+				
+				//Once the content of the file is copied, this entry to the zip file
+				//needs to be closed. ZipOutputStream updates necessary header information
+				//for this file in this step
+				outputStream.closeEntry();
+				
+				inputStream.close();
+			}
+			
+			//ZipOutputStream now writes zip header information to the zip file
+			outputStream.finish();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (outputStream != null) {
+				try {
+					outputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if (inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
     }
     
     public static void unzip(File targetFolderPath, String password) {
@@ -159,7 +248,7 @@ public class RealmManager implements GenericMechanic {
 			World w = Bukkit.getWorld(uuid.toString());
 
 			Bukkit.unloadWorld(w, true);
-			zipDirectory(new File(uuid.toString()), new File("/realms/up/" + uuid.toString() + ".zip"));
+			zipRealm(uuid);
 			URL url = new URL("ftp://" + USER + ":" + PASSWORD + "@" + HOST + ROOT_DIR + uuid.toString() + ".zip");
 			URLConnection urlc = url.openConnection();
 			OutputStream out = urlc.getOutputStream();
