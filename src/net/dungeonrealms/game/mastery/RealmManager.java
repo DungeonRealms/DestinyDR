@@ -696,6 +696,8 @@ public class RealmManager implements GenericMechanic {
     }
 
     public void generateBlankRealm(UUID ownerUUID) {
+    	
+    	/*
         downloadRealmTemplate(ownerUUID);
 
         WorldCreator worldCreator = new WorldCreator(ownerUUID.toString());
@@ -729,7 +731,51 @@ public class RealmManager implements GenericMechanic {
         Location portalLocation = world.getSpawnLocation().clone();
         portalLocation.getBlock().setType(Material.PORTAL);
         portalLocation.subtract(0, 1, 0).getBlock().setType(Material.PORTAL);
-        portalLocation.add(0, 1, 0);
+        portalLocation.add(0, 1, 0); */
+    	
+		WorldCreator wc = new WorldCreator(ownerUUID.toString());
+		wc.type(WorldType.FLAT);
+		wc.generateStructures(false);
+		wc.generator(new VoidGeneratorGenerator());
+		World w = Bukkit.createWorld(wc);
+		// w.setAnimalSpawnLimit(0);
+		// w.setAutoSave(true);
+		// w.setKeepSpawnInMemory(false);
+		w.setSpawnLocation(24, 130, 24);
+
+		// fixchunks(w);
+		// w.save();
+
+		// setRealmTierSQL(owner, 1);
+		// owner.getInventory().setItem(7, makeTeleportRune(owner));
+		// owner.updateInventory();
+
+		// Void generator makes that.
+		w.getBlockAt(0, 64, 0).setType(Material.AIR);
+		int x = 0, y = 128, z = 0;
+		Vector s = new Vector(16, 128, 16);
+		// GRASS
+		for (x = s.getBlockX(); x < 32; x++) {
+			for (z = s.getBlockZ(); z < 32; z++) {
+				w.getBlockAt(new Location(w, x, y, z)).setType(Material.GRASS);
+			}
+		}
+
+		// DIRT
+		for (x = s.getBlockX(); x < 32; x++) {
+			for (y = 127; y >= 112; y--) {
+				for (z = s.getBlockZ(); z < 32; z++) {
+					w.getBlockAt(new Location(w, x, y, z)).setType(Material.DIRT);
+				}
+			}
+		}
+
+		// BEDROCK
+		for (x = s.getBlockX(); x < 32; x++) {
+			for (z = s.getBlockZ(); z < 32; z++) {
+				w.getBlockAt(new Location(w, x, y, z)).setType(Material.BEDROCK);
+			}
+		}
 
         Utils.log.info("[REALMS] Blank Realm generated for player " + ownerUUID.toString());
     }

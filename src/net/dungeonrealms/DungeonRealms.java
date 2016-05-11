@@ -163,11 +163,6 @@ public class DungeonRealms extends JavaPlugin {
 		}
         Utils.log.info("Done reading shard config!");
         
-        hs = new HearthStone();
-        ps = new Profile();
-        hs.onEnable();
-        ps.onEnable();
-        
         Database.getInstance().startInitialization();
         DatabaseAPI.getInstance().startInitialization();
         NetworkAPI.getInstance().startInitialization();
@@ -188,7 +183,11 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new EnergyListener(), this);
             pm.registerEvents(new AntiCheatListener(), this);
             pm.registerEvents(new ShopListener(), this);
-            pm.registerEvents(new AchievementManager(), this);
+            pm.registerEvents(new AchievementManager(), this);         
+            hs = new HearthStone();
+            ps = new Profile();
+            hs.onEnable();
+            ps.onEnable();
         } else {
             pm.registerEvents(new MainListenerInstance(), this);
             pm.registerEvents(new DamageListener(), this);
