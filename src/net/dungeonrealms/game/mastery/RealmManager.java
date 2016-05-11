@@ -130,6 +130,15 @@ public class RealmManager implements GenericMechanic {
 
     public static void zip(UUID uuid, File destinationFilePath, String password) {
         
+    	if(!destinationFilePath.exists())
+    	{
+    		try {
+				destinationFilePath.createNewFile();
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	}
 		// Input and OutputStreams are defined outside of the try/catch block
 		// to use them in the finally block
 		ZipOutputStream outputStream = null;
