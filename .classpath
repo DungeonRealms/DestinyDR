@@ -2,7 +2,6 @@
 <classpath>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="lib" path="lib/ActionBarAPI-1.4.2.jar"/>
-	<classpathentry kind="lib" path="lib/AnvilApi.jar"/>
 	<classpathentry kind="lib" path="lib/ArmorEquipEvent.jar"/>
 	<classpathentry kind="lib" path="lib/BossBarAPI_v1.0.6.jar"/>
 	<classpathentry kind="lib" path="lib/BountifulAPI.jar"/>
@@ -24,5 +23,6 @@
 	<classpathentry kind="lib" path="lib/zip4j_1.3.2.jar"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/ProtocolLib.jar"/>
+	<classpathentry kind="lib" path="lib/AnvilApi.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

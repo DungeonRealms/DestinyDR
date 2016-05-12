@@ -423,6 +423,13 @@ public class API {
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
             return;
         }
+        if(DungeonRealms.getInstance().realmnumber != -1)
+        {
+        	if(Bukkit.getWorld(player.getUniqueId().toString()) != null)
+        	{
+                 RealmManager.getInstance().removePlayerRealm(player, true); // Only called if the server is a realm server & they have a realm open!       	
+        	}
+        }
 //        if (CombatLog.isInCombat(player) && !DuelingMechanics.isDueling(uuid) && !API.isNonPvPRegion(player.getLocation())) {
 //            CombatLog.handleCombatLogger(player);
 //        }
