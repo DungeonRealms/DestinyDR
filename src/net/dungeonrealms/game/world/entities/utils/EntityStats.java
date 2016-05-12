@@ -10,12 +10,10 @@ import org.bukkit.metadata.FixedMetadataValue;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
-import net.dungeonrealms.game.world.items.Item.ItemModifier;
+import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
-import net.dungeonrealms.game.world.items.ItemGenerator;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorModifier;
-import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.Entity;
 
@@ -108,9 +106,10 @@ public class EntityStats {
         entity.getBukkitEntity().setMetadata("def", new FixedMetadataValue(DungeonRealms.getInstance(), stat.def));
         entity.getBukkitEntity().setMetadata("attack", new FixedMetadataValue(DungeonRealms.getInstance(), stat.atk));
         entity.getBukkitEntity().setMetadata("spd", new FixedMetadataValue(DungeonRealms.getInstance(), stat.spd));
-        //TODO Staff and Bow Elites
-		ItemStack[] armor = new ArmorGenerator().nextArmor(tier, ArmorModifier.UNIQUE);
-		ItemStack weapon = new ItemGenerator().getDefinedStack(ItemType.SWORD, ItemTier.getByTier(tier), ItemModifier.UNIQUE);
+        //TODO confirm working for elites of all types
+		ItemStack[] armor = new ItemGenerator().setRarity(ItemRarity.UNIQUE).setTier(ItemTier.getByTier(tier)).getArmorSet();
+        ItemStack weapon = new ItemGenerator().setType(ItemType.getRandomWeapon()).setRarity(ItemRarity.UNIQUE)
+                .setTier(ItemTier.getByTier(tier)).generateItem().getItem();
 		entity.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
 		entity.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
 		entity.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));

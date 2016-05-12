@@ -86,7 +86,6 @@ import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
-import net.dungeonrealms.game.world.items.NamedItems;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.realms.Instance;
@@ -238,7 +237,6 @@ public class DungeonRealms extends JavaPlugin {
             //mm.registerMechanic(DungeonManager.getInstance());
             mm.registerMechanic(new Entities());
             mm.registerMechanic(ScoreboardHandler.getInstance());
-            mm.registerMechanic(new NamedItems());
             //mm.registerMechanic(RealmManager.getInstance());
             mm.registerMechanic(new ShopMechanics());
             mm.registerMechanic(Mining.getInstance());
@@ -263,7 +261,6 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(NetworkServer.getInstance());
             mm.registerMechanic(new Entities());
             mm.registerMechanic(ScoreboardHandler.getInstance());
-            mm.registerMechanic(new NamedItems());
             //mm.registerMechanic(RealmManager.getInstance());
             mm.registerMechanic(new ShopMechanics());
             mm.registerMechanic(Mining.getInstance());

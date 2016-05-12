@@ -3,12 +3,13 @@ package net.dungeonrealms.game.world.entities.types.monsters;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRSkeleton;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
-import net.dungeonrealms.game.world.items.ItemGenerator;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityLiving;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -41,7 +42,8 @@ public class BasicMageMonster extends DRSkeleton {
       this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
       this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
       this.tier = tier;
-      this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().getDefinedStack(ItemType.STAFF, ItemTier.getByTier(tier), ItemGenerator.getRandomItemModifier())));
+        this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().setType(ItemType.STAFF)
+                .setTier(ItemTier.getByTier(tier)).setRarity(API.getItemRarity()).generateItem().getItem()));
     }
 
     public BasicMageMonster(World world) {

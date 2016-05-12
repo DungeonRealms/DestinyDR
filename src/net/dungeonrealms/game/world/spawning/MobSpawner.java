@@ -26,7 +26,7 @@ import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.Pyromancer;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
-import net.dungeonrealms.game.world.items.NamedItems;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import net.minecraft.server.v1_8_R3.EntityInsentient;
@@ -311,7 +311,11 @@ public class MobSpawner {
 	private void giveCustomEquipment(Entity entity) {
 		if(monsterCustomName.equalsIgnoreCase("Blayshan The Naga")){
 			EntityInsentient ent = (EntityInsentient) entity;
-			ent.setEquipment(0, CraftItemStack.asNMSCopy(NamedItems.blayshanAxe));
+			ent.setEquipment(0, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("blayshanaxe")));
+	        ent.setEquipment(1, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("blayshanboots")));
+	        ent.setEquipment(2, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("blayshanlegs")));
+	        ent.setEquipment(3, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("blayshanplate")));
+	        ent.setEquipment(4, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("blayshanhelm")));
 		}
 	}
 

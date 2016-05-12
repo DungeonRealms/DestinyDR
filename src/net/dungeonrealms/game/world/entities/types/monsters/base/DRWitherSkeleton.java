@@ -1,13 +1,5 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.world.anticheat.AntiCheat;
-import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.Monster;
-import net.dungeonrealms.game.world.items.DamageAPI;
-import net.dungeonrealms.game.world.items.ItemGenerator;
-import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
@@ -16,6 +8,22 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
+
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.world.anticheat.AntiCheat;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.game.world.entities.types.monsters.Monster;
+import net.dungeonrealms.game.world.items.DamageAPI;
+import net.dungeonrealms.game.world.items.Item.ItemTier;
+import net.dungeonrealms.game.world.items.Item.ItemType;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
+import net.minecraft.server.v1_8_R3.EntityLiving;
+import net.minecraft.server.v1_8_R3.EntitySkeleton;
+import net.minecraft.server.v1_8_R3.GenericAttributes;
+import net.minecraft.server.v1_8_R3.Item;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Oct 3, 2015
@@ -88,7 +96,8 @@ public class DRWitherSkeleton extends EntitySkeleton implements Monster{
 	}
 
 	   private ItemStack getTierWeapon(int tier) {
-		   ItemStack item = new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.BOW, net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(tier), API.getItemModifier());
+        ItemStack item = new ItemGenerator().setType(ItemType.BOW).setRarity(API.getItemRarity())
+                .setTier(ItemTier.getByTier(tier)).generateItem().getItem();
 		   AntiCheat.getInstance().applyAntiDupe(item);
 		   return item;
 	    }

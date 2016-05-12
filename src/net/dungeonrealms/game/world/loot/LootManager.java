@@ -2,28 +2,18 @@ package net.dungeonrealms.game.world.loot;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.block.Block;
-import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.world.items.Item.ItemModifier;
-import net.dungeonrealms.game.world.items.Item.ItemTier;
-import net.dungeonrealms.game.world.items.Item.ItemType;
-import net.dungeonrealms.game.world.items.ItemGenerator;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorModifier;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorTier;
-import net.dungeonrealms.game.world.items.armor.Armor.EquipmentType;
-import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
-import net.dungeonrealms.game.world.loot.types.LootType;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.game.world.loot.types.LootType;
 
 /**
  * Created by Chase on Oct 9, 2015
@@ -112,53 +102,6 @@ public class LootManager implements GenericMechanic {
 		return false;
 	}
 	
-	public static ItemStack generateRandomTierItem(int tier) {
-		ItemStack i = null;
-		
-	    int armor_range_check = new Random().nextInt(100);
-	    ItemModifier rarity = null;
-	    ArmorModifier armorRarity = null;
-        if (armor_range_check <= 80) {
-            rarity = ItemModifier.COMMON;
-            armorRarity = ArmorModifier.COMMON;
-        } else if (armor_range_check < 95) {
-            rarity = ItemModifier.UNCOMMON;
-            armorRarity = ArmorModifier.UNCOMMON;
-        } else if (armor_range_check < 98) {
-            rarity = ItemModifier.RARE;
-            armorRarity = ArmorModifier.RARE;
-        } else if (armor_range_check == 99) {
-            rarity = ItemModifier.UNIQUE;
-            armorRarity = ArmorModifier.UNIQUE;
-        }
-        if (rarity == null) {
-            rarity = ItemModifier.COMMON;
-            armorRarity = ArmorModifier.COMMON;
-        }
-        
-		int r = new Random().nextInt(9);
-		if (r == 0) {
-			return new ItemGenerator().next(ItemType.SWORD, ItemTier.getByTier(tier), rarity);
-		} else if (r == 1) {
-			return new ItemGenerator().next(ItemType.AXE, ItemTier.getByTier(tier), rarity);
-		} else if (r == 2) {
-			return new ItemGenerator().next(ItemType.BOW, ItemTier.getByTier(tier), rarity);
-		} else if (r == 3) {
-			return new ArmorGenerator().getArmor(EquipmentType.HELMET, ArmorTier.getByTier(tier), armorRarity);
-		} else if (r == 4) {
-			return new ArmorGenerator().getArmor(EquipmentType.BOOTS, ArmorTier.getByTier(tier), armorRarity);
-		} else if (r == 5) {
-			return new ArmorGenerator().getArmor(EquipmentType.LEGGINGS, ArmorTier.getByTier(tier), armorRarity);
-		} else if (r == 6) {
-			return new ArmorGenerator().getArmor(EquipmentType.CHESTPLATE, ArmorTier.getByTier(tier), armorRarity);
-		} else if (r == 7) {
-			return new ItemGenerator().next(ItemType.POLE_ARM, ItemTier.getByTier(tier), rarity);
-		} else if (r == 8) {
-			return new ItemGenerator().next(ItemType.STAFF, ItemTier.getByTier(tier), rarity);
-		}
-		return i;
-	}
-
 	@Override
 	public EnumPriority startPriority() {
 		return EnumPriority.ARCHBISHOPS;

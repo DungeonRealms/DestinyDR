@@ -1,7 +1,5 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
-import java.util.Random;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -15,8 +13,9 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.Monster;
-import net.dungeonrealms.game.world.items.Item.ItemModifier;
-import net.dungeonrealms.game.world.items.ItemGenerator;
+import net.dungeonrealms.game.world.items.Item.ItemTier;
+import net.dungeonrealms.game.world.items.Item.ItemType;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_8_R3.EntityPigZombie;
 import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.Item;
@@ -93,7 +92,8 @@ public class DRPigman extends EntityPigZombie implements Monster {
 	}
 
     private ItemStack getTierWeapon(int tier) {
-    	ItemStack item = new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.getById(new Random().nextInt(net.dungeonrealms.game.world.items.Item.ItemType.values().length - 2)), net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(tier), ItemModifier.COMMON);
+        ItemStack item = new ItemGenerator().setType(ItemType.getRandomWeapon()).setRarity(API.getItemRarity())
+                .setTier(ItemTier.getByTier(tier)).generateItem().getItem();
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;
     }

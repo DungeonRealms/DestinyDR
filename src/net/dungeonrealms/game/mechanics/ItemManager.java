@@ -322,14 +322,14 @@ public class ItemManager {
         }
     }
 
-    public static ItemStack createHealingFood(int tier, Item.ItemModifier modifier) {
+    public static ItemStack createHealingFood(int tier, Item.ItemRarity rarity) {
         ItemStack rawStack = null;
         String name = "";
         String description = "";
         int healAmount = 0;
         switch (tier) {
             case 1:
-                switch (modifier) {
+                switch (rarity) {
                     case COMMON:
                         name = ChatColor.WHITE + "Plowed Potato";
                         description = ChatColor.GRAY + "The staple crop of Andulucia.";
@@ -342,7 +342,7 @@ public class ItemManager {
                         healAmount = 16;
                         rawStack = new ItemStack(Material.BAKED_POTATO, 1);
                         break;
-                    case LEGENDARY:
+                    case UNIQUE:
                         name = ChatColor.WHITE + "Fresh Apple";
                         description = ChatColor.GRAY + "Fresh from the local Apple Tree.";
                         healAmount = 25;
@@ -351,7 +351,7 @@ public class ItemManager {
                 }
                 break;
             case 2:
-                switch (modifier) {
+                switch (rarity) {
                     case COMMON:
                         name = ChatColor.GREEN + "Uncooked Chicken";
                         description = ChatColor.GRAY + "This may or may not be safe to eat...";
@@ -364,7 +364,7 @@ public class ItemManager {
                         healAmount = 55;
                         rawStack = new ItemStack(Material.COOKED_CHICKEN, 1);
                         break;
-                    case LEGENDARY:
+                    case UNIQUE:
                         name = ChatColor.GREEN + "Pumpkin Pie";
                         description = ChatColor.GRAY + "The spookiest meal you'll ever eat.";
                         healAmount = 70;
@@ -373,7 +373,7 @@ public class ItemManager {
                 }
                 break;
             case 3:
-                switch (modifier) {
+                switch (rarity) {
                     case COMMON:
                         name = ChatColor.AQUA + "Salted Pork";
                         description = ChatColor.GRAY + "Bringing in the bacon.";
@@ -386,7 +386,7 @@ public class ItemManager {
                         healAmount = 150;
                         rawStack = new ItemStack(Material.GRILLED_PORK, 1);
                         break;
-                    case LEGENDARY:
+                    case UNIQUE:
                         name = ChatColor.AQUA + "Mushroom Soup";
                         description = ChatColor.GRAY + "I hope these are the correct mushrooms.";
                         healAmount = 190;
@@ -395,7 +395,7 @@ public class ItemManager {
                 }
                 break;
             case 4:
-                switch (modifier) {
+                switch (rarity) {
                     case COMMON:
                         name = ChatColor.LIGHT_PURPLE + "Frozen Steak";
                         description = ChatColor.GRAY + "Stop complaining. Your dog would love this.";
@@ -408,7 +408,7 @@ public class ItemManager {
                         healAmount = 400;
                         rawStack = new ItemStack(Material.COOKED_BEEF, 1);
                         break;
-                    case LEGENDARY:
+                    case UNIQUE:
                         name = ChatColor.LIGHT_PURPLE + "Grilled Rabbit";
                         description = ChatColor.GRAY + "Aww, look at the cute little bunny.";
                         healAmount = 500;
@@ -417,7 +417,7 @@ public class ItemManager {
                 }
                 break;
             case 5:
-                switch (modifier) {
+                switch (rarity) {
                     case COMMON:
                         name = ChatColor.YELLOW + "King's Apple";
                         description = ChatColor.GRAY + "A meal fit for a King.";
@@ -430,7 +430,7 @@ public class ItemManager {
                         healAmount = 1000;
                         rawStack = new ItemStack(Material.GOLDEN_APPLE, 1, (short) 1);
                         break;
-                    case LEGENDARY:
+                    case UNIQUE:
                         name = ChatColor.YELLOW + "Golden Carrot";
                         description = ChatColor.GRAY + "Now this is just a waste of useful gold ore.";
                         healAmount = 1350;
@@ -446,14 +446,14 @@ public class ItemManager {
             itemLore.add(ChatColor.RED + "+" + ChatColor.BOLD + healAmount + "HP/s" + ChatColor.RED + " for " + ChatColor.BOLD + "15 " + ChatColor.RED + "Seconds.");
             itemLore.add(ChatColor.RED.toString() + ChatColor.BOLD + "Sprinting will cancel the effect!");
             itemLore.add(description);
-            itemLore.add(modifier.getName());
+            itemLore.add(rarity.getName());
             meta.setLore(itemLore);
             rawStack.setItemMeta(meta);
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("type", new NBTTagString("healingFood"));
             tag.setInt("itemTier", tier);
-            tag.set("itemModifier", new NBTTagInt(modifier.getId()));
+            tag.set("itemRarity", new NBTTagInt(rarity.getId()));
             tag.setInt("healAmount", healAmount);
             tag.set("AttributeModifiers", new NBTTagList());
             nmsStack.setTag(tag);

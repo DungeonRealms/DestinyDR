@@ -1,5 +1,34 @@
 package net.dungeonrealms;
 
+import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.rmi.activation.UnknownObjectException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.plugin.Plugin;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
@@ -7,12 +36,18 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
+
 import net.dungeonrealms.game.guild.Guild;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
-import net.dungeonrealms.game.mastery.*;
+import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.ItemSerialization;
+import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.mastery.RealmManager;
+import net.dungeonrealms.game.mastery.UUIDHelper;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
@@ -33,40 +68,14 @@ import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
-import net.dungeonrealms.game.world.items.Item.ItemModifier;
+import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorModifier;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorTier;
-import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.Player;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
-
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.rmi.activation.UnknownObjectException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -119,15 +128,6 @@ public class API {
         return ItemTier.getByTier(nms.getTag().getInt("itemTier"));
     }
 
-    public static ArmorTier getArmorTier(ItemStack stack) {
-        if (stack.getType() == Material.AIR || stack == null)
-            return null;
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        if (!nms.hasTag() || nms.hasTag() && !nms.getTag().hasKey("armorTier")) return null;
-
-        return ArmorTier.getByTier(nms.getTag().getInt("armorTier"));
-    }
-
     /**
      * @param player
      * @param kill
@@ -147,29 +147,27 @@ public class API {
 
     public static ItemStack[] getTierArmor(int tier) {
         int chance = RandomHelper.getRandomNumberBetween(1, 1000);
-        if (chance == 1) {
-            return new ArmorGenerator().nextArmor(tier, ArmorModifier.LEGENDARY);
-        } else if (chance <= 10) {
-            return new ArmorGenerator().nextArmor(tier, ArmorModifier.RARE);
-        } else if (chance > 10 && chance <= 50) {
-            return new ArmorGenerator().nextArmor(tier, ArmorModifier.UNCOMMON);
+        if (chance <= 20) {
+            return new ItemGenerator().setRarity(ItemRarity.UNIQUE).setTier(ItemTier.getByTier(tier)).getArmorSet();
+        } else if (chance <= 100) {
+            return new ItemGenerator().setRarity(ItemRarity.RARE).setTier(ItemTier.getByTier(tier)).getArmorSet();
+        } else if (chance <= 400) {
+            return new ItemGenerator().setRarity(ItemRarity.UNCOMMON).setTier(ItemTier.getByTier(tier)).getArmorSet();
         } else {
-            return new ArmorGenerator().nextArmor(tier, ArmorModifier.COMMON);
+            return new ItemGenerator().setRarity(ItemRarity.COMMON).setTier(ItemTier.getByTier(tier)).getArmorSet();
         }
     }
 
-    public static ArmorModifier getArmorModifier() {
+    public static ItemRarity getItemRarity() {
         int chance = RandomHelper.getRandomNumberBetween(1, 500);
-        if (chance == 1) {
-            return ArmorModifier.LEGENDARY;
-        } else if (chance <= 10) {
-            return ArmorModifier.UNIQUE;
+        if (chance <= 10) {
+            return ItemRarity.UNIQUE;
         } else if (chance > 10 && chance <= 50) {
-            return ArmorModifier.RARE;
+            return ItemRarity.RARE;
         } else if (chance > 50 && chance <= 200) {
-            return ArmorModifier.UNCOMMON;
+            return ItemRarity.UNCOMMON;
         } else {
-            return ArmorModifier.COMMON;
+            return ItemRarity.COMMON;
         }
     }
 
@@ -974,23 +972,5 @@ public class API {
     public static boolean isItemNonTradeable(ItemStack itemStack) {
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
         return nms != null && nms.getTag() != null && nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter");
-    }
-
-    /**
-     * @return
-     */
-    public static ItemModifier getItemModifier() {
-        int chance = RandomHelper.getRandomNumberBetween(1, 500);
-        if (chance == 1) {
-            return ItemModifier.LEGENDARY;
-        } else if (chance <= 10) {
-            return ItemModifier.UNIQUE;
-        } else if (chance > 10 && chance <= 50) {
-            return ItemModifier.RARE;
-        } else if (chance > 50 && chance <= 200) {
-            return ItemModifier.UNCOMMON;
-        } else {
-            return ItemModifier.COMMON;
-        }
     }
 }

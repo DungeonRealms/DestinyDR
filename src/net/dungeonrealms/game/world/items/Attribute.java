@@ -3,7 +3,6 @@ package net.dungeonrealms.game.world.items;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
-import net.dungeonrealms.game.world.items.armor.Armor;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
@@ -29,19 +28,9 @@ public class Attribute {
         return Item.ItemTier.getByTier(tag.getInt("itemTier"));
     }
 
-    public Item.ItemModifier getItemModifier() {
+    public Item.ItemRarity getItemRarity() {
         NBTTagCompound tag = nmsStack.getTag();
-        return Item.ItemModifier.getById(tag.getInt("itemModifier"));
-    }
-
-    public Armor.EquipmentType getArmorType() {
-        NBTTagCompound tag = nmsStack.getTag();
-        return Armor.EquipmentType.getById(tag.getInt("equipmentType"));
-    }
-
-    public Armor.ArmorTier getArmorTier() {
-        NBTTagCompound tag = nmsStack.getTag();
-        return Armor.ArmorTier.getById(tag.getInt("armorTier"));
+        return Item.ItemRarity.getById(tag.getInt("itemRarity"));
     }
 
     public ItemStack getItem() {

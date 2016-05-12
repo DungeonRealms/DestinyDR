@@ -1,33 +1,7 @@
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.donate.DonationEffects;
-import net.dungeonrealms.game.guild.Guild;
-import net.dungeonrealms.game.world.items.EnumItem;
-import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.items.Item.ItemModifier;
-import net.dungeonrealms.game.world.items.Item.ItemTier;
-import net.dungeonrealms.game.world.items.Item.ItemType;
-import net.dungeonrealms.game.world.items.ItemGenerator;
-import net.dungeonrealms.game.world.items.NamedItems;
-import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorTier;
-import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.dungeonrealms.game.mastery.RealmManager;
-import net.dungeonrealms.game.mechanics.ItemManager;
-import net.dungeonrealms.game.mechanics.ParticleAPI;
-import net.dungeonrealms.game.world.glyph.Glyph;
-import net.dungeonrealms.game.world.party.Affair;
-import net.dungeonrealms.game.world.realms.Instance;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.NBTTagString;
+import java.util.Random;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -37,10 +11,28 @@ import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import java.util.List;
-import java.util.Random;
+import net.dungeonrealms.API;
+import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.donate.DonationEffects;
+import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.RealmManager;
+import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.mechanics.ParticleAPI;
+import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.world.items.EnumItem;
+import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.items.Item.ItemTier;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
+import net.dungeonrealms.game.world.items.repairing.RepairAPI;
+import net.dungeonrealms.game.world.party.Affair;
+import net.dungeonrealms.game.world.realms.Instance;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.NBTTagString;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -74,12 +66,6 @@ public class CommandAdd extends BasicCommand {
                 case "name":
                     player.sendMessage(API.getNameFromUUID(player.getUniqueId()));
                     break;
-                case "ga":
-                    player.getInventory().addItem(Glyph.getInstance().getBaseGlyph(args[1], Integer.valueOf(args[2]), Glyph.GlyphType.ARMOR));
-                    break;
-                case "gw":
-                    player.getInventory().addItem(Glyph.getInstance().getBaseGlyph(args[1], Integer.valueOf(args[2]), Glyph.GlyphType.WEAPON));
-                    break;
                 case "uploadrealm":
                     new RealmManager().uploadRealm(player.getUniqueId());
                     break;
@@ -89,12 +75,15 @@ public class CommandAdd extends BasicCommand {
                     break;
                 case "weapon":
                     tier = Integer.parseInt(args[1]);
-                    player.getInventory().addItem(new ItemGenerator().getDefinedStack(ItemGenerator.getRandomItemType(), ItemTier.getByTier(tier), ItemGenerator.getRandomItemModifier()));
+                    player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier)).getItem());
                     break;
                 case "armor":
                     tier = Integer.parseInt(args[1]);
-                    player.getInventory().addItem(new ArmorGenerator().getDefinedStack(ArmorGenerator.getRandomEquipmentType(), ArmorTier.getByTier(tier), ArmorGenerator.getRandomItemModifier()));
+                    player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier)).getItem());
                     break;
+                case "customitem":
+                    String name = args[1];
+                    player.getInventory().addItem(ItemGenerator.getNamedItem(name));
                 case "particle":
                     if (args[1] != null)
                         ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.getById(Integer.valueOf(args[1])), player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
@@ -152,21 +141,21 @@ public class CommandAdd extends BasicCommand {
                     break;
                 case "food":
                     player.setFoodLevel(1);
-                    player.getInventory().addItem(ItemManager.createHealingFood(1, Item.ItemModifier.COMMON));
-                    player.getInventory().addItem(ItemManager.createHealingFood(1, Item.ItemModifier.RARE));
-                    player.getInventory().addItem(ItemManager.createHealingFood(1, Item.ItemModifier.LEGENDARY));
-                    player.getInventory().addItem(ItemManager.createHealingFood(2, Item.ItemModifier.COMMON));
-                    player.getInventory().addItem(ItemManager.createHealingFood(2, Item.ItemModifier.RARE));
-                    player.getInventory().addItem(ItemManager.createHealingFood(2, Item.ItemModifier.LEGENDARY));
-                    player.getInventory().addItem(ItemManager.createHealingFood(3, Item.ItemModifier.COMMON));
-                    player.getInventory().addItem(ItemManager.createHealingFood(3, Item.ItemModifier.RARE));
-                    player.getInventory().addItem(ItemManager.createHealingFood(3, Item.ItemModifier.LEGENDARY));
-                    player.getInventory().addItem(ItemManager.createHealingFood(4, Item.ItemModifier.COMMON));
-                    player.getInventory().addItem(ItemManager.createHealingFood(4, Item.ItemModifier.RARE));
-                    player.getInventory().addItem(ItemManager.createHealingFood(4, Item.ItemModifier.LEGENDARY));
-                    player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemModifier.COMMON));
-                    player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemModifier.RARE));
-                    player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemModifier.LEGENDARY));
+                    player.getInventory().addItem(ItemManager.createHealingFood(1, Item.ItemRarity.COMMON));
+                    player.getInventory().addItem(ItemManager.createHealingFood(1, Item.ItemRarity.RARE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(1, Item.ItemRarity.UNIQUE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(2, Item.ItemRarity.COMMON));
+                    player.getInventory().addItem(ItemManager.createHealingFood(2, Item.ItemRarity.RARE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(2, Item.ItemRarity.UNIQUE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(3, Item.ItemRarity.COMMON));
+                    player.getInventory().addItem(ItemManager.createHealingFood(3, Item.ItemRarity.RARE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(3, Item.ItemRarity.UNIQUE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(4, Item.ItemRarity.COMMON));
+                    player.getInventory().addItem(ItemManager.createHealingFood(4, Item.ItemRarity.RARE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(4, Item.ItemRarity.UNIQUE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemRarity.COMMON));
+                    player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemRarity.RARE));
+                    player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemRarity.UNIQUE));
                     break;
                 case "test":
                     Bukkit.broadcastMessage("Get2" + String.valueOf(RepairAPI.getCustomDurability(player.getItemInHand())));
@@ -206,28 +195,6 @@ public class CommandAdd extends BasicCommand {
                     test.addExtra(bungeeMessage);
                     Bukkit.spigot().broadcast(test);
                     break;
-                case "blayshan":
-                	player.getInventory().addItem(NamedItems.blayshanAxe);
-                	break;
-                case "xwaffle":
-                	ItemStack xwaffleItem = new ItemGenerator().getDefinedStack(ItemType.AXE, ItemTier.TIER_5, ItemModifier.LEGENDARY);
-                	ItemMeta meta = xwaffleItem.getItemMeta();
-                	meta.setDisplayName(ChatColor.YELLOW + "Xwaffle's Cock");
-                	List<String> lore = meta.getLore();
-                	int i = 0;
-                	for(String str : lore){
-                		if(str.startsWith("DMG: ")){
-                			lore.set(i, ChatColor.RED + "DMG: " + 1000);
-                			lore.add("Xwaffle is the best.");
-                			break;	
-                		}
-                		i++;
-                	}
-                	xwaffleItem.setItemMeta(meta);
-                	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(xwaffleItem);
-                	nms.getTag().setInt("damage", 1000);
-                	player.getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
-                	break;
             }
         }
 

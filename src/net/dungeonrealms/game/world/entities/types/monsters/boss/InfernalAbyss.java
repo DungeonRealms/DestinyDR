@@ -1,17 +1,7 @@
 package net.dungeonrealms.game.world.entities.types.monsters.boss;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.InfernalLordsGuard;
-import net.dungeonrealms.game.world.entities.utils.EntityStats;
-import net.dungeonrealms.game.handlers.HealthHandler;
-import net.dungeonrealms.game.world.items.ItemGenerator;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorModifier;
-import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
-import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.minecraft.server.v1_8_R3.*;
+import java.lang.reflect.Field;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -26,7 +16,29 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.lang.reflect.Field;
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
+import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.InfernalLordsGuard;
+import net.dungeonrealms.game.world.entities.utils.EntityStats;
+import net.dungeonrealms.game.world.items.Item.ItemRarity;
+import net.dungeonrealms.game.world.items.Item.ItemTier;
+import net.dungeonrealms.game.world.items.Item.ItemType;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
+import net.minecraft.server.v1_8_R3.DamageSource;
+import net.minecraft.server.v1_8_R3.EntityHuman;
+import net.minecraft.server.v1_8_R3.EntitySkeleton;
+import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
+import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
+import net.minecraft.server.v1_8_R3.PathfinderGoalMeleeAttack;
+import net.minecraft.server.v1_8_R3.PathfinderGoalMoveTowardsRestriction;
+import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
+import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
+import net.minecraft.server.v1_8_R3.PathfinderGoalSelector;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Oct 21, 2015
@@ -90,24 +102,16 @@ public class InfernalAbyss extends EntitySkeleton implements Boss {
 	}
 
 	protected void setArmor(int tier) {
-		ItemStack[] armor = getArmor();
-		// weapon, boots, legs, chest, helmet/head
-		ItemStack weapon = getWeapon();
 		// weapon.addEnchantment(Enchantment.DAMAGE_ALL, 1);
-		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-		this.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
-		this.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
-		this.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
-		this.setEquipment(4, getHead());
-		ghast.setArmor(armor, weapon);
-	}
-
-	/**
-	 * @return
-	 */
-	private ItemStack getWeapon() {
-        return new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.SWORD, net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(getEnumBoss().tier));
-	}
+		this.setEquipment(0, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("infernalstaff")));
+		this.setEquipment(1, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("infernalboot")));
+		this.setEquipment(2, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("infernallegging")));
+		this.setEquipment(3, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("infernalchest")));
+		this.setEquipment(4, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("infernalhelmet")));
+        ghast.setArmor(new ItemGenerator().setTier(ItemTier.getByTier(tier)).setRarity(ItemRarity.UNIQUE).getArmorSet(),
+                new ItemGenerator().setTier(ItemTier.getByTier(tier)).setRarity(ItemRarity.UNIQUE)
+                        .setType(ItemType.getRandomWeapon()).generateItem().getItem());
+    }
 
 	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
 		ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
@@ -115,10 +119,6 @@ public class InfernalAbyss extends EntitySkeleton implements Boss {
 		meta.setOwner("Steve");
 		head.setItemMeta(meta);
 		return CraftItemStack.asNMSCopy(head);
-	}
-
-	private ItemStack[] getArmor() {
-		return new ArmorGenerator().nextArmor(getEnumBoss().tier, ArmorModifier.LEGENDARY);
 	}
 
 	@Override

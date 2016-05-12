@@ -1,21 +1,25 @@
 package net.dungeonrealms.game.player.duel;
 
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorTier;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-
-import java.util.UUID;
 
 /**
  * Created by Chase on Nov 13, 2015
@@ -27,7 +31,7 @@ public class DuelOffer {
     public Inventory sharedInventory = null;
     public boolean p1Ready;
     public boolean p2Ready;
-    public ArmorTier tierArmor = ArmorTier.TIER_5;
+    public ItemTier tierArmor = ItemTier.TIER_5;
     public ItemTier tierWeapon = ItemTier.TIER_5;
     public Location centerPoint = null;
     public boolean canFight = false;
@@ -170,7 +174,7 @@ public class DuelOffer {
     }
 
     public void cycleArmor() {
-        ArmorTier[] list = ArmorTier.values();
+        ItemTier[] list = ItemTier.values();
         int j = 0;
         for (int i = 0; i < list.length; i++) {
             if (list[i] == tierArmor) {
@@ -307,7 +311,7 @@ public class DuelOffer {
             ItemStack boots = pl.getInventory().getBoots();
 
             if (helmet != null && helmet.getType() != Material.AIR) {
-                if ((API.getArmorTier(helmet).getTierId() > max_armor_tier)) {
+                if ((API.getItemTier(helmet).getTierId() > max_armor_tier)) {
                     pl.sendMessage(ChatColor.RED + "Unequiped Illegal Helmet");
                     pl.getInventory().setItem(pl.getInventory().firstEmpty(), helmet);
                     pl.getInventory().setHelmet(new ItemStack(Material.AIR));
@@ -315,7 +319,7 @@ public class DuelOffer {
             }
 
             if (chest != null && chest.getType() != Material.AIR) {
-                if ((API.getArmorTier(chest).getTierId() > max_armor_tier)) {
+                if ((API.getItemTier(chest).getTierId() > max_armor_tier)) {
                     pl.sendMessage(ChatColor.RED + "Unequiped Illegal Chestplate");
                     pl.getInventory().setItem(pl.getInventory().firstEmpty(), chest);
                     pl.getInventory().setChestplate(new ItemStack(Material.AIR));
@@ -323,7 +327,7 @@ public class DuelOffer {
             }
 
             if (legs != null && legs.getType() != Material.AIR) {
-                if ((API.getArmorTier(legs).getTierId() > max_armor_tier)) {
+                if ((API.getItemTier(legs).getTierId() > max_armor_tier)) {
                     pl.sendMessage(ChatColor.RED + "Unequiped Illegal Leggings");
                     pl.getInventory().setItem(pl.getInventory().firstEmpty(), legs);
                     pl.getInventory().setLeggings(new ItemStack(Material.AIR));
@@ -331,7 +335,7 @@ public class DuelOffer {
             }
 
             if (boots != null && boots.getType() != Material.AIR) {
-                if ((API.getArmorTier(boots).getTierId() > max_armor_tier)) {
+                if ((API.getItemTier(boots).getTierId() > max_armor_tier)) {
                     pl.sendMessage(ChatColor.RED + "Unequiped Illegal Boots");
                     pl.getInventory().setItem(pl.getInventory().firstEmpty(), boots);
                     pl.getInventory().setBoots(new ItemStack(Material.AIR));
@@ -364,7 +368,7 @@ public class DuelOffer {
             boots = pl.getInventory().getBoots();
 
             if (helmet != null && helmet.getType() != Material.AIR) {
-                if ((API.getArmorTier(helmet).getTierId() > max_armor_tier)) {
+                if ((API.getItemTier(helmet).getTierId() > max_armor_tier)) {
                     pl.sendMessage(ChatColor.RED + "Unequiped Illegal Helmet");
                     pl.getInventory().setItem(pl.getInventory().firstEmpty(), helmet);
                     pl.getInventory().setHelmet(new ItemStack(Material.AIR));
@@ -372,7 +376,7 @@ public class DuelOffer {
             }
 
             if (chest != null && chest.getType() != Material.AIR) {
-                if ((API.getArmorTier(chest).getTierId() > max_armor_tier)) {
+                if ((API.getItemTier(chest).getTierId() > max_armor_tier)) {
                     pl.sendMessage(ChatColor.RED + "Unequiped Illegal Chestplate");
                     pl.getInventory().setItem(pl.getInventory().firstEmpty(), chest);
                     pl.getInventory().setChestplate(new ItemStack(Material.AIR));
@@ -380,7 +384,7 @@ public class DuelOffer {
             }
 
             if (legs != null && legs.getType() != Material.AIR) {
-                if ((API.getArmorTier(legs).getTierId() > max_armor_tier)) {
+                if ((API.getItemTier(legs).getTierId() > max_armor_tier)) {
                     pl.sendMessage(ChatColor.RED + "Unequiped Illegal Leggings");
                     pl.getInventory().setItem(pl.getInventory().firstEmpty(), legs);
                     pl.getInventory().setLeggings(new ItemStack(Material.AIR));
@@ -388,7 +392,7 @@ public class DuelOffer {
             }
 
             if (boots != null && boots.getType() != Material.AIR) {
-                if ((API.getArmorTier(boots).getTierId() > max_armor_tier)) {
+                if ((API.getItemTier(boots).getTierId() > max_armor_tier)) {
                     pl.sendMessage(ChatColor.RED + "Unequiped Illegal Boots");
                     pl.getInventory().setItem(pl.getInventory().firstEmpty(), boots);
                     pl.getInventory().setBoots(new ItemStack(Material.AIR));

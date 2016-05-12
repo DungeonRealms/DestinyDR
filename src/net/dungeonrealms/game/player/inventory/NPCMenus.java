@@ -8,7 +8,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
-import net.dungeonrealms.game.world.items.Item.ItemModifier;
+import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -200,26 +200,26 @@ public class NPCMenus {
 
     public static void openFoodVendorMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 18, "Food Vendor");
-        ItemStack potato = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemModifier.COMMON), 2);
-        ItemStack loadedPotato = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemModifier.RARE), 4);
-        ItemStack apple = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemModifier.LEGENDARY), 8);
+        ItemStack potato = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemRarity.COMMON), 2);
+        ItemStack loadedPotato = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemRarity.RARE), 4);
+        ItemStack apple = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemRarity.UNIQUE), 8);
 
-        ItemStack unCookedChicken = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemModifier.COMMON), 10);
-        ItemStack RoastedChicken = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemModifier.RARE), 14);
-        ItemStack pumpkinPie = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemModifier.LEGENDARY), 18);
+        ItemStack unCookedChicken = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemRarity.COMMON), 10);
+        ItemStack RoastedChicken = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemRarity.RARE), 14);
+        ItemStack pumpkinPie = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemRarity.UNIQUE), 18);
 
 
-        ItemStack saltedPork = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemModifier.COMMON), 20);
-        ItemStack seasonedPork = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemModifier.RARE), 25);
-        ItemStack mushroomSoup = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemModifier.LEGENDARY), 30);
+        ItemStack saltedPork = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemRarity.COMMON), 20);
+        ItemStack seasonedPork = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemRarity.RARE), 25);
+        ItemStack mushroomSoup = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemRarity.UNIQUE), 30);
 
-        ItemStack frozenSteak = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemModifier.COMMON), 35);
-        ItemStack sizzlingSteak = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemModifier.RARE), 45);
-        ItemStack grilledRabbit = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemModifier.LEGENDARY), 55);
+        ItemStack frozenSteak = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemRarity.COMMON), 35);
+        ItemStack sizzlingSteak = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemRarity.RARE), 45);
+        ItemStack grilledRabbit = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemRarity.UNIQUE), 55);
 
-        ItemStack kingsApple = ShopMechanics.addPrice(ItemManager.createHealingFood(5, ItemModifier.COMMON), 95);
-        ItemStack enchantedApple = ShopMechanics.addPrice(ItemManager.createHealingFood(5, ItemModifier.RARE), 100);
-        ItemStack goldCarrot = ShopMechanics.addPrice(ItemManager.createHealingFood(5, ItemModifier.LEGENDARY), 128);
+        ItemStack kingsApple = ShopMechanics.addPrice(ItemManager.createHealingFood(5, ItemRarity.COMMON), 95);
+        ItemStack enchantedApple = ShopMechanics.addPrice(ItemManager.createHealingFood(5, ItemRarity.RARE), 100);
+        ItemStack goldCarrot = ShopMechanics.addPrice(ItemManager.createHealingFood(5, ItemRarity.UNIQUE), 128);
 
         inv.setItem(0, potato);
         inv.setItem(1, loadedPotato);

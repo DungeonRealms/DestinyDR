@@ -1,17 +1,7 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.mechanics.ParticleAPI;
-import net.dungeonrealms.game.world.anticheat.AntiCheat;
-import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.Monster;
-import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.items.ItemGenerator;
-import net.minecraft.server.v1_8_R3.EntityZombie;
-import net.minecraft.server.v1_8_R3.GenericAttributes;
-import net.minecraft.server.v1_8_R3.World;
+import java.util.Random;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -22,7 +12,19 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.Random;
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mechanics.ParticleAPI;
+import net.dungeonrealms.game.world.anticheat.AntiCheat;
+import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.game.world.entities.types.monsters.Monster;
+import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.items.Item.ItemTier;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
+import net.minecraft.server.v1_8_R3.EntityZombie;
+import net.minecraft.server.v1_8_R3.GenericAttributes;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Xwaffle on 8/29/2015.
@@ -99,13 +101,14 @@ public abstract class DRZombie extends EntityZombie implements Monster{
                 itemType = Item.ItemType.SWORD;
                 break;
             case 1:
-                itemType = Item.ItemType.POLE_ARM;
+                itemType = Item.ItemType.POLEARM;
                 break;
             case 2:
                 itemType = Item.ItemType.AXE;
                 break;
         }
-    	ItemStack item = new ItemGenerator().next(itemType, net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(tier), API.getItemModifier());
+        ItemStack item = new ItemGenerator().setType(itemType).setRarity(API.getItemRarity())
+                .setTier(ItemTier.getByTier(tier)).generateItem().getItem();
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;
     }

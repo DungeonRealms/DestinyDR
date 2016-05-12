@@ -1,17 +1,7 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.game.miscellaneous.RandomHelper;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.world.items.DamageAPI;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorModifier;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorTier;
-import net.dungeonrealms.game.world.items.armor.Armor.EquipmentType;
-import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
-import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.minecraft.server.v1_8_R3.World;
+import java.util.Random;
+
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -21,7 +11,19 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Random;
+import net.dungeonrealms.API;
+import net.dungeonrealms.game.miscellaneous.RandomHelper;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.world.items.DamageAPI;
+import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.items.Item.ItemRarity;
+import net.dungeonrealms.game.world.items.Item.ItemTier;
+import net.dungeonrealms.game.world.items.Item.ItemType;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
+import net.dungeonrealms.game.world.items.repairing.RepairAPI;
+import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Oct 21, 2015
@@ -123,11 +125,9 @@ public interface Monster {
 			ItemStack[] armor = ((LivingEntity) ent).getEquipment().getArmorContents();
 			ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
 			if (ent.hasMetadata("elite"))
-				armor[3] = new ArmorGenerator().getArmor(EquipmentType.HELMET, ArmorTier.getByTier(tier),
-				        ArmorModifier.UNIQUE);
+			    armor[3] = new ItemGenerator().setType(ItemType.HELMET).setTier(ItemTier.getById(tier)).setRarity(Item.ItemRarity.UNIQUE).getItem();
 			else
-				armor[3] = new ArmorGenerator().getArmor(EquipmentType.HELMET, ArmorTier.getByTier(tier),
-				        API.getArmorModifier());
+	            armor[3] = new ItemGenerator().setType(ItemType.HELMET).setTier(ItemTier.getById(tier)).setRarity(API.getItemRarity()).getItem();
 
 			loot = new ItemStack[] { armor[0], armor[1], armor[2], armor[3], weapon };
 			ItemStack armorToDrop;

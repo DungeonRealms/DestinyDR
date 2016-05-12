@@ -1,13 +1,17 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
+
+import net.dungeonrealms.API;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRSkeleton;
 import net.dungeonrealms.game.world.items.DamageAPI;
+import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
-import net.dungeonrealms.game.world.items.ItemGenerator;
-import net.dungeonrealms.game.world.items.armor.Armor;
-import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.EntityLiving;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
@@ -17,9 +21,6 @@ import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
 import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
 import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
 import net.minecraft.server.v1_8_R3.World;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.inventory.ItemStack;
 
 /**
  * Created by Chase on Sep 21, 2015
@@ -40,6 +41,7 @@ public class EntityFireImp extends DRSkeleton {
     	super(world);
     }
     
+    @SuppressWarnings("unchecked")
     public EntityFireImp(World world, int tier, EnumEntityType entityType) {
         super(world, EnumMonster.FireImp, tier, entityType);
         this.goalSelector.a(1, new PathfinderGoalFloat(this));
@@ -48,14 +50,15 @@ public class EntityFireImp extends DRSkeleton {
         this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
         this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
         this.tier = tier;
-        this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().getDefinedStack(ItemType.STAFF, ItemTier.getByTier(tier), ItemGenerator.getRandomItemModifier())));
+        this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().setType(ItemType.STAFF)
+                .setTier(ItemTier.getByTier(tier)).setRarity(API.getItemRarity()).getItem()));
     }
 
     @Override
     public void setArmor(int tier) {
-        ItemStack leggings = new ItemStack(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.LEGGINGS, Armor.ArmorTier.getByTier(tier), ArmorGenerator.getRandomItemModifier()));
-        ItemStack chestplate = new ItemStack(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.CHESTPLATE, Armor.ArmorTier.getByTier(tier), ArmorGenerator.getRandomItemModifier()));
-        ItemStack boots = new ItemStack(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.BOOTS, Armor.ArmorTier.getByTier(tier), ArmorGenerator.getRandomItemModifier()));
+        ItemStack leggings = new ItemGenerator().setType(ItemType.LEGGINGS).setTier(ItemTier.getByTier(tier)).setRarity(API.getItemRarity()).getItem();
+        ItemStack chestplate = new ItemGenerator().setType(ItemType.CHESTPLATE).setTier(ItemTier.getByTier(tier)).setRarity(API.getItemRarity()).getItem();
+        ItemStack boots = new ItemGenerator().setType(ItemType.BOOTS).setTier(ItemTier.getByTier(tier)).setRarity(API.getItemRarity()).getItem();
         this.setEquipment(1, CraftItemStack.asNMSCopy(boots));
         this.setEquipment(2, CraftItemStack.asNMSCopy(leggings));
         this.setEquipment(3, CraftItemStack.asNMSCopy(chestplate));

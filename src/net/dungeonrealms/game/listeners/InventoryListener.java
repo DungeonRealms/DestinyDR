@@ -1,5 +1,35 @@
 package net.dungeonrealms.game.listeners;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Random;
+import java.util.Set;
+
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
+import org.bukkit.GameMode;
+import org.bukkit.Material;
+import org.bukkit.Sound;
+import org.bukkit.block.Block;
+import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.player.PlayerItemHeldEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
 import ca.thederpygolems.armorequip.ArmorEquipEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
@@ -21,40 +51,17 @@ import net.dungeonrealms.game.player.stats.StatsManager;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.world.glyph.Glyph;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.items.Item.AttributeType;
-import net.dungeonrealms.game.world.items.ItemGenerator;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorAttributeType;
-import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
+import net.dungeonrealms.game.world.items.Item.ArmorAttributeType;
+import net.dungeonrealms.game.world.items.Item.WeaponAttributeType;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.minecraft.server.v1_8_R3.BlockPosition;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.Packet;
 import net.minecraft.server.v1_8_R3.PacketPlayOutWorldEvent;
-import org.bukkit.*;
-import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.inventory.*;
-import org.bukkit.event.player.PlayerItemHeldEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -73,7 +80,6 @@ public class InventoryListener implements Listener {
         if (event.getCurrentItem() != null && !event.getCurrentItem().getType().equals(Material.AIR) && event.getCursor() != null && !event.getCursor().getType().equals(Material.AIR)) {
             if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
             if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
-            Glyph.getInstance().applyGlyph(((Player) event.getWhoClicked()), event, event.getCursor(), event.getCurrentItem());
         }
 
         ClickHandler.getInstance().doClick(event);
@@ -255,28 +261,15 @@ public class InventoryListener implements Listener {
         Attribute a = new Attribute(event.getCurrentItem());
         Player player = (Player) event.getWhoClicked();
         int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
-        if (API.isArmor(event.getCurrentItem())) {
-            switch (a.getArmorTier().getTierId()) {
-                case 5:
-                    if (playerLevel < 10) {
-                        event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 10");
-                        player.updateInventory();
-                        return;
-                    }
-                    break;
+        switch (a.getItemTier().getTierId()) {
+        case 5:
+            if (playerLevel < 10) {
+                event.setCancelled(true);
+                player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 10");
+                player.updateInventory();
+                return;
             }
-        }  else if (API.isWeapon(event.getCurrentItem())) {
-            switch (a.getItemTier().getTierId()) {
-                case 5:
-                    if (playerLevel < 10) {
-                        event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 10");
-                        player.updateInventory();
-                        return;
-                    }
-                    break;
-            }
+            break;
         }
     }
 
@@ -292,7 +285,7 @@ public class InventoryListener implements Listener {
         if (event.getNewArmorPiece() != null && event.getNewArmorPiece().getType() != Material.AIR) {
             Attribute a = new Attribute(event.getNewArmorPiece());
             int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
-            switch (a.getArmorTier().getTierId()) {
+            switch (a.getItemTier().getTierId()) {
                 case 5:
                     if (playerLevel < 10) {
                         event.setCancelled(true);
@@ -537,6 +530,7 @@ public class InventoryListener implements Listener {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerUseOrbs(InventoryClickEvent event) {
         if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) return;
@@ -563,12 +557,13 @@ public class InventoryListener implements Listener {
             newStack.setAmount(newStack.getAmount() - 1);
             event.setCursor(newStack);
         }
-        ItemStack item = new ItemGenerator().reRoll(slotItem);
+        ItemStack item = new ItemGenerator().setItem(slotItem).reroll().getItem();
         event.setCurrentItem(new ItemStack(Material.AIR));
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> event.getWhoClicked().getInventory().addItem(item));
     }
 
 
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerUseEnchant(InventoryClickEvent event) {
         if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) return;
@@ -711,24 +706,29 @@ public class InventoryListener implements Listener {
             }
 
             String finalName = ChatColor.RED + "[" + "+" + (amount + 1) + "] " + newName;
-            double doublenewDamage = nmsItem.getTag().getInt("damage") + ((5 * nmsItem.getTag().getInt("damage")) / 100);
+            double doublenewDamageMin = nmsItem.getTag().getInt("damageMin") + ((5 * nmsItem.getTag().getInt("damageMin")) / 100);
+            double doublenewDamageMax = nmsItem.getTag().getInt("damageMax") + ((5 * nmsItem.getTag().getInt("damageMax")) / 100);
             if (tier == 1) {
-                doublenewDamage += 1;
+                doublenewDamageMin += 1;
+                doublenewDamageMax += 1;
             }
-            int finalDmg = (int) Math.round(doublenewDamage);
+            int finalDmgMin = (int) Math.round(doublenewDamageMin);
+            int finalDmgMax = (int) Math.round(doublenewDamageMax);
             Attribute att = new Attribute(slotItem);
-            List<String> itemLore = new ArrayList<>();
-            itemLore.add(ItemGenerator.setCorrectItemLore(AttributeType.DAMAGE, finalDmg, att.getItemTier().getTierId()));
+            
+            // update the item lore
+            lore.set(0, ChatColor.RED + "DMG: " + finalDmgMin + " - " + finalDmgMax);
 
-            itemLore.addAll(lore.stream().filter(current -> !current.startsWith(ChatColor.WHITE + "DMG:")).collect(Collectors.toList()));
+            // update the NMS tags
             nmsItem.getTag().setInt("enchant", amount + 1);
-            nmsItem.getTag().setInt("damage", finalDmg);
+            nmsItem.getTag().setInt("damageMin", finalDmgMin);
+            nmsItem.getTag().setInt("damageMax", finalDmgMax);
             ItemStack newItem = CraftItemStack.asBukkitCopy(nmsItem);
 
 
             ItemMeta meta = newItem.getItemMeta();
             meta.setDisplayName(finalName);
-            meta.setLore(itemLore);
+            meta.setLore(lore);
             newItem.setItemMeta(meta);
             if (EnchantmentAPI.isItemProtected(slotItem)) {
                newItem = EnchantmentAPI.removeItemProtection(newItem);
@@ -844,24 +844,23 @@ public class InventoryListener implements Listener {
             }
 
             String finalName = ChatColor.RED + "[" + "+" + (amount + 1) + "] " + newName;
-            List<String> itemLore = new ArrayList<>();
+            List<String> itemLore = slotItem.getItemMeta().getLore();
 
             double hpDouble = nmsItem.getTag().getInt(ArmorAttributeType.HEALTH_POINTS.getNBTName()) + ((nmsItem.getTag().getInt(ArmorAttributeType.HEALTH_POINTS.getNBTName()) * 5) / 100);
             int newHP = (int) Math.round((hpDouble));
-            itemLore.add(ArmorGenerator.setCorrectArmorLore(ArmorAttributeType.HEALTH_POINTS, newHP));
+            itemLore.set(1, ChatColor.RED + "HP: +" + newHP);
             nmsItem.getTag().setInt(ArmorAttributeType.HEALTH_POINTS.getNBTName(), newHP);
 
             if (nmsItem.getTag().hasKey(ArmorAttributeType.HEALTH_REGEN.getNBTName())) {
                 double hpRegenDouble = nmsItem.getTag().getInt(ArmorAttributeType.HEALTH_REGEN.getNBTName()) + ((nmsItem.getTag().getInt(ArmorAttributeType.HEALTH_REGEN.getNBTName()) * 5) / 100);
                 int newHPRegen = (int) Math.round((hpRegenDouble));
                 nmsItem.getTag().setInt(ArmorAttributeType.HEALTH_REGEN.getNBTName(), newHPRegen);
-                itemLore.add(ArmorGenerator.setCorrectArmorLore(ArmorAttributeType.HEALTH_REGEN, newHPRegen));
-
+                itemLore.set(2, ChatColor.RED + "HP REGEN: +" + newHPRegen + " HP/s");
             } else if (nmsItem.getTag().hasKey(ArmorAttributeType.ENERGY_REGEN.getNBTName())) {
                 double energyRegen = nmsItem.getTag().getInt(ArmorAttributeType.ENERGY_REGEN.getNBTName());
                 int newEnergyRegen = (int) Math.round((energyRegen)) + 1;
                 nmsItem.getTag().setInt(ArmorAttributeType.ENERGY_REGEN.getNBTName(), newEnergyRegen);
-                itemLore.add(ArmorGenerator.setCorrectArmorLore(ArmorAttributeType.ENERGY_REGEN, newEnergyRegen));
+                itemLore.set(2, ChatColor.RED + "ENERGY REGEN: +" + newEnergyRegen + "%");
             }
 
             ArrayList<String> lore = (ArrayList<String>) meta2.getLore();
@@ -939,6 +938,7 @@ public class InventoryListener implements Listener {
     }
 
 
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerUseScrapItem(InventoryClickEvent event) {
         if (event.getCursor() == null) return;

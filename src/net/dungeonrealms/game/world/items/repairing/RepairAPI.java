@@ -13,12 +13,11 @@ import org.bukkit.inventory.meta.Repairable;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
-import net.dungeonrealms.game.world.items.Attribute;
-import net.dungeonrealms.game.world.items.ItemGenerator;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.SoundAPI;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.world.items.Attribute;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
@@ -31,7 +30,7 @@ public class RepairAPI {
 		
 		if(API.isArmor(i)) { // It's a piece of armor.
 			
-			int item_tier = API.getArmorTier(i).getTierId();
+			int item_tier = API.getItemTier(i).getTierId();
 			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(i);
 			double avg_armor = 0;
 			if(nms.getTag().hasKey("armor"))
@@ -519,29 +518,29 @@ public class RepairAPI {
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " **2% DURABILITY " + ChatColor.RED + "Left on " + itemStack.getItemMeta().getDisplayName() + "*");
                 }
                 if (newItemDurability <= 0.1D) {
-                    switch (new Attribute(itemStack).getArmorType().getId()) {
-                        case 0:
+                    switch (new Attribute(itemStack).getItemType().getId()) {
+                        case 5:
                             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                                 player.getInventory().setHelmet(new ItemStack(Material.AIR));
                                 SoundAPI.getInstance().playSound("random.anvil_break", player);
                                 player.updateInventory();
                             }, 10L);
                             break;
-                        case 1:
+                        case 6:
                             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                                 player.getInventory().setChestplate(new ItemStack(Material.AIR));
                                 SoundAPI.getInstance().playSound("random.anvil_break", player);
                                 player.updateInventory();
                             }, 10L);
                             break;
-                        case 2:
+                        case 7:
                             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                                 player.getInventory().setLeggings(new ItemStack(Material.AIR));
                                 SoundAPI.getInstance().playSound("random.anvil_break", player);
                                 player.updateInventory();
                             }, 10L);
                             break;
-                        case 3:
+                        case 8:
                             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                                 player.getInventory().setBoots(new ItemStack(Material.AIR));
                                 SoundAPI.getInstance().playSound("random.anvil_break", player);
