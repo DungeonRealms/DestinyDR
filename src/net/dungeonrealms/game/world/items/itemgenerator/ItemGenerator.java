@@ -10,8 +10,10 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -32,6 +34,7 @@ import net.dungeonrealms.game.world.items.itemgenerator.engine.ModifierCondition
 import net.dungeonrealms.game.world.items.itemgenerator.engine.ModifierType;
 import net.dungeonrealms.game.world.items.itemgenerator.modifiers.ArmorModifiers;
 import net.dungeonrealms.game.world.items.itemgenerator.modifiers.WeaponModifiers;
+import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagInt;
 import net.minecraft.server.v1_8_R3.NBTTagList;
@@ -118,28 +121,6 @@ public class ItemGenerator {
         ItemStack item = new ItemStack(type.getTier(tier));
         ItemMeta meta = item.getItemMeta().clone();
         
-        // NMS stack for writing NBT tags
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
-        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-        
-	    tag.set("itemType", new NBTTagInt(type.getId()));
-        tag.set("itemTier", new NBTTagInt(tier.getTierId()));
-        tag.set("itemRarity", new NBTTagInt(rarity.getId()));
-        tag.set("bound", new NBTTagString("false"));
-        
-        if (type.getId() <= 4) {
-            tag.set("type",  new NBTTagString("weapon"));
-        }
-        else {
-            tag.set("type",  new NBTTagString("armor"));
-        }
-        
-        /*
-        The line below removes the weapons attributes.
-        E.g. Diamond Sword says, "+7 Attack Damage"
-         */
-        tag.set("AttributeModifiers", new NBTTagList());
-	    
 		meta.setLore(new ArrayList<String>());
 		
 		final HashMap<ModifierCondition, ItemModifier> conditions = new HashMap<ModifierCondition, ItemModifier>();
@@ -211,6 +192,7 @@ public class ItemGenerator {
 		String modName = "";
         String name = tier.getTierColor().toString();
         String[] bonuses = new String[24];
+        HashMap<String, Integer> NBTModifiers = new HashMap<>();
         
         // NBT tag write and name the item
 		for (ModifierCondition mc : order) {
@@ -220,11 +202,11 @@ public class ItemGenerator {
 		    // write NBT tags
             if (mc.getRange().getModifierType() == ModifierType.TRIPLE
                     || mc.getRange().getModifierType() == ModifierType.RANGE) {
-		        tag.set(im.getNBTName() + "Min", new NBTTagInt(mc.getRange().getValLow()));
-		        tag.set(im.getNBTName() + "Max", new NBTTagInt(mc.getRange().getValHigh()));
+                NBTModifiers.put(im.getNBTName() + "Min", mc.getRange().getValLow());
+                NBTModifiers.put(im.getNBTName() + "Max", mc.getRange().getValHigh());
 		    }
 		    else {
-		        tag.set(im.getNBTName(), new NBTTagInt(mc.getRange().getValLow()));
+		        NBTModifiers.put(im.getNBTName(), mc.getRange().getValLow());
 		    }
 		    
 		    modName = ChatColor.stripColor(mc.getChosenPrefix().substring(0, mc.getChosenPrefix().indexOf(":")));
@@ -401,9 +383,6 @@ public class ItemGenerator {
 		// if no extra attributes, then make sure the item has the basic name
 	    if (!(name.contains(type.getTierName(tier)))) name += type.getTierName(tier);
 	    
-	    // set NBT tags
-	    nmsStack.setTag(tag);
-		
 		// add the rarity tag
 		List<String> lore = meta.getLore();
 		lore.add(rarity.getName());
@@ -413,10 +392,37 @@ public class ItemGenerator {
 		meta.setDisplayName(name);
 		item.setItemMeta(meta);
 		
+        // set NBT tags
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+        // NMS stack for writing NBT tags
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        
+        tag.set("itemType", new NBTTagInt(type.getId()));
+        tag.set("itemTier", new NBTTagInt(tier.getTierId()));
+        tag.set("itemRarity", new NBTTagInt(rarity.getId()));
+        tag.set("bound", new NBTTagString("false"));
+        
+        if (type.getId() <= 4) {
+            tag.set("type",  new NBTTagString("weapon"));
+        }
+        else {
+            tag.set("type",  new NBTTagString("armor"));
+        }
+        
+        /*
+        The line below removes the weapons attributes.
+        E.g. Diamond Sword says, "+7 Attack Damage"
+         */
+        tag.set("AttributeModifiers", new NBTTagList());
+        
+        for (Map.Entry<String, Integer> entry : NBTModifiers.entrySet()) {
+            tag.set(entry.getKey(), new NBTTagInt(entry.getValue()));
+        }
+        
+        nmsStack.setTag(tag);
+        
 		// apply antidupe
-		AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
-		
-		this.item = item;
+		this.item = AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
 		
 		return this;
 	}

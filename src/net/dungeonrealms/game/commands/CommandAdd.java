@@ -23,6 +23,7 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
+import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.party.Affair;
@@ -75,11 +76,11 @@ public class CommandAdd extends BasicCommand {
                     break;
                 case "weapon":
                     tier = Integer.parseInt(args[1]);
-                    player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier)).getItem());
+                    player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier)).setType(ItemType.getRandomWeapon()).generateItem().getItem());
                     break;
                 case "armor":
                     tier = Integer.parseInt(args[1]);
-                    player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier)).getItem());
+                    player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier)).setType(ItemType.getRandomArmor()).generateItem().getItem());
                     break;
                 case "customitem":
                     String name = args[1];
@@ -94,6 +95,9 @@ public class CommandAdd extends BasicCommand {
                     Banktag.set("type", new NBTTagString("bank"));
                     nmsBank.setTag(Banktag);
                     player.getInventory().addItem(CraftItemStack.asBukkitCopy(nmsBank));
+                    break;
+                case "reloadModifiers":
+                    ItemGenerator.loadModifiers();
                     break;
                 case "trail":
                     if (args[1] != null)
