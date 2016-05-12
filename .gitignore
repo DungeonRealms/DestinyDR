@@ -2,3 +2,5 @@
 *.idea
 /DungeonRealms.jar
 /bin
+/src/rebel.xml
+/src/rebel-remote.xml
