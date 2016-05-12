@@ -24,5 +24,6 @@
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
 	<classpathentry kind="lib" path="lib/ProtocolLib.jar"/>
 	<classpathentry kind="lib" path="lib/AnvilApi.jar"/>
+	<classpathentry kind="lib" path="lib/Item-NBT-API.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

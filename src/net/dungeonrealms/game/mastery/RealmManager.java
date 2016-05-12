@@ -58,8 +58,7 @@ public class RealmManager implements GenericMechanic {
     public CopyOnWriteArrayList<RealmObject> CURRENT_REALMS = new CopyOnWriteArrayList<>();
 
     public static String HOST = "167.114.65.102";
-    public static int port = 21;
-    public static String USER = "dr.23";
+    public static String USER = "dr.53";
     public static String PASSWORD = "19584!cK";
     public static String ROOT_DIR = "/testing/";
     public static String zipPass = "JRmyzc-E+7Qw27qD##L84CJqdbqJE$MXpJmXKBQMT&%-=+=!vymg8JLj*VpZ-vmvhW7qmNTEbEaXU3GybSTMTfd^X5zMtNrLQE_na74*-UkBzz*GER3MarzT2s!6yzgk?Us2nhdke!Zxy%ygnT!PC6Ta$p58KX?8LVtrPUGJHguLU8E5h6=YCzXA%C?gjx6V3Z_jK3gwA3u9__@EsP#%mc=aCfJXebD5B!6rJRw$KHLZyzxBWfHsM-bLEKDEeUCA+zv%KVp8^%AR@vXAv*yTuzDU4^KM4f8@#pgbc#USNh+sYxYZ8tKbt_sJXE9AzCFWsbpy!jEH6$Fa*APRaX%GEDk=d!j^?mWASfGQWC6QdhwPf6$fc2DC6R#jnwMCFuR5*+4+PVj$N#Lx2L8rs7#Z5a&p$WtBc@E-y6wz5c$BPk!%!+9%YA73y8$m%WzEqVN-ms9V^Z*6d+eLFyg-%+gGdw%@ntM?cjCp2Tn6Ss%7tQCgJ*aM4&v7CPPYYU%ef6=3AtHqRsV5KD?^t&hc!Jz7#VzcpJ7dazV%ne9A5a3#k^dUQR_4Htq6NLC*DC?eCZB6Q2xh@+6C-$q4!vMR3daXeAn2LqEmh-92Yv!%p+RMqFsH6C#L%x*%K@QM8Nf77kS79sEL7_yDGMukrPRt*uDFLKtmbTTb*ZdHUcbCzxv*Tb3UMvQzUrPWbc_q&wE2vShWHhWFU9xekuyrQQEgEy@6*mXcmG#GZhXfWNzfDJqDCNr-Ck-VDX=b^frwRuFDp5xLjjnE2UZe36fvfhcmRJ?U5Mq&f=8&8Bw4-f&$fxyutC&SdA!dwcVjSg?MHFUmYxS*hBJRUS9te=4Kf!aHt5J-LH*scK-9JGfa8xx_tj2n#Cp64H2^tGgxcasmcsmswrp-#EB-GY7dGQKPuVSW*uFg*7ULg=ajDL*!3SDvwyaRqH+vkhVH!&dF5DY=wqSpp+SG*@4t_yZ^_AA53g*+WAmmYg88=ba4erjCcn@6!gBBsQ#fABWsJ?bTxnR$?&T*qRC@C2fqTX5tY5GFD-?LhxAGBTDfRg_j*bDJX?hL7gb!UkgA8dG_jkNThEP#*7gAkz!5hBD7q!MNQsxFNdMu+3KRHXY!UhV_GRpL24ap98*mWbDfVJ&jPdH^M&+BqcWsQw=%ERqaDFW+5weNUDb32LVKNwCkNRBaunBJgjSKmFaWWaT_cFebzA-eW?gCb!ynL!S==DUuffs@Mc9f$UswRcJ^%c+Wg?$D?LPPceq$kugQ6*5-xByGwE&P-SxyRz?KF@b$9Ehpfxcs&B8yKn^PN4-?nc3Q#vwm5+FrDw5q9%^_?Y&9xkt@utK+cBVyWjFwsGGvgq_pxa!N=tuvJBkQz7ARF@7Qx6A$x=_8L$Q^sppMSuKRS$4DK+@*d$GjX8azC+q4MWCeh@Ngh?9qcV!cgJMd4Pt5+Npgz%DMr&2yh4f7fdRkyJcEp$t7H@aTrkd^5ppw6puVCFD4jHm3rmeJM@quMeeSWs2RUg6LHcYCA_6QuPjq3m2xfD^nKSveRuV=g3wNU8G8aCf_kXYcp=Gy3@AFkARA!K_GZmQXJrMxNMJWvddPEq+P5vSgqQsQw5m4!#uv&paq6d?@g%vC&4n3Y3FH#3cB3Q^ThA!$tGn#M9fNtJ7LmfAJA_FLVz#6KTLbgAQ^VV*Hsx&-gg!rf-@umWSCynG+DyACDm?eJpaBaPSbzt%?=+yky=34tHauf3&PC@gdhjWDdAAyUKcpJ3$pwSJBX2?p3%kb7&Fscv#W5EZDWXwVG&^d^_RvP7Vj=g8YJAz3Qw9RWdS+4Hh%d@2m8UVfMaM9N^7r6xbVpg#Xg4hSx39p#CDuPV@zS3C5k$Tu=WHrEbfWr%HMLH2xre3%+p2!6JSP6FncTb4j5gP^uxsYf4F+24hb5^g37q+hRj@t-Se-bUjrbDB%==7_ZTgj+8WhnL6gDrRSe99N$Hk39QEF&fZZpP@BYf=RAyZH&yWGk@W_%ar^SeN6WAw^@zS8TBG&VEEvp4^k5_FDnrBYnG2+VAKCVDUP^&mM$Y^@uc+#5wDK";
@@ -130,15 +129,6 @@ public class RealmManager implements GenericMechanic {
 
     public static void zip(UUID uuid, File destinationFilePath, String password) {
         
-    	if(!destinationFilePath.exists())
-    	{
-    		try {
-				destinationFilePath.createNewFile();
-			} catch (IOException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-    	}
 		// Input and OutputStreams are defined outside of the try/catch block
 		// to use them in the finally block
 		ZipOutputStream outputStream = null;
@@ -488,58 +478,6 @@ public class RealmManager implements GenericMechanic {
         } else {
             player.sendMessage(ChatColor.RED + "You already have a Realm Portal in the world, please destroy it!");
         }
-    }
-
-    /**
-     * Will download and extract a players realm zip.
-     *
-     * @param uuid
-     * @since 1.0
-     */
-    public void downloadRealmTemplate(UUID uuid) {
-        AsyncUtils.pool.submit(() -> {
-            FTPClient ftpClient = new FTPClient();
-            FileOutputStream fos = null;
-            String REMOTE_FILE = "realm_template.zip";
-            try {
-                ftpClient.connect(HOST, port);
-                boolean login = ftpClient.login(USER, PASSWORD);
-                if (login) {
-                    Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString() + " [TEMPLATE]");
-                }
-                ftpClient.enterLocalPassiveMode();
-                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-
-                if (!checkFileExists(ftpClient, REMOTE_FILE)) {
-                    ftpClient.logout();
-                    ftpClient.disconnect();
-                    Utils.log.warning("[REALM] [ASYNC] Realm Template doesn't exist remotely!");
-                    return;
-                }
-
-                Utils.log.info("[REALM] [ASYNC] Downloading Template Realm for player + " + uuid.toString() + " ... STARTING");
-                File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloading/" + uuid.toString() + ".zip");
-                fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
-                ftpClient.retrieveFile(REMOTE_FILE, fos);
-                fos.close();
-                Utils.log.info("[REALM] [ASYNC] Template Realm downloaded for " + uuid.toString());
-                unzip(TEMP_LOCAL_LOCATION, zipPass);
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                deleteLocalCache(uuid);
-                if (ftpClient.isConnected()) {
-                    try {
-                        ftpClient.logout();
-                        ftpClient.disconnect();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
     }
 
     public void generateBlankRealm(UUID ownerUUID) {

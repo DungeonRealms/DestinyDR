@@ -8,15 +8,12 @@ import java.io.IOException;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.ini4j.Ini;
 import org.ini4j.InvalidFileFormatException;
 
 import com.connorlinfoot.bountifulapi.BountifulAPI;
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
 
 import net.dungeonrealms.core.Core;
 import net.dungeonrealms.game.commands.CommandAccept;
@@ -88,6 +85,7 @@ import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.loot.LootManager;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.realms.Instance;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
@@ -167,6 +165,8 @@ public class DungeonRealms extends JavaPlugin {
         DatabaseAPI.getInstance().startInitialization();
         NetworkAPI.getInstance().startInitialization();
         AntiCheat.getInstance().startInitialization();
+        ItemGenerator.loadModifiers();
+
         //new Spar().startInitialization();
         
         ItemGenerator.loadModifiers();
@@ -346,7 +346,9 @@ public class DungeonRealms extends JavaPlugin {
         if(!isInstanceServer)
         {
     		AbstractCommand gotesting = new TestingCommand("gotesting", "/<command> [args]", "This is a test command");
-    		gotesting.register();	
+    		gotesting.register();
+    		AbstractCommand givestarter = new StarterCommand("givestarter", "/<command> [args]", "Gives a starter kit to someone");
+    		givestarter.register();	
         }
 
         try {
