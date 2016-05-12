@@ -31,6 +31,7 @@ public class StarterCommand extends AbstractCommand {
     	if(args.length != 1)
     	{
     		p.sendMessage(ChatColor.RED + "Invalid Paremeters: /givestarter <name>");
+    		return true;
     	}
     	if(Bukkit.getPlayer(args[0]) != null)
     	{
