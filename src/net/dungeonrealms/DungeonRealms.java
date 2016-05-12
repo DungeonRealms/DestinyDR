@@ -346,7 +346,7 @@ public class DungeonRealms extends JavaPlugin {
     		AbstractCommand gotesting = new TestingCommand("gotesting", "/<command> [args]", "This is a test command");
     		gotesting.register();
     		AbstractCommand givestarter = new StarterCommand("givestarter", "/<command> [args]", "Gives a starter kit to someone");
-    		gotesting.register();	
+    		givestarter.register();	
         }
 
         try {
