@@ -1,12 +1,10 @@
 package net.dungeonrealms.game.miscellaneous;
 
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.NBTTagInt;
-import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+
+import de.tr7zw.itemnbtapi.NBTItem;
 
 import java.util.Arrays;
 import java.util.List;
@@ -16,14 +14,14 @@ import java.util.List;
  */
 public class ItemBuilder {
 
-    private ItemStack itemStack;
+	private NBTItem NBTitem;
 
     public ItemBuilder setItem(ItemStack item, String name, String[] lore) {
         ItemMeta meta = item.getItemMeta();
         meta.setDisplayName(name);
         meta.setLore(Arrays.asList(lore));
         item.setItemMeta(meta);
-        this.itemStack = item;
+        this.NBTitem = new NBTItem(item);
         return this;
     }
 
@@ -33,46 +31,42 @@ public class ItemBuilder {
         meta.setDisplayName(name);
         meta.setLore(Arrays.asList(lore));
         tempItem.setItemMeta(meta);
-        this.itemStack = tempItem;
+        this.NBTitem = new NBTItem(tempItem);
         return this;
     }
 
     public ItemBuilder setItem(ItemStack item) {
-        this.itemStack = item;
+        this.NBTitem = new NBTItem(item);
         return this;
     }
 
     public ItemBuilder addLore(String lore) {
-        ItemStack item = itemStack;
+        ItemStack item = NBTitem.getItem();
         ItemMeta meta = item.getItemMeta();
         List<String> itemLore = meta.getLore();
         itemLore.add(lore);
         meta.setLore(itemLore);
         item.setItemMeta(meta);
-        this.itemStack = item;
+        NBTitem = new NBTItem(item);
         return this;
     }
 
     public ItemBuilder setNBTString(String identifier, String content) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-        NBTTagCompound nbtTagCompound = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-        nbtTagCompound.set(identifier, new NBTTagString(content));
-        nmsStack.setTag(nbtTagCompound);
-        this.itemStack = CraftItemStack.asBukkitCopy(nmsStack);
+        NBTItem temp = NBTitem;
+        temp.setString(identifier, content);
+        this.NBTitem = temp;
         return this;
     }
 
     public ItemBuilder setNBTInt(String identifier, int content) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-        NBTTagCompound nbtTagCompound = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-        nbtTagCompound.set(identifier, new NBTTagInt(content));
-        nmsStack.setTag(nbtTagCompound);
-        this.itemStack = CraftItemStack.asBukkitCopy(nmsStack);
+        NBTItem temp = NBTitem;
+        temp.setInteger(identifier, content);
+        this.NBTitem = temp;
         return this;
     }
 
     public ItemStack build() {
-        return itemStack;
+        return NBTitem.getItem();
     }
 
 }

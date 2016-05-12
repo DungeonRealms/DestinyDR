@@ -64,8 +64,10 @@ public class TutorialIslandHandler implements GenericMechanic, Listener {
     }
 
     public void giveStarterKit(Player player) {
-        player.getInventory().addItem(new ItemBuilder().setItem(new ItemGenerator().setType(ItemType.AXE).setTier(ItemTier.TIER_1).setRarity(ItemRarity.COMMON).getItem())
-                .setNBTString("subtype", "starter").build());
+    	ItemBuilder axe = new ItemBuilder().setItem(new ItemGenerator().setType(ItemType.AXE).setTier(ItemTier.TIER_1).setRarity(ItemRarity.COMMON).getItem());
+    	axe.setNBTString("subtype", "starter");
+        player.getInventory().addItem(axe.build());
+        /*
         player.getInventory().addItem(new ItemBuilder().setItem(new ItemGenerator().setType(ItemType.HELMET).setTier(ItemTier.TIER_1).setRarity(ItemRarity.COMMON).getItem())
                 .setNBTString("subtype", "starter").build());
         player.getInventory().addItem(new ItemBuilder().setItem(new ItemGenerator().setType(ItemType.CHESTPLATE).setTier(ItemTier.TIER_1).setRarity(ItemRarity.COMMON).getItem())
@@ -73,7 +75,7 @@ public class TutorialIslandHandler implements GenericMechanic, Listener {
         player.getInventory().addItem(new ItemBuilder().setItem(new ItemGenerator().setType(ItemType.LEGGINGS).setTier(ItemTier.TIER_1).setRarity(ItemRarity.COMMON).getItem())
                 .setNBTString("subtype", "starter").build());
         player.getInventory().addItem(new ItemBuilder().setItem(new ItemGenerator().setType(ItemType.BOOTS).setTier(ItemTier.TIER_1).setRarity(ItemRarity.COMMON).getItem())
-                .setNBTString("subtype", "starter").build());
+                .setNBTString("subtype", "starter").build()); */
         player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 5)).setNBTString("subtype", "starter").build());
         player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
         player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
