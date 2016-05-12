@@ -198,8 +198,8 @@ public class DamageAPI {
             if (nmsTag == null) {
                 damage += 0;
             } else {
-                if (nmsTag.getDouble("damage") != 0) {
-                    damage += (damage * (nmsTag.getDouble("damage") / 100));
+                if (nmsTag.getDouble("dpsMin") != 0) {
+                    damage += (damage * (Utils.randInt((int) nmsTag.getDouble("dpsMin"), (int) nmsTag.getDouble("dpsMax")) / 100));
                 }
             }
         }
@@ -364,8 +364,8 @@ public class DamageAPI {
             if (nmsTag == null) {
                 damage += 0;
             } else {
-                if (nmsTag.getDouble("damage") != 0) {
-                    damage += (damage * (nmsTag.getDouble("damage") / 100));
+                if (nmsTag.getDouble("damageMin") != 0) {
+                    damage += (damage * (Utils.randInt((int) nmsTag.getDouble("damageMin"), (int) nmsTag.getDouble("damageMax")) / 100));
                 }
             }
         }
@@ -550,10 +550,9 @@ public class DamageAPI {
                                 net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
                                 NBTTagCompound tag = nmsItem.getTag();
                                 if (tag != null) {
-                                    if (tag.getDouble("damage") != 0) {
-                                        int damageFromThorns = (int) ((tag.getDouble("damage") / 100) * (nmsTag.getInt("thorns") / 2));
-                                        HealthHandler.getInstance().healPlayerByAmount((Player) attacker, -damageFromThorns);
-                                    }
+                                    int damageFromThorns = (int) (attackingDamage * (nmsTag.getInt("thorns") / 2));
+                                    HealthHandler.getInstance().healPlayerByAmount((Player) attacker,
+                                            -damageFromThorns);
                                 }
                             }
                         }

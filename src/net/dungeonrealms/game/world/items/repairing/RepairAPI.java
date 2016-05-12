@@ -33,10 +33,10 @@ public class RepairAPI {
 			int item_tier = API.getItemTier(i).getTierId();
 			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(i);
 			double avg_armor = 0;
-			if(nms.getTag().hasKey("armor"))
-				avg_armor = nms.getTag().getInt("armor");
+			if(nms.getTag().hasKey("armorMin"))
+				avg_armor = nms.getTag().getInt("armorMin");
 			else
-				avg_armor = nms.getTag().getInt("damage");
+				avg_armor = nms.getTag().getInt("dmgMin");
 			double percent_durability_left =   (getCustomDurability(i) / 1550) * 100;  // getDurabilityValueAsPercent(i, getCustomDurability(i));
 			if(percent_durability_left > 99) {
 				percent_durability_left = 99;
@@ -78,7 +78,7 @@ public class RepairAPI {
 				return -1;
 			int item_tier = nms.getTag().getInt("itemTier");
 	        NBTTagCompound tag = CraftItemStack.asNMSCopy(i).getTag();
-	        double avg_dmg = tag.getInt("damage");//Utils.randInt((int) Math.round(tag.getDouble("damage")  / damageRandomizer), (int) Math.round(tag.getDouble("damage")/ (damageRandomizer - 1)));
+	        double avg_dmg = tag.getInt("dmgMin");//Utils.randInt((int) Math.round(tag.getDouble("damage")  / damageRandomizer), (int) Math.round(tag.getDouble("damage")/ (damageRandomizer - 1)));
 			double dmg_cost = avg_dmg * 0.02; // This is the cost PER PERCENT
 
 			double percent_durability_left =   (getCustomDurability(i) / 1550) * 100;  // getDurabilityValueAsPercent(i, getCustomDurability(i));
