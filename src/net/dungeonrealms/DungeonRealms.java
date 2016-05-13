@@ -76,6 +76,7 @@ import net.dungeonrealms.game.mongo.achievements.AchievementManager;
 import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.network.NetworkServer;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.chat.TabbedChatListener;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
@@ -254,6 +255,7 @@ public class DungeonRealms extends JavaPlugin {
             ps = new Profile();
             hs.onEnable();
             ps.onEnable();
+            pm.registerEvents(new TabbedChatListener(), this);
         } else {
             pm.registerEvents(new MainListenerInstance(), this);
             pm.registerEvents(new DamageListener(), this);
@@ -263,6 +265,7 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new EnergyListener(), this);
             pm.registerEvents(new AntiCheatListener(), this);
             pm.registerEvents(new AchievementManager(), this);
+            pm.registerEvents(new TabbedChatListener(), this);
         }        
         
         //pm.registerEvents(new MainListener(), this);
