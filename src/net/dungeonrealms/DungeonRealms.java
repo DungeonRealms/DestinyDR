@@ -76,6 +76,7 @@ import net.dungeonrealms.game.mongo.achievements.AchievementManager;
 import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.network.NetworkServer;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.chat.TabbedChatListener;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
@@ -91,6 +92,7 @@ import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
+import net.dungeonrealms.newcommands.KickAllCommand;
 import net.dungeonrealms.newcommands.RealmTestCommand;
 import net.dungeonrealms.newcommands.StarterCommand;
 import net.dungeonrealms.newcommands.TestingCommand;
@@ -254,6 +256,7 @@ public class DungeonRealms extends JavaPlugin {
             ps = new Profile();
             hs.onEnable();
             ps.onEnable();
+            pm.registerEvents(new TabbedChatListener(), this);
         } else {
             pm.registerEvents(new MainListenerInstance(), this);
             pm.registerEvents(new DamageListener(), this);
@@ -263,6 +266,7 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new EnergyListener(), this);
             pm.registerEvents(new AntiCheatListener(), this);
             pm.registerEvents(new AchievementManager(), this);
+            pm.registerEvents(new TabbedChatListener(), this);
         }        
         
         //pm.registerEvents(new MainListener(), this);
@@ -354,7 +358,8 @@ public class DungeonRealms extends JavaPlugin {
     		AbstractCommand realmtest = new RealmTestCommand("realmtest", "/<command> [args]", "Puts you in your realm");
     		realmtest.register();	
         }
-
+		AbstractCommand kickAllCMD = new KickAllCommand("kickall", "/<command> [args]", "Kicks all players from the server");
+		kickAllCMD.register();	
         try {
             FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));
         } catch (IOException e) {
