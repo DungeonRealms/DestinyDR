@@ -79,8 +79,8 @@ public class RealmManager implements GenericMechanic {
         Utils.log.info("DungeonRealms Registering FTP() ... STARTING ...");
         File coreDirectory = DungeonRealms.getInstance().getDataFolder();
         try {
-            FileUtils.forceMkdir(new File(coreDirectory + File.separator + "/realms/downloading"));
-            FileUtils.forceMkdir(new File(coreDirectory + File.separator + "/realms/uploading"));
+            FileUtils.forceMkdir(new File(coreDirectory + File.separator + "realms/down"));
+            FileUtils.forceMkdir(new File(coreDirectory + File.separator + "realms/up"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -242,7 +242,7 @@ public class RealmManager implements GenericMechanic {
 			URLConnection urlc = url.openConnection();
 			OutputStream out = urlc.getOutputStream();
 
-			InputStream is = new FileInputStream("/realms/up/" + uuid.toString() + ".zip");
+			InputStream is = new FileInputStream("realms/up/" + uuid.toString() + ".zip");
 
 			byte buf[] = new byte[1024];
 			int len;
@@ -254,7 +254,7 @@ public class RealmManager implements GenericMechanic {
 			out.close();
 			is.close();
 
-			new File("/realms/up/" + uuid.toString() + ".zip").delete();
+			new File("realms/up/" + uuid.toString() + ".zip").delete();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -275,7 +275,7 @@ public class RealmManager implements GenericMechanic {
 			urlc = url.openConnection();
 
 			InputStream is = urlc.getInputStream();
-			OutputStream out = new FileOutputStream("/realms/down/" + uuid.toString() + ".zip");
+			OutputStream out = new FileOutputStream("realms/down/" + uuid.toString() + ".zip");
 
 			byte buf[] = new byte[1024];
 			int len;
@@ -326,7 +326,7 @@ public class RealmManager implements GenericMechanic {
      */
     public void deleteLocalCache(UUID uuid) {
         Utils.log.info("[REALM] Removing cached realm for " + uuid.toString());
-        File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloading/" + uuid.toString() + ".zip");
+        File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "realms/down/" + uuid.toString() + ".zip");
         if (TEMP_LOCAL_LOCATION.exists()) {
             TEMP_LOCAL_LOCATION.delete();
         } else {
