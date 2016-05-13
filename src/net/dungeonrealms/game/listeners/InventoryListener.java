@@ -286,14 +286,38 @@ public class InventoryListener implements Listener {
             Attribute a = new Attribute(event.getNewArmorPiece());
             int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
             switch (a.getItemTier().getTierId()) {
-                case 5:
-                    if (playerLevel < 10) {
-                        event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 10");
-                        player.updateInventory();
-                        return;
-                    }
-                    break;
+            case 2:
+                if (playerLevel < 10) {
+                    event.setCancelled(true);
+                    player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 10");
+                    player.updateInventory();
+                    return;
+                }
+                break;
+            case 3:
+                if (playerLevel < 20) {
+                    event.setCancelled(true);
+                    player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 20");
+                    player.updateInventory();
+                    return;
+                }
+                break;
+            case 4:
+                if (playerLevel < 30) {
+                    event.setCancelled(true);
+                    player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 30");
+                    player.updateInventory();
+                    return;
+                }
+                break;
+            case 5:
+                if (playerLevel < 40) {
+                    event.setCancelled(true);
+                    player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 40");
+                    player.updateInventory();
+                    return;
+                }
+                break;
             }
         }
         if (!CombatLog.isInCombat(player)) {

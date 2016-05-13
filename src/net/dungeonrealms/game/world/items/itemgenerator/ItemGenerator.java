@@ -415,9 +415,21 @@ public class ItemGenerator {
          */
         tag.set("AttributeModifiers", new NBTTagList());
         
+        NBTTagList modifiersList = new NBTTagList();
+        
         for (Map.Entry<String, Integer> entry : NBTModifiers.entrySet()) {
             tag.set(entry.getKey(), new NBTTagInt(entry.getValue()));
+            
+            if (!entry.getKey().contains("Max")) {
+                if (entry.getKey().contains("Min")) {
+                    modifiersList.add(new NBTTagString(entry.getKey().replace("Min", "")));
+                    continue;
+                }
+                modifiersList.add(new NBTTagString(entry.getKey()));
+            }
         }
+        
+        tag.set("modifiers", modifiersList);
         
         nmsStack.setTag(tag);
         
