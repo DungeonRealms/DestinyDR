@@ -123,11 +123,11 @@ public class RealmManager implements GenericMechanic {
     }
 
     private void zipRealm(UUID uuid) throws IOException {
-    	File destination = new File("/realms/up/" + uuid.toString() + ".zip");
-        zip(uuid, destination, zipPass);
+    	File destination = new File("realms/up/" + uuid.toString() + ".zip");
+        zip(uuid, destination);
     }
 
-    public static void zip(UUID uuid, File destinationFilePath, String password) {
+    public static void zip(UUID uuid, File destinationFilePath) {
         
 		// Input and OutputStreams are defined outside of the try/catch block
 		// to use them in the finally block
@@ -164,15 +164,6 @@ public class RealmManager implements GenericMechanic {
 			// DEFLATE_LEVEL_MAXIMUM - High compression level with a compromise of speed
 			// DEFLATE_LEVEL_ULTRA - Highest compression level but low speed
 			parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
-			
-			//This flag defines if the realm files have to be encrypted.
-			parameters.setEncryptFiles(true);
-
-			
-			// Lets set the Encryption Now for the Realm
-			parameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
-			parameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
-			parameters.setPassword(password);
 			
 			//Now we loop through each file and read this file with an inputstream
 			//and write it to the ZipOutputStream.
@@ -235,7 +226,6 @@ public class RealmManager implements GenericMechanic {
     public static void unzip(File targetFolderPath, String password) {
         try {
             ZipFile zipFile = new ZipFile(targetFolderPath);
-            zipFile.setPassword(zipPass);
             zipFile.extractAll("");
         } catch (ZipException e) {
             e.printStackTrace();
