@@ -291,7 +291,7 @@ public class RealmManager implements GenericMechanic {
             generateBlankRealm(uuid);
 			return;
 		}
-		File TEMP_LOCAL_LOCATION = new File("/realms/down/" + uuid.toString() + ".zip");
+		File TEMP_LOCAL_LOCATION = new File("realms/down/" + uuid.toString() + ".zip");
         unzip(TEMP_LOCAL_LOCATION, zipPass);
         loadInWorld(uuid.toString(), uuid);
 	}
