@@ -92,7 +92,7 @@ public class InfernalAbyss extends EntitySkeleton implements Boss {
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
 			if (!this.getBukkitEntity().isDead())
 				this.getBukkitEntity().getLocation().add(0, 1, 0).getBlock().setType(Material.FIRE);
-		} , 0, 20l);
+		} , 0, 20L);
 		ghast = new InfernalGhast(this);
 		guard = new InfernalLordsGuard(this);
 		guard.isInvulnerable(DamageSource.FALL);

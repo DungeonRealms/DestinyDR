@@ -9,7 +9,6 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.world.party.Affair;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;

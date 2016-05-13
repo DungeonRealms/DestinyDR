@@ -136,7 +136,7 @@ public class CombatLog implements GenericMechanic {
                     COMBAT.put(e.getKey(), (e.getValue() - 1));
                 }
             }
-        }, 0, 20l);
+        }, 0, 20L);
     }
 
     @Override

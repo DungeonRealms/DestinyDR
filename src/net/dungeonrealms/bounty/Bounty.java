@@ -36,7 +36,7 @@ public class Bounty {
         Executors.newSingleThreadExecutor().submit(() -> {
             try (
                     PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT placer, reward FROM `bounties` WHERE victim='" + uuid.toString() + "';");
-                    ResultSet resultSet = statement.executeQuery();
+                    ResultSet resultSet = statement.executeQuery()
             ) {
                 HashMap<String, Integer> temp = new HashMap<>();
                 while (resultSet.next()) {
@@ -59,7 +59,7 @@ public class Bounty {
             boolean contains = true;
             try (
                     PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT placer FROM `bounties` WHERE victim='" + uuid.toString() + "';");
-                    ResultSet resultSet = statement.executeQuery();
+                    ResultSet resultSet = statement.executeQuery()
             ) {
                 contains = resultSet.next();
             } catch (SQLException e) {
@@ -85,7 +85,7 @@ public class Bounty {
         Executors.newSingleThreadExecutor().submit(() -> {
             try (
                     PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT * FROM `bounties` WHERE placer='" + uuid.toString() + "';");
-                    ResultSet resultSet = statement.executeQuery();
+                    ResultSet resultSet = statement.executeQuery()
             ) {
                 HashMap<String, Integer> temp = new HashMap<>();
                 while (resultSet.next()) {

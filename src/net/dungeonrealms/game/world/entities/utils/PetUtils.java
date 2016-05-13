@@ -89,14 +89,13 @@ public class PetUtils implements GenericMechanic{
      */
     private static void makePet(EntityLiving e, UUID toFollow, double speed) {
         try {
-            Object nms_entity = e;
-            if (nms_entity instanceof EntityInsentient) {
-                PathfinderGoalSelector goal = (PathfinderGoalSelector) goalSelector.get(nms_entity);
-                PathfinderGoalSelector target = (PathfinderGoalSelector) targetSelector.get(nms_entity);
+            if (e instanceof EntityInsentient) {
+                PathfinderGoalSelector goal = (PathfinderGoalSelector) goalSelector.get(e);
+                PathfinderGoalSelector target = (PathfinderGoalSelector) targetSelector.get(e);
                 gsa.set(goal, new UnsafeList<>());
                 gsa.set(target, new UnsafeList<>());
-                goal.a(0, new PathfinderGoalFloat((EntityInsentient) nms_entity));
-                goal.a(1, new PathfinderGoalWalktoTile((EntityInsentient) nms_entity, toFollow, speed));
+                goal.a(0, new PathfinderGoalFloat((EntityInsentient) e));
+                goal.a(1, new PathfinderGoalWalktoTile((EntityInsentient) e, toFollow, speed));
             } else {
                 throw new IllegalArgumentException(e.getCustomName() + " is not an instance of an EntityInsentient.");
             }

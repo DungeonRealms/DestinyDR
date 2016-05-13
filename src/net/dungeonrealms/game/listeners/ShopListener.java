@@ -132,7 +132,6 @@ public class ShopListener implements Listener {
 			        && itemHeld.getType() != stackInSlot.getType()) {
 				clicker.sendMessage(ChatColor.RED.toString() + "Move item in slot first.");
 				event.setCancelled(true);
-				return;
 			} else {
 				if (event.isLeftClick()) {
 					if (stackInSlot == null || stackInSlot.getType() == Material.AIR) {
@@ -240,14 +239,13 @@ public class ShopListener implements Listener {
 						return;
 					}
 					event.setCancelled(true);
-					Player player = clicker;
-					player.closeInventory();
-					AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
+					clicker.closeInventory();
+					AnvilGUIInterface gui = AnvilApi.createNewGUI(clicker, e -> {
 						if (e.getSlot() == AnvilSlot.OUTPUT) {
 							int number = 0;
 							try {
 								number = Integer.parseInt(e.getName());
-								player.sendMessage("Price set");
+								clicker.sendMessage("Price set");
 							} catch (Exception exc) {
 								e.setWillClose(true);
 								e.setWillDestroy(true);
@@ -255,7 +253,7 @@ public class ShopListener implements Listener {
 								return;
 							}
 							if (number < 0) {
-								player.getPlayer().sendMessage("You can't ask for negative money!");
+								clicker.getPlayer().sendMessage("You can't ask for negative money!");
 							} else {
 								ItemStack stack = stackInSlot.clone();
 								ItemMeta meta = stackInSlot.getItemMeta();
@@ -277,7 +275,7 @@ public class ShopListener implements Listener {
 								net.minecraft.server.v1_8_R3.ItemStack nms1 = CraftItemStack.asNMSCopy(stack);
 								nms1.getTag().setInt("Price", number);
 								shop.inventory.setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms1));
-								player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
+								clicker.playSound(clicker.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
 								e.setWillClose(true);
 								e.setWillDestroy(true);
 							}

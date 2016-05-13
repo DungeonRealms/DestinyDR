@@ -27,6 +27,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.UUID;
 
 /**
@@ -233,14 +234,14 @@ public class BankListener implements Listener {
                             ItemStack accept = new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData());
                             ItemMeta acceptMeta = accept.getItemMeta();
                             acceptMeta.setDisplayName(ChatColor.GREEN.toString() + ChatColor.BOLD + "ACCEPT");
-                            acceptMeta.setLore(Arrays.asList(ChatColor.GRAY + "Upgrade storage: " + ChatColor.GREEN.toString() + num +"g"));
+                            acceptMeta.setLore(Collections.singletonList(ChatColor.GRAY + "Upgrade storage: " + ChatColor.GREEN.toString() + num + "g"));
                             accept.setItemMeta(acceptMeta);
                             
                             
                             ItemStack deny = new ItemStack(Material.WOOL, 1, DyeColor.RED.getData());
                             ItemMeta denyMeta = deny.getItemMeta();
                             denyMeta.setDisplayName(ChatColor.RED.toString() + ChatColor.BOLD + "DENY");
-                            denyMeta.setLore(Arrays.asList(ChatColor.GRAY + "Cancel upgrade"));
+                            denyMeta.setLore(Collections.singletonList(ChatColor.GRAY + "Cancel upgrade"));
                             deny.setItemMeta(denyMeta);
                             
                             inv.setItem(3, accept);
@@ -256,8 +257,7 @@ public class BankListener implements Listener {
                     	if(storage.collection_bin != null){
                     		player.openInventory(storage.collection_bin);
                     		e.setCancelled(true);
-                    		return;
-                    	}else{
+                        }else{
                     		player.sendMessage(ChatColor.RED + "Collection Bin is empty.");
                     	}
                     }
@@ -430,7 +430,7 @@ public class BankListener implements Listener {
     				        true);
         			player.sendMessage(ChatColor.GREEN.toString() + "Storage updated!");
         			player.closeInventory();
-        			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->BankMechanics.getInstance().getStorage(player.getUniqueId()).update(), 20l);
+        			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->BankMechanics.getInstance().getStorage(player.getUniqueId()).update(), 20L);
         			});
         		}else{
         			player.closeInventory();
@@ -446,7 +446,6 @@ public class BankListener implements Listener {
         	e.setCancelled(true);
             if(e.getRawSlot() > e.getInventory().getSize()){
             	e.setCancelled(true);
-            	return;
             }else if(e.getCurrentItem() != null && e.getCurrentItem().getType() != Material.AIR){
             	ItemStack stack = e.getCurrentItem();
             	if(e.getWhoClicked().getInventory().firstEmpty() >= 0){

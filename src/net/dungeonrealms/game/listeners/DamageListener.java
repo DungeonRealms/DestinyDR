@@ -401,7 +401,6 @@ public class DamageListener implements Listener {
          if(!offer.canFight){
         	event.setCancelled(true);
         	event.setDamage(0);
-        	return;
          }
         }
     
@@ -475,7 +474,6 @@ public class DamageListener implements Listener {
                                     }
                                 }
                             } else {
-                                continue;
                             }
                         }
                         DamageAPI.polearmAOEProcessing.remove(attacker);
@@ -972,7 +970,6 @@ public class DamageListener implements Listener {
                             RepairAPI.subtractCustomDurability(player, itemStack, 400);
                             player.getInventory().addItem(itemStack);
                         } else {
-                            continue;
                         }
                     }
                 }

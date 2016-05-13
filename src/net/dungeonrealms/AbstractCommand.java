@@ -91,8 +91,7 @@ public abstract class AbstractCommand implements CommandExecutor, TabExecutor {
         protected ReflectCommand(String command) { super(command); }
         public void setExecutor(AbstractCommand exe) { this.exe = exe; }
         @Override public boolean execute(CommandSender sender, String commandLabel, String[] args) {
-            if (exe != null) { return exe.onCommand(sender, this, commandLabel, args); }
-            return false;
+            return exe != null && exe.onCommand(sender, this, commandLabel, args);
         }
         
         @Override  public List<String> tabComplete(CommandSender sender, String alais, String[] args) {

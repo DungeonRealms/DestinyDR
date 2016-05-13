@@ -18,7 +18,6 @@ import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
@@ -30,13 +29,13 @@ import net.minecraft.server.v1_8_R3.World;
  */
 public interface Monster {
 
-	public void onMonsterAttack(Player p);
+	void onMonsterAttack(Player p);
 
-	public void onMonsterDeath(Player killer);
+	void onMonsterDeath(Player killer);
 
-	public EnumMonster getEnum();
+	EnumMonster getEnum();
 
-	public default void checkItemDrop(int tier, EnumMonster monter, Entity ent, Player killer) {
+	default void checkItemDrop(int tier, EnumMonster monter, Entity ent, Player killer) {
 		int killerLuck = DamageAPI.calculatePlayerLuck(killer);
 		Location loc = ent.getLocation();
 		World world = ((CraftWorld) loc.getWorld()).getHandle();

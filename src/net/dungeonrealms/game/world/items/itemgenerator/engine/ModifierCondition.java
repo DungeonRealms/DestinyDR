@@ -26,14 +26,14 @@ public class ModifierCondition {
 		this.rarity = rarity;
 		this.range = range;
 		this.chance = chance;
-		this.cantContain = new ArrayList<Class<? extends ItemModifier>>();
+		this.cantContain = new ArrayList<>();
 	}
 	
 	public ModifierCondition(ItemTier tier, ItemRarity rarity, ModifierRange range){
 		this.tier = tier;
 		this.rarity = rarity;
 		this.range = range;
-		this.cantContain = new ArrayList<Class<? extends ItemModifier>>();
+		this.cantContain = new ArrayList<>();
 	}
 	
 	public void setChosenPrefix(String prefix){
@@ -58,7 +58,7 @@ public class ModifierCondition {
 	}
 	
 	public ModifierCondition setReplacement(Class<? extends ItemModifier> replacement){
-		this.replacement = new ArrayList<Class<? extends ItemModifier>>();
+		this.replacement = new ArrayList<>();
 		this.replacement.add(replacement);
 		return this;
 	}
@@ -80,8 +80,7 @@ public class ModifierCondition {
 	
 	public boolean doesConclude(ItemTier tier, ItemRarity rarity, ItemMeta meta){
 		if(this.tier != null && this.tier != tier) return false;
-		if(this.rarity != null && this.rarity != rarity) return false;
-		return true;
+		return !(this.rarity != null && this.rarity != rarity);
 	}
 	
 	public ModifierRange getRange(){
@@ -118,8 +117,7 @@ public class ModifierCondition {
 	}
 	
 	public boolean checkCantContain(Class<? extends ItemModifier> mod) {
-	    if (this.getCantContain().contains(mod)) return false;
-	    return true;
+		return !this.getCantContain().contains(mod);
 	}
 	
 }

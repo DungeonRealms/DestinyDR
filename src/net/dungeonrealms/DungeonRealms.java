@@ -83,7 +83,6 @@ import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
-import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.party.Affair;
@@ -92,6 +91,9 @@ import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
+import net.dungeonrealms.newcommands.RealmTestCommand;
+import net.dungeonrealms.newcommands.StarterCommand;
+import net.dungeonrealms.newcommands.TestingCommand;
 
 public class DungeonRealms extends JavaPlugin {
 
@@ -349,6 +351,8 @@ public class DungeonRealms extends JavaPlugin {
     		gotesting.register();
     		AbstractCommand givestarter = new StarterCommand("givestarter", "/<command> [args]", "Gives a starter kit to someone");
     		givestarter.register();	
+    		AbstractCommand realmtest = new RealmTestCommand("realmtest", "/<command> [args]", "Puts you in your realm");
+    		realmtest.register();	
         }
 
         try {
@@ -369,21 +373,15 @@ public class DungeonRealms extends JavaPlugin {
                     AsyncUtils.pool.shutdown();
                     Database.mongoClient.close();
                 }, 200);
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    Bukkit.getOnlinePlayers().stream().forEach(player -> BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE"));
-                }, (20 * 60) * 4);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getOnlinePlayers().stream().forEach(player -> BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE")), (20 * 60) * 4);
 
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 1200);
             }, 6000);
         }, 288000);
-        Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000l) / START_TIME) + "/s");
+        Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000L) / START_TIME) + "/s");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> this.hasFinishedSetup = true, 240L);
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> {
-            DatabaseAPI.getInstance().PLAYER_TIME.entrySet().stream().forEach(e -> {
-                DatabaseAPI.getInstance().PLAYER_TIME.put(e.getKey(), (e.getValue() + 1));
-            });
-        }, 0, 20);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> DatabaseAPI.getInstance().PLAYER_TIME.entrySet().stream().forEach(e -> DatabaseAPI.getInstance().PLAYER_TIME.put(e.getKey(), (e.getValue() + 1))), 0, 20);
 
     }
 

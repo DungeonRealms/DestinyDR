@@ -19,7 +19,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -79,8 +78,8 @@ public class RealmManager implements GenericMechanic {
         Utils.log.info("DungeonRealms Registering FTP() ... STARTING ...");
         File coreDirectory = DungeonRealms.getInstance().getDataFolder();
         try {
-            FileUtils.forceMkdir(new File(coreDirectory + File.separator + "/realms/downloading"));
-            FileUtils.forceMkdir(new File(coreDirectory + File.separator + "/realms/uploading"));
+            FileUtils.forceMkdir(new File(coreDirectory + File.separator + "realms/down"));
+            FileUtils.forceMkdir(new File(coreDirectory + File.separator + "realms/up"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -123,11 +122,11 @@ public class RealmManager implements GenericMechanic {
     }
 
     private void zipRealm(UUID uuid) throws IOException {
-    	File destination = new File("/realms/up/" + uuid.toString() + ".zip");
-        zip(uuid, destination, zipPass);
+    	File destination = new File("realms/up/" + uuid.toString() + ".zip");
+        zip(uuid, destination);
     }
 
-    public static void zip(UUID uuid, File destinationFilePath, String password) {
+    public static void zip(UUID uuid, File destinationFilePath) {
         
 		// Input and OutputStreams are defined outside of the try/catch block
 		// to use them in the finally block
@@ -136,7 +135,7 @@ public class RealmManager implements GenericMechanic {
 		
 		try {
 			// Prepare the realm files that will be added later in the code
-			 ArrayList<File> filesToAdd = new ArrayList<File>();
+			 ArrayList<File> filesToAdd = new ArrayList<>();
 		     try (Stream<Path> filePathStream=Files.walk(Paths.get(uuid.toString()))) {
 		    	    filePathStream.forEach(filePath -> {
 		    	        if (Files.isRegularFile(filePath)) {
@@ -165,19 +164,10 @@ public class RealmManager implements GenericMechanic {
 			// DEFLATE_LEVEL_ULTRA - Highest compression level but low speed
 			parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
 			
-			//This flag defines if the realm files have to be encrypted.
-			parameters.setEncryptFiles(true);
-
-			
-			// Lets set the Encryption Now for the Realm
-			parameters.setEncryptionMethod(Zip4jConstants.ENC_METHOD_AES);
-			parameters.setAesKeyStrength(Zip4jConstants.AES_STRENGTH_256);
-			parameters.setPassword(password);
-			
 			//Now we loop through each file and read this file with an inputstream
 			//and write it to the ZipOutputStream.
 			for (int i = 0; i < filesToAdd.size(); i++) {
-				File file = (File)filesToAdd.get(i);
+				File file = filesToAdd.get(i);
 				
 				//This will initiate ZipOutputStream to include the file
 				//with the input parameters
@@ -235,7 +225,6 @@ public class RealmManager implements GenericMechanic {
     public static void unzip(File targetFolderPath, String password) {
         try {
             ZipFile zipFile = new ZipFile(targetFolderPath);
-            zipFile.setPassword(zipPass);
             zipFile.extractAll("");
         } catch (ZipException e) {
             e.printStackTrace();
@@ -252,7 +241,7 @@ public class RealmManager implements GenericMechanic {
 			URLConnection urlc = url.openConnection();
 			OutputStream out = urlc.getOutputStream();
 
-			InputStream is = new FileInputStream("/realms/up/" + uuid.toString() + ".zip");
+			InputStream is = new FileInputStream("realms/up/" + uuid.toString() + ".zip");
 
 			byte buf[] = new byte[1024];
 			int len;
@@ -264,7 +253,7 @@ public class RealmManager implements GenericMechanic {
 			out.close();
 			is.close();
 
-			new File("/realms/up/" + uuid.toString() + ".zip").delete();
+			new File("realms/up/" + uuid.toString() + ".zip").delete();
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -285,7 +274,7 @@ public class RealmManager implements GenericMechanic {
 			urlc = url.openConnection();
 
 			InputStream is = urlc.getInputStream();
-			OutputStream out = new FileOutputStream("/realms/down/" + uuid.toString() + ".zip");
+			OutputStream out = new FileOutputStream("realms/down/" + uuid.toString() + ".zip");
 
 			byte buf[] = new byte[1024];
 			int len;
@@ -301,7 +290,7 @@ public class RealmManager implements GenericMechanic {
             generateBlankRealm(uuid);
 			return;
 		}
-		File TEMP_LOCAL_LOCATION = new File("/realms/down/" + uuid.toString() + ".zip");
+		File TEMP_LOCAL_LOCATION = new File("realms/down/" + uuid.toString() + ".zip");
         unzip(TEMP_LOCAL_LOCATION, zipPass);
         loadInWorld(uuid.toString(), uuid);
 	}
@@ -321,10 +310,7 @@ public class RealmManager implements GenericMechanic {
             e.printStackTrace();
         }
         int returnCode = ftpClient.getReplyCode();
-        if (inputStream == null || returnCode == 550) {
-            return false;
-        }
-        return true;
+        return !(inputStream == null || returnCode == 550);
     }
 
     /**
@@ -336,7 +322,7 @@ public class RealmManager implements GenericMechanic {
      */
     public void deleteLocalCache(UUID uuid) {
         Utils.log.info("[REALM] Removing cached realm for " + uuid.toString());
-        File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloading/" + uuid.toString() + ".zip");
+        File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "realms/down/" + uuid.toString() + ".zip");
         if (TEMP_LOCAL_LOCATION.exists()) {
             TEMP_LOCAL_LOCATION.delete();
         } else {
@@ -439,7 +425,7 @@ public class RealmManager implements GenericMechanic {
         }
     }
     
-	static HashMap<UUID, Integer> realm_transferpending = new HashMap<UUID, Integer>();
+	static HashMap<UUID, Integer> realm_transferpending = new HashMap<>();
     
     /**
      * Opens a players realm for an Instance.

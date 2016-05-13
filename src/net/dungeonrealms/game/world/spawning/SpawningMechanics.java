@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.world.spawning;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Random;
 
 import org.bukkit.Bukkit;

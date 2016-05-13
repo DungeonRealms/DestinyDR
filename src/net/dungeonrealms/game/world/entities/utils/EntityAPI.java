@@ -29,14 +29,12 @@ public class EntityAPI {
     public static void removePlayerPetList(UUID uuid) {
         if (Entities.PLAYER_PETS.containsKey(uuid)) {
             Entities.PLAYER_PETS.remove(uuid);
-            return;
         }
     }
 
     public static void removePlayerMountList(UUID uuid) {
         if (Entities.PLAYER_MOUNTS.containsKey(uuid)) {
             Entities.PLAYER_MOUNTS.remove(uuid);
-            return;
         }
     }
 

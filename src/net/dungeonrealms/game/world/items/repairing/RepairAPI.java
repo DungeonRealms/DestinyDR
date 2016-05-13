@@ -392,10 +392,7 @@ public class RepairAPI {
         if (tag.getString("type").equalsIgnoreCase("weapon")) {
             return true;
         }
-        if (tag.getString("type").equalsIgnoreCase("armor")) {
-            return true;
-        }
-        return false;
+        return tag.getString("type").equalsIgnoreCase("armor");
     }
 
     /**

@@ -24,7 +24,6 @@ import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
 import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
-import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -67,36 +66,37 @@ public class ClickHandler {
         /*
         Animal Tamer NPC
          */
-        if (name.equals("Animal Vendor")) {
-            event.setCancelled(true);
-            if (slot > 18) return;
-            if (event.getCurrentItem().getType() != Material.AIR) {
-                net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                if (nmsStack == null) return;
-                if (nmsStack.getTag() == null) return;
-                List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
-                if (playerMounts.contains(nmsStack.getTag().getString("mountType"))) {
-                    player.sendMessage(ChatColor.RED + "You already own this mount!");
-                    return;
-                } else {
-                    if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, nmsStack.getTag().getString("mountType").toUpperCase(), true);
-                        player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("mountType") + " mount.");
-                        player.closeInventory();
+        switch (name) {
+            case "Animal Vendor":
+                event.setCancelled(true);
+                if (slot > 18) return;
+                if (event.getCurrentItem().getType() != Material.AIR) {
+                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                    if (nmsStack == null) return;
+                    if (nmsStack.getTag() == null) return;
+                    List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
+                    if (playerMounts.contains(nmsStack.getTag().getString("mountType"))) {
+                        player.sendMessage(ChatColor.RED + "You already own this mount!");
                         return;
                     } else {
-                        player.sendMessage(ChatColor.RED + "You cannot afford this mount, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("mountCost") + ChatColor.RED + " Gems.");
-                        return;
+                        if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, nmsStack.getTag().getString("mountType").toUpperCase(), true);
+                            player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("mountType") + " mount.");
+                            player.closeInventory();
+                            return;
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You cannot afford this mount, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("mountCost") + ChatColor.RED + " Gems.");
+                            return;
+                        }
                     }
                 }
-            }
-            return;
-        } else
+                return;
+
 
         /*
         Skill Trainer NPC
          */
-            if (name.equals("Profession Vendor")) {
+            case "Profession Vendor":
                 event.setCancelled(true);
                 if (slot > 9) return;
                 if (event.getCurrentItem().getType() != Material.AIR) {
@@ -122,93 +122,93 @@ public class ClickHandler {
                     return;
                 }
                 return;
-            } else
+
 
         /*
         E-Cash Vendor NPC
          */
-                if (name.equals("E-Cash Vendor")) {
-                    event.setCancelled(true);
-                    if (slot > 25) return;
-                    if (event.getCurrentItem().getType() != Material.AIR) {
-                        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                        if (nmsStack == null) return;
-                        if (nmsStack.getTag() == null) return;
-                        if (nmsStack.getTag().hasKey("playerTrailType")) {
-                            List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, player.getUniqueId());
-                            if (playerTrails.contains(nmsStack.getTag().getString("playerTrailType"))) {
-                                player.sendMessage(ChatColor.RED + "You already own this trail!");
-                                return;
-                            } else {
-                                if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PARTICLES, nmsStack.getTag().getString("playerTrailType").toUpperCase(), true);
-                                    player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("playerTrailType") + " trail.");
-                                    player.closeInventory();
-                                    return;
-                                } else {
-                                    player.sendMessage(ChatColor.RED + "You cannot afford this trail, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
-                                    return;
-                                }
-                            }
-                        }
-                        if (nmsStack.getTag().hasKey("mountType")) {
-                            List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
-                            if (playerMounts.contains(nmsStack.getTag().getString("mountType"))) {
-                                player.sendMessage(ChatColor.RED + "You already own this mount!");
-                                return;
-                            } else {
-                                if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, nmsStack.getTag().getString("mountType").toUpperCase(), true);
-                                    player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("mountType") + " mount");
-                                    player.closeInventory();
-                                    return;
-                                } else {
-                                    player.sendMessage(ChatColor.RED + "You cannot afford this mount, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
-                                    return;
-                                }
-                            }
-                        }
-                        if (nmsStack.getTag().hasKey("petType")) {
-                            List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, player.getUniqueId());
-                            if (playerPets.contains(nmsStack.getTag().getString("petType"))) {
-                                player.sendMessage(ChatColor.RED + "You already own this pet.");
-                                return;
-                            } else {
-                                if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, nmsStack.getTag().getString("petType").toUpperCase(), true);
-                                    player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("petType") + " pet.");
-                                    player.closeInventory();
-                                    return;
-                                } else {
-                                    player.sendMessage(ChatColor.RED + "You cannot afford this pet, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
-                                    return;
-                                }
-                            }
-                        }
-                        if (nmsStack.getTag().hasKey("donationStore")) {
-                            player.closeInventory();
-                            TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
-                            bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://shop.dungeonrealms.net"));
-                            bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Dungeon Realms Shop").create()));
-                            TextComponent test = new TextComponent(ChatColor.RED + "To Purchase E-Cash from our Shop, Click ");
-                            test.addExtra(bungeeMessage);
-                            player.spigot().sendMessage(test);
+            case "E-Cash Vendor":
+                event.setCancelled(true);
+                if (slot > 25) return;
+                if (event.getCurrentItem().getType() != Material.AIR) {
+                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                    if (nmsStack == null) return;
+                    if (nmsStack.getTag() == null) return;
+                    if (nmsStack.getTag().hasKey("playerTrailType")) {
+                        List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, player.getUniqueId());
+                        if (playerTrails.contains(nmsStack.getTag().getString("playerTrailType"))) {
+                            player.sendMessage(ChatColor.RED + "You already own this trail!");
                             return;
-                        }
-                        if (nmsStack.getTag().hasKey("storageExpansion")) {
+                        } else {
                             if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                                player.getInventory().addItem(ItemManager.createItem(EnumItem.StorageExpansion));
-                                player.sendMessage(ChatColor.GREEN + "You have purchased a Storage Expansion.");
+                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PARTICLES, nmsStack.getTag().getString("playerTrailType").toUpperCase(), true);
+                                player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("playerTrailType") + " trail.");
                                 player.closeInventory();
                                 return;
                             } else {
-                                player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
+                                player.sendMessage(ChatColor.RED + "You cannot afford this trail, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
                                 return;
                             }
                         }
-                        if (nmsStack.getTag().hasKey("repairHammer")) {
-                            player.sendMessage(ChatColor.RED + "This is currently not implemented");
+                    }
+                    if (nmsStack.getTag().hasKey("mountType")) {
+                        List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
+                        if (playerMounts.contains(nmsStack.getTag().getString("mountType"))) {
+                            player.sendMessage(ChatColor.RED + "You already own this mount!");
+                            return;
+                        } else {
+                            if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
+                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, nmsStack.getTag().getString("mountType").toUpperCase(), true);
+                                player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("mountType") + " mount");
+                                player.closeInventory();
+                                return;
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You cannot afford this mount, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
+                                return;
+                            }
+                        }
+                    }
+                    if (nmsStack.getTag().hasKey("petType")) {
+                        List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, player.getUniqueId());
+                        if (playerPets.contains(nmsStack.getTag().getString("petType"))) {
+                            player.sendMessage(ChatColor.RED + "You already own this pet.");
+                            return;
+                        } else {
+                            if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
+                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, nmsStack.getTag().getString("petType").toUpperCase(), true);
+                                player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("petType") + " pet.");
+                                player.closeInventory();
+                                return;
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You cannot afford this pet, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
+                                return;
+                            }
+                        }
+                    }
+                    if (nmsStack.getTag().hasKey("donationStore")) {
+                        player.closeInventory();
+                        TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
+                        bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://shop.dungeonrealms.net"));
+                        bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Dungeon Realms Shop").create()));
+                        TextComponent test = new TextComponent(ChatColor.RED + "To Purchase E-Cash from our Shop, Click ");
+                        test.addExtra(bungeeMessage);
+                        player.spigot().sendMessage(test);
+                        return;
+                    }
+                    if (nmsStack.getTag().hasKey("storageExpansion")) {
+                        if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
+                            player.getInventory().addItem(ItemManager.createItem(EnumItem.StorageExpansion));
+                            player.sendMessage(ChatColor.GREEN + "You have purchased a Storage Expansion.");
                             player.closeInventory();
+                            return;
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
+                            return;
+                        }
+                    }
+                    if (nmsStack.getTag().hasKey("repairHammer")) {
+                        player.sendMessage(ChatColor.RED + "This is currently not implemented");
+                        player.closeInventory();
                     /*if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
                         player.getInventory().addItem(ItemManager.createItem(EnumItem.RepairHammer));
                         player.sendMessage(ChatColor.GREEN + "You have purchased Five Repair Hammers.");
@@ -218,21 +218,21 @@ public class ClickHandler {
                         player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
                         return;
                     }*/
-                        }
-                        if (nmsStack.getTag().hasKey("retrainingBook")) {
-                            if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
-                                player.getInventory().addItem(ItemManager.createItem(EnumItem.RetrainingBook));
-                                player.sendMessage(ChatColor.GREEN + "You have purchased a Retraining Book.");
-                                player.closeInventory();
-                                return;
-                            } else {
-                                player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
-                                return;
-                            }
-                        }
-                        if (nmsStack.getTag().hasKey("medalOfGathering")) {
-                            player.sendMessage(ChatColor.RED + "This is currently not implemented!");
+                    }
+                    if (nmsStack.getTag().hasKey("retrainingBook")) {
+                        if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
+                            player.getInventory().addItem(ItemManager.createItem(EnumItem.RetrainingBook));
+                            player.sendMessage(ChatColor.GREEN + "You have purchased a Retraining Book.");
                             player.closeInventory();
+                            return;
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash");
+                            return;
+                        }
+                    }
+                    if (nmsStack.getTag().hasKey("medalOfGathering")) {
+                        player.sendMessage(ChatColor.RED + "This is currently not implemented!");
+                        player.closeInventory();
                     /*if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
                         player.getInventory().addItem(ItemManager.createItem(EnumItem.MedalOfGathering));
                         player.sendMessage(ChatColor.GREEN + "You have purchased a Medal Of Gathering.");
@@ -242,229 +242,229 @@ public class ClickHandler {
                         player.sendMessage(ChatColor.RED + "You cannot afford this, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("ecashCost") + ChatColor.RED + " E-Cash!");
                         return;
                     }*/
-                        }
                     }
-                    return;
-                } else
+                }
+                return;
+
 
         /*
         Inn Keeper NPC
          */
-                    if (name.equals("Hearthstone Re-Location")) {
-                        event.setCancelled(true);
-                        if (slot > 9) return;
-                        if (event.getCurrentItem().getType() != Material.AIR) {
-                            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                            if (nmsStack == null) return;
-                            if (nmsStack.getTag() == null) return;
-                            if (nmsStack.getTag().hasKey("hearthstoneLocation")) {
-                                String hearthstoneLocation = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, player.getUniqueId()));
-                                if (hearthstoneLocation.equalsIgnoreCase(nmsStack.getTag().getString("hearthstoneLocation"))) {
-                                    player.sendMessage(ChatColor.RED + "Your Hearthstone is already at this location!");
+            case "Hearthstone Re-Location":
+                event.setCancelled(true);
+                if (slot > 9) return;
+                if (event.getCurrentItem().getType() != Material.AIR) {
+                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                    if (nmsStack == null) return;
+                    if (nmsStack.getTag() == null) return;
+                    if (nmsStack.getTag().hasKey("hearthstoneLocation")) {
+                        String hearthstoneLocation = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, player.getUniqueId()));
+                        if (hearthstoneLocation.equalsIgnoreCase(nmsStack.getTag().getString("hearthstoneLocation"))) {
+                            player.sendMessage(ChatColor.RED + "Your Hearthstone is already at this location!");
+                            return;
+                        } else {
+                            if (TeleportAPI.canSetHearthstoneLocation(player, nmsStack.getTag().getString("hearthstoneLocation"))) {
+                                if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("gemCost"), player)) {
+                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEARTHSTONE, nmsStack.getTag().getString("hearthstoneLocation"), true);
+                                    player.sendMessage(ChatColor.GREEN + "Hearthstone set to " + nmsStack.getTag().getString("hearthstoneLocation") + ".");
+                                    player.closeInventory();
                                     return;
                                 } else {
-                                    if (TeleportAPI.canSetHearthstoneLocation(player, nmsStack.getTag().getString("hearthstoneLocation"))) {
-                                        if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("gemCost"), player)) {
-                                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEARTHSTONE, nmsStack.getTag().getString("hearthstoneLocation"), true);
-                                            player.sendMessage(ChatColor.GREEN + "Hearthstone set to " + nmsStack.getTag().getString("hearthstoneLocation") + ".");
-                                            player.closeInventory();
-                                            return;
-                                        } else {
-                                            player.sendMessage(ChatColor.RED + "You do NOT have enough gems for this location, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("gemCost") + ChatColor.RED + " Gems.");
-                                            return;
-                                        }
-                                    } else {
-                                        player.sendMessage(ChatColor.RED + "You have not explored the surrounding area of this Hearthstone Location yet");
-                                        return;
-                                    }
+                                    player.sendMessage(ChatColor.RED + "You do NOT have enough gems for this location, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("gemCost") + ChatColor.RED + " Gems.");
+                                    return;
                                 }
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You have not explored the surrounding area of this Hearthstone Location yet");
+                                return;
                             }
                         }
-                        return;
-                    } else
+                    }
+                }
+                return;
+
 
         /*
         Merchant
          */
-                        if (name.equals("Merchant")) {
-                            Inventory tradeWindow = event.getInventory();
-                            if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
-                                event.setCancelled(true);
-                                return;
-                            }
-                            if (!(event.isShiftClick()) || (event.isShiftClick() && slot < 27)) {
-                                if (!(event.getSlotType() == InventoryType.SlotType.CONTAINER)) {
-                                    return;
-                                }
-                                if (event.getInventory().getType() == InventoryType.PLAYER) {
-                                    return;
-                                }
-                                if (slot > 26 || slot < 0) {
-                                    return;
-                                }
-                                if (!(slot == 0 || slot == 1 || slot == 2 || slot == 3 || slot == 9 || slot == 10 || slot == 11 || slot == 12 || slot == 18 || slot == 19
-                                        || slot == 20 || slot == 21) && !(slot > 27)) {
-                                    event.setCancelled(true);
-                                    tradeWindow.setItem(slot, tradeWindow.getItem(slot));
-                                    player.setItemOnCursor(event.getCursor());
-                                    player.updateInventory();
-                                } else if (!(event.isShiftClick())) {
-                                    if ((event.getCursor() == null || event.getCursor().getType() == Material.AIR && event.getCurrentItem() != null && CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && (!CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")))) {
-                                        event.setCancelled(true);
-                                        ItemStack slotItem = tradeWindow.getItem(slot);
-                                        tradeWindow.setItem(slot, new ItemStack(Material.AIR));
-                                        event.setCursor(slotItem);
-                                        player.updateInventory();
-                                    } else if ((event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR && event.getCursor() != null)) {
-                                        if (CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && (CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("subType"))) {
-                                            event.setCancelled(true);
-                                            player.updateInventory();
-                                        }
-                                        event.setCancelled(true);
-                                        ItemStack currentItem = event.getCursor();
-                                        tradeWindow.setItem(slot, currentItem);
-                                        event.setCursor(new ItemStack(Material.AIR));
-                                        player.updateInventory();
-                                    } else if (event.getCurrentItem() != null && event.getCursor() != null && CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && (!CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton"))) {
-                                        event.setCancelled(true);
-                                        ItemStack currentItem = event.getCursor();
-                                        ItemStack slotItem = event.getCurrentItem();
-                                        event.setCursor(slotItem);
-                                        event.setCurrentItem(currentItem);
-                                        player.updateInventory();
-                                    }
-                                }
-                            }
-                            if (event.isShiftClick() && slot < 26) {
-                                if (!(slot == 0 || slot == 1 || slot == 2 || slot == 3 || slot == 9 || slot == 10 || slot == 11 || slot == 12 || slot == 18
-                                        || slot == 19 || slot == 20 || slot == 21) && !(slot > 27)) {
-                                    event.setCancelled(true);
-                                    if (tradeWindow.getItem(slot) != null && tradeWindow.getItem(slot).getType() != Material.AIR) {
-                                        tradeWindow.setItem(slot, tradeWindow.getItem(slot));
-                                        player.updateInventory();
-                                    }
-                                } else if (CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && !CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")) {
-                                    event.setCancelled(true);
-                                    ItemStack slotItem = event.getCurrentItem();
-                                    if (player.getInventory().firstEmpty() != -1) {
-                                        tradeWindow.setItem(slot, new ItemStack(Material.AIR));
-                                        player.getInventory().setItem(player.getInventory().firstEmpty(), slotItem);
-                                        player.updateInventory();
-                                    }
-                                }
-                            }
-                            if (event.isShiftClick() && slot >= 27 && !(event.isCancelled()) && !(event.getCurrentItem().getType() == Material.BOOK)) {
-                                event.setCancelled(true);
-                                ItemStack slotItem = event.getCurrentItem();
-                                int localSlot = event.getSlot();
-                                int x = -1;
-                                while (x < 26) {
-                                    x++;
-                                    if (!(x == 0 || x == 1 || x == 2 || x == 3 || x == 9 || x == 10 || x == 11 || x == 12 || x == 18 || x == 19 || x == 20 || x == 21)) {
-                                        continue;
-                                    }
-                                    ItemStack itemStack = tradeWindow.getItem(x);
-                                    if (!(itemStack == null)) {
-                                        continue;
-                                    }
-                                    tradeWindow.setItem(x, slotItem);
-                                    if (tradeWindow.getItem(x) != null) {
-                                        tradeWindow.getItem(x).setAmount(slotItem.getAmount());
-                                    }
-                                    player.getInventory().setItem(localSlot, new ItemStack(Material.AIR));
-                                    player.updateInventory();
-                                    break;
-                                }
-                            }
-                            List<ItemStack> player_Offer = new ArrayList<>();
-                            int x = -1;
-                            while (x < 26) {
-                                x++;
-                                if (!(x == 0 || x == 1 || x == 2 || x == 3 || x == 9 || x == 10 || x == 11 || x == 12 || x == 18 || x == 19 || x == 20 || x == 21)) {
-                                    continue;
-                                }
-                                ItemStack itemStack = tradeWindow.getItem(x);
-                                if (itemStack == null || itemStack.getType() == Material.AIR || CraftItemStack.asNMSCopy(itemStack) != null && CraftItemStack.asNMSCopy(itemStack).getTag() != null && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton")) {
-                                    continue;
-                                }
-                                player_Offer.add(itemStack);
-                            }
-                            List<ItemStack> new_Offer = TradeCalculator.calculateMerchantOffer(player_Offer);
-                            x = -1;
-                            while (x < 26) {
-                                x++;
-                                if ((x == 0 || x == 1 || x == 2 || x == 3 || x == 4 || x == 9 || x == 10 || x == 11 || x == 12 || x == 13 || x == 22 || x == 18 || x == 19
-                                        || x == 20 || x == 21)) {
-                                    continue;
-                                }
-                                tradeWindow.setItem(x, new ItemStack(Material.AIR));
-                            }
-                            x = -1;
-                            while (x < 26) {
-                                x++;
-                                if (new_Offer.size() > 0) {
-                                    if ((x == 0 || x == 1 || x == 2 || x == 3 || x == 4 || x == 9 || x == 10 || x == 11 || x == 12 || x == 13 || x == 22 || x == 18 || x == 19
-                                            || x == 20 || x == 21)) {
-                                        continue;
-                                    }
-                                    int index = new_Offer.size() - 1;
-                                    ItemStack itemStack = new_Offer.get(index);
-                                    tradeWindow.setItem(x, itemStack);
-                                    new_Offer.remove(index);
-                                }
-                            }
+            case "Merchant":
+                Inventory tradeWindow = event.getInventory();
+                if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
+                    event.setCancelled(true);
+                    return;
+                }
+                if (!(event.isShiftClick()) || (event.isShiftClick() && slot < 27)) {
+                    if (!(event.getSlotType() == InventoryType.SlotType.CONTAINER)) {
+                        return;
+                    }
+                    if (event.getInventory().getType() == InventoryType.PLAYER) {
+                        return;
+                    }
+                    if (slot > 26 || slot < 0) {
+                        return;
+                    }
+                    if (!(slot == 0 || slot == 1 || slot == 2 || slot == 3 || slot == 9 || slot == 10 || slot == 11 || slot == 12 || slot == 18 || slot == 19
+                            || slot == 20 || slot == 21) && !(slot > 27)) {
+                        event.setCancelled(true);
+                        tradeWindow.setItem(slot, tradeWindow.getItem(slot));
+                        player.setItemOnCursor(event.getCursor());
+                        player.updateInventory();
+                    } else if (!(event.isShiftClick())) {
+                        if ((event.getCursor() == null || event.getCursor().getType() == Material.AIR && event.getCurrentItem() != null && CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && (!CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")))) {
+                            event.setCancelled(true);
+                            ItemStack slotItem = tradeWindow.getItem(slot);
+                            tradeWindow.setItem(slot, new ItemStack(Material.AIR));
+                            event.setCursor(slotItem);
                             player.updateInventory();
-                            if (CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")) {
+                        } else if ((event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR && event.getCursor() != null)) {
+                            if (CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && (CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("subType"))) {
                                 event.setCancelled(true);
-                                if (event.getCurrentItem().getDurability() == 8) {
-                                    int player_Inv_Available = 0;
-                                    int inv_Needed = 0;
-                                    event.setCurrentItem(new ItemBuilder().setItem(Material.INK_SACK, (short) 10, ChatColor.GREEN + "Trade accepted.", new String[]{
-                                            ""
-                                    }).setNBTString("acceptButton", "whynot").build());
-                                    player.playSound(player.getLocation(), Sound.BLAZE_HIT, 1F, 2.F);
+                                player.updateInventory();
+                            }
+                            event.setCancelled(true);
+                            ItemStack currentItem = event.getCursor();
+                            tradeWindow.setItem(slot, currentItem);
+                            event.setCursor(new ItemStack(Material.AIR));
+                            player.updateInventory();
+                        } else if (event.getCurrentItem() != null && event.getCursor() != null && CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && (!CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton"))) {
+                            event.setCancelled(true);
+                            ItemStack currentItem = event.getCursor();
+                            ItemStack slotItem = event.getCurrentItem();
+                            event.setCursor(slotItem);
+                            event.setCurrentItem(currentItem);
+                            player.updateInventory();
+                        }
+                    }
+                }
+                if (event.isShiftClick() && slot < 26) {
+                    if (!(slot == 0 || slot == 1 || slot == 2 || slot == 3 || slot == 9 || slot == 10 || slot == 11 || slot == 12 || slot == 18
+                            || slot == 19 || slot == 20 || slot == 21) && !(slot > 27)) {
+                        event.setCancelled(true);
+                        if (tradeWindow.getItem(slot) != null && tradeWindow.getItem(slot).getType() != Material.AIR) {
+                            tradeWindow.setItem(slot, tradeWindow.getItem(slot));
+                            player.updateInventory();
+                        }
+                    } else if (CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && !CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")) {
+                        event.setCancelled(true);
+                        ItemStack slotItem = event.getCurrentItem();
+                        if (player.getInventory().firstEmpty() != -1) {
+                            tradeWindow.setItem(slot, new ItemStack(Material.AIR));
+                            player.getInventory().setItem(player.getInventory().firstEmpty(), slotItem);
+                            player.updateInventory();
+                        }
+                    }
+                }
+                if (event.isShiftClick() && slot >= 27 && !(event.isCancelled()) && !(event.getCurrentItem().getType() == Material.BOOK)) {
+                    event.setCancelled(true);
+                    ItemStack slotItem = event.getCurrentItem();
+                    int localSlot = event.getSlot();
+                    int x = -1;
+                    while (x < 26) {
+                        x++;
+                        if (!(x == 0 || x == 1 || x == 2 || x == 3 || x == 9 || x == 10 || x == 11 || x == 12 || x == 18 || x == 19 || x == 20 || x == 21)) {
+                            continue;
+                        }
+                        ItemStack itemStack = tradeWindow.getItem(x);
+                        if (!(itemStack == null)) {
+                            continue;
+                        }
+                        tradeWindow.setItem(x, slotItem);
+                        if (tradeWindow.getItem(x) != null) {
+                            tradeWindow.getItem(x).setAmount(slotItem.getAmount());
+                        }
+                        player.getInventory().setItem(localSlot, new ItemStack(Material.AIR));
+                        player.updateInventory();
+                        break;
+                    }
+                }
+                List<ItemStack> player_Offer = new ArrayList<>();
+                int x = -1;
+                while (x < 26) {
+                    x++;
+                    if (!(x == 0 || x == 1 || x == 2 || x == 3 || x == 9 || x == 10 || x == 11 || x == 12 || x == 18 || x == 19 || x == 20 || x == 21)) {
+                        continue;
+                    }
+                    ItemStack itemStack = tradeWindow.getItem(x);
+                    if (itemStack == null || itemStack.getType() == Material.AIR || CraftItemStack.asNMSCopy(itemStack) != null && CraftItemStack.asNMSCopy(itemStack).getTag() != null && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton")) {
+                        continue;
+                    }
+                    player_Offer.add(itemStack);
+                }
+                List<ItemStack> new_Offer = TradeCalculator.calculateMerchantOffer(player_Offer);
+                x = -1;
+                while (x < 26) {
+                    x++;
+                    if ((x == 0 || x == 1 || x == 2 || x == 3 || x == 4 || x == 9 || x == 10 || x == 11 || x == 12 || x == 13 || x == 22 || x == 18 || x == 19
+                            || x == 20 || x == 21)) {
+                        continue;
+                    }
+                    tradeWindow.setItem(x, new ItemStack(Material.AIR));
+                }
+                x = -1;
+                while (x < 26) {
+                    x++;
+                    if (new_Offer.size() > 0) {
+                        if ((x == 0 || x == 1 || x == 2 || x == 3 || x == 4 || x == 9 || x == 10 || x == 11 || x == 12 || x == 13 || x == 22 || x == 18 || x == 19
+                                || x == 20 || x == 21)) {
+                            continue;
+                        }
+                        int index = new_Offer.size() - 1;
+                        ItemStack itemStack = new_Offer.get(index);
+                        tradeWindow.setItem(x, itemStack);
+                        new_Offer.remove(index);
+                    }
+                }
+                player.updateInventory();
+                if (CraftItemStack.asNMSCopy(event.getCurrentItem()) != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag() != null && CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag().hasKey("acceptButton")) {
+                    event.setCancelled(true);
+                    if (event.getCurrentItem().getDurability() == 8) {
+                        int player_Inv_Available = 0;
+                        int inv_Needed = 0;
+                        event.setCurrentItem(new ItemBuilder().setItem(Material.INK_SACK, (short) 10, ChatColor.GREEN + "Trade accepted.", new String[]{
+                                ""
+                        }).setNBTString("acceptButton", "whynot").build());
+                        player.playSound(player.getLocation(), Sound.BLAZE_HIT, 1F, 2.F);
 
-                                    for (ItemStack itemStack : player.getInventory()) {
-                                        if (itemStack == null || itemStack.getType() == Material.AIR) {
-                                            player_Inv_Available++;
-                                        }
-                                    }
-                                    int slot_Variable = -1;
-                                    while (slot_Variable < 26) {
-                                        slot_Variable++;
-                                        if (!(slot_Variable == 5 || slot_Variable == 6 || slot_Variable == 7 || slot_Variable == 8 || slot_Variable == 14 || slot_Variable == 15
-                                                || slot_Variable == 16 || slot_Variable == 17 || slot_Variable == 23 || slot_Variable == 24 || slot_Variable == 25 || slot_Variable == 26)) {
-                                            continue;
-                                        }
-                                        ItemStack itemStack = tradeWindow.getItem(slot_Variable);
-                                        if (itemStack == null || itemStack.getType() == Material.AIR || (CraftItemStack.asNMSCopy(itemStack) != null && CraftItemStack.asNMSCopy(itemStack).getTag() != null && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton")) || itemStack.getType() == Material.THIN_GLASS) {
-                                            continue;
-                                        }
-                                        inv_Needed++;
-                                    }
-                                    if (player_Inv_Available < inv_Needed) {
-                                        player.sendMessage(ChatColor.RED + "Inventory is full.");
-                                        player.sendMessage(ChatColor.GRAY + "You require " + ChatColor.BOLD + (inv_Needed - player_Inv_Available) + ChatColor.GRAY + " more free slots to complete this trade!");
-                                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                                            InventoryCloseEvent closeEvent = new InventoryCloseEvent(player.getOpenInventory());
-                                            Bukkit.getServer().getPluginManager().callEvent(closeEvent);
-                                        }, 2L);
-                                        return;
-                                    }
-                                    slot_Variable = -1;
-                                    while (slot_Variable < 26) {
-                                        slot_Variable++;
-                                        if (!(slot_Variable == 5 || slot_Variable == 6 || slot_Variable == 7 || slot_Variable == 8 || slot_Variable == 14 || slot_Variable == 15
-                                                || slot_Variable == 16 || slot_Variable == 17 || slot_Variable == 23 || slot_Variable == 24 || slot_Variable == 25 || slot_Variable == 26)) {
-                                            continue;
-                                        }
-                                        ItemStack itemStack = tradeWindow.getItem(slot_Variable);
-                                        if (itemStack == null || itemStack.getType() == Material.AIR || (CraftItemStack.asNMSCopy(itemStack) != null && CraftItemStack.asNMSCopy(itemStack).getTag() != null && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton")) || itemStack.getType() == Material.THIN_GLASS) {
-                                            continue;
-                                        }
-                                        if (itemStack.getType() == Material.EMERALD) {
-                                            itemStack = BankMechanics.createBankNote(itemStack.getAmount());
-                                        }
+                        for (ItemStack itemStack : player.getInventory()) {
+                            if (itemStack == null || itemStack.getType() == Material.AIR) {
+                                player_Inv_Available++;
+                            }
+                        }
+                        int slot_Variable = -1;
+                        while (slot_Variable < 26) {
+                            slot_Variable++;
+                            if (!(slot_Variable == 5 || slot_Variable == 6 || slot_Variable == 7 || slot_Variable == 8 || slot_Variable == 14 || slot_Variable == 15
+                                    || slot_Variable == 16 || slot_Variable == 17 || slot_Variable == 23 || slot_Variable == 24 || slot_Variable == 25 || slot_Variable == 26)) {
+                                continue;
+                            }
+                            ItemStack itemStack = tradeWindow.getItem(slot_Variable);
+                            if (itemStack == null || itemStack.getType() == Material.AIR || (CraftItemStack.asNMSCopy(itemStack) != null && CraftItemStack.asNMSCopy(itemStack).getTag() != null && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton")) || itemStack.getType() == Material.THIN_GLASS) {
+                                continue;
+                            }
+                            inv_Needed++;
+                        }
+                        if (player_Inv_Available < inv_Needed) {
+                            player.sendMessage(ChatColor.RED + "Inventory is full.");
+                            player.sendMessage(ChatColor.GRAY + "You require " + ChatColor.BOLD + (inv_Needed - player_Inv_Available) + ChatColor.GRAY + " more free slots to complete this trade!");
+                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                                InventoryCloseEvent closeEvent = new InventoryCloseEvent(player.getOpenInventory());
+                                Bukkit.getServer().getPluginManager().callEvent(closeEvent);
+                            }, 2L);
+                            return;
+                        }
+                        slot_Variable = -1;
+                        while (slot_Variable < 26) {
+                            slot_Variable++;
+                            if (!(slot_Variable == 5 || slot_Variable == 6 || slot_Variable == 7 || slot_Variable == 8 || slot_Variable == 14 || slot_Variable == 15
+                                    || slot_Variable == 16 || slot_Variable == 17 || slot_Variable == 23 || slot_Variable == 24 || slot_Variable == 25 || slot_Variable == 26)) {
+                                continue;
+                            }
+                            ItemStack itemStack = tradeWindow.getItem(slot_Variable);
+                            if (itemStack == null || itemStack.getType() == Material.AIR || (CraftItemStack.asNMSCopy(itemStack) != null && CraftItemStack.asNMSCopy(itemStack).getTag() != null && CraftItemStack.asNMSCopy(itemStack).getTag().hasKey("acceptButton")) || itemStack.getType() == Material.THIN_GLASS) {
+                                continue;
+                            }
+                            if (itemStack.getType() == Material.EMERALD) {
+                                itemStack = BankMechanics.createBankNote(itemStack.getAmount());
+                            }
 //                                        if (Glyph.getInstance().isGlyph(itemStack)) {
 //                                            int tier = Glyph.getInstance().getGlyphTier(itemStack);
 //                                            if (new Random().nextBoolean()) {
@@ -473,29 +473,30 @@ public class ClickHandler {
 //                                                itemStack = Glyph.getInstance().getBaseGlyph("Armor Glyph", tier, Glyph.GlyphType.ARMOR);
 //                                            }
 //                                        }
-                                        player.getInventory().setItem(player.getInventory().firstEmpty(), itemStack);
-                                    }
-                                    player.sendMessage(ChatColor.GREEN + "Trade Accepted.");
+                            player.getInventory().setItem(player.getInventory().firstEmpty(), itemStack);
+                        }
+                        player.sendMessage(ChatColor.GREEN + "Trade Accepted.");
 
-                                    for (ItemStack stack : tradeWindow.getContents()) {
-                                        if (stack != null && stack.getType() == Material.MAGMA_CREAM) {
-                                            break;
-                                        }
-                                    }
-
-                                    player.playSound(player.getLocation(), Sound.BLAZE_HIT, 1F, 1F);
-                                    tradeWindow.clear();
-
-                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                                        player.updateInventory();
-                                        player.closeInventory();
-                                    }, 2L);
-
-                                    return;
-                                }
-                                player.updateInventory();
+                        for (ItemStack stack : tradeWindow.getContents()) {
+                            if (stack != null && stack.getType() == Material.MAGMA_CREAM) {
+                                break;
                             }
                         }
+
+                        player.playSound(player.getLocation(), Sound.BLAZE_HIT, 1F, 1F);
+                        tradeWindow.clear();
+
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                            player.updateInventory();
+                            player.closeInventory();
+                        }, 2L);
+
+                        return;
+                    }
+                    player.updateInventory();
+                }
+                break;
+        }
 
         /*
         Dungeoneer
@@ -519,7 +520,6 @@ public class ClickHandler {
                     }
                 }
             }
-            return;
         } else
         /*
         Friend Management
@@ -577,7 +577,6 @@ public class ClickHandler {
                             ItemStack clickedItem = event.getCurrentItem();
                             MailHandler.getInstance().giveItemToPlayer(clickedItem, player);
                         }
-                        return;
                     } else
         /*
         Pets Below
@@ -711,7 +710,6 @@ public class ClickHandler {
                                         }
                                     }, 60L);
                                 }
-                                return;
                             } else
 
         /*
@@ -824,7 +822,6 @@ public class ClickHandler {
                                             default:
                                                 break;
                                         }
-                                        return;
                                     } else
 
         /*Reset Stats Wizard*/
@@ -864,42 +861,42 @@ public class ClickHandler {
                                                 case 0:
                                                     boolean bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, player.getUniqueId());
                                                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_CHAOTIC_PREVENTION, !bool, true);
-                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
+                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10L);
                                                     break;
                                                 case 1:
                                                     bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId());
                                                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_DEBUG, !bool, true);
-                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
+                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10L);
                                                     break;
                                                 case 2:
                                                     bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DUEL, player.getUniqueId());
                                                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_DUEL, !bool, true);
-                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
+                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10L);
                                                     break;
                                                 case 3:
                                                     bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
                                                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_GLOBAL_CHAT, !bool, true);
-                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
+                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10L);
                                                     break;
                                                 case 4:
                                                     bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, player.getUniqueId());
                                                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_PVP, !bool, true);
-                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
+                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10L);
                                                     break;
                                                 case 5:
                                                     bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, player.getUniqueId());
                                                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_RECEIVE_MESSAGE, !bool, true);
-                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
+                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10L);
                                                     break;
                                                 case 6:
                                                     bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, player.getUniqueId());
                                                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_TRADE, !bool, true);
-                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
+                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10L);
                                                     break;
                                                 case 7:
                                                     bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, player.getUniqueId());
                                                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_TRADE_CHAT, !bool, true);
-                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10l);
+                                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10L);
                                                     break;
                                                 case 8:
                                                     PlayerMenus.openPlayerProfileMenu(player);

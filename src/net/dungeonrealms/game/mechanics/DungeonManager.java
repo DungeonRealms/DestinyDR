@@ -65,14 +65,12 @@ public class DungeonManager implements GenericMechanic {
 		}
 
 		Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(),
-		        () -> Dungeons.stream().forEach(dungeon -> {
-			        dungeon.aliveMonsters.stream().forEach(mob -> {
-				        if (mob != null)
-					        if (!mob.isAlive() || mob.dead) {
-						        dungeon.aliveMonsters.remove(mob);
-					        }
-			        });
-		        }), 0, 10);
+		        () -> Dungeons.stream().forEach(dungeon -> dungeon.aliveMonsters.stream().forEach(mob -> {
+                    if (mob != null)
+                        if (!mob.isAlive() || mob.dead) {
+                            dungeon.aliveMonsters.remove(mob);
+                        }
+                })), 0, 10);
 
 		Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(),
 		        () -> Dungeons.stream().forEach(dungeonObject -> {
@@ -123,7 +121,7 @@ public class DungeonManager implements GenericMechanic {
 			        }
 			        dungeonObject.modifyTime(1);
 			        updateDungeonBoard(dungeonObject);
-		        }), 0, 20l);
+		        }), 0, 20L);
 		Utils.log.info("[DUNGEONS] Finished Loading Dungeon Mechanics ... OKAY");
 	}
 
@@ -188,7 +186,7 @@ public class DungeonManager implements GenericMechanic {
 	 */
 	public void createNewInstance(DungeonType type, List<Player> playerList) {
 		DungeonObject dungeonObject = new DungeonObject(type, 0, playerList,
-		        "DUNGEON_" + String.valueOf(System.currentTimeMillis() / 1000l));
+		        "DUNGEON_" + String.valueOf(System.currentTimeMillis() / 1000L));
 		Dungeons.add(dungeonObject);
 		dungeonObject.load();
 	}

@@ -5,17 +5,12 @@ import static com.comphenix.protocol.PacketType.Play.Client.WINDOW_CLICK;
 
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
-import org.bukkit.DyeColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.block.banner.Pattern;
-import org.bukkit.block.banner.PatternType;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -24,7 +19,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.BannerMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import com.comphenix.protocol.PacketType;
@@ -89,7 +83,7 @@ public class HearthStone implements Listener {
     }
     
     private enum Slot {
-        RESULT, IN_1, IN_2, IN_3, IN_4;
+        RESULT, IN_1, IN_2, IN_3, IN_4
     }
     public static ItemStack createCustomItem(ItemStack is, String name, List<String> lore) {
         ItemMeta im = is.getItemMeta();
@@ -142,14 +136,11 @@ public class HearthStone implements Listener {
             if (TeleportAPI.canUseHearthstone(player.getUniqueId())) {
                 net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(getItem(player));
                 Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.HEARTHSTONE, nmsItem.getTag());
-                return;
             } else {
                 player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because of Alignment, World or Cooldown issues!" + " (" + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s)");
-                return;
             }
         } else {
             player.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "TELEPORT " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player) + "s" + ChatColor.RED + ")");
-            return;
         }
     }
     

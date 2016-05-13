@@ -95,7 +95,7 @@ public class Guild {
             String rname = "";
             try (
                     PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT guild FROM `players` WHERE uuid='" + uuid.toString() + "';");
-                    ResultSet resultSet = statement.executeQuery();
+                    ResultSet resultSet = statement.executeQuery()
             ) {
                 if (resultSet.next()) {
                     rname = resultSet.getString("guild");
@@ -209,9 +209,7 @@ public class Guild {
      * Saves all guilds.
      */
     public void saveAllGuilds() {
-        guilds.entrySet().stream().forEach(e -> {
-            saveGuild(e.getKey());
-        });
+        guilds.entrySet().stream().forEach(e -> saveGuild(e.getKey()));
     }
 
     /**
@@ -256,10 +254,8 @@ public class Guild {
      * @param message   sends all a message.
      */
     public void sendAlert(String guildName, String message) {
-        getAllOnlineOf(guildName).stream().forEach(player -> {
-            player.sendMessage(
-                    ChatColor.GRAY + "<" + ChatColor.DARK_AQUA + getClanTagOf(guildName) + ChatColor.GRAY + ">" + ChatColor.RESET + " " + message);
-        });
+        getAllOnlineOf(guildName).stream().forEach(player -> player.sendMessage(
+                ChatColor.GRAY + "<" + ChatColor.DARK_AQUA + getClanTagOf(guildName) + ChatColor.GRAY + ">" + ChatColor.RESET + " " + message));
     }
 
     /**
@@ -275,7 +271,7 @@ public class Guild {
      */
     public void saveGuild(String guildName) {
         try (
-                PreparedStatement statement = Core.getInstance().connection.prepareStatement("UPDATE `guilds` SET data='" + guilds.get(guildName).toString() + "' WHERE guildName='" + guildName + "';");
+                PreparedStatement statement = Core.getInstance().connection.prepareStatement("UPDATE `guilds` SET data='" + guilds.get(guildName).toString() + "' WHERE guildName='" + guildName + "';")
         ) {
             statement.executeUpdate();
 
@@ -294,7 +290,7 @@ public class Guild {
         Executors.newSingleThreadExecutor().submit(() -> {
             try (
                     PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT data FROM `guilds` WHERE guildName='" + guildName + "';");
-                    ResultSet resultSet = statement.executeQuery();
+                    ResultSet resultSet = statement.executeQuery()
             ) {
                 if (resultSet.next()) {
                     action.accept((JSONObject) new JSONParser().parse(resultSet.getString("data")));
@@ -418,7 +414,7 @@ public class Guild {
         if (guildName == null) {
             Executors.newSingleThreadExecutor().submit(() -> {
                 try (
-                        PreparedStatement statement = Core.getInstance().connection.prepareStatement("UPDATE `players` SET guild=" + null + " WHERE uuid='" + uuid.toString() + "';");
+                        PreparedStatement statement = Core.getInstance().connection.prepareStatement("UPDATE `players` SET guild=" + null + " WHERE uuid='" + uuid.toString() + "';")
                 ) {
                     statement.executeUpdate();
                 } catch (SQLException e) {
@@ -428,7 +424,7 @@ public class Guild {
         } else {
             Executors.newSingleThreadExecutor().submit(() -> {
                 try (
-                        PreparedStatement statement = Core.getInstance().connection.prepareStatement("UPDATE `players` SET guild='" + guildName + "' WHERE uuid='" + uuid.toString() + "';");
+                        PreparedStatement statement = Core.getInstance().connection.prepareStatement("UPDATE `players` SET guild='" + guildName + "' WHERE uuid='" + uuid.toString() + "';")
                 ) {
                     statement.executeUpdate();
                 } catch (SQLException e) {
@@ -454,7 +450,7 @@ public class Guild {
     public void createGuild(String guildName, String clanTag, UUID owner, Consumer<Boolean> action) {
         Executors.newSingleThreadExecutor().submit(() -> {
             try (
-                    PreparedStatement statement = Core.getInstance().connection.prepareStatement("INSERT INTO guilds VALUES(" + "'" + guildName + "'" + ", " + "'" + clanTag + "'" + ", " + "'" + getRawGuildJson(guildName, clanTag, owner).toJSONString() + "'" + ");");
+                    PreparedStatement statement = Core.getInstance().connection.prepareStatement("INSERT INTO guilds VALUES(" + "'" + guildName + "'" + ", " + "'" + clanTag + "'" + ", " + "'" + getRawGuildJson(guildName, clanTag, owner).toJSONString() + "'" + ");")
             ) {
                 statement.executeUpdate();
                 Utils.log.info("DR | Created new guildName: " + guildName + " | clanTag: " + clanTag + " | ownerUUID: " + owner.toString());
@@ -484,7 +480,7 @@ public class Guild {
         Executors.newSingleThreadExecutor().submit(() -> {
             try (
                     PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT clanTag FROM `guilds` WHERE clanTag='" + clanTag + "';");
-                    ResultSet resultSet = statement.executeQuery();
+                    ResultSet resultSet = statement.executeQuery()
             ) {
                 action.accept(resultSet.next());
             } catch (SQLException e) {
@@ -503,7 +499,7 @@ public class Guild {
         Executors.newSingleThreadExecutor().submit(() -> {
             try (
                     PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT guildName FROM `guilds` WHERE guildName='" + guildName + "';");
-                    ResultSet resultSet = statement.executeQuery();
+                    ResultSet resultSet = statement.executeQuery()
             ) {
                 action.accept(resultSet.next());
             } catch (SQLException e) {
@@ -527,7 +523,7 @@ public class Guild {
         temp.put("allies", new ArrayList<String>());
         temp.put("enemies", new ArrayList<String>());
         temp.put("sound", Sound.ARROW_HIT.toString());
-        temp.put("origin", (System.currentTimeMillis() / 1000l));
+        temp.put("origin", (System.currentTimeMillis() / 1000L));
         temp.put("motd", "This is my MOTD, change this.");
         temp.put("banner", "");
         temp.put("color", "");

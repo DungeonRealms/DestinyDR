@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.world.items.itemgenerator.modifiers;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -39,7 +40,7 @@ public class ArmorModifiers {
 	public class MainArmor extends ItemModifier {
 
 		public MainArmor() {
-			super(Arrays.asList(ItemType.CHESTPLATE), 100, "armor", r + "ARMOR: ", "%", false); // 50% chance for DPS, 50% for armor
+			super(Collections.singletonList(ItemType.CHESTPLATE), 100, "armor", r + "ARMOR: ", "%", false); // 50% chance for DPS, 50% for armor
 			
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 1)).setCantContain(MainDPS.class));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 2, 3)).setCantContain(MainDPS.class));
@@ -74,7 +75,7 @@ public class ArmorModifiers {
 	public class LeggingArmor extends ItemModifier {
 
 		public LeggingArmor() {
-			super(Arrays.asList(ItemType.LEGGINGS), 100, "armor", r + "ARMOR: ", "%", false); // 50% chance for DPS, 50% for armor
+			super(Collections.singletonList(ItemType.LEGGINGS), 100, "armor", r + "ARMOR: ", "%", false); // 50% chance for DPS, 50% for armor
 			
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 1)).setCantContain(MainDPS.class));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 2, 3)).setCantContain(MainDPS.class));
@@ -109,7 +110,7 @@ public class ArmorModifiers {
 	public class HelmetsArmor extends ItemModifier {
 
 		public HelmetsArmor() {
-			super(Arrays.asList(ItemType.HELMET), 100, "armor", r + "ARMOR: ", "%", false); // 50% chance for DPS, 50% for armor
+			super(Collections.singletonList(ItemType.HELMET), 100, "armor", r + "ARMOR: ", "%", false); // 50% chance for DPS, 50% for armor
 			
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 1)).setCantContain(OtherDPS.class));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 2)).setCantContain(OtherDPS.class));
@@ -144,7 +145,7 @@ public class ArmorModifiers {
 	public class BootsArmor extends ItemModifier {
 
 		public BootsArmor() {
-			super(Arrays.asList(ItemType.BOOTS), 100, "armor", r + "ARMOR: ", "%", false); // 50% chance for DPS, 50% for armor
+			super(Collections.singletonList(ItemType.BOOTS), 100, "armor", r + "ARMOR: ", "%", false); // 50% chance for DPS, 50% for armor
 			
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 1)).setCantContain(OtherDPS.class));
 			addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 2)).setCantContain(OtherDPS.class));
@@ -179,7 +180,7 @@ public class ArmorModifiers {
 	public class MainDPS extends ItemModifier {
 
         public MainDPS() {
-            super(Arrays.asList(ItemType.LEGGINGS), 50, "dps", r + "DPS: ", "%", false); // 50% chance for DPS, 50% for armor
+            super(Collections.singletonList(ItemType.LEGGINGS), 50, "dps", r + "DPS: ", "%", false); // 50% chance for DPS, 50% for armor
             
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 1)));
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 2, 3)));
@@ -213,7 +214,7 @@ public class ArmorModifiers {
 	public class MainDPS1 extends ItemModifier {
 
         public MainDPS1() {
-            super(Arrays.asList(ItemType.CHESTPLATE), 50, "dps", r + "DPS: ", "%", false); // 50% chance for DPS, 50% for armor
+            super(Collections.singletonList(ItemType.CHESTPLATE), 50, "dps", r + "DPS: ", "%", false); // 50% chance for DPS, 50% for armor
             
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 1)));
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 2, 3)));
@@ -248,7 +249,7 @@ public class ArmorModifiers {
 	public class OtherDPS extends ItemModifier {
 
         public OtherDPS() {
-            super(Arrays.asList(ItemType.HELMET), 50, "dps", r + "DPS: ", "%", false); // 50% chance for DPS, 50% for armor
+            super(Collections.singletonList(ItemType.HELMET), 50, "dps", r + "DPS: ", "%", false); // 50% chance for DPS, 50% for armor
             
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 1)));
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 2)));
@@ -283,7 +284,7 @@ public class ArmorModifiers {
 	public class OtherDPS1 extends ItemModifier {
 
         public OtherDPS1() {
-            super(Arrays.asList(ItemType.BOOTS), 50, "dps", r + "DPS: ", "%", false); // 50% chance for DPS, 50% for armor
+            super(Collections.singletonList(ItemType.BOOTS), 50, "dps", r + "DPS: ", "%", false); // 50% chance for DPS, 50% for armor
             
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 1)));
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.TRIPLE, 1, 1, 2)));
@@ -318,7 +319,7 @@ public class ArmorModifiers {
 	public class ChestplateHP extends ItemModifier {
 
         public ChestplateHP() {
-            super(Arrays.asList(ItemType.CHESTPLATE), 100, "healthPoints", r + "HP: +", null, false);
+            super(Collections.singletonList(ItemType.CHESTPLATE), 100, "healthPoints", r + "HP: +", null, false);
 
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.STATIC, 10, 30 )));
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.STATIC, 31, 60)));
@@ -353,7 +354,7 @@ public class ArmorModifiers {
 	public class LeggingsHP extends ItemModifier {
 
         public LeggingsHP() {
-            super(Arrays.asList(ItemType.LEGGINGS), 100, "healthPoints", r + "HP: +", null, false);
+            super(Collections.singletonList(ItemType.LEGGINGS), 100, "healthPoints", r + "HP: +", null, false);
 
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.STATIC, 10, 30 )));
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.STATIC, 31, 60)));
@@ -389,7 +390,7 @@ public class ArmorModifiers {
 	public class BootsHP extends ItemModifier {
 
         public BootsHP() {
-            super(Arrays.asList(ItemType.BOOTS), 100, "healthPoints", r + "HP: +", null, false);
+            super(Collections.singletonList(ItemType.BOOTS), 100, "healthPoints", r + "HP: +", null, false);
 
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.STATIC, 5, 12)));
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.STATIC, 13, 27)));
@@ -424,7 +425,7 @@ public class ArmorModifiers {
 	public class HelmetHP extends ItemModifier {
 
         public HelmetHP() {
-            super(Arrays.asList(ItemType.HELMET), 100, "healthPoints", r + "HP: +", null, false);
+            super(Collections.singletonList(ItemType.HELMET), 100, "healthPoints", r + "HP: +", null, false);
 
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.COMMON, new ModifierRange(ModifierType.STATIC, 5, 12)));
             addCondition(new ModifierCondition(ItemTier.TIER_1, ItemRarity.UNCOMMON, new ModifierRange(ModifierType.STATIC, 13, 27)));

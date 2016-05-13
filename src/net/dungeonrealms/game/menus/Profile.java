@@ -67,19 +67,17 @@ public class Profile implements Listener {
 		log.info("Enabled Profiles");
     }
     private enum Slot {
-        RESULT, IN_1, IN_2, IN_3, IN_4;
+        RESULT, IN_1, IN_2, IN_3, IN_4
     }
 
     private static ItemStack getItem(Player player, Slot slot) {
-		ItemStack filler = ItemManager.getPlayerProfile(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Character Profile", new String[]{
-                ChatColor.GREEN + "Open Profile"});
-		return filler;
+        return ItemManager.getPlayerProfile(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Character Profile", new String[]{
+ChatColor.GREEN + "Open Profile"});
     }
     
     private static ItemStack getItem(Player player) {
-		ItemStack filler = ItemManager.getPlayerProfile(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Character Profile", new String[]{
-                ChatColor.GREEN + "Open Profile"});
-		return filler;
+        return ItemManager.getPlayerProfile(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Character Profile", new String[]{
+ChatColor.GREEN + "Open Profile"});
     }
 
     private PacketContainer createSlotPacket(int windowId, int slot, ItemStack item) {

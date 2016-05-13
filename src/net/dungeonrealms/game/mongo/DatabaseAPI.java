@@ -4,7 +4,6 @@ import com.mongodb.client.model.Filters;
 import com.mongodb.client.result.UpdateResult;
 import net.dungeonrealms.Callback;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.core.Core;
 import net.dungeonrealms.game.mastery.Utils;
 import org.bson.Document;
 
@@ -260,8 +259,8 @@ public class DatabaseAPI {
                                 .append("gems", 0)
                                 .append("ecash", 0)
                                 .append("firstLogin", System.currentTimeMillis() / 1000L)
-                                .append("lastLogin", 0l)
-                                .append("lastLogout", 0l)
+                                .append("lastLogin", 0L)
+                                .append("lastLogout", 0L)
                                 .append("netLevel", 1)
                                 .append("experience", 0d)
                                 .append("hearthstone", "Cyrennica")
@@ -309,7 +308,7 @@ public class DatabaseAPI {
                                         .append("friendRequest", new ArrayList<String>())
                                         .append("mailbox", new ArrayList<String>()))
                         .append("rank",
-                                new Document("lastPurchase", 0l)
+                                new Document("lastPurchase", 0L)
                                         .append("purchaseHistory", new ArrayList<String>())
                                         .append("rank", "DEFAULT"))
                         .append("inventory",

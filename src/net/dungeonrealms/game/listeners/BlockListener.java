@@ -2,7 +2,6 @@ package net.dungeonrealms.game.listeners;
 
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
@@ -278,7 +277,7 @@ public class BlockListener implements Listener {
                 	finalinv.setItem(5, ItemManager.createItemWithData(Material.WOOL, ChatColor.YELLOW + "Deny", new String[] {ChatColor.GRAY + "Deny the repair of your item."}, DyeColor.RED.getData()));
                 	
                 	player.openInventory(finalinv);
-                }, 10l);
+                }, 10L);
 
             	
             } else {
@@ -312,7 +311,6 @@ public class BlockListener implements Listener {
                             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
                             Block blockLook = e.getPlayer().getTargetBlock((Set<Material>) null, 7);
                             if(blockLook.getType() != Material.CHEST){
-                            	return;
                             }else{
                                 e.getPlayer().openInventory(loot.inv);
                             }

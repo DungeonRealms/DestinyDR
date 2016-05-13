@@ -13,7 +13,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -23,7 +22,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
-import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.items.Item.WeaponAttributeType;
 import net.dungeonrealms.game.world.items.Item.ItemRarity;
@@ -34,7 +32,6 @@ import net.dungeonrealms.game.world.items.itemgenerator.engine.ModifierCondition
 import net.dungeonrealms.game.world.items.itemgenerator.engine.ModifierType;
 import net.dungeonrealms.game.world.items.itemgenerator.modifiers.ArmorModifiers;
 import net.dungeonrealms.game.world.items.itemgenerator.modifiers.WeaponModifiers;
-import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagInt;
 import net.minecraft.server.v1_8_R3.NBTTagList;
@@ -42,8 +39,8 @@ import net.minecraft.server.v1_8_R3.NBTTagString;
 
 public class ItemGenerator {
 	
-	public static HashMap<Class<? extends ItemModifier>, ItemModifier> modifiers = new HashMap<Class<? extends ItemModifier>, ItemModifier>();
-	public static List<ItemModifier> modifierObjects = new ArrayList<ItemModifier>();
+	public static HashMap<Class<? extends ItemModifier>, ItemModifier> modifiers = new HashMap<>();
+	public static List<ItemModifier> modifierObjects = new ArrayList<>();
 	
 	private ItemType type;
 	private ItemTier tier;
@@ -121,9 +118,9 @@ public class ItemGenerator {
         ItemStack item = new ItemStack(type.getTier(tier));
         ItemMeta meta = item.getItemMeta().clone();
         
-		meta.setLore(new ArrayList<String>());
+		meta.setLore(new ArrayList<>());
 		
-		final HashMap<ModifierCondition, ItemModifier> conditions = new HashMap<ModifierCondition, ItemModifier>();
+		final HashMap<ModifierCondition, ItemModifier> conditions = new HashMap<>();
 		
 		Collections.shuffle(modifierObjects);
 		
@@ -154,7 +151,7 @@ public class ItemGenerator {
 			}
 		}
 
-		List<ModifierCondition> order = new ArrayList<ModifierCondition>();
+		List<ModifierCondition> order = new ArrayList<>();
 		
 		for(Object ob : Arrays.asList(conditions.keySet().toArray())){
 			ModifierCondition mc = (ModifierCondition) ob;
@@ -182,12 +179,7 @@ public class ItemGenerator {
 		    }
         }
 		
-		Collections.sort(order, new Comparator<ModifierCondition>() {
-			@Override
-			public int compare(ModifierCondition mc1, ModifierCondition mc2) {
-				return conditions.get(mc1).getOrderPriority() - conditions.get(mc2).getOrderPriority();
-			}
-		});
+		Collections.sort(order, (mc1, mc2) -> conditions.get(mc1).getOrderPriority() - conditions.get(mc2).getOrderPriority());
 		
 		String modName = "";
         String name = tier.getTierColor().toString();
@@ -479,7 +471,7 @@ public class ItemGenerator {
 
         int item_id = -1;
         String item_name = "";
-        List<String> item_lore = new ArrayList<String>();
+        List<String> item_lore = new ArrayList<>();
         
         ItemStack is = null;
 

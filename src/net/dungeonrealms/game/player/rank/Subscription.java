@@ -63,7 +63,7 @@ public class Subscription implements GenericMechanic {
                 }
                 checkSubscription(Bukkit.getPlayer(uuid));
             }
-        }, 20 * 3, 20 * 15l);
+        }, 20 * 3, 20 * 15L);
     }
 
     /**
@@ -74,9 +74,9 @@ public class Subscription implements GenericMechanic {
      * @since 1.0
      */
     public void checkSubscription(Player player) {
-        long currentTime = System.currentTimeMillis() / 1000l;
+        long currentTime = System.currentTimeMillis() / 1000L;
         long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId())));
-        long time = (endTime - currentTime) / 1000l;
+        long time = (endTime - currentTime) / 1000L;
         if (time == 0 && PLAYER_SUBSCRIPTION.contains(player.getUniqueId())) {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.RANK, "DEFAULT", true);
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.RANK_EXISTENCE, 0, true);
@@ -93,9 +93,9 @@ public class Subscription implements GenericMechanic {
      * @since 1.0
      */
     public int getHoursLeft(Player player) {
-        long currentTime = System.currentTimeMillis() / 1000l;
+        long currentTime = System.currentTimeMillis() / 1000L;
         long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId())));
-        return (int) ((endTime - currentTime) / 1000l);
+        return (int) ((endTime - currentTime) / 1000L);
     }
 
     /**
@@ -109,9 +109,9 @@ public class Subscription implements GenericMechanic {
         if (!PLAYER_SUBSCRIPTION.contains(player.getUniqueId())) {
             PLAYER_SUBSCRIPTION.add(player.getUniqueId());
         }
-        long currentTime = System.currentTimeMillis() / 1000l;
+        long currentTime = System.currentTimeMillis() / 1000L;
         long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId())));
-        int hoursLeft = (int) ((endTime - currentTime) / 1000l);
+        int hoursLeft = (int) ((endTime - currentTime) / 1000L);
 
         if (hoursLeft > 10) {
             TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");

@@ -4,9 +4,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import java.io.BufferedReader;
@@ -130,9 +128,9 @@ public enum LootType {
                             }
 
                             if (amount_to_spawn > 64) {
-                                item = BankMechanics.getInstance().createBankNote(amount_to_spawn);
+                                item = BankMechanics.createBankNote(amount_to_spawn);
                             } else {
-                                item = BankMechanics.getInstance().gem.clone();
+                                item = BankMechanics.gem.clone();
                                 item.setAmount(amount_to_spawn);
                             }
                             break;

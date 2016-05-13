@@ -7,7 +7,6 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
-import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.RealmManager;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
@@ -15,19 +14,13 @@ import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.lingala.zip4j.core.ZipFile;
-import net.lingala.zip4j.exception.ZipException;
-import net.lingala.zip4j.model.ZipParameters;
-import net.lingala.zip4j.util.Zip4jConstants;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -42,7 +35,6 @@ import org.bukkit.util.Vector;
 
 import java.io.*;
 import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -80,8 +72,8 @@ public class Instance implements GenericMechanic, Listener {
         rootFolder = new File(System.getProperty("user.dir"));
 
         try {
-            FileUtils.forceMkdir(new File(RealmManager.getInstance().ROOT_DIR + "/realms/down"));
-            FileUtils.forceMkdir(new File(RealmManager.getInstance().ROOT_DIR + "/realms/up"));
+            FileUtils.forceMkdir(new File(RealmManager.ROOT_DIR + "/realms/down"));
+            FileUtils.forceMkdir(new File(RealmManager.ROOT_DIR + "/realms/up"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -346,7 +338,7 @@ public class Instance implements GenericMechanic, Listener {
 	
     public boolean doesRemoteRealmExist(String uuid) {
 		try {
-			URL url = new URL("ftp://" + RealmManager.USER + ":" + RealmManager.PASSWORD + "@" + RealmManager.HOST + RealmManager.ROOT_DIR + uuid.toString() + ".zip");
+			URL url = new URL("ftp://" + RealmManager.USER + ":" + RealmManager.PASSWORD + "@" + RealmManager.HOST + RealmManager.ROOT_DIR + uuid + ".zip");
 			url.openConnection();
 
 		} catch (IOException first_login) {
