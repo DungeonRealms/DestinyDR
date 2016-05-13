@@ -22,6 +22,8 @@ public class TabbedChatListener implements Listener {
     public void onPlayerChatTabCompleteEvent(PlayerChatTabCompleteEvent e) {
         final Player player = e.getPlayer();
         StringBuilder chatMessage = new StringBuilder();
+        
+        chatMessage.append(e.getChatMessage());
 
         String finalChat = Chat.getInstance().checkForBannedWords(chatMessage.toString());
 
