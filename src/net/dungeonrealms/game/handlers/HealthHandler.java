@@ -2,9 +2,8 @@
 
     import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
-import org.bukkit.Bukkit;
+    import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.EntityEffect;
 import org.bukkit.Material;
@@ -64,13 +63,11 @@ public class HealthHandler implements GenericMechanic {
     }
 
     public void startInitialization() {
-		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), new Runnable() {
-			public void run() {
-				for(Player pl : Bukkit.getServer().getOnlinePlayers()) {
-					setPlayerOverheadHP(pl, getPlayerHPLive(pl));
-				}
-			}
-		}, 0L, 5L);
+		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            for(Player pl : Bukkit.getServer().getOnlinePlayers()) {
+                setPlayerOverheadHP(pl, getPlayerHPLive(pl));
+            }
+        }, 0L, 5L);
 		Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40, 20L);
     }
 
@@ -566,7 +563,7 @@ public class HealthHandler implements GenericMechanic {
                             KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, finalLeAttacker);
                         }
                         CombatLog.removeFromCombat(player);
-                    }, 20l);
+                    }, 20L);
                     return;
                 }
             } else {
@@ -592,7 +589,7 @@ public class HealthHandler implements GenericMechanic {
                         KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, finalLeAttacker);
                     }
                     CombatLog.removeFromCombat(player);
-                }, 20l);
+                }, 20L);
                 return;
             }
         }

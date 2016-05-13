@@ -60,7 +60,7 @@ public class DuelingMechanics {
 				if (pending.containsKey(sender.getUniqueId()))
 					pending.remove(sender.getUniqueId());
 				cooldown.remove(sender.getUniqueId());
-			} , 100l);// Remove Pending Request after 10 seconds.
+			} , 100L);// Remove Pending Request after 10 seconds.
 		} else {
 			sender.sendMessage(ChatColor.RED + "That player has duels toggled off!");
 		}
@@ -115,11 +115,7 @@ public class DuelingMechanics {
 	 * @return boolean
 	 */
 	public static boolean isDueling(UUID uuid) {
-		for (DuelOffer offer : duels) {
-			return uuid.toString().equalsIgnoreCase(offer.player1.toString())
-			        || uuid.toString().equalsIgnoreCase(offer.player2.toString());
-		}
-		return false;
+		return !duels.isEmpty() && (uuid.equals(duels.get(0).player1) || uuid.equals(duels.get(0).player2));
 	}
 
 	/**
@@ -149,10 +145,7 @@ public class DuelingMechanics {
 	 * @return
 	 */
 	public static boolean isDuelPartner(UUID uniqueId, UUID uniqueId2) {
-		for(DuelOffer offer : duels){
-			boolean bool = offer.player1.toString().equalsIgnoreCase(uniqueId.toString()) || offer.player2.toString().equalsIgnoreCase(uniqueId.toString()) && offer.player1.toString().equalsIgnoreCase(uniqueId2.toString()) || offer.player2.toString().equalsIgnoreCase(uniqueId2.toString());
-			return bool;
-		}
-		return false;
+		return !duels.isEmpty() && (duels.get(0).player1.equals(uniqueId) || duels.get(0).player2.equals(uniqueId))
+				&& (duels.get(0).player1.equals(uniqueId2) || duels.get(0).player2.equals(uniqueId2));
 	}
 }

@@ -109,10 +109,9 @@ public class CommandSpawn extends BasicCommand {
                     		return false;
                     	}
                     }
-                    Location location = loc;
-                    entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                        entity.setLocation(loc.getX(), loc.getY(), loc.getZ(), 1, 1);
                     world.addEntity(entity, SpawnReason.CUSTOM);
-                    entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                    entity.setLocation(loc.getX(), loc.getY(), loc.getZ(), 1, 1);
                     ((BlockCommandSender) s).getBlock().setType(Material.AIR);
                 }
             return false;

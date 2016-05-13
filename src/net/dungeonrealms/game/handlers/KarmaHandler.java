@@ -121,7 +121,6 @@ public class KarmaHandler implements GenericMechanic {
                         toRemove.add(player);
                     }
                 } catch (NullPointerException npe) {
-                    continue;
                 }
             } else if (timeLeft > 0) {
                 PLAYER_ALIGNMENT_TIMES.put(player, timeLeft);
@@ -368,7 +367,6 @@ public class KarmaHandler implements GenericMechanic {
         } else if (alignmentPlayer.equalsIgnoreCase(EnumPlayerAlignments.NEUTRAL.name)) {
             setPlayerAlignment(player, EnumPlayerAlignments.NEUTRAL.name, false);
         } else {
-            return;
         }
     }
 

@@ -3,7 +3,7 @@ package net.dungeonrealms.game.mechanics;
 /**
  * Created by Nick on 9/19/2015.
  * <p>
- * Java’s Random:  45.7 million longs per second
+ * Javaï¿½s Random:  45.7 million longs per second
  * XOR: 320.6 million longs per second, or 7 times faster!
  */
 public class XRandom {
@@ -39,7 +39,7 @@ public class XRandom {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return 0l;
+        return 0L;
     }
 
     public int nextInt(int bits) {

@@ -13,7 +13,7 @@ import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 
 public abstract class ItemModifier implements Comparable<ItemModifier> {
 	
-	private List<ModifierCondition> conditions = new ArrayList<ModifierCondition>(); 
+	private List<ModifierCondition> conditions = new ArrayList<>();
 	private List<ItemType> possibleApplicants;
 	private int chance = 0; // chance of obtaining modifier on item
 	private String NBTName; // internal name for NBT tags
@@ -57,9 +57,8 @@ public abstract class ItemModifier implements Comparable<ItemModifier> {
 	    return other.getOrderPriority() - orderPriority;
 	}
 	
-	public boolean canApply(ItemType type){
-		if(possibleApplicants == null) return false;
-		return possibleApplicants.contains(type);
+	public boolean canApply(ItemType type) {
+		return possibleApplicants != null && possibleApplicants.contains(type);
 	}
 	
 	protected void addCondition(ItemTier tier, ItemRarity rarity, ModifierRange range){
@@ -134,5 +133,5 @@ public abstract class ItemModifier implements Comparable<ItemModifier> {
     }
 
     // choose one stat for multiple stat modifiers
-    public void chooseStat() {};
+    public void chooseStat() {}
 }

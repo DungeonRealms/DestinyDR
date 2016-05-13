@@ -98,7 +98,7 @@ public class MailHandler {
 
         String serializedItem = ItemSerialization.itemStackToBase64(itemStack);
 
-        String mailIdentification = player.getName() + "," + (System.currentTimeMillis() / 1000l) + "," + serializedItem;
+        String mailIdentification = player.getName() + "," + (System.currentTimeMillis() / 1000L) + "," + serializedItem;
 
         if (API.isOnline(toUUID)) {
             DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification, true);

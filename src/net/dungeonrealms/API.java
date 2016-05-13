@@ -198,8 +198,7 @@ public class API {
      */
     private static int calculateXP(Player player, Entity kill, int mob_level) {
         int pLevel = API.getGamePlayer(player).getStats().getLevel();
-        int xp = (int) (((pLevel * 5) + 45) * (1 + (0.07 * (pLevel + (mob_level - pLevel)))));
-        return xp;
+        return (int) (((pLevel * 5) + 45) * (1 + (0.07 * (pLevel + (mob_level - pLevel)))));
     }
 
 
@@ -387,7 +386,7 @@ public class API {
                     + player.getLocation().getPitch();
         }
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, false);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, System.currentTimeMillis() / 1000l, false);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, System.currentTimeMillis() / 1000L, false);
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
         KarmaHandler.getInstance().handleLogoutEvents(player);
@@ -462,7 +461,7 @@ public class API {
             DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_MULE, ItemSerialization.toString(MountUtils.inventories.get(uuid)), false);
             MountUtils.inventories.remove(uuid);
         }
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, System.currentTimeMillis() / 1000l, false);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, System.currentTimeMillis() / 1000L, false);
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
         KarmaHandler.getInstance().handleLogoutEvents(player);
@@ -739,9 +738,7 @@ public class API {
                     	API.handleLogout(uuid);
                     	NetworkAPI.getInstance().sendToServer(player.getName(), cs);
                 	} else {
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        	player.teleport(Bukkit.getWorld(uuid).getSpawnLocation());
-                        }, 40L);
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.teleport(Bukkit.getWorld(uuid).getSpawnLocation()), 40L);
                 	}
                 }
             	//RealmManager.getInstance().tryToOpenRealmInstance(player);
@@ -828,7 +825,7 @@ public class API {
 
     public static GamePlayer getGamePlayer(Player p) {
         for (GamePlayer gPlayer : GAMEPLAYERS) {
-            if (gPlayer.getPlayer().getName().equalsIgnoreCase(p.getName()))
+            if (gPlayer.getPlayer().getName().equals(p.getName()))
                 return gPlayer;
         }
         return null;

@@ -374,9 +374,8 @@ public class MainListener implements Listener {
                                 event.setWillDestroy(true);
                                 theevent.getPlayer().closeInventory();
                                 Player p1 = theevent.getPlayer();
-                                Player p2 = playerClicked;
-                                if (API.isNonPvPRegion(p1.getLocation()) && API.isNonPvPRegion(p2.getLocation())) {
-                                    DuelingMechanics.sendDuelRequest(p1, p2);
+                                if (API.isNonPvPRegion(p1.getLocation()) && API.isNonPvPRegion(playerClicked.getLocation())) {
+                                    DuelingMechanics.sendDuelRequest(p1, playerClicked);
                                 }
                             } else if (item.getType() == Material.EMERALD) {
                                 event.setWillClose(true);

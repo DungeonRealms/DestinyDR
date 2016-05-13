@@ -40,7 +40,7 @@ public class CommandGlobalChat extends BasicCommand {
         StringBuilder chatMessage = new StringBuilder();
 
         for (String arg : args) {
-            chatMessage.append(arg + " ");
+            chatMessage.append(arg).append(" ");
         }
 
         String finalChat = Chat.getInstance().checkForBannedWords(chatMessage.toString());

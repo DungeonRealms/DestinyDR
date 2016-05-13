@@ -28,9 +28,7 @@ public class AntiCheat {
     }
 
     public void startInitialization() {
-        Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            Bukkit.getOnlinePlayers().stream().forEach(this::checkPlayer);
-        }, 0, 20);
+        Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> Bukkit.getOnlinePlayers().stream().forEach(this::checkPlayer), 0, 20);
     }
 
     /**

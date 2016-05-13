@@ -114,7 +114,7 @@ public class FriendHandler {
     public void sendRequest(Player player, Player friend) {
         if (areFriends(player, friend.getUniqueId())) return;
 
-        DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUSTS, player.getUniqueId() + "," + (System.currentTimeMillis() / 1000l), true, new Callback<UpdateResult>(UpdateResult.class) {
+        DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUSTS, player.getUniqueId() + "," + (System.currentTimeMillis() / 1000L), true, new Callback<UpdateResult>(UpdateResult.class) {
             @Override
             public void callback(Throwable failCause, UpdateResult result) {
                 if (result.wasAcknowledged()) {

@@ -19,7 +19,6 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -136,7 +135,7 @@ public class RealmManager implements GenericMechanic {
 		
 		try {
 			// Prepare the realm files that will be added later in the code
-			 ArrayList<File> filesToAdd = new ArrayList<File>();
+			 ArrayList<File> filesToAdd = new ArrayList<>();
 		     try (Stream<Path> filePathStream=Files.walk(Paths.get(uuid.toString()))) {
 		    	    filePathStream.forEach(filePath -> {
 		    	        if (Files.isRegularFile(filePath)) {
@@ -168,7 +167,7 @@ public class RealmManager implements GenericMechanic {
 			//Now we loop through each file and read this file with an inputstream
 			//and write it to the ZipOutputStream.
 			for (int i = 0; i < filesToAdd.size(); i++) {
-				File file = (File)filesToAdd.get(i);
+				File file = filesToAdd.get(i);
 				
 				//This will initiate ZipOutputStream to include the file
 				//with the input parameters
@@ -311,10 +310,7 @@ public class RealmManager implements GenericMechanic {
             e.printStackTrace();
         }
         int returnCode = ftpClient.getReplyCode();
-        if (inputStream == null || returnCode == 550) {
-            return false;
-        }
-        return true;
+        return !(inputStream == null || returnCode == 550);
     }
 
     /**
@@ -429,7 +425,7 @@ public class RealmManager implements GenericMechanic {
         }
     }
     
-	static HashMap<UUID, Integer> realm_transferpending = new HashMap<UUID, Integer>();
+	static HashMap<UUID, Integer> realm_transferpending = new HashMap<>();
     
     /**
      * Opens a players realm for an Instance.

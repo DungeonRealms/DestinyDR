@@ -34,7 +34,7 @@ public class Item {
         private Material t1, t2, t3, t4, t5; // the Minecraft material representing each tier
         private String t1Name, t2Name, t3Name, t4Name, t5Name; // the item name representing each tier
         
-        private ItemType(int id, Material t1, String t1Name, Material t2, String t2Name, Material t3, String t3Name, Material t4, String t4Name, Material t5, String t5Name) {
+        ItemType(int id, Material t1, String t1Name, Material t2, String t2Name, Material t3, String t3Name, Material t4, String t4Name, Material t5, String t5Name) {
             this.id = id;
             
             this.t1 = t1;
@@ -84,10 +84,7 @@ public class Item {
          */
         public static boolean isWeapon(ItemStack is) {
             ItemType type = getTypeFromMaterial(is.getType());
-            if (type != null && type.getId() <= 4) {
-                return true;
-            }
-            return false;
+            return type != null && type.getId() <= 4;
         }
         
         /**
@@ -97,10 +94,7 @@ public class Item {
          */
         public static boolean isArmor(ItemStack is) {
             ItemType type = getTypeFromMaterial(is.getType());
-            if (type != null && type.getId() >= 5) {
-                return true;
-            }
-            return false;
+            return type != null && type.getId() >= 5;
         }
         
         /**

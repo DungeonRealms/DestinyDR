@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.world.items.itemgenerator.modifiers;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -29,7 +30,7 @@ public class WeaponModifiers {
 	public class SwordDamage extends ItemModifier {
 
 		public SwordDamage() {
-			super(Arrays.asList(ItemType.SWORD), 100, "damage", r + "DMG: ", null, false);
+			super(Collections.singletonList(ItemType.SWORD), 100, "damage", r + "DMG: ", null, false);
 			
 			setOrderPriority(0);
 			
@@ -64,7 +65,7 @@ public class WeaponModifiers {
 	public class AxeDamage extends ItemModifier {
 
         public AxeDamage() {
-            super(Arrays.asList(ItemType.AXE), 100, "damage", r + "DMG: ", null, false);
+            super(Collections.singletonList(ItemType.AXE), 100, "damage", r + "DMG: ", null, false);
             
             setOrderPriority(0);
             
@@ -99,7 +100,7 @@ public class WeaponModifiers {
 	public class StaffDamage extends ItemModifier {
 
         public StaffDamage() {
-            super(Arrays.asList(ItemType.STAFF), 100, "damage", r + "DMG: ", null, false);
+            super(Collections.singletonList(ItemType.STAFF), 100, "damage", r + "DMG: ", null, false);
             
             setOrderPriority(0);
             
@@ -134,7 +135,7 @@ public class WeaponModifiers {
 	public class PolearmDamage extends ItemModifier {
 
 	    public PolearmDamage() {
-	        super(Arrays.asList(ItemType.POLEARM), 100, "damage", r + "DMG: ", null, false);
+	        super(Collections.singletonList(ItemType.POLEARM), 100, "damage", r + "DMG: ", null, false);
 
 	        setOrderPriority(0);
 
@@ -169,7 +170,7 @@ public class WeaponModifiers {
 	public class BowDamage extends ItemModifier {
 
 	    public BowDamage() {
-	        super(Arrays.asList(ItemType.BOW), 100, "damage", r + "DMG: ", null, false);
+	        super(Collections.singletonList(ItemType.BOW), 100, "damage", r + "DMG: ", null, false);
 
 	        setOrderPriority(0);
 
@@ -297,7 +298,7 @@ public class WeaponModifiers {
 	public class Slow extends ItemModifier {
 
 		public Slow() {
-			super(Arrays.asList(ItemType.BOW), -1, "slow", r + "SLOW: ", "%");
+			super(Collections.singletonList(ItemType.BOW), -1, "slow", r + "SLOW: ", "%");
 			setOrderPriority(6);
 			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 3), 3));
 			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 4), 10));
@@ -340,7 +341,7 @@ public class WeaponModifiers {
 	public class ElementalBow extends ItemModifier {
 
 		public ElementalBow() {
-			super(Arrays.asList(ItemType.BOW), -1, null, null, null);
+			super(Collections.singletonList(ItemType.BOW), -1, null, null, null);
 			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 8), 6));
 			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 15), 9));
 			addCondition(new ModifierCondition(ItemTier.TIER_3, null, new ModifierRange(ModifierType.STATIC, 1, 25), 10));
@@ -399,7 +400,7 @@ public class WeaponModifiers {
 	public class Pure extends ItemModifier {
 
 		public Pure() {
-			super(Arrays.asList(ItemType.AXE), -1, "pureDamage", r + "PURE DMG: +", null);
+			super(Collections.singletonList(ItemType.AXE), -1, "pureDamage", r + "PURE DMG: +", null);
 			setOrderPriority(10);
 			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 5), 6));
 			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 8), 9));
@@ -413,7 +414,7 @@ public class WeaponModifiers {
 	public class Accuracy extends ItemModifier {
 
 		public Accuracy() {
-			super(Arrays.asList(ItemType.SWORD), -1, "accuracy", r + "ACCURACY: ", "%");
+			super(Collections.singletonList(ItemType.SWORD), -1, "accuracy", r + "ACCURACY: ", "%");
 			setOrderPriority(3);
 			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 10), 8));
 			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 12), 12));
@@ -427,7 +428,7 @@ public class WeaponModifiers {
 	public class ArmorPenetration extends ItemModifier {
 
 		public ArmorPenetration() {
-			super(Arrays.asList(ItemType.AXE), -1, "armorPenetration", r + "ARMOR PENETRATION: ", "%");
+			super(Collections.singletonList(ItemType.AXE), -1, "armorPenetration", r + "ARMOR PENETRATION: ", "%");
 			setOrderPriority(5);
 			addCondition(new ModifierCondition(ItemTier.TIER_1, null, new ModifierRange(ModifierType.STATIC, 1, 1), 20));
 			addCondition(new ModifierCondition(ItemTier.TIER_2, null, new ModifierRange(ModifierType.STATIC, 1, 3), 20));
