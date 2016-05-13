@@ -540,4 +540,19 @@ public class Item {
         return null;
     }
 
+    /**
+     * Gets the ItemTier from a material
+     * @param m
+     * @return
+     */
+    public static ItemTier getTierFromMaterial(Material m) {
+        for(ItemType i : ItemType.values()) {
+            if(i.t1 == m) return ItemTier.TIER_1;
+            if(i.t2 == m) return ItemTier.TIER_2;
+            if(i.t3 == m) return ItemTier.TIER_3;
+            if(i.t4 == m) return ItemTier.TIER_4;
+            if(i.t5 == m) return ItemTier.TIER_5;
+        }
+        return null;
+    }
 }

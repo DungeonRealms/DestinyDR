@@ -479,7 +479,7 @@ public class ArmorModifiers {
 			if (chosenStat == null || chosenStat == "") {
 			    chooseStat();
 			}
-			return r + chosenStat.substring(0, 2).toUpperCase() + ": +";
+			return r + chosenStat.substring(0, 3).toUpperCase() + ": +";
 		}
 		
 		@Override

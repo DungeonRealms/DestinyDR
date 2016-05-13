@@ -54,6 +54,7 @@ import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ArmorAttributeType;
+import net.dungeonrealms.game.world.items.Item.WeaponAttributeType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
@@ -307,7 +308,7 @@ public class InventoryListener implements Listener {
                     player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 30");
                     player.updateInventory();
                     return;
-                }
+                } 
                 break;
             case 5:
                 if (playerLevel < 40) {
@@ -948,7 +949,7 @@ public class InventoryListener implements Listener {
             if (pouchAmount + amount > pouchMax) {
                 amount = (pouchMax - (pouchAmount + amount)) * -1;
                 event.setCurrentItem(BankMechanics.getInstance().createGemPouch(tier, pouchMax));
-                event.setCursor(BankMechanics.createGems(amount));
+                event.setCursor(BankMechanics.getInstance().createGems(amount));
             } else {
                 event.setCursor(null);
                 event.setCurrentItem(BankMechanics.getInstance().createGemPouch(tier, pouchAmount + amount));
