@@ -92,6 +92,7 @@ import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
+import net.dungeonrealms.newcommands.RealmTestCommand;
 import net.dungeonrealms.newcommands.StarterCommand;
 import net.dungeonrealms.newcommands.TestingCommand;
 
@@ -351,7 +352,7 @@ public class DungeonRealms extends JavaPlugin {
     		gotesting.register();
     		AbstractCommand givestarter = new StarterCommand("givestarter", "/<command> [args]", "Gives a starter kit to someone");
     		givestarter.register();	
-    		AbstractCommand realmtest = new StarterCommand("realmtest", "/<command> [args]", "Puts you in your realm");
+    		AbstractCommand realmtest = new RealmTestCommand("realmtest", "/<command> [args]", "Puts you in your realm");
     		realmtest.register();	
         }
 
