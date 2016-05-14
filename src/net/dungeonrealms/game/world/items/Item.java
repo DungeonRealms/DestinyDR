@@ -375,7 +375,7 @@ public class Item {
         DODGE(11, "DODGE", "dodge"), //Percentage
         DAMAGE(12, "DPS", "dps"), //Percentage
         DEXTERITY(13, "DEX", "dexterity"),
-        REFLECTION(14, "REFLECT", "reflection"), //Percentage
+        REFLECTION(14, "REFLECTION", "reflection"), //Percentage
         GEM_FIND(15, "GEM FIND", "gemFind"), //Percentage
         ITEM_FIND(16, "ITEM FIND", "itemFind"), 
         ICE_RESISTANCE(17, "ICE RESISTANCE", "iceResistance"),

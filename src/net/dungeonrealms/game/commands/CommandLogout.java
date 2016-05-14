@@ -1,13 +1,18 @@
 package net.dungeonrealms.game.commands;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Player;
+
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.md_5.bungee.api.ChatColor;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.entity.Player;
 
 /**
  * Created by Chase on Nov 18, 2015
@@ -25,11 +30,29 @@ public class CommandLogout extends BasicCommand {
             if (DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
                 if (CombatLog.isInCombat(player)) {
                     player.sendMessage(ChatColor.RED + "You can not use /logout while in combat.");
-                    return false;
+                    return true;
                 }
-
-                player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "Starting Logout...");
-                NetworkAPI.getInstance().sendToServer(player.getName(), "drhub");
+                
+                Location startingLocation = player.getLocation();
+                if (API.isInSafeRegion(startingLocation)) {
+                    NetworkAPI.getInstance().sendToServer(player.getName(), "hub");
+                    return true;
+                }
+                
+                player.sendMessage(ChatColor.RED + "You will be " + ChatColor.BOLD + "LOGGED OUT" + ChatColor.RED + " of the game world shortly.");
+                final int[] taskTimer = {5};
+                int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+                    if (startingLocation.distanceSquared(player.getLocation()) >= 2.0D || CombatLog.isInCombat(player)) {
+                        player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Logout - CANCELLED");
+                        return;
+                    }
+                    player.sendMessage(ChatColor.RED + "Logging out in ... " + ChatColor.BOLD + taskTimer[0] + "s");
+                    taskTimer[0]--;
+                }, 0, 20L);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 6 * 20L);
+                if (taskTimer[0] == 0) {
+                    NetworkAPI.getInstance().sendToServer(player.getName(), "hub");
+                }
             }
 
         }
