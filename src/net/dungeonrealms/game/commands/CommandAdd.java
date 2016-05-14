@@ -22,6 +22,7 @@ import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
@@ -54,6 +55,8 @@ public class CommandAdd extends BasicCommand {
         }
         if (args.length > 0) {
             int tier;
+            ItemType type;
+            ItemRarity rarity;
             switch (args[0]) {
                 case "pcheck":
                     player.sendMessage(ChatColor.GREEN + "There are " + String.valueOf(Affair.getInstance()._parties.size()));
@@ -75,12 +78,62 @@ public class CommandAdd extends BasicCommand {
                     //new RealmManager().downloadRealm(player.getUniqueId());
                     break;
                 case "weapon":
-                    tier = Integer.parseInt(args[1]);
-                    player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier)).setType(ItemType.getRandomWeapon()).generateItem().getItem());
+                    try {
+                        if (args.length == 2) {
+                            tier = Integer.parseInt(args[1]);
+                            player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier))
+                                    .setType(ItemType.getRandomWeapon()).generateItem().getItem());
+                        }
+                        else if (args.length == 3) {
+                            tier = Integer.parseInt(args[1]);
+                            type = ItemType.getByName(args[2]);
+                            player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier))
+                                    .setType(type).generateItem().getItem());
+                        }
+                        else if (args.length == 4) {
+                            tier = Integer.parseInt(args[1]);
+                            type = ItemType.getByName(args[2]);
+                            rarity = ItemRarity.getByName(args[3]);
+                            player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier))
+                                    .setType(type).setRarity(rarity).generateItem().getItem());
+                        }
+                        else {
+                            player.getInventory().addItem(
+                                    new ItemGenerator().setType(ItemType.getRandomWeapon()).generateItem().getItem());
+                        }
+                    }
+                    catch (NullPointerException ex) {
+                        player.sendMessage("Format: /ad weapon [tier] [type] [rarity]. Leave parameter blank to generate a random value.");
+                    }
                     break;
                 case "armor":
-                    tier = Integer.parseInt(args[1]);
-                    player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier)).setType(ItemType.getRandomArmor()).generateItem().getItem());
+                    try {
+                        if (args.length == 2) {
+                            tier = Integer.parseInt(args[1]);
+                            player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier))
+                                    .setType(ItemType.getRandomArmor()).generateItem().getItem());
+                        }
+                        else if (args.length == 3) {
+                            tier = Integer.parseInt(args[1]);
+                            type = ItemType.getByName(args[2]);
+                            player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier))
+                                    .setType(type).generateItem().getItem());
+                        }
+                        else if (args.length == 4) {
+                            tier = Integer.parseInt(args[1]);
+                            type = ItemType.getByName(args[2]);
+                            rarity = ItemRarity.getByName(args[3]);
+                            player.getInventory().addItem(new ItemGenerator().setTier(ItemTier.getByTier(tier))
+                                    .setType(type).setRarity(rarity).generateItem().getItem());
+                        }
+                        else {
+                            player.getInventory().addItem(
+                                    new ItemGenerator().setType(ItemType.getRandomArmor()).generateItem().getItem());
+                        }
+                    }
+                    catch (NullPointerException ex) {
+                        player.sendMessage("Format: /ad armor [tier] [type] [rarity]. Leave parameter blank to generate a random value.");
+                    }
                     break;
                 case "customitem":
                     String name = args[1];

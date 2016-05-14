@@ -22,6 +22,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
+import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.items.Item.WeaponAttributeType;
 import net.dungeonrealms.game.world.items.Item.ItemRarity;
@@ -463,7 +464,7 @@ public class ItemGenerator {
 	 * @return
 	 */
 	public static ItemStack getNamedItem(String template_name) {
-        File template = new File("plugins/ItemMechanics/custom_items/" + template_name + ".item");
+        File template = new File("plugins/DungeonRealms/customitems/" + template_name + ".item");
         if (!(template.exists())) {
             Utils.log.warning("[ItemGenerator] Custom item " + template_name + " not found!");
             return null; // No such custom template!
@@ -472,12 +473,8 @@ public class ItemGenerator {
         int item_id = -1;
         String item_name = "";
         List<String> item_lore = new ArrayList<>();
-        
+        HashMap<String, NBTTagInt> NBTModifiers = new HashMap<>();
         ItemStack is = null;
-
-        // NMS stack for reading NBT tags
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = null;
-        NBTTagCompound tag = null;
 
         BufferedReader reader = null;
         try {
@@ -492,18 +489,8 @@ public class ItemGenerator {
                 } else if (line.startsWith("item_id=")) {
                     item_id = Integer.parseInt(line.substring(line.indexOf("=") + 1, line.length()));
                     is = new ItemStack(Material.getMaterial(item_id));
-                    nmsStack = CraftItemStack.asNMSCopy(is);
-                    tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-                    
-                    // set item type
-                    if (ItemType.isWeapon(is)) {
-                        tag.set("type", new NBTTagString("weapon"));
-                    }
-                    else if (ItemType.isArmor(is)) {
-                        tag.set("type", new NBTTagString("armor"));
-                    }
-                } else {
-                    if (is == null || nmsStack == null || tag == null) {
+                } else if (line.contains(":")) {
+                    if (is == null) {
                         Utils.log.warning("[ItemGenerator] Missing item id from item " + template_name + "!");
                         return null;
                     }
@@ -530,7 +517,7 @@ public class ItemGenerator {
                     }
                     
                     // set NBT tags
-                    if (API.isWeapon(is)) {
+                    if (ItemType.isWeapon(is)) {
                         WeaponAttributeType attribute = WeaponAttributeType.getByName(modifierName);
                         if (attribute == null) {
                             Utils.log.warning("[ItemGenerator] Invalid modifier " + modifierName + " for item " + template_name + "!");
@@ -541,19 +528,19 @@ public class ItemGenerator {
                             int lowVal = Integer.parseInt(line.substring(line.indexOf(':') + 2, line.indexOf(':') + 3));
                             int highVal = Integer.parseInt(line.substring(line.indexOf('-') + 2, line.indexOf('-') + 3));
                             
-                            tag.set(attribute.getNBTName() + "Min", new NBTTagInt(lowVal));
-                            tag.set(attribute.getNBTName() + "Max", new NBTTagInt(highVal));
+                            NBTModifiers.put(attribute.getNBTName() + "Min", new NBTTagInt(lowVal));
+                            NBTModifiers.put(attribute.getNBTName() + "Max", new NBTTagInt(highVal));
                         }
                         else { // static val
                             int val = Integer.parseInt(line.substring(line.indexOf('+') + 1, line.indexOf('+') + 2));
                             
-                            tag.set(attribute.getNBTName(), new NBTTagInt(val));
+                            NBTModifiers.put(attribute.getNBTName(), new NBTTagInt(val));
                         }
                     }
-                    else if (API.isArmor(is)) {
+                    else if (ItemType.isArmor(is)) {
                         ArmorAttributeType attribute = ArmorAttributeType.getByName(modifierName);
 
-                        if (ArmorAttributeType.getByString(modifierName) == null) {
+                        if (ArmorAttributeType.getByName(modifierName) == null) {
                             Utils.log.warning("[ItemGenerator] Invalid modifier " + modifierName + " for item " + template_name + "!");
                             return null;
                         }
@@ -562,17 +549,20 @@ public class ItemGenerator {
                             int lowVal = Integer.parseInt(line.substring(line.indexOf(':') + 2, line.indexOf(':') + 3));
                             int highVal = Integer.parseInt(line.substring(line.indexOf('-') + 2, line.indexOf('-') + 3));
                             
-                            tag.set(attribute.getNBTName() + "Min", new NBTTagInt(lowVal));
-                            tag.set(attribute.getNBTName() + "Max", new NBTTagInt(highVal));
+                            NBTModifiers.put(attribute.getNBTName() + "Min", new NBTTagInt(lowVal));
+                            NBTModifiers.put(attribute.getNBTName() + "Max", new NBTTagInt(highVal));
                         }
                         else { // static val
                             int val = Integer.parseInt(line.substring(line.indexOf('+') + 1, line.indexOf('+') + 2));
                             
-                            tag.set(attribute.getNBTName(), new NBTTagInt(val));
+                            NBTModifiers.put(attribute.getNBTName(), new NBTTagInt(val));
                         }
                     }
 
                     item_lore.add(line);
+                }
+                else {
+                    item_lore.add(ChatColor.translateAlternateColorCodes('&', line));
                 }
             }
         } catch (Exception e) {
@@ -586,7 +576,7 @@ public class ItemGenerator {
             }
         }
         
-        if (is == null || nmsStack == null || tag == null) {
+        if (is == null) {
             Utils.log.warning("[ItemGenerator] Missing item id from item " + template_name + "!");
             return null;
         }
@@ -596,21 +586,58 @@ public class ItemGenerator {
         im.setLore(item_lore);
         is.setItemMeta(im);
 
-        String rarity = ItemRarity.UNIQUE.getChatColorOfModifier(ItemRarity.UNIQUE);
+        String rarity = ItemRarity.UNIQUE.getName();
         if (rarity != null) {
             // Add rarity if needed.
             item_lore.add(rarity);
             im.setLore(item_lore);
             is.setItemMeta(im);
         }
+        
+        // set NBT tags
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(is);
+        // NMS stack for writing NBT tags
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        
+        tag.set("itemType", new NBTTagInt(ItemType.getTypeFromMaterial(is.getType()).getId()));
+        tag.set("itemTier", new NBTTagInt(Item.getTierFromMaterial(is.getType()).getId()));
+        tag.set("itemRarity", new NBTTagInt(ItemRarity.UNIQUE.getId()));
+        tag.set("bound", new NBTTagString("false"));
 
         /*
         The line below removes the weapons attributes.
         E.g. Diamond Sword says, "+7 Attack Damage"
          */
         tag.set("AttributeModifiers", new NBTTagList());
+        
+        // set item type
+        if (ItemType.isWeapon(is)) {
+            tag.set("type", new NBTTagString("weapon"));
+        }
+        else if (ItemType.isArmor(is)) {
+            tag.set("type", new NBTTagString("armor"));
+        }
+        
+        NBTTagList modifiersList = new NBTTagList();
+        
+        for (Map.Entry<String, NBTTagInt> entry : NBTModifiers.entrySet()) {
+            tag.set(entry.getKey(), entry.getValue());
+            
+            if (!entry.getKey().contains("Max")) {
+                if (entry.getKey().contains("Min")) {
+                    modifiersList.add(new NBTTagString(entry.getKey().replace("Min", "")));
+                    continue;
+                }
+                modifiersList.add(new NBTTagString(entry.getKey()));
+            }
+        }
+        
+        tag.set("modifiers", modifiersList);
+        
+//        tag.a(CraftItemStack.asNMSCopy(is).getTag());
+        nmsStack.setTag(tag);
 
-        return is;
+        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
 	
 	/**

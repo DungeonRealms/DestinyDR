@@ -124,6 +124,13 @@ public class Item {
             if(tier == ItemTier.TIER_5) return t5Name;
             return null;
         }
+        
+        public static ItemType getByName(String name) {
+            for (ItemType i : values()) {
+                if (i.toString().equalsIgnoreCase(name)) return i;
+            }
+            return null;
+        }
 
         public int getId() {
             return id;
@@ -274,6 +281,13 @@ public class Item {
                     return ChatColor.GRAY.toString() + ChatColor.ITALIC.toString();
             }
         }
+        
+        public static ItemRarity getByName(String name) {
+            for (ItemRarity i : values()) {
+                if (i.toString().equalsIgnoreCase(name)) return i;
+            }
+            return null;
+        }
     }
 
     public enum WeaponAttributeType {
@@ -361,7 +375,7 @@ public class Item {
         DODGE(11, "DODGE", "dodge"), //Percentage
         DAMAGE(12, "DPS", "dps"), //Percentage
         DEXTERITY(13, "DEX", "dexterity"),
-        REFLECTION(14, "REFLECTION", "reflection"), //Percentage
+        REFLECTION(14, "REFLECT", "reflection"), //Percentage
         GEM_FIND(15, "GEM FIND", "gemFind"), //Percentage
         ITEM_FIND(16, "ITEM FIND", "itemFind"), 
         ICE_RESISTANCE(17, "ICE RESISTANCE", "iceResistance"),
