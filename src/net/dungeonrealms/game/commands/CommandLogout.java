@@ -42,19 +42,21 @@ public class CommandLogout extends BasicCommand {
                 player.sendMessage(ChatColor.RED + "You will be " + ChatColor.BOLD + "LOGGED OUT" + ChatColor.RED + " of the game world shortly.");
                 final int[] taskTimer = {5};
                 int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+                    if (taskTimer[0] <= 0) {
+                        return;
+                    }
                     if (startingLocation.distanceSquared(player.getLocation()) >= 2.0D || CombatLog.isInCombat(player)) {
                         player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "Logout - CANCELLED");
                         return;
                     }
                     player.sendMessage(ChatColor.RED + "Logging out in ... " + ChatColor.BOLD + taskTimer[0] + "s");
                     taskTimer[0]--;
+                    if (taskTimer[0] == 0) {
+                        NetworkAPI.getInstance().sendToServer(player.getName(), "hub");
+                    }
                 }, 0, 20L);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 6 * 20L);
-                if (taskTimer[0] == 0) {
-                    NetworkAPI.getInstance().sendToServer(player.getName(), "hub");
-                }
             }
-
         }
         return true;
     }
