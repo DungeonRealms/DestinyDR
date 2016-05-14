@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -301,7 +302,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandAccept("accept", "/<command> [args]", "The accept command."));
             cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
             cm.registerCommand(new CommandStats("stats", "/<command> [args]", "The stats command."));
-            cm.registerCommand(new CommandStop("stop", "/<command> [args]", "The stop command."));
+            cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "The stop command.", Arrays.asList("drstop")));
             cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "The roll command."));
             cm.registerCommand(new CommandPRemove("premove", "/<command> [args]", "Remove player from party."));
             cm.registerCommand(new CommandPLeave("pleave", "/<command> [args]", "Remove player from party."));
@@ -328,7 +329,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandGlobalChat("gl", "/<command> [args]", "The invoke command."));
 
             cm.registerCommand(new CommandStats("stats", "/<command> [args]", "The stats command."));
-            cm.registerCommand(new CommandStop("stop", "/<command> [args]", "The stop command."));
+            cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "The stop command.", Arrays.asList("drstop")));
             cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "The roll command."));
             cm.registerCommand(new CommandStuck("stuck", "/<command> [args]", "The stuck command."));
 
