@@ -18,7 +18,7 @@ import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 public class NetworkServer implements GenericMechanic{
 
     static NetworkServer instance = null;
-    public static Client client;
+    public Client client;
     public static String masterIP = "127.0.0.1";
     public static int port = 1337;
     public static String key = "XfrB39uHqxLqvUkw";
@@ -51,7 +51,8 @@ public class NetworkServer implements GenericMechanic{
 
     @Override
     public void stopInvocation() {
-
+    	client.close();
+        Utils.log.info("[NetworkServer] Left the master server in the dark ... OKAY");
     }
 
     /**
