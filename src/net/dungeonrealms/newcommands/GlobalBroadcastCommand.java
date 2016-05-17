@@ -26,7 +26,14 @@ public class GlobalBroadcastCommand extends AbstractCommand {
     		p.kickPlayer("No!");
     		return false;
     	}
-    	NetworkServer.getInstance().client.getServerConnection().sendTcp(new BroadcastPacket(Collections.emptyList(), args[0]));
+    	StringBuilder sb = new StringBuilder();
+    	for (int i = 1; i < args.length; i++){
+    	sb.append(args[i]).append(" ");
+    	}
+    	 
+    	String allArgs = sb.toString().trim();
+    	allArgs.replaceAll("(?i)&([a-f0-9])", "\u00A7$1"); // Add color support eh?
+    	NetworkServer.getInstance().client.getServerConnection().sendTcp(new BroadcastPacket(Collections.emptyList(), allArgs));
     	return true;
     }
 
