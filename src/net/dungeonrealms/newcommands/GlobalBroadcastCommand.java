@@ -1,5 +1,8 @@
 package net.dungeonrealms.newcommands;
 
+import java.awt.List;
+import java.util.ArrayList;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -22,7 +25,7 @@ public class GlobalBroadcastCommand extends AbstractCommand {
     		p.kickPlayer("No!");
     		return false;
     	}
-    	NetworkServer.getInstance().client.getServerConnection().sendTcp(new BroadcastPacket(null, args[0]));
+    	NetworkServer.getInstance().client.getServerConnection().sendTcp(new BroadcastPacket(new ArrayList<String>(), args[0]));
     	return true;
     }
 
