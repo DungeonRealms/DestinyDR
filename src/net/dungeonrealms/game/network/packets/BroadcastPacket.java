@@ -11,10 +11,10 @@ public class BroadcastPacket implements Serializable {
 	 * Server id (-1) for all shards
 	 */
 	private static final long serialVersionUID = -8185820884718187088L;
-	public List<Integer> serverid = new ArrayList<Integer>();
+	public List<String> serverid = new ArrayList<String>();
 	public String message;
 
-    public BroadcastPacket(List<Integer> id, String message) {
+    public BroadcastPacket(List<String> id, String message) {
     	this.serverid = id;
         this.message = message;
     }
