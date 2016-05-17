@@ -24,7 +24,8 @@ public class PacketHandler {
 		if(obj instanceof BroadcastPacket)
 		{
 			BroadcastPacket packet = (BroadcastPacket)obj;
-			Bukkit.broadcastMessage(packet.message);
+	    	String colored = packet.message.replaceAll("(?i)&([a-f0-9])", "\u00A7$1"); // Add color support eh?
+			Bukkit.broadcastMessage(colored);
 			return;
 		}
 		else if(obj instanceof PartyPacket)

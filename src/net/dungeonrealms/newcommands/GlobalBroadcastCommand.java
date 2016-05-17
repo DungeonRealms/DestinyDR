@@ -1,7 +1,5 @@
 package net.dungeonrealms.newcommands;
 
-import java.awt.List;
-import java.util.ArrayList;
 import java.util.Collections;
 
 import org.bukkit.command.Command;
@@ -32,7 +30,6 @@ public class GlobalBroadcastCommand extends AbstractCommand {
     	}
     	 
     	String allArgs = sb.toString().trim();
-    	allArgs.replaceAll("(?i)&([a-f0-9])", "\u00A7$1"); // Add color support eh?
     	NetworkServer.getInstance().client.getServerConnection().sendTcp(new BroadcastPacket(Collections.emptyList(), allArgs));
     	return true;
     }
