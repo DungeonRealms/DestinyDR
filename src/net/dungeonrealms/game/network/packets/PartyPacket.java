@@ -22,6 +22,14 @@ public class PartyPacket implements Serializable {
             this.members = members;
         }
 
+        public String getFrom()
+        {
+        	return serverfrom;
+        }
+        public String getTo()
+        {
+        	return serverto;
+        }
         public Player getOwner() {
             return owner;
         }
