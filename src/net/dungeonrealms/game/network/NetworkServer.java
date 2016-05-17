@@ -46,7 +46,6 @@ public class NetworkServer implements GenericMechanic{
         client = new Client(masterIP, port, port);
         client.setListener(new Listener());
         client.connect();
-        client.getServerConnection().sendTcp("@" + id + ":" + "helloworld");
         Utils.log.info("[NetworkServer] Finished starting up ... OKAY");
     }
 

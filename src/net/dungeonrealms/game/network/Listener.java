@@ -2,37 +2,26 @@ package net.dungeonrealms.game.network;
 
 import com.jmr.wrapper.common.Connection;
 import com.jmr.wrapper.common.listener.SocketListener;
+import com.sk89q.jchronic.handlers.Handler;
+
+import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.network.handlers.PacketHandler;
 
 public class Listener implements SocketListener {
 
     @Override
     public void received(Connection con, Object object) {
-    	if(object instanceof String)
-    	{
-    		String RAW = (String)object;
-    		if(RAW.contains("@"))
-    		{
-                String thisserver = NetworkServer.id.toString();
-                String id = RAW.substring(RAW.indexOf("@") + 1);
-                id = id.substring(0, id.indexOf(":"));
-                if(id.equals(thisserver))
-                {
-                	return; // Don't process packets from itself! LOL
-                }
-                String packet = RAW.substring(RAW.indexOf(":") + 1);
-                System.out.println("Recieved packet from server: " + id + " >> " + packet);	
-    		}	
-    	}
+    	PacketHandler.handlePacket(object);
     }
 
     @Override
     public void connected(Connection con) {
-        System.out.println("Connected to DungeonRealms Master Server.");
+		Utils.log.warning("Connected to the DungeonRealms master server!");
     }
 
     @Override
     public void disconnected(Connection con) {
-        System.out.println("Disconnected from DungeonRealms Master Server.");
+		Utils.log.warning("Disconnected from the DungeonRealms Master Server.");
     }
 
 }
