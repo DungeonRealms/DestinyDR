@@ -93,6 +93,7 @@ import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
+import net.dungeonrealms.newcommands.GlobalBroadcastCommand;
 import net.dungeonrealms.newcommands.KickAllCommand;
 import net.dungeonrealms.newcommands.RealmTestCommand;
 import net.dungeonrealms.newcommands.StarterCommand;
@@ -361,7 +362,7 @@ public class DungeonRealms extends JavaPlugin {
         }
 		AbstractCommand kickAllCMD = new KickAllCommand("kickall", "/<command> [args]", "Kicks all players from the server");
 		kickAllCMD.register();	
-		AbstractCommand GlobalBroadcastCMD = new KickAllCommand("glbroadcast", "/<command> [args]", "Broadcast Global message across all shards!");
+		AbstractCommand GlobalBroadcastCMD = new GlobalBroadcastCommand("glbroadcast", "/<command> [args]", "Broadcast Global message across all shards!");
 		GlobalBroadcastCMD.register();
         try {
             FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));
