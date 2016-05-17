@@ -19,6 +19,7 @@ public class PacketHandler {
     		{
     			NetworkServer.getInstance().client.getServerConnection().sendTcp("@" + DungeonRealms.getInstance().bungeeName);
     		}
+    		return; // Ignore any other string based packets that we don't understand. (Temporary)
     	}
 		if(obj instanceof BroadcastPacket)
 		{
