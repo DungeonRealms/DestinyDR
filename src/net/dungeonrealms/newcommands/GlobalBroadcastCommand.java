@@ -27,7 +27,7 @@ public class GlobalBroadcastCommand extends AbstractCommand {
     		return false;
     	}
     	StringBuilder sb = new StringBuilder();
-    	for (int i = 1; i < args.length; i++){
+    	for (int i = 0; i < args.length; i++){
     	sb.append(args[i]).append(" ");
     	}
     	 
