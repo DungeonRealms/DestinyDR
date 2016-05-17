@@ -361,6 +361,8 @@ public class DungeonRealms extends JavaPlugin {
         }
 		AbstractCommand kickAllCMD = new KickAllCommand("kickall", "/<command> [args]", "Kicks all players from the server");
 		kickAllCMD.register();	
+		AbstractCommand GlobalBroadcastCMD = new KickAllCommand("glbroadcast", "/<command> [args]", "Broadcast Global message across all shards!");
+		GlobalBroadcastCMD.register();
         try {
             FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));
         } catch (IOException e) {
