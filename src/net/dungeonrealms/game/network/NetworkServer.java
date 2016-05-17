@@ -1,12 +1,16 @@
 package net.dungeonrealms.game.network;
 
-import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanics.generic.EnumPriority;
-import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
+import java.util.ArrayList;
+import java.util.UUID;
+
 import org.bson.Document;
 import org.bukkit.Bukkit;
 
-import java.util.ArrayList;
+import com.jmr.wrapper.client.Client;
+
+import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanics.generic.EnumPriority;
+import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 
 /**
  * Created by Nick on 10/16/2015.
@@ -14,6 +18,12 @@ import java.util.ArrayList;
 public class NetworkServer implements GenericMechanic{
 
     static NetworkServer instance = null;
+    public static Client client;
+    public static String masterIP = "127.0.0.1";
+    public static int port = 1337;
+    public static String key = "XfrB39uHqxLqvUkw";
+    public static String salt = "BAABABABAAAAAAAB";
+    public static final UUID id = UUID.randomUUID();
 
     public static NetworkServer getInstance() {
         if (instance == null) {
@@ -33,6 +43,10 @@ public class NetworkServer implements GenericMechanic{
 	public void startInitialization() {
         Utils.log.info("[NetworkServer] Starting up... STARTING");
         //Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), this::refreshDocument, 0, 20 * 8);
+        client = new Client(masterIP, port, port);
+        client.setListener(new Listener());
+        client.connect();
+        client.getServerConnection().sendTcp("@" + id + ":" + "helloworld");
         Utils.log.info("[NetworkServer] Finished starting up ... OKAY");
     }
 
