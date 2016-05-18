@@ -5,12 +5,15 @@ import java.util.UUID;
 
 import org.bson.Document;
 import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import com.jmr.wrapper.client.Client;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
 
 /**
  * Created by Nick on 10/16/2015.
@@ -46,6 +49,17 @@ public class NetworkServer implements GenericMechanic{
         client = new Client(masterIP, port, port);
         client.setListener(new Listener());
         client.connect();
+        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+        scheduler.scheduleSyncRepeatingTask(DungeonRealms.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                if(!client.isConnected())
+                {
+                    client.connect();
+                    Utils.log.info("[NetworkServer] Reconnected to Master server");
+                }
+            }
+        }, 0L, 20L);
         Utils.log.info("[NetworkServer] Finished starting up ... OKAY");
     }
 
