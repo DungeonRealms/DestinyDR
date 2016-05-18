@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.Consumer;
 
@@ -31,15 +32,28 @@ public class Chat {
         return instance;
     }
 
-    private static final Queue<Consumer<? super AsyncPlayerChatEvent>> chatQueue = new ConcurrentLinkedDeque<>();
+    private static final Map<Player, Consumer<? super AsyncPlayerChatEvent>> chatListeners = new ConcurrentHashMap<>();
+    private static final Map<Player, Consumer<? super Player>> orElseListeners = new ConcurrentHashMap<>();
 
     /**
-     * Adds a new listener to the chat queue. If this is the first in line, the next chat event will be passed to this Consumer
+     * Listens for a player message.
+     * If <i>consumer</i> is null, the player is removed from memory (used in Quit event)
      *
      * @param consumer the Consumer that should listen for the event AND NOT BE NULL
+     * @param orElse the consumer that get called when another listener listens for a message (this one gets removed) or when the player quits
      */
-    public static void listenForMessage(Consumer<? super AsyncPlayerChatEvent> consumer) {
-        chatQueue.add(consumer);
+    public static void listenForMessage(Player player,
+                                        Consumer<? super AsyncPlayerChatEvent> consumer,
+                                        Consumer<? super Player> orElse) {
+        if (chatListeners.remove(player) != null) {
+            Consumer<? super Player> old = orElseListeners.remove(player);
+            if (old != null)
+                old.accept(player);
+        }
+        if (consumer != null) {
+            chatListeners.put(player, consumer);
+            if (orElse != null) orElseListeners.put(player, orElse);
+        }
     }
 
     public static List<String> bannedWords = new ArrayList<>(Arrays.asList("shit", "fuck", "cunt", "bitch", "whore", "slut", "wank", "asshole", "cock",
@@ -55,9 +69,10 @@ public class Chat {
      */
     public void doChat(AsyncPlayerChatEvent event) {
 
-        Consumer<? super AsyncPlayerChatEvent> messageListener = chatQueue.poll();
+        Consumer<? super AsyncPlayerChatEvent> messageListener = chatListeners.remove(event.getPlayer());
         if (messageListener != null) {
             messageListener.accept(event);
+            orElseListeners.remove(event.getPlayer());
             return;
         }
 

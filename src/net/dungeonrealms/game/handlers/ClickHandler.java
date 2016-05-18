@@ -1,8 +1,5 @@
 package net.dungeonrealms.game.handlers;
 
-import com.minebone.anvilapi.core.AnvilApi;
-import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
-import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.donate.DonationEffects;
@@ -15,6 +12,7 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
@@ -29,7 +27,10 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.Entity;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryAction;
@@ -531,21 +532,15 @@ public class ClickHandler {
                     PlayerMenus.openFriendsMenu(player);
                 }
                 if (slot == 0) {
-                    AnvilGUIInterface addFriendGUI = AnvilApi.createNewGUI(player, anvilClick -> {
-                        switch (anvilClick.getSlot()) {
-                            case OUTPUT:
-                                anvilClick.setWillClose(true);
-                                anvilClick.setWillDestroy(true);
-                                if (Bukkit.getPlayer(anvilClick.getName()) != null) {
-                                    FriendHandler.getInstance().sendRequest(player, Bukkit.getPlayer(anvilClick.getName()));
-                                } else {
-                                    player.sendMessage(ChatColor.RED + "Oops, I can't find that player!");
-                                }
-                                break;
+                    player.sendMessage(ChatColor.GREEN + "Please enter the player's name...");
+                    Chat.listenForMessage(player, chat -> {
+                        Player target = Bukkit.getPlayer(chat.getMessage());
+                        if (target != null) {
+                            FriendHandler.getInstance().sendRequest(player, target);
+                        } else {
+                            player.sendMessage(ChatColor.RED + "Oops, I can't find that player!");
                         }
-                    });
-                    addFriendGUI.setSlot(AnvilSlot.INPUT_LEFT, PlayerMenus.editItem(new ItemStack(Material.SKULL_ITEM, 1, (short) 3), "Type name here..", new String[]{}));
-                    addFriendGUI.open();
+                    }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
                     return;
                 }
                 FriendHandler.getInstance().addOrRemove(player, event.getClick(), event.getCurrentItem());
@@ -829,23 +824,12 @@ public class ClickHandler {
                                             GamePlayer gp = API.getGamePlayer(player);
                                             if (gp.getLevel() >= 10) {
                                                 if (gp.getStats().resetAmounts > 0) {
-                                                    player.sendMessage(ChatColor.GREEN + "ONE stat reset available.");
-                                                    AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
-                                                        if (e.getSlot() == AnvilSlot.OUTPUT) {
-                                                            if (e.getName().equalsIgnoreCase("Yes") || e.getName().equalsIgnoreCase("y")) {
-                                                                gp.getStats().freeResets -= 1;
-                                                            } else {
-                                                                e.destroy();
-                                                            }
+                                                    player.sendMessage(ChatColor.GREEN + "ONE stat reset available. Type 'yes' or 'y' to continue");
+                                                    Chat.listenForMessage(player, e -> {
+                                                        if (e.getMessage().equalsIgnoreCase("Yes") || e.getMessage().equalsIgnoreCase("y")) {
+                                                            gp.getStats().freeResets -= 1;
                                                         }
-                                                    });
-                                                    ItemStack stack = new ItemStack(Material.INK_SACK, 1, DyeColor.GREEN.getDyeData());
-                                                    ItemMeta meta = stack.getItemMeta();
-                                                    meta.setDisplayName("Use your ONE stat points reset?");
-                                                    stack.setItemMeta(meta);
-                                                    gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
-                                                    Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> player.sendMessage("Opening stat reset confirmation"), 0, 20 * 3);
-                                                    Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), gui::open, 20 * 5);
+                                                    }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
                                                 } else {
                                                     player.sendMessage(ChatColor.RED + "You have already used your free stat reset for your character.");
                                                     player.sendMessage(ChatColor.YELLOW + "You may purchase more resets from the E-Cash vendor!.");

@@ -1,16 +1,16 @@
 package net.dungeonrealms.game.player.inventory;
 
-import com.minebone.anvilapi.core.AnvilApi;
-import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
-import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
+import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -71,22 +71,12 @@ public class NPCMenus {
         GamePlayer gp = API.getGamePlayer(player);
         if (gp.getLevel() >= 10) {
             if (gp.getStats().resetAmounts > 0) {
-                player.sendMessage(ChatColor.GREEN + "You have a free stat reset available!");
-                AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
-                    if (e.getSlot() == AnvilSlot.OUTPUT) {
-                        if (e.getName().equalsIgnoreCase("Yes") || e.getName().equalsIgnoreCase("y")) {
-                            gp.getStats().freeResets -= 1;
-                        } else {
-                            e.destroy();
-                        }
+                player.sendMessage(ChatColor.GREEN + "You have a free stat reset available! Type 'yes' or 'y' to use it");
+                Chat.listenForMessage(player, chat -> {
+                    if (chat.getMessage().equalsIgnoreCase("yes") || chat.getMessage().equalsIgnoreCase("y")) {
+                        gp.getStats().freeResets-= 1;
                     }
-                });
-                ItemStack stack = new ItemStack(Material.INK_SACK, 1, DyeColor.GREEN.getDyeData());
-                ItemMeta meta = stack.getItemMeta();
-                meta.setDisplayName("Use your ONE stat points reset?");
-                stack.setItemMeta(meta);
-                gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), gui::open, 50L);
+                }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
             } else {
                 player.sendMessage(ChatColor.RED + "You have already used your free stat reset for your character.");
                 player.sendMessage(ChatColor.YELLOW + "You may purchase more resets from the E-Cash vendor!.");

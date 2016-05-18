@@ -312,6 +312,7 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
+        Chat.listenForMessage(event.getPlayer(), null, null);
         event.setQuitMessage(null);
         //Ensures the player has played at least 5 seconds before saving to the database.
         if (DatabaseAPI.getInstance().PLAYER_TIME.containsKey(event.getPlayer().getUniqueId()) && DatabaseAPI.getInstance().PLAYER_TIME.get(event.getPlayer().getUniqueId()) > 5) {

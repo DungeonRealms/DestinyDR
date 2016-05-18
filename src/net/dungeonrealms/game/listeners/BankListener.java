@@ -1,14 +1,12 @@
 package net.dungeonrealms.game.listeners;
 
-import com.minebone.anvilapi.core.AnvilApi;
-import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
-import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.player.chat.Chat;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -77,69 +75,52 @@ public class BankListener implements Listener {
                         e.setCancelled(true);
                         if (e.getCursor() != null) {
                             if (e.getClick() == ClickType.LEFT) {
-                                AnvilGUIInterface gui = AnvilApi.createNewGUI(player, event -> {
-                                    if (event.getSlot() == AnvilSlot.OUTPUT) {
-                                        int number = 0;
-                                        try {
-                                            number = Integer.parseInt(event.getName());
-                                        } catch (Exception exc) {
-                                            event.setWillClose(true);
-                                            event.setWillDestroy(true);
-                                            Bukkit.getPlayer(event.getPlayerName()).sendMessage("Please enter a valid number");
-                                            return;
-                                        }
-                                        event.setWillClose(true);
-                                        event.setWillDestroy(true);
-                                        int currentGems = getPlayerGems(player.getUniqueId());
-                                        if (number < 0) {
-                                            player.getPlayer().sendMessage("You can't ask for negative money!");
-                                        } else if (number > currentGems) {
-                                            player.getPlayer().sendMessage("You only have " + currentGems);
-                                        } else {
-                                            ItemStack stack = BankMechanics.gem.clone();
-                                            if (hasSpaceInInventory(player.getUniqueId(), number)) {
-                                                Player p = player.getPlayer();
-                                                DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(),
-                                                        EnumOperators.$INC, EnumData.GEMS, -number, true);
-                                                while (number > 0) {
-                                                    while (number > 64) {
-                                                        ItemStack item = stack.clone();
-                                                        item.setAmount(64);
-                                                        p.getInventory().setItem(p.getInventory().firstEmpty(), item);
-                                                        number -= 64;
-                                                    }
-                                                    ItemStack item = stack.clone();
-                                                    item.setAmount(number);
-                                                    p.getInventory().setItem(p.getInventory().firstEmpty(), item);
-                                                    number = 0;
-                                                }
-                                                player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
-                                            }
-                                        }
-
+                                player.sendMessage(ChatColor.RED + "Please enter the amount of money to withdraw:");
+                                Chat.listenForMessage(player, event -> {
+                                    int number = 0;
+                                    try {
+                                        number = Integer.parseInt(event.getMessage());
+                                    } catch (Exception exc) {
+                                        event.getPlayer().sendMessage("Please enter a valid number");
+                                        return;
                                     }
-                                });
-                                ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
-                                ItemMeta meta = stack.getItemMeta();
-                                meta.setDisplayName("?");
-                                stack.setItemMeta(meta);
-                                gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
-                                player.closeInventory();
-                                gui.open();
+                                    int currentGems = getPlayerGems(player.getUniqueId());
+                                    if (number < 0) {
+                                        player.getPlayer().sendMessage("You can't ask for negative money!");
+                                    } else if (number > currentGems) {
+                                        player.getPlayer().sendMessage("You only have " + currentGems);
+                                    } else {
+                                        ItemStack stack = BankMechanics.gem.clone();
+                                        if (hasSpaceInInventory(player.getUniqueId(), number)) {
+                                            Player p = player.getPlayer();
+                                            DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(),
+                                                    EnumOperators.$INC, EnumData.GEMS, -number, true);
+                                            while (number > 0) {
+                                                while (number > 64) {
+                                                    ItemStack item = stack.clone();
+                                                    item.setAmount(64);
+                                                    p.getInventory().setItem(p.getInventory().firstEmpty(), item);
+                                                    number -= 64;
+                                                }
+                                                ItemStack item = stack.clone();
+                                                item.setAmount(number);
+                                                p.getInventory().setItem(p.getInventory().firstEmpty(), item);
+                                                number = 0;
+                                            }
+                                            player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
+                                        }
+                                    }
+                                }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
                             } else if (e.getClick() == ClickType.RIGHT) {
-                                AnvilGUIInterface gui = AnvilApi.createNewGUI(player, event -> {
-                                    if (event.getSlot() == AnvilSlot.OUTPUT) {
+                                player.sendMessage(ChatColor.RED + "Please enter the amount of money to withdraw:");
+                                Chat.listenForMessage(player, event -> {
                                         int number = 0;
                                         try {
-                                            number = Integer.parseInt(event.getName());
+                                            number = Integer.parseInt(event.getMessage());
                                         } catch (Exception exc) {
-                                            event.setWillClose(true);
-                                            event.setWillDestroy(true);
-                                            Bukkit.getPlayer(event.getPlayerName()).sendMessage("Please enter a valid number");
+                                            event.getPlayer().sendMessage("Please enter a valid number");
                                             return;
                                         }
-                                        event.setWillClose(true);
-                                        event.setWillDestroy(true);
                                         int currentGems = getPlayerGems(player.getUniqueId());
                                         if (number < 0) {
                                             player.getPlayer().sendMessage("You can't ask for negative money!");
@@ -151,18 +132,8 @@ public class BankListener implements Listener {
                                             DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(),
                                                     EnumOperators.$INC, EnumData.GEMS, -number, true);
                                             player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
-
                                         }
-
-                                    }
-                                });
-                                ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
-                                ItemMeta meta = stack.getItemMeta();
-                                meta.setDisplayName("?");
-                                stack.setItemMeta(meta);
-                                gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
-                                player.closeInventory();
-                                gui.open();
+                                }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
                             }
 
                         }
