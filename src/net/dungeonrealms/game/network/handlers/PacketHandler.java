@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.network.handlers;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
@@ -24,7 +25,7 @@ public class PacketHandler {
 		if(obj instanceof BroadcastPacket)
 		{
 			BroadcastPacket packet = (BroadcastPacket)obj;
-	    	String colored = packet.message.replaceAll("(?i)&([a-f0-9])", "\u00A7$1"); // Add color support eh?
+			String colored = ChatColor.translateAlternateColorCodes('&', packet.message);
 			Bukkit.broadcastMessage(colored);
 			return;
 		}
