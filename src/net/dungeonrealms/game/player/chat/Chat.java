@@ -13,10 +13,9 @@ import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentLinkedDeque;
+import java.util.function.Consumer;
 
 /**
  * Created by Nick on 9/26/2015.
@@ -32,6 +31,17 @@ public class Chat {
         return instance;
     }
 
+    private static final Queue<Consumer<? super AsyncPlayerChatEvent>> chatQueue = new ConcurrentLinkedDeque<>();
+
+    /**
+     * Adds a new listener to the chat queue. If this is the first in line, the next chat event will be passed to this Consumer
+     *
+     * @param consumer the Consumer that should listen for the event AND NOT BE NULL
+     */
+    public static void listenForMessage(Consumer<? super AsyncPlayerChatEvent> consumer) {
+        chatQueue.add(consumer);
+    }
+
     public static List<String> bannedWords = new ArrayList<>(Arrays.asList("shit", "fuck", "cunt", "bitch", "whore", "slut", "wank", "asshole", "cock",
             "dick", "clit", "homo", "fag", "queer", "nigger", "dike", "dyke", "retard", "motherfucker", "vagina", "boob", "pussy", "rape", "gay", "penis",
             "cunt", "titty", "anus", "faggot", "gay", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "titanrift", "fucked"));
@@ -44,6 +54,12 @@ public class Chat {
      * @since 1.0
      */
     public void doChat(AsyncPlayerChatEvent event) {
+
+        Consumer<? super AsyncPlayerChatEvent> messageListener = chatQueue.poll();
+        if (messageListener != null) {
+            messageListener.accept(event);
+            return;
+        }
 
         UUID uuid = event.getPlayer().getUniqueId();
 
