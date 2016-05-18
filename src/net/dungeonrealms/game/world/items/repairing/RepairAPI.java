@@ -29,9 +29,10 @@ public class RepairAPI {
 		double repair_cost = 0;
 		
 		if(API.isArmor(i)) { // It's a piece of armor.
-			
-			int item_tier = API.getItemTier(i).getTierId();
 			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(i);
+			if(!nms.hasTag() && !nms.getTag().hasKey("itemTier"))
+				return -1;
+			int item_tier = nms.getTag().getInt("itemTier");
 			double avg_armor = 0;
 			if(nms.getTag().hasKey("armorMin"))
 				avg_armor = nms.getTag().getInt("armorMin");

@@ -255,12 +255,12 @@ public class BlockListener implements Listener {
         	event.setCancelled(true);
         	return;
         }
-        
+        /*
         int cost = RepairAPI.getItemRepairCost(item);
         if(cost < 0){
         	event.setCancelled(true);
         	return;
-        }
+        } */
             if (RepairAPI.canItemBeRepaired(item)) {
                 Player player = event.getPlayer();
             	int newCost = RepairAPI.getItemRepairCost(item);
