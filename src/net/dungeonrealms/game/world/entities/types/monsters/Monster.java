@@ -86,7 +86,8 @@ public interface Monster {
 
 		if (((LivingEntity) ent).getEquipment().getItemInHand().getType() == Material.BOW) {
 			int arrowRoll = new Random().nextInt(99);
-			if (arrowRoll <= (25 + (25 * killerLuck / 100))) {
+			//if (arrowRoll <= (25 + (25 * killerLuck / 100))) {
+			if(true) { // TEMP FOR TESTING
 				ItemStack item = new ItemStack(Material.ARROW);
 				int amount = (tier * 2);
 				item.setAmount(amount);
@@ -113,7 +114,8 @@ public interface Monster {
 			break;
 		}
 		int armorRoll = new Random().nextInt(1000);
-		if (armorRoll <= chance + (chance * killerLuck / 100)) {
+		//if (armorRoll <= chance + (chance * killerLuck / 100)) {
+		if(true) { // TEMP FOR TESTING
 			if (armorRoll > chance) {
 				if (Boolean.valueOf(
 				        DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId()).toString())) {
