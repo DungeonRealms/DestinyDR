@@ -79,9 +79,6 @@ public class RepairAPI {
 				return -1;
 			int item_tier = nms.getTag().getInt("itemTier");
 	        NBTTagCompound tag = CraftItemStack.asNMSCopy(i).getTag();
-	        double avg_dmg = tag.getInt("dmgMin");//Utils.randInt((int) Math.round(tag.getDouble("damage")  / damageRandomizer), (int) Math.round(tag.getDouble("damage")/ (damageRandomizer - 1)));
-			double dmg_cost = avg_dmg * 0.02; // This is the cost PER PERCENT
-
 			double percent_durability_left =   (getCustomDurability(i) / 1550) * 100;  // getDurabilityValueAsPercent(i, getCustomDurability(i));
 			if(percent_durability_left > 99) {
 				percent_durability_left = 99;
@@ -90,7 +87,7 @@ public class RepairAPI {
 			double global_multiplier = 0.20;
 			double multiplier = 1.0; // 100%
 			double missing_percent = 100 - percent_durability_left;
-			double total_dmg_cost = missing_percent * dmg_cost;
+			double total_dmg_cost = missing_percent;
 			if(item_tier == 1) {
 				multiplier = 1.0;
 				repair_cost = total_dmg_cost * multiplier;

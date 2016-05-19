@@ -1,5 +1,8 @@
 package net.dungeonrealms.game.network.handlers;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
@@ -8,6 +11,8 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.network.NetworkServer;
 import net.dungeonrealms.game.network.packets.BroadcastPacket;
 import net.dungeonrealms.game.network.packets.PartyPacket;
+import net.dungeonrealms.game.network.packets.WhoisUpdateRecievePacket;
+import net.dungeonrealms.game.network.packets.WhoisUpdateSendPacket;
 
 public class PacketHandler {
 
@@ -31,6 +36,16 @@ public class PacketHandler {
 		}
 		else if(obj instanceof PartyPacket)
 		{
+			return;
+		}
+		else if(obj instanceof WhoisUpdateSendPacket)
+		{
+			if(Bukkit.getOnlinePlayers().size() == 0) return; // Don't bother.. This server is empty.
+			List<String> playersSend = new ArrayList<String>();
+            Bukkit.getOnlinePlayers().stream().forEach(newPlayer ->{
+                playersSend.add(newPlayer.getName());
+            });
+			NetworkServer.getInstance().client.getServerConnection().sendTcp(new WhoisUpdateRecievePacket(DungeonRealms.getInstance().bungeeName, playersSend));
 			return;
 		}
 		else {
