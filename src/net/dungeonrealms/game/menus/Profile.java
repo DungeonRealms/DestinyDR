@@ -94,17 +94,20 @@ ChatColor.GREEN + "Open Profile"});
     public static void callEvent(Player player)
     {
     	player.closeInventory();
-        if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.SKULL_ITEM) return;
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(getItem(player));
-        NBTTagCompound tag = nmsStack.getTag();
-        if (tag == null) return;
-        if (!(tag.getString("type").equalsIgnoreCase("important")) && !(tag.getString("usage").equalsIgnoreCase("profile"))) return;
         PlayerMenus.openPlayerProfileMenu(player);
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     void inventoryClick(InventoryClickEvent event) {
-        if (event.getWhoClicked() instanceof Player
+		Bukkit.broadcastMessage("HI");
+    	if (event.getWhoClicked() instanceof Player)
+    	{
+    		if(!(event.getInventory() instanceof CraftingInventory))
+    		{
+    			event.getWhoClicked().closeInventory();
+    		}
+    	}
+    	if (event.getWhoClicked() instanceof Player
                 && event.getInventory() instanceof CraftingInventory && event.getInventory().getSize() == 5
                 && event.getRawSlot() == 1) {
             Player player = (Player) event.getWhoClicked();

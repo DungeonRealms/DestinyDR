@@ -144,7 +144,7 @@ public class HearthStone implements Listener {
         }
     }
     
-    @EventHandler
+    @EventHandler(ignoreCancelled = true)
     void inventoryClick(InventoryClickEvent event) {
         if (event.getWhoClicked() instanceof Player
                 && event.getInventory() instanceof CraftingInventory && event.getInventory().getSize() == 5
