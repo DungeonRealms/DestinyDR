@@ -21,6 +21,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.DungeonManager.DungeonObject;
+import net.dungeonrealms.game.miscellaneous.LocationUtils;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
@@ -156,6 +157,10 @@ public class MobSpawner {
                     EntityStats.setMonsterElite(entity, level, tier);
                     entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), ChatColor.BOLD.toString() + API.getTierColor(tier) + monsterCustomName.trim()));
                     giveCustomEquipment(entity);
+                	if(LocationUtils.getNearbyEntities(location, 10).size() > 3)
+                	{
+                		return; // Lets not spawn more than 3 entities in a radius of 3
+                	}
                     toSpawn = true;
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     	entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
@@ -240,13 +245,20 @@ public class MobSpawner {
                                 	newEntity.setCustomName(newlvlName + API.getTierColor(tier) + newmobName);
                                 	newEntity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + newmobName));
                                 }
-                        		
+                            	if(LocationUtils.getNearbyEntities(location, 10).size() > 3)
+                            	{
+                            		return; // Lets not spawn more than 10 entities in a radius of 3
+                            	}
                                 newEntity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                         		world.addEntity(newEntity, SpawnReason.CUSTOM);
                         		newEntity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                         		newEntity.getBukkitEntity().setVelocity(new Vector(0.25, 0.5, 0.25));
                         	}
                         }else{
+                        	if(LocationUtils.getNearbyEntities(location, 10).size() > 3)
+                        	{
+                        		return; // Lets not spawn more than 10 entities in a radius of 3
+                        	}
                         	entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                         	world.addEntity(entity, SpawnReason.CUSTOM);
                         	entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);

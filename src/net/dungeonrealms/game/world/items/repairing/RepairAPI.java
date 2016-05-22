@@ -184,7 +184,12 @@ public class RepairAPI {
 		if(repair_cost < 1) {
 			repair_cost = 1;
 		}
-		return (int) Math.round(repair_cost);
+		int cost = (int) Math.round(repair_cost) / 2; // Divide by 2
+		if(cost < 10)
+		{
+			return 10; // Minimum of 10 gems yeh?
+		}
+		return cost;
 	}
 	
 	
