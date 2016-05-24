@@ -19,8 +19,8 @@ public final class GameChat {
     public static final String SUB = ChatColor.GREEN.toString() + ChatColor.BOLD + "S" + ChatColor.RESET + " ";
     public static final String SUBPLUS = ChatColor.GOLD.toString() + ChatColor.BOLD + "S+" + ChatColor.RESET + " ";
     public static final String GM = ChatColor.AQUA.toString() + ChatColor.BOLD + "GM" + ChatColor.RESET + " ";
-    public static final String CM = ChatColor.BLUE.toString() + ChatColor.BOLD + "CM" + ChatColor.RESET + " ";
-    public static final String DEVS = ChatColor.GOLD.toString() + ChatColor.BOLD + "DEV" + ChatColor.RESET + " ";
+    public static final String SUPPORT = ChatColor.BLUE.toString() + ChatColor.BOLD + "SUPPORT" + ChatColor.RESET + " ";
+    public static final String DEV = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "DEV" + ChatColor.RESET + " ";
     public static final String YOUTUBE = ChatColor.RED.toString() + ChatColor.BOLD + "YT" + ChatColor.RESET + " ";
     public static final String PMOD = ChatColor.WHITE.toString() + ChatColor.BOLD + "PMOD" + ChatColor.RESET + " ";
 
@@ -71,11 +71,11 @@ public final class GameChat {
                 return ChatColor.WHITE + player.getName() + ChatColor.GRAY + ":" + ChatColor.RESET + " ";
             case "sub+":
                 return ChatColor.WHITE + player.getName() + ChatColor.GRAY + ":" + ChatColor.RESET + " ";
-            case "devs":
-                return ChatColor.DARK_AQUA + player.getName() + ChatColor.GRAY + ":" + ChatColor.RESET + " ";
+            case "dev":
+                return ChatColor.DARK_AQUA + player.getName() + ":" + ChatColor.RESET + " ";
             case "gm":
-                return ChatColor.RED + player.getName() + ChatColor.GRAY + ":" + ChatColor.RESET + " ";
-            case "cm":
+                return ChatColor.AQUA + player.getName() + ":" + ChatColor.RESET + " ";
+            case "support":
                 return ChatColor.BLUE + player.getName() + ChatColor.GRAY + ":" + ChatColor.RESET + " ";
             case "youtube":
                 return ChatColor.RED + player.getName() + ChatColor.GRAY + ":" + ChatColor.RESET + " ";
@@ -95,12 +95,12 @@ public final class GameChat {
                 return SUB;
             case "sub+":
                 return SUBPLUS;
-            case "devs":
-                return DEVS;
+            case "dev":
+                return DEV;
             case "gm":
                 return GM;
-            case "cm":
-                return CM;
+            case "support":
+                return SUPPORT;
             case "youtube":
                 return YOUTUBE;
             case "pmod":

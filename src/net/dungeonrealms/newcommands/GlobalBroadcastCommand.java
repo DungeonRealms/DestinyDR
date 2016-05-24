@@ -21,7 +21,6 @@ public class GlobalBroadcastCommand extends AbstractCommand {
     	Player p = (Player)sender;
     	if(!p.isOp())
     	{
-    		p.kickPlayer("No!");
     		return false;
     	}
     	StringBuilder sb = new StringBuilder();

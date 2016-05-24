@@ -20,7 +20,6 @@ public class StarterCommand extends AbstractCommand {
     	Player p = (Player)sender;
     	if(!p.isOp())
     	{
-    		p.kickPlayer("No!");
     		return false;
     	}
     	if(args.length != 1)

@@ -22,7 +22,6 @@ public class RealmTestCommand extends AbstractCommand {
     	Player p = (Player)sender;
     	if(!p.isOp())
     	{
-    		p.kickPlayer("No!");
     		return false;
     	}
     	DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.ENTERINGREALM, p.getUniqueId().toString(), true);
