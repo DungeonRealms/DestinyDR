@@ -1,11 +1,16 @@
 package net.dungeonrealms.game.handlers;
 
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.API;
@@ -26,6 +31,14 @@ import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 public class TutorialIslandHandler implements GenericMechanic, Listener {
 
     private static TutorialIslandHandler instance = null;
+    private Set<UUID> skipList; // a list of players who have executed the /skip command
+
+    /**
+     * @return the skipList
+     */
+    public Set<UUID> getSkipList() {
+        return skipList;
+    }
 
     public static TutorialIslandHandler getInstance() {
         if (instance == null) {
@@ -41,6 +54,7 @@ public class TutorialIslandHandler implements GenericMechanic, Listener {
 
     @Override
     public void startInitialization() {
+        skipList = new HashSet<>();
         Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::hideVanishedPlayers, 100L, 1L);
     }
 
@@ -78,5 +92,24 @@ public class TutorialIslandHandler implements GenericMechanic, Listener {
         player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
         player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
         player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
+    }
+    
+    // detects if the player has executed /skip and if so, listens for their confirmation
+    public void onPlayerConfirmSkip(AsyncPlayerChatEvent e) {
+        Player pl = e.getPlayer();
+        
+        if(skipList.contains(pl.getName())) {
+            e.setCancelled(true);
+            if(e.getMessage().equalsIgnoreCase("y")) {
+                pl.teleport(new Location(Bukkit.getWorlds().get(0), -378, 85, 362));
+                // only add a weapon, no armor
+                pl.getInventory().addItem(new ItemBuilder().setItem(new ItemGenerator().setType(ItemType.AXE).setTier(ItemTier.TIER_1).setRarity(ItemRarity.COMMON).generateItem().getItem())
+                        .setNBTString("subtype", "starter").build());
+            } else {
+                pl.sendMessage(ChatColor.RED + "Tutorial Skip - " + ChatColor.BOLD + "CANCELLED");
+            }
+            skipList.remove(pl.getName());
+            return;
+        }
     }
 }
