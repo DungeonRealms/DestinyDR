@@ -18,7 +18,6 @@ public class TestingCommand extends AbstractCommand {
     	Player p = (Player)sender;
     	if(!p.isOp())
     	{
-    		p.kickPlayer("No!");
     		return false;
     	}
     	p.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());

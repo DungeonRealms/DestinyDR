@@ -20,7 +20,6 @@ public class KickAllCommand extends AbstractCommand {
     	Player p = (Player)sender;
     	if(!p.isOp())
     	{
-    		p.kickPlayer("No!");
     		return false;
     	}
     	Bukkit.getOnlinePlayers().stream().forEach(newPlayer ->{ newPlayer.kickPlayer("This server has been put into maintenance mode!");});
