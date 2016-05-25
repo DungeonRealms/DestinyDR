@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.mechanics;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
@@ -763,6 +764,23 @@ public class ItemManager {
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
         tag.set("usage", new NBTTagString("profile"));
+        nmsStack.setTag(tag);
+        return CraftItemStack.asBukkitCopy(nmsStack);
+    }
+
+    public static ItemStack getPlayerHearthstone(Player player) {
+        ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.QUARTZ), ChatColor.GREEN + "Hearthstone", new String[]{
+                ChatColor.DARK_GRAY + "Home location",
+                "",
+                ChatColor.GRAY + "Use: Returns you to ",
+                ChatColor.YELLOW + TeleportAPI.getLocationFromDatabase(player.getUniqueId()),
+                "",
+                ChatColor.YELLOW + "Speak to an Innkeeper to change location."
+        });
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set("type", new NBTTagString("important"));
+        tag.set("usage", new NBTTagString("hearthstone"));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }

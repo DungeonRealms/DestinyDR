@@ -46,8 +46,7 @@ public class ItemListener implements Listener {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null || !tag.getString("type").equalsIgnoreCase("important")) return;
-        event.setCancelled(true);
-        event.getPlayer().sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You can't drop important game items!");
+        event.getItemDrop().remove();
     }
 
     /**

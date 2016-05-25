@@ -1,70 +1,13 @@
 package net.dungeonrealms;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.Arrays;
-
-import org.apache.commons.io.FileUtils;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.plugin.PluginManager;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.ini4j.Ini;
-import org.ini4j.InvalidFileFormatException;
-
 import com.connorlinfoot.bountifulapi.BountifulAPI;
-
 import net.dungeonrealms.core.Core;
-import net.dungeonrealms.game.commands.CommandAccept;
-import net.dungeonrealms.game.commands.CommandAdd;
-import net.dungeonrealms.game.commands.CommandCheck;
-import net.dungeonrealms.game.commands.CommandEss;
-import net.dungeonrealms.game.commands.CommandGlobalChat;
-import net.dungeonrealms.game.commands.CommandGuild;
-import net.dungeonrealms.game.commands.CommandInvoke;
-import net.dungeonrealms.game.commands.CommandLag;
-import net.dungeonrealms.game.commands.CommandList;
-import net.dungeonrealms.game.commands.CommandLogout;
-import net.dungeonrealms.game.commands.CommandMail;
-import net.dungeonrealms.game.commands.CommandModeration;
-import net.dungeonrealms.game.commands.CommandPAccept;
-import net.dungeonrealms.game.commands.CommandPChat;
-import net.dungeonrealms.game.commands.CommandPLeave;
-import net.dungeonrealms.game.commands.CommandPRemove;
-import net.dungeonrealms.game.commands.CommandPl;
-import net.dungeonrealms.game.commands.CommandPurchase;
-import net.dungeonrealms.game.commands.CommandRank;
-import net.dungeonrealms.game.commands.CommandRoll;
-import net.dungeonrealms.game.commands.CommandSet;
-import net.dungeonrealms.game.commands.CommandShopClose;
-import net.dungeonrealms.game.commands.CommandSkip;
-import net.dungeonrealms.game.commands.CommandSpar;
-import net.dungeonrealms.game.commands.CommandSpawn;
-import net.dungeonrealms.game.commands.CommandStats;
-import net.dungeonrealms.game.commands.CommandStop;
-import net.dungeonrealms.game.commands.CommandStuck;
-import net.dungeonrealms.game.commands.CommandTell;
-import net.dungeonrealms.game.commands.CommandToggle;
+import net.dungeonrealms.game.commands.*;
 import net.dungeonrealms.game.commands.generic.CommandManager;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.guild.Guild;
-import net.dungeonrealms.game.handlers.EnergyHandler;
-import net.dungeonrealms.game.handlers.HealthHandler;
-import net.dungeonrealms.game.handlers.KarmaHandler;
-import net.dungeonrealms.game.handlers.ScoreboardHandler;
-import net.dungeonrealms.game.handlers.TutorialIslandHandler;
-import net.dungeonrealms.game.listeners.AntiCheatListener;
-import net.dungeonrealms.game.listeners.BankListener;
-import net.dungeonrealms.game.listeners.BlockListener;
-import net.dungeonrealms.game.listeners.DamageListener;
-import net.dungeonrealms.game.listeners.EnergyListener;
-import net.dungeonrealms.game.listeners.InventoryListener;
-import net.dungeonrealms.game.listeners.ItemListener;
-import net.dungeonrealms.game.listeners.MainListener;
-import net.dungeonrealms.game.listeners.MainListenerInstance;
-import net.dungeonrealms.game.listeners.ShopListener;
+import net.dungeonrealms.game.handlers.*;
+import net.dungeonrealms.game.listeners.*;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.RealmManager;
 import net.dungeonrealms.game.mastery.Utils;
@@ -85,19 +28,28 @@ import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
-import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
+import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.realms.Instance;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
-import net.dungeonrealms.newcommands.GlobalBroadcastCommand;
-import net.dungeonrealms.newcommands.KickAllCommand;
-import net.dungeonrealms.newcommands.RealmTestCommand;
-import net.dungeonrealms.newcommands.StarterCommand;
-import net.dungeonrealms.newcommands.TestingCommand;
+import net.dungeonrealms.newcommands.*;
+import org.apache.commons.io.FileUtils;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.plugin.PluginManager;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.ini4j.Ini;
+import org.ini4j.InvalidFileFormatException;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.Collections;
 
 public class DungeonRealms extends JavaPlugin {
 
@@ -157,7 +109,6 @@ public class DungeonRealms extends JavaPlugin {
 			realmport = ini.get("RealmInstance", "port", int.class);
 			realmmax = ini.get("RealmInstance", "maxrealms", int.class);
 			realmpmax = ini.get("RealmInstance", "maxplayers", int.class);
-
 		} catch (InvalidFileFormatException e1) {
 			Utils.log.info("InvalidFileFormat in shard config!");
 		} catch (FileNotFoundException e1) {
@@ -303,7 +254,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandAccept("accept", "/<command> [args]", "The accept command."));
             cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
             cm.registerCommand(new CommandStats("stats", "/<command> [args]", "The stats command."));
-            cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "The stop command.", Arrays.asList("drstop")));
+            cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "The stop command.", Collections.singletonList("drstop")));
             cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "The roll command."));
             cm.registerCommand(new CommandPRemove("premove", "/<command> [args]", "Remove player from party."));
             cm.registerCommand(new CommandPLeave("pleave", "/<command> [args]", "Remove player from party."));
@@ -330,7 +281,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandGlobalChat("gl", "/<command> [args]", "The invoke command."));
 
             cm.registerCommand(new CommandStats("stats", "/<command> [args]", "The stats command."));
-            cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "The stop command.", Arrays.asList("drstop")));
+            cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "The stop command.", Collections.singletonList("drstop")));
             cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "The roll command."));
             cm.registerCommand(new CommandStuck("stuck", "/<command> [args]", "The stuck command."));
 

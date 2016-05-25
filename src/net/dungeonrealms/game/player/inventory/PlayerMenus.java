@@ -198,10 +198,12 @@ public class PlayerMenus {
 
         List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, uuid);
         int count = 0;
-        if(playerMounts.size() > 0)
-        for(String mount : playerMounts)
-        	if(!mount.equalsIgnoreCase("MULE"))
-        		count++;
+        if (playerMounts.size() > 0)
+        for (String mount : playerMounts) {
+            if (!mount.equalsIgnoreCase("MULE")) {
+                count++;
+            }
+        }
         if (count <= 0) {
             Inventory noMounts = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mounts!");
             player.openInventory(noMounts);
@@ -213,8 +215,9 @@ public class PlayerMenus {
         inv.setItem(26, editItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Dismiss Mount", new String[]{}));
 
         for (String mountType : playerMounts) {
-        	if(mountType.equalsIgnoreCase(EnumMounts.MULE.getRawName()))
-        		continue;
+        	if (mountType.equalsIgnoreCase(EnumMounts.MULE.getRawName())) {
+                continue;
+            }
             ItemStack itemStack = EnumMounts.getByName(mountType).getSelectionItem();
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
@@ -266,7 +269,7 @@ public class PlayerMenus {
                 "",
                 ChatColor.YELLOW + "Use: View Attributes."
         }));
-        inv.setItem(1, editItem("xFinityPro", ChatColor.GREEN + "Friend List", new String[]{
+        inv.setItem(1, editItem("Shrek", ChatColor.GREEN + "Friend List", new String[]{
                 ChatColor.DARK_GRAY + "Friends",
                 "",
                 ChatColor.GRAY + "Add and remove friends.",

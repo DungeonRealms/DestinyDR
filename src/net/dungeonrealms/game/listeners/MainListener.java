@@ -633,7 +633,6 @@ public class MainListener implements Listener {
         }
         player.getOpenInventory().getTopInventory().clear();
         player.updateInventory();
-        player.sendMessage(ChatColor.YELLOW + "Trade Cancelled!");
     }
 
 
