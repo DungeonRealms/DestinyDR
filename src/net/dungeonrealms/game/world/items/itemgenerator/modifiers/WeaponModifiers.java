@@ -1,13 +1,5 @@
 package net.dungeonrealms.game.world.items.itemgenerator.modifiers;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-import java.util.Random;
-
-import org.bukkit.ChatColor;
-import org.bukkit.inventory.meta.ItemMeta;
-
 import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
@@ -15,6 +7,13 @@ import net.dungeonrealms.game.world.items.itemgenerator.engine.ItemModifier;
 import net.dungeonrealms.game.world.items.itemgenerator.engine.ModifierCondition;
 import net.dungeonrealms.game.world.items.itemgenerator.engine.ModifierRange;
 import net.dungeonrealms.game.world.items.itemgenerator.engine.ModifierType;
+import org.bukkit.ChatColor;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+import java.util.Random;
 
 public class WeaponModifiers {
 
@@ -223,7 +222,7 @@ public class WeaponModifiers {
         
         @Override
         public String getPrefix(ItemMeta meta){
-            if (chosenStat == null || chosenStat == "") {
+            if (chosenStat == null || chosenStat.equals("")) {
                 chooseStat();
             }
             return r + chosenStat.substring(0, 3).toUpperCase() + ": +";
@@ -231,7 +230,7 @@ public class WeaponModifiers {
         
         @Override
         public String getNBTName() {
-            if (chosenStat == null || chosenStat == "") {
+            if (chosenStat == null || chosenStat.equals("")) {
                 chooseStat();
             }
             return chosenStat;

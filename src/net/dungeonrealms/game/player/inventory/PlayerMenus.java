@@ -198,10 +198,11 @@ public class PlayerMenus {
 
         List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, uuid);
         int count = 0;
-        if (playerMounts.size() > 0)
-        for (String mount : playerMounts) {
-            if (!mount.equalsIgnoreCase("MULE")) {
-                count++;
+        if (playerMounts.size() > 0) {
+            for (String mount : playerMounts) {
+                if (!mount.equalsIgnoreCase("MULE")) {
+                    count++;
+                }
             }
         }
         if (count <= 0) {
@@ -292,7 +293,8 @@ public class PlayerMenus {
                 ChatColor.GRAY + "Get around quickly with",
                 ChatColor.GRAY + "your mount of choice.",
                 "",
-                ChatColor.YELLOW + "Use: View available mounts."
+                ChatColor.YELLOW + "Use: Left Click - View available mounts.",
+                ChatColor.YELLOW + "Use: Middle Click - Receive mount item."
         }));
         inv.setItem(8, editItem(new ItemStack(Material.NAME_TAG), ChatColor.GREEN + "Pets", new String[]{
                 ChatColor.DARK_GRAY + "Companions",

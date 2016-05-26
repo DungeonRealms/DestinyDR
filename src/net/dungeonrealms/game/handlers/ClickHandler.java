@@ -33,10 +33,7 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryAction;
-import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.inventory.InventoryCloseEvent;
-import org.bukkit.event.inventory.InventoryType;
+import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -592,9 +589,9 @@ public class ClickHandler {
                                         DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                                     }
                                     EntityAPI.removePlayerPetList(player.getUniqueId());
-                                    player.sendMessage(ChatColor.AQUA + " Pet dismissed.");
+                                    player.sendMessage(ChatColor.AQUA + "Pet dismissed.");
                                 } else {
-                                    player.sendMessage(ChatColor.AQUA + " You currently do not have a pet in the world.");
+                                    player.sendMessage(ChatColor.AQUA + "You currently do not have a pet in the world.");
                                 }
                                 return;
                             }
@@ -618,7 +615,7 @@ public class ClickHandler {
                                         DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                                     }
                                     EntityAPI.removePlayerMountList(player.getUniqueId());
-                                    player.sendMessage(ChatColor.AQUA + " Mount dismissed.");
+                                    player.sendMessage(ChatColor.AQUA + "Mount dismissed.");
                                 }
                                 net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                                 if (nmsStack.getTag() == null || nmsStack.getTag().getString("petType") == null) {
@@ -653,9 +650,9 @@ public class ClickHandler {
                                             DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                                         }
                                         EntityAPI.removePlayerMountList(player.getUniqueId());
-                                        player.sendMessage(ChatColor.AQUA + " Mount dismissed.");
+                                        player.sendMessage(ChatColor.AQUA + "Mount dismissed.");
                                     } else {
-                                        player.sendMessage(ChatColor.AQUA + " You currently do not have a mount in the world.");
+                                        player.sendMessage(ChatColor.AQUA + "You currently do not have a mount in the world.");
                                     }
                                     return;
                                 }
@@ -719,9 +716,9 @@ public class ClickHandler {
                                     if (event.getCurrentItem().getType() == Material.ARMOR_STAND) {
                                         if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(player)) {
                                             DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(player);
-                                            player.sendMessage(ChatColor.AQUA + " You have disabled your trail.");
+                                            player.sendMessage(ChatColor.AQUA + "You have disabled your trail.");
                                         } else {
-                                            player.sendMessage(ChatColor.AQUA + " You don't have a Player trail enabled.");
+                                            player.sendMessage(ChatColor.AQUA + "You don't have a Player trail enabled.");
                                         }
                                         return;
                                     }
@@ -733,7 +730,7 @@ public class ClickHandler {
                                             return;
                                         }
                                         DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")));
-                                        player.sendMessage(ChatColor.AQUA + " Enabling " + ChatColor.RED + nmsStack.getTag().getString("playerTrailType") + ChatColor.AQUA + " trail.");
+                                        player.sendMessage(ChatColor.AQUA + "Enabling " + ChatColor.RED + nmsStack.getTag().getString("playerTrailType") + ChatColor.AQUA + " trail.");
                                     }
                                 } else
 
@@ -742,6 +739,7 @@ public class ClickHandler {
          */
                                     if (name.equals("Profile")) {
                                         event.setCancelled(true);
+                                        if (event.getClick() == ClickType.MIDDLE) return;
                                         switch (slot) {
                                             case 0:
                                                 player.openInventory(StatsManager.getInventory(player));
@@ -784,7 +782,7 @@ public class ClickHandler {
                                                         DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
                                                     }
                                                     EntityAPI.removePlayerPetList(player.getUniqueId());
-                                                    player.sendMessage(ChatColor.AQUA + " Pet dismissed.");
+                                                    player.sendMessage(ChatColor.AQUA + "Pet dismissed.");
                                                 }
                                                 if (CombatLog.isInCombat(player)) {
                                                     player.sendMessage(ChatColor.RED + "You cannot summon a storage mule while in Combat!");

@@ -368,18 +368,17 @@ public class Item {
         INTELLECT(4, "INT", "intellect"),
         FIRE_RESISTANCE(5, "FIRE RESISTANCE", "fireResistance"),
         BLOCK(6, "BLOCK", "block"), //Percentage
-        LUCK(7, "LUCK", "luck"), //Percentage
-        THORNS(8, "THORNS", "thorns"), //Percentage
-        STRENGTH(9, "STR", "strength"),
-        VITALITY(10, "VIT", "vitality"),
-        DODGE(11, "DODGE", "dodge"), //Percentage
-        DAMAGE(12, "DPS", "dps"), //Percentage
-        DEXTERITY(13, "DEX", "dexterity"),
-        REFLECTION(14, "REFLECTION", "reflection"), //Percentage
-        GEM_FIND(15, "GEM FIND", "gemFind"), //Percentage
-        ITEM_FIND(16, "ITEM FIND", "itemFind"), 
-        ICE_RESISTANCE(17, "ICE RESISTANCE", "iceResistance"),
-        POISON_RESISTANCE(18, "POISON RESISTANCE", "poisonResistance");
+        THORNS(7, "THORNS", "thorns"), //Percentage
+        STRENGTH(8, "STR", "strength"),
+        VITALITY(9, "VIT", "vitality"),
+        DODGE(10, "DODGE", "dodge"), //Percentage
+        DAMAGE(11, "DPS", "dps"), //Percentage
+        DEXTERITY(12, "DEX", "dexterity"),
+        REFLECTION(13, "REFLECTION", "reflection"), //Percentage
+        GEM_FIND(14, "GEM FIND", "gemFind"), //Percentage
+        ITEM_FIND(15, "ITEM FIND", "itemFind"),
+        ICE_RESISTANCE(16, "ICE RESISTANCE", "iceResistance"),
+        POISON_RESISTANCE(17, "POISON RESISTANCE", "poisonResistance");
 
         private int id;
         private String name;

@@ -649,17 +649,17 @@ public class ItemManager {
         ItemStack stack = createItem(Material.WRITTEN_BOOK, ChatColor.GREEN.toString() + ChatColor.BOLD + "Character Journal", new String[]{ChatColor.GREEN + "Left Click: " + ChatColor.GRAY + "Invite to Party", ChatColor.GREEN + "Sneak-Left Click: " + ChatColor.GRAY + "Setup Shop"});
         BookMeta bm = (BookMeta) stack.getItemMeta();
         List<String> pages = new ArrayList<>();
-        String page1_string = "";
-        String page2_string = "";
-        String page3_string = "";
-        String page4_string = "";
+        String page1_string;
+        String page2_string;
+        String page3_string;
+        String page4_string;
         String new_line = "\n" + ChatColor.WHITE.toString() + "`" + "\n";
         GamePlayer gp = API.getGamePlayer(p);
         String pretty_align = ChatColor.DARK_GREEN + ChatColor.UNDERLINE.toString() + gp.getPlayerAlignment().name();
         DecimalFormat df = new DecimalFormat("#.##");
         PlayerStats stats = gp.getStats();
 
-        if(pretty_align.contains("CHAOTIC")){
+        if (pretty_align.contains("CHAOTIC")) {
         String time  = String.valueOf(KarmaHandler.getInstance().getAlignmentTime(p));
 		page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character" + "\n" 
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + "\n" +  ChatColor.RED.toString() + ChatColor.BOLD  + time + "s.." + new_line
@@ -669,8 +669,9 @@ public class ItemManager {
                 + "   " + (HealthHandler.getInstance().getPlayerHPRegenLive(p)) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n" + ChatColor.BLACK.toString()
                 + "   " + EnergyHandler.getInstance().getPlayerEnergyPercentage(p.getUniqueId()) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString()
                 + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString() 
-                + "   " + gp.getPlayerLuck() + ChatColor.BOLD.toString() + " LUCK";
-        }else{
+                + "   " + gp.getPlayerGemFind() + ChatColor.BOLD.toString() + " GEM FIND" + "\n" + ChatColor.BLACK.toString()
+                + "   " + gp.getPlayerItemFind() + ChatColor.BOLD.toString() + " ITEM FIND";
+        } else {
             page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character" + "\n" + new_line
                     + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + new_line
                     + ChatColor.BLACK.toString() + gp.getPlayerAlignment().description + new_line + ChatColor.BLACK.toString() + "   " + gp.getPlayerCurrentHP()
@@ -678,8 +679,9 @@ public class ItemManager {
                     + "   " + Math.round(gp.getStats().getDPS()) + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
                     + "   " + (HealthHandler.getInstance().getPlayerHPRegenLive(p) + gp.getStats().getHPRegen()) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n" + ChatColor.BLACK.toString()
                     + "   " + EnergyHandler.getInstance().getPlayerEnergyPercentage(p.getUniqueId()) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString()
-                    + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString() 
-                    + "   " + gp.getPlayerLuck() + ChatColor.BOLD.toString() + " LUCK";
+                    + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString()
+                    + "   " + gp.getPlayerGemFind() + ChatColor.BOLD.toString() + " GEM FIND" + "\n" + ChatColor.BLACK.toString()
+                    + "   " + gp.getPlayerItemFind() + ChatColor.BOLD.toString() + " ITEM FIND";
         }
         page2_string = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "  ** LEVEL/EXP **\n\n" + ChatColor.BLACK + ChatColor.BOLD
                 + "       LEVEL\n" + "          " + ChatColor.BLACK + gp.getLevel() + "\n\n" + ChatColor.BLACK + ChatColor.BOLD
@@ -781,6 +783,18 @@ public class ItemManager {
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
         tag.set("usage", new NBTTagString("hearthstone"));
+        nmsStack.setTag(tag);
+        return CraftItemStack.asBukkitCopy(nmsStack);
+    }
+
+    public static ItemStack getPlayerMountItem() {
+        ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.SADDLE), ChatColor.GREEN + "Mount", new String[]{
+                ChatColor.DARK_GRAY + "Summons your active Mount.",
+        });
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set("type", new NBTTagString("important"));
+        tag.set("usage", new NBTTagString("mount"));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }

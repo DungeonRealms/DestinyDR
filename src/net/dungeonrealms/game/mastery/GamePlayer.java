@@ -8,6 +8,7 @@ import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import org.bukkit.Bukkit;
@@ -266,8 +267,12 @@ public class GamePlayer {
         return stats;
     }
 
-    public int getPlayerLuck() {
-        return DamageAPI.calculatePlayerLuck(T);
+    public int getPlayerGemFind() {
+        return DamageAPI.calculatePlayerStat(T, Item.ArmorAttributeType.GEM_FIND);
+    }
+
+    public int getPlayerItemFind() {
+        return DamageAPI.calculatePlayerStat(T, Item.ArmorAttributeType.ITEM_FIND);
     }
 
 }

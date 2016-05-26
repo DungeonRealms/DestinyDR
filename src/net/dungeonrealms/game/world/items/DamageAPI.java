@@ -12,11 +12,7 @@ import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_8_R3.EntityMonster;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftMonster;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -605,9 +601,9 @@ public class DamageAPI {
         return new double[]{Math.round(totalArmorReduction), totalArmor};
     }
 
-    public static int calculatePlayerLuck(Player player) {
-        int playerLuck[] = new int[4];
-        int totalLuck;
+    public static int calculatePlayerStat(Player player, Item.ArmorAttributeType type) {
+        int statAmount[] = new int[4];
+        int totalStat;
         NBTTagCompound nmsTags[] = new NBTTagCompound[4];
         EntityEquipment playerEquipment = player.getEquipment();
         ItemStack[] playerArmor = playerEquipment.getArmorContents();
@@ -633,16 +629,16 @@ public class DamageAPI {
         }
         for (int i = 0; i < nmsTags.length; i++) {
             if (nmsTags[i] == null) {
-                playerLuck[i] += 0;
+                statAmount[i] += 0;
             } else {
-                if (nmsTags[i].getInt("luck") != 0) {
-                    playerLuck[i] = nmsTags[i].getInt("luck");
+                if (nmsTags[i].getInt(type.getNBTName()) != 0) {
+                    statAmount[i] = nmsTags[i].getInt(type.getNBTName());
                 }
             }
         }
-        totalLuck = playerLuck[0] + playerLuck[1] + playerLuck[2] + playerLuck[3];
+        totalStat = statAmount[0] + statAmount[1] + statAmount[2] + statAmount[3];
 
-        return Math.round(totalLuck);
+        return Math.round(totalStat);
     }
 
     public static void fireStaffProjectile(Player player, ItemStack itemStack, NBTTagCompound tag) {
