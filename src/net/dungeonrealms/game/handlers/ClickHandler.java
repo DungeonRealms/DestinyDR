@@ -17,6 +17,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.stats.StatsManager;
+import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
@@ -27,10 +28,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.Entity;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.*;
@@ -65,7 +63,7 @@ public class ClickHandler {
         Animal Tamer NPC
          */
         switch (name) {
-            case "Animal Vendor":
+            case "Animal Tamer":
                 event.setCancelled(true);
                 if (slot > 18) return;
                 if (event.getCurrentItem().getType() != Material.AIR) {
@@ -77,14 +75,18 @@ public class ClickHandler {
                         player.sendMessage(ChatColor.RED + "You already own this mount!");
                         return;
                     } else {
-                        if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
-                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, nmsStack.getTag().getString("mountType").toUpperCase(), true);
-                            player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("mountType") + " mount.");
-                            player.closeInventory();
-                            return;
+                        if (MountUtils.hasMountPrerequisites(EnumMounts.getByName(nmsStack.getTag().getString("mountType")), playerMounts)) {
+                            if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
+                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, nmsStack.getTag().getString("mountType").toUpperCase(), true);
+                                player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("mountType") + " mount.");
+                                player.closeInventory();
+                                return;
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You cannot afford this mount, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("mountCost") + ChatColor.RED + " Gems.");
+                                return;
+                            }
                         } else {
-                            player.sendMessage(ChatColor.RED + "You cannot afford this mount, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("mountCost") + ChatColor.RED + " Gems.");
-                            return;
+                            player.sendMessage(ChatColor.RED + "You do not meet the requirements to purchase this mount");
                         }
                     }
                 }
@@ -627,6 +629,7 @@ public class ClickHandler {
                                 if (nmsStack.getTag().getString("particleType") != null) {
                                     particleType = nmsStack.getTag().getString("particleType");
                                 }
+                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, nmsStack.getTag().getString("petType"), false);
                                 PetUtils.spawnPet(player.getUniqueId(), nmsStack.getTag().getString("petType"), particleType);
                             }
                         } else
@@ -689,18 +692,30 @@ public class ClickHandler {
                                         player.closeInventory();
                                         return;
                                     }
+                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT, nmsStack.getTag().getString("mountType"), false);
                                     player.sendMessage(ChatColor.GREEN + "Your Mount is being summoned into this world!");
-                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                                    final int[] count = {0};
+                                    Location startingLocation = player.getLocation();
+                                    int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
                                         if (!EntityAPI.hasMountOut(player.getUniqueId())) {
-                                            if (!CombatLog.isInCombat(player)) {
-                                                MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"));
-                                            } else {
-                                                player.sendMessage(ChatColor.RED + "Combat has cancelled your mount summoning!");
+                                            if (player.getLocation().distanceSquared(startingLocation) <= 4) {
+                                                if (!CombatLog.isInCombat(player)) {
+                                                    if (count[0] < 3) {
+                                                        count[0]++;
+                                                    } else {
+                                                        MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"));
+                                                    }
+                                                } else {
+                                                    count[0] = 0;
+                                                    player.sendMessage(ChatColor.RED + "Combat has cancelled your mount summoning!");
+                                                }
                                             }
                                         } else {
-                                            player.sendMessage(ChatColor.RED + "You just summoned your mount!");
+                                            count[0] = 0;
+                                            player.sendMessage(ChatColor.RED + "Movement has cancelled your mount summoning!");
                                         }
-                                    }, 60L);
+                                    }, 0L, 20L);
+                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 65L);
                                 }
                             } else
 
@@ -729,6 +744,7 @@ public class ClickHandler {
                                             player.closeInventory();
                                             return;
                                         }
+                                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_TRAIL, nmsStack.getTag().getString("playerTrailType"), false);
                                         DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(nmsStack.getTag().getString("playerTrailType")));
                                         player.sendMessage(ChatColor.AQUA + "Enabling " + ChatColor.RED + nmsStack.getTag().getString("playerTrailType") + ChatColor.AQUA + " trail.");
                                     }

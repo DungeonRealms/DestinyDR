@@ -24,6 +24,9 @@ public enum EnumData {
     LOGGERDIED("info.loggerdied"),
     ENTERINGREALM("info.enteringrealm"),
     CURRENTSERVER("info.current"),
+    ACTIVE_MOUNT("info.activemount"),
+    ACTIVE_PET("info.activepet"),
+    ACTIVE_TRAIL("info.activetrail"),
 
     ACHIEVEMENTS("collectibles.achievements"),
 

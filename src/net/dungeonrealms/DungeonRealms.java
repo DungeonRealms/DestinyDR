@@ -302,8 +302,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandTell("isay", "/<command> [args]", "Prints message to players in dungeon world from command block."));
             cm.registerCommand(new CommandSpar("spar", "/<command> [args]", "The spar command, basically duels recoded."));	
         }
-        if(!isInstanceServer)
-        {
+        if (!isInstanceServer) {
     		AbstractCommand gotesting = new TestingCommand("gotesting", "/<command> [args]", "This is a test command");
     		gotesting.register();
     		AbstractCommand givestarter = new StarterCommand("givestarter", "/<command> [args]", "Gives a starter kit to someone");
@@ -340,18 +339,17 @@ public class DungeonRealms extends JavaPlugin {
         }, 288000);
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000L) / START_TIME) + "/s");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> this.hasFinishedSetup = true, 240L);
-
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> DatabaseAPI.getInstance().PLAYER_TIME.entrySet().stream().forEach(e -> DatabaseAPI.getInstance().PLAYER_TIME.put(e.getKey(), (e.getValue() + 1))), 0, 20);
 
     }
 
     public void onDisable() {
+        API.logoutAllPlayers();
     	ps.onDisable();
     	hs.onDisable();
         saveConfig();
         Guild.getInstance().saveAllGuilds();
         ShopMechanics.deleteAllShops();
-        API.logoutAllPlayers();
         mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
         AsyncUtils.pool.shutdown();

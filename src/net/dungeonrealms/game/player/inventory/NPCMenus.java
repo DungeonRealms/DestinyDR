@@ -5,6 +5,7 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import org.bukkit.Bukkit;
@@ -25,26 +26,26 @@ import java.util.List;
 public class NPCMenus {
 
     public static void openMountPurchaseMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 18, "Animal Vendor");
+        Inventory inv = Bukkit.createInventory(null, 18, "Animal Tamer");
 
         inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.SADDLE), ChatColor.GREEN + "Old Horse Mount", new String[]{
                 ChatColor.RED + "Speed 120%",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "An old brown starter horse.",
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "5000g"}).setNBTString("mountType", "T1HORSE").setNBTInt("mountCost", 5000).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "5000g"}).setNBTString("mountType", EnumMounts.TIER1_HORSE.getRawName()).setNBTInt("mountCost", 5000).build());
         inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.DIAMOND_BARDING), ChatColor.AQUA + "Traveler's Horse Mount", new String[]{
                 ChatColor.RED + "Speed 140%",
                 ChatColor.RED + "Jump 110%",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "A well versed travelling companion.",
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "15000g"}).setNBTString("mountType", "DIAMONDHORSE").setNBTInt("mountCost", 15000).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "15000g"}).setNBTString("mountType", EnumMounts.TIER2_HORSE.getRawName()).setNBTInt("mountCost", 15000).build());
         inv.setItem(2, new ItemBuilder().setItem(new ItemStack(Material.GOLD_BARDING), ChatColor.YELLOW + "Knight's Horse Mount", new String[]{
                 ChatColor.RED + "Speed 160%",
                 ChatColor.RED + "Jump 110%",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "A mount fit for even the best of adventurers.",
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "35000g"}).setNBTString("mountType", "GOLDHORSE").setNBTInt("mountCost", 35000).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "35000g"}).setNBTString("mountType", EnumMounts.TIER3_HORSE.getRawName()).setNBTInt("mountCost", 35000).build());
         inv.setItem(9, new ItemBuilder().setItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Storage Mule", new String[]{
                 ChatColor.RED + "Storage Size: 9 Items",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "An old worn-out storage mule.",
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "15000g"}).setNBTString("mountType", "MULE").setNBTInt("mountCost", 15000).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "15000g"}).setNBTString("mountType", EnumMounts.MULE.getRawName()).setNBTInt("mountCost", 15000).build());
         player.openInventory(inv);
     }
 

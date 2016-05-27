@@ -169,7 +169,7 @@ public class PlayerMenus {
         for (String pet : playerPets) {
             String petType;
             String particleType = "";
-            String petName = "";
+            String petName;
             if (pet.contains("-")) {
                 petType = pet.split("-")[0];
                 particleType = pet.split("-")[1];
@@ -215,18 +215,37 @@ public class PlayerMenus {
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
         inv.setItem(26, editItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Dismiss Mount", new String[]{}));
 
-        for (String mountType : playerMounts) {
-        	if (mountType.equalsIgnoreCase(EnumMounts.MULE.getRawName())) {
-                continue;
-            }
-            ItemStack itemStack = EnumMounts.getByName(mountType).getSelectionItem();
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("mountType", new NBTTagString(mountType));
-            nmsStack.setTag(tag);
-            inv.addItem(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), EnumMounts.getByName(mountType).getShortID(), ChatColor.GREEN + mountType.toUpperCase(), new String[]{
-            }));
+        ItemStack itemStack;
+        String mountType = null;
+
+        if (playerMounts.contains(EnumMounts.TIER3_HORSE.getRawName())) {
+            mountType = EnumMounts.TIER3_HORSE.getRawName();
+        } else if (playerMounts.contains(EnumMounts.TIER2_HORSE.getRawName())) {
+            mountType = EnumMounts.TIER2_HORSE.getRawName();
+        } else if (playerMounts.contains(EnumMounts.TIER1_HORSE.getRawName())) {
+            mountType = EnumMounts.TIER1_HORSE.getRawName();
         }
+
+        if (mountType == null) {
+            Inventory noMounts = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mounts!");
+            player.openInventory(noMounts);
+            return;
+        }
+
+        itemStack = EnumMounts.getByName(mountType).getSelectionItem();
+
+        if (itemStack == null) {
+            Inventory noMounts = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mounts!");
+            player.openInventory(noMounts);
+            return;
+        }
+
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set("mountType", new NBTTagString(mountType));
+        nmsStack.setTag(tag);
+        inv.addItem(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), EnumMounts.getByName(mountType).getShortID(), ChatColor.GREEN + mountType.toUpperCase(), new String[]{
+        }));
 
         player.openInventory(inv);
     }

@@ -25,18 +25,14 @@ import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.logging.Logger;
-
 import static com.comphenix.protocol.PacketType.Play.Client.CLIENT_COMMAND;
 import static com.comphenix.protocol.PacketType.Play.Client.WINDOW_CLICK;
 
 public class HearthStone implements Listener {
 
-    static Logger log = Logger.getLogger("Minecraft");
     private static PacketListener listener;
 
     public void onEnable() {
-        log.info("Enabling Hearthstone Mechanics Extension");
         listener = new PacketAdapter(DungeonRealms.getInstance(), CLIENT_COMMAND, WINDOW_CLICK) {
             @Override
             public void onPacketReceiving(PacketEvent event) {
@@ -51,13 +47,11 @@ public class HearthStone implements Listener {
         };
         ProtocolLibrary.getProtocolManager().addPacketListener(listener);
         Bukkit.getServer().getPluginManager().registerEvents(this, DungeonRealms.getInstance());
-        log.info("Enabled Hearthstone Mechanics Extension");
     }
 
     public void onDisable() {
         ProtocolLibrary.getProtocolManager().removePacketListener(listener);
         HandlerList.unregisterAll(this);
-        log.info("Disabled Hearthstone Mechanics Expansion");
     }
 
     private static ItemStack getItem(Player player) {

@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.events.PacketListener;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanics.ItemManager;
@@ -15,23 +16,22 @@ import org.bukkit.GameMode;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.HandlerList;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.CraftingInventory;
 import org.bukkit.inventory.ItemStack;
-
-import java.util.logging.Logger;
 
 import static com.comphenix.protocol.PacketType.Play.Client.CLIENT_COMMAND;
 import static com.comphenix.protocol.PacketType.Play.Client.WINDOW_CLICK;
 
 public class Profile implements Listener {
 
-    static Logger log = Logger.getLogger("Minecraft");
+    private static PacketListener listener;
 
     public void onEnable() {
-        log.info("Enabling Profiles");
-        ProtocolLibrary.getProtocolManager().addPacketListener(new PacketAdapter(DungeonRealms.getInstance(), CLIENT_COMMAND, WINDOW_CLICK) {
+        listener = new PacketAdapter(DungeonRealms.getInstance(), CLIENT_COMMAND, WINDOW_CLICK) {
             @Override
             public void onPacketReceiving(PacketEvent event) {
                 PacketContainer packet = event.getPacket();
@@ -42,23 +42,27 @@ public class Profile implements Listener {
                     player.getOpenInventory().getTopInventory().setItem(1, getItem(player));
                 }
             }
-        });
+        };
+        ProtocolLibrary.getProtocolManager().addPacketListener(listener);
         Bukkit.getServer().getPluginManager().registerEvents(this, DungeonRealms.getInstance());
-        log.info("Enabled Profiles");
     }
 
     public static ItemStack getItem(Player player) {
-        return ItemManager.getPlayerProfile(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Character Profile", new String[]{
-                ChatColor.GREEN + "Open Profile"});
+        return ItemManager.getPlayerProfile(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Character Profile", new String[]{ChatColor.GREEN + "Open Profile"});
     }
 
     public void onDisable() {
-        log.info("Disabled Profiles");
+        ProtocolLibrary.getProtocolManager().removePacketListener(listener);
+        HandlerList.unregisterAll(this);
     }
 
     private static void callEvent(Player player) {
         player.closeInventory();
         PlayerMenus.openPlayerProfileMenu(player);
+    }
+
+    private static void addMountItem(Player player) {
+        player.getInventory().addItem(ItemManager.getPlayerMountItem());
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
@@ -67,6 +71,18 @@ public class Profile implements Listener {
             if (event.getWhoClicked().getGameMode() == GameMode.CREATIVE) return;
             event.setCancelled(true);
             callEvent((Player) event.getWhoClicked());
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    public void onInventoryDrag(InventoryClickEvent event) {
+        if (event.getInventory().getTitle().equals("Profile")) {
+            if (event.getClick() == ClickType.MIDDLE) {
+                if (event.getRawSlot() == 7) {
+                    event.setCancelled(true);
+                    addMountItem((Player) event.getWhoClicked());
+                }
+            }
         }
     }
 }

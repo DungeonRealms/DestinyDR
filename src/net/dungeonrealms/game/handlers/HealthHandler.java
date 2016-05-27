@@ -1,29 +1,6 @@
 	package net.dungeonrealms.game.handlers;
 
-    import java.util.ArrayList;
-import java.util.List;
-
-    import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.EntityEffect;
-import org.bukkit.Material;
-import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Arrow;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Snowball;
-import org.bukkit.entity.WitherSkull;
-import org.bukkit.event.entity.EntityDeathEvent;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-import org.bukkit.potion.PotionEffect;
-
-import com.connorlinfoot.actionbarapi.ActionBarAPI;
-
+    import com.connorlinfoot.actionbarapi.ActionBarAPI;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -41,6 +18,18 @@ import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.party.Affair;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
+import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.*;
+import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+
+import java.util.ArrayList;
+import java.util.List;
 
     /**
  * Created by Kieran on 10/3/2015.
@@ -161,8 +150,6 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     private void setPlayerOverheadHP(Player player, int hp) {
-        //Check their Max HP from wherever we decide to store it, get it as a percentage.
-        //Update BarAPI thing with it.
         boolean safeRegion = API.isInSafeRegion(player.getLocation());
         boolean nonPvPRegion = API.isNonPvPRegion(player.getLocation());
         GamePlayer gamePlayer = API.getGamePlayer(player);
@@ -171,10 +158,6 @@ public class HealthHandler implements GenericMechanic {
         }
         ScoreboardHandler.getInstance().updatePlayerHP(player, hp);
         double maxHP = getPlayerMaxHPLive(player);
-        double healthPercentage = ((double) hp / maxHP);
-        if (healthPercentage * 100.0F > 100.0F) {
-            healthPercentage = 1.0;
-        }
         int playerLevel = gamePlayer.getLevel();
         String playerLevelInfo = ChatColor.AQUA.toString() + ChatColor.BOLD + "LVL " + ChatColor.AQUA + playerLevel;
         String separator = ChatColor.BLACK.toString() + ChatColor.BOLD + " - ";

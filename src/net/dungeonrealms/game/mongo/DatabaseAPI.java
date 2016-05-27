@@ -39,13 +39,16 @@ public class DatabaseAPI {
      * @since 1.0
      */
     public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean requestNew) {
-        Database.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)),
-                (result, exception) -> {
+        Database.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)));
+        if (requestNew) {
+            requestPlayer(uuid);
+        }
+                /*(result, exception) -> {
                     Utils.log.info("DatabaseAPI update() called ...");
                     if (exception == null && requestNew) {
                         requestPlayer(uuid);
                     }
-                });
+                });*/
     }
 
     /**
@@ -60,14 +63,17 @@ public class DatabaseAPI {
      * @since 1.0
      */
     public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean requestNew, Callback<UpdateResult> callback) {
-        Database.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)),
-                (result, exception) -> {
+        Database.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)));
+        if (requestNew) {
+            requestPlayer(uuid);
+        }
+                /*(result, exception) -> {
                     callback.callback(exception, result);
                     Utils.log.info("DatabaseAPI update() called ...");
                     if (exception == null && requestNew) {
                         requestPlayer(uuid);
                     }
-                });
+                });*/
     }
 
     /**
@@ -127,6 +133,12 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("current", String.class);
             case ENTERINGREALM:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("enteringrealm", String.class);
+            case ACTIVE_MOUNT:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("activemount", String.class);
+            case ACTIVE_PET:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("activepet", String.class);
+            case ACTIVE_TRAIL:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("activetrail", String.class);
             /*
             Rank Things. Different Sub-Document().
              */
@@ -234,14 +246,21 @@ public class DatabaseAPI {
      * @since 1.0
      */
     public void requestPlayer(UUID uuid) {
-        Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first((document, throwable) -> {
+        Document doc = Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
+        if (doc == null) {
+            addNewPlayer(uuid);
+        } else {
+            Utils.log.info("Fetched information for uuid: " + uuid.toString());
+            PLAYERS.put(uuid, doc);
+        }
+        /*Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first((document) -> {
             if (document != null) {
                 Utils.log.info("Fetched information for uuid: " + uuid.toString());
                 PLAYERS.put(uuid, document);
             } else {
                 addNewPlayer(uuid);
             }
-        });
+        });*/
     }
 
     /**
@@ -274,7 +293,10 @@ public class DatabaseAPI {
                                 .append("shopLevel", 1)
                                 .append("loggerdied", false)
                 				.append("current", DungeonRealms.getInstance().bungeeName)
-                				.append("enteringrealm", ""))
+                				.append("enteringrealm", "")
+                                .append("activepet", "")
+                                .append("activemount", "")
+                                .append("activetrail", ""))
                         .append("attributes",
                                 new Document("bufferPoints", 6)
                                         .append("strength", 0)
@@ -318,9 +340,8 @@ public class DatabaseAPI {
                                         .append("level", 1)
                                         .append("player", "")
                                         .append("armor", new ArrayList<String>()));
-        Database.collection.insertOne(newPlayerDocument, (aVoid, throwable) -> {
-            requestPlayer(uuid);
-            Utils.log.info("Requesting new data for : " + uuid);
-        });
+        Database.collection.insertOne(newPlayerDocument);
+        requestPlayer(uuid);
+        Utils.log.info("Requesting new data for : " + uuid);
     }
 }

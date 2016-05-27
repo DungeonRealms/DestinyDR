@@ -10,7 +10,7 @@
 	<classpathentry kind="lib" path="lib/commons-net-3.3.jar"/>
 	<classpathentry kind="lib" path="lib/HolographicDisplaysAPI_v2.1.7.jar"/>
 	<classpathentry kind="lib" path="lib/ini4j-0.5.4.jar"/>
-	<classpathentry kind="lib" path="lib/mongodb-driver-async-3.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/mongodb-java-driver-3.0.3.jar"/>
 	<classpathentry kind="lib" path="lib/mongodb-driver-core-3.0.2.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-5.0.8-bin.jar"/>
 	<classpathentry kind="lib" path="lib/NPCLib_v1.6.3.jar"/>

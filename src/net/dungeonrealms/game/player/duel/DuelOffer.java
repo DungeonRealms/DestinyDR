@@ -1,17 +1,5 @@
 package net.dungeonrealms.game.player.duel;
 
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
@@ -20,6 +8,13 @@ import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
+
+import java.util.UUID;
 
 /**
  * Created by Chase on Nov 13, 2015
@@ -280,7 +275,7 @@ public class DuelOffer {
         this.getPlayer1().sendMessage(ChatColor.YELLOW + "Battle begins in 10 seconds!");
         this.getPlayer2().sendMessage(ChatColor.YELLOW + "Battle begins in 10 seconds!");
         timerID = Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), this::checkArmorAndWeapon, 0, 10);
-        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             canFight = true;
             this.getPlayer1().sendMessage(ChatColor.YELLOW + "Fight!");
             this.getPlayer2().sendMessage(ChatColor.YELLOW + "Fight!");

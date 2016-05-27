@@ -239,14 +239,14 @@ public class ItemListener implements Listener {
                     event.getPlayer().removeMetadata("FoodRegen", DungeonRealms.getInstance());
                 }
             }, 300L);
-        }else if(event.getItem().getType() == Material.COOKED_FISH && nmsItem.getTag().getString("type").equalsIgnoreCase("fishBuff") && nmsItem.getTag().hasKey("buff")){
+        } else if (event.getItem().getType() == Material.COOKED_FISH && nmsItem.getTag().getString("type").equalsIgnoreCase("fishBuff") && nmsItem.getTag().hasKey("buff")) {
         	if(Fishing.fishBuffs.containsKey(event.getPlayer().getUniqueId())){
         		event.getPlayer().sendMessage(ChatColor.RED + "You have an active fish buff already!");
         		return;
         	}
         	Fishing.fishBuffs.put(event.getPlayer().getUniqueId(), nmsItem.getTag().getString("buff"));
         	event.getPlayer().sendMessage("    " + ChatColor.BOLD.toString() + ChatColor.YELLOW + nmsItem.getTag().getString("buff") + " Active for 10 seconds!");
-        	Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->Fishing.fishBuffs.remove(event.getPlayer().getUniqueId()));
+        	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> Fishing.fishBuffs.remove(event.getPlayer().getUniqueId()));
         }
     }
 

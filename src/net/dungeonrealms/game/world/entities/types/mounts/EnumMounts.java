@@ -8,8 +8,8 @@ import org.bukkit.inventory.ItemStack;
  */
 public enum EnumMounts {
     TIER1_HORSE(0, "T1HORSE", new ItemStack(Material.SADDLE, 1), 0),
-    GOLD_HORSE(1, "GOLDHORSE", new ItemStack(Material.GOLD_BARDING, 1), 0),
-    DIAMOND_HORSE(2, "DIAMONDHORSE", new ItemStack(Material.DIAMOND_BARDING, 1), 0),
+    TIER2_HORSE(1, "T2HORSE", new ItemStack(Material.DIAMOND_BARDING, 1), 0),
+    TIER3_HORSE(2, "T3HORSE", new ItemStack(Material.GOLD_BARDING, 1), 0),
     SKELETON_HORSE(3, "SKELETONHORSE", new ItemStack(Material.SKULL_ITEM, 1), 0),
     ZOMBIE_HORSE(4, "ZOMBIEHORSE", new ItemStack(Material.SKULL_ITEM, 1), 2),
     MULE(5, "MULE", new ItemStack(Material.CHEST, 1), 0);

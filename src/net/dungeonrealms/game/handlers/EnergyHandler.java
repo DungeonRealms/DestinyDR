@@ -122,12 +122,12 @@ public class EnergyHandler implements GenericMechanic {
             if (!API.isPlayer(player)) {
                 continue;
             }
-            if (getPlayerCurrentEnergy(player.getUniqueId()) == 1.0F) {
+            if (getPlayerCurrentEnergy(player) == 1.0F) {
                 continue;
             }
-            if (getPlayerCurrentEnergy(player.getUniqueId()) > 1.0F) {
+            if (getPlayerCurrentEnergy(player) > 1.0F) {
                 player.setExp(1.0F);
-                updatePlayerEnergyBar(player.getUniqueId());
+                updatePlayerEnergyBar(player);
                 continue;
             }
             float regenAmount = getPlayerEnergyRegenerationAmount(player.getUniqueId());
@@ -142,7 +142,7 @@ public class EnergyHandler implements GenericMechanic {
                 if(Fishing.fishBuffs.containsKey(player.getUniqueId()) && Fishing.fishBuffs.get(player.getUniqueId()).equalsIgnoreCase("Energy Regen")){
                 	regenAmount += .15;
                 }
-                addEnergyToPlayerAndUpdate(player.getUniqueId(), regenAmount);
+                addEnergyToPlayerAndUpdate(player, regenAmount);
             }
         }
     }
@@ -151,12 +151,11 @@ public class EnergyHandler implements GenericMechanic {
      * Returns the players current
      * energy value
      *
-     * @param uuid
+     * @param player
      * @return float
      * @since 1.0
      */
-    public static float getPlayerCurrentEnergy(UUID uuid) {
-        Player player = Bukkit.getPlayer(uuid);
+    public static float getPlayerCurrentEnergy(Player player) {
         return player.getExp();
     }
 
@@ -164,11 +163,11 @@ public class EnergyHandler implements GenericMechanic {
      * Updates the players Minecraft EXP bar
      * with our custom energy values
      *
-     * @param uuid
+     * @param player
      * @since 1.0
      */
-    private static void updatePlayerEnergyBar(UUID uuid) {
-        float currExp = getPlayerCurrentEnergy(uuid);
+    private static void updatePlayerEnergyBar(Player player) {
+        float currExp = getPlayerCurrentEnergy(player);
         double percent = currExp * 100.00D;
         if (percent > 100) {
             percent = 100;
@@ -176,7 +175,7 @@ public class EnergyHandler implements GenericMechanic {
         if (percent < 0) {
             percent = 0;
         }
-        Bukkit.getPlayer(uuid).setLevel(((int) percent));
+        player.setLevel(((int) percent));
     }
 
     /**
@@ -302,16 +301,16 @@ public class EnergyHandler implements GenericMechanic {
     /**
      * Adds energy to the defined player
      *
-     * @param uuid
+     * @param player
      * @param amountToAdd
      * @since 1.0
      */
-    private static void addEnergyToPlayerAndUpdate(UUID uuid, float amountToAdd) {
-        if (getPlayerCurrentEnergy(uuid) == 1) {
+    private static void addEnergyToPlayerAndUpdate(Player player, float amountToAdd) {
+        if (getPlayerCurrentEnergy(player) == 1) {
             return;
         }
-        Bukkit.getPlayer(uuid).setExp(Bukkit.getPlayer(uuid).getExp() + amountToAdd);
-        updatePlayerEnergyBar(uuid);
+        player.setExp(player.getExp() + amountToAdd);
+        updatePlayerEnergyBar(player);
     }
 
     /**
@@ -324,7 +323,7 @@ public class EnergyHandler implements GenericMechanic {
     private void removePlayerEnergySprint() {
         Bukkit.getOnlinePlayers().stream().filter(Player::isSprinting).forEach(player -> {
             removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 0.12F);
-            if (getPlayerCurrentEnergy(player.getUniqueId()) <= 0 || player.hasMetadata("starving")) {
+            if (getPlayerCurrentEnergy(player) <= 0 || player.hasMetadata("starving")) {
                 player.setSprinting(false);
                 player.removeMetadata("sprinting", DungeonRealms.getInstance());
                 if (!player.hasPotionEffect(PotionEffectType.JUMP)) {
@@ -361,15 +360,15 @@ public class EnergyHandler implements GenericMechanic {
             }
         }
         player.setMetadata("last_energy_remove", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-        if (getPlayerCurrentEnergy(uuid) <= 0) return;
-        if ((getPlayerCurrentEnergy(uuid) - amountToRemove) <= 0) {
+        if (getPlayerCurrentEnergy(player) <= 0) return;
+        if ((getPlayerCurrentEnergy(player) - amountToRemove) <= 0) {
             player.setExp(0.0F);
-            updatePlayerEnergyBar(uuid);
+            updatePlayerEnergyBar(player);
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.addPotionEffect(new PotionEffect(PotionEffectType.SLOW_DIGGING, 50, 4)), 0L);
             return;
         }
-        player.setExp(getPlayerCurrentEnergy(uuid) - amountToRemove);
-        updatePlayerEnergyBar(uuid);
+        player.setExp(getPlayerCurrentEnergy(player) - amountToRemove);
+        updatePlayerEnergyBar(player);
     }
 
     /**

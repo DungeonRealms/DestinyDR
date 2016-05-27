@@ -1,17 +1,16 @@
 package net.dungeonrealms.game.player.duel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
-
-import net.dungeonrealms.game.mongo.achievements.Achievements;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.mongo.achievements.Achievements;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Created by Chase on Nov 13, 2015
@@ -56,7 +55,7 @@ public class DuelingMechanics {
 			}
 			requested.sendMessage(ChatColor.YELLOW + "Duel request received from " + sender.getName() + "");
 			requested.sendMessage(ChatColor.YELLOW + "Shift Right click the player and choose duel to accept");
-			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 				if (pending.containsKey(sender.getUniqueId()))
 					pending.remove(sender.getUniqueId());
 				cooldown.remove(sender.getUniqueId());
@@ -67,7 +66,7 @@ public class DuelingMechanics {
 	}
 
 	/**
-	 * @param uniqueId
+	 * @param uuid
 	 * @return UUID
 	 */
 	public static UUID getPendingPartner(UUID uuid) {
@@ -111,7 +110,7 @@ public class DuelingMechanics {
 	}
 
 	/**
-	 * @param uniqueId
+	 * @param uuid
 	 * @return boolean
 	 */
 	public static boolean isDueling(UUID uuid) {
@@ -134,9 +133,11 @@ public class DuelingMechanics {
 	 * @param offer
 	 */
 	public static void removeOffer(DuelOffer offer) {
-		if(offer.timerID != -1)
-				Bukkit.getScheduler().cancelTask(offer.timerID);
+		if (offer.timerID != -1) {
+			Bukkit.getScheduler().cancelTask(offer.timerID);
+		}
 		duels.remove(offer);
+
 	}
 
 	/**
