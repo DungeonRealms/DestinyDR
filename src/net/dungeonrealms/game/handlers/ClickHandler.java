@@ -696,23 +696,32 @@ public class ClickHandler {
                                     player.sendMessage(ChatColor.GREEN + "Your Mount is being summoned into this world!");
                                     final int[] count = {0};
                                     Location startingLocation = player.getLocation();
+                                    final boolean[] cancelled = {false};
                                     int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
                                         if (!EntityAPI.hasMountOut(player.getUniqueId())) {
                                             if (player.getLocation().distanceSquared(startingLocation) <= 4) {
                                                 if (!CombatLog.isInCombat(player)) {
-                                                    if (count[0] < 3) {
-                                                        count[0]++;
-                                                    } else {
-                                                        MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"));
+                                                    if (!cancelled[0]) {
+                                                        if (count[0] < 3) {
+                                                            count[0]++;
+                                                        } else {
+                                                            MountUtils.spawnMount(player.getUniqueId(), nmsStack.getTag().getString("mountType"));
+                                                        }
                                                     }
                                                 } else {
+                                                    if (!cancelled[0]) {
+                                                        cancelled[0] = true;
+                                                        count[0] = 0;
+                                                        player.sendMessage(ChatColor.RED + "Combat has cancelled your mount summoning!");
+                                                    }
+                                                }
+                                            } else {
+                                                if (!cancelled[0]) {
+                                                    cancelled[0] = true;
                                                     count[0] = 0;
-                                                    player.sendMessage(ChatColor.RED + "Combat has cancelled your mount summoning!");
+                                                    player.sendMessage(ChatColor.RED + "Movement has cancelled your mount summoning!");
                                                 }
                                             }
-                                        } else {
-                                            count[0] = 0;
-                                            player.sendMessage(ChatColor.RED + "Movement has cancelled your mount summoning!");
                                         }
                                     }, 0L, 20L);
                                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 65L);
