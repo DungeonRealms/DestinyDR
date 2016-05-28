@@ -27,6 +27,7 @@ public enum EnumData {
     ACTIVE_MOUNT("info.activemount"),
     ACTIVE_PET("info.activepet"),
     ACTIVE_TRAIL("info.activetrail"),
+    ACTIVE_MOUNT_SKIN("info.activemountskin"),
 
     ACHIEVEMENTS("collectibles.achievements"),
 
@@ -49,6 +50,7 @@ public enum EnumData {
     MOUNTS("collectibles.mounts"),
     PETS("collectibles.pets"),
     PARTICLES("collectibles.particles"),
+    MOUNT_SKINS("collectibles.mountskins"),
 
     TOGGLE_DEBUG("toggles.debug"),
     TOGGLE_TRADE("toggles.trade"),

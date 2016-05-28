@@ -28,6 +28,7 @@ import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
@@ -481,18 +482,18 @@ public class API {
      *
      * @since 1.0
      */
-    public static void logoutAllPlayers() {
+    public static void logoutAllPlayers(boolean customStop) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (CombatLog.isInCombat(player)) {
                 CombatLog.removeFromCombat(player);
             }
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            if (customStop) {
                 try {
-                    NetworkAPI.getInstance().sendToServer(player.getName(), "drhub");
+                    NetworkAPI.getInstance().sendToServer(player.getName(), "Lobby");
                 } catch (Exception exc) {
                     exc.printStackTrace();
                 }
-            }, 40L);
+            }
         }
     }
 
@@ -538,8 +539,6 @@ public class API {
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
             ItemStack[] items = ItemSerialization.fromString(playerInv).getContents();
             player.getInventory().setContents(items);
-        } else {
-            Utils.log.info(player.getName() + " HAS NULL/EMPTY INVENTORY");
         }
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
         if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
@@ -661,8 +660,6 @@ public class API {
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
             ItemStack[] items = ItemSerialization.fromString(playerInv).getContents();
             player.getInventory().setContents(items);
-        } else {
-            Utils.log.info(player.getName() + " HAS NULL/EMPTY INVENTORY");
         }
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
         if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
@@ -766,6 +763,17 @@ public class API {
      */
     public static boolean isStringMount(String mountType) {
         return EnumMounts.getByName(mountType.toUpperCase()) != null;
+    }
+
+    /**
+     * Returns the string is a Mount Skin
+     *
+     * @param mountSkin
+     * @return boolean
+     * @since 1.0
+     */
+    public static boolean isStringMountSkin(String mountSkin) {
+        return EnumMountSkins.getByName(mountSkin.toUpperCase()) != null;
     }
 
     /**

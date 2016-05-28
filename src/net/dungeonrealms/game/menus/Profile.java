@@ -65,6 +65,14 @@ public class Profile implements Listener {
         player.getInventory().addItem(ItemManager.getPlayerMountItem());
     }
 
+    private static void addPetItem(Player player) {
+        player.getInventory().addItem(ItemManager.getPlayerPetItem());
+    }
+
+    private static void addTrailItem(Player player) {
+        player.getInventory().addItem(ItemManager.getPlayerTrailItem());
+    }
+
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void inventoryClick(InventoryClickEvent event) {
         if (event.getInventory() instanceof CraftingInventory && event.getInventory().getSize() == 5 && event.getRawSlot() == 1) {
@@ -75,12 +83,22 @@ public class Profile implements Listener {
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
-    public void onInventoryDrag(InventoryClickEvent event) {
+    public void onPlayerRequestItem(InventoryClickEvent event) {
         if (event.getInventory().getTitle().equals("Profile")) {
             if (event.getClick() == ClickType.MIDDLE) {
-                if (event.getRawSlot() == 7) {
-                    event.setCancelled(true);
-                    addMountItem((Player) event.getWhoClicked());
+                switch (event.getRawSlot()) {
+                    case 6:
+                        event.setCancelled(true);
+                        addTrailItem((Player) event.getWhoClicked());
+                        break;
+                    case 7:
+                        event.setCancelled(true);
+                        addMountItem((Player) event.getWhoClicked());
+                        break;
+                    case 8:
+                        event.setCancelled(true);
+                        addPetItem((Player) event.getWhoClicked());
+                        break;
                 }
             }
         }

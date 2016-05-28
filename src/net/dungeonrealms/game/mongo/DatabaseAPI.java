@@ -139,6 +139,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("activepet", String.class);
             case ACTIVE_TRAIL:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("activetrail", String.class);
+            case ACTIVE_MOUNT_SKIN:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("activemountskin", String.class);
             /*
             Rank Things. Different Sub-Document().
              */
@@ -225,6 +227,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("collectibles")).get("particles", ArrayList.class);
             case ACHIEVEMENTS:
                 return ((Document) PLAYERS.get(uuid).get("collectibles")).get("achievements", ArrayList.class);
+            case MOUNT_SKINS:
+                return ((Document) PLAYERS.get(uuid).get("collectibles")).get("mountskins", ArrayList.class);
             default:
         }
         return null;
@@ -296,7 +300,8 @@ public class DatabaseAPI {
                 				.append("enteringrealm", "")
                                 .append("activepet", "")
                                 .append("activemount", "")
-                                .append("activetrail", ""))
+                                .append("activetrail", "")
+                                .append("activemountskin", ""))
                         .append("attributes",
                                 new Document("bufferPoints", 6)
                                         .append("strength", 0)
@@ -309,7 +314,8 @@ public class DatabaseAPI {
                                 new Document("achievements", new ArrayList<String>())
                                         .append("mounts", new ArrayList<String>())
                                         .append("pets", new ArrayList<String>())
-                                        .append("particles", new ArrayList<String>()))
+                                        .append("particles", new ArrayList<String>())
+                                        .append("mountskins", new ArrayList<String>()))
                         .append("toggles",
                                 new Document("debug", true)
                                         .append("trade", false)

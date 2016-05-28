@@ -2,8 +2,10 @@ package net.dungeonrealms.game.listeners;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -11,11 +13,16 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.world.entities.utils.EntityAPI;
+import net.dungeonrealms.game.world.entities.utils.MountUtils;
+import net.dungeonrealms.game.world.entities.utils.PetUtils;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
+import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
@@ -262,6 +269,116 @@ public class ItemListener implements Listener {
                     }
                     HealthHandler.getInstance().healPlayerByAmount((Player) entity, nmsItem.getTag().getInt("healAmount"));
                 }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerUseSpecialItem(PlayerInteractEvent event) {
+        if (!(event.getAction() == Action.RIGHT_CLICK_AIR)) return;
+        Player player = event.getPlayer();
+        if (player.getItemInHand() == null || player.getItemInHand().getType() == Material.AIR) {
+            return;
+        }
+        if (player.getItemInHand().getType() == Material.SADDLE || player.getItemInHand().getType() == Material.EYE_OF_ENDER || player.getItemInHand().getType() == Material.NAME_TAG) {
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(player.getItemInHand());
+            NBTTagCompound tag = nmsStack.getTag();
+            if (tag == null) return;
+            if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
+            switch (tag.getString("usage")) {
+                case "mount":
+                    if (EntityAPI.hasMountOut(player.getUniqueId())) {
+                        Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
+                        if (entity.isAlive()) {
+                            entity.getBukkitEntity().remove();
+                        }
+                        if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                            DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
+                        }
+                        player.sendMessage(ChatColor.AQUA + "Mount dismissed.");
+                        EntityAPI.removePlayerMountList(player.getUniqueId());
+                        return;
+                    }
+                    if (CombatLog.isInCombat(player)) {
+                        player.sendMessage(ChatColor.RED + "You cannot summon a mount while in Combat!");
+                        return;
+                    }
+                    String mountType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId());
+                    if (mountType == null || mountType.equals("")) {
+                        player.sendMessage(ChatColor.RED + "You don't have an active mount, please enter the mounts section in your profile to set one.");
+                        player.closeInventory();
+                        return;
+                    }
+                    player.sendMessage(ChatColor.GREEN + "Your Mount is being summoned into this world!");
+                    final int[] count = {0};
+                    Location startingLocation = player.getLocation();
+                    final boolean[] cancelled = {false};
+                    int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+                        if (!EntityAPI.hasMountOut(player.getUniqueId())) {
+                            if (player.getLocation().distanceSquared(startingLocation) <= 4) {
+                                if (!CombatLog.isInCombat(player)) {
+                                    if (!cancelled[0]) {
+                                        if (count[0] < 3) {
+                                            count[0]++;
+                                        } else {
+                                            MountUtils.spawnMount(player.getUniqueId(), mountType, (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT_SKIN, player.getUniqueId()));
+                                        }
+                                    }
+                                } else {
+                                    if (!cancelled[0]) {
+                                        cancelled[0] = true;
+                                        count[0] = 0;
+                                        player.sendMessage(ChatColor.RED + "Combat has cancelled your mount summoning!");
+                                    }
+                                }
+                            } else {
+                                if (!cancelled[0]) {
+                                    cancelled[0] = true;
+                                    count[0] = 0;
+                                    player.sendMessage(ChatColor.RED + "Movement has cancelled your mount summoning!");
+                                }
+                            }
+                        }
+                    }, 0L, 20L);
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 65L);
+                    break;
+                case "pet":
+                    if (EntityAPI.hasPetOut(player.getUniqueId())) {
+                        Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
+                        if (entity.isAlive()) {
+                            entity.getBukkitEntity().remove();
+                        }
+                        if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                            DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
+                        }
+                        player.sendMessage(ChatColor.AQUA + "Pet dismissed.");
+                        EntityAPI.removePlayerPetList(player.getUniqueId());
+                        return;
+                    }
+                    String petType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_PET, player.getUniqueId());
+                    if (petType == null || petType.equals("")) {
+                        player.sendMessage(ChatColor.RED + "You don't have an active pet, please enter the pets section in your profile to set one.");
+                        player.closeInventory();
+                        return;
+                    }
+                    player.sendMessage(ChatColor.GREEN + "Pet summoned.");
+                    PetUtils.spawnPet(player.getUniqueId(), petType, "");
+                    break;
+                case "trail":
+                    if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(player)) {
+                        DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(player);
+                        player.sendMessage(ChatColor.AQUA + "You have disabled your trail.");
+                        return;
+                    }
+                    String trailType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_TRAIL, player.getUniqueId());
+                    if (trailType == null || trailType.equals("")) {
+                        player.sendMessage(ChatColor.RED + "You don't have an active trail, please enter the trails section in your profile to set one.");
+                        player.closeInventory();
+                        return;
+                    }
+                    DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(trailType));
+                    player.sendMessage(ChatColor.GREEN + "Enabling " + ParticleAPI.ParticleEffect.getByName(trailType).getDisplayName() + " trail.");
+                    break;
             }
         }
     }

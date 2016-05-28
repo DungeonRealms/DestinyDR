@@ -7,17 +7,17 @@ import org.bukkit.inventory.ItemStack;
  * Created by Kieran on 10/16/2015.
  */
 public enum EnumMounts {
-    TIER1_HORSE(0, "T1HORSE", new ItemStack(Material.SADDLE, 1), 0),
-    TIER2_HORSE(1, "T2HORSE", new ItemStack(Material.DIAMOND_BARDING, 1), 0),
-    TIER3_HORSE(2, "T3HORSE", new ItemStack(Material.GOLD_BARDING, 1), 0),
-    SKELETON_HORSE(3, "SKELETONHORSE", new ItemStack(Material.SKULL_ITEM, 1), 0),
-    ZOMBIE_HORSE(4, "ZOMBIEHORSE", new ItemStack(Material.SKULL_ITEM, 1), 2),
-    MULE(5, "MULE", new ItemStack(Material.CHEST, 1), 0);
+    TIER1_HORSE(0, "T1HORSE", new ItemStack(Material.SADDLE, 1), 0, "Old Horse"),
+    TIER2_HORSE(0, "T2HORSE", new ItemStack(Material.IRON_BARDING, 1), 0 , "Placeholder Horse Name"),
+    TIER3_HORSE(2, "T3HORSE", new ItemStack(Material.DIAMOND_BARDING, 1), 0, "Traveler's Horse"),
+    TIER4_HORSE(3, "T4HORSE", new ItemStack(Material.GOLD_BARDING, 1), 0, "Knight's Horse"),
+    MULE(4, "MULE", new ItemStack(Material.CHEST, 1), 0, "Mule");
 
     private int id;
     private String name;
     private ItemStack selectionItem;
     private int shortID;
+    private String displayName;
 
     public int getId() {
         return id;
@@ -35,11 +35,16 @@ public enum EnumMounts {
         return (short) shortID;
     }
 
-    EnumMounts(int id, String name, ItemStack selectionItem, int shortID) {
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    EnumMounts(int id, String name, ItemStack selectionItem, int shortID, String displayName) {
         this.id = id;
         this.name = name;
         this.selectionItem = selectionItem;
         this.shortID = shortID;
+        this.displayName = displayName;
     }
 
     public static EnumMounts getById(int id) {

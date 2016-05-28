@@ -799,6 +799,30 @@ public class ItemManager {
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
 
+    public static ItemStack getPlayerPetItem() {
+        ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.NAME_TAG), ChatColor.GREEN + "Pet", new String[]{
+                ChatColor.DARK_GRAY + "Summons your active Pet.",
+        });
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set("type", new NBTTagString("important"));
+        tag.set("usage", new NBTTagString("pet"));
+        nmsStack.setTag(tag);
+        return CraftItemStack.asBukkitCopy(nmsStack);
+    }
+
+    public static ItemStack getPlayerTrailItem() {
+        ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.EYE_OF_ENDER), ChatColor.GREEN + "Trail", new String[]{
+                ChatColor.DARK_GRAY + "Equips your active Trail.",
+        });
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set("type", new NBTTagString("important"));
+        tag.set("usage", new NBTTagString("trail"));
+        nmsStack.setTag(tag);
+        return CraftItemStack.asBukkitCopy(nmsStack);
+    }
+
     /**
      * Remove the cost of gems from itemstacks lore.
      *

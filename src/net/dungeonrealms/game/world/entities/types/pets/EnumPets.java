@@ -14,20 +14,21 @@ public enum EnumPets {
     //Pink Baby Sheep - Cancer Awareness (Maybe different for Breast/Lung etc based on the ribbons)
     //Pig (In Love) - Valentines Day
     //Adult Chicken - Thanksgiving
-    WOLF(0, "WOLF", 95),
-    ENDERMITE(1, "ENDERMITE", 67),
-    SILVERFISH(2, "SILVERFISH", 60),
-    CAVE_SPIDER(3, "CAVESPIDER", 59),
-    BABY_ZOMBIE(4, "BABYZOMBIE", 54),
-    BABY_PIGZOMBIE(5, "BABYPIGZOMBIE", 57),
-    SNOWMAN(6, "SNOWMAN", 56),
-    OCELOT(7, "OCELOT", 98),
-    RABBIT(8, "RABBIT", 101),
-    CHICKEN(9, "CHICKEN", 93);
+    WOLF(0, "WOLF", 95, "Wolf"),
+    ENDERMITE(1, "ENDERMITE", 67, "Endermite"),
+    SILVERFISH(2, "SILVERFISH", 60, "Silverfish"),
+    CAVE_SPIDER(3, "CAVESPIDER", 59, "Cave Spider"),
+    BABY_ZOMBIE(4, "BABYZOMBIE", 54, "Baby Zombie"),
+    BABY_PIGZOMBIE(5, "BABYPIGZOMBIE", 57, "Baby Pig Zombie"),
+    SNOWMAN(6, "SNOWMAN", 56, "Snowman"),
+    OCELOT(7, "OCELOT", 98, "Ocelot"),
+    RABBIT(8, "RABBIT", 101, "Rabbit"),
+    CHICKEN(9, "CHICKEN", 93, "Chicken");
 
     private int id;
     private String name;
     private int eggShortData;
+    private String displayName;
 
     public int getId() {
         return id;
@@ -41,10 +42,15 @@ public enum EnumPets {
         return eggShortData;
     }
 
-    EnumPets(int id, String name, int eggShortData) {
+    public String getDisplayName() {
+        return displayName;
+    }
+
+    EnumPets(int id, String name, int eggShortData, String displayName) {
         this.id = id;
         this.name = name;
         this.eggShortData = eggShortData;
+        this.displayName = displayName;
     }
 
     public static EnumPets getById(int id) {

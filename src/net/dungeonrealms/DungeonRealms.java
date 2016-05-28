@@ -325,7 +325,7 @@ public class DungeonRealms extends JavaPlugin {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 DungeonRealms.getInstance().setFinishedSetup(false);
                 ShopMechanics.deleteAllShops();
-                API.logoutAllPlayers();
+                API.logoutAllPlayers(true);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     DungeonRealms.getInstance().mm.stopInvocation();
                     Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
@@ -344,7 +344,7 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     public void onDisable() {
-        API.logoutAllPlayers();
+        API.logoutAllPlayers(false);
     	ps.onDisable();
     	hs.onDisable();
         saveConfig();
