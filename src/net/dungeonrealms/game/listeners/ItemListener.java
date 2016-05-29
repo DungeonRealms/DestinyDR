@@ -377,7 +377,7 @@ public class ItemListener implements Listener {
                         return;
                     }
                     DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.put(player, ParticleAPI.ParticleEffect.getByName(trailType));
-                    player.sendMessage(ChatColor.GREEN + "Enabling " + ParticleAPI.ParticleEffect.getByName(trailType).getDisplayName() + " trail.");
+                    player.sendMessage(ChatColor.GREEN + "Enabling trail.");
                     break;
             }
         }

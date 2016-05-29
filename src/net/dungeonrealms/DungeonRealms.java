@@ -4,6 +4,11 @@ import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.core.Core;
 import net.dungeonrealms.game.commands.*;
 import net.dungeonrealms.game.commands.generic.CommandManager;
+import net.dungeonrealms.game.commands.menualias.CommandMount;
+import net.dungeonrealms.game.commands.menualias.CommandPet;
+import net.dungeonrealms.game.commands.menualias.CommandProfile;
+import net.dungeonrealms.game.commands.menualias.CommandTrail;
+import net.dungeonrealms.game.commands.newcommands.*;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.guild.Guild;
 import net.dungeonrealms.game.handlers.*;
@@ -36,7 +41,6 @@ import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
-import net.dungeonrealms.newcommands.*;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -243,9 +247,7 @@ public class DungeonRealms extends JavaPlugin {
 
         CommandManager cm = new CommandManager();
 
-        if(isInstanceServer)
-        {
-            
+        if (isInstanceServer) {
             cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menu!"));
             cm.registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
             cm.registerCommand(new CommandSet("set", "/<command> [args]", "SETS THE YEAH."));
@@ -253,7 +255,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandMail("mailbox", "/<command> [args]", "The mail command."));
             cm.registerCommand(new CommandAccept("accept", "/<command> [args]", "The accept command."));
             cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
-            cm.registerCommand(new CommandStats("stats", "/<command> [args]", "The stats command."));
+            cm.registerCommand(new CommandStats("stat", "/<command> [args]", "The stats command.", Collections.singletonList("stats")));
             cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "The stop command.", Collections.singletonList("drstop")));
             cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "The roll command."));
             cm.registerCommand(new CommandPRemove("premove", "/<command> [args]", "Remove player from party."));
@@ -280,7 +282,7 @@ public class DungeonRealms extends JavaPlugin {
 
             cm.registerCommand(new CommandGlobalChat("gl", "/<command> [args]", "The invoke command."));
 
-            cm.registerCommand(new CommandStats("stats", "/<command> [args]", "The stats command."));
+            cm.registerCommand(new CommandStats("stat", "/<command> [args]", "The stats command.", Collections.singletonList("stats")));
             cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "The stop command.", Collections.singletonList("drstop")));
             cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "The roll command."));
             cm.registerCommand(new CommandStuck("stuck", "/<command> [args]", "The stuck command."));
@@ -300,20 +302,19 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Check epoch time of item."));
             cm.registerCommand(new CommandTell("tell", "/<command> [args]", "tell a player something."));
             cm.registerCommand(new CommandTell("isay", "/<command> [args]", "Prints message to players in dungeon world from command block."));
-            cm.registerCommand(new CommandSpar("spar", "/<command> [args]", "The spar command, basically duels recoded."));	
+            cm.registerCommand(new CommandSpar("spar", "/<command> [args]", "The spar command, basically duels recoded."));
+
+            cm.registerCommand(new CommandMount("mount", "/<command> [args]", "The mount command.", Collections.singletonList("mounts")));
+            cm.registerCommand(new CommandPet("pet", "/<command> [args]", "The pet command.", Collections.singletonList("pets")));
+            cm.registerCommand(new CommandTrail("trail", "/<command> [args]", "The trails command.", Collections.singletonList("trails")));
+            cm.registerCommand(new CommandProfile("profile", "/<command> [args]", "The profile command."));
+
+            cm.registerCommand(new TestingCommand("gotesting", "/<command> [args]", "This is a test command"));
+            cm.registerCommand(new StarterCommand("givestarter", "/<command> [args]", "Gives a starter kit to someone"));
+            cm.registerCommand(new RealmTestCommand("realmtest", "/<command> [args]", "Puts you in your realm"));
+            cm.registerCommand(new KickAllCommand("kickall", "/<command> [args]", "Kicks all players from the server"));
+            cm.registerCommand(new GlobalBroadcastCommand("glbroadcast", "/<command> [args]", "Broadcast Global message across all shards!"));
         }
-        if (!isInstanceServer) {
-    		AbstractCommand gotesting = new TestingCommand("gotesting", "/<command> [args]", "This is a test command");
-    		gotesting.register();
-    		AbstractCommand givestarter = new StarterCommand("givestarter", "/<command> [args]", "Gives a starter kit to someone");
-    		givestarter.register();	
-    		AbstractCommand realmtest = new RealmTestCommand("realmtest", "/<command> [args]", "Puts you in your realm");
-    		realmtest.register();	
-        }
-		AbstractCommand kickAllCMD = new KickAllCommand("kickall", "/<command> [args]", "Kicks all players from the server");
-		kickAllCMD.register();	
-		AbstractCommand GlobalBroadcastCMD = new GlobalBroadcastCommand("glbroadcast", "/<command> [args]", "Broadcast Global message across all shards!");
-		GlobalBroadcastCMD.register();
         try {
             FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));
         } catch (IOException e) {
