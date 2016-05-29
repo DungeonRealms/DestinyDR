@@ -23,7 +23,10 @@ public enum EnumPets {
     SNOWMAN(6, "SNOWMAN", 56, "Snowman"),
     OCELOT(7, "OCELOT", 98, "Ocelot"),
     RABBIT(8, "RABBIT", 101, "Rabbit"),
-    CHICKEN(9, "CHICKEN", 93, "Chicken");
+    CHICKEN(9, "CHICKEN", 93, "Chicken"),
+    BAT(10, "BAT", 65, "Bat"),
+    SLIME(11, "SLIME", 66, "Slime"),
+    MAGMA_CUBE(12, "MAGMA_CUBE", 62, "Magma Cube");
 
     private int id;
     private String name;
