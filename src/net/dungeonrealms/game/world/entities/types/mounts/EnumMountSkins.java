@@ -4,7 +4,7 @@ import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
 /**
- * Created by Kieran Quigley (Proxying) on 27-May-16 for CherryIO.
+ * Created by Kieran Quigley (Proxying) on 27-May-16.
  */
 public enum EnumMountSkins {
     SKELETON_HORSE(0, "SKELETONHORSE", new ItemStack(Material.SKULL_ITEM, 1), 0, "Skeleton Horse"),
