@@ -32,26 +32,29 @@ public class NPCMenus {
         inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.SADDLE), ChatColor.GREEN + EnumMounts.TIER1_HORSE.getDisplayName(), new String[]{
                 ChatColor.RED + "Speed 120%",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "An old brown starter horse.",
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "5000g"}).setNBTString("mountType", EnumMounts.TIER1_HORSE.getRawName()).setNBTInt("mountCost", 5000).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "3000g"}).setNBTString("mountType", EnumMounts.TIER1_HORSE.getRawName()).setNBTInt("mountCost", 3000).build());
         inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.IRON_BARDING), ChatColor.AQUA + EnumMounts.TIER2_HORSE.getDisplayName(), new String[]{
                 ChatColor.RED + "Speed 140%",
                 ChatColor.RED + "Jump 110%",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + "TODO: Insert Lore Here (NPCMenus:39).",
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "15000g"}).setNBTString("mountType", EnumMounts.TIER2_HORSE.getRawName()).setNBTInt("mountCost", 15000).build());
-        inv.setItem(2, new ItemBuilder().setItem(new ItemStack(Material.DIAMOND_BARDING), ChatColor.AQUA + EnumMounts.TIER3_HORSE.getDisplayName(), new String[]{
-                ChatColor.RED + "Speed 160%",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "A horse fit for a humble squire.",
+                ChatColor.RED.toString() + ChatColor.BOLD + "REQ: " + ChatColor.RESET + ChatColor.GREEN + EnumMounts.TIER1_HORSE.getDisplayName(),
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "7000g"}).setNBTString("mountType", EnumMounts.TIER2_HORSE.getRawName()).setNBTInt("mountCost", 7000).build());
+        inv.setItem(2, new ItemBuilder().setItem(new ItemStack(Material.DIAMOND_BARDING), ChatColor.LIGHT_PURPLE + EnumMounts.TIER3_HORSE.getDisplayName(), new String[]{
+                ChatColor.RED + "Speed 170%",
                 ChatColor.RED + "Jump 110%",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "A well versed travelling companion.",
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "25000g"}).setNBTString("mountType", EnumMounts.TIER3_HORSE.getRawName()).setNBTInt("mountCost", 25000).build());
+                ChatColor.RED.toString() + ChatColor.BOLD + "REQ: " + ChatColor.RESET +  ChatColor.AQUA + EnumMounts.TIER2_HORSE.getDisplayName(),
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "15000g"}).setNBTString("mountType", EnumMounts.TIER3_HORSE.getRawName()).setNBTInt("mountCost", 15000).build());
         inv.setItem(3, new ItemBuilder().setItem(new ItemStack(Material.GOLD_BARDING), ChatColor.YELLOW + EnumMounts.TIER4_HORSE.getDisplayName(), new String[]{
-                ChatColor.RED + "Speed 180%",
+                ChatColor.RED + "Speed 200%",
                 ChatColor.RED + "Jump 110%",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "A mount fit for even the best of adventurers.",
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "35000g"}).setNBTString("mountType", EnumMounts.TIER4_HORSE.getRawName()).setNBTInt("mountCost", 35000).build());
+                ChatColor.RED.toString() + ChatColor.BOLD + "REQ: " + ChatColor.RESET + ChatColor.LIGHT_PURPLE + EnumMounts.TIER3_HORSE.getDisplayName(),
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "30000g"}).setNBTString("mountType", EnumMounts.TIER4_HORSE.getRawName()).setNBTInt("mountCost", 30000).build());
         inv.setItem(9, new ItemBuilder().setItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Storage Mule", new String[]{
                 ChatColor.RED + "Storage Size: 9 Items",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "An old worn-out storage mule.",
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "15000g"}).setNBTString("mountType", EnumMounts.MULE.getRawName()).setNBTInt("mountCost", 15000).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "5000g"}).setNBTString("mountType", EnumMounts.MULE.getRawName()).setNBTInt("mountCost", 5000).build());
         player.openInventory(inv);
     }
 
@@ -61,7 +64,6 @@ public class NPCMenus {
         ItemStack fishingRod = ItemManager.createFishingPole(1);
         ItemMeta meta = pickAxe.getItemMeta();
         List<String> lore = meta.getLore();
-//        String[] array = (String[]) lore.toArray();
         lore.add(ChatColor.GREEN + "Price: " + ChatColor.WHITE + "100g");
         String[] arr = lore.toArray(new String[lore.size()]);
         inv.addItem(editItem(pickAxe, pickAxe.getItemMeta().getDisplayName(), arr));

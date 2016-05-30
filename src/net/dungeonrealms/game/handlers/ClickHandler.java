@@ -77,18 +77,22 @@ public class ClickHandler {
                         player.sendMessage(ChatColor.RED + "You already own this mount!");
                         return;
                     } else {
-                        if (MountUtils.hasMountPrerequisites(EnumMounts.getByName(nmsStack.getTag().getString("mountType")), playerMounts)) {
-                            if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
-                                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, nmsStack.getTag().getString("mountType").toUpperCase(), true);
-                                player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("mountType") + " mount.");
-                                player.closeInventory();
-                                return;
+                        if (MountUtils.hasRequiredLevel(EnumMounts.getByName(nmsStack.getTag().getString("mountType")), player.getUniqueId())) {
+                            if (MountUtils.hasMountPrerequisites(EnumMounts.getByName(nmsStack.getTag().getString("mountType")), playerMounts)) {
+                                if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
+                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, nmsStack.getTag().getString("mountType").toUpperCase(), true);
+                                    player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("mountType") + " mount.");
+                                    player.closeInventory();
+                                    return;
+                                } else {
+                                    player.sendMessage(ChatColor.RED + "You cannot afford this mount, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("mountCost") + ChatColor.RED + " Gems.");
+                                    return;
+                                }
                             } else {
-                                player.sendMessage(ChatColor.RED + "You cannot afford this mount, you require " + ChatColor.BOLD + nmsStack.getTag().getInt("mountCost") + ChatColor.RED + " Gems.");
-                                return;
+                                player.sendMessage(ChatColor.RED + "You must own the previous mount to upgrade.");
                             }
                         } else {
-                            player.sendMessage(ChatColor.RED + "You do not meet the requirements to purchase this mount");
+                            player.sendMessage(ChatColor.RED + "You do not meet the minimum level requirements to own this mount.");
                         }
                     }
                 }
@@ -962,7 +966,7 @@ public class ClickHandler {
                                                     EntityAPI.removePlayerMountList(player.getUniqueId());
                                                     player.sendMessage(ChatColor.AQUA + "Mount skin removed. Please re-summon your mount.");
                                                 } else {
-                                                    player.sendMessage(ChatColor.AQUA + "You currently do not have a mount in the world.");
+                                                    player.sendMessage(ChatColor.AQUA + "Mount skin removed.");
                                                 }
                                                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, "", true);
                                                 return;
