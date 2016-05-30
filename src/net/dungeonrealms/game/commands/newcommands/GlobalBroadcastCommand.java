@@ -1,13 +1,9 @@
 package net.dungeonrealms.game.commands.newcommands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.network.NetworkServer;
-import net.dungeonrealms.game.network.packets.BroadcastPacket;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-
-import java.util.Collections;
 
 public class GlobalBroadcastCommand extends BasicCommand {
 
@@ -27,7 +23,7 @@ public class GlobalBroadcastCommand extends BasicCommand {
 		}
     	 
     	String allArgs = sb.toString().trim();
-    	NetworkServer.getInstance().client.getServerConnection().sendTcp(new BroadcastPacket(Collections.emptyList(), allArgs));
+    	//NetworkServer.getInstance().client.getServerConnection().sendTcp(new BroadcastPacket(Collections.emptyList(), allArgs));
     	return true;
     }
 

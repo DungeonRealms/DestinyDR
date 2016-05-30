@@ -1,18 +1,14 @@
 package net.dungeonrealms.game.network.handlers;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.network.packets.BroadcastPacket;
+import net.dungeonrealms.game.network.packets.PartyPacket;
+import net.dungeonrealms.game.network.packets.WhoisUpdateSendPacket;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.network.NetworkServer;
-import net.dungeonrealms.game.network.packets.BroadcastPacket;
-import net.dungeonrealms.game.network.packets.PartyPacket;
-import net.dungeonrealms.game.network.packets.WhoisUpdateRecievePacket;
-import net.dungeonrealms.game.network.packets.WhoisUpdateSendPacket;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PacketHandler {
 
@@ -23,7 +19,7 @@ public class PacketHandler {
     		String RAW = (String)obj;
     		if(RAW.contains("@"))
     		{
-    			NetworkServer.getInstance().client.getServerConnection().sendTcp("@" + DungeonRealms.getInstance().bungeeName);
+    			//NetworkServer.getInstance().client.getServerConnection().sendTcp("@" + DungeonRealms.getInstance().bungeeName);
     		}
     		return; // Ignore any other string based packets that we don't understand. (Temporary)
     	}
@@ -45,7 +41,7 @@ public class PacketHandler {
             Bukkit.getOnlinePlayers().stream().forEach(newPlayer ->{
                 playersSend.add(newPlayer.getName());
             });
-			NetworkServer.getInstance().client.getServerConnection().sendTcp(new WhoisUpdateRecievePacket(DungeonRealms.getInstance().bungeeName, playersSend));
+			//NetworkServer.getInstance().client.getServerConnection().sendTcp(new WhoisUpdateRecievePacket(DungeonRealms.getInstance().bungeeName, playersSend));
 			return;
 		}
 		else {
