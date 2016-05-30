@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="lib" path="lib/ActionBarAPI-1.4.2.jar"/>
+	<classpathentry kind="lib" path="lib/ArmorEquipEvent.jar"/>
+	<classpathentry kind="lib" path="lib/BossBarAPI_v1.0.6.jar"/>
+	<classpathentry kind="lib" path="lib/BountifulAPI.jar"/>
+	<classpathentry kind="lib" path="lib/bson-3.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/BungeeCord.jar"/>
+	<classpathentry kind="lib" path="lib/commons-net-3.3.jar"/>
+	<classpathentry kind="lib" path="lib/HolographicDisplaysAPI_v2.1.7.jar"/>
+	<classpathentry kind="lib" path="lib/ini4j-0.5.4.jar"/>
+	<classpathentry kind="lib" path="lib/mongodb-java-driver-3.0.3.jar"/>
+	<classpathentry kind="lib" path="lib/mongodb-driver-core-3.0.2.jar"/>
+	<classpathentry kind="lib" path="lib/mysql-connector-java-5.0.8-bin.jar"/>
+	<classpathentry kind="lib" path="lib/NPCLib_v1.6.3.jar"/>
+	<classpathentry kind="lib" path="lib/nuvotifier-universal-2.3.jar"/>
+	<classpathentry kind="lib" path="lib/spigot-1.8.8-R0.1-SNAPSHOT-latest.jar"/>
+	<classpathentry kind="lib" path="lib/VoidGenerator.jar"/>
+	<classpathentry kind="lib" path="lib/Votifier.jar"/>
+	<classpathentry kind="lib" path="lib/worldedit-bukkit-6.1.jar"/>
+	<classpathentry kind="lib" path="lib/worldguard-6.1.jar"/>
+	<classpathentry kind="lib" path="lib/zip4j_1.3.2.jar"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+	<classpathentry kind="lib" path="lib/ProtocolLib.jar"/>
+	<classpathentry kind="lib" path="lib/AnvilApi.jar"/>
+	<classpathentry kind="lib" path="lib/Item-NBT-API.jar"/>
+	<classpathentry kind="lib" path="lib/NitroNet.jar"/>
+	<classpathentry kind="output" path="bin"/>
+</classpath>

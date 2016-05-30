@@ -1,12 +1,19 @@
 package net.dungeonrealms.game.network;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
+import org.bson.Document;
+import org.bukkit.Bukkit;
+import org.bukkit.scheduler.BukkitScheduler;
+
+import com.jmr.wrapper.client.Client;
+
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
-import org.bson.Document;
-import org.bukkit.Bukkit;
-
-import java.util.ArrayList;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
 
 /**
  * Created by Nick on 10/16/2015.
@@ -14,6 +21,12 @@ import java.util.ArrayList;
 public class NetworkServer implements GenericMechanic{
 
     static NetworkServer instance = null;
+    public Client client;
+    public static String masterIP = "127.0.0.1";
+    public static int port = 1337;
+    public static String key = "XfrB39uHqxLqvUkw";
+    public static String salt = "BAABABABAAAAAAAB";
+    public static final UUID id = UUID.randomUUID();
 
     public static NetworkServer getInstance() {
         if (instance == null) {
@@ -33,12 +46,27 @@ public class NetworkServer implements GenericMechanic{
 	public void startInitialization() {
         Utils.log.info("[NetworkServer] Starting up... STARTING");
         //Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), this::refreshDocument, 0, 20 * 8);
+        client = new Client(masterIP, port, port);
+        client.setListener(new Listener());
+        client.connect();
+        BukkitScheduler scheduler = Bukkit.getServer().getScheduler();
+        scheduler.scheduleSyncRepeatingTask(DungeonRealms.getInstance(), new Runnable() {
+            @Override
+            public void run() {
+                if(!client.isConnected())
+                {
+                    client.connect();
+                    Utils.log.info("[NetworkServer] Reconnected to Master server");
+                }
+            }
+        }, 0L, 20L);
         Utils.log.info("[NetworkServer] Finished starting up ... OKAY");
     }
 
     @Override
     public void stopInvocation() {
-
+    	client.close();
+        Utils.log.info("[NetworkServer] Left the master server in the dark ... OKAY");
     }
 
     /**

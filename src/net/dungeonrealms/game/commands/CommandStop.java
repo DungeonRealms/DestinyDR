@@ -13,12 +13,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 /**
  * Created by Chase on Nov 6, 2015
  */
 public class CommandStop extends BasicCommand {
-    public CommandStop(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandStop(String command, String usage, String description, List<String> aliases) {
+        super(command, usage, description, aliases);
     }
 
     @Override
@@ -33,15 +35,15 @@ public class CommandStop extends BasicCommand {
         DungeonRealms.getInstance().setFinishedSetup(false);
         DungeonRealms.getInstance().saveConfig();
         ShopMechanics.deleteAllShops();
-        API.logoutAllPlayers();
+        API.logoutAllPlayers(true);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             DungeonRealms.getInstance().mm.stopInvocation();
-            Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
+            Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN in 5s");
             AsyncUtils.pool.shutdown();
             Database.mongoClient.close();
         }, 200);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 1200);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 15 * 20L);
         return false;
     }
 }

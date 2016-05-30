@@ -48,11 +48,11 @@ public class TradeManager {
 		        + ChatColor.YELLOW + " Shift right click them and choose trade to accept!");
 		pending.put(p1, p2);
 
-		Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 			if (pending.containsKey(p1))
 				pending.remove(p1);
 			cooldown.remove(p1);
-		} , 200l);// Remove Pending Request after 10 seconds.
+		} , 200L);// Remove Pending Request after 10 seconds.
 
 	}
 

@@ -32,7 +32,7 @@ public final class Core implements GenericMechanic {
     public synchronized void connectToMysql() {
         Utils.log.warning("DR | Connecting to MySQL ... This might take a moment ...");
         try {
-            connection = DriverManager.getConnection("jdbc:mysql://192.99.43.236:3306/dungeonrealms?user=dungeonrealms&password=8aQbrSTsVDG7UWQh");
+            connection = DriverManager.getConnection("jdbc:mysql://192.99.200.110:3306/drnew?user=root&password=19584!cK");
         } catch (SQLException e) {
             e.printStackTrace();
             Bukkit.shutdown();
@@ -53,7 +53,7 @@ public final class Core implements GenericMechanic {
                 Utils.log.warning("DR | ERROR Cannot find the table `guilds` in the database! Creating it now...");
                 // Table does not exist
                 try (
-                        Statement statement = connection.createStatement();
+                        Statement statement = connection.createStatement()
                 ) {
                     statement.execute("CREATE TABLE guilds (" +
                             "guildName VARCHAR(17) NOT NULL," +
@@ -75,7 +75,7 @@ public final class Core implements GenericMechanic {
                 Utils.log.warning("DR | ERROR Cannot find the table `players` in the database! Creating it now...");
                 // Table does not exist
                 try (
-                        Statement statement = connection.createStatement();
+                        Statement statement = connection.createStatement()
                 ) {
                     statement.execute("CREATE TABLE players (" +
                             "name VARCHAR(17) NOT NULL," +
@@ -97,7 +97,7 @@ public final class Core implements GenericMechanic {
                 Utils.log.warning("DR | ERROR Cannot find the table `bounties` in the database! Creating it now...");
                 // Table does not exist
                 try (
-                        Statement statement = connection.createStatement();
+                        Statement statement = connection.createStatement()
                 ) {
                     statement.execute("CREATE TABLE bounties (" +
                             "placer VARCHAR(36) NOT NULL," +
@@ -119,7 +119,7 @@ public final class Core implements GenericMechanic {
         Executors.newSingleThreadExecutor().submit(() -> {
             try (
                     PreparedStatement statement = this.connection.prepareStatement("SELECT uuid FROM `players` WHERE uuid='" + uuid.toString() + "';");
-                    ResultSet resultSet = statement.executeQuery();
+                    ResultSet resultSet = statement.executeQuery()
             ) {
 
                 if (!resultSet.next()) {
@@ -146,7 +146,7 @@ public final class Core implements GenericMechanic {
         Executors.newSingleThreadExecutor().submit(() -> {
             try (
                     PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT * FROM `players` WHERE name='" + playerName + "';");
-                    ResultSet resultSet = statement.executeQuery();
+                    ResultSet resultSet = statement.executeQuery()
             ) {
                 HashMap<String, Object> temp = new HashMap<>();
                 while (resultSet.next()) {
@@ -174,7 +174,7 @@ public final class Core implements GenericMechanic {
             boolean played = false;
             try (
                     PreparedStatement statement = this.connection.prepareStatement("SELECT name FROM `players` WHERE name='" + name + "';");
-                    ResultSet resultSet = statement.executeQuery();
+                    ResultSet resultSet = statement.executeQuery()
             ) {
                 played = resultSet.next();
             } catch (SQLException e) {
@@ -198,7 +198,7 @@ public final class Core implements GenericMechanic {
             UUID rname = null;
             try (
                     PreparedStatement statement = this.connection.prepareStatement("SELECT uuid FROM `players` WHERE name='" + name + "';");
-                    ResultSet resultSet = statement.executeQuery();
+                    ResultSet resultSet = statement.executeQuery()
             ) {
                 if (resultSet.next()) {
                     rname = UUID.fromString(resultSet.getString("uuid"));
@@ -224,7 +224,7 @@ public final class Core implements GenericMechanic {
             String rname = "";
             try (
                     PreparedStatement statement = this.connection.prepareStatement("SELECT name FROM `players` WHERE uuid='" + uuid.toString() + "';");
-                    ResultSet resultSet = statement.executeQuery();
+                    ResultSet resultSet = statement.executeQuery()
             ) {
                 if (resultSet.next()) {
                     rname = resultSet.getString("name");

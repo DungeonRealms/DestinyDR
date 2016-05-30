@@ -1,32 +1,44 @@
 package net.dungeonrealms.game.mastery;
 
-import com.gmail.filoghost.holographicdisplays.api.Hologram;
-import com.gmail.filoghost.holographicdisplays.api.HologramsAPI;
-import me.Bogdacutu.VoidGenerator.VoidGeneratorGenerator;
-import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.player.combat.CombatLog;
-import net.dungeonrealms.game.world.loot.LootManager;
-import net.dungeonrealms.game.mechanics.generic.EnumPriority;
-import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.game.world.teleportation.Teleportation;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.apache.commons.net.ftp.FTP;
-import org.apache.commons.net.ftp.FTPClient;
-import org.bukkit.*;
-import org.bukkit.entity.Player;
-import org.bukkit.util.Vector;
-
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URL;
+import java.net.URLConnection;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
-import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipFile;
-import java.util.zip.ZipOutputStream;
+import java.util.stream.Stream;
+
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.net.ftp.FTPClient;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.WorldCreator;
+import org.bukkit.WorldType;
+import org.bukkit.entity.Player;
+import org.bukkit.util.Vector;
+
+import me.Bogdacutu.VoidGenerator.VoidGeneratorGenerator;
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mechanics.generic.EnumPriority;
+import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
+import net.lingala.zip4j.core.ZipFile;
+import net.lingala.zip4j.exception.ZipException;
+import net.lingala.zip4j.io.ZipOutputStream;
+import net.lingala.zip4j.model.ZipParameters;
+import net.lingala.zip4j.util.Zip4jConstants;
 
 /**
  * Created by Nick on 9/22/2015.
@@ -44,11 +56,11 @@ public class RealmManager implements GenericMechanic {
 
     public CopyOnWriteArrayList<RealmObject> CURRENT_REALMS = new CopyOnWriteArrayList<>();
 
-    String HOST = "167.114.65.102";
-    int port = 21;
-    String USER = "dr.23";
-    String PASSWORD = "devpass123";
-    String ROOT_DIR = "";
+    public static String HOST = "167.114.65.102";
+    public static String USER = "dr.53";
+    public static String PASSWORD = "19584!cK";
+    public static String ROOT_DIR = "/testing/";
+    public static String zipPass = "JRmyzc-E+7Qw27qD##L84CJqdbqJE$MXpJmXKBQMT&%-=+=!vymg8JLj*VpZ-vmvhW7qmNTEbEaXU3GybSTMTfd^X5zMtNrLQE_na74*-UkBzz*GER3MarzT2s!6yzgk?Us2nhdke!Zxy%ygnT!PC6Ta$p58KX?8LVtrPUGJHguLU8E5h6=YCzXA%C?gjx6V3Z_jK3gwA3u9__@EsP#%mc=aCfJXebD5B!6rJRw$KHLZyzxBWfHsM-bLEKDEeUCA+zv%KVp8^%AR@vXAv*yTuzDU4^KM4f8@#pgbc#USNh+sYxYZ8tKbt_sJXE9AzCFWsbpy!jEH6$Fa*APRaX%GEDk=d!j^?mWASfGQWC6QdhwPf6$fc2DC6R#jnwMCFuR5*+4+PVj$N#Lx2L8rs7#Z5a&p$WtBc@E-y6wz5c$BPk!%!+9%YA73y8$m%WzEqVN-ms9V^Z*6d+eLFyg-%+gGdw%@ntM?cjCp2Tn6Ss%7tQCgJ*aM4&v7CPPYYU%ef6=3AtHqRsV5KD?^t&hc!Jz7#VzcpJ7dazV%ne9A5a3#k^dUQR_4Htq6NLC*DC?eCZB6Q2xh@+6C-$q4!vMR3daXeAn2LqEmh-92Yv!%p+RMqFsH6C#L%x*%K@QM8Nf77kS79sEL7_yDGMukrPRt*uDFLKtmbTTb*ZdHUcbCzxv*Tb3UMvQzUrPWbc_q&wE2vShWHhWFU9xekuyrQQEgEy@6*mXcmG#GZhXfWNzfDJqDCNr-Ck-VDX=b^frwRuFDp5xLjjnE2UZe36fvfhcmRJ?U5Mq&f=8&8Bw4-f&$fxyutC&SdA!dwcVjSg?MHFUmYxS*hBJRUS9te=4Kf!aHt5J-LH*scK-9JGfa8xx_tj2n#Cp64H2^tGgxcasmcsmswrp-#EB-GY7dGQKPuVSW*uFg*7ULg=ajDL*!3SDvwyaRqH+vkhVH!&dF5DY=wqSpp+SG*@4t_yZ^_AA53g*+WAmmYg88=ba4erjCcn@6!gBBsQ#fABWsJ?bTxnR$?&T*qRC@C2fqTX5tY5GFD-?LhxAGBTDfRg_j*bDJX?hL7gb!UkgA8dG_jkNThEP#*7gAkz!5hBD7q!MNQsxFNdMu+3KRHXY!UhV_GRpL24ap98*mWbDfVJ&jPdH^M&+BqcWsQw=%ERqaDFW+5weNUDb32LVKNwCkNRBaunBJgjSKmFaWWaT_cFebzA-eW?gCb!ynL!S==DUuffs@Mc9f$UswRcJ^%c+Wg?$D?LPPceq$kugQ6*5-xByGwE&P-SxyRz?KF@b$9Ehpfxcs&B8yKn^PN4-?nc3Q#vwm5+FrDw5q9%^_?Y&9xkt@utK+cBVyWjFwsGGvgq_pxa!N=tuvJBkQz7ARF@7Qx6A$x=_8L$Q^sppMSuKRS$4DK+@*d$GjX8azC+q4MWCeh@Ngh?9qcV!cgJMd4Pt5+Npgz%DMr&2yh4f7fdRkyJcEp$t7H@aTrkd^5ppw6puVCFD4jHm3rmeJM@quMeeSWs2RUg6LHcYCA_6QuPjq3m2xfD^nKSveRuV=g3wNU8G8aCf_kXYcp=Gy3@AFkARA!K_GZmQXJrMxNMJWvddPEq+P5vSgqQsQw5m4!#uv&paq6d?@g%vC&4n3Y3FH#3cB3Q^ThA!$tGn#M9fNtJ7LmfAJA_FLVz#6KTLbgAQ^VV*Hsx&-gg!rf-@umWSCynG+DyACDm?eJpaBaPSbzt%?=+yky=34tHauf3&PC@gdhjWDdAAyUKcpJ3$pwSJBX2?p3%kb7&Fscv#W5EZDWXwVG&^d^_RvP7Vj=g8YJAz3Qw9RWdS+4Hh%d@2m8UVfMaM9N^7r6xbVpg#Xg4hSx39p#CDuPV@zS3C5k$Tu=WHrEbfWr%HMLH2xre3%+p2!6JSP6FncTb4j5gP^uxsYf4F+24hb5^g37q+hRj@t-Se-bUjrbDB%==7_ZTgj+8WhnL6gDrRSe99N$Hk39QEF&fZZpP@BYf=RAyZH&yWGk@W_%ar^SeN6WAw^@zS8TBG&VEEvp4^k5_FDnrBYnG2+VAKCVDUP^&mM$Y^@uc+#5wDK";
 
     @Override
     public EnumPriority startPriority() {
@@ -66,8 +78,8 @@ public class RealmManager implements GenericMechanic {
         Utils.log.info("DungeonRealms Registering FTP() ... STARTING ...");
         File coreDirectory = DungeonRealms.getInstance().getDataFolder();
         try {
-            FileUtils.forceMkdir(new File(coreDirectory + File.separator + "/realms/downloading"));
-            FileUtils.forceMkdir(new File(coreDirectory + File.separator + "/realms/uploading"));
+            FileUtils.forceMkdir(new File(coreDirectory + File.separator + "realms/down"));
+            FileUtils.forceMkdir(new File(coreDirectory + File.separator + "realms/up"));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -77,17 +89,13 @@ public class RealmManager implements GenericMechanic {
     public class RealmObject {
 
         private UUID realmOwner;
-        private Location portalLocation;
         private List<Player> playerList;
-        private Hologram realmHologram;
         private List<Player> realmBuilders;
         private boolean isRealmPortalOpen;
 
-        public RealmObject(UUID realmOwner, Location portalLocation, List<Player> playerList, Hologram realmHologram, List<Player> realmBuilders, boolean isRealmPortalOpen) {
+        public RealmObject(UUID realmOwner, List<Player> playerList, List<Player> realmBuilders, boolean isRealmPortalOpen) {
             this.realmOwner = realmOwner;
-            this.portalLocation = portalLocation;
             this.playerList = playerList;
-            this.realmHologram = realmHologram;
             this.realmBuilders = realmBuilders;
             this.isRealmPortalOpen = isRealmPortalOpen;
         }
@@ -95,17 +103,8 @@ public class RealmManager implements GenericMechanic {
         public UUID getRealmOwner() {
             return realmOwner;
         }
-
-        public Location getLocation() {
-            return portalLocation;
-        }
-
         public List<Player> getPlayerList() {
             return playerList;
-        }
-
-        public Hologram getRealmHologram() {
-            return realmHologram;
         }
 
         public List<Player> getRealmBuilders() {
@@ -122,73 +121,143 @@ public class RealmManager implements GenericMechanic {
 
     }
 
-    private void zipDirectory(File directory, File zip) throws IOException {
-        ZipOutputStream zos = new ZipOutputStream(new FileOutputStream(zip));
-        zip(directory, directory, zos);
-        zos.close();
+    private void zipRealm(UUID uuid) throws IOException {
+    	File destination = new File("realms/up/" + uuid.toString() + ".zip");
+        zip(uuid, destination);
     }
 
-    private void zip(File directory, File base, ZipOutputStream zos) throws IOException {
-        File[] files = directory.listFiles();
-        byte[] buffer = new byte[8192];
-        int read;
-        assert files != null;
-        for (File file : files) {
-            if (file.isDirectory()) {
-                zip(file, base, zos);
-            } else {
-                FileInputStream in = new FileInputStream(file);
-                ZipEntry entry = new ZipEntry(file.getPath().substring(base.getPath().length() + 1));
-                zos.putNextEntry(entry);
-                while (-1 != (read = in.read(buffer))) {
-                    zos.write(buffer, 0, read);
-                }
-                in.close();
-            }
+    public static void zip(UUID uuid, File destinationFilePath) {
+        
+		// Input and OutputStreams are defined outside of the try/catch block
+		// to use them in the finally block
+		ZipOutputStream outputStream = null;
+		InputStream inputStream = null;
+		
+		try {
+			// Prepare the realm files that will be added later in the code
+			 ArrayList<File> filesToAdd = new ArrayList<>();
+		     try (Stream<Path> filePathStream=Files.walk(Paths.get(uuid.toString()))) {
+		    	    filePathStream.forEach(filePath -> {
+		    	        if (Files.isRegularFile(filePath)) {
+		    	            filesToAdd.add(filePath.toFile());
+		    	        }
+		    	    });
+		    	}
+			
+			//Initiate output stream with the path/file of the zip file
+			//Please note that ZipOutputStream will overwrite zip file if it already exists so no need to worry about the Realm already existing in the upload folder
+			outputStream = new ZipOutputStream(new FileOutputStream(destinationFilePath));
+			
+			// Initiate Zip Parameters which define various properties such
+			// as compression method, etc.
+			ZipParameters parameters = new ZipParameters();
+			
+			//Deflate compression or store(no compression) can be set below
+			parameters.setCompressionMethod(Zip4jConstants.COMP_DEFLATE);
+			
+			// Set the compression level. This value has to be in between 0 to 9
+			// Several predefined compression levels are available
+			// DEFLATE_LEVEL_FASTEST - Lowest compression level but higher speed of compression
+			// DEFLATE_LEVEL_FAST - Low compression level but higher speed of compression
+			// DEFLATE_LEVEL_NORMAL - Optimal balance between compression level/speed
+			// DEFLATE_LEVEL_MAXIMUM - High compression level with a compromise of speed
+			// DEFLATE_LEVEL_ULTRA - Highest compression level but low speed
+			parameters.setCompressionLevel(Zip4jConstants.DEFLATE_LEVEL_NORMAL);
+			
+			//Now we loop through each file and read this file with an inputstream
+			//and write it to the ZipOutputStream.
+			for (int i = 0; i < filesToAdd.size(); i++) {
+				File file = filesToAdd.get(i);
+				
+				//This will initiate ZipOutputStream to include the file
+				//with the input parameters
+				outputStream.putNextEntry(file,parameters);
+				
+				//If this file is a directory, then no further processing is required
+				//and we close the entry (Please note that we do not want to close the outputstream yet.. This will cause realm zipping errors)
+				if (file.isDirectory()) {
+					outputStream.closeEntry();
+					continue;
+				}
+				
+				//Initialize inputstream
+				inputStream = new FileInputStream(file);
+				byte[] readBuff = new byte[4096];
+				int readLen = -1;
+				
+				//Read the file content and write it to the OutputStream
+				while ((readLen = inputStream.read(readBuff)) != -1) {
+					outputStream.write(readBuff, 0, readLen);
+				}
+				
+				//Once the content of the file is copied, this entry to the zip file
+				//needs to be closed. ZipOutputStream updates necessary header information
+				//for this file in this step
+				outputStream.closeEntry();
+				
+				inputStream.close();
+			}
+			
+			//ZipOutputStream now writes zip header information to the zip file
+			outputStream.finish();
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		} finally {
+			if (outputStream != null) {
+				try {
+					outputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+			
+			if (inputStream != null) {
+				try {
+					inputStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+    }
+    
+    public static void unzip(File targetFolderPath, String password) {
+        try {
+            ZipFile zipFile = new ZipFile(targetFolderPath);
+            zipFile.extractAll("");
+        } catch (ZipException e) {
+            e.printStackTrace();
         }
     }
+    
+	public void uploadRealm(UUID uuid) {
+		try {
+			World w = Bukkit.getWorld(uuid.toString());
 
-    public void uploadRealm(UUID uuid) {
-        AsyncUtils.pool.submit(() -> {
-            Utils.log.info("[REALM] [ASYNC] Starting Compression for player realm " + uuid.toString());
-            try {
-                zipDirectory(new File(uuid.toString()), new File(ROOT_DIR + "/realms/uploading/" + uuid.toString() + ".zip"));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            FTPClient ftpClient = new FTPClient();
-            try {
-                ftpClient.connect(HOST);
-                ftpClient.login(USER, PASSWORD);
-                ftpClient.enterLocalPassiveMode();
-                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+			Bukkit.unloadWorld(w, true);
+			zipRealm(uuid);
+			URL url = new URL("ftp://" + USER + ":" + PASSWORD + "@" + HOST + ROOT_DIR + uuid.toString() + ".zip");
+			URLConnection urlc = url.openConnection();
+			OutputStream out = urlc.getOutputStream();
 
-                String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
+			InputStream is = new FileInputStream("realms/up/" + uuid.toString() + ".zip");
 
-                InputStream inputStream = new FileInputStream(ROOT_DIR + "/realms/uploading/" + uuid.toString() + ".zip");
+			byte buf[] = new byte[1024];
+			int len;
 
-                Utils.log.info("[REALM] [ASYNC] Started upload for player realm " + uuid.toString() + " ... STARTING");
-                ftpClient.storeFile(REMOTE_FILE, inputStream);
-                inputStream.close();
-                Utils.log.info("[REALM] [ASYNC] Successfully uploaded player realm " + uuid.toString());
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                Utils.log.info("[REALM] [ASYNC] Deleting local cache of realm " + uuid.toString());
-                try {
-                    FileUtils.deleteDirectory(new File((ROOT_DIR + "/realms/uploading/" + uuid.toString() + ".zip")));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-                Utils.log.info("[REALM] [ASYNC] Deleting local cache of unzipped realm " + uuid.toString());
-                try {
-                    FileUtils.deleteDirectory(new File(Bukkit.getWorldContainer().getAbsolutePath().replace(".", "") + uuid.toString()));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-    }
+			while ((len = is.read(buf)) > 0) {
+				out.write(buf, 0, len);
+			}
+
+			out.close();
+			is.close();
+
+			new File("realms/up/" + uuid.toString() + ".zip").delete();
+		} catch (Exception ex) {
+			ex.printStackTrace();
+		}
+	}
 
     /**
      * Will download and extract a players realm zip.
@@ -196,57 +265,35 @@ public class RealmManager implements GenericMechanic {
      * @param uuid
      * @since 1.0
      */
-    public void downloadRealm(UUID uuid) {
-        AsyncUtils.pool.submit(() -> {
-            FTPClient ftpClient = new FTPClient();
-            FileOutputStream fos = null;
-            String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
-            Utils.log.info("Attempting to start Realm Download!");
-            try {
-                ftpClient.connect(HOST, port);
-                boolean login = ftpClient.login(USER, PASSWORD);
-                if (login) {
-                    Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString());
-                }
-                ftpClient.enterLocalPassiveMode();
-                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+	public void downloadRealm(UUID uuid) {
+        deleteLocalCache(uuid);
+		try {
+			URL url = new URL("ftp://" + USER + ":" + PASSWORD + "@" + HOST + ROOT_DIR + uuid.toString() + ".zip");
+			URLConnection urlc;
 
-                if (!checkFileExists(ftpClient, REMOTE_FILE)) {
-                    ftpClient.logout();
-                    ftpClient.disconnect();
-                    Utils.log.warning("[REALM] [ASYNC] Player: " + uuid.toString() + " doesn't exist remotely!");
-                    generateBlankRealm(uuid);
-                    Bukkit.broadcastMessage("GENERATING BLANK REALM!");
-                    return;
-                }
+			urlc = url.openConnection();
 
-                Utils.log.info("[REALM] [ASYNC] Downloading " + uuid.toString() + "'s Realm ... STARTING");
-                File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloading/" + uuid.toString() + ".zip");
-                fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
-                ftpClient.retrieveFile(REMOTE_FILE, fos);
-                fos.close();
-                Utils.log.info("[REALM] [ASYNC] Realm downloaded for " + uuid.toString());
+			InputStream is = urlc.getInputStream();
+			OutputStream out = new FileOutputStream("realms/down/" + uuid.toString() + ".zip");
 
-                ZipFile zipFile = new ZipFile(TEMP_LOCAL_LOCATION);
-                unZip(zipFile, uuid);
+			byte buf[] = new byte[1024];
+			int len;
 
+			while ((len = is.read(buf)) > 0) {
+				out.write(buf, 0, len);
+			}
 
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                deleteLocalCache(uuid);
-                if (ftpClient.isConnected()) {
-                    try {
-                        ftpClient.logout();
-                        ftpClient.disconnect();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-                loadInWorld(uuid.toString(), uuid);
-            }
-        });
-    }
+			out.close();
+			is.close();
+
+		} catch (IOException first_login) {
+            generateBlankRealm(uuid);
+			return;
+		}
+		File TEMP_LOCAL_LOCATION = new File("realms/down/" + uuid.toString() + ".zip");
+        unzip(TEMP_LOCAL_LOCATION, zipPass);
+        loadInWorld(uuid.toString(), uuid);
+	}
 
     /**
      * Checks the remote server for existance.
@@ -263,46 +310,7 @@ public class RealmManager implements GenericMechanic {
             e.printStackTrace();
         }
         int returnCode = ftpClient.getReplyCode();
-        if (inputStream == null || returnCode == 550) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Will extract a players realm .zip to the correct folder.
-     *
-     * @param zipFile
-     * @since 1.0
-     */
-    public void unZip(ZipFile zipFile, UUID uuid) {
-        Utils.log.info("[REALMS] Unzipping instance for " + uuid.toString());
-        new File(uuid.toString()).mkdir();
-        try {
-            Enumeration<? extends ZipEntry> entries = zipFile.entries();
-            while (entries.hasMoreElements()) {
-                ZipEntry entry = entries.nextElement();
-                File entryDestination = new File(uuid.toString(), entry.getName());
-                if (entry.isDirectory())
-                    entryDestination.mkdirs();
-                else {
-                    entryDestination.getParentFile().mkdirs();
-                    InputStream in = zipFile.getInputStream(entry);
-                    OutputStream out = new FileOutputStream(entryDestination);
-                    IOUtils.copy(in, out);
-                    IOUtils.closeQuietly(in);
-                    out.close();
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        } finally {
-            try {
-                zipFile.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+        return !(inputStream == null || returnCode == 550);
     }
 
     /**
@@ -314,7 +322,7 @@ public class RealmManager implements GenericMechanic {
      */
     public void deleteLocalCache(UUID uuid) {
         Utils.log.info("[REALM] Removing cached realm for " + uuid.toString());
-        File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloading/" + uuid.toString() + ".zip");
+        File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "realms/down/" + uuid.toString() + ".zip");
         if (TEMP_LOCAL_LOCATION.exists()) {
             TEMP_LOCAL_LOCATION.delete();
         } else {
@@ -361,9 +369,6 @@ public class RealmManager implements GenericMechanic {
      */
     public void removeRealm(RealmObject realmObject, boolean playerLoggingOut) {
         realmObject.isRealmPortalOpen = false;
-        realmObject.getLocation().add(0, 1, 0).getBlock().setType(Material.AIR);
-        realmObject.getLocation().add(0, 1, 0).getBlock().setType(Material.AIR);
-        realmObject.getRealmHologram().delete();
         if (playerLoggingOut) {
             realmObject.getPlayerList().stream().forEach(player -> {
                 if (!player.getWorld().getName().contains("DUNGEON") && !player.getWorld().equals(Bukkit.getWorlds().get(0))) {
@@ -374,14 +379,6 @@ public class RealmManager implements GenericMechanic {
             });
             Bukkit.unloadWorld(realmObject.getRealmOwner().toString(), false);
             Utils.log.info("[REALMS] Unloading world: " + realmObject.getRealmOwner().toString() + " in preparation for deletion!");
-            /*Bukkit.getWorlds().remove(Bukkit.getWorld(realmObject.getRealmOwner().toString()));
-            Utils.log.info("[REALMS] Removing world: " + realmObject.getRealmOwner().toString() + " from worldList().");*/
-            /*try {
-                FileUtils.deleteDirectory(new File(realmObject.getRealmOwner().toString()));
-                Utils.log.info("[REALMS] Deleted world: " + realmObject.getRealmOwner().toString() + " final stage.");
-            } catch (IOException e) {
-                e.printStackTrace();
-            }*/
             CURRENT_REALMS.remove(realmObject);
             uploadRealm(realmObject.getRealmOwner());
         }
@@ -427,67 +424,21 @@ public class RealmManager implements GenericMechanic {
             removeRealm(getPlayerRealm(player), playerLoggingOut);
         }
     }
-
+    
+	static HashMap<UUID, Integer> realm_transferpending = new HashMap<>();
+    
     /**
-     * Opens a players realm and creates
-     * the Portal Blocks.
+     * Opens a players realm for an Instance.
      *
      * @since 1.0
      */
-    public void tryToOpenRealm(Player player, Location clickLocation) {
+    @SuppressWarnings("deprecation")
+	public void tryToOpenRealmInstance(Player player) {
         if (getPlayerRealm(player) == null || !getPlayerRealm(player).isRealmPortalOpen()) {
-            if (CombatLog.isInCombat(player)) {
-                player.sendMessage(ChatColor.RED + "Cannot open Realm while in Combat!");
-                return;
-            }
             if (!player.getWorld().equals(Bukkit.getWorlds().get(0))) {
                 player.sendMessage(ChatColor.RED + "You can only open a realm portal in the main world!");
                 return;
             }
-            final Location portalLocation = clickLocation.clone();
-            if (!(portalLocation.clone().add(0, 1, 0).getBlock().getType() == Material.AIR) || !(portalLocation.clone().add(0, 1, 0).getBlock().getType() == Material.AIR)
-                    || clickLocation.clone().getBlock().getType() == Material.CHEST || clickLocation.clone().getBlock().getType() == Material.ENDER_CHEST
-                    || clickLocation.clone().getBlock().getType() == Material.PORTAL || clickLocation.clone().getBlock().getType() == Material.ANVIL) {
-                player.sendMessage(ChatColor.RED + "You cannot open a realm portal here!");
-                return;
-            }
-            if (LootManager.checkLocationForLootSpawner(clickLocation.clone())) {
-                player.sendMessage(ChatColor.RED + "You cannot place a realm portal this close to a Loot Spawning location");
-                return;
-            }
-            if (API.isMaterialNearby(clickLocation.clone().getBlock(), 3, Material.LADDER) || API.isMaterialNearby(clickLocation.clone().getBlock(), 10, Material.ENDER_CHEST)) {
-                player.sendMessage(ChatColor.RED + "You cannot place a realm portal here!");
-                return;
-            }
-            if (isThereARealmPortalNearby(clickLocation.clone().add(0, 1, 0), 6) || API.isMaterialNearby(clickLocation.clone().getBlock(), 6, Material.PORTAL)) {
-                player.sendMessage(ChatColor.RED + "You cannot place a portal so close to another! (Min 3 Blocks)");
-                return;
-            }
-            for (Player player1 : Bukkit.getWorlds().get(0).getPlayers()) {
-                if (player1.getName().equals(player.getName())) {
-                    continue;
-                }
-                if (!player1.getWorld().equals(player.getWorld())) {
-                    continue;
-                }
-                if (player1.getLocation().distanceSquared(player.getLocation()) <= 2) {
-                    player.sendMessage(ChatColor.RED + "You cannot place your realm portal near another player");
-                    return;
-                }
-            }
-            player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "REALMS" + ChatColor.WHITE + "] " + ChatColor.YELLOW + "Your realm is loading now!");
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                portalLocation.add(0, 1, 0).getBlock().setType(Material.PORTAL);
-                portalLocation.add(0, 1, 0).getBlock().setType(Material.PORTAL);
-                Hologram realmHologram = HologramsAPI.createHologram(DungeonRealms.getInstance(), portalLocation.add(0.5, 1.5, 0.5));
-                realmHologram.appendTextLine(player.getName() + "(s) REALM");
-                realmHologram.getVisibilityManager().setVisibleByDefault(true);
-                RealmObject realmObject = new RealmObject(player.getUniqueId(), clickLocation, new ArrayList<>(), realmHologram, new ArrayList<>(), true);
-                realmObject.getRealmBuilders().add(player);
-                realmObject.getPlayerList().add(player);
-                CURRENT_REALMS.add(realmObject);
-                player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "REALMS" + ChatColor.WHITE + "] " + ChatColor.YELLOW + "Your realm is ready!");
-            }, 200L);
             if (doesRealmExistLocally(player.getUniqueId()) && !isRealmLoaded(player.getUniqueId())) {
                 Utils.log.info("[REALMS] Player " + player.getUniqueId().toString() + "'s Realm existed locally, loading it!");
                 Bukkit.createWorld(new WorldCreator(player.getUniqueId().toString()));
@@ -497,200 +448,57 @@ public class RealmManager implements GenericMechanic {
                 Utils.log.info("[REALMS] Player " + player.getUniqueId().toString() + "'s Realm doesn't exist locally, downloading it from FTP!");
                 downloadRealm(player.getUniqueId());
             }
+            realm_transferpending.put(player.getUniqueId(), Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            	if(Bukkit.getWorld(player.getUniqueId().toString()) != null)
+            	{
+                    RealmObject realmObject = new RealmObject(player.getUniqueId(), new ArrayList<>(), new ArrayList<>(), true);
+                    realmObject.getRealmBuilders().add(player);
+                    realmObject.getPlayerList().add(player);
+                    CURRENT_REALMS.add(realmObject);
+            		player.teleport(Bukkit.getWorld(player.getUniqueId().toString()).getSpawnLocation());
+            		Bukkit.getScheduler().cancelTask(realm_transferpending.get(player.getUniqueId()));
+            		realm_transferpending.remove(player.getUniqueId());
+            	}
+            	
+            }, 0, 20L));
         } else {
             player.sendMessage(ChatColor.RED + "You already have a Realm Portal in the world, please destroy it!");
         }
     }
 
-    /**
-     * Gets a Realm Spawn Location from
-     * the location of a Portal in the
-     * main world.
-     *
-     * @return Location (The Location)
-     * @since 1.0
-     */
-    public Location getRealmLocation(Location location, Player player) {
-        if (!CURRENT_REALMS.isEmpty()) {
-            for (RealmObject realmObject : CURRENT_REALMS) {
-                if (location.distanceSquared(realmObject.getLocation()) <= 4) {
-                    if (Bukkit.getWorld(realmObject.getRealmOwner().toString()) == null) {
-                        return null;
-                    }
-                    realmObject.getPlayerList().add(player);
-                    return Bukkit.getWorld(realmObject.getRealmOwner().toString()).getSpawnLocation();
-                }
-            }
-        } else {
-            player.sendMessage(ChatColor.RED + "There are no Realms currently, no clue how this portal got here!");
-            location.getBlock().setType(Material.AIR);
-            if (location.subtract(0, 1, 0).getBlock().getType() == Material.PORTAL) {
-                location.getBlock().setType(Material.AIR);
-            }
-            if (location.add(0, 2, 0).getBlock().getType() == Material.PORTAL) {
-                location.getBlock().setType(Material.AIR);
-            }
-            return null;
-        }
-        return null;
-    }
-
-    /**
-     * Gets a Realm Portal location from
-     * a player object that is currently
-     * in THE realm.
-     *
-     * @return Location (The Location)
-     * @since 1.0
-     */
-    public Location getPortalLocationFromRealmWorld(Player player) {
-        for (RealmObject realmObject : CURRENT_REALMS) {
-            if (player.getWorld().getName().equalsIgnoreCase(realmObject.getRealmOwner().toString())) {
-                realmObject.getPlayerList().remove(player);
-                return realmObject.getLocation();
-            }
-        }
-        return Teleportation.Cyrennica;
-    }
-
-    /**
-     * Gets a Realm Object from
-     * the location of a Portal in the
-     * main world.
-     *
-     * @return Location (The Location)
-     * @since 1.0
-     */
-    public RealmObject getRealmViaLocation(Location location) {
-        if (!CURRENT_REALMS.isEmpty()) {
-            for (RealmObject realmObject : CURRENT_REALMS) {
-                if (location.distanceSquared(realmObject.getLocation()) <= 4) {
-                    return realmObject;
-                }
-            }
-        } else {
-            return null;
-        }
-        return null;
-    }
-
-    /**
-     * Removes a realm via its portal location.
-     *
-     * @since 1.0
-     */
-    public void removeRealmViaPortalLocation(Location location) {
-        for (RealmObject realmObject : CURRENT_REALMS) {
-            if (location.distanceSquared(realmObject.getLocation()) <= 4) {
-                removeRealm(realmObject, false);
-            }
-        }
-    }
-
-    /**
-     * Checks if there is a Realm Portal nearby.
-     *
-     * @since 1.0
-     */
-    public boolean isThereARealmPortalNearby(Location location, int radius) {
-        double rad = Math.pow(radius, 2);
-        for (RealmObject realmObject : CURRENT_REALMS) {
-            if (realmObject.getLocation().distanceSquared(location.clone()) <= rad) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Will download and extract a players realm zip.
-     *
-     * @param uuid
-     * @since 1.0
-     */
-    public void downloadRealmTemplate(UUID uuid) {
-        AsyncUtils.pool.submit(() -> {
-            FTPClient ftpClient = new FTPClient();
-            FileOutputStream fos = null;
-            String REMOTE_FILE = "/" + "realms" + "/" + "REALM_TEMPLATE" + ".zip";
-            try {
-                ftpClient.connect(HOST, port);
-                boolean login = ftpClient.login(USER, PASSWORD);
-                if (login) {
-                    Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString() + " [TEMPLATE]");
-                }
-                ftpClient.enterLocalPassiveMode();
-                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-
-                if (!checkFileExists(ftpClient, REMOTE_FILE)) {
-                    ftpClient.logout();
-                    ftpClient.disconnect();
-                    Utils.log.warning("[REALM] [ASYNC] Realm Template doesn't exist remotely!");
-                    return;
-                }
-
-                Utils.log.info("[REALM] [ASYNC] Downloading Template Realm for player + " + uuid.toString() + " ... STARTING");
-                File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloading/" + uuid.toString() + ".zip");
-                fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
-                ftpClient.retrieveFile(REMOTE_FILE, fos);
-                fos.close();
-                Utils.log.info("[REALM] [ASYNC] Template Realm downloaded for " + uuid.toString());
-
-                ZipFile zipFile = new ZipFile(TEMP_LOCAL_LOCATION);
-                unZip(zipFile, uuid);
-
-
-            } catch (IOException e) {
-                e.printStackTrace();
-            } finally {
-                deleteLocalCache(uuid);
-                if (ftpClient.isConnected()) {
-                    try {
-                        ftpClient.logout();
-                        ftpClient.disconnect();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        });
-    }
-
     public void generateBlankRealm(UUID ownerUUID) {
-        downloadRealmTemplate(ownerUUID);
+    	
+		WorldCreator wc = new WorldCreator(ownerUUID.toString());
+		wc.type(WorldType.FLAT);
+		wc.generateStructures(false);
+		wc.generator(new VoidGeneratorGenerator());
+		World w = Bukkit.createWorld(wc);
+		w.setSpawnLocation(24, 130, 24);
+		w.getBlockAt(0, 64, 0).setType(Material.AIR);
+		int x = 0, y = 128, z = 0;
+		Vector s = new Vector(16, 128, 16);
+		// GRASS
+		for (x = s.getBlockX(); x < 32; x++) {
+			for (z = s.getBlockZ(); z < 32; z++) {
+				w.getBlockAt(new Location(w, x, y, z)).setType(Material.GRASS);
+			}
+		}
 
-        WorldCreator worldCreator = new WorldCreator(ownerUUID.toString());
-        worldCreator.type(WorldType.FLAT);
-        worldCreator.generateStructures(false);
-        worldCreator.generator(new VoidGeneratorGenerator());
-        World world = Bukkit.createWorld(worldCreator);
-        world.setSpawnLocation(24, 130, 24);
-        world.getBlockAt(0, 64, 0).setType(Material.AIR);
-        int x, y = 128, z;
-        Vector vector = new Vector(16, 128, 16);
+		// DIRT
+		for (x = s.getBlockX(); x < 32; x++) {
+			for (y = 127; y >= 112; y--) {
+				for (z = s.getBlockZ(); z < 32; z++) {
+					w.getBlockAt(new Location(w, x, y, z)).setType(Material.DIRT);
+				}
+			}
+		}
 
-        for (x = vector.getBlockX(); x < 32; x++) {
-            for (z = vector.getBlockZ(); z < 32; z++) {
-                world.getBlockAt(new Location(world, x, y, z)).setType(Material.GRASS);
-            }
-        }
-        for (x = vector.getBlockX(); x < 32; x++) {
-            for (y = 127; y >= 112; y--) {
-                for (z = vector.getBlockZ(); z < 32; z++) {
-                    world.getBlockAt(new Location(world, x, y, z)).setType(Material.DIRT);
-                }
-            }
-        }
-        for (x = vector.getBlockX(); x < 32; x++) {
-            for (z = vector.getBlockZ(); z < 32; z++) {
-                world.getBlockAt(new Location(world, x, y, z)).setType(Material.BEDROCK);
-            }
-        }
-
-        Location portalLocation = world.getSpawnLocation().clone();
-        portalLocation.getBlock().setType(Material.PORTAL);
-        portalLocation.subtract(0, 1, 0).getBlock().setType(Material.PORTAL);
-        portalLocation.add(0, 1, 0);
+		// BEDROCK
+		for (x = s.getBlockX(); x < 32; x++) {
+			for (z = s.getBlockZ(); z < 32; z++) {
+				w.getBlockAt(new Location(w, x, y, z)).setType(Material.BEDROCK);
+			}
+		}
 
         Utils.log.info("[REALMS] Blank Realm generated for player " + ownerUUID.toString());
     }

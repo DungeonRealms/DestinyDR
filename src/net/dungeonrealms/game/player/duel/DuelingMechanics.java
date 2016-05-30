@@ -1,17 +1,16 @@
 package net.dungeonrealms.game.player.duel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.UUID;
-
-import net.dungeonrealms.game.mongo.achievements.Achievements;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.mongo.achievements.Achievements;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 
 /**
  * Created by Chase on Nov 13, 2015
@@ -56,18 +55,18 @@ public class DuelingMechanics {
 			}
 			requested.sendMessage(ChatColor.YELLOW + "Duel request received from " + sender.getName() + "");
 			requested.sendMessage(ChatColor.YELLOW + "Shift Right click the player and choose duel to accept");
-			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
+			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
 				if (pending.containsKey(sender.getUniqueId()))
 					pending.remove(sender.getUniqueId());
 				cooldown.remove(sender.getUniqueId());
-			} , 100l);// Remove Pending Request after 10 seconds.
+			} , 100L);// Remove Pending Request after 10 seconds.
 		} else {
 			sender.sendMessage(ChatColor.RED + "That player has duels toggled off!");
 		}
 	}
 
 	/**
-	 * @param uniqueId
+	 * @param uuid
 	 * @return UUID
 	 */
 	public static UUID getPendingPartner(UUID uuid) {
@@ -111,15 +110,11 @@ public class DuelingMechanics {
 	}
 
 	/**
-	 * @param uniqueId
+	 * @param uuid
 	 * @return boolean
 	 */
 	public static boolean isDueling(UUID uuid) {
-		for (DuelOffer offer : duels) {
-			return uuid.toString().equalsIgnoreCase(offer.player1.toString())
-			        || uuid.toString().equalsIgnoreCase(offer.player2.toString());
-		}
-		return false;
+		return !duels.isEmpty() && (uuid.equals(duels.get(0).player1) || uuid.equals(duels.get(0).player2));
 	}
 
 	/**
@@ -138,9 +133,11 @@ public class DuelingMechanics {
 	 * @param offer
 	 */
 	public static void removeOffer(DuelOffer offer) {
-		if(offer.timerID != -1)
-				Bukkit.getScheduler().cancelTask(offer.timerID);
+		if (offer.timerID != -1) {
+			Bukkit.getScheduler().cancelTask(offer.timerID);
+		}
 		duels.remove(offer);
+
 	}
 
 	/**
@@ -149,10 +146,7 @@ public class DuelingMechanics {
 	 * @return
 	 */
 	public static boolean isDuelPartner(UUID uniqueId, UUID uniqueId2) {
-		for(DuelOffer offer : duels){
-			boolean bool = offer.player1.toString().equalsIgnoreCase(uniqueId.toString()) || offer.player2.toString().equalsIgnoreCase(uniqueId.toString()) && offer.player1.toString().equalsIgnoreCase(uniqueId2.toString()) || offer.player2.toString().equalsIgnoreCase(uniqueId2.toString());
-			return bool;
-		}
-		return false;
+		return !duels.isEmpty() && (duels.get(0).player1.equals(uniqueId) || duels.get(0).player2.equals(uniqueId))
+				&& (duels.get(0).player1.equals(uniqueId2) || duels.get(0).player2.equals(uniqueId2));
 	}
 }

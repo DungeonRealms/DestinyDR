@@ -34,9 +34,7 @@ public class Utils {
 
         Random rand = new Random();
 
-        int randomNum = rand.nextInt((max - min) + 1) + min;
-
-        return randomNum;
+        return rand.nextInt((max - min) + 1) + min;
     }
 
     public static int getRandomFromTier(int tier, String lvlRange) {

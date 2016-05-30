@@ -5,7 +5,7 @@ package net.dungeonrealms.game.world.spar.sparworlds;
  */
 public interface SparWorld {
 
-    public String getName();
-    public int[] getLocations();
+    String getName();
+    int[] getLocations();
 
 }

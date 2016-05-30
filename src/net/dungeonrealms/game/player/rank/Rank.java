@@ -58,7 +58,8 @@ public class Rank implements GenericMechanic {
 
     @Override
     public void startInitialization() {
-        Database.ranks.find().forEach(printDocumentBlock, (aVoid, throwable) -> Utils.log.warning("[RANK] [ASYNC] Successfully grabbed all existing ranks!"));
+        Database.ranks.find().forEach(printDocumentBlock);
+        Utils.log.warning("[RANK] [ASYNC] Successfully grabbed all existing ranks!");
     }
 
     @Override
@@ -94,10 +95,9 @@ public class Rank implements GenericMechanic {
                                 .append("suffix", suffix)
                                 .append("permissions", new ArrayList<String>())
                 );
-        Database.ranks.insertOne(blankRankDocument, (aVoid, throwable) -> {
-            Utils.log.warning("Created a new Rank " + rankName);
-            startInitialization();
-        });
+        Database.ranks.insertOne(blankRankDocument);
+        Utils.log.warning("Created a new Rank " + rankName);
+        startInitialization();
         return true;
     }
 
@@ -109,11 +109,9 @@ public class Rank implements GenericMechanic {
      * @since 1.0
      */
     public void addPermission(String rank, String permission) {
-        Database.ranks.updateOne(Filters.eq("rank.name", rank.toUpperCase()), new Document(EnumOperators.$PUSH.getUO(), new Document("rank.permissions", permission)),
-                (result, t) -> {
-                    Utils.log.info("[ASYNC] DatabaseAPI update() called .. addPermission()... METHOD");
-                    startInitialization();
-                });
+        Database.ranks.updateOne(Filters.eq("rank.name", rank.toUpperCase()), new Document(EnumOperators.$PUSH.getUO(), new Document("rank.permissions", permission)));
+        Utils.log.info("[ASYNC] DatabaseAPI update() called .. addPermission()... METHOD");
+        startInitialization();
     }
 
     /**

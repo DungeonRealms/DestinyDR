@@ -113,11 +113,7 @@ public class Affair implements GenericMechanic {
     }
 
     public boolean areInSameParty(Player player1, Player player2) {
-        if (isInParty(player1) && isInParty(player2)) {
-            return (getParty(player1).get().getOwner().getName().equalsIgnoreCase(getParty(player2).get().getOwner().getName().toLowerCase()));
-        } else {
-            return false;
-        }
+        return isInParty(player1) && isInParty(player2) && (getParty(player1).get().getOwner().getName().equalsIgnoreCase(getParty(player2).get().getOwner().getName().toLowerCase()));
     }
 
     public int amountInParty(AffairO party) {

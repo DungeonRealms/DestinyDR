@@ -12,10 +12,7 @@ import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_8_R3.EntityMonster;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import org.bukkit.ChatColor;
-import org.bukkit.Effect;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftMonster;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -72,9 +69,7 @@ public class DamageAPI {
                 nmsTags[3] = CraftItemStack.asNMSCopy(attackerArmor[0]).getTag();
             }
         }
-        int weaponTier = tag.getInt("itemTier");
-        int damageRandomizer = ItemGenerator.getRandomDamageVariable(weaponTier);
-        damage = Utils.randInt((int) Math.round(tag.getDouble("damage") - (tag.getDouble("damage") / damageRandomizer)), (int) Math.round(tag.getDouble("damage") + (tag.getDouble("damage") / (damageRandomizer))));
+        damage = Utils.randInt(tag.getInt("damageMin"), tag.getInt("damageMax"));
         boolean isHitCrit = false;
         if (API.isPlayer(receiver)) {
             if (tag.getDouble("vsPlayers") != 0) {
@@ -199,8 +194,8 @@ public class DamageAPI {
             if (nmsTag == null) {
                 damage += 0;
             } else {
-                if (nmsTag.getDouble("damage") != 0) {
-                    damage += (damage * (nmsTag.getDouble("damage") / 100));
+                if (nmsTag.getDouble("dpsMin") != 0) {
+                    damage += (damage * (Utils.randInt((int) nmsTag.getDouble("dpsMin"), (int) nmsTag.getDouble("dpsMax")) / 100));
                 }
             }
         }
@@ -212,7 +207,7 @@ public class DamageAPI {
             Player player = (Player) attacker;
             if (API.getGamePlayer(player) != null) {
                 switch (new Attribute(((Player) attacker).getItemInHand()).getItemType()) {
-                    case POLE_ARM:
+                    case POLEARM:
                         damage += (damage * (API.getGamePlayer(player).getStats().getPolearmDMG()));
                         break;
                     case AXE:
@@ -237,8 +232,9 @@ public class DamageAPI {
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
                     attacker.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "                        *CRIT*");
                 }
+                ((Player) attacker).playSound(attacker.getLocation(), Sound.WOOD_CLICK, 1.5F, 0.5F);
             }
-            damage *= 1.5;
+            damage *= 2;
         }
         return Math.round(damage);
     }
@@ -276,9 +272,7 @@ public class DamageAPI {
                 nmsTags[3] = CraftItemStack.asNMSCopy(attackerArmor[0]).getTag();
             }
         }
-        int damageRandomizer = ItemGenerator.getRandomDamageVariable(projectile.getMetadata("itemTier").get(0).asInt());
-        damage = Utils.randInt(((int) Math.round(projectile.getMetadata("damage").get(0).asDouble() - projectile.getMetadata("damage").get(0).asDouble() / damageRandomizer)),
-                (int) Math.round(projectile.getMetadata("damage").get(0).asDouble() + projectile.getMetadata("damage").get(0).asDouble() / damageRandomizer));
+        damage = Utils.randInt((int) projectile.getMetadata("damageMin").get(0).asDouble(), (int) projectile.getMetadata("damageMax").get(0).asDouble());
 
         boolean isHitCrit = false;
         if (API.isPlayer(receiver)) {
@@ -366,8 +360,8 @@ public class DamageAPI {
             if (nmsTag == null) {
                 damage += 0;
             } else {
-                if (nmsTag.getDouble("damage") != 0) {
-                    damage += (damage * (nmsTag.getDouble("damage") / 100));
+                if (nmsTag.getDouble("damageMin") != 0) {
+                    damage += (damage * (Utils.randInt((int) nmsTag.getDouble("damageMin"), (int) nmsTag.getDouble("damageMax")) / 100));
                 }
             }
         }
@@ -395,8 +389,9 @@ public class DamageAPI {
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
                     attacker.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "                        *CRIT*");
                 }
+                ((Player) attacker).playSound(attacker.getLocation(), Sound.WOOD_CLICK, 1.5F, 0.5F);
             }
-            damage = damage * 1.5;
+            damage = damage * 2;
         }
         return Math.round(damage) + 1;
     }
@@ -409,8 +404,9 @@ public class DamageAPI {
      * @param defenderArmor
      * @since 1.0
      */
-    public static double calculateArmorReduction(Entity attacker, Entity defender, ItemStack[] defenderArmor, double attackingDamage) {
+    public static double[] calculateArmorReduction(Entity attacker, Entity defender, ItemStack[] defenderArmor, double attackingDamage) {
         double damageAfterArmor = attackingDamage;
+        int totalArmor = 0;
         boolean block = false, dodge = false;
         double totalArmorReduction;
         NBTTagCompound nmsTags[] = new NBTTagCompound[4];
@@ -550,10 +546,9 @@ public class DamageAPI {
                                 net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
                                 NBTTagCompound tag = nmsItem.getTag();
                                 if (tag != null) {
-                                    if (tag.getDouble("damage") != 0) {
-                                        int damageFromThorns = (int) ((tag.getDouble("damage") / 100) * (nmsTag.getInt("thorns") / 2));
-                                        HealthHandler.getInstance().healPlayerByAmount((Player) attacker, -damageFromThorns);
-                                    }
+                                    int damageFromThorns = (int) (attackingDamage * (nmsTag.getInt("thorns") / 2));
+                                    HealthHandler.getInstance().healPlayerByAmount((Player) attacker,
+                                            -damageFromThorns);
                                 }
                             }
                         }
@@ -571,7 +566,9 @@ public class DamageAPI {
                         damageAfterArmor -= nmsTag.getInt("fireResistance");
                     }
                 }
-                damageAfterArmor -= (damageAfterArmor / 100) * (nmsTag.getInt("armor"));
+                int armor = Utils.randInt(nmsTag.getInt("armorMin"), nmsTag.getInt("armorMax"));
+                totalArmor += armor;
+                damageAfterArmor -= (damageAfterArmor / 100) * armor;
             }
         }
         if (dodge) {
@@ -601,12 +598,12 @@ public class DamageAPI {
                 }
             }
         }
-        return Math.round(totalArmorReduction);
+        return new double[]{Math.round(totalArmorReduction), totalArmor};
     }
 
-    public static int calculatePlayerLuck(Player player) {
-        int playerLuck[] = new int[4];
-        int totalLuck;
+    public static int calculatePlayerStat(Player player, Item.ArmorAttributeType type) {
+        int statAmount[] = new int[4];
+        int totalStat;
         NBTTagCompound nmsTags[] = new NBTTagCompound[4];
         EntityEquipment playerEquipment = player.getEquipment();
         ItemStack[] playerArmor = playerEquipment.getArmorContents();
@@ -632,16 +629,16 @@ public class DamageAPI {
         }
         for (int i = 0; i < nmsTags.length; i++) {
             if (nmsTags[i] == null) {
-                playerLuck[i] += 0;
+                statAmount[i] += 0;
             } else {
-                if (nmsTags[i].getInt("luck") != 0) {
-                    playerLuck[i] = nmsTags[i].getInt("luck");
+                if (nmsTags[i].getInt(type.getNBTName()) != 0) {
+                    statAmount[i] = nmsTags[i].getInt(type.getNBTName());
                 }
             }
         }
-        totalLuck = playerLuck[0] + playerLuck[1] + playerLuck[2] + playerLuck[3];
+        totalStat = statAmount[0] + statAmount[1] + statAmount[2] + statAmount[3];
 
-        return Math.round(totalLuck);
+        return Math.round(totalStat);
     }
 
     public static void fireStaffProjectile(Player player, ItemStack itemStack, NBTTagCompound tag) {

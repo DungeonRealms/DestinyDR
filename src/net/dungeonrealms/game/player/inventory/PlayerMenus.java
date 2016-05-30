@@ -8,9 +8,9 @@ import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
-import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.Bukkit;
@@ -170,14 +170,14 @@ public class PlayerMenus {
         for (String pet : playerPets) {
             String petType;
             String particleType = "";
-            String petName = "";
+            String petName;
             if (pet.contains("-")) {
                 petType = pet.split("-")[0];
                 particleType = pet.split("-")[1];
-                petName = ParticleAPI.ParticleEffect.getChatColorByName(particleType) + particleType + " " + ChatColor.GREEN + petType.toUpperCase();
+                petName = ParticleAPI.ParticleEffect.getChatColorByName(particleType) + particleType + " " + ChatColor.GREEN + EnumPets.getByName(petType).getDisplayName();
             } else {
                 petType = pet;
-                petName = ChatColor.GREEN + petType.toUpperCase();
+                petName = ChatColor.GREEN + EnumPets.getByName(petType).getDisplayName();
             }
             ItemStack itemStack = new ItemStack(Material.MONSTER_EGG, 1, (short) EnumPets.getByName(petType).getEggShortData());
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
@@ -199,10 +199,13 @@ public class PlayerMenus {
 
         List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, uuid);
         int count = 0;
-        if(playerMounts.size() > 0)
-        for(String mount : playerMounts)
-        	if(!mount.equalsIgnoreCase("MULE"))
-        		count++;
+        if (playerMounts.size() > 0) {
+            for (String mount : playerMounts) {
+                if (!mount.equalsIgnoreCase("MULE")) {
+                    count++;
+                }
+            }
+        }
         if (count <= 0) {
             Inventory noMounts = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mounts!");
             player.openInventory(noMounts);
@@ -213,17 +216,37 @@ public class PlayerMenus {
         inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
         inv.setItem(26, editItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Dismiss Mount", new String[]{}));
 
-        for (String mountType : playerMounts) {
-        	if(mountType.equalsIgnoreCase(EnumMounts.MULE.getRawName()))
-        		continue;
-            ItemStack itemStack = EnumMounts.getByName(mountType).getSelectionItem();
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
-            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
-            tag.set("mountType", new NBTTagString(mountType));
-            nmsStack.setTag(tag);
-            inv.addItem(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), EnumMounts.getByName(mountType).getShortID(), ChatColor.GREEN + mountType.toUpperCase(), new String[]{
-            }));
+        ItemStack itemStack;
+        String mountType = null;
+
+        if (playerMounts.contains(EnumMounts.TIER3_HORSE.getRawName())) {
+            mountType = EnumMounts.TIER3_HORSE.getRawName();
+        } else if (playerMounts.contains(EnumMounts.TIER2_HORSE.getRawName())) {
+            mountType = EnumMounts.TIER2_HORSE.getRawName();
+        } else if (playerMounts.contains(EnumMounts.TIER1_HORSE.getRawName())) {
+            mountType = EnumMounts.TIER1_HORSE.getRawName();
         }
+
+        if (mountType == null) {
+            Inventory noMounts = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mounts!");
+            player.openInventory(noMounts);
+            return;
+        }
+
+        itemStack = EnumMounts.getByName(mountType).getSelectionItem();
+
+        if (itemStack == null) {
+            Inventory noMounts = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mounts!");
+            player.openInventory(noMounts);
+            return;
+        }
+
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set("mountType", new NBTTagString(mountType));
+        nmsStack.setTag(tag);
+        inv.addItem(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), EnumMounts.getByName(mountType).getShortID(), ChatColor.GREEN + EnumMounts.getByName(mountType).getDisplayName(), new String[]{
+        }));
 
         player.openInventory(inv);
     }
@@ -249,7 +272,35 @@ public class PlayerMenus {
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("playerTrailType", new NBTTagString(trailType));
             nmsStack.setTag(tag);
-            inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStack), ChatColor.GREEN + trailType.toUpperCase(), new String[]{
+            inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStack), ChatColor.GREEN + ParticleAPI.ParticleEffect.getByName(trailType).getDisplayName(), new String[]{
+            }));
+        }
+
+        player.openInventory(inv);
+    }
+
+    public static void openPlayerMountSkinMenu(Player player) {
+        UUID uuid = player.getUniqueId();
+
+        List<String> playerMountSkins = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNT_SKINS, uuid);
+
+        if (playerMountSkins == null || playerMountSkins.size() <= 0) {
+            Inventory noSkins = Bukkit.createInventory(null, 0, ChatColor.RED + "You have no Mount Skins!");
+            player.openInventory(noSkins);
+            return;
+        }
+
+        Inventory inv = Bukkit.createInventory(null, 27, "Mount Skin Selection");
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+        inv.setItem(26, editItem(new ItemStack(Material.ARMOR_STAND), ChatColor.GREEN + "Turn off Mount Skin", new String[]{}));
+
+        for (String skinType : playerMountSkins) {
+            ItemStack itemStack = EnumMountSkins.getByName(skinType).getSelectionItem();
+            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+            NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+            tag.set("skinType", new NBTTagString(skinType));
+            nmsStack.setTag(tag);
+            inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStack), ChatColor.GREEN + EnumMountSkins.getByName(skinType).getDisplayName(), new String[]{
             }));
         }
 
@@ -267,7 +318,7 @@ public class PlayerMenus {
                 "",
                 ChatColor.YELLOW + "Use: View Attributes."
         }));
-        inv.setItem(1, editItem("xFinityPro", ChatColor.GREEN + "Friend List", new String[]{
+        inv.setItem(1, editItem("Shrek", ChatColor.GREEN + "Friend List", new String[]{
                 ChatColor.DARK_GRAY + "Friends",
                 "",
                 ChatColor.GRAY + "Add and remove friends.",
@@ -282,7 +333,8 @@ public class PlayerMenus {
                 ChatColor.GRAY + "Stand out amongst the rest",
                 ChatColor.GRAY + "with a powerful trail.",
                 "",
-                ChatColor.YELLOW + "Use: View available trails."
+                ChatColor.YELLOW + "Use: View available trails.",
+                ChatColor.YELLOW + "Use: Middle Click - Receive trail item."
         }));
         inv.setItem(7, editItem(new ItemStack(Material.SADDLE), ChatColor.GREEN + "Mounts", new String[]{
                 ChatColor.DARK_GRAY + "Mounts",
@@ -290,7 +342,8 @@ public class PlayerMenus {
                 ChatColor.GRAY + "Get around quickly with",
                 ChatColor.GRAY + "your mount of choice.",
                 "",
-                ChatColor.YELLOW + "Use: View available mounts."
+                ChatColor.YELLOW + "Use: Left Click - View available mounts.",
+                ChatColor.YELLOW + "Use: Middle Click - Receive mount summoner."
         }));
         inv.setItem(8, editItem(new ItemStack(Material.NAME_TAG), ChatColor.GREEN + "Pets", new String[]{
                 ChatColor.DARK_GRAY + "Companions",
@@ -298,7 +351,8 @@ public class PlayerMenus {
                 ChatColor.GRAY + "Obtained through E-Cash Shop.",
                 ChatColor.GRAY + "Bring your favorite pet with you.",
                 "",
-                ChatColor.YELLOW + "Use: View available pets."
+                ChatColor.YELLOW + "Use: View available pets.",
+                ChatColor.YELLOW + "Use: Middle Click - Receive pet summoner."
         }));
         inv.setItem(16, editItem(new ItemStack(Material.CHEST), ChatColor.GREEN + "Storage Mule", new String[]{
                 ChatColor.DARK_GRAY + "Storage Companion",
@@ -307,20 +361,20 @@ public class PlayerMenus {
                 "",
                 ChatColor.YELLOW + "Use: Spawn Storage Mule."
         }));
+        inv.setItem(17, editItem(new ItemStack(Material.ARMOR_STAND), ChatColor.GREEN + "Mount Skins", new String[]{
+                ChatColor.DARK_GRAY + "Mount Skins",
+                "",
+                ChatColor.GRAY + "Obtained through E-Cash Shop.",
+                ChatColor.GRAY + "Equip your mount with a fancy skin.",
+                "",
+                ChatColor.YELLOW + "Use: View available mount skins."
+        }));
         inv.setItem(18, editItem(new ItemStack(Material.EMERALD), ChatColor.GREEN + "E-Cash Shop", new String[]{
                 ChatColor.DARK_GRAY + "Exclusive perks",
                 "",
                 ChatColor.GRAY + "Obtained by voting or donating.",
                 "",
                 ChatColor.YELLOW + "Use: Open the E-Cash Shop."
-        }));
-        inv.setItem(22, editItem(new ItemStack(Material.QUARTZ), ChatColor.GREEN + "Hearthstone", new String[]{
-                ChatColor.DARK_GRAY + "Home location",
-                "",
-                ChatColor.GRAY + "Use: Returns you to ",
-                ChatColor.YELLOW + TeleportAPI.getLocationFromDatabase(player.getUniqueId()),
-                "",
-                ChatColor.YELLOW + "Speak to an Innkeeper to change location."
         }));
         inv.setItem(26, editItem(new ItemStack(Material.REDSTONE_COMPARATOR), ChatColor.GREEN + "Options", new String[]{
                 ChatColor.DARK_GRAY + "Toggles",

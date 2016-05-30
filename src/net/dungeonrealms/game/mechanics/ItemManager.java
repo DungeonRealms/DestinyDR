@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.mechanics;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
@@ -322,14 +323,14 @@ public class ItemManager {
         }
     }
 
-    public static ItemStack createHealingFood(int tier, Item.ItemModifier modifier) {
+    public static ItemStack createHealingFood(int tier, Item.ItemRarity rarity) {
         ItemStack rawStack = null;
         String name = "";
         String description = "";
         int healAmount = 0;
         switch (tier) {
             case 1:
-                switch (modifier) {
+                switch (rarity) {
                     case COMMON:
                         name = ChatColor.WHITE + "Plowed Potato";
                         description = ChatColor.GRAY + "The staple crop of Andulucia.";
@@ -342,7 +343,7 @@ public class ItemManager {
                         healAmount = 16;
                         rawStack = new ItemStack(Material.BAKED_POTATO, 1);
                         break;
-                    case LEGENDARY:
+                    case UNIQUE:
                         name = ChatColor.WHITE + "Fresh Apple";
                         description = ChatColor.GRAY + "Fresh from the local Apple Tree.";
                         healAmount = 25;
@@ -351,7 +352,7 @@ public class ItemManager {
                 }
                 break;
             case 2:
-                switch (modifier) {
+                switch (rarity) {
                     case COMMON:
                         name = ChatColor.GREEN + "Uncooked Chicken";
                         description = ChatColor.GRAY + "This may or may not be safe to eat...";
@@ -364,7 +365,7 @@ public class ItemManager {
                         healAmount = 55;
                         rawStack = new ItemStack(Material.COOKED_CHICKEN, 1);
                         break;
-                    case LEGENDARY:
+                    case UNIQUE:
                         name = ChatColor.GREEN + "Pumpkin Pie";
                         description = ChatColor.GRAY + "The spookiest meal you'll ever eat.";
                         healAmount = 70;
@@ -373,7 +374,7 @@ public class ItemManager {
                 }
                 break;
             case 3:
-                switch (modifier) {
+                switch (rarity) {
                     case COMMON:
                         name = ChatColor.AQUA + "Salted Pork";
                         description = ChatColor.GRAY + "Bringing in the bacon.";
@@ -386,7 +387,7 @@ public class ItemManager {
                         healAmount = 150;
                         rawStack = new ItemStack(Material.GRILLED_PORK, 1);
                         break;
-                    case LEGENDARY:
+                    case UNIQUE:
                         name = ChatColor.AQUA + "Mushroom Soup";
                         description = ChatColor.GRAY + "I hope these are the correct mushrooms.";
                         healAmount = 190;
@@ -395,7 +396,7 @@ public class ItemManager {
                 }
                 break;
             case 4:
-                switch (modifier) {
+                switch (rarity) {
                     case COMMON:
                         name = ChatColor.LIGHT_PURPLE + "Frozen Steak";
                         description = ChatColor.GRAY + "Stop complaining. Your dog would love this.";
@@ -408,7 +409,7 @@ public class ItemManager {
                         healAmount = 400;
                         rawStack = new ItemStack(Material.COOKED_BEEF, 1);
                         break;
-                    case LEGENDARY:
+                    case UNIQUE:
                         name = ChatColor.LIGHT_PURPLE + "Grilled Rabbit";
                         description = ChatColor.GRAY + "Aww, look at the cute little bunny.";
                         healAmount = 500;
@@ -417,7 +418,7 @@ public class ItemManager {
                 }
                 break;
             case 5:
-                switch (modifier) {
+                switch (rarity) {
                     case COMMON:
                         name = ChatColor.YELLOW + "King's Apple";
                         description = ChatColor.GRAY + "A meal fit for a King.";
@@ -430,7 +431,7 @@ public class ItemManager {
                         healAmount = 1000;
                         rawStack = new ItemStack(Material.GOLDEN_APPLE, 1, (short) 1);
                         break;
-                    case LEGENDARY:
+                    case UNIQUE:
                         name = ChatColor.YELLOW + "Golden Carrot";
                         description = ChatColor.GRAY + "Now this is just a waste of useful gold ore.";
                         healAmount = 1350;
@@ -446,14 +447,14 @@ public class ItemManager {
             itemLore.add(ChatColor.RED + "+" + ChatColor.BOLD + healAmount + "HP/s" + ChatColor.RED + " for " + ChatColor.BOLD + "15 " + ChatColor.RED + "Seconds.");
             itemLore.add(ChatColor.RED.toString() + ChatColor.BOLD + "Sprinting will cancel the effect!");
             itemLore.add(description);
-            itemLore.add(modifier.getName());
+            itemLore.add(rarity.getName());
             meta.setLore(itemLore);
             rawStack.setItemMeta(meta);
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("type", new NBTTagString("healingFood"));
             tag.setInt("itemTier", tier);
-            tag.set("itemModifier", new NBTTagInt(modifier.getId()));
+            tag.set("itemRarity", new NBTTagInt(rarity.getId()));
             tag.setInt("healAmount", healAmount);
             tag.set("AttributeModifiers", new NBTTagList());
             nmsStack.setTag(tag);
@@ -648,17 +649,17 @@ public class ItemManager {
         ItemStack stack = createItem(Material.WRITTEN_BOOK, ChatColor.GREEN.toString() + ChatColor.BOLD + "Character Journal", new String[]{ChatColor.GREEN + "Left Click: " + ChatColor.GRAY + "Invite to Party", ChatColor.GREEN + "Sneak-Left Click: " + ChatColor.GRAY + "Setup Shop"});
         BookMeta bm = (BookMeta) stack.getItemMeta();
         List<String> pages = new ArrayList<>();
-        String page1_string = "";
-        String page2_string = "";
-        String page3_string = "";
-        String page4_string = "";
+        String page1_string;
+        String page2_string;
+        String page3_string;
+        String page4_string;
         String new_line = "\n" + ChatColor.WHITE.toString() + "`" + "\n";
         GamePlayer gp = API.getGamePlayer(p);
         String pretty_align = ChatColor.DARK_GREEN + ChatColor.UNDERLINE.toString() + gp.getPlayerAlignment().name();
         DecimalFormat df = new DecimalFormat("#.##");
         PlayerStats stats = gp.getStats();
 
-        if(pretty_align.contains("CHAOTIC")){
+        if (pretty_align.contains("CHAOTIC")) {
         String time  = String.valueOf(KarmaHandler.getInstance().getAlignmentTime(p));
 		page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character" + "\n" 
                 + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + "\n" +  ChatColor.RED.toString() + ChatColor.BOLD  + time + "s.." + new_line
@@ -668,8 +669,9 @@ public class ItemManager {
                 + "   " + (HealthHandler.getInstance().getPlayerHPRegenLive(p)) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n" + ChatColor.BLACK.toString()
                 + "   " + EnergyHandler.getInstance().getPlayerEnergyPercentage(p.getUniqueId()) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString()
                 + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString() 
-                + "   " + gp.getPlayerLuck() + ChatColor.BOLD.toString() + " LUCK";
-        }else{
+                + "   " + gp.getPlayerGemFind() + ChatColor.BOLD.toString() + " GEM FIND" + "\n" + ChatColor.BLACK.toString()
+                + "   " + gp.getPlayerItemFind() + ChatColor.BOLD.toString() + " ITEM FIND";
+        } else {
             page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character" + "\n" + new_line
                     + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + new_line
                     + ChatColor.BLACK.toString() + gp.getPlayerAlignment().description + new_line + ChatColor.BLACK.toString() + "   " + gp.getPlayerCurrentHP()
@@ -677,8 +679,9 @@ public class ItemManager {
                     + "   " + Math.round(gp.getStats().getDPS()) + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
                     + "   " + (HealthHandler.getInstance().getPlayerHPRegenLive(p) + gp.getStats().getHPRegen()) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n" + ChatColor.BLACK.toString()
                     + "   " + EnergyHandler.getInstance().getPlayerEnergyPercentage(p.getUniqueId()) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString()
-                    + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString() 
-                    + "   " + gp.getPlayerLuck() + ChatColor.BOLD.toString() + " LUCK";
+                    + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString()
+                    + "   " + gp.getPlayerGemFind() + ChatColor.BOLD.toString() + " GEM FIND" + "\n" + ChatColor.BLACK.toString()
+                    + "   " + gp.getPlayerItemFind() + ChatColor.BOLD.toString() + " ITEM FIND";
         }
         page2_string = ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + "  ** LEVEL/EXP **\n\n" + ChatColor.BLACK + ChatColor.BOLD
                 + "       LEVEL\n" + "          " + ChatColor.BLACK + gp.getLevel() + "\n\n" + ChatColor.BLACK + ChatColor.BOLD
@@ -763,6 +766,59 @@ public class ItemManager {
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
         tag.set("usage", new NBTTagString("profile"));
+        nmsStack.setTag(tag);
+        return CraftItemStack.asBukkitCopy(nmsStack);
+    }
+
+    public static ItemStack getPlayerHearthstone(Player player) {
+        ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.QUARTZ), ChatColor.GREEN + "Hearthstone", new String[]{
+                ChatColor.DARK_GRAY + "Home location",
+                "",
+                ChatColor.GRAY + "Use: Returns you to ",
+                ChatColor.YELLOW + TeleportAPI.getLocationFromDatabase(player.getUniqueId()),
+                "",
+                ChatColor.YELLOW + "Speak to an Innkeeper to change location."
+        });
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set("type", new NBTTagString("important"));
+        tag.set("usage", new NBTTagString("hearthstone"));
+        nmsStack.setTag(tag);
+        return CraftItemStack.asBukkitCopy(nmsStack);
+    }
+
+    public static ItemStack getPlayerMountItem() {
+        ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.SADDLE), ChatColor.GREEN + "Mount", new String[]{
+                ChatColor.DARK_GRAY + "Summons your active Mount.",
+        });
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set("type", new NBTTagString("important"));
+        tag.set("usage", new NBTTagString("mount"));
+        nmsStack.setTag(tag);
+        return CraftItemStack.asBukkitCopy(nmsStack);
+    }
+
+    public static ItemStack getPlayerPetItem() {
+        ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.NAME_TAG), ChatColor.GREEN + "Pet", new String[]{
+                ChatColor.DARK_GRAY + "Summons your active Pet.",
+        });
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set("type", new NBTTagString("important"));
+        tag.set("usage", new NBTTagString("pet"));
+        nmsStack.setTag(tag);
+        return CraftItemStack.asBukkitCopy(nmsStack);
+    }
+
+    public static ItemStack getPlayerTrailItem() {
+        ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.EYE_OF_ENDER), ChatColor.GREEN + "Trail", new String[]{
+                ChatColor.DARK_GRAY + "Equips your active Trail.",
+        });
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set("type", new NBTTagString("important"));
+        tag.set("usage", new NBTTagString("trail"));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }

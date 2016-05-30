@@ -5,10 +5,10 @@ package net.dungeonrealms.game.mechanics.generic;
  */
 public interface GenericMechanic {
 
-    public EnumPriority startPriority();
+    EnumPriority startPriority();
 
-    public void startInitialization();
+    void startInitialization();
 
-    public void stopInvocation();
+    void stopInvocation();
 
 }

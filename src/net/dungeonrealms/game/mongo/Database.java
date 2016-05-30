@@ -1,13 +1,9 @@
 package net.dungeonrealms.game.mongo;
 
-import org.bson.Document;
-
-import com.mongodb.async.client.MongoClient;
-import com.mongodb.async.client.MongoClients;
-import com.mongodb.async.client.MongoCollection;
-import com.mongodb.async.client.MongoDatabase;
-
+import com.mongodb.MongoClient;
+import com.mongodb.MongoClientURI;
 import net.dungeonrealms.game.mastery.Utils;
+import org.bson.Document;
 
 /**
  * Created by Nick on 8/29/2015.
@@ -23,15 +19,18 @@ public class Database {
         return instance;
     }
 
-    public static MongoClient mongoClient = null;
-    public static MongoDatabase database = null;
-    public static MongoCollection<Document> collection = null;
-    public static MongoCollection<Document> ranks = null;
-    public static MongoCollection<Document> guilds = null;
+    public static com.mongodb.MongoClient mongoClient = null;
+    public static MongoClientURI mongoClientURI = null;
+    public static com.mongodb.client.MongoDatabase database = null;
+    public static com.mongodb.client.MongoCollection<Document> collection = null;
+    public static com.mongodb.client.MongoCollection<Document> ranks = null;
+    public static com.mongodb.client.MongoCollection<Document> guilds = null;
 
     public void startInitialization() {
         Utils.log.info("DungeonRealms Starting [MONGODB] Connection...");
-        mongoClient = MongoClients.create("mongodb://dungeonrealms:hN5tPQ4K5fVJryEQ@167.114.118.135:27017/dungeonrealms");
+        mongoClientURI = new MongoClientURI("mongodb://104.236.116.27:27017/dungeonrealms");
+        mongoClient = new MongoClient(mongoClientURI);
+        //mongoClient = MongoClients.create("mongodb://104.236.116.27:27017/dungeonrealms");
         database = mongoClient.getDatabase("dungeonrealms");
         collection = database.getCollection("player_data");
         guilds = database.getCollection("guilds");

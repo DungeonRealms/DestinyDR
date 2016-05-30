@@ -336,7 +336,6 @@ public class Mining implements GenericMechanic {
 						count++;
 					} catch (NullPointerException npe) {
 						npe.printStackTrace();
-						continue;
 					}
 				}
 			}

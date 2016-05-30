@@ -1,9 +1,7 @@
 package net.dungeonrealms.game.world.entities.types.monsters.boss;
 
 import java.lang.reflect.Field;
-import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -18,18 +16,13 @@ import org.bukkit.metadata.FixedMetadataValue;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.BasicEntitySkeleton;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
-import net.dungeonrealms.game.handlers.HealthHandler;
-import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.items.Item.ItemTier;
-import net.dungeonrealms.game.world.items.ItemGenerator;
-import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorModifier;
-import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.dungeonrealms.game.world.teleportation.Teleportation;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_8_R3.EntityHuman;
 import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
@@ -88,22 +81,21 @@ public class Burick extends BasicEntitySkeleton implements Boss {
 
 	@Override
 	public void setArmor(int tier) {
-		ItemStack[] armor = getArmor();
 		// weapon, boots, legs, chest, helmet/head
 		ItemStack weapon = getWeapon();
 		// weapon.addEnchantment(Enchantment.DAMAGE_ALL, 1);
 		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-		this.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
-		this.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
-		this.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
-		this.setEquipment(4, getHead());
+		this.setEquipment(1, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("up_boots")));
+		this.setEquipment(2, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("up_leggings")));
+		this.setEquipment(3, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("up_chest")));
+		this.setEquipment(4, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("up_helmet")));
 	}
 
 	/**
 	 * @return
 	 */
 	private ItemStack getWeapon() {
-		return new ItemGenerator().next(Item.ItemType.AXE, ItemTier.TIER_3);
+	    return ItemGenerator.getNamedItem("up_axe");
 	}
 
 	@Override
@@ -113,10 +105,6 @@ public class Burick extends BasicEntitySkeleton implements Boss {
 		meta.setOwner("Steve");
 		head.setItemMeta(meta);
 		return CraftItemStack.asNMSCopy(head);
-	}
-
-	private ItemStack[] getArmor() {
-		return new ArmorGenerator().nextArmor(getEnumBoss().tier, ArmorModifier.LEGENDARY);
 	}
 
 	@Override

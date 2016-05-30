@@ -171,7 +171,7 @@ public class CommandGuild extends BasicCommand {
                                                     add(guildName);
                                                 }});
                                                 Guild.getInstance().sendAlert(guildName, ChatColor.RED + player.getName() + " has invited " + args[1] + " " + "to the guild!");
-                                                Bukkit.getPlayer(args[1]).sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "GUILD INVITATION" + ChatColor.RED + " ➜ " + ChatColor.GOLD + guildName + " " + ChatColor.GRAY + "Type /guild accept " + guildName);
+                                                Bukkit.getPlayer(args[1]).sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "GUILD INVITATION" + ChatColor.RED + " >> " + ChatColor.GOLD + guildName + " " + ChatColor.GRAY + "Type /guild accept " + guildName);
                                                 //Bukkit.getPlayer(args[1]).sendMessage(ChatColor.GREEN + "You have been invited to: " + ChatColor.GOLD + guildName + " " + ChatColor.GREEN + "type /guild accept " + guildName + " to accept!");
                                             } else {
                                                 if (!Guild.invitations.get(player.getUniqueId()).contains(guildName)) {
@@ -256,9 +256,7 @@ public class CommandGuild extends BasicCommand {
                         Guild.getInstance().doesClanTagExist(args[2], clanTag -> {
                             if (!clanTag) {
                                 player.sendMessage(ChatColor.GREEN + "That clanTag is available!");
-                                Guild.getInstance().createGuild(args[1], args[2], player.getUniqueId(), creation -> {
-                                    player.sendMessage(creation ? ChatColor.GREEN + "Your guild has been created!" : ChatColor.RED + "AN ERROR occurred");
-                                });
+                                Guild.getInstance().createGuild(args[1], args[2], player.getUniqueId(), creation -> player.sendMessage(creation ? ChatColor.GREEN + "Your guild has been created!" : ChatColor.RED + "AN ERROR occurred"));
                             } else {
                                 player.sendMessage(ChatColor.RED + "That clanTag is already taken!");
                             }

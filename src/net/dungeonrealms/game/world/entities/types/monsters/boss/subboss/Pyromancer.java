@@ -18,12 +18,11 @@ import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
-import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.Monster;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
-import net.dungeonrealms.game.world.items.ItemGenerator;
-import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
+import net.dungeonrealms.game.world.items.Item.ItemTier;
+import net.dungeonrealms.game.world.items.Item.ItemType;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_8_R3.EntitySkeleton;
 import net.minecraft.server.v1_8_R3.World;
 
@@ -51,22 +50,22 @@ public class Pyromancer extends EntitySkeleton implements Boss{
 	}
 
 	protected void setArmor(int tier) {
-		ItemStack[] armor = getArmor();
+		ItemStack[] armor = API.getTierArmor(tier);
 		// weapon, boots, legs, chest, helmet/head
 		ItemStack weapon = getWeapon();
 		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
 		this.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
 		this.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
 		this.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
-		this.setEquipment(4, getHead());
+		this.setEquipment(4, CraftItemStack.asNMSCopy(armor[3]));
 	}
 
 	/**
 	 * @return
 	 */
 	private ItemStack getWeapon() {
-		return new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.STAFF,
-		        net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(1));
+        return new ItemGenerator().setType(ItemType.STAFF).setTier(ItemTier.TIER_1).setRarity(API.getItemRarity())
+                .generateItem().getItem();
 	}
 
 	/**
@@ -86,10 +85,6 @@ public class Pyromancer extends EntitySkeleton implements Boss{
 		meta.setOwner("Steve");
 		head.setItemMeta(meta);
 		return CraftItemStack.asNMSCopy(head);
-	}
-
-	private ItemStack[] getArmor() {
-		return new ArmorGenerator().nextTier(getEnumBoss().tier);
 	}
 
 	@Override

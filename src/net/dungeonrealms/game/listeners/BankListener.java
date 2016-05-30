@@ -1,14 +1,12 @@
 package net.dungeonrealms.game.listeners;
 
-import com.minebone.anvilapi.core.AnvilApi;
-import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
-import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.banks.Storage;
+import net.dungeonrealms.game.player.chat.Chat;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -26,16 +24,16 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.UUID;
 
 /**
  * Created by Chase, by fixed by Proxying and under inspection of xFinityPro.
  */
 public class BankListener implements Listener {
-	
-	public ArrayList<UUID> prompted = new ArrayList<>();
-	
+
+    public ArrayList<UUID> prompted = new ArrayList<>();
+
     /**
      * Bank Inventory. When a player moves items
      *
@@ -76,92 +74,65 @@ public class BankListener implements Listener {
                         e.setCancelled(true);
                         if (e.getCursor() != null) {
                             if (e.getClick() == ClickType.LEFT) {
-                                AnvilGUIInterface gui = AnvilApi.createNewGUI(player, event -> {
-                                    if (event.getSlot() == AnvilSlot.OUTPUT) {
-                                        int number = 0;
-                                        try {
-                                            number = Integer.parseInt(event.getName());
-                                        } catch (Exception exc) {
-                                            event.setWillClose(true);
-                                            event.setWillDestroy(true);
-                                            Bukkit.getPlayer(event.getPlayerName()).sendMessage("Please enter a valid number");
-                                            return;
-                                        }
-                                        event.setWillClose(true);
-                                        event.setWillDestroy(true);
-                                        int currentGems = getPlayerGems(player.getUniqueId());
-                                        if (number < 0) {
-                                            player.getPlayer().sendMessage("You can't ask for negative money!");
-                                        } else if (number > currentGems) {
-                                            player.getPlayer().sendMessage("You only have " + currentGems);
-                                        } else {
-                                            ItemStack stack = BankMechanics.gem.clone();
-                                            if (hasSpaceInInventory(player.getUniqueId(), number)) {
-                                                Player p = player.getPlayer();
-                                                DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(),
-                                                        EnumOperators.$INC, EnumData.GEMS, -number, true);
-                                                while (number > 0) {
-                                                    while (number > 64) {
-                                                        ItemStack item = stack.clone();
-                                                        item.setAmount(64);
-                                                        p.getInventory().setItem(p.getInventory().firstEmpty(), item);
-                                                        number -= 64;
-                                                    }
-                                                    ItemStack item = stack.clone();
-                                                    item.setAmount(number);
-                                                    p.getInventory().setItem(p.getInventory().firstEmpty(), item);
-                                                    number = 0;
-                                                }
-                                                player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
-                                            }
-                                        }
-
+                                player.sendMessage(ChatColor.RED + "Please enter the amount of money to withdraw:");
+                                Chat.listenForMessage(player, event -> {
+                                    int number = 0;
+                                    try {
+                                        number = Integer.parseInt(event.getMessage());
+                                    } catch (Exception exc) {
+                                        event.getPlayer().sendMessage("Please enter a valid number");
+                                        return;
                                     }
-                                });
-                                ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
-                                ItemMeta meta = stack.getItemMeta();
-                                meta.setDisplayName("?");
-                                stack.setItemMeta(meta);
-                                gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
-                                player.closeInventory();
-                                gui.open();
-                            } else if (e.getClick() == ClickType.RIGHT) {
-                                AnvilGUIInterface gui = AnvilApi.createNewGUI(player, event -> {
-                                    if (event.getSlot() == AnvilSlot.OUTPUT) {
-                                        int number = 0;
-                                        try {
-                                            number = Integer.parseInt(event.getName());
-                                        } catch (Exception exc) {
-                                            event.setWillClose(true);
-                                            event.setWillDestroy(true);
-                                            Bukkit.getPlayer(event.getPlayerName()).sendMessage("Please enter a valid number");
-                                            return;
-                                        }
-                                        event.setWillClose(true);
-                                        event.setWillDestroy(true);
-                                        int currentGems = getPlayerGems(player.getUniqueId());
-                                        if (number < 0) {
-                                            player.getPlayer().sendMessage("You can't ask for negative money!");
-                                        } else if (number > currentGems) {
-                                            player.getPlayer().sendMessage("You only have " + currentGems);
-                                        } else {
+                                    int currentGems = getPlayerGems(player.getUniqueId());
+                                    if (number < 0) {
+                                        player.getPlayer().sendMessage("You can't ask for negative money!");
+                                    } else if (number > currentGems) {
+                                        player.getPlayer().sendMessage("You only have " + currentGems);
+                                    } else {
+                                        ItemStack stack = BankMechanics.gem.clone();
+                                        if (hasSpaceInInventory(player.getUniqueId(), number)) {
                                             Player p = player.getPlayer();
-                                            p.getInventory().addItem(BankMechanics.createBankNote(number));
                                             DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(),
                                                     EnumOperators.$INC, EnumData.GEMS, -number, true);
+                                            while (number > 0) {
+                                                while (number > 64) {
+                                                    ItemStack item = stack.clone();
+                                                    item.setAmount(64);
+                                                    p.getInventory().setItem(p.getInventory().firstEmpty(), item);
+                                                    number -= 64;
+                                                }
+                                                ItemStack item = stack.clone();
+                                                item.setAmount(number);
+                                                p.getInventory().setItem(p.getInventory().firstEmpty(), item);
+                                                number = 0;
+                                            }
                                             player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
-
                                         }
-
                                     }
-                                });
-                                ItemStack stack = new ItemStack(Material.NAME_TAG, 1);
-                                ItemMeta meta = stack.getItemMeta();
-                                meta.setDisplayName("?");
-                                stack.setItemMeta(meta);
-                                gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
-                                player.closeInventory();
-                                gui.open();
+                                }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
+                            } else if (e.getClick() == ClickType.RIGHT) {
+                                player.sendMessage(ChatColor.RED + "Please enter the amount of money to withdraw:");
+                                Chat.listenForMessage(player, event -> {
+                                    int number = 0;
+                                    try {
+                                        number = Integer.parseInt(event.getMessage());
+                                    } catch (Exception exc) {
+                                        event.getPlayer().sendMessage("Please enter a valid number");
+                                        return;
+                                    }
+                                    int currentGems = getPlayerGems(player.getUniqueId());
+                                    if (number < 0) {
+                                        player.getPlayer().sendMessage("You can't ask for negative money!");
+                                    } else if (number > currentGems) {
+                                        player.getPlayer().sendMessage("You only have " + currentGems);
+                                    } else {
+                                        Player p = player.getPlayer();
+                                        p.getInventory().addItem(BankMechanics.createBankNote(number));
+                                        DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(),
+                                                EnumOperators.$INC, EnumData.GEMS, -number, true);
+                                        player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
+                                    }
+                                }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
                             }
 
                         }
@@ -174,32 +145,32 @@ public class BankListener implements Listener {
                             if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                                 int size = 0;
                                 if (e.isLeftClick()) {
-                                	if(e.getCursor().getType() == Material.INK_SACK){
-                                		int type = nms.getTag().getInt("tier");
-                                		size = nms.getTag().getInt("worth");
-                                    	e.setCursor(null);
-                                    	e.setCurrentItem(null);
-                                		e.getWhoClicked().getInventory().addItem(BankMechanics.getInstance().createGemPouch(type, 0));
-                                	}else if (e.getCursor().getType() == Material.EMERALD){
-                                    	size = e.getCursor().getAmount();
-                                    	e.setCursor(null);
-                                    	e.setCurrentItem(null);
-                                    }else if (e.getCursor().getType() == Material.PAPER){
+                                    if (e.getCursor().getType() == Material.INK_SACK) {
+                                        int type = nms.getTag().getInt("tier");
+                                        size = nms.getTag().getInt("worth");
+                                        e.setCursor(null);
+                                        e.setCurrentItem(null);
+                                        e.getWhoClicked().getInventory().addItem(BankMechanics.getInstance().createGemPouch(type, 0));
+                                    } else if (e.getCursor().getType() == Material.EMERALD) {
+                                        size = e.getCursor().getAmount();
+                                        e.setCursor(null);
+                                        e.setCurrentItem(null);
+                                    } else if (e.getCursor().getType() == Material.PAPER) {
                                         size = e.getCursor().getAmount() * nms.getTag().getInt("worth");
-                                    	e.setCursor(null);
-                                    	e.setCurrentItem(null);
+                                        e.setCursor(null);
+                                        e.setCurrentItem(null);
                                     }
                                 } else if (e.isRightClick()) {
-                                    
+
                                     if (e.getCursor().getType() == Material.EMERALD)
                                         size = 1;
                                     else
                                         size = nms.getTag().getInt("worth");
-                                    
-                                    if(e.getCursor().getAmount() > 1){
+
+                                    if (e.getCursor().getAmount() > 1) {
                                         e.getCursor().setAmount(e.getCursor().getAmount() - 1);
-                                    }else{
-                                    	e.setCursor(null);
+                                    } else {
+                                        e.setCursor(null);
                                     }
                                 }
                                 int newBalance = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, player.getUniqueId()) + size;
@@ -220,7 +191,7 @@ public class BankListener implements Listener {
                                 player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
                             }
                         }
-                    } else if(e.getRawSlot() == 0){
+                    } else if (e.getRawSlot() == 0) {
                         e.setCancelled(true);
                         Storage storage = BankMechanics.getInstance().getStorage(player.getUniqueId());
                         if (e.isLeftClick()) {
@@ -228,57 +199,59 @@ public class BankListener implements Listener {
                             player.openInventory(storage.inv);
                         } else if (e.isRightClick()) {
                             Inventory inv = Bukkit.createInventory(null, 9, "Upgrade your storage?");
-                        	int invLvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
-                			int num = BankMechanics.getPrice(invLvl);
+                            int invLvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
+                            int num = BankMechanics.getPrice(invLvl);
                             ItemStack accept = new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData());
                             ItemMeta acceptMeta = accept.getItemMeta();
                             acceptMeta.setDisplayName(ChatColor.GREEN.toString() + ChatColor.BOLD + "ACCEPT");
-                            acceptMeta.setLore(Arrays.asList(ChatColor.GRAY + "Upgrade storage: " + ChatColor.GREEN.toString() + num +"g"));
+                            acceptMeta.setLore(Collections.singletonList(ChatColor.GRAY + "Upgrade storage: " + ChatColor.GREEN.toString() + num + "g"));
                             accept.setItemMeta(acceptMeta);
-                            
-                            
+
+
                             ItemStack deny = new ItemStack(Material.WOOL, 1, DyeColor.RED.getData());
                             ItemMeta denyMeta = deny.getItemMeta();
                             denyMeta.setDisplayName(ChatColor.RED.toString() + ChatColor.BOLD + "DENY");
-                            denyMeta.setLore(Arrays.asList(ChatColor.GRAY + "Cancel upgrade"));
+                            denyMeta.setLore(Collections.singletonList(ChatColor.GRAY + "Cancel upgrade"));
                             deny.setItemMeta(denyMeta);
-                            
+
                             inv.setItem(3, accept);
                             inv.setItem(5, deny);
                             player.openInventory(inv);
 
                             // Upgrade Storage
                         }
-                    }else if(e.getRawSlot() == 4 && e.getInventory().getItem(4) != null && e.getInventory().getItem(4).getType() == Material.CHEST){
-                    	//Collection Bin
-                    	e.setCancelled(true);
+                    } else if (e.getRawSlot() == 4 && e.getInventory().getItem(4) != null && e.getInventory().getItem(4).getType() == Material.CHEST) {
+                        //Collection Bin
+                        e.setCancelled(true);
                         Storage storage = BankMechanics.getInstance().getStorage(player.getUniqueId());
-                    	if(storage.collection_bin != null){
-                    		player.openInventory(storage.collection_bin);
-                    		e.setCancelled(true);
-                    		return;
-                    	}else{
-                    		player.sendMessage(ChatColor.RED + "Collection Bin is empty.");
-                    	}
+                        if (storage.collection_bin != null) {
+                            player.openInventory(storage.collection_bin);
+                            e.setCancelled(true);
+                        } else {
+                            player.sendMessage(ChatColor.RED + "Collection Bin is empty.");
+                        }
                     }
                 } else {
                     if (e.isShiftClick()) {
-                    	if(e.getCurrentItem().getType() != Material.EMERALD && e.getCurrentItem().getType() != Material.PAPER && e.getCurrentItem().getType() != Material.INK_SACK){ e.setCancelled(true); return;}
-                    	
+                        if (e.getCurrentItem().getType() != Material.EMERALD && e.getCurrentItem().getType() != Material.PAPER && e.getCurrentItem().getType() != Material.INK_SACK) {
+                            e.setCancelled(true);
+                            return;
+                        }
+
                         nms = CraftItemStack.asNMSCopy(e.getCurrentItem());
-                        if(!nms.hasTag())
-                        	return;
+                        if (!nms.hasTag())
+                            return;
                         int size = 0;
-                        if (e.getCurrentItem().getType() == Material.EMERALD){
+                        if (e.getCurrentItem().getType() == Material.EMERALD) {
                             size = e.getCurrentItem().getAmount();
                             e.setCurrentItem(null);
-                        }else if (e.getCurrentItem().getType() == Material.PAPER) {
+                        } else if (e.getCurrentItem().getType() == Material.PAPER) {
                             size = e.getCurrentItem().getAmount() * nms.getTag().getInt("worth");
                             e.setCurrentItem(null);
-                        }else if(e.getCurrentItem().getType() == Material.INK_SACK){
-                        	int tier = nms.getTag().getInt("tier");
+                        } else if (e.getCurrentItem().getType() == Material.INK_SACK) {
+                            int tier = nms.getTag().getInt("tier");
                             size = nms.getTag().getInt("worth");
-                        	e.setCurrentItem(BankMechanics.getInstance().createGemPouch(tier, 0));
+                            e.setCurrentItem(BankMechanics.getInstance().createGemPouch(tier, 0));
                         }
                         if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                             e.setCancelled(true);
@@ -308,7 +281,7 @@ public class BankListener implements Listener {
                 ItemStack current = e.getCurrentItem();
                 if (current != null) {
                     if (current.getType() == Material.STAINED_GLASS_PANE) {
-                        int number = getAmmount(e.getRawSlot());
+                        int number = getAmount(e.getRawSlot());
                         int currentWith = CraftItemStack.asNMSCopy(e.getInventory().getItem(4)).getTag().getInt("withdraw");
                         int finalNum = 0;
                         finalNum = currentWith + number;
@@ -369,7 +342,7 @@ public class BankListener implements Listener {
                 ItemStack current = e.getCurrentItem();
                 if (current != null) {
                     if (current.getType() == Material.STAINED_GLASS_PANE) {
-                        int number = getAmmount(e.getRawSlot());
+                        int number = getAmount(e.getRawSlot());
                         int currentWith = CraftItemStack.asNMSCopy(e.getInventory().getItem(4)).getTag().getInt("withdraw");
                         int finalNum = 0;
                         finalNum = currentWith + number;
@@ -416,43 +389,39 @@ public class BankListener implements Listener {
                     }
                 }
             }
-        }else if(e.getInventory().getTitle().contains("Upgrade your storage?")){
-        	e.setCancelled(true);
-        	int invLvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
-			int num = BankMechanics.getPrice(invLvl);
-			//TODO PRICE OF UPGRADE ^ 
-        	int slot = e.getRawSlot();
-        	if(slot ==3){
-            	boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(num, player);
-        		if(tookGems){
-        			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->{
-        			DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invLvl + 1,
-    				        true);
-        			player.sendMessage(ChatColor.GREEN.toString() + "Storage updated!");
-        			player.closeInventory();
-        			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->BankMechanics.getInstance().getStorage(player.getUniqueId()).update(), 20l);
-        			});
-        		}else{
-        			player.closeInventory();
-        			player.sendMessage(ChatColor.RED.toString() + "Not enough Gems in your inventory!");
-        		}
-        	}
-        }else if(e.getInventory().getTitle().equalsIgnoreCase("Collection Bin")){
-            Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
-            if(e.isShiftClick()){
-            	e.setCancelled(true);
-            	return;
+        } else if (e.getInventory().getTitle().contains("Upgrade your storage?")) {
+            e.setCancelled(true);
+            int invLvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
+            int num = BankMechanics.getPrice(invLvl);
+            //TODO PRICE OF UPGRADE ^
+            int slot = e.getRawSlot();
+            if (slot == 3) {
+                boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(num, player);
+                if (tookGems) {
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invLvl + 1, true);
+                    player.sendMessage(ChatColor.GREEN.toString() + "Storage updated!");
+                    player.closeInventory();
+                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> BankMechanics.getInstance().getStorage(player.getUniqueId()).update(), 20L);
+                } else {
+                    player.closeInventory();
+                    player.sendMessage(ChatColor.RED.toString() + "Not enough Gems in your inventory!");
+                }
             }
-        	e.setCancelled(true);
-            if(e.getRawSlot() > e.getInventory().getSize()){
-            	e.setCancelled(true);
-            	return;
-            }else if(e.getCurrentItem() != null && e.getCurrentItem().getType() != Material.AIR){
-            	ItemStack stack = e.getCurrentItem();
-            	if(e.getWhoClicked().getInventory().firstEmpty() >= 0){
-            		e.setCurrentItem(new ItemStack(Material.AIR));
-            		e.getWhoClicked().getInventory().addItem(stack);
-            	}
+        } else if (e.getInventory().getTitle().equalsIgnoreCase("Collection Bin")) {
+            Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
+            if (e.isShiftClick()) {
+                e.setCancelled(true);
+                return;
+            }
+            e.setCancelled(true);
+            if (e.getRawSlot() > e.getInventory().getSize()) {
+                e.setCancelled(true);
+            } else if (e.getCurrentItem() != null && e.getCurrentItem().getType() != Material.AIR) {
+                ItemStack stack = e.getCurrentItem();
+                if (e.getWhoClicked().getInventory().firstEmpty() >= 0) {
+                    e.setCurrentItem(new ItemStack(Material.AIR));
+                    e.getWhoClicked().getInventory().addItem(stack);
+                }
             }
         }
     }
@@ -464,7 +433,7 @@ public class BankListener implements Listener {
      * @param slot
      * @since 1.0
      */
-    private int getAmmount(int slot) {
+    private int getAmount(int slot) {
         switch (slot) {
             case 0:
                 return -1000;
@@ -548,9 +517,8 @@ public class BankListener implements Listener {
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(bankItem);
         nms.getTag().setString("type", "bank");
         inv.setItem(8, CraftItemStack.asBukkitCopy(nms));
-        
-        
-        
+
+
         ItemMeta collectionMeta = storage.getItemMeta();
         collectionMeta.setDisplayName(ChatColor.RED.toString() + ChatColor.BOLD + "COLLECTION BIN");
         ArrayList<String> collectionlore = new ArrayList<>();
@@ -559,8 +527,8 @@ public class BankListener implements Listener {
         storage.setItemMeta(collectionMeta);
         net.minecraft.server.v1_8_R3.ItemStack collectionBin = CraftItemStack.asNMSCopy(storage);
         collectionBin.getTag().setString("type", "collection");
-        if(BankMechanics.getInstance().getStorage(uuid).collection_bin != null)
-        	inv.setItem(4, CraftItemStack.asBukkitCopy(collectionBin));
+        if (BankMechanics.getInstance().getStorage(uuid).collection_bin != null)
+            inv.setItem(4, CraftItemStack.asBukkitCopy(collectionBin));
         return inv;
     }
 

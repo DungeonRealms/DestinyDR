@@ -21,13 +21,10 @@ import net.dungeonrealms.game.player.stats.StatsManager;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.world.glyph.Glyph;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.items.Item.AttributeType;
-import net.dungeonrealms.game.world.items.ItemGenerator;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorAttributeType;
-import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
+import net.dungeonrealms.game.world.items.Item.ArmorAttributeType;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.minecraft.server.v1_8_R3.BlockPosition;
@@ -54,7 +51,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -73,29 +69,9 @@ public class InventoryListener implements Listener {
         if (event.getCurrentItem() != null && !event.getCurrentItem().getType().equals(Material.AIR) && event.getCursor() != null && !event.getCursor().getType().equals(Material.AIR)) {
             if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
             if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
-            Glyph.getInstance().applyGlyph(((Player) event.getWhoClicked()), event, event.getCursor(), event.getCurrentItem());
         }
 
         ClickHandler.getInstance().doClick(event);
-    }
-
-    /**
-     * Disables the clicking of items that contain NBTTag `important` in `type`.
-     *
-     * @param event
-     * @since 1.0
-     */
-    @EventHandler(priority = EventPriority.MONITOR)
-    public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getCurrentItem() == null)
-            return;
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getCurrentItem());
-        if (nmsItem == null)
-            return;
-        NBTTagCompound tag = nmsItem.getTag();
-        if (tag == null || !tag.getString("type").equalsIgnoreCase("important"))
-            return;
-        event.setCancelled(true);
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -206,77 +182,66 @@ public class InventoryListener implements Listener {
             if (nms.hasTag()) {
                 if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon")) {
                     Item.ItemTier tier = new Attribute(p.getInventory().getItem(slot)).getItemTier();
-                    if(tier.getTierId() == 5){
-                    	int minLevel = tier.getRangeValues()[0];
-                    	int pLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, p.getUniqueId());
-                    	if (pLevel < minLevel) {
-                    		p.sendMessage(ChatColor.RED + "You must be level " + ChatColor.YELLOW.toString() + ChatColor.BOLD + minLevel + ChatColor.RED + " to wield this weapon!");
-                    		event.setCancelled(true);
-                    		return;
-                    	}
+                    if (tier.getTierId() == 5) {
+                        int minLevel = tier.getRangeValues()[0];
+                        int pLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, p.getUniqueId());
+                        if (pLevel < minLevel) {
+                            p.sendMessage(ChatColor.RED + "You must be level " + ChatColor.YELLOW.toString() + ChatColor.BOLD + minLevel + ChatColor.RED + " to wield this weapon!");
+                            event.setCancelled(true);
+                            return;
+                        }
                     }
                     p.playSound(event.getPlayer().getLocation(), Sound.ITEM_BREAK, 0.5F, 1F);
                 }
             }
         }
     }
-    
+
     @EventHandler(priority = EventPriority.MONITOR)
-    public void editPlayerAmor(InventoryClickEvent event){
-    	if(!event.getInventory().getTitle().contains("Armor"))return;
-    	String playerArmor = event.getInventory().getTitle().split(" ")[0];
-    	Player player = Bukkit.getPlayer(playerArmor);
-    	if(player != null){
-    		ItemStack[] contents = new ItemStack[4];
-    		for(int i = 0; i < 4; i++){
-    			if(event.getInventory().getItem(i) != null &&
-    			   event.getInventory().getItem(i).getType() != Material.AIR &&
-    			   API.isArmor(event.getInventory().getItem(i))){
-    				contents[i] = event.getInventory().getItem(i);
-    			}
-    		}
-    		player.getInventory().setArmorContents(contents);
-    		player.updateInventory();
-    	}
+    public void editPlayerAmor(InventoryClickEvent event) {
+        if (!event.getInventory().getTitle().contains("Armor")) return;
+        String playerArmor = event.getInventory().getTitle().split(" ")[0];
+        Player player = Bukkit.getPlayer(playerArmor);
+        if (player != null) {
+            ItemStack[] contents = new ItemStack[4];
+            for (int i = 0; i < 4; i++) {
+                if (event.getInventory().getItem(i) != null &&
+                        event.getInventory().getItem(i).getType() != Material.AIR &&
+                        API.isArmor(event.getInventory().getItem(i))) {
+                    contents[i] = event.getInventory().getItem(i);
+                }
+            }
+            player.getInventory().setArmorContents(contents);
+            player.updateInventory();
+        }
     }
-    
-    
+
+
     //Armor
+
     /**
      * Stop Shift Clicking Armor ABove Level possibility.
+     *
      * @param event
      */
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void playerShiftClickArmor(InventoryClickEvent event){
+    public void playerShiftClickArmor(InventoryClickEvent event) {
         if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
-    	if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+        if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
         if (!event.isShiftClick()) return;
         if (!API.isArmor(event.getCurrentItem()) && !API.isWeapon(event.getCurrentItem())) return;
         Attribute a = new Attribute(event.getCurrentItem());
         Player player = (Player) event.getWhoClicked();
         int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
-        if (API.isArmor(event.getCurrentItem())) {
-            switch (a.getArmorTier().getTierId()) {
-                case 5:
-                    if (playerLevel < 10) {
-                        event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 10");
-                        player.updateInventory();
-                        return;
-                    }
-                    break;
-            }
-        }  else if (API.isWeapon(event.getCurrentItem())) {
-            switch (a.getItemTier().getTierId()) {
-                case 5:
-                    if (playerLevel < 10) {
-                        event.setCancelled(true);
-                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 10");
-                        player.updateInventory();
-                        return;
-                    }
-                    break;
-            }
+        switch (a.getItemTier().getTierId()) {
+            case 5:
+                if (playerLevel < 10) {
+                    event.setCancelled(true);
+                    player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 10");
+                    player.updateInventory();
+                    return;
+                }
+                break;
         }
     }
 
@@ -292,11 +257,35 @@ public class InventoryListener implements Listener {
         if (event.getNewArmorPiece() != null && event.getNewArmorPiece().getType() != Material.AIR) {
             Attribute a = new Attribute(event.getNewArmorPiece());
             int playerLevel = (int) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId());
-            switch (a.getArmorTier().getTierId()) {
-                case 5:
+            switch (a.getItemTier().getTierId()) {
+                case 2:
                     if (playerLevel < 10) {
                         event.setCancelled(true);
                         player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 10");
+                        player.updateInventory();
+                        return;
+                    }
+                    break;
+                case 3:
+                    if (playerLevel < 20) {
+                        event.setCancelled(true);
+                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 20");
+                        player.updateInventory();
+                        return;
+                    }
+                    break;
+                case 4:
+                    if (playerLevel < 30) {
+                        event.setCancelled(true);
+                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 30");
+                        player.updateInventory();
+                        return;
+                    }
+                    break;
+                case 5:
+                    if (playerLevel < 40) {
+                        event.setCancelled(true);
+                        player.sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 40");
                         player.updateInventory();
                         return;
                     }
@@ -442,17 +431,17 @@ public class InventoryListener implements Listener {
         } else if (event.getInventory().getTitle().contains("Collection Bin")) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
             Inventory bin = storage.collection_bin;
-            if(bin	 == null)
-            	return;
+            if (bin == null)
+                return;
             int i = 0;
-            for(ItemStack stack : bin.getContents()){
-            	if(stack == null || stack.getType() == Material.AIR)
-            		continue;
-            	i++;
+            for (ItemStack stack : bin.getContents()) {
+                if (stack == null || stack.getType() == Material.AIR)
+                    continue;
+                i++;
             }
-            if(i == 0){
-        		DatabaseAPI.getInstance().update(storage.ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
-        		storage.collection_bin = null;
+            if (i == 0) {
+                DatabaseAPI.getInstance().update(storage.ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, "", true);
+                storage.collection_bin = null;
             }
         }
     }
@@ -537,6 +526,7 @@ public class InventoryListener implements Listener {
         }
     }
 
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerUseOrbs(InventoryClickEvent event) {
         if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) return;
@@ -547,10 +537,10 @@ public class InventoryListener implements Listener {
         net.minecraft.server.v1_8_R3.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
         if (cursorItem.getType() != Material.MAGMA_CREAM || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || nmsCursor.getTag().hasKey("type") && !nmsCursor.getTag().getString("type").equalsIgnoreCase("orb"))
             return;
-        if(API.getGamePlayer((Player) event.getWhoClicked()).getLevel() < 30){
-        	event.setCancelled(true);
-        	event.getWhoClicked().sendMessage(ChatColor.RED + "You must be level 30 to use Orbs of Alteration");
-        	return;
+        if (API.getGamePlayer((Player) event.getWhoClicked()).getLevel() < 30) {
+            event.setCancelled(true);
+            event.getWhoClicked().sendMessage(ChatColor.RED + "You must be level 30 to use Orbs of Alteration");
+            return;
         }
         ItemStack slotItem = event.getCurrentItem();
         if (!API.isWeapon(slotItem) && !API.isArmor(slotItem)) return;
@@ -563,12 +553,13 @@ public class InventoryListener implements Listener {
             newStack.setAmount(newStack.getAmount() - 1);
             event.setCursor(newStack);
         }
-        ItemStack item = new ItemGenerator().reRoll(slotItem);
+        ItemStack item = new ItemGenerator().setItem(slotItem).reroll().getItem();
         event.setCurrentItem(new ItemStack(Material.AIR));
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> event.getWhoClicked().getInventory().addItem(item));
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> event.getWhoClicked().getInventory().addItem(item));
     }
 
 
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerUseEnchant(InventoryClickEvent event) {
         if (event.getCursor() == null || event.getCursor().getType() == Material.AIR) return;
@@ -607,8 +598,8 @@ public class InventoryListener implements Listener {
                     newStack.setAmount(newStack.getAmount() - 1);
                     event.setCursor(newStack);
                 }
-            }else{
-            	event.getWhoClicked().sendMessage(ChatColor.RED + "Item already protected.");
+            } else {
+                event.getWhoClicked().sendMessage(ChatColor.RED + "Item already protected.");
             }
             return;
         }
@@ -711,28 +702,33 @@ public class InventoryListener implements Listener {
             }
 
             String finalName = ChatColor.RED + "[" + "+" + (amount + 1) + "] " + newName;
-            double doublenewDamage = nmsItem.getTag().getInt("damage") + ((5 * nmsItem.getTag().getInt("damage")) / 100);
+            double doublenewDamageMin = nmsItem.getTag().getInt("damageMin") + ((5 * nmsItem.getTag().getInt("damageMin")) / 100);
+            double doublenewDamageMax = nmsItem.getTag().getInt("damageMax") + ((5 * nmsItem.getTag().getInt("damageMax")) / 100);
             if (tier == 1) {
-                doublenewDamage += 1;
+                doublenewDamageMin += 1;
+                doublenewDamageMax += 1;
             }
-            int finalDmg = (int) Math.round(doublenewDamage);
+            int finalDmgMin = (int) Math.round(doublenewDamageMin);
+            int finalDmgMax = (int) Math.round(doublenewDamageMax);
             Attribute att = new Attribute(slotItem);
-            List<String> itemLore = new ArrayList<>();
-            itemLore.add(ItemGenerator.setCorrectItemLore(AttributeType.DAMAGE, finalDmg, att.getItemTier().getTierId()));
 
-            itemLore.addAll(lore.stream().filter(current -> !current.startsWith(ChatColor.WHITE + "DMG:")).collect(Collectors.toList()));
+            // update the item lore
+            lore.set(0, ChatColor.RED + "DMG: " + finalDmgMin + " - " + finalDmgMax);
+
+            // update the NMS tags
             nmsItem.getTag().setInt("enchant", amount + 1);
-            nmsItem.getTag().setInt("damage", finalDmg);
+            nmsItem.getTag().setInt("damageMin", finalDmgMin);
+            nmsItem.getTag().setInt("damageMax", finalDmgMax);
             ItemStack newItem = CraftItemStack.asBukkitCopy(nmsItem);
 
 
             ItemMeta meta = newItem.getItemMeta();
             meta.setDisplayName(finalName);
-            meta.setLore(itemLore);
+            meta.setLore(lore);
             newItem.setItemMeta(meta);
             if (EnchantmentAPI.isItemProtected(slotItem)) {
-               newItem = EnchantmentAPI.removeItemProtection(newItem);
-             }
+                newItem = EnchantmentAPI.removeItemProtection(newItem);
+            }
             if (cursorItem.getAmount() == 1) {
                 event.setCursor(new ItemStack(Material.AIR));
             } else {
@@ -822,7 +818,7 @@ public class InventoryListener implements Listener {
                     newStack.setAmount(newStack.getAmount() - 1);
                     event.setCursor(newStack);
                 }
-                
+
                 if (EnchantmentAPI.isItemProtected(slotItem)) {
                     event.getWhoClicked().sendMessage(ChatColor.RED + "While dealing with magical enchants. Your protection scroll saved your item from vanishing");
                     event.setCurrentItem(EnchantmentAPI.removeItemProtection(event.getCurrentItem()));
@@ -833,7 +829,7 @@ public class InventoryListener implements Listener {
                 event.setCurrentItem(new ItemStack(Material.AIR));
                 return;
             }
-            
+
             ItemMeta meta2 = slotItem.getItemMeta();
             String itemName = meta2.getDisplayName();
             String newName = "";
@@ -844,24 +840,23 @@ public class InventoryListener implements Listener {
             }
 
             String finalName = ChatColor.RED + "[" + "+" + (amount + 1) + "] " + newName;
-            List<String> itemLore = new ArrayList<>();
+            List<String> itemLore = slotItem.getItemMeta().getLore();
 
             double hpDouble = nmsItem.getTag().getInt(ArmorAttributeType.HEALTH_POINTS.getNBTName()) + ((nmsItem.getTag().getInt(ArmorAttributeType.HEALTH_POINTS.getNBTName()) * 5) / 100);
             int newHP = (int) Math.round((hpDouble));
-            itemLore.add(ArmorGenerator.setCorrectArmorLore(ArmorAttributeType.HEALTH_POINTS, newHP));
+            itemLore.set(1, ChatColor.RED + "HP: +" + newHP);
             nmsItem.getTag().setInt(ArmorAttributeType.HEALTH_POINTS.getNBTName(), newHP);
 
             if (nmsItem.getTag().hasKey(ArmorAttributeType.HEALTH_REGEN.getNBTName())) {
                 double hpRegenDouble = nmsItem.getTag().getInt(ArmorAttributeType.HEALTH_REGEN.getNBTName()) + ((nmsItem.getTag().getInt(ArmorAttributeType.HEALTH_REGEN.getNBTName()) * 5) / 100);
                 int newHPRegen = (int) Math.round((hpRegenDouble));
                 nmsItem.getTag().setInt(ArmorAttributeType.HEALTH_REGEN.getNBTName(), newHPRegen);
-                itemLore.add(ArmorGenerator.setCorrectArmorLore(ArmorAttributeType.HEALTH_REGEN, newHPRegen));
-
+                itemLore.set(2, ChatColor.RED + "HP REGEN: +" + newHPRegen + " HP/s");
             } else if (nmsItem.getTag().hasKey(ArmorAttributeType.ENERGY_REGEN.getNBTName())) {
                 double energyRegen = nmsItem.getTag().getInt(ArmorAttributeType.ENERGY_REGEN.getNBTName());
                 int newEnergyRegen = (int) Math.round((energyRegen)) + 1;
                 nmsItem.getTag().setInt(ArmorAttributeType.ENERGY_REGEN.getNBTName(), newEnergyRegen);
-                itemLore.add(ArmorGenerator.setCorrectArmorLore(ArmorAttributeType.ENERGY_REGEN, newEnergyRegen));
+                itemLore.set(2, ChatColor.RED + "ENERGY REGEN: +" + newEnergyRegen + "%");
             }
 
             ArrayList<String> lore = (ArrayList<String>) meta2.getLore();
@@ -880,7 +875,7 @@ public class InventoryListener implements Listener {
             meta.setLore(itemLore);
             newItem.setItemMeta(meta);
             if (EnchantmentAPI.isItemProtected(slotItem)) {
-            	newItem = EnchantmentAPI.removeItemProtection(newItem);
+                newItem = EnchantmentAPI.removeItemProtection(newItem);
             }
             if (cursorItem.getAmount() == 1) {
                 event.setCursor(new ItemStack(Material.AIR));
@@ -939,6 +934,7 @@ public class InventoryListener implements Listener {
     }
 
 
+    @SuppressWarnings("deprecation")
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerUseScrapItem(InventoryClickEvent event) {
         if (event.getCursor() == null) return;
@@ -957,11 +953,11 @@ public class InventoryListener implements Listener {
         int scrapTier = RepairAPI.getScrapTier(cursorItem);
         int slotTier = 0;
         if (Mining.isDRPickaxe(slotItem) || Fishing.isDRFishingPole(slotItem)) {
-        	if(Mining.isDRPickaxe(slotItem))
-        		slotTier = Mining.getPickTier(slotItem);
-        	else{
-        		slotTier = Fishing.getRodTier(slotItem);
-        	}
+            if (Mining.isDRPickaxe(slotItem))
+                slotTier = Mining.getPickTier(slotItem);
+            else {
+                slotTier = Fishing.getRodTier(slotItem);
+            }
             if (scrapTier != slotTier) return;
             if (cursorItem.getAmount() == 1) {
                 event.setCancelled(true);
@@ -1162,23 +1158,23 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void playerClickRepairInv(InventoryClickEvent event) {
         if (!event.getInventory().getTitle().contains("Repair your item for")) return;
-            event.setCancelled(true);
-            if (event.getRawSlot() == 3) {
-                String string = event.getInventory().getTitle().substring(event.getInventory().getTitle().indexOf(ChatColor.BOLD.toString()) + 2);
-                string = string.replace("g?", "");
-                int cost = Integer.parseInt(string);
-                if (BankMechanics.getInstance().takeGemsFromInventory(cost, (Player) event.getWhoClicked())) {
-                    ItemStack stack = event.getWhoClicked().getItemInHand();
-                    RepairAPI.setCustomItemDurability(stack, 1500);
-                    event.getWhoClicked().setItemInHand(stack);
-                    event.getWhoClicked().closeInventory();
-                } else {
-                    event.getWhoClicked().sendMessage(ChatColor.RED + "You do not have " + cost + " gems!");
-                    event.getWhoClicked().closeInventory();
-                }
-            } else if (event.getRawSlot() == 5) {
+        event.setCancelled(true);
+        if (event.getRawSlot() == 3) {
+            String string = event.getInventory().getTitle().substring(event.getInventory().getTitle().indexOf(ChatColor.BOLD.toString()) + 2);
+            string = string.replace("g?", "");
+            int cost = Integer.parseInt(string);
+            if (BankMechanics.getInstance().takeGemsFromInventory(cost, (Player) event.getWhoClicked())) {
+                ItemStack stack = event.getWhoClicked().getItemInHand();
+                RepairAPI.setCustomItemDurability(stack, 1500);
+                event.getWhoClicked().setItemInHand(stack);
+                event.getWhoClicked().closeInventory();
+            } else {
+                event.getWhoClicked().sendMessage(ChatColor.RED + "You do not have " + cost + " gems!");
                 event.getWhoClicked().closeInventory();
             }
+        } else if (event.getRawSlot() == 5) {
+            event.getWhoClicked().closeInventory();
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
@@ -1189,5 +1185,64 @@ public class InventoryListener implements Listener {
         event.setCancelled(true);
         event.setResult(Event.Result.DENY);
         event.getWhoClicked().sendMessage(ChatColor.RED + "Please do not try to equip armor this way!");
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void playerShiftClickWithImportantItem(InventoryClickEvent event) {
+        if (event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
+        if (event.getClick().isShiftClick()) {
+            Inventory clicked = event.getClickedInventory();
+            if (clicked == event.getWhoClicked().getInventory()) {
+                ItemStack clickedOn = event.getCurrentItem();
+                if (clickedOn != null) {
+                    if (clickedOn.getType() == Material.SADDLE || clickedOn.getType() == Material.EYE_OF_ENDER || clickedOn.getType() == Material.NAME_TAG) {
+                        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(clickedOn);
+                        NBTTagCompound tag = nmsStack.getTag();
+                        if (tag == null) return;
+                        if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
+                        event.setCancelled(true);
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void playerClickWithImportantItem(InventoryClickEvent event) {
+        if (event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
+        Inventory clicked = event.getClickedInventory();
+        if (clicked != event.getWhoClicked().getInventory()) {
+            ItemStack onCursor = event.getCursor();
+            if (onCursor != null) {
+                if (onCursor.getType() == Material.SADDLE || onCursor.getType() == Material.EYE_OF_ENDER || onCursor.getType() == Material.NAME_TAG) {
+                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(onCursor);
+                    NBTTagCompound tag = nmsStack.getTag();
+                    if (tag == null) return;
+                    if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
+                    event.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerDragImportantItem(InventoryDragEvent event) {
+        if (event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
+        ItemStack dragged = event.getOldCursor();
+        if (dragged != null) {
+            if (dragged.getType() == Material.SADDLE || dragged.getType() == Material.EYE_OF_ENDER || dragged.getType() == Material.NAME_TAG) {
+                net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(dragged);
+                NBTTagCompound tag = nmsStack.getTag();
+                if (tag == null) return;
+                if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
+                int inventorySize = event.getInventory().getSize();
+                for (int i : event.getRawSlots()) {
+                    if (i < inventorySize) {
+                        event.setCancelled(true);
+                        break;
+                    }
+                }
+            }
+        }
     }
 }

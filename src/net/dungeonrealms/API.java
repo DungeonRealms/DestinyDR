@@ -28,16 +28,15 @@ import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
-import net.dungeonrealms.game.world.items.Item.ItemModifier;
+import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorModifier;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorTier;
-import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -119,15 +118,6 @@ public class API {
         return ItemTier.getByTier(nms.getTag().getInt("itemTier"));
     }
 
-    public static ArmorTier getArmorTier(ItemStack stack) {
-        if (stack.getType() == Material.AIR || stack == null)
-            return null;
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        if (!nms.hasTag() || nms.hasTag() && !nms.getTag().hasKey("armorTier")) return null;
-
-        return ArmorTier.getByTier(nms.getTag().getInt("armorTier"));
-    }
-
     /**
      * @param player
      * @param kill
@@ -147,29 +137,27 @@ public class API {
 
     public static ItemStack[] getTierArmor(int tier) {
         int chance = RandomHelper.getRandomNumberBetween(1, 1000);
-        if (chance == 1) {
-            return new ArmorGenerator().nextArmor(tier, ArmorModifier.LEGENDARY);
-        } else if (chance <= 10) {
-            return new ArmorGenerator().nextArmor(tier, ArmorModifier.RARE);
-        } else if (chance > 10 && chance <= 50) {
-            return new ArmorGenerator().nextArmor(tier, ArmorModifier.UNCOMMON);
+        if (chance <= 20) {
+            return new ItemGenerator().setRarity(ItemRarity.UNIQUE).setTier(ItemTier.getByTier(tier)).getArmorSet();
+        } else if (chance <= 100) {
+            return new ItemGenerator().setRarity(ItemRarity.RARE).setTier(ItemTier.getByTier(tier)).getArmorSet();
+        } else if (chance <= 400) {
+            return new ItemGenerator().setRarity(ItemRarity.UNCOMMON).setTier(ItemTier.getByTier(tier)).getArmorSet();
         } else {
-            return new ArmorGenerator().nextArmor(tier, ArmorModifier.COMMON);
+            return new ItemGenerator().setRarity(ItemRarity.COMMON).setTier(ItemTier.getByTier(tier)).getArmorSet();
         }
     }
 
-    public static ArmorModifier getArmorModifier() {
+    public static ItemRarity getItemRarity() {
         int chance = RandomHelper.getRandomNumberBetween(1, 500);
-        if (chance == 1) {
-            return ArmorModifier.LEGENDARY;
-        } else if (chance <= 10) {
-            return ArmorModifier.UNIQUE;
+        if (chance <= 10) {
+            return ItemRarity.UNIQUE;
         } else if (chance > 10 && chance <= 50) {
-            return ArmorModifier.RARE;
+            return ItemRarity.RARE;
         } else if (chance > 50 && chance <= 200) {
-            return ArmorModifier.UNCOMMON;
+            return ItemRarity.UNCOMMON;
         } else {
-            return ArmorModifier.COMMON;
+            return ItemRarity.COMMON;
         }
     }
 
@@ -200,8 +188,7 @@ public class API {
      */
     private static int calculateXP(Player player, Entity kill, int mob_level) {
         int pLevel = API.getGamePlayer(player).getStats().getLevel();
-        int xp = (int) (((pLevel * 5) + 45) * (1 + (0.07 * (pLevel + (mob_level - pLevel)))));
-        return xp;
+        return (int) (((pLevel * 5) + 45) * (1 + (0.07 * (pLevel + (mob_level - pLevel)))));
     }
 
 
@@ -389,7 +376,7 @@ public class API {
                     + player.getLocation().getPitch();
         }
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, false);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, System.currentTimeMillis() / 1000l, false);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, System.currentTimeMillis() / 1000L, false);
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
         KarmaHandler.getInstance().handleLogoutEvents(player);
@@ -415,22 +402,98 @@ public class API {
     }
 
     /**
+     * Safely logs out the player, updates their mongo inventories etc. in an INSTANCED server
+     *
+     * @param uuid
+     * @since 1.0
+     */
+    public static void handleInstanceLogout(UUID uuid) {
+        Player player = Bukkit.getPlayer(uuid);
+        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
+            return;
+        }
+        if(DungeonRealms.getInstance().realmnumber != -1)
+        {
+        	if(Bukkit.getWorld(player.getUniqueId().toString()) != null)
+        	{
+                 RealmManager.getInstance().removePlayerRealm(player, true); // Only called if the server is a realm server & they have a realm open!       	
+        	}
+        }
+//        if (CombatLog.isInCombat(player) && !DuelingMechanics.isDueling(uuid) && !API.isNonPvPRegion(player.getLocation())) {
+//            CombatLog.handleCombatLogger(player);
+//        }
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, false);
+        if (BankMechanics.storage.containsKey(uuid)) {
+            Inventory inv = BankMechanics.getInstance().getStorage(uuid).inv;
+            if (inv != null) {
+                String serializedInv = ItemSerialization.toString(inv);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, false);
+            }
+            inv = BankMechanics.getInstance().getStorage(uuid).collection_bin;
+            if (inv != null) {
+                String serializedInv = ItemSerialization.toString(inv);
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, serializedInv, false);
+            }
+            BankMechanics.storage.remove(uuid);
+        }
+        Inventory inv = player.getInventory();
+        ArrayList<String> armor = new ArrayList<>();
+        for (ItemStack itemStack : player.getInventory().getArmorContents()) {
+            if (itemStack == null || itemStack.getType() == Material.AIR) {
+                armor.add("null");
+            } else {
+                armor.add(ItemSerialization.itemStackToBase64(itemStack));
+            }
+        }
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, false);
+
+        if (MountUtils.inventories.containsKey(uuid)) {
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_MULE, ItemSerialization.toString(MountUtils.inventories.get(uuid)), false);
+            MountUtils.inventories.remove(uuid);
+        }
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, System.currentTimeMillis() / 1000L, false);
+        EnergyHandler.getInstance().handleLogoutEvents(player);
+        HealthHandler.getInstance().handleLogoutEvents(player);
+        KarmaHandler.getInstance().handleLogoutEvents(player);
+        ScoreboardHandler.getInstance().removePlayerScoreboard(player);
+        if (EntityAPI.hasPetOut(uuid)) {
+            net.minecraft.server.v1_8_R3.Entity pet = Entities.PLAYER_PETS.get(uuid);
+            pet.dead = true;
+            EntityAPI.removePlayerPetList(uuid);
+        }
+        if (EntityAPI.hasMountOut(uuid)) {
+            net.minecraft.server.v1_8_R3.Entity mount = Entities.PLAYER_MOUNTS.get(uuid);
+            mount.dead = true;
+            EntityAPI.removePlayerMountList(uuid);
+        }
+        if (GAMEPLAYERS.size() > 0)
+            GAMEPLAYERS.stream().filter(gPlayer -> gPlayer.getPlayer().getName().equalsIgnoreCase(player.getName())).forEach(gPlayer -> {
+                gPlayer.getStats().updateDatabase();
+                GAMEPLAYERS.remove(gPlayer);
+            });
+        String inventory = ItemSerialization.toString(inv);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ENTERINGREALM, "", true);
+
+    }
+    
+    /**
      * Safely logs out all players when the server restarts
      *
      * @since 1.0
      */
-    public static void logoutAllPlayers() {
+    public static void logoutAllPlayers(boolean customStop) {
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (CombatLog.isInCombat(player)) {
                 CombatLog.removeFromCombat(player);
             }
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            if (customStop) {
                 try {
-                    NetworkAPI.getInstance().sendToServer(player.getName(), "drhub");
+                    NetworkAPI.getInstance().sendToServer(player.getName(), "Lobby");
                 } catch (Exception exc) {
                     exc.printStackTrace();
                 }
-            }, 40L);
+            }
         }
     }
 
@@ -476,8 +539,6 @@ public class API {
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
             ItemStack[] items = ItemSerialization.fromString(playerInv).getContents();
             player.getInventory().setContents(items);
-        } else {
-            Utils.log.info(player.getName() + " HAS NULL/EMPTY INVENTORY");
         }
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
         if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
@@ -551,19 +612,123 @@ public class API {
                     });
                 }
             }, 100);
-
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENTSERVER, DungeonRealms.getInstance().bungeeName, true);
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
+    }
+    
+    
+    /**
+     * Safely logs in the player, giving them their items, their storage and
+     * their cooldowns in an INSTANCE
+     *
+     * @since 1.0
+     */
+    @SuppressWarnings("deprecation")
+	public static void handleInstanceLogin(UUID uuid) {
+        if (Bukkit.getPlayer(uuid) == null) {
+            return;
+        }
+        Player player = Bukkit.getPlayer(uuid);
+        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
+            player.kickPlayer(ChatColor.RED + "Unable to grab your data.. rejoin!");
+        } else {
+            if (player != null) {
+                player.sendMessage(ChatColor.GREEN + "Successfully received your data.. loading now...");
+            }
+        }
 
-        if (Rank.getInstance().getRank(uuid).getName().equalsIgnoreCase("PMOD")) {
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.tempban", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.tempmute", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.kick", true);
-        } else if (Rank.getInstance().getRank(uuid).getName().equalsIgnoreCase("CM") || Rank.getInstance().getRank(uuid).getName().equalsIgnoreCase("GM")) {
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.tempban", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.tempmute", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.ban", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.mute", true);
-            player.addAttachment(DungeonRealms.getInstance()).setPermission("bm.command.kick", true);
+        GamePlayer gp = new GamePlayer(player);
+        API.GAMEPLAYERS.add(gp);
+
+        List<String> playerArmor = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ARMOR, player.getUniqueId());
+        int i = -1;
+        ItemStack[] armorContents = new ItemStack[4];
+        for (String armor : playerArmor) {
+            i++;
+            if (armor.equals("null") || armor.equals("")) {
+                armorContents[i] = new ItemStack(Material.AIR);
+            } else {
+                armorContents[i] = ItemSerialization.itemStackFromBase64(armor);
+            }
+        }
+        player.getInventory().setArmorContents(armorContents);
+
+//        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
+
+        AchievementManager.getInstance().handleLogin(player);
+        String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
+        if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
+            ItemStack[] items = ItemSerialization.fromString(playerInv).getContents();
+            player.getInventory().setContents(items);
+        }
+        String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
+        if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
+            Inventory inv = ItemSerialization.fromString(source);
+            Storage storageTemp = new Storage(uuid, inv);
+            BankMechanics.storage.put(uuid, storageTemp);
+        } else {
+            Storage storageTemp = new Storage(uuid);
+            BankMechanics.storage.put(uuid, storageTemp);
+        }
+        TeleportAPI.addPlayerHearthstoneCD(uuid, 150);
+        /*
+        if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, uuid).equals("")) {
+            String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, uuid))
+                    .split(",");
+            player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]),
+                    Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]),
+                    Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
+        } else {
+            player.kickPlayer("Somehow you glitched onto an instance server.. Please use a main server first.");
+
+        } */
+        PlayerManager.checkInventory(uuid);
+        EnergyHandler.getInstance().handleLoginEvents(player);
+        HealthHandler.getInstance().handleLoginEvents(player);
+        KarmaHandler.getInstance().handleLoginEvents(player);
+        // Essentials
+        //Subscription.getInstance().handleJoin(player);
+        Rank.getInstance().doGet(uuid);
+        // Guilds
+        Guild.getInstance().doLogin(player);
+
+        // Notices
+        Notice.getInstance().doLogin(player);
+
+        // Scoreboard Safety
+        ScoreboardHandler.getInstance().matchMainScoreboard(player);
+        player.setGameMode(GameMode.SURVIVAL);
+        player.setMaximumNoDamageTicks(0);
+        player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
+		// DO REALM CHECKS and begin code now!
+        String cs = (String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid);
+		//NetworkAPI.getInstance().sendToServer(player.getName(), cs);
+        if(DungeonRealms.getInstance().realmnumber >= 0)
+        {
+            if(!RealmManager.getInstance().isRealmLoaded(uuid))
+            {
+                String enterrealm = (String) DatabaseAPI.getInstance().getData(EnumData.ENTERINGREALM, uuid);
+                if(enterrealm.equalsIgnoreCase(""))
+                {
+                	player.sendMessage(ChatColor.RED + "You entered a misconfigured realm!");
+                	API.handleLogout(uuid);
+                	NetworkAPI.getInstance().sendToServer(player.getName(), cs);
+                }
+                if(enterrealm.equalsIgnoreCase(uuid.toString()))
+                {
+                	RealmManager.getInstance().tryToOpenRealmInstance(player);
+                } else {
+                	if(!RealmManager.getInstance().isRealmLoaded(UUID.fromString(enterrealm)))
+                	{
+                    	player.sendMessage(ChatColor.RED + "This player's realm has been unloaded!");
+                    	API.handleLogout(uuid);
+                    	NetworkAPI.getInstance().sendToServer(player.getName(), cs);
+                	} else {
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.teleport(Bukkit.getWorld(uuid).getSpawnLocation()), 40L);
+                	}
+                }
+            	//RealmManager.getInstance().tryToOpenRealmInstance(player);
+            }	
         }
     }
 
@@ -601,6 +766,17 @@ public class API {
     }
 
     /**
+     * Returns the string is a Mount Skin
+     *
+     * @param mountSkin
+     * @return boolean
+     * @since 1.0
+     */
+    public static boolean isStringMountSkin(String mountSkin) {
+        return EnumMountSkins.getByName(mountSkin.toUpperCase()) != null;
+    }
+
+    /**
      * Returns the string is a Particle Trail
      *
      * @param trailType
@@ -619,7 +795,7 @@ public class API {
      * @since 1.0
      */
     public static boolean isPlayer(Entity entity) {
-        return entity instanceof Player && !(entity.hasMetadata("NPC") || entity.hasMetadata("npc"));
+        return entity instanceof Player && !(entity.hasMetadata("NPC") && !(entity.hasMetadata("npc")));
     }
 
     /**
@@ -646,7 +822,7 @@ public class API {
 
     public static GamePlayer getGamePlayer(Player p) {
         for (GamePlayer gPlayer : GAMEPLAYERS) {
-            if (gPlayer.getPlayer().getName().equalsIgnoreCase(p.getName()))
+            if (gPlayer.getPlayer().getName().equals(p.getName()))
                 return gPlayer;
         }
         return null;
@@ -797,23 +973,5 @@ public class API {
     public static boolean isItemNonTradeable(ItemStack itemStack) {
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
         return nms != null && nms.getTag() != null && nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter");
-    }
-
-    /**
-     * @return
-     */
-    public static ItemModifier getItemModifier() {
-        int chance = RandomHelper.getRandomNumberBetween(1, 500);
-        if (chance == 1) {
-            return ItemModifier.LEGENDARY;
-        } else if (chance <= 10) {
-            return ItemModifier.UNIQUE;
-        } else if (chance > 10 && chance <= 50) {
-            return ItemModifier.RARE;
-        } else if (chance > 50 && chance <= 200) {
-            return ItemModifier.UNCOMMON;
-        } else {
-            return ItemModifier.COMMON;
-        }
     }
 }

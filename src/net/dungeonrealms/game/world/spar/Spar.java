@@ -27,41 +27,37 @@ public class Spar {
 
         Utils.log.info("[SPAR] STARTING ON ... STARTING");
 
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            spars.stream().forEach(battle -> {
-                battle.incTime();
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> spars.stream().forEach(battle -> {
+            battle.incTime();
 
-                List<Player> all = new ArrayList<>();
-                all.add(battle.getPlayer1());
-                all.add(battle.getPlayer2());
+            List<Player> all = new ArrayList<>();
+            all.add(battle.getPlayer1());
+            all.add(battle.getPlayer2());
 
-                switch ((int) battle.getTime()) {
-                    case 10:
-                        all.stream().forEach(player -> player.sendMessage(ChatColor.AQUA.toString() + ChatColor.BOLD + "SPAR" + " " + ChatColor.YELLOW.toString() + ChatColor.BOLD +
-                                "➜" + " " + ChatColor.GRAY + "Spar has reached 10 seconds!"));
-                        break;
-                    case 20:
-                        all.stream().forEach(player -> player.sendMessage(ChatColor.AQUA.toString() + ChatColor.BOLD + "SPAR" + " " + ChatColor.YELLOW.toString() + ChatColor.BOLD +
-                                "➜" + " " + ChatColor.GRAY + "Spar has reached 20 seconds!"));
-                        break;
-                    case 30:
-                        all.stream().forEach(player -> player.sendMessage(ChatColor.AQUA.toString() + ChatColor.BOLD + "SPAR" + " " + ChatColor.YELLOW.toString() + ChatColor.BOLD +
-                                "➜" + " " + ChatColor.GRAY + "Spar has reached 30 seconds!"));
-                        break;
-                    case 180:
-                        all.stream().forEach(player -> player.sendMessage(ChatColor.AQUA.toString() + ChatColor.BOLD + "SPAR" + " " + ChatColor.YELLOW.toString() + ChatColor.BOLD +
-                                "➜" + " " + ChatColor.GRAY + "Spar has reached maximum time and expired!"));
-                        removeBattle(battle);
-                        break;
-                }
+            switch ((int) battle.getTime()) {
+                case 10:
+                    all.stream().forEach(player -> player.sendMessage(ChatColor.AQUA.toString() + ChatColor.BOLD + "SPAR" + " " + ChatColor.YELLOW.toString() + ChatColor.BOLD +
+                            " >> " + " " + ChatColor.GRAY + "Spar has reached 10 seconds!"));
+                    break;
+                case 20:
+                    all.stream().forEach(player -> player.sendMessage(ChatColor.AQUA.toString() + ChatColor.BOLD + "SPAR" + " " + ChatColor.YELLOW.toString() + ChatColor.BOLD +
+                            " >> " + " " + ChatColor.GRAY + "Spar has reached 20 seconds!"));
+                    break;
+                case 30:
+                    all.stream().forEach(player -> player.sendMessage(ChatColor.AQUA.toString() + ChatColor.BOLD + "SPAR" + " " + ChatColor.YELLOW.toString() + ChatColor.BOLD +
+                            " >> " + " " + ChatColor.GRAY + "Spar has reached 30 seconds!"));
+                    break;
+                case 180:
+                    all.stream().forEach(player -> player.sendMessage(ChatColor.AQUA.toString() + ChatColor.BOLD + "SPAR" + " " + ChatColor.YELLOW.toString() + ChatColor.BOLD +
+                            " >> " + " " + ChatColor.GRAY + "Spar has reached maximum time and expired!"));
+                    removeBattle(battle);
+                    break;
+            }
 
-                all.stream().forEach(player -> {
-                    BountifulAPI.sendActionBar(player, ChatColor.AQUA.toString() + ChatColor.BOLD + "SPAR" + " " + ChatColor.YELLOW.toString() + ChatColor.BOLD +
-                            "➜" + " " + ChatColor.GRAY + battle.getPlayer1().getName() + ChatColor.RED + " VS " + ChatColor.GRAY + battle.getPlayer2().getName());
-                });
+            all.stream().forEach(player -> BountifulAPI.sendActionBar(player, ChatColor.AQUA.toString() + ChatColor.BOLD + "SPAR" + " " + ChatColor.YELLOW.toString() + ChatColor.BOLD +
+                    " >> " + " " + ChatColor.GRAY + battle.getPlayer1().getName() + ChatColor.RED + " VS " + ChatColor.GRAY + battle.getPlayer2().getName()));
 
-            });
-        }, 0, 20);
+        }), 0, 20);
     }
 
     public void removeBattle(Battle battle) {

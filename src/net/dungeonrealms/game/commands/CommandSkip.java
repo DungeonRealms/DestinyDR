@@ -29,9 +29,17 @@ public class CommandSkip extends BasicCommand {
         Player player = (Player) sender;
 
         if (API.getRegionName(player.getLocation()).equalsIgnoreCase("tutorial_island")) {
-            player.teleport(new Location(Bukkit.getWorlds().get(0), -378, 85, 362));
-            TutorialIslandHandler.getInstance().giveStarterKit(player);
-        } else {
+            TutorialIslandHandler.getInstance().getSkipList().add(player.getUniqueId());
+            if (!TutorialIslandHandler.getInstance().getSkipList().contains(player.getUniqueId())) {
+                player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED
+                        + "If you skip this tutorial you will not recieve " + ChatColor.UNDERLINE + "ANY"
+                        + ChatColor.RED + " of the item rewards for completing it.");
+                player.sendMessage(ChatColor.GRAY + "If you're sure you still want to skip it, type '" + ChatColor.GREEN
+                        + ChatColor.BOLD + "Y" + ChatColor.GRAY + "' to finish the tutorial. Otherwise, just type '"
+                        + ChatColor.RED + "cancel" + ChatColor.GRAY + "' to continue with the tutorial.");
+            }
+        }
+        else {
             player.sendMessage(ChatColor.RED + "You are not on the tutorial island.");
         }
 

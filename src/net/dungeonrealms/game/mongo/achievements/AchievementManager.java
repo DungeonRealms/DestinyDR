@@ -68,9 +68,9 @@ public class AchievementManager implements GenericMechanic, Listener {
      * @since 1.0
      */
     public void handleLogin(Player player) {
-        if (!player.getUniqueId().toString().equals("d1f95fe1-335f-433c-9f78-f5649c157581")) return;
+        if (!player.getUniqueId().toString().equals("e0926362-9a92-4ffb-8d1f-7dfa5f4b4dd0")) return;
 
-        Bukkit.getOnlinePlayers().stream().forEach(player1 -> Achievements.getInstance().giveAchievement(player1.getUniqueId(), Achievements.EnumAchievements.PLAY_WITH_XFINITYPRO));
+        Bukkit.getOnlinePlayers().stream().forEach(player1 -> Achievements.getInstance().giveAchievement(player1.getUniqueId(), Achievements.EnumAchievements.PLAY_WITH_KAYABA));
 
     }
 

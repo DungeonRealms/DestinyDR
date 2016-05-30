@@ -6,10 +6,10 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.items.DamageAPI;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorModifier;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorTier;
-import net.dungeonrealms.game.world.items.armor.Armor.EquipmentType;
-import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
+import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.items.Item.ItemTier;
+import net.dungeonrealms.game.world.items.Item.ItemType;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.ChatColor;
@@ -28,22 +28,22 @@ import java.util.Random;
  */
 public interface Monster {
 
-	public void onMonsterAttack(Player p);
+	void onMonsterAttack(Player p);
 
-	public void onMonsterDeath(Player killer);
+	void onMonsterDeath(Player killer);
 
-	public EnumMonster getEnum();
+	EnumMonster getEnum();
 
-	public default void checkItemDrop(int tier, EnumMonster monter, Entity ent, Player killer) {
-		int killerLuck = DamageAPI.calculatePlayerLuck(killer);
+	default void checkItemDrop(int tier, EnumMonster monster, Entity ent, Player killer) {
+		int killerGemFind = DamageAPI.calculatePlayerStat(killer, Item.ArmorAttributeType.GEM_FIND);
+		int killerItemFind = DamageAPI.calculatePlayerStat(killer, Item.ArmorAttributeType.ITEM_FIND);
 		Location loc = ent.getLocation();
 		World world = ((CraftWorld) loc.getWorld()).getHandle();
 		int gemRoll = new Random().nextInt(99);
-		if (gemRoll <= (20 + (20 * killerLuck / 100))) {
+		if (gemRoll <= (20 + (20 * killerGemFind / 100))) {
 			if (gemRoll > 20) {
-				if (Boolean.valueOf(
-				        DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId()).toString())) {
-					killer.sendMessage(ChatColor.GREEN + "Your " + killerLuck + "% Luck has resulted in a drop.");
+				if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId()).toString())) {
+					killer.sendMessage(ChatColor.GREEN + "Your " + killerGemFind + "% Gem Find has resulted in a drop.");
 				}
 			}
 			double gem_drop_amount = 0;
@@ -85,7 +85,12 @@ public interface Monster {
 
 		if (((LivingEntity) ent).getEquipment().getItemInHand().getType() == Material.BOW) {
 			int arrowRoll = new Random().nextInt(99);
-			if (arrowRoll <= (25 + (25 * killerLuck / 100))) {
+			if (arrowRoll <= (25 + (25 * killerItemFind / 100))) {
+				if (arrowRoll > 25) {
+					if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId()).toString())) {
+						killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
+					}
+				}
 				ItemStack item = new ItemStack(Material.ARROW);
 				int amount = (tier * 2);
 				item.setAmount(amount);
@@ -112,22 +117,19 @@ public interface Monster {
 			break;
 		}
 		int armorRoll = new Random().nextInt(1000);
-		if (armorRoll <= chance + (chance * killerLuck / 100)) {
+		if (armorRoll <= chance + (chance * killerItemFind / 100)) {
 			if (armorRoll > chance) {
-				if (Boolean.valueOf(
-				        DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId()).toString())) {
-					killer.sendMessage(ChatColor.GREEN + "Your " + killerLuck + "% Luck has resulted in a drop.");
+				if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId()).toString())) {
+					killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
 				}
 			}
-			ItemStack[] loot = new ItemStack[5];
+			ItemStack[] loot;
 			ItemStack[] armor = ((LivingEntity) ent).getEquipment().getArmorContents();
 			ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
 			if (ent.hasMetadata("elite"))
-				armor[3] = new ArmorGenerator().getArmor(EquipmentType.HELMET, ArmorTier.getByTier(tier),
-				        ArmorModifier.UNIQUE);
+			    armor[3] = new ItemGenerator().setType(ItemType.HELMET).setTier(ItemTier.getById(tier)).setRarity(Item.ItemRarity.UNIQUE).getItem();
 			else
-				armor[3] = new ArmorGenerator().getArmor(EquipmentType.HELMET, ArmorTier.getByTier(tier),
-				        API.getArmorModifier());
+	            armor[3] = new ItemGenerator().setType(ItemType.HELMET).setTier(ItemTier.getById(tier)).setRarity(API.getItemRarity()).getItem();
 
 			loot = new ItemStack[] { armor[0], armor[1], armor[2], armor[3], weapon };
 			ItemStack armorToDrop;

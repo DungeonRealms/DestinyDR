@@ -1,0 +1,45 @@
+package net.dungeonrealms.game.world.entities.types.pets;
+
+import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.minecraft.server.v1_8_R3.EntityLiving;
+import net.minecraft.server.v1_8_R3.EntityMagmaCube;
+import net.minecraft.server.v1_8_R3.World;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import java.util.UUID;
+
+/**
+ * Created by Kieran Quigley (Proxying) on 29-May-16.
+ */
+public class MagmaCube extends EntityMagmaCube {
+
+    private String mobName;
+    private UUID ownerUUID;
+    private EnumEntityType entityType;
+    private Player target;
+
+    public MagmaCube(World world, String mobName, UUID ownerUUID, EnumEntityType entityType) {
+        super(world);
+        this.mobName = mobName;
+        this.ownerUUID = ownerUUID;
+        this.entityType = entityType;
+        this.getBukkitEntity().setCustomNameVisible(true);
+        this.getBukkitEntity().setCustomName(mobName);
+        this.setSize(1);
+        this.canPickUpLoot = false;
+        this.persistent = true;
+        this.target = Bukkit.getPlayer(ownerUUID);
+
+        MetadataUtils.registerEntityMetadata(this, this.entityType, 0, 0);
+    }
+
+    public MagmaCube(World world) {
+        super(world);
+    }
+
+    @Override
+    protected void e(EntityLiving entityliving) {
+    }
+}

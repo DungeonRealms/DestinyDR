@@ -1,10 +1,11 @@
 	package net.dungeonrealms.game.handlers;
 
-    import net.dungeonrealms.API;
+    import com.connorlinfoot.actionbarapi.ActionBarAPI;
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.GamePlayer;
-    import net.dungeonrealms.game.mechanics.SoundAPI;
-    import net.dungeonrealms.game.mechanics.generic.EnumPriority;
+import net.dungeonrealms.game.mechanics.SoundAPI;
+import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -17,8 +18,8 @@ import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.party.Affair;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
-    import org.bukkit.*;
-    import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.*;
@@ -26,11 +27,9 @@ import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
-import org.inventivetalent.bossbar.BossBarAPI;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
     /**
  * Created by Kieran on 10/3/2015.
@@ -53,8 +52,12 @@ public class HealthHandler implements GenericMechanic {
     }
 
     public void startInitialization() {
-        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::updatePlayerHPBars, 40, 6L);
-        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40, 20L);
+		Bukkit.getServer().getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            for(Player pl : Bukkit.getServer().getOnlinePlayers()) {
+                setPlayerOverheadHP(pl, getPlayerHPLive(pl));
+            }
+        }, 0L, 5L);
+		Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::regenerateHealth, 40, 20L);
     }
 
         @Override
@@ -104,15 +107,9 @@ public class HealthHandler implements GenericMechanic {
         }
     }
 
-    /**
-     * Updates players "HP Bars"
-     * using the bossbar API
-     *
-     * @since 1.0
-     */
-    private void updatePlayerHPBars() {
-        Bukkit.getOnlinePlayers().stream().filter(player -> getPlayerHPLive(player) > 0).forEach(player -> setPlayerOverheadHP(player, getPlayerHPLive(player)));
-    }
+    //private void updatePlayerHPBars() {
+    //    Bukkit.getOnlinePlayers().stream().filter(player -> getPlayerHPLive(player) > 0).forEach(player -> setPlayerOverheadHP(player, getPlayerHPLive(player)));
+    //}
 
     /**
      * Returns the players current HP
@@ -153,27 +150,14 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     private void setPlayerOverheadHP(Player player, int hp) {
-        //Check their Max HP from wherever we decide to store it, get it as a percentage.
-        //Update BarAPI thing with it.
         boolean safeRegion = API.isInSafeRegion(player.getLocation());
         boolean nonPvPRegion = API.isNonPvPRegion(player.getLocation());
-        if (safeRegion) {
-            //Save a little bit while in safe zones?
-            if (new Random().nextInt(4) <= 2) {
-                return;
-            }
-        }
         GamePlayer gamePlayer = API.getGamePlayer(player);
         if (gamePlayer == null) {
             return;
         }
         ScoreboardHandler.getInstance().updatePlayerHP(player, hp);
         double maxHP = getPlayerMaxHPLive(player);
-        double healthPercentage = ((double) hp / maxHP);
-        if (healthPercentage * 100.0F > 100.0F) {
-            healthPercentage = 1.0;
-        }
-        float healthToDisplay = (float) (healthPercentage * 100.F);
         int playerLevel = gamePlayer.getLevel();
         String playerLevelInfo = ChatColor.AQUA.toString() + ChatColor.BOLD + "LVL " + ChatColor.AQUA + playerLevel;
         String separator = ChatColor.BLACK.toString() + ChatColor.BOLD + " - ";
@@ -186,9 +170,7 @@ public class HealthHandler implements GenericMechanic {
             playerHPInfo = ChatColor.RED.toString() + ChatColor.BOLD + "HP " + ChatColor.RED + hp + ChatColor.BOLD + " / " + ChatColor.RED + (int) maxHP;
         }
         String playerEXPInfo = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "EXP " + ChatColor.LIGHT_PURPLE + Math.round((gamePlayer.getExperience() / gamePlayer.getEXPNeeded(playerLevel)) * 100.0) + "%";
-
-        BossBarAPI.setMessage(player, playerLevelInfo + separator + playerHPInfo + separator + playerEXPInfo, 100F);
-        BossBarAPI.setHealth(player, healthToDisplay);
+        ActionBarAPI.sendActionBar(player, playerLevelInfo + separator + playerHPInfo + separator + playerEXPInfo);
     }
 
     /**
@@ -378,7 +360,7 @@ public class HealthHandler implements GenericMechanic {
                 if (newHealth >= maxHP) {
                     newHealth = maxHP;
                 }
-                player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " ➜ " + ChatColor.GREEN + " [" + (int) newHealth + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+                player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " -> " + ChatColor.GREEN + " [" + (int) newHealth + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
             }
             return;
         } else if (player.getHealth() <= 19 && ((currentHP + (double) amount) < maxHP)) {
@@ -403,7 +385,7 @@ public class HealthHandler implements GenericMechanic {
             if (newHealth >= maxHP) {
                 newHealth = maxHP;
             }
-            player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " ➜ " + ChatColor.GREEN + " [" + (int) newHealth + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+            player.sendMessage(ChatColor.GREEN + "     +" + amount + ChatColor.BOLD + " HP" + ChatColor.AQUA + " -> " + ChatColor.GREEN + " [" + (int) newHealth + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
         }
     }
 
@@ -458,7 +440,7 @@ public class HealthHandler implements GenericMechanic {
      * @param damage
      * @since 1.0
      */
-    public void handlePlayerBeingDamaged(Player player, Entity damager, double damage) {
+    public void handlePlayerBeingDamaged(Player player, Entity damager, double damage, double armourReducedDamage, double totalArmor) {
         if (!API.isPlayer(player)) {
             return;
         }
@@ -518,14 +500,16 @@ public class HealthHandler implements GenericMechanic {
                 }
             }
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, leAttacker.getUniqueId()).toString())) {
-                leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " ➜ " + ChatColor.DARK_PURPLE + player.getName() + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
+                leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
             }
             player.playEffect(EntityEffect.HURT);
             SoundAPI.getInstance().playSoundAtLocation("damage.hit", player.getLocation(), 6);
         }
 
         if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-            player.sendMessage(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.RED + " ➜ " + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
+            player.sendMessage(ChatColor.RED + "     -" + (int) damage + ChatColor.BOLD + " HP" + ChatColor.GRAY + " [-"
+                    + (int) totalArmor + "%A -> -" + (int) armourReducedDamage + ChatColor.BOLD + "DMG" + ChatColor.GRAY
+                    + "]" + ChatColor.GREEN + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.GREEN + "]");
         }
 
         if (newHP <= 0) {
@@ -562,7 +546,7 @@ public class HealthHandler implements GenericMechanic {
                             KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, finalLeAttacker);
                         }
                         CombatLog.removeFromCombat(player);
-                    }, 20l);
+                    }, 20L);
                     return;
                 }
             } else {
@@ -588,7 +572,7 @@ public class HealthHandler implements GenericMechanic {
                         KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, finalLeAttacker);
                     }
                     CombatLog.removeFromCombat(player);
-                }, 20l);
+                }, 20L);
                 return;
             }
         }
@@ -639,7 +623,7 @@ public class HealthHandler implements GenericMechanic {
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
                     if (!entity.hasMetadata("uuid")) {
                         String customNameAppended = (entity.getMetadata("customname").get(0).asString().trim());
-                        attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " ➜ " + ChatColor.DARK_PURPLE + API.getTierColor(entity.getMetadata("tier").get(0).asInt()) + customNameAppended + ChatColor.DARK_PURPLE + ChatColor.BOLD + " [" + (int) newHP + "HP]");
+                        attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + API.getTierColor(entity.getMetadata("tier").get(0).asInt()) + customNameAppended + ChatColor.DARK_PURPLE + ChatColor.BOLD + " [" + (int) newHP + "HP]");
                     }
                 }
             }

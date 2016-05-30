@@ -1,8 +1,6 @@
 *.class
 *.idea
-*.project
-*.classpath
-*.settings
-/DR.iml
+/DungeonRealms.jar
 /bin
-rebel*
+/src/rebel.xml
+/src/rebel-remote.xml

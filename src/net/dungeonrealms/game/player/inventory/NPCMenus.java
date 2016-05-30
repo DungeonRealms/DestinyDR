@@ -1,16 +1,18 @@
 package net.dungeonrealms.game.player.inventory;
 
-import com.minebone.anvilapi.core.AnvilApi;
-import com.minebone.anvilapi.nms.anvil.AnvilGUIInterface;
-import com.minebone.anvilapi.nms.anvil.AnvilSlot;
 import net.dungeonrealms.API;
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
-import net.dungeonrealms.game.world.items.Item.ItemModifier;
+import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
+import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
+import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -25,26 +27,34 @@ import java.util.List;
 public class NPCMenus {
 
     public static void openMountPurchaseMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 18, "Animal Vendor");
+        Inventory inv = Bukkit.createInventory(null, 18, "Animal Tamer");
 
-        inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.SADDLE), ChatColor.GREEN + "Old Horse Mount", new String[]{
+        inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.SADDLE), ChatColor.GREEN + EnumMounts.TIER1_HORSE.getDisplayName(), new String[]{
                 ChatColor.RED + "Speed 120%",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "An old brown starter horse.",
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "5000g"}).setNBTString("mountType", "T1HORSE").setNBTInt("mountCost", 5000).build());
-        inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.DIAMOND_BARDING), ChatColor.AQUA + "Traveler's Horse Mount", new String[]{
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "3000g"}).setNBTString("mountType", EnumMounts.TIER1_HORSE.getRawName()).setNBTInt("mountCost", 3000).build());
+        inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.IRON_BARDING), ChatColor.AQUA + EnumMounts.TIER2_HORSE.getDisplayName(), new String[]{
                 ChatColor.RED + "Speed 140%",
                 ChatColor.RED + "Jump 110%",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "A horse fit for a humble squire.",
+                ChatColor.RED.toString() + ChatColor.BOLD + "REQ: " + ChatColor.RESET + ChatColor.GREEN + EnumMounts.TIER1_HORSE.getDisplayName(),
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "7000g"}).setNBTString("mountType", EnumMounts.TIER2_HORSE.getRawName()).setNBTInt("mountCost", 7000).build());
+        inv.setItem(2, new ItemBuilder().setItem(new ItemStack(Material.DIAMOND_BARDING), ChatColor.LIGHT_PURPLE + EnumMounts.TIER3_HORSE.getDisplayName(), new String[]{
+                ChatColor.RED + "Speed 170%",
+                ChatColor.RED + "Jump 110%",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "A well versed travelling companion.",
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "15000g"}).setNBTString("mountType", "DIAMONDHORSE").setNBTInt("mountCost", 15000).build());
-        inv.setItem(2, new ItemBuilder().setItem(new ItemStack(Material.GOLD_BARDING), ChatColor.YELLOW + "Knight's Horse Mount", new String[]{
-                ChatColor.RED + "Speed 160%",
+                ChatColor.RED.toString() + ChatColor.BOLD + "REQ: " + ChatColor.RESET +  ChatColor.AQUA + EnumMounts.TIER2_HORSE.getDisplayName(),
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "15000g"}).setNBTString("mountType", EnumMounts.TIER3_HORSE.getRawName()).setNBTInt("mountCost", 15000).build());
+        inv.setItem(3, new ItemBuilder().setItem(new ItemStack(Material.GOLD_BARDING), ChatColor.YELLOW + EnumMounts.TIER4_HORSE.getDisplayName(), new String[]{
+                ChatColor.RED + "Speed 200%",
                 ChatColor.RED + "Jump 110%",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "A mount fit for even the best of adventurers.",
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "35000g"}).setNBTString("mountType", "GOLDHORSE").setNBTInt("mountCost", 35000).build());
+                ChatColor.RED.toString() + ChatColor.BOLD + "REQ: " + ChatColor.RESET + ChatColor.LIGHT_PURPLE + EnumMounts.TIER3_HORSE.getDisplayName(),
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "30000g"}).setNBTString("mountType", EnumMounts.TIER4_HORSE.getRawName()).setNBTInt("mountCost", 30000).build());
         inv.setItem(9, new ItemBuilder().setItem(new ItemStack(Material.LEASH), ChatColor.GREEN + "Storage Mule", new String[]{
                 ChatColor.RED + "Storage Size: 9 Items",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "An old worn-out storage mule.",
-                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "15000g"}).setNBTString("mountType", "MULE").setNBTInt("mountCost", 15000).build());
+                ChatColor.GREEN + "Price: " + ChatColor.WHITE + "5000g"}).setNBTString("mountType", EnumMounts.MULE.getRawName()).setNBTInt("mountCost", 5000).build());
         player.openInventory(inv);
     }
 
@@ -54,7 +64,6 @@ public class NPCMenus {
         ItemStack fishingRod = ItemManager.createFishingPole(1);
         ItemMeta meta = pickAxe.getItemMeta();
         List<String> lore = meta.getLore();
-//        String[] array = (String[]) lore.toArray();
         lore.add(ChatColor.GREEN + "Price: " + ChatColor.WHITE + "100g");
         String[] arr = lore.toArray(new String[lore.size()]);
         inv.addItem(editItem(pickAxe, pickAxe.getItemMeta().getDisplayName(), arr));
@@ -71,22 +80,12 @@ public class NPCMenus {
         GamePlayer gp = API.getGamePlayer(player);
         if (gp.getLevel() >= 10) {
             if (gp.getStats().resetAmounts > 0) {
-                player.sendMessage(ChatColor.GREEN + "You have a free stat reset available!");
-                AnvilGUIInterface gui = AnvilApi.createNewGUI(player, e -> {
-                    if (e.getSlot() == AnvilSlot.OUTPUT) {
-                        if (e.getName().equalsIgnoreCase("Yes") || e.getName().equalsIgnoreCase("y")) {
-                            gp.getStats().freeResets -= 1;
-                        } else {
-                            e.destroy();
-                        }
+                player.sendMessage(ChatColor.GREEN + "You have a free stat reset available! Type 'yes' or 'y' to use it");
+                Chat.listenForMessage(player, chat -> {
+                    if (chat.getMessage().equalsIgnoreCase("yes") || chat.getMessage().equalsIgnoreCase("y")) {
+                        gp.getStats().freeResets-= 1;
                     }
-                });
-                ItemStack stack = new ItemStack(Material.INK_SACK, 1, DyeColor.GREEN.getDyeData());
-                ItemMeta meta = stack.getItemMeta();
-                meta.setDisplayName("Use your ONE stat points reset?");
-                stack.setItemMeta(meta);
-                gui.setSlot(AnvilSlot.INPUT_LEFT, stack);
-                Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), gui::open, 50L);
+                }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
             } else {
                 player.sendMessage(ChatColor.RED + "You have already used your free stat reset for your character.");
                 player.sendMessage(ChatColor.YELLOW + "You may purchase more resets from the E-Cash vendor!.");
@@ -107,14 +106,12 @@ public class NPCMenus {
                 ChatColor.AQUA + "649 E-Cash"}).setNBTString("playerTrailType", "CLOUD").setNBTInt("ecashCost", 649).build());
         inv.setItem(3, new ItemBuilder().setItem(new ItemStack(Material.POTION), ChatColor.DARK_PURPLE + "Cursed Trail", new String[]{
                 ChatColor.AQUA + "649 E-Cash"}).setNBTString("playerTrailType", "WITCHMAGIC").setNBTInt("ecashCost", 649).build());
-        inv.setItem(4, new ItemBuilder().setItem(Material.SKULL_ITEM, (short) 2, ChatColor.GREEN + "Zombie Horse", new String[]{
-                ChatColor.RED + "Speed 160%",
-                ChatColor.RED + "Jump 110%",
-                ChatColor.AQUA + "749 E-Cash"}).setNBTString("mountType", "ZOMBIEHORSE").setNBTInt("ecashCost", 749).build());
-        inv.setItem(5, new ItemBuilder().setItem(Material.SKULL_ITEM, (short) 0, ChatColor.GRAY + "Skeleton Horse", new String[]{
-                ChatColor.RED + "Speed 160%",
-                ChatColor.RED + "Jump 110%",
-                ChatColor.AQUA + "749 E-Cash"}).setNBTString("mountType", "SKELETONHORSE").setNBTInt("ecashCost", 749).build());
+        inv.setItem(4, new ItemBuilder().setItem(Material.SKULL_ITEM, (short) 2, ChatColor.GREEN + "Zombie Horse Skin", new String[]{
+                ChatColor.RED + "Requires a mount to purchase",
+                ChatColor.AQUA + "749 E-Cash"}).setNBTString("skinType", EnumMountSkins.ZOMBIE_HORSE.getRawName()).setNBTInt("ecashCost", 749).build());
+        inv.setItem(5, new ItemBuilder().setItem(Material.SKULL_ITEM, (short) 0, ChatColor.GRAY + "Skeleton Horse Skin", new String[]{
+                ChatColor.RED + "Requires a mount to purchase",
+                ChatColor.AQUA + "749 E-Cash"}).setNBTString("skinType", EnumMountSkins.SKELETON_HORSE.getRawName()).setNBTInt("ecashCost", 749).build());
         inv.setItem(6, new ItemBuilder().setItem(Material.MONSTER_EGG, (short) 101, ChatColor.YELLOW + "Rabbit Pet", new String[]{
                 ChatColor.AQUA + "749 E-Cash"}).setNBTString("petType", "RABBIT").setNBTInt("ecashCost", 749).build());
         inv.setItem(7, new ItemBuilder().setItem(Material.MONSTER_EGG, (short) 98, ChatColor.YELLOW + "Ocelot Pet", new String[]{
@@ -200,26 +197,26 @@ public class NPCMenus {
 
     public static void openFoodVendorMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 18, "Food Vendor");
-        ItemStack potato = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemModifier.COMMON), 2);
-        ItemStack loadedPotato = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemModifier.RARE), 4);
-        ItemStack apple = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemModifier.LEGENDARY), 8);
+        ItemStack potato = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemRarity.COMMON), 2);
+        ItemStack loadedPotato = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemRarity.RARE), 4);
+        ItemStack apple = ShopMechanics.addPrice(ItemManager.createHealingFood(1, ItemRarity.UNIQUE), 8);
 
-        ItemStack unCookedChicken = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemModifier.COMMON), 10);
-        ItemStack RoastedChicken = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemModifier.RARE), 14);
-        ItemStack pumpkinPie = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemModifier.LEGENDARY), 18);
+        ItemStack unCookedChicken = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemRarity.COMMON), 10);
+        ItemStack RoastedChicken = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemRarity.RARE), 14);
+        ItemStack pumpkinPie = ShopMechanics.addPrice(ItemManager.createHealingFood(2, ItemRarity.UNIQUE), 18);
 
 
-        ItemStack saltedPork = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemModifier.COMMON), 20);
-        ItemStack seasonedPork = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemModifier.RARE), 25);
-        ItemStack mushroomSoup = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemModifier.LEGENDARY), 30);
+        ItemStack saltedPork = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemRarity.COMMON), 20);
+        ItemStack seasonedPork = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemRarity.RARE), 25);
+        ItemStack mushroomSoup = ShopMechanics.addPrice(ItemManager.createHealingFood(3, ItemRarity.UNIQUE), 30);
 
-        ItemStack frozenSteak = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemModifier.COMMON), 35);
-        ItemStack sizzlingSteak = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemModifier.RARE), 45);
-        ItemStack grilledRabbit = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemModifier.LEGENDARY), 55);
+        ItemStack frozenSteak = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemRarity.COMMON), 35);
+        ItemStack sizzlingSteak = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemRarity.RARE), 45);
+        ItemStack grilledRabbit = ShopMechanics.addPrice(ItemManager.createHealingFood(4, ItemRarity.UNIQUE), 55);
 
-        ItemStack kingsApple = ShopMechanics.addPrice(ItemManager.createHealingFood(5, ItemModifier.COMMON), 95);
-        ItemStack enchantedApple = ShopMechanics.addPrice(ItemManager.createHealingFood(5, ItemModifier.RARE), 100);
-        ItemStack goldCarrot = ShopMechanics.addPrice(ItemManager.createHealingFood(5, ItemModifier.LEGENDARY), 128);
+        ItemStack kingsApple = ShopMechanics.addPrice(ItemManager.createHealingFood(5, ItemRarity.COMMON), 95);
+        ItemStack enchantedApple = ShopMechanics.addPrice(ItemManager.createHealingFood(5, ItemRarity.RARE), 100);
+        ItemStack goldCarrot = ShopMechanics.addPrice(ItemManager.createHealingFood(5, ItemRarity.UNIQUE), 128);
 
         inv.setItem(0, potato);
         inv.setItem(1, loadedPotato);

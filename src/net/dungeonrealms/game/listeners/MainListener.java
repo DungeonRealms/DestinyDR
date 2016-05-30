@@ -217,7 +217,7 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onAsyncJoin(AsyncPlayerPreLoginEvent event) {
-        if (!DungeonRealms.getInstance().hasFinishedSetup() && !event.getName().equalsIgnoreCase("xFinityPro")) {
+        if (!DungeonRealms.getInstance().hasFinishedSetup() && !event.getName().equalsIgnoreCase("Kayaba")) {
             event.disallow(Result.KICK_OTHER, ChatColor.GREEN + "The server is still setting up reconnect shortly!");
             return;
         }
@@ -312,6 +312,7 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onPlayerQuit(PlayerQuitEvent event) {
+        Chat.listenForMessage(event.getPlayer(), null, null);
         event.setQuitMessage(null);
         //Ensures the player has played at least 5 seconds before saving to the database.
         if (DatabaseAPI.getInstance().PLAYER_TIME.containsKey(event.getPlayer().getUniqueId()) && DatabaseAPI.getInstance().PLAYER_TIME.get(event.getPlayer().getUniqueId()) > 5) {
@@ -374,9 +375,8 @@ public class MainListener implements Listener {
                                 event.setWillDestroy(true);
                                 theevent.getPlayer().closeInventory();
                                 Player p1 = theevent.getPlayer();
-                                Player p2 = playerClicked;
-                                if (API.isNonPvPRegion(p1.getLocation()) && API.isNonPvPRegion(p2.getLocation())) {
-                                    DuelingMechanics.sendDuelRequest(p1, p2);
+                                if (API.isNonPvPRegion(p1.getLocation()) && API.isNonPvPRegion(playerClicked.getLocation())) {
+                                    DuelingMechanics.sendDuelRequest(p1, playerClicked);
                                 }
                             } else if (item.getType() == Material.EMERALD) {
                                 event.setWillClose(true);
@@ -486,7 +486,7 @@ public class MainListener implements Listener {
             player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " enter " + ChatColor.BOLD.toString() + "NON-PVP" + ChatColor.RED + " zones with a Chaotic alignment.");
         }
     }
-
+    
     /**
      * Checks for player interacting with NPC Players, opens an inventory if
      * they have one.
@@ -633,7 +633,6 @@ public class MainListener implements Listener {
         }
         player.getOpenInventory().getTopInventory().clear();
         player.updateInventory();
-        player.sendMessage(ChatColor.YELLOW + "Trade Cancelled!");
     }
 
 

@@ -10,8 +10,8 @@ import org.bukkit.inventory.ItemStack;
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.items.Item.AttributeType;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorAttributeType;
+import net.dungeonrealms.game.world.items.Item.ArmorAttributeType;
+import net.dungeonrealms.game.world.items.Item.WeaponAttributeType;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 
 /**
@@ -49,7 +49,7 @@ public class CommandCheck extends BasicCommand {
         if(args.length == 1){
         	if(args[0].equalsIgnoreCase("nbt")){
         		if(API.isWeapon(inHand)){
-        			for(AttributeType type : Item.AttributeType.values()){
+        			for(WeaponAttributeType type : Item.WeaponAttributeType.values()){
         				if(tag.hasKey(type.getNBTName())){
         					sender.sendMessage(type.getName() + ": " + tag.getInt(type.getNBTName()));
         				}else{

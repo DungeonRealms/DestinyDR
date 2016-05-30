@@ -101,6 +101,9 @@ public class Entities implements GenericMechanic {
 		nmsUtils.registerEntity("MountHorse", 100, EntityHorse.class, Horse.class);
 		nmsUtils.registerEntity("PetSnowman", 97, EntitySnowman.class, Snowman.class);
 		nmsUtils.registerEntity("MountEnderDragon", 63, EntityEnderDragon.class, EnderDragon.class);
+		nmsUtils.registerEntity("PetBat", 65, EntityBat.class, Bat.class);
+		nmsUtils.registerEntity("PetSlime", 55, EntitySlime.class, Slime.class);
+		nmsUtils.registerEntity("PetMagmaCube", 62, EntityMagmaCube.class, MagmaCube.class);
 
 		Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::checkForLeashedMobs, 0, 20L);
 	}

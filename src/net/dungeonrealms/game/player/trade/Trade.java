@@ -126,9 +126,7 @@ public class Trade {
 	 * @return
 	 */
 	public boolean isLeftPlayer(UUID uniqueId) {
-		if (uniqueId.toString().equalsIgnoreCase(p1.getUniqueId().toString()))
-			return true;
-		return false;
+		return uniqueId.toString().equalsIgnoreCase(p1.getUniqueId().toString());
 	}
 
 	/**

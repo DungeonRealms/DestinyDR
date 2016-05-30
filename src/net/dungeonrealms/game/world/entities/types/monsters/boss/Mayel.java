@@ -2,30 +2,27 @@ package net.dungeonrealms.game.world.entities.types.monsters.boss;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.BasicEntitySkeleton;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.items.DamageAPI;
-import net.dungeonrealms.game.world.items.ItemGenerator;
-import net.dungeonrealms.game.world.items.Item.ItemModifier;
-import net.dungeonrealms.game.world.items.armor.Armor.ArmorModifier;
-import net.dungeonrealms.game.world.items.armor.ArmorGenerator;
-import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
-import net.dungeonrealms.game.world.teleportation.Teleportation;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.EntityLiving;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -35,8 +32,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.lang.reflect.Field;
-import java.util.List;
 import java.util.Random;
 
 /**
@@ -75,13 +70,12 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 
 	@Override
 	public void setArmor(int tier) {
-		ItemStack[] armor = getArmor();
 		// weapon, boots, legs, chest, helmet/head
 		ItemStack weapon = getWeapon();
 		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-		this.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
-		this.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
-		this.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
+		this.setEquipment(1, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("mayelboot")));
+		this.setEquipment(2, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("mayelpants")));
+		this.setEquipment(3, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("mayelchest")));
 		this.setEquipment(4, getHead());
 	}
 
@@ -89,8 +83,7 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 	 * @return
 	 */
 	private ItemStack getWeapon() {
-		return new ItemGenerator().next(net.dungeonrealms.game.world.items.Item.ItemType.SWORD,
-		        net.dungeonrealms.game.world.items.Item.ItemTier.getByTier(1), ItemModifier.LEGENDARY);
+		return ItemGenerator.getNamedItem("mayelbow");
 	}
 
 	/**
@@ -114,16 +107,25 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 
 	@Override
 	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
+	    int bandit_type = new Random().nextInt(2) + 1;
+        String skin_name = "";
+
+        if (bandit_type == 0) {
+            skin_name = "hway234";
+        }
+        if (bandit_type == 1) {
+            skin_name = "Xmattpt";
+        }
+        if (bandit_type == 2) {
+            skin_name = "Kayaba"; // niv330
+        }
 		ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
 		SkullMeta meta = (SkullMeta) head.getItemMeta();
-		meta.setOwner("Steve");
+		meta.setOwner(skin_name);
 		head.setItemMeta(meta);
 		return CraftItemStack.asNMSCopy(head);
 	}
 
-	private ItemStack[] getArmor() {
-		return new ArmorGenerator().nextArmor(getEnumBoss().tier, ArmorModifier.LEGENDARY);
-	}
 	@Override
 	public void onBossDeath() {
 		say(this.getBukkitEntity(), getEnumBoss().death);
@@ -174,7 +176,7 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 				canSpawn = false;
 			}
 			say(this.getBukkitEntity(), "Come to my call, brothers!");
-			Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> canSpawn = true, 20 * 5);
+			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> canSpawn = true, 20 * 5);
 		}
 
 	}

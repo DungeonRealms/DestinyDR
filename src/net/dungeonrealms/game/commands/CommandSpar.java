@@ -37,8 +37,8 @@ public class CommandSpar extends BasicCommand {
             String personToFight = args[0];
 
             if (Bukkit.getPlayer(personToFight) != null) {
-                new Battle(player, new ArrayList<ItemStack>(), Bukkit.getPlayer(personToFight), new ArrayList<ItemStack>(), player.getLocation(), Spar.SparWorlds.CYREN_BATTLE, "DUEL_" + (System.currentTimeMillis() / 1000l),
-                        SparArmor.TIER_1, SparWeapon.TIER_1, 2323, 0, new ArrayList<Player>()).start();
+                new Battle(player, new ArrayList<>(), Bukkit.getPlayer(personToFight), new ArrayList<>(), player.getLocation(), Spar.SparWorlds.CYREN_BATTLE, "DUEL_" + (System.currentTimeMillis() / 1000L),
+                        SparArmor.TIER_1, SparWeapon.TIER_1, 2323, 0, new ArrayList<>()).start();
             } else {
                 player.sendMessage(ChatColor.RED + "That person is offline!");
             }

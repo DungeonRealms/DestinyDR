@@ -24,7 +24,10 @@ import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.items.ItemGenerator;
+import net.dungeonrealms.game.world.items.Item.ItemRarity;
+import net.dungeonrealms.game.world.items.Item.ItemTier;
+import net.dungeonrealms.game.world.items.Item.ItemType;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.spawning.BuffManager;
@@ -209,7 +212,7 @@ public class DamageListener implements Listener {
             NBTTagCompound tag = nmsItem.getTag();
             //Check if it's a {WEAPON} the player is hitting with. Once of our custom ones!
             if (!tag.getString("type").equalsIgnoreCase("weapon")) return;
-            if (attacker.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(attacker.getUniqueId()) <= 0) {
+            if (attacker.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(attacker) <= 0) {
                 event.setCancelled(true);
                 event.setDamage(0);
                 attacker.playSound(attacker.getLocation(), Sound.WOLF_PANT, 12F, 1.5F);
@@ -376,7 +379,6 @@ public class DamageListener implements Listener {
          if(!offer.canFight){
         	event.setCancelled(true);
         	event.setDamage(0);
-        	return;
          }
         }
     
@@ -425,7 +427,7 @@ public class DamageListener implements Listener {
                 }
             }
         }
-        double armourReducedDamage = 0;
+        double armourReducedDamage = 0, totalArmor = 0;
         LivingEntity defender = (LivingEntity) event.getEntity();
         EntityEquipment defenderEquipment = defender.getEquipment();
         LivingEntity attacker = null;
@@ -433,11 +435,13 @@ public class DamageListener implements Listener {
         ItemStack[] defenderArmor = defenderEquipment.getArmorContents();
         if (event.getDamager() instanceof LivingEntity) {
             attacker = (LivingEntity) event.getDamager();
-            armourReducedDamage = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor, event.getDamage());
+            double[] result = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor, event.getDamage());
+            armourReducedDamage = result[0];
+            totalArmor = result[1];
             if (attacker.getEquipment().getItemInHand() != null && attacker.getEquipment().getItemInHand().getType() != Material.AIR) {
                 net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attacker.getEquipment().getItemInHand()));
                 if (nmsItem != null && nmsItem.getTag() != null) {
-                    if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.POLE_ARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
+                    if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.POLEARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
                         DamageAPI.polearmAOEProcessing.add(attacker);
                         for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
                             if (entity instanceof LivingEntity && entity != event.getEntity() && !(entity instanceof Player)) {
@@ -448,7 +452,6 @@ public class DamageListener implements Listener {
                                     }
                                 }
                             } else {
-                                continue;
                             }
                         }
                         DamageAPI.polearmAOEProcessing.remove(attacker);
@@ -497,7 +500,9 @@ public class DamageListener implements Listener {
                     return;
                 }
             }
-            armourReducedDamage = DamageAPI.calculateArmorReduction(attackingArrow, defender, defenderArmor, event.getDamage());
+            double[] result = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor, event.getDamage());
+            armourReducedDamage = result[0];
+            totalArmor = result[1];
         } else if (event.getDamager().getType() == EntityType.SNOWBALL) {
             Snowball staffProjectile = (Snowball) event.getDamager();
             if (!(staffProjectile.getShooter() instanceof LivingEntity)) return;
@@ -540,7 +545,9 @@ public class DamageListener implements Listener {
                     return;
                 }
             }
-            armourReducedDamage = DamageAPI.calculateArmorReduction(staffProjectile, defender, defenderArmor, event.getDamage());
+            double[] result = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor, event.getDamage());
+            armourReducedDamage = result[0];
+            totalArmor = result[1];
         }
         if (armourReducedDamage == -1) {
             if (attacker instanceof Player) {
@@ -552,9 +559,7 @@ public class DamageListener implements Listener {
                 } else {
                     defenderName = "Enemy";
                 }
-                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
-                    attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT DODGED* (" + defenderName + org.bukkit.ChatColor.RED + ")");
-                }
+                attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT DODGED* (" + defenderName + org.bukkit.ChatColor.RED + ")");
             }
             if (defender instanceof Player) {
                 String attackerName;
@@ -565,9 +570,8 @@ public class DamageListener implements Listener {
                 } else {
                     attackerName = "Enemy";
                 }
-                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, defender.getUniqueId()).toString())) {
-                    defender.sendMessage(org.bukkit.ChatColor.GREEN + "" + org.bukkit.ChatColor.BOLD + "                        *DODGE* (" + org.bukkit.ChatColor.RED + attackerName + org.bukkit.ChatColor.GREEN + ")");
-                }
+                ((Player) defender).playSound(defender.getLocation(), Sound.ZOMBIE_INFECT, 1.5F, 2F);
+                defender.sendMessage(org.bukkit.ChatColor.GREEN + "" + org.bukkit.ChatColor.BOLD + "                        *DODGE* (" + org.bukkit.ChatColor.RED + attackerName + org.bukkit.ChatColor.GREEN + ")");
             }
             //The defender dodged the attack
             event.setDamage(0);
@@ -590,9 +594,7 @@ public class DamageListener implements Listener {
                 } else {
                     defenderName = "Enemy";
                 }
-                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
-                    attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + org.bukkit.ChatColor.RED + ")");
-                }
+                attacker.sendMessage(org.bukkit.ChatColor.RED + "" + org.bukkit.ChatColor.BOLD + "                   *OPPONENT BLOCKED* (" + defenderName + org.bukkit.ChatColor.RED + ")");
             }
             if (defender instanceof Player) {
                 String attackerName;
@@ -603,9 +605,8 @@ public class DamageListener implements Listener {
                 } else {
                     attackerName = "Enemy";
                 }
-                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, defender.getUniqueId()).toString())) {
-                    defender.sendMessage(org.bukkit.ChatColor.DARK_GREEN + "" + org.bukkit.ChatColor.BOLD + "                        *BLOCK* (" + org.bukkit.ChatColor.RED + attackerName + org.bukkit.ChatColor.DARK_GREEN + ")");
-                }
+                ((Player) defender).playSound(defender.getLocation(), Sound.ZOMBIE_METAL, 2F, 1.0F);
+                defender.sendMessage(org.bukkit.ChatColor.DARK_GREEN + "" + org.bukkit.ChatColor.BOLD + "                        *BLOCK* (" + org.bukkit.ChatColor.RED + attackerName + org.bukkit.ChatColor.DARK_GREEN + ")");
             }
             event.setDamage(0);
             LivingEntity leDefender = (LivingEntity) event.getEntity();
@@ -620,14 +621,14 @@ public class DamageListener implements Listener {
                 if (((Player) defender).isBlocking() && ((Player) defender).getItemInHand() != null && ((Player) defender).getItemInHand().getType() != Material.AIR) {
                     if (new Random().nextInt(100) <= 80) {
                         double blockDamage = event.getDamage() / 2;
-                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (blockDamage - armourReducedDamage));
+                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (blockDamage - armourReducedDamage), armourReducedDamage, totalArmor);
                         event.setDamage(0);
                     } else {
-                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (event.getDamage() - armourReducedDamage));
+                        HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (event.getDamage() - armourReducedDamage), armourReducedDamage, totalArmor);
                         event.setDamage(0);
                     }
                 } else {
-                    HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (event.getDamage() - armourReducedDamage));
+                    HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (event.getDamage() - armourReducedDamage), armourReducedDamage, totalArmor);
                     event.setDamage(0);
                 }
             } else if (defender instanceof CraftLivingEntity) {
@@ -687,7 +688,7 @@ public class DamageListener implements Listener {
     public void onPlayerFireBow(EntityShootBowEvent event) {
         if (event.getEntity().getType() != EntityType.PLAYER) return;
         Player player = (Player) event.getEntity();
-        if (player.getExp() <= 0 || EnergyHandler.getPlayerCurrentEnergy(player.getUniqueId()) <= 0) {
+        if (player.getExp() <= 0 || EnergyHandler.getPlayerCurrentEnergy(player) <= 0) {
             event.setCancelled(true);
             return;
         }
@@ -947,7 +948,6 @@ public class DamageListener implements Listener {
                             RepairAPI.subtractCustomDurability(player, itemStack, 400);
                             player.getInventory().addItem(itemStack);
                         } else {
-                            continue;
                         }
                     }
                 }
@@ -955,11 +955,15 @@ public class DamageListener implements Listener {
             player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
             player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
             player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
-            player.getInventory().addItem(new ItemBuilder().setItem(new ItemGenerator().getDefinedStack(Item.ItemType.AXE, Item.ItemTier.TIER_1, Item.ItemModifier.UNCOMMON)).setNBTString("subtype", "starter").build());
-            //player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.HELMET, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON)).setNBTString("subtype", "starter").build());
-           // player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.CHESTPLATE, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON)).setNBTString("subtype", "starter").build());
-            //player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.LEGGINGS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON)).setNBTString("subtype", "starter").build());
-            //player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Armor.EquipmentType.BOOTS, Armor.ArmorTier.TIER_1, Armor.ArmorModifier.COMMON)).setNBTString("subtype", "starter").build());
+            player.getInventory()
+                    .addItem(new ItemBuilder()
+                            .setItem(new ItemGenerator().setTier(ItemTier.TIER_1).setRarity(ItemRarity.COMMON)
+                                    .setType(ItemType.AXE).generateItem().getItem())
+                            .setNBTString("subtype", "starter").build());
+            //player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Item.ItemType.HELMET, Armor.ArmorTier.TIER_1, Armor.ItemRarity.COMMON)).setNBTString("subtype", "starter").build());
+           // player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Item.ItemType.CHESTPLATE, Armor.ArmorTier.TIER_1, Armor.ItemRarity.COMMON)).setNBTString("subtype", "starter").build());
+            //player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Item.ItemType.LEGGINGS, Armor.ArmorTier.TIER_1, Armor.ItemRarity.COMMON)).setNBTString("subtype", "starter").build());
+            //player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Item.ItemType.BOOTS, Armor.ArmorTier.TIER_1, Armor.ItemRarity.COMMON)).setNBTString("subtype", "starter").build());
         }, 20L);
     }
 
@@ -1022,7 +1026,7 @@ public class DamageListener implements Listener {
                 break;
         }
         
-        if (event.getPlayer().hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(event.getPlayer().getUniqueId()) <= 0) {
+        if (event.getPlayer().hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(event.getPlayer()) <= 0) {
             event.setCancelled(true);
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.WOLF_PANT, 12F, 1.5F);
             try {
@@ -1138,7 +1142,7 @@ public class DamageListener implements Listener {
                 double actualDamage = ((Player) event.getEntity()).getMaxHealth() / event.getDamage();
                 int damageToHarmBy = (int) (HealthHandler.getInstance().getPlayerMaxHPLive((Player) event.getEntity()) / actualDamage);
                 if (damageToHarmBy > 0) {
-                    HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, (damageToHarmBy / 10));
+                    HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), null, (damageToHarmBy / 10), 0, 0);
                 }
                 event.setDamage(0);
                 event.setCancelled(true);

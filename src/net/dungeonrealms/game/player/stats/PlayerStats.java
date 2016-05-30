@@ -146,7 +146,7 @@ public class PlayerStats {
 
 		int vit =  vitPoints;
 		int aPoints = tempvitPoints; // allocated points
-		boolean spent = (aPoints > 0) ? true : false;
+		boolean spent = aPoints > 0;
 		
 		return ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.RED + "Vitality Bonuses: " + vit + (spent ? ChatColor.GREEN + " [+" + aPoints + "]" : ""), new String[]{	ChatColor.GOLD + "HP: " + ChatColor.AQUA + df.format(vit * 0.034) + "%" + (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.034) + "%]" : ""),
 				ChatColor.GOLD + "HP REGEN: " + ChatColor.AQUA + df.format(vit * 0.03) + " HP/s"
@@ -183,7 +183,7 @@ public class PlayerStats {
 	  ItemStack loadStrStatsItem() {
 		int str = strPoints;
 		int aPoints = tempstrPoints; // allocated points
-		boolean spent = (aPoints > 0) ? true : false;
+		boolean spent = aPoints > 0;
 		
 		return ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.RED + "Strength Bonuses: " + str + (spent ? ChatColor.GREEN + " [+" + aPoints + "]" : ""), new String[]{ChatColor.GOLD + "ARMOR: " + ChatColor.AQUA + df.format(str * 0.03) + "%" + (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.03) + "%]" : ""),
 				ChatColor.GOLD + "BLOCK: " + ChatColor.AQUA + df.format(str * 0.017) + "%" + (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.017) + "%]" : ""),
@@ -221,7 +221,7 @@ public class PlayerStats {
 	  ItemStack loadIntStatsItem() {
 		int in = intPoints;
 		int aPoints = tempintPoints; // allocated points
-		boolean spent = (aPoints > 0) ? true : false;
+		boolean spent = aPoints > 0;
 		
 		return  ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.RED + "Intellect Bonuses: " + in + (spent ? ChatColor.GREEN + " [+" + aPoints + "]" : ""), new String[]{
 				ChatColor.GOLD + "ENERGY REGEN: " + ChatColor.AQUA + df.format(in * 0.015) + "%"
@@ -266,7 +266,7 @@ public class PlayerStats {
 	  ItemStack loadDexStatsItem() {
 	  		int dex = dexPoints;
 	  		int aPoints = tempdexPoints; // allocated points
-	  		boolean spent = (aPoints > 0) ? true : false;
+	  		boolean spent = aPoints > 0;
 	  		return ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.RED + "Dexterity Bonuses: " + dex + (spent ? ChatColor.GREEN + " [+" + aPoints + "]" : ""), new String[] {ChatColor.GOLD + "DPS: " + ChatColor.AQUA + df.format(dex * 0.03) + "%" + (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.03) + "%]" : ""),
 				ChatColor.GOLD + "DODGE: " + ChatColor.AQUA + df.format(dex * 0.017) + "%"
 						+ (spent ? ChatColor.GREEN + " [+" + df.format(aPoints * 0.017) + "%]" : ""),
