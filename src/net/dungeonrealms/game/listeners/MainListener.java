@@ -20,6 +20,7 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.mongo.achievements.Achievements;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.inventory.GUI;
@@ -250,17 +251,17 @@ public class MainListener implements Listener {
         player.getInventory().setArmorContents(armor);
         player.sendMessage(ChatColor.GREEN + "Loading your data.. This will only take a moment!");
 
-//        CombatLog.checkCombatLog(uuid);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-                () -> API.handleLogin(player.getUniqueId()), 20L * 3);
-//        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
-//                () -> {
-//                    if ((Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, uuid).toString()))) {
-//                        player.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "You have Combat Logged and someone killed your body while you were gone!");
-//                        player.teleport(Teleportation.Cyrennica);
-//                    }
-//                }, 20L * 5);
-
+        CombatLog.checkCombatLog(player.getUniqueId());
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> API.handleLogin(player.getUniqueId()), 20L * 3);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            if (player.isOnline()) {
+                if ((Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.LOGGERDIED, player.getUniqueId()).toString()))) {
+                    player.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "You logged out while in combat, you're doppelganger was killed and alas your items are gone.");
+                    player.teleport(Teleportation.Cyrennica);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
+                }
+            }
+        }, 20L * 5);
     }
 
     /**
@@ -751,7 +752,6 @@ public class MainListener implements Listener {
                     net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity) ent).getHandle();
                     if ((!(nms instanceof EntityItem)) && !(ent instanceof Player)) {
                         if (!(ent instanceof ItemFrame) && !(ent instanceof Painting) && !(ent instanceof Hanging)) {
-                            Utils.log.info("REMOVED " + ent.getName() + " at " + ent.getLocation());
                             ent.remove();
                         }
                     }
@@ -770,7 +770,6 @@ public class MainListener implements Listener {
                     net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity) ent).getHandle();
                     if ((!(nms instanceof EntityItem)) && !(ent instanceof Player)) {
                         if (!(ent instanceof ItemFrame) && !(ent instanceof Painting) && !(ent instanceof Hanging)) {
-                            Utils.log.info("REMOVED " + ent.getName() + " at " + ent.getLocation());
                             ent.remove();
                         }
                     }

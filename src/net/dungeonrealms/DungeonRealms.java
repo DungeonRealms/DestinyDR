@@ -23,7 +23,6 @@ import net.dungeonrealms.game.mongo.Database;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.achievements.AchievementManager;
 import net.dungeonrealms.game.network.NetworkAPI;
-import net.dungeonrealms.game.network.NetworkServer;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.TabbedChatListener;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -145,7 +144,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(HealthHandler.getInstance());
             mm.registerMechanic(KarmaHandler.getInstance());
             mm.registerMechanic(BankMechanics.getInstance());
-            mm.registerMechanic(NetworkServer.getInstance());
+            //mm.registerMechanic(NetworkServer.getInstance());
             //mm.registerMechanic(DungeonManager.getInstance());
             mm.registerMechanic(new Entities());
             mm.registerMechanic(ScoreboardHandler.getInstance());
@@ -170,7 +169,7 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(HealthHandler.getInstance());
             mm.registerMechanic(KarmaHandler.getInstance());
             mm.registerMechanic(BankMechanics.getInstance());
-            mm.registerMechanic(NetworkServer.getInstance());
+            //mm.registerMechanic(NetworkServer.getInstance());
             mm.registerMechanic(new Entities());
             mm.registerMechanic(ScoreboardHandler.getInstance());
             //mm.registerMechanic(RealmManager.getInstance());

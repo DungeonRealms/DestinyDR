@@ -7,7 +7,6 @@ import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.PlayerManager;
@@ -1086,24 +1085,25 @@ public class DamageListener implements Listener {
         Zombie z = CombatLog.LOGGER.get(uuid);
         z.setBaby(false);
         Inventory inv = CombatLog.LOGGER_INVENTORY.get(uuid);
-        if(inv == null){
-        	Utils.log.info("COMBAT LOGGER INV NULL");
+        if(inv == null) {
         	return;
         }
         Location loc =  KarmaHandler.CHAOTIC_RESPAWNS.get(new Random().nextInt(KarmaHandler.CHAOTIC_RESPAWNS.size() - 1));
-        for(int i = 0; i < inv.getContents().length; i++){
-        	if(i == 0)
-        		continue;	
+        for(int i = 0; i < inv.getContents().length; i++) {
+        	if(i == 0) {
+                continue;
+            }
         	ItemStack stack = inv.getItem(i);
         	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        	if(stack == null || stack.getType() == Material.AIR || nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important") || nms.hasTag() && nms.getTag().hasKey("subtype"))
-        		continue;
+        	if(stack == null || stack.getType() == Material.AIR || nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important") || nms.hasTag() && nms.getTag().hasKey("subtype")) {
+                continue;
+            }
         	event.getEntity().getWorld().dropItemNaturally(event.getEntity().getLocation(), stack);
         }
-        //CombatLog.checkCombatLog(uuid);
+        CombatLog.checkCombatLog(uuid);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, "", true);
   		DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, new ArrayList<String>(), true);
-  		if(loc != null){
+  		if(loc != null) {
   			String locString = loc.getBlockX() +"," + loc.getBlockY() + 5 + "," + loc.getBlockZ() + "," + "0,0";
   			DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locString, true);
   		}

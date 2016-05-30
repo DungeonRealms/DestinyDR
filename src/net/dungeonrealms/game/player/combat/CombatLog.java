@@ -101,17 +101,12 @@ public class CombatLog implements GenericMechanic {
         z.setCustomName(ChatColor.LIGHT_PURPLE + "[" + lvl + "]" + ChatColor.RED + " " + p.getName());
         z.setCustomNameVisible(true);
         MetadataUtils.registerEntityMetadata(((CraftEntity) z).getHandle(), EnumEntityType.HOSTILE_MOB, 4, lvl);
-
-
         HealthHandler.getInstance().setMonsterHPLive(z, HealthHandler.getInstance().getPlayerHPLive(p));
         z.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getPlayerMaxHPLive(p)));
         z.setMetadata("combatlog", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
         z.setMetadata("uuid", new FixedMetadataValue(DungeonRealms.getInstance(), p.getUniqueId().toString()));
         LOGGER.put(p.getUniqueId(), z);
         LOGGER_INVENTORY.put(p.getUniqueId(), p.getInventory());
-        //for(ItemStack stack : p.getInventory()){
-
-        //}
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             LOGGER.get(p.getUniqueId()).remove();
             LOGGER.remove(p.getUniqueId());

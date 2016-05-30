@@ -24,6 +24,7 @@ import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.Entities;
@@ -335,9 +336,14 @@ public class API {
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
             return;
         }
-//        if (CombatLog.isInCombat(player) && !DuelingMechanics.isDueling(uuid) && !API.isNonPvPRegion(player.getLocation())) {
-//            CombatLog.handleCombatLogger(player);
-//        }
+        if (CombatLog.isInCombat(player)) {
+            if (!DuelingMechanics.isDueling(uuid)) {
+                if (!API.isNonPvPRegion(player.getLocation())) {
+                    CombatLog.handleCombatLogger(player);
+                }
+            }
+        }
+
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, false);
         if (BankMechanics.storage.containsKey(uuid)) {
             Inventory inv = BankMechanics.getInstance().getStorage(uuid).inv;
@@ -412,16 +418,15 @@ public class API {
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
             return;
         }
-        if(DungeonRealms.getInstance().realmnumber != -1)
-        {
-        	if(Bukkit.getWorld(player.getUniqueId().toString()) != null)
-        	{
+        if(DungeonRealms.getInstance().realmnumber != -1) {
+        	if(Bukkit.getWorld(player.getUniqueId().toString()) != null) {
                  RealmManager.getInstance().removePlayerRealm(player, true); // Only called if the server is a realm server & they have a realm open!       	
         	}
         }
-//        if (CombatLog.isInCombat(player) && !DuelingMechanics.isDueling(uuid) && !API.isNonPvPRegion(player.getLocation())) {
-//            CombatLog.handleCombatLogger(player);
-//        }
+        /*if (CombatLog.isInCombat(player) && !DuelingMechanics.isDueling(uuid) && !API.isNonPvPRegion(player.getLocation())) {
+            CombatLog.handleCombatLogger(player);
+        }*/
+
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, false);
         if (BankMechanics.storage.containsKey(uuid)) {
             Inventory inv = BankMechanics.getInstance().getStorage(uuid).inv;
@@ -596,7 +601,7 @@ public class API {
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + " Use " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/logout " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "to safely change your server instance."
         });
 
-        if (gp != null && gp.getPlayer() != null)
+        if (gp.getPlayer() != null)
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 if (gp.getStats().freePoints > 0) {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
