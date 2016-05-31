@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.ChatColor;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -7,12 +8,11 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRZombie;
 import net.dungeonrealms.game.mastery.Utils;
-import net.minecraft.server.v1_8_R3.World;
 
 /**
  * Created by Chase on Sep 21, 2015
  */
-public class EntityBandit extends DRZombie{
+public class EntityBandit extends DRZombie {
     public EntityBandit(World world) {
         super(world);
     }

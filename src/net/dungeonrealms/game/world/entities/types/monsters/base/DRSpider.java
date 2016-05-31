@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
+import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -30,6 +31,7 @@ public class DRSpider extends DRZombie implements Monster{
         String customName = monsterType.getPrefix() + " " + monsterType.name + " " + monsterType.getSuffix() + " ";
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
+		this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
 	}
 
 	public DRSpider(World world) {
