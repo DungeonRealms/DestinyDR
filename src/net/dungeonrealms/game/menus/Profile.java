@@ -39,7 +39,9 @@ public class Profile implements Listener {
                 if (player.getGameMode() == GameMode.CREATIVE) return;
                 PacketType type = packet.getType();
                 if (type == CLIENT_COMMAND && packet.getClientCommands().read(0) == EnumWrappers.ClientCommand.OPEN_INVENTORY_ACHIEVEMENT) {
-                    player.getOpenInventory().getTopInventory().setItem(1, getItem(player));
+                    if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
+                        player.getOpenInventory().getTopInventory().setItem(1, getItem(player));
+                    }
                 }
             }
         };

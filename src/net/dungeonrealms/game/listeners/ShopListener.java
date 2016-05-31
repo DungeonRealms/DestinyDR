@@ -20,6 +20,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryOpenEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -36,311 +37,322 @@ import com.minebone.anvilapi.nms.anvil.AnvilSlot;*/
  */
 public class ShopListener implements Listener {
 
-	/**
-	 * Handling Shops being Right clicked.
-	 *
-	 * @param event
-	 * @since 1.0
-	 */
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void playerClickChest(PlayerInteractEvent event) {
-		Block block = event.getClickedBlock();
-		if (block == null)
-			return;
-		if (block.getType() != Material.CHEST)
-			return;
-		Shop shop = ShopMechanics.getShop(block);
-		if (shop == null)
-			return;
-		Action actionType = event.getAction();
-		switch (actionType) {
-		case RIGHT_CLICK_BLOCK:
-			if (shop.isopen || shop.ownerUUID.toString().equalsIgnoreCase(event.getPlayer().getUniqueId().toString())) {
-				event.setCancelled(true);
-				if(shop.ownerName.equalsIgnoreCase(event.getPlayer().getName()) && event.getPlayer().isSneaking()){
-					if(shop.isopen){
-						event.getPlayer().sendMessage(ChatColor.RED + "You must close your shop to upgrade it!");
-						return;
-					}
-					shop.promptUpgrade();
-					return;
-				}else{
-					event.getPlayer().openInventory(shop.getInventory());
-				}
-			} else if (!shop.isopen) {
-				event.setCancelled(true);
-				event.getPlayer().sendMessage(ChatColor.RED.toString() + "This shop is closed!");
-			}
-			break;
-		case LEFT_CLICK_BLOCK:
-			if (shop.ownerUUID.toString().equalsIgnoreCase(event.getPlayer().getUniqueId().toString()) || event.getPlayer().isOp()) {
-				event.setCancelled(true);
-				shop.deleteShop();
-			}
-			break;
-		default:
-		}
-	}
-	//RANDOM MESSAGE NIGGAA BOY!
-	
-	/**
-	 * Ex - Fin -ehty is a nigger boy.
-	 * @param event
-	 */
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void playerClickShopInventory(InventoryClickEvent event) {
-		if (!event.getInventory().getTitle().contains("@"))
-			return;
-		if (event.isShiftClick()) {
-			event.setCancelled(true);
-			return;
-		}
-		String ownerName = event.getInventory().getTitle().split("@")[1];
-		if (ownerName == null)
-			return;
-		Shop shop = ShopMechanics.getShop(ownerName);
-		if (shop == null)
-			return;
-		if (event.getAction() == InventoryAction.NOTHING)
-			return;
-		Player clicker = (Player) event.getWhoClicked();
-		if (event.getRawSlot() >= event.getInventory().getSize()) {
-			return;
-		}
-		if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
-			event.setCancelled(true);
-			return;
-		}
-		if (clicker.getUniqueId().toString().equalsIgnoreCase(shop.ownerUUID.toString())) {
-			// Owner is Clicking
-			if (event.getRawSlot() == 8) {
-				event.setCancelled(true);
-				((Player)event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), Sound.LEVEL_UP, 1, 1)	;
-				shop.updateStatus();
-				return;
-			}
-			ItemStack itemHeld = event.getCursor();
-			ItemStack stackInSlot = event.getCurrentItem();
-			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemHeld);
-			if (shop.isopen) {
-				clicker.sendMessage(ChatColor.RED + "You must close the shop before you can edit");
-				event.setCancelled(true);
-				return;
-			}
-			if (stackInSlot != null && stackInSlot.getType() != Material.AIR && itemHeld.getType() != Material.AIR
-			        && itemHeld.getType() != stackInSlot.getType()) {
-				clicker.sendMessage(ChatColor.RED.toString() + "Move item in slot first.");
-				event.setCancelled(true);
-			} else {
-				if (event.isLeftClick()) {
-					if (stackInSlot == null || stackInSlot.getType() == Material.AIR) {
-						//Setting new Item in SHop
-						if (itemHeld.getType() == Material.AIR || itemHeld == null || itemHeld.getType() == Material.EMERALD)
-							return;
-						if (clicker.getInventory().firstEmpty() < 0) {
-							clicker.sendMessage(ChatColor.RED + "Make more room in your inventory");
-							event.setCancelled(true);
-							return;
-						}
-						if (nms.hasTag() && nms.getTag().hasKey("subtype")
-						        && nms.getTag().getString("subtype").equalsIgnoreCase("starter")) {
-							event.setCancelled(true);
-							clicker.sendMessage("Can't sell starter Items!");
-							return;
-						}
-						event.setCancelled(true);
-						event.setCursor(null);
-						int playerSlot = clicker.getInventory().firstEmpty();
-						clicker.getInventory().setItem(playerSlot, itemHeld);
-						clicker.sendMessage(ChatColor.GREEN + "Please enter a price for the item:");
-						clicker.closeInventory();
-						Chat.listenForMessage(clicker, chat -> {
-							int number = 0;
-							try {
-								number = Integer.parseInt(chat.getMessage());
-							} catch (Exception exc) {
-								chat.getPlayer().sendMessage(ChatColor.RED + "Please enter a valid number");
-								return;
-							}
-							if (number < 0) {
-								clicker.sendMessage(ChatColor.RED + "You can't ask for negative money!");
-							} else {
-								ItemStack stack = itemHeld.clone();
-								ItemMeta meta = itemHeld.getItemMeta();
-								ArrayList<String> lore = new ArrayList<>();
-								if (meta.hasLore()) {
-									lore = (ArrayList<String>) meta.getLore();
-								}
-								lore.add(ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "Price: "
-										+ ChatColor.WHITE.toString() + number + "g" + ChatColor.GREEN + " each");
-								meta.setLore(lore);
-								stack.setItemMeta(meta);
-								net.minecraft.server.v1_8_R3.ItemStack newNMS = CraftItemStack.asNMSCopy(stack);
-								newNMS.getTag().setInt("Price", number);
-								if (shop.inventory.firstEmpty() >= 0) {
-									int slot = shop.inventory.firstEmpty();
-									shop.inventory.setItem(slot, CraftItemStack.asBukkitCopy(newNMS));
-									clicker.playSound(clicker.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
+    /**
+     * Handling Shops being Right clicked.
+     *
+     * @param event
+     * @since 1.0
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void playerClickChest(PlayerInteractEvent event) {
+        Block block = event.getClickedBlock();
+        if (block == null)
+            return;
+        if (block.getType() != Material.CHEST)
+            return;
+        Shop shop = ShopMechanics.getShop(block);
+        if (shop == null)
+            return;
+        Action actionType = event.getAction();
+        switch (actionType) {
+            case RIGHT_CLICK_BLOCK:
+                if (shop.isopen || shop.ownerUUID.toString().equalsIgnoreCase(event.getPlayer().getUniqueId().toString())) {
+                    event.setCancelled(true);
+                    if (shop.ownerName.equalsIgnoreCase(event.getPlayer().getName()) && event.getPlayer().isSneaking()) {
+                        if (shop.isopen) {
+                            event.getPlayer().sendMessage(ChatColor.RED + "You must close your shop to upgrade it!");
+                            return;
+                        }
+                        shop.promptUpgrade();
+                        return;
+                    } else {
+                        event.getPlayer().openInventory(shop.getInventory());
+                    }
+                } else if (!shop.isopen) {
+                    event.setCancelled(true);
+                    event.getPlayer().sendMessage(ChatColor.RED.toString() + "This shop is closed!");
+                }
+                break;
+            case LEFT_CLICK_BLOCK:
+                if (shop.ownerUUID.toString().equalsIgnoreCase(event.getPlayer().getUniqueId().toString()) || event.getPlayer().isOp()) {
+                    event.setCancelled(true);
+                    shop.deleteShop();
+                }
+                break;
+            default:
+        }
+    }
+    //RANDOM MESSAGE NIGGAA BOY!
 
-									clicker.sendMessage(new String[] {
-											ChatColor.YELLOW.toString() + "Price set. Right-Click item to edit.",
-											ChatColor.YELLOW + "Left Click the item to remove it from your shop." });
-									clicker.getInventory().setItem(playerSlot, new ItemStack(Material.AIR));
-								} else {
-									clicker.getInventory().addItem(itemHeld);
-									clicker.sendMessage("There is no room for this item in your Shop");
-								}
-							}
-						}, player -> player.sendMessage(ChatColor.RED + "Action cancelled."));
-						clicker.closeInventory();
-						return;
-					}
-					
-					if(event.getWhoClicked().getInventory().firstEmpty() < 0){
-						event.getWhoClicked().sendMessage(ChatColor.RED + "Make room in your inventory.");
-						event.setCancelled(true);
-						return;
-					}
-					
-					// Removing item from Shop
-					ItemStack stack = stackInSlot.clone();
-					ItemMeta meta = stack.getItemMeta();
-					List<String> lore = meta.getLore();
-					if (lore != null)
-						for (int i = 0; i < lore.size(); i++) {
-							String current = lore.get(i);
-							if (current.contains("Price")) {
-								lore.remove(i);
-								break;
-							}
-						}
-					meta.setLore(lore);
-					stack.setItemMeta(meta);
-					event.setCancelled(true);
-					net.minecraft.server.v1_8_R3.ItemStack nms2 = CraftItemStack.asNMSCopy(stack);
-					nms2.getTag().remove("Price");
-					clicker.getInventory().addItem(CraftItemStack.asBukkitCopy(nms2));
-					event.getInventory().setItem(event.getRawSlot(), new ItemStack(Material.AIR, 1));
-				} else if (event.isRightClick()) {
-					if(stackInSlot == null || stackInSlot.getType() == Material.AIR){
-						clicker.sendMessage(ChatColor.RED + "Can't edit an empty shop!");
-						event.setCancelled(true);
-						return;
-					}
-					event.setCancelled(true);
-					clicker.closeInventory();
-					clicker.sendMessage(ChatColor.GREEN + "Please enter a price for the item:");
-					Chat.listenForMessage(clicker, chat -> {
-						int number = 0;
-						try {
-							number = Integer.parseInt(chat.getMessage());
-							clicker.sendMessage("Price set");
-						} catch (Exception exc) {
-							chat.getPlayer().sendMessage(ChatColor.RED + "Please enter a valid number");
-							return;
-						}
-						if (number < 0) {
-							clicker.getPlayer().sendMessage("You can't ask for negative money!");
-						} else {
-							ItemStack stack = stackInSlot.clone();
-							ItemMeta meta = stackInSlot.getItemMeta();
-							ArrayList<String> lore = new ArrayList<>();
-							if (meta.hasLore()) {
-								lore = (ArrayList<String>) meta.getLore();
-							}
-							for (int i = 0; i < lore.size(); i++) {
-								String current = lore.get(i);
-								if (current.contains("Price")) {
-									lore.remove(i);
-									break;
-								}
-							}
-							lore.add(ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "Price: "
-									+ ChatColor.WHITE.toString() + number + "g " + ChatColor.GREEN + "each");
-							meta.setLore(lore);
-							stack.setItemMeta(meta);
-							net.minecraft.server.v1_8_R3.ItemStack nms1 = CraftItemStack.asNMSCopy(stack);
-							nms1.getTag().setInt("Price", number);
-							shop.inventory.setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms1));
-							clicker.playSound(clicker.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
-						}
-					}, player -> player.sendMessage(ChatColor.RED + "Action cancelled."));
-				}
-			}
-		} else {
-			event.setCancelled(true);
-			// Not Owner Clicking
-			if (!shop.isopen) {
-				if(event.getCursor() != null){
-					clicker.getInventory().addItem(event.getCursor());
-					event.setCursor(null);
-				}
-				clicker.closeInventory();
-				clicker.sendMessage(ChatColor.RED + "The shop has closed");
-				return;
-			}
-			if (event.getRawSlot() == 8) {
-				return;
-			}
-			ItemStack itemClicked = event.getCurrentItem();
-			if (itemClicked == null || itemClicked.getType() == Material.AIR)
-				return;
-			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemClicked);
-			if (nms == null || !nms.hasTag() || !nms.getTag().hasKey("Price"))
-				return;
-			int itemPrice = nms.getTag().getInt("Price");
+    /**
+     * Ex - Fin -ehty is a nigger boy.
+     *
+     * @param event
+     */
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void playerClickShopInventory(InventoryClickEvent event) {
+        if (!event.getInventory().getTitle().contains("@")) return;
+        if (event.isShiftClick()) {
+            event.setCancelled(true);
+            return;
+        }
+        String ownerName = event.getInventory().getTitle().split("@")[1];
+        if (ownerName == null) return;
+        Shop shop = ShopMechanics.getShop(ownerName);
+        if (shop == null) return;
+        if (event.getAction() == InventoryAction.NOTHING) return;
+        Player clicker = (Player) event.getWhoClicked();
+        if (event.getRawSlot() >= event.getInventory().getSize()) {
+            return;
+        }
+        if (event.getAction().equals(InventoryAction.COLLECT_TO_CURSOR)) {
+            event.setCancelled(true);
+            return;
+        }
+        if (clicker.getUniqueId().toString().equalsIgnoreCase(shop.ownerUUID.toString())) {
+            // Owner is Clicking
+            if (event.getRawSlot() == 8) {
+                event.setCancelled(true);
+                ((Player) event.getWhoClicked()).playSound(event.getWhoClicked().getLocation(), Sound.LEVEL_UP, 1, 1);
+                shop.updateStatus();
+                return;
+            }
+            ItemStack itemHeld = event.getCursor();
+            ItemStack stackInSlot = event.getCurrentItem();
+            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemHeld);
+            if (shop.isopen) {
+                clicker.sendMessage(ChatColor.RED + "You must close the shop before you can edit");
+                event.setCancelled(true);
+                return;
+            }
+            if (stackInSlot != null && stackInSlot.getType() != Material.AIR && itemHeld.getType() != Material.AIR
+                    && itemHeld.getType() != stackInSlot.getType()) {
+                clicker.sendMessage(ChatColor.RED.toString() + "Move item in slot first.");
+                event.setCancelled(true);
+            } else {
+                if (event.isLeftClick()) {
+                    if (stackInSlot == null || stackInSlot.getType() == Material.AIR) {
+                        //Setting new Item in SHop
+                        if (itemHeld.getType() == Material.AIR || itemHeld.getType() == Material.EMERALD)
+                            return;
+                        if (clicker.getInventory().firstEmpty() < 0) {
+                            clicker.sendMessage(ChatColor.RED + "Make more room in your inventory");
+                            event.setCancelled(true);
+                            return;
+                        }
+                        if (nms.hasTag() && nms.getTag().hasKey("subtype")
+                                && nms.getTag().getString("subtype").equalsIgnoreCase("starter")) {
+                            event.setCancelled(true);
+                            clicker.sendMessage("Can't sell starter Items!");
+                            return;
+                        }
+                        event.setCancelled(true);
+                        event.setCursor(null);
+                        int playerSlot = clicker.getInventory().firstEmpty();
+                        clicker.getInventory().setItem(playerSlot, itemHeld);
+                        clicker.sendMessage(ChatColor.GREEN + "Please enter a price for the item:");
+                        clicker.closeInventory();
+                        Chat.listenForMessage(clicker, chat -> {
+                            int number = 0;
+                            try {
+                                number = Integer.parseInt(chat.getMessage());
+                            } catch (Exception exc) {
+                                chat.getPlayer().sendMessage(ChatColor.RED + "Please enter a valid number");
+                                return;
+                            }
+                            if (number < 0) {
+                                clicker.sendMessage(ChatColor.RED + "You can't ask for negative money!");
+                            } else {
+                                ItemStack stack = itemHeld.clone();
+                                ItemMeta meta = itemHeld.getItemMeta();
+                                ArrayList<String> lore = new ArrayList<>();
+                                if (meta.hasLore()) {
+                                    lore = (ArrayList<String>) meta.getLore();
+                                }
+                                lore.add(ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "Price: "
+                                        + ChatColor.WHITE.toString() + number + "g" + ChatColor.GREEN + " each");
+                                meta.setLore(lore);
+                                stack.setItemMeta(meta);
+                                net.minecraft.server.v1_8_R3.ItemStack newNMS = CraftItemStack.asNMSCopy(stack);
+                                newNMS.getTag().setInt("Price", number);
+                                if (shop.inventory.firstEmpty() >= 0) {
+                                    int slot = shop.inventory.firstEmpty();
+                                    shop.inventory.setItem(slot, CraftItemStack.asBukkitCopy(newNMS));
+                                    clicker.playSound(clicker.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
 
-			if (BankMechanics.getInstance().takeGemsFromInventory(itemPrice, clicker)) {
-				if (itemClicked.getAmount() == 1) {
-					event.getInventory().setItem(event.getRawSlot(), new ItemStack(Material.AIR));
-				} else {
-					event.getInventory().getItem(event.getRawSlot()).setAmount(itemClicked.getAmount() - 1);
-				}
-				ItemStack clickClone = itemClicked.clone();
-				ItemMeta meta = clickClone.getItemMeta();
-				List<String> lore = meta.getLore();
-				if (lore != null)
-					for (int i = 0; i < lore.size(); i++) {
-						String current = lore.get(i);
-						if (current.contains("Price")) {
-							lore.remove(i);
-							break;
-						}
-					}
-				meta.setLore(lore);
-				clickClone.setItemMeta(meta);
-				DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS, itemPrice, true);
-				if(shop.getOwner() != null){
-					shop.getOwner().sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "  +" + itemPrice + " gems from shop");
-				}else{
-				NetworkAPI.getInstance().sendPlayerMessage(ownerName,
-				        ChatColor.GREEN.toString() + ChatColor.BOLD + "  +" + itemPrice + " gems from shop");
-				}
-				clickClone.setAmount(1);
-				clicker.getInventory().addItem(clickClone);
-				clicker.sendMessage(ChatColor.GREEN + "You purchased a " + ChatColor.YELLOW
-				        + itemClicked.getItemMeta().getDisplayName() + ChatColor.GREEN + " for " + ChatColor.YELLOW
-				        + itemPrice + ChatColor.GREEN + " gems");
-			} else {
-				clicker.closeInventory();
-				clicker.sendMessage(ChatColor.RED + "You do not have " + itemPrice + " gems");
-			}
-		}
-	}
+                                    clicker.sendMessage(new String[]{
+                                            ChatColor.YELLOW.toString() + "Price set. Right-Click item to edit.",
+                                            ChatColor.YELLOW + "Left Click the item to remove it from your shop."});
+                                    clicker.getInventory().setItem(playerSlot, new ItemStack(Material.AIR));
+                                } else {
+                                    clicker.getInventory().addItem(itemHeld);
+                                    clicker.sendMessage("There is no room for this item in your Shop");
+                                }
+                            }
+                        }, player -> player.sendMessage(ChatColor.RED + "Action cancelled."));
+                        clicker.closeInventory();
+                        return;
+                    }
 
-	public void punchShop(PlayerInteractEvent event) {
-		if (event.getAction() != Action.LEFT_CLICK_BLOCK)
-			return;
-		if (event.getClickedBlock().getType() != Material.CHEST)
-			return;
-		Shop shop = ShopMechanics.getShop(event.getClickedBlock());
-		if (shop == null)
-			return;
-		if (event.getPlayer().getUniqueId().toString().equalsIgnoreCase(shop.ownerUUID.toString()))
-			shop.deleteShop();
-		if(event.getPlayer().isOp()){
-			shop.deleteShop();
-		}
-	}
+                    if (event.getWhoClicked().getInventory().firstEmpty() < 0) {
+                        event.getWhoClicked().sendMessage(ChatColor.RED + "Make room in your inventory.");
+                        event.setCancelled(true);
+                        return;
+                    }
+
+                    // Removing item from Shop
+                    ItemStack stack = stackInSlot.clone();
+                    ItemMeta meta = stack.getItemMeta();
+                    List<String> lore = meta.getLore();
+                    if (lore != null)
+                        for (int i = 0; i < lore.size(); i++) {
+                            String current = lore.get(i);
+                            if (current.contains("Price")) {
+                                lore.remove(i);
+                                break;
+                            }
+                        }
+                    meta.setLore(lore);
+                    stack.setItemMeta(meta);
+                    event.setCancelled(true);
+                    net.minecraft.server.v1_8_R3.ItemStack nms2 = CraftItemStack.asNMSCopy(stack);
+                    nms2.getTag().remove("Price");
+                    clicker.getInventory().addItem(CraftItemStack.asBukkitCopy(nms2));
+                    event.getInventory().setItem(event.getRawSlot(), new ItemStack(Material.AIR, 1));
+                } else if (event.isRightClick()) {
+                    if (stackInSlot == null || stackInSlot.getType() == Material.AIR) {
+                        clicker.sendMessage(ChatColor.RED + "Can't edit an empty shop!");
+                        event.setCancelled(true);
+                        return;
+                    }
+                    event.setCancelled(true);
+                    clicker.closeInventory();
+                    clicker.sendMessage(ChatColor.GREEN + "Please enter a price for the item:");
+                    Chat.listenForMessage(clicker, chat -> {
+                        int number = 0;
+                        try {
+                            number = Integer.parseInt(chat.getMessage());
+                            clicker.sendMessage("Price set");
+                        } catch (Exception exc) {
+                            chat.getPlayer().sendMessage(ChatColor.RED + "Please enter a valid number");
+                            return;
+                        }
+                        if (number < 0) {
+                            clicker.getPlayer().sendMessage("You can't ask for negative money!");
+                        } else {
+                            ItemStack stack = stackInSlot.clone();
+                            ItemMeta meta = stackInSlot.getItemMeta();
+                            ArrayList<String> lore = new ArrayList<>();
+                            if (meta.hasLore()) {
+                                lore = (ArrayList<String>) meta.getLore();
+                            }
+                            for (int i = 0; i < lore.size(); i++) {
+                                String current = lore.get(i);
+                                if (current.contains("Price")) {
+                                    lore.remove(i);
+                                    break;
+                                }
+                            }
+                            lore.add(ChatColor.BOLD.toString() + ChatColor.GREEN.toString() + "Price: "
+                                    + ChatColor.WHITE.toString() + number + "g " + ChatColor.GREEN + "each");
+                            meta.setLore(lore);
+                            stack.setItemMeta(meta);
+                            net.minecraft.server.v1_8_R3.ItemStack nms1 = CraftItemStack.asNMSCopy(stack);
+                            nms1.getTag().setInt("Price", number);
+                            shop.inventory.setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms1));
+                            clicker.playSound(clicker.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
+                        }
+                    }, player -> player.sendMessage(ChatColor.RED + "Action cancelled."));
+                }
+            }
+        } else {
+            event.setCancelled(true);
+            // Not Owner Clicking
+            if (!shop.isopen) {
+                if (event.getCursor() != null) {
+                    clicker.getInventory().addItem(event.getCursor());
+                    event.setCursor(null);
+                }
+                clicker.closeInventory();
+                clicker.sendMessage(ChatColor.RED + "The shop has closed");
+                return;
+            }
+            if (event.getRawSlot() == 8) {
+                return;
+            }
+            ItemStack itemClicked = event.getCurrentItem();
+            if (itemClicked == null || itemClicked.getType() == Material.AIR)
+                return;
+            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemClicked);
+            if (nms == null || !nms.hasTag() || !nms.getTag().hasKey("Price"))
+                return;
+            int itemPrice = nms.getTag().getInt("Price");
+
+            if (BankMechanics.getInstance().takeGemsFromInventory(itemPrice, clicker)) {
+                if (itemClicked.getAmount() == 1) {
+                    event.getInventory().setItem(event.getRawSlot(), new ItemStack(Material.AIR));
+                } else {
+                    event.getInventory().getItem(event.getRawSlot()).setAmount(itemClicked.getAmount() - 1);
+                }
+                ItemStack clickClone = itemClicked.clone();
+                ItemMeta meta = clickClone.getItemMeta();
+                List<String> lore = meta.getLore();
+                if (lore != null)
+                    for (int i = 0; i < lore.size(); i++) {
+                        String current = lore.get(i);
+                        if (current.contains("Price")) {
+                            lore.remove(i);
+                            break;
+                        }
+                    }
+                meta.setLore(lore);
+                clickClone.setItemMeta(meta);
+                DatabaseAPI.getInstance().update(shop.ownerUUID, EnumOperators.$INC, EnumData.GEMS, itemPrice, true);
+                if (shop.getOwner() != null) {
+                    shop.getOwner().sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "  +" + itemPrice + " gems from shop");
+                } else {
+                    NetworkAPI.getInstance().sendPlayerMessage(ownerName,
+                            ChatColor.GREEN.toString() + ChatColor.BOLD + "  +" + itemPrice + " gems from shop");
+                }
+                clickClone.setAmount(1);
+                clicker.getInventory().addItem(clickClone);
+                clicker.sendMessage(ChatColor.GREEN + "You purchased a " + ChatColor.YELLOW
+                        + itemClicked.getItemMeta().getDisplayName() + ChatColor.GREEN + " for " + ChatColor.YELLOW
+                        + itemPrice + ChatColor.GREEN + " gems");
+            } else {
+                clicker.closeInventory();
+                clicker.sendMessage(ChatColor.RED + "You do not have " + itemPrice + " gems");
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void punchShop(PlayerInteractEvent event) {
+        if (event.getAction() != Action.LEFT_CLICK_BLOCK) return;
+        if (event.getClickedBlock().getType() != Material.CHEST) return;
+        Shop shop = ShopMechanics.getShop(event.getClickedBlock());
+        if (shop == null) return;
+        if (event.getPlayer().getUniqueId().toString().equalsIgnoreCase(shop.ownerUUID.toString())) {
+            shop.deleteShop();
+        }
+        if (event.getPlayer().isOp()) {
+            shop.deleteShop();
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void playerOpenShopInventory(InventoryOpenEvent event) {
+        if (!event.getInventory().getTitle().contains("@")) return;
+        String ownerName = event.getInventory().getTitle().split("@")[1];
+        if (ownerName == null) return;
+        Shop shop = ShopMechanics.getShop(ownerName);
+        if (shop == null) return;
+        if (!shop.isopen) return;
+        if (event.getPlayer().getName().equalsIgnoreCase(ownerName)) return;
+        shop.viewCount = shop.viewCount + 1;
+        shop.hologram.clearLines();
+        shop.hologram.insertTextLine(0, ChatColor.GREEN + "[S] " + shop.shopName);
+        shop.hologram.insertTextLine(1, String.valueOf(shop.viewCount) + ChatColor.RED + " ❤");
+    }
 
 }

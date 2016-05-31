@@ -41,7 +41,9 @@ public class HearthStone implements Listener {
                 if (player.getGameMode() != GameMode.SURVIVAL) return;
                 PacketType type = packet.getType();
                 if (type == CLIENT_COMMAND && packet.getClientCommands().read(0) == EnumWrappers.ClientCommand.OPEN_INVENTORY_ACHIEVEMENT) {
-                    player.getOpenInventory().getTopInventory().setItem(2, getItem(player));
+                    if (player.getOpenInventory().getTopInventory() instanceof CraftingInventory) {
+                        player.getOpenInventory().getTopInventory().setItem(2, getItem(player));
+                    }
                 }
             }
         };
