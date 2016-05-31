@@ -545,10 +545,12 @@ public class ClickHandler {
                 }
                 if (slot == 0) {
                     player.sendMessage(ChatColor.GREEN + "Please enter the player's name...");
+                    player.closeInventory();
                     Chat.listenForMessage(player, chat -> {
                         Player target = Bukkit.getPlayer(chat.getMessage());
                         if (target != null) {
                             FriendHandler.getInstance().sendRequest(player, target);
+                            player.sendMessage(ChatColor.GREEN + "Friend request sent to " + target.getName());
                         } else {
                             player.sendMessage(ChatColor.RED + "Oops, I can't find that player!");
                         }
@@ -841,9 +843,11 @@ public class ClickHandler {
                                             if (gp.getLevel() >= 10) {
                                                 if (gp.getStats().resetAmounts > 0) {
                                                     player.sendMessage(ChatColor.GREEN + "ONE stat reset available. Type 'yes' or 'y' to continue");
+                                                    player.closeInventory();
                                                     Chat.listenForMessage(player, e -> {
                                                         if (e.getMessage().equalsIgnoreCase("Yes") || e.getMessage().equalsIgnoreCase("y")) {
                                                             gp.getStats().freeResets -= 1;
+                                                            player.sendMessage(ChatColor.GREEN + "Stats reset");
                                                         }
                                                     }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
                                                 } else {

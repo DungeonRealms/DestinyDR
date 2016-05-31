@@ -133,13 +133,14 @@ public class PetUtils implements GenericMechanic{
                 return path != null;
             }
             Location targetLocation = Bukkit.getPlayer(p).getLocation();
+
             this.entity.getNavigation();
             this.path = this.entity.getNavigation().a(targetLocation.getX() + 1, targetLocation.getY(), targetLocation.getZ() + 1);
             this.entity.getNavigation();
             if (this.path != null) {
                 this.c();
             }
-            return this.path != null;
+            return this.path != null && this.entity.getBukkitEntity().getLocation().distanceSquared(targetLocation) < 3;
         }
 
         @Override
@@ -287,7 +288,7 @@ public class PetUtils implements GenericMechanic{
                 petChicken.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petChicken, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petChicken.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                petChicken.setAge(0);
+                petChicken.setAge(-1);
                 petChicken.ageLocked = true;
                 player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1F, 1F);
                 makePet(petChicken, player.getUniqueId(), 1.3D, EnumPets.CHICKEN);
@@ -314,7 +315,7 @@ public class PetUtils implements GenericMechanic{
                 petRabbit.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petRabbit, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petRabbit.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                petRabbit.setAge(0);
+                petRabbit.setAge(-1);
                 petRabbit.ageLocked = true;
                 player.playSound(player.getLocation(), Sound.DIG_GRASS, 1F, 1F);
                 makePet(petRabbit, player.getUniqueId(), 1.1D, EnumPets.RABBIT);

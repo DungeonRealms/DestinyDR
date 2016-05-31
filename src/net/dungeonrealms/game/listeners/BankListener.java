@@ -75,6 +75,7 @@ public class BankListener implements Listener {
                         if (e.getCursor() != null) {
                             if (e.getClick() == ClickType.LEFT) {
                                 player.sendMessage(ChatColor.RED + "Please enter the amount of money to withdraw:");
+                                player.closeInventory();
                                 Chat.listenForMessage(player, event -> {
                                     int number = 0;
                                     try {
@@ -106,11 +107,13 @@ public class BankListener implements Listener {
                                                 p.getInventory().setItem(p.getInventory().firstEmpty(), item);
                                                 number = 0;
                                             }
+                                            player.sendMessage(ChatColor.GREEN + "Withdrew " + number + " gems.");
                                             player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
                                         }
                                     }
                                 }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
                             } else if (e.getClick() == ClickType.RIGHT) {
+                                player.closeInventory();
                                 player.sendMessage(ChatColor.RED + "Please enter the amount of money to withdraw:");
                                 Chat.listenForMessage(player, event -> {
                                     int number = 0;
@@ -128,8 +131,8 @@ public class BankListener implements Listener {
                                     } else {
                                         Player p = player.getPlayer();
                                         p.getInventory().addItem(BankMechanics.createBankNote(number));
-                                        DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(),
-                                                EnumOperators.$INC, EnumData.GEMS, -number, true);
+                                        DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(), EnumOperators.$INC, EnumData.GEMS, -number, true);
+                                        player.sendMessage(ChatColor.GREEN + "Withdrew " + number + " gems.");
                                         player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
                                     }
                                 }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));

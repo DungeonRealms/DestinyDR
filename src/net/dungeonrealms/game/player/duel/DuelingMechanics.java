@@ -3,7 +3,6 @@ package net.dungeonrealms.game.player.duel;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.achievements.Achievements;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -50,9 +49,9 @@ public class DuelingMechanics {
 			pending.put(sender.getUniqueId(), requested.getUniqueId());
 			cooldown.add(sender.getUniqueId());
 			sender.sendMessage(ChatColor.GREEN + "Duel request sent!");
-			if (requested.getUniqueId().toString().equals("f8740cbf-e6c7-43ef-830a-ac3923936b3c")) {
+			/*if (requested.getUniqueId().toString().equals("f8740cbf-e6c7-43ef-830a-ac3923936b3c")) {
 				Achievements.getInstance().giveAchievement(sender.getUniqueId(), Achievements.EnumAchievements.U_WOT_MATE);
-			}
+			}*/
 			requested.sendMessage(ChatColor.YELLOW + "Duel request received from " + sender.getName() + "");
 			requested.sendMessage(ChatColor.YELLOW + "Shift Right click the player and choose duel to accept");
 			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

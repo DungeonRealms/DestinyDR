@@ -151,9 +151,9 @@ public class ItemListener implements Listener {
                             event.getItem().setAmount(event.getItem().getAmount() - 1);
                         } else {
                             event.getPlayer().getInventory().remove(event.getItem());
-                            API.getGamePlayer(event.getPlayer()).getStats().unallocateAllPoints();
-                            event.getPlayer().sendMessage(ChatColor.YELLOW + "All Stat Points have been unallocated!");
                         }
+                        API.getGamePlayer(event.getPlayer()).getStats().unallocateAllPoints();
+                        event.getPlayer().sendMessage(ChatColor.YELLOW + "All Stat Points have been unallocated!");
                     }
                 }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
     		}

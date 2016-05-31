@@ -153,6 +153,7 @@ public class ShopListener implements Listener {
 						int playerSlot = clicker.getInventory().firstEmpty();
 						clicker.getInventory().setItem(playerSlot, itemHeld);
 						clicker.sendMessage(ChatColor.GREEN + "Please enter a price for the item:");
+						clicker.closeInventory();
 						Chat.listenForMessage(clicker, chat -> {
 							int number = 0;
 							try {

@@ -185,16 +185,16 @@ public class Achievements {
                 "Dungeon Realms Master",
         }, 8000, "achievement.master"),
 
-        PLAY_WITH_KAYABA(23, "Play with Kayaba", new String[]{
-                "Congratulations! You've been granted the privilege to play on the same server as Kayaba!",
-        }, 450, "achievement.play_with_kayaba"),
+        PLAY_WITH_DEV(23, "Play with Dev", new String[]{
+                "You're playing with a Developer!",
+        }, 450, "achievement.play_with_dev"),
         MESSAGE_YOURSELF(24, "Message yourself", new String[]{}, 640, "achievement.message_your_self"),
 
         SEND_A_PM(25, "Send a private message", new String[]{}, 200, "achievement.send_a_pm"),
 
-        U_WOT_MATE(26, "U Wot Mate?", new String[]{
-                "You just challenged Proxying to a duel, are you crazy?",
-        }, 400, "achievement.u_wot_mate"),
+        DUELER(26, "Dueler", new String[]{
+                "You just challenged someone to a duel!",
+        }, 400, "achievement.dueler"),
 
         GUILD_INVITE_YOURSELF(27, "Krazy Kat.", new String[]{
                 "Invite yourself to your own guild!",
@@ -206,7 +206,7 @@ public class Achievements {
 
         VOTE_AS_SUB(29, "Vote as Subscriber", new String[]{}, 500, "achievement.vote_as_subscriber"),
         VOTE_AS_SUB_PLUS(30, "Vote as Subscriber+", new String[]{}, 1000, "achievement.vote_as_subscriber+"),
-        PM_KAYABA(31, "Message Kayaba", new String[]{"You attempted to message Kayaba.. Please contact a Game Master for game assistance."}, 450, "achievement.pmxwaffle"),
+        PM_DEV(31, "Message A Dev", new String[]{"You attempted to message a Dev. Please contact a Game Master for game assistance."}, 450, "achievement.pmdev"),
         CREATE_A_GUILD(32, "Create a Guild", new String[]{"Congratulations on the creation of your new guild!."}, 750, "achievement.create_a_guild"),;
 
         private int id;

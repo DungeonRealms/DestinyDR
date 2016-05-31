@@ -3,8 +3,6 @@ package net.dungeonrealms.game.player.chat;
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.achievements.Achievements;
-import net.dungeonrealms.game.mongo.achievements.Achievements.EnumAchievements;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -15,7 +13,6 @@ import org.bukkit.event.player.AsyncPlayerChatEvent;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ConcurrentLinkedDeque;
 import java.util.function.Consumer;
 
 /**
@@ -42,13 +39,12 @@ public class Chat {
      * @param consumer the Consumer that should listen for the event AND NOT BE NULL
      * @param orElse the consumer that get called when another listener listens for a message (this one gets removed) or when the player quits
      */
-    public static void listenForMessage(Player player,
-                                        Consumer<? super AsyncPlayerChatEvent> consumer,
-                                        Consumer<? super Player> orElse) {
+    public static void listenForMessage(Player player, Consumer<? super AsyncPlayerChatEvent> consumer, Consumer<? super Player> orElse) {
         if (chatListeners.remove(player) != null) {
             Consumer<? super Player> old = orElseListeners.remove(player);
-            if (old != null)
+            if (old != null) {
                 old.accept(player);
+            }
         }
         if (consumer != null) {
             chatListeners.put(player, consumer);
@@ -73,6 +69,7 @@ public class Chat {
         if (messageListener != null) {
             messageListener.accept(event);
             orElseListeners.remove(event.getPlayer());
+            event.setCancelled(true);
             return;
         }
 
@@ -82,11 +79,11 @@ public class Chat {
 
         if (fixedMessage.startsWith("@") && !fixedMessage.contains("@i@")) {
             String playerName = fixedMessage.replace("@", "").split(" ")[0];
-            if(playerName.equalsIgnoreCase("Kayaba")){
+            /*if( playerName.equalsIgnoreCase("Kayaba")){
             	Achievements.getInstance().giveAchievement(uuid, EnumAchievements.PM_KAYABA);
                 event.setCancelled(true);
             	return;
-            }
+            }*/
             fixedMessage = fixedMessage.replace("@" + playerName, "");
             String tempFixedMessage = fixedMessage.replace("@" + playerName, "");
             Bukkit.getOnlinePlayers().stream().filter(player -> player.getName().equalsIgnoreCase(playerName)).limit(1).forEach(theTargetPlayer -> {

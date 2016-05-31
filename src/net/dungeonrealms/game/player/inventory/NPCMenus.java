@@ -81,9 +81,11 @@ public class NPCMenus {
         if (gp.getLevel() >= 10) {
             if (gp.getStats().resetAmounts > 0) {
                 player.sendMessage(ChatColor.GREEN + "You have a free stat reset available! Type 'yes' or 'y' to use it");
+                player.closeInventory();
                 Chat.listenForMessage(player, chat -> {
                     if (chat.getMessage().equalsIgnoreCase("yes") || chat.getMessage().equalsIgnoreCase("y")) {
                         gp.getStats().freeResets-= 1;
+                        player.sendMessage(ChatColor.GREEN + "Stats reset");
                     }
                 }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
             } else {
