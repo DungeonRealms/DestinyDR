@@ -384,7 +384,7 @@ public class Guild {
             temp.add(Bukkit.getPlayer(UUID.fromString(jsonObject.get("owner").toString())));
         }
 
-        if (((ArrayList<String>) jsonObject.get("officers")).size() > 0) {
+        if (((ArrayList<String>) jsonObject.get("officers")).size() >  0) {
             ((ArrayList<String>) jsonObject.get("officers")).stream().forEach(s -> {
                 if (Bukkit.getPlayer(UUID.fromString(s)) != null) {
                     temp.add(Bukkit.getPlayer(UUID.fromString(s)));
