@@ -4,3 +4,4 @@
 /bin
 /src/rebel.xml
 /src/rebel-remote.xml
+resources/META_INF/MANIFEST.MF
