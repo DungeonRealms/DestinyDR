@@ -77,11 +77,12 @@ public class ClickHandler {
                         player.sendMessage(ChatColor.RED + "You already own this mount!");
                         return;
                     } else {
-                        if (MountUtils.hasRequiredLevel(EnumMounts.getByName(nmsStack.getTag().getString("mountType")), player.getUniqueId())) {
-                            if (MountUtils.hasMountPrerequisites(EnumMounts.getByName(nmsStack.getTag().getString("mountType")), playerMounts)) {
+                        EnumMounts mount = EnumMounts.getByName(nmsStack.getTag().getString("mountType"));
+                        if (MountUtils.hasRequiredLevel(mount, player.getUniqueId())) {
+                            if (MountUtils.hasMountPrerequisites(mount, playerMounts)) {
                                 if (BankMechanics.getInstance().takeGemsFromInventory(nmsStack.getTag().getInt("mountCost"), player)) {
                                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNTS, nmsStack.getTag().getString("mountType").toUpperCase(), true);
-                                    player.sendMessage(ChatColor.GREEN + "You have purchased the " + nmsStack.getTag().getString("mountType") + " mount.");
+                                    player.sendMessage(ChatColor.GREEN + "You have purchased the " + mount.getDisplayName() + ChatColor.GREEN + " mount.");
                                     player.closeInventory();
                                     return;
                                 } else {
