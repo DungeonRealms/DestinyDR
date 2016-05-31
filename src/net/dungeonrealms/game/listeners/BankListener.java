@@ -85,10 +85,10 @@ public class BankListener implements Listener {
                                         return;
                                     }
                                     int currentGems = getPlayerGems(player.getUniqueId());
-                                    if (number < 0) {
-                                        player.getPlayer().sendMessage("You can't ask for negative money!");
+                                    if (number <= 0) {
+                                        player.sendMessage(ChatColor.RED + "You can't ask for negative/zero gems!");
                                     } else if (number > currentGems) {
-                                        player.getPlayer().sendMessage("You only have " + currentGems);
+                                        player.sendMessage(ChatColor.RED + "You only have " + currentGems + "gem(s).");
                                     } else {
                                         ItemStack stack = BankMechanics.gem.clone();
                                         if (hasSpaceInInventory(player.getUniqueId(), number)) {
@@ -107,7 +107,7 @@ public class BankListener implements Listener {
                                                 p.getInventory().setItem(p.getInventory().firstEmpty(), item);
                                                 number = 0;
                                             }
-                                            player.sendMessage(ChatColor.GREEN + "Withdrew " + number + " gems.");
+                                            player.sendMessage(ChatColor.GREEN + "Withdrew " + number + " gem(s).");
                                             player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
                                         }
                                     }
@@ -124,15 +124,15 @@ public class BankListener implements Listener {
                                         return;
                                     }
                                     int currentGems = getPlayerGems(player.getUniqueId());
-                                    if (number < 0) {
-                                        player.getPlayer().sendMessage("You can't ask for negative money!");
+                                    if (number <= 0) {
+                                        player.sendMessage(ChatColor.RED + "You can't ask for negative/zero gems!");
                                     } else if (number > currentGems) {
-                                        player.getPlayer().sendMessage("You only have " + currentGems);
+                                        player.sendMessage(ChatColor.RED + "You only have " + currentGems + "gem(s).");
                                     } else {
                                         Player p = player.getPlayer();
                                         p.getInventory().addItem(BankMechanics.createBankNote(number));
                                         DatabaseAPI.getInstance().update(player.getPlayer().getUniqueId(), EnumOperators.$INC, EnumData.GEMS, -number, true);
-                                        player.sendMessage(ChatColor.GREEN + "Withdrew " + number + " gems.");
+                                        player.sendMessage(ChatColor.GREEN + "Withdrew " + number + " gem(s).");
                                         player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
                                     }
                                 }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
