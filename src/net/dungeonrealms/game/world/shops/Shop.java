@@ -16,6 +16,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -102,12 +103,6 @@ public class Shop {
             block1.getWorld().save();
             ShopMechanics.ALLSHOPS.remove(ownerName);
         } else {
-
-
-//			if(getOwner().getInventory().firstEmpty() < 0){
-//				saveCollectionBin();
-//				break;
-//			}
             CopyOnWriteArrayList<ItemStack> contents = new CopyOnWriteArrayList<>();
             for (ItemStack stack : inventory.getContents()) {
                 if (stack == null || stack.getType() == Material.AIR)
@@ -208,6 +203,9 @@ public class Shop {
         isopen = !isopen;
         hologram.clearLines();
         if (!isopen) {
+            if (inventory.getViewers().size() > 0) {
+                inventory.getViewers().forEach(HumanEntity::closeInventory);
+            }
             ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.GRAY.getDyeData());
             ItemMeta meta = button.getItemMeta();
             meta.setDisplayName(ChatColor.GREEN.toString() + "Click to OPEN Shop");
@@ -218,7 +216,6 @@ public class Shop {
             net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
             nmsButton.getTag().setString("status", "off");
             inventory.setItem(8, CraftItemStack.asBukkitCopy(nmsButton));
-            hologram.appendTextLine(ChatColor.RED.toString() + shopName);
             hologram.clearLines();
             hologram.insertTextLine(0, ChatColor.RED + shopName);
             hologram.insertTextLine(1, String.valueOf(viewCount) + ChatColor.RED + " ❤");

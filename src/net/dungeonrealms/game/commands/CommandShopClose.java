@@ -18,7 +18,7 @@ public class CommandShopClose extends BasicCommand {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		if(sender instanceof Player)
+		if (sender instanceof Player)
 		NetworkAPI.getInstance().sendNetworkMessage("shop", "close", sender.getName());
 		return true;
 	}

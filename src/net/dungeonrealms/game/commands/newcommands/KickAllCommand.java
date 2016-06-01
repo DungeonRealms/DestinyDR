@@ -1,7 +1,8 @@
 package net.dungeonrealms.game.commands.newcommands;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import org.bukkit.Bukkit;
+import net.dungeonrealms.game.world.shops.ShopMechanics;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -18,7 +19,8 @@ public class KickAllCommand extends BasicCommand {
     	if (!p.isOp()) {
     		return false;
     	}
-    	Bukkit.getOnlinePlayers().stream().forEach(newPlayer -> newPlayer.kickPlayer("This server has been put into maintenance mode!"));
+		ShopMechanics.deleteAllShops();
+		API.logoutAllPlayers(true);
     	return true;
     }
 

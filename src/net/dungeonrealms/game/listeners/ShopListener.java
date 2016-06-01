@@ -160,8 +160,8 @@ public class ShopListener implements Listener {
                                 chat.getPlayer().sendMessage(ChatColor.RED + "Please enter a valid number");
                                 return;
                             }
-                            if (number < 0) {
-                                clicker.sendMessage(ChatColor.RED + "You can't ask for negative money!");
+                            if (number <= 0) {
+                                clicker.sendMessage(ChatColor.RED + "You can't ask for negative/zero gem(s)!");
                             } else {
                                 ItemStack stack = itemHeld.clone();
                                 ItemMeta meta = itemHeld.getItemMeta();
@@ -238,7 +238,7 @@ public class ShopListener implements Listener {
                             return;
                         }
                         if (number < 0) {
-                            clicker.getPlayer().sendMessage("You can't ask for negative money!");
+                            clicker.sendMessage(ChatColor.RED + "You can't ask for negative/zero gem(s)!");
                         } else {
                             ItemStack stack = stackInSlot.clone();
                             ItemMeta meta = stackInSlot.getItemMeta();
@@ -350,8 +350,7 @@ public class ShopListener implements Listener {
         if (!shop.isopen) return;
         if (event.getPlayer().getName().equalsIgnoreCase(ownerName)) return;
         shop.viewCount = shop.viewCount + 1;
-        shop.hologram.clearLines();
-        shop.hologram.insertTextLine(0, ChatColor.GREEN + "[S] " + shop.shopName);
+        shop.hologram.removeLine(1);
         shop.hologram.insertTextLine(1, String.valueOf(shop.viewCount) + ChatColor.RED + " ❤");
     }
 

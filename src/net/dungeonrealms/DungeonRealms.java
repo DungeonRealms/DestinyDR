@@ -132,8 +132,7 @@ public class DungeonRealms extends JavaPlugin {
         ItemGenerator.loadModifiers();
 
         mm = new MechanicManager();
-        if(!isInstanceServer)
-        {
+        if(!isInstanceServer) {
             mm.registerMechanic(Core.getInstance());
             mm.registerMechanic(PetUtils.getInstance());
             mm.registerMechanic(Teleportation.getInstance());
@@ -183,19 +182,12 @@ public class DungeonRealms extends JavaPlugin {
             }
         }
 
-        /*
-        In development
-        mm.registerMechanic(RiftPortal.getInstance());
-        mm.registerMechanic(Runes.getInstance());
-         */
-
         mm.loadMechanics();
 
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
         
-        if(!isInstanceServer)
-        {
+        if(!isInstanceServer) {
             pm.registerEvents(new MainListener(), this);
             pm.registerEvents(new DamageListener(), this);
             pm.registerEvents(new ItemListener(), this);
@@ -235,11 +227,6 @@ public class DungeonRealms extends JavaPlugin {
         //pm.registerEvents(new ShopListener(), this);
         //pm.registerEvents(new AchievementManager(), this);
         //pm.registerEvents(Instance.getInstance(), this);
-        /*
-        In development
-        pm.registerEvents(new RiftPortal(), this);
-        pm.registerEvents(new Runes(), this);
-         */
         Utils.log.info("DungeonRealms Registering Events() ... FINISHED!");
 
         CommandManager cm = new CommandManager();
@@ -299,7 +286,6 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Check epoch time of item."));
             cm.registerCommand(new CommandTell("tell", "/<command> [args]", "tell a player something."));
             cm.registerCommand(new CommandTell("isay", "/<command> [args]", "Prints message to players in dungeon world from command block."));
-            cm.registerCommand(new CommandSpar("spar", "/<command> [args]", "The spar command, basically duels recoded."));
 
             cm.registerCommand(new CommandMount("mount", "/<command> [args]", "The mount command.", Collections.singletonList("mounts")));
             cm.registerCommand(new CommandPet("pet", "/<command> [args]", "The pet command.", Collections.singletonList("pets")));
