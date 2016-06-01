@@ -297,11 +297,18 @@ public class BlockListener implements Listener {
                 repairMap.remove(block.getLocation());
             }
 
+            int newCost = RepairAPI.getItemRepairCost(item);
+            if (BankMechanics.getInstance().getTotalGemsInInventory(player) < newCost) {
+                player.sendMessage(ChatColor.RED + "You do not have enough gems to repair this item.");
+                player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: " + ChatColor.RED + newCost + ChatColor.BOLD.toString() + " GEM(s)");
+                return;
+            }
 
             Location middle = block.getLocation().add(.5, 1.3, .5);
             //Set the item on the anvil
             player.setItemInHand(null);
             player.updateInventory();
+
 
             Item itemEntity = block.getWorld().dropItem(middle, item);
             itemEntity.teleport(middle);
@@ -309,13 +316,7 @@ public class BlockListener implements Listener {
             itemEntity.setPickupDelay(Integer.MAX_VALUE);
 
 //            block.setMetadata("repairing", new FixedMetadataValue(DungeonRealms.getInstance(), player.getName()));
-            int newCost = RepairAPI.getItemRepairCost(item);
 
-            if (BankMechanics.getInstance().getTotalGemsInInventory(player) < newCost) {
-                player.sendMessage(ChatColor.RED + "You do not have enough gems to repair this item.");
-                player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: " + ChatColor.RED + newCost + ChatColor.BOLD.toString() + " GEMS(s)");
-                return;
-            }
 
             Repair repair = new Repair(item, itemEntity, player.getName());
             repairMap.put(block.getLocation(), repair);
