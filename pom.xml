@@ -234,5 +234,12 @@
             <systemPath>${project.basedir}/lib/VoidGenerator.jar</systemPath>
             <scope>system</scope>
         </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.16.8</version>
+            <systemPath>${project.basedir}/lib/lombok.jar</systemPath>
+            <scope>system</scope>
+        </dependency>
     </dependencies>
 </project>
