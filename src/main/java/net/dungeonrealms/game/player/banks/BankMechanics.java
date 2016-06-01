@@ -91,6 +91,63 @@ public class BankMechanics implements GenericMechanic {
 
     }
 
+    public int getTotalGemsInInventory(Player p) {
+        Inventory i = p.getInventory();
+
+
+        int found = 0;
+
+        HashMap<Integer, ? extends ItemStack> invItems = i.all(Material.EMERALD);
+        for (Map.Entry<Integer, ? extends ItemStack> entry : invItems.entrySet()) {
+            int index = entry.getKey();
+            ItemStack item = entry.getValue();
+            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+            if (!nms.hasTag() || !nms.getTag().hasKey("type") || !nms.getTag().getString("type").equalsIgnoreCase("money"))
+                continue;
+            int stackAmount = item.getAmount();
+            found += stackAmount;
+        }
+
+        //TODO GEM POUCH
+
+//		HashMap<Integer, ? extends ItemStack> gem_pouches = i.all(Material.INK_SACK);
+//		for (Map.Entry<Integer, ? extends ItemStack> entry : gem_pouches.entrySet()) {
+//			ItemStack item = entry.getValue();
+//
+//			if (!MoneyMechanics.isGemPouch(item)) {
+//				continue;
+//			}
+//
+//			int worth = MoneyMechanics.getGemPouchWorth(item);
+//
+//			if ((paid_off + worth) <= amount) {
+//				paid_off += worth;
+//				MoneyMechanics.setPouchWorth(item, 0);
+//			} else {
+//				int to_take = amount - paid_off;
+//				paid_off += to_take;
+//				MoneyMechanics.setPouchWorth(item, worth - to_take);
+//			}
+//
+//			if (paid_off >= amount) {
+//				p.updateInventory();
+//				break;
+//			}
+//
+//		}
+
+        HashMap<Integer, ? extends ItemStack> bank_notes = i.all(Material.PAPER);
+        for (Map.Entry<Integer, ? extends ItemStack> entry : bank_notes.entrySet()) {
+            ItemStack item = entry.getValue();
+            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+            if (!nms.hasTag() || !nms.getTag().hasKey("type") || !nms.getTag().getString("type").equalsIgnoreCase("money"))
+                continue;
+            int bank_note_val = getNoteValue(item);
+            found += bank_note_val;
+        }
+
+        return found;
+    }
 
     public boolean takeGemsFromInventory(int amount, Player p) {
         Inventory i = p.getInventory();
