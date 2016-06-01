@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.mastery;
 
-import com.sk89q.worldedit.internal.gson.JsonObject;
-import com.sk89q.worldedit.internal.gson.JsonParser;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import org.apache.commons.io.Charsets;
 import org.bukkit.craftbukkit.libs.joptsimple.internal.Strings;
 

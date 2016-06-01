@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.listeners;
 
-import ca.thederpygolems.armorequip.ArmorEquipEvent;
+import com.codingforcookies.armorequip.ArmorEquipEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
