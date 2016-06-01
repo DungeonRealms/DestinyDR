@@ -1,10 +1,13 @@
 package net.dungeonrealms.game.handlers;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.game.guild.Guild;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.world.party.Affair;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -31,7 +34,7 @@ public class ScoreboardHandler implements GenericMechanic {
     }
 
     public HashMap<UUID, Scoreboard> PLAYER_SCOREBOARDS = new HashMap<>();
-    private Scoreboard mainScoreboard;
+    public Scoreboard mainScoreboard;
 
     @Override
     public EnumPriority startPriority() {
@@ -61,11 +64,10 @@ public class ScoreboardHandler implements GenericMechanic {
      */
     public Scoreboard getPlayerScoreboardObject(Player player) {
         if (!(PLAYER_SCOREBOARDS.containsKey(player.getUniqueId()))) {
+            //Why not just set the default scoreboard to the main one so it doesnt become desynced?
             Scoreboard scoreboard = Bukkit.getScoreboardManager().getNewScoreboard();
 
-            Objective objective = scoreboard.registerNewObjective("playerScoreboard", "playerScoreboard");
-            objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
-            objective.setDisplayName(ChatColor.RED.toString() + "❤");
+            registerHealth(scoreboard);
 
             PLAYER_SCOREBOARDS.put(player.getUniqueId(), scoreboard);
             player.setScoreboard(scoreboard);
@@ -83,8 +85,17 @@ public class ScoreboardHandler implements GenericMechanic {
      * @since 1.0
      */
     public void updatePlayerHP(Player player, int hp) {
+        Affair affair = Affair.getInstance();
         for (Player player1 : Bukkit.getOnlinePlayers()) {
+            //Party support.
+            if (affair.isInParty(player1)) continue;
+
             getPlayerScoreboardObject(player1).getObjective(DisplaySlot.BELOW_NAME).getScore(player.getName()).setScore(hp);
+        }
+
+        for (Affair.AffairO party : affair._parties) {
+            Scoreboard scoreboard = party.getPartyScoreboard();
+            scoreboard.getObjective(DisplaySlot.BELOW_NAME).getScore(player.getName()).setScore(hp);
         }
         mainScoreboard.getObjective(DisplaySlot.BELOW_NAME).getScore(player.getName()).setScore(hp);
     }
@@ -104,7 +115,16 @@ public class ScoreboardHandler implements GenericMechanic {
             String clanTag = Guild.getInstance().getClanTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
             suffix = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + " [" + clanTag + ChatColor.RESET + "]");
         }
+
+        Affair affair = Affair.getInstance();
         for (Player player1 : Bukkit.getOnlinePlayers()) {
+
+            //Party support.
+            if (affair.isInParty(player1)) {
+                //Dont update them each indiviually.
+                continue;
+            }
+
             Team team = getPlayerTeam(getPlayerScoreboardObject(player1), player);
             team.setPrefix(ChatColor.LIGHT_PURPLE + "[" + playerLevel + "] " + chatColor);
             team.setSuffix(suffix);
@@ -112,11 +132,63 @@ public class ScoreboardHandler implements GenericMechanic {
                 team.addEntry(player.getName());
             }
         }
+
+        for (Affair.AffairO party : affair._parties) {
+            //Update the party scoreboards with this persons new level.
+            updateCurrentPlayerLevel(player, party.getPartyScoreboard());
+        }
+
         Team team = getPlayerTeam(mainScoreboard, player);
         team.setPrefix(ChatColor.LIGHT_PURPLE + "[" + playerLevel + "] " + chatColor);
         team.setSuffix(suffix);
         if (!team.hasEntry(player.getName())) {
             team.addEntry(player.getName());
+        }
+    }
+
+    public void updateCurrentPlayerLevel(Player toSetFor, Scoreboard scoreboard) {
+//        Scoreboard scoreboard = player1.getScoreboard() != null ? player1.getScoreboard() : getPlayerScoreboardObject(player);
+
+        String suffix = "";
+        if (!Guild.getInstance().isGuildNull(toSetFor.getUniqueId())) {
+            String clanTag = Guild.getInstance().getClanTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, toSetFor.getUniqueId()).toString());
+            suffix = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + " [" + clanTag + ChatColor.RESET + "]");
+        }
+        GamePlayer gamePlayer = API.getGamePlayer(toSetFor);
+
+        int level = gamePlayer.getStats().getLevel();
+
+        Team team = getPlayerTeam(scoreboard, toSetFor);
+        team.setPrefix(ChatColor.LIGHT_PURPLE + "[" + level + "] " + gamePlayer.getPlayerAlignment().getAlignmentColor());
+        team.setSuffix(suffix);
+        if (!team.hasEntry(toSetFor.getName())) {
+            team.addEntry(toSetFor.getName());
+        }
+    }
+
+    public void registerHealth(Scoreboard scoreboard) {
+        Objective objective = scoreboard.getObjective("playerScoreboard") != null ? scoreboard.getObjective("playerScoreboard") : scoreboard.registerNewObjective("playerScoreboard", "playerScoreboard");
+        objective.setDisplaySlot(DisplaySlot.BELOW_NAME);
+        objective.setDisplayName(ChatColor.RED.toString() + "❤");
+    }
+
+    public void setCurrentPlayerLevels(Scoreboard scoreboard) {
+        for (Player player1 : Bukkit.getOnlinePlayers()) {
+            String suffix = "";
+            if (!Guild.getInstance().isGuildNull(player1.getUniqueId())) {
+                String clanTag = Guild.getInstance().getClanTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player1.getUniqueId()).toString());
+                suffix = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + " [" + clanTag + ChatColor.RESET + "]");
+            }
+            GamePlayer gamePlayer = API.getGamePlayer(player1);
+
+            int level = gamePlayer.getStats().getLevel();
+
+            Team team = getPlayerTeam(scoreboard, player1);
+            team.setPrefix(ChatColor.LIGHT_PURPLE + "[" + level + "] " + gamePlayer.getPlayerAlignment().getAlignmentColor());
+            team.setSuffix(suffix);
+            if (!team.hasEntry(player1.getName())) {
+                team.addEntry(player1.getName());
+            }
         }
     }
 

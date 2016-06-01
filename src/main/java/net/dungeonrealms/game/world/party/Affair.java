@@ -1,7 +1,10 @@
 package net.dungeonrealms.game.world.party;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
@@ -45,11 +48,20 @@ public class Affair implements GenericMechanic {
             /*
             Scoreboards
              */
-                ScoreboardManager manager = Bukkit.getScoreboardManager();
-                Scoreboard board = manager.getNewScoreboard();
-                Objective objective = board.registerNewObjective("test", "dummy");
-                objective.setDisplaySlot(DisplaySlot.SIDEBAR);
-                objective.setDisplayName(ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY");
+                Scoreboard board;
+                if (party.getPartyScoreboard() == null) {
+                    board = party.createScoreboard();
+                    party.setPartyScoreboard(board);
+                } else {
+                    board = party.getPartyScoreboard();
+                }
+
+                Objective objective = board.getObjective("party");
+                if (objective == null) {
+                    objective = board.registerNewObjective("party", "dummy");
+                    objective.setDisplaySlot(DisplaySlot.SIDEBAR);
+                    objective.setDisplayName(ChatColor.AQUA.toString() + ChatColor.BOLD + "PARTY");
+                }
 
                 List<Player> allPlayers = new ArrayList<>();
                 {
@@ -57,12 +69,20 @@ public class Affair implements GenericMechanic {
                     allPlayers.addAll(party.getMembers());
                 }
 
-                allPlayers.stream().filter(player1 -> player1 != null).forEach(player -> {
-                    Score score = objective.getScore(player.getName());
-                    score.setScore(HealthHandler.getInstance().getPlayerHPLive(player));
-                });
+                for (Player player : allPlayers) {
+                    if (player != null) {
+                        Score score = objective.getScore(player.getName());
+                        score.setScore(HealthHandler.getInstance().getPlayerHPLive(player));
 
-                allPlayers.stream().filter(player1 -> player1 != null).forEach(player -> player.setScoreboard(board));
+                        //Only set the scoreboard if we need to as setScoreboard will send packets and also cause the sb to flicker
+                        if (player.getScoreboard() != board) {
+                            player.setScoreboard(board);
+                        }
+                    }
+                }
+
+
+//				allPlayers.stream().filter(player1 -> player1 != null).forEach(player -> player.setScoreboard(board));
             }
 
         }), 0, 15);
@@ -70,7 +90,9 @@ public class Affair implements GenericMechanic {
 
     public void invitePlayer(Player inviting, Player invitor) {
         _invitations.put(inviting, getParty(invitor).get());
-        inviting.sendMessage(ChatColor.LIGHT_PURPLE.toString() + ChatColor.UNDERLINE + invitor.getName() + ChatColor.GRAY + " has invited you to join their party! Type " + ChatColor.LIGHT_PURPLE + "/paccept" + ChatColor.GRAY + " to join.");
+        inviting.sendMessage(
+                ChatColor.LIGHT_PURPLE.toString() + ChatColor.UNDERLINE + invitor.getName() + ChatColor.GRAY + " has invited you to join their party! Type "
+                        + ChatColor.LIGHT_PURPLE + "/paccept" + ChatColor.GRAY + " to join.");
     }
 
     public void removeParty(AffairO party) {
@@ -80,9 +102,10 @@ public class Affair implements GenericMechanic {
         allPlayers.addAll(party.getMembers());
 
         allPlayers.stream().forEach(player -> {
-            player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+            player.setScoreboard(ScoreboardHandler.getInstance().mainScoreboard);
             player.sendMessage(ChatColor.RED + "Your party has been disbanded!");
         });
+
 
         Utils.log.info("Deleted Old Party: " + party.toString());
 
@@ -104,7 +127,7 @@ public class Affair implements GenericMechanic {
         party.getOwner().sendMessage(ChatColor.AQUA + player.getName() + " " + ChatColor.RED + "has left the party!");
         party.getMembers().stream().forEach(player1 -> player1.sendMessage(ChatColor.AQUA + player.getName() + " " + ChatColor.RED + "has left the party!"));
 
-        player.setScoreboard(Bukkit.getScoreboardManager().getMainScoreboard());
+        player.setScoreboard(ScoreboardHandler.getInstance().mainScoreboard);
 
     }
 
@@ -113,7 +136,8 @@ public class Affair implements GenericMechanic {
     }
 
     public boolean areInSameParty(Player player1, Player player2) {
-        return isInParty(player1) && isInParty(player2) && (getParty(player1).get().getOwner().getName().equalsIgnoreCase(getParty(player2).get().getOwner().getName().toLowerCase()));
+        return isInParty(player1) && isInParty(player2) && (getParty(player1).get().getOwner().getName()
+                .equalsIgnoreCase(getParty(player2).get().getOwner().getName().toLowerCase()));
     }
 
     public int amountInParty(AffairO party) {
@@ -147,9 +171,22 @@ public class Affair implements GenericMechanic {
         private Player owner;
         private List<Player> members;
 
+        @Getter
+        @Setter
+        private Scoreboard partyScoreboard;
+
         public AffairO(Player owner, List<Player> members) {
             this.owner = owner;
             this.members = members;
+            this.partyScoreboard = createScoreboard();
+        }
+
+        public Scoreboard createScoreboard() {
+            Scoreboard sb = Bukkit.getScoreboardManager().getNewScoreboard();
+            ScoreboardHandler handler = ScoreboardHandler.getInstance();
+            handler.setCurrentPlayerLevels(sb);
+            handler.registerHealth(sb);
+            return sb;
         }
 
         public Player getOwner() {

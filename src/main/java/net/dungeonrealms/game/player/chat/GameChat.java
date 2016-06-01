@@ -42,7 +42,7 @@ public final class GameChat {
 
         Rank.RankBlob r = Rank.getInstance().getRank(player.getUniqueId());
 
-        if (!r.getName().toLowerCase().contains("default")) {
+        if (r != null && !r.getName().toLowerCase().contains("default")) {
             boolean gChat = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
             if (gChat) {
                 message.append(GLOBAL).append(getRankPrefix(r.getName())).append(getName(player, r.getName().toLowerCase()));
