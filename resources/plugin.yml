@@ -1,7 +1,0 @@
-name: DungeonRealms
-main: net.dungeonrealms.DungeonRealms
-version: 1.0
-authors: [xFinityPro, Proxying, Xwaffle]
-website: http://www.dungeonrealms.net
-depend: [BountifulAPI, WorldGuard, BossBarAPI]
-description: The new dungeonrealms!

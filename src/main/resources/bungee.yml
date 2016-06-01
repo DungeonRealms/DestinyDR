@@ -1,0 +1,6 @@
+name: DungeonRealmsProxy
+main: net.dungeonrealms.bungee.DungeonRealmsPorxy
+version: 1.0
+authors: [xFinityPro, Proxying, Xwaffle, apollosoftware]
+website: http://www.dungeonrealms.net
+description: The new dungeonrealms!
