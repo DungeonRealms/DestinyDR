@@ -1,36 +1,22 @@
 package net.dungeonrealms.game.world.spawning;
 
-import java.util.ArrayList;
-import java.util.Random;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.dungeonrealms.game.world.entities.types.monsters.BasicEntityBlaze;
-import net.dungeonrealms.game.world.entities.types.monsters.BasicEntitySkeleton;
-import net.dungeonrealms.game.world.entities.types.monsters.BasicMageMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.BasicMeleeMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.EntityBandit;
-import net.dungeonrealms.game.world.entities.types.monsters.EntityFireImp;
-import net.dungeonrealms.game.world.entities.types.monsters.EntityGolem;
-import net.dungeonrealms.game.world.entities.types.monsters.EntityPirate;
-import net.dungeonrealms.game.world.entities.types.monsters.EntityRangedPirate;
-import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.base.DRMagma;
-import net.dungeonrealms.game.world.entities.types.monsters.base.DRPigman;
-import net.dungeonrealms.game.world.entities.types.monsters.base.DRSilverfish;
-import net.dungeonrealms.game.world.entities.types.monsters.base.DRSpider;
-import net.dungeonrealms.game.world.entities.types.monsters.base.DRWitherSkeleton;
+import net.dungeonrealms.game.world.entities.types.monsters.*;
+import net.dungeonrealms.game.world.entities.types.monsters.base.*;
 import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.World;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+
+import java.util.ArrayList;
+import java.util.Random;
 
 /**
  * Created by Chase on Sep 28, 2015
@@ -74,11 +60,15 @@ public class SpawningMechanics implements GenericMechanic {
             int spawnAmount = Integer.parseInt(stringAmount);
             String monster = line.split("=")[1].split(":")[0];
             String spawnRange = String.valueOf(line.charAt(line.length() - 1));
+            int spawnDelay = Integer.parseInt(line.substring(line.lastIndexOf("@") + 1, line.indexOf("#")));
+            if (spawnDelay < 20) {
+                spawnDelay = 20;
+            }
             MobSpawner spawner;
             if(spawnRange.equalsIgnoreCase("+"))
-             spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "high");
+             spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "high", spawnDelay);
             else
-             spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low");
+             spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low", spawnDelay);
             ALLSPAWNERS.add(spawner);
         }
         ArrayList<String> BANDIT_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("banditTrove");
@@ -98,8 +88,13 @@ public class SpawningMechanics implements GenericMechanic {
             stringAmount = stringAmount.replace("+", "");
             int spawnAmount = Integer.parseInt(stringAmount);
             String monster = line.split("=")[1].split(":")[0];
+            int spawnDelay = Integer.parseInt(line.substring(line.lastIndexOf("@") + 1, line.indexOf("#")));
+            if (spawnDelay < 20) {
+                spawnDelay = 20;
+            }
             MobSpawner spawner;
-            spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, BanditTroveSpawns.size(), "high");
+            spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, BanditTroveSpawns.size(), "high", spawnDelay);
+            spawner.setDungeonSpawner(true);
             BanditTroveSpawns.add(spawner);
         }
         Utils.log.info("FINISHED LOADING DUNGEON SPAWNS");
@@ -124,10 +119,14 @@ public class SpawningMechanics implements GenericMechanic {
         String monster = line.split("=")[1].split(":")[0];
         String spawnRange = String.valueOf(line.charAt(line.length() - 1));
         MobSpawner spawner;
+        int spawnDelay = Integer.parseInt(line.substring(line.lastIndexOf("@") + 1, line.indexOf("#")));
+        if (spawnDelay < 20) {
+            spawnDelay = 20;
+        }
         if(spawnRange.equalsIgnoreCase("+"))
-         spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "high");
+         spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "high", spawnDelay);
         else
-         spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low");
+         spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low", spawnDelay);
         ALLSPAWNERS.add(spawner);
         spawner.init();
     }

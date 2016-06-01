@@ -1,21 +1,5 @@
 package net.dungeonrealms.game.commands;
 
-import java.util.Random;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.command.BlockCommandSender;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Wolf;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
@@ -37,6 +21,21 @@ import net.dungeonrealms.game.world.spawning.MobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.World;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.command.BlockCommandSender;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.Player;
+import org.bukkit.entity.Wolf;
+import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+
+import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -178,9 +177,11 @@ public class CommandSpawn extends BasicCommand {
                     int tier = 1;
                     if (args.length == 3)
                         tier = Integer.parseInt(args[2]);
-                    MobSpawner spawner = new MobSpawner(player.getLocation(), monster, tier, 4, SpawningMechanics.ALLSPAWNERS.size(), "high");
-                    String text = (player.getLocation().getX() + "," + player.getLocation().getY() + ","
-                            + player.getLocation().getZ() + "=" + args[1] + ":" + tier);
+                    int spawnDelay = 20;
+                    if (args.length == 4)
+                        spawnDelay = Integer.parseInt(args[3]);
+                    MobSpawner spawner = new MobSpawner(player.getLocation(), monster, tier, 4, SpawningMechanics.ALLSPAWNERS.size(), "high", spawnDelay);
+                    String text = (player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + "=" + monster + ":" + tier + "@" + spawnDelay + "#");
                     SpawningMechanics.SPAWNER_CONFIG.add(text);
                     DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
                     SpawningMechanics.ALLSPAWNERS.add(spawner);

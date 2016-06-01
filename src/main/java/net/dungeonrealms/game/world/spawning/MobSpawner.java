@@ -52,8 +52,10 @@ public class MobSpawner {
     public boolean toSpawn;
     public boolean isDungeonSpawner;
     public boolean hasCustomName = false;
+    private int respawnDelay;
+    private int counter;
 
-    public MobSpawner(Location location, String type, int tier, int spawnAmount, int configid, String lvlRange) {
+    public MobSpawner(Location location, String type, int tier, int spawnAmount, int configid, String lvlRange, int respawnDelay) {
         if (type.contains("(") && type.contains("*")) {
             isElite = true;
         } else if (type.contains("(")) {
@@ -79,6 +81,8 @@ public class MobSpawner {
         this.id = configid;
         this.spawnType = type;
         this.tier = tier;
+        this.respawnDelay = respawnDelay;
+        this.counter = 0;
         World world = ((CraftWorld) location.getWorld()).getHandle();
         armorstand = new EntityArmorStand(world);
         armorstand.getBukkitEntity().setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "spawner"));
@@ -108,6 +112,11 @@ public class MobSpawner {
 //    		return;
 //    	}
         if (toSpawn) return;
+        if (!canMobsSpawn()) {
+            counter = counter + 5;
+            //Mobs haven't passed their respawn timer yet.
+            return;
+        }
         if (!not) {
             if (!SPAWNED_MONSTERS.isEmpty()) {
                 for (Entity monster : SPAWNED_MONSTERS) {
@@ -202,7 +211,7 @@ public class MobSpawner {
 
                 String lvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
 
-                String mobName = "";
+                String mobName;
                 try {
                     mobName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
                 } catch (Exception exc) {
@@ -218,7 +227,6 @@ public class MobSpawner {
                 }
 
                 toSpawn = true;
-//                if (!firstSpawn) {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     if (firstSpawn) {
                         firstSpawn = false;
@@ -264,47 +272,6 @@ public class MobSpawner {
                     SPAWNED_MONSTERS.add(entity);
                     toSpawn = false;
                 }, firstSpawn ? 0 : 400);
-//                }
-//                else {
-//                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-//                        for (int i = 0; i < spawnAmount; i++) {
-//                            Entity newentity = SpawningMechanics.getMob(world, tier, monsEnum);
-//                            int newlevel = Utils.getRandomFromTier(tier, lvlRange);
-//                            MetadataUtils.registerEntityMetadata(newentity, type, tier, newlevel);
-//                            EntityStats.setMonsterRandomStats(newentity, newlevel, tier);
-//
-//                            String newlvlName = ChatColor.LIGHT_PURPLE.toString() + "[" + newlevel + "] ";
-//                            String newcustomName = "";
-//                            try {
-//                                newcustomName = newentity.getBukkitEntity().getMetadata("customname").get(0).asString();
-//                            } catch (Exception exc) {
-//                                Utils.log.info(newentity.getCustomName() + " doesn't have metadata 'customname' ");
-//                                newcustomName = monsEnum.name;
-//                            }
-//                            
-//                            if(this.hasCustomName){
-//                                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString()  + monsterCustomName));
-//                            	entity.setCustomName(newlvlName + API.getTierColor(tier)  + ChatColor.BOLD + monsterCustomName);
-//                            	Utils.log.info("setCustomName FIRST SPAWN " + newlvlName + API.getTierColor(tier)  + ChatColor.BOLD + monsterCustomName);
-//                            }else{
-//                                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + newcustomName));
-//                                entity.setCustomName(newlvlName + API.getTierColor(tier) + newcustomName);
-//                            	Utils.log.info("setMobName FIRST SPAWN " +  newlvlName + API.getTierColor(tier) + newcustomName);
-//                            }
-//                            
-//                            
-//                            
-//                            newentity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-//                            world.addEntity(newentity, SpawnReason.CUSTOM);
-//                            newentity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-//                            newentity.getBukkitEntity().setVelocity(new Vector(0.1, 0, 0.1));
-//                            SPAWNED_MONSTERS.add(newentity);
-//
-//                        }
-//                        firstSpawn = false;
-//                        toSpawn = false;
-//                    });
-//                }
             }
         } else {
             if (!SPAWNED_MONSTERS.isEmpty()) {
@@ -331,7 +298,7 @@ public class MobSpawner {
     /**
      * Custom Spawning for dungeons
      *
-     * @param dungeonManager
+     * @param dungeon
      */
     public void dungeonSpawn(DungeonObject dungeon) {
         int i = 0;
@@ -422,7 +389,7 @@ public class MobSpawner {
                     if (isRemoved) {
                         Bukkit.getScheduler().cancelTask(timerID);
                     } else
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> spawnIn(false));
+                        spawnIn(false);
                 }, 0, 100L);
             } else {
                 if (timerID != -1) {
@@ -440,5 +407,15 @@ public class MobSpawner {
      */
     public void setDungeonSpawner(boolean b) {
         isDungeonSpawner = b;
+    }
+
+    //Checks whether mobs can spawn based on their delay set in config.
+    private boolean canMobsSpawn() {
+        Bukkit.broadcastMessage("Counter: " + counter + " || Delay: " + respawnDelay);
+        if (counter < respawnDelay) {
+            return false;
+        }
+        counter = 0;
+        return true;
     }
 }
