@@ -70,8 +70,7 @@ public class ShopListener implements Listener {
         if (block.getType() != Material.CHEST) return;
         Shop shop = ShopMechanics.getShop(block);
         if (shop == null) return;
-        if (event.getPlayer().getItemInHand() == null || event.getPlayer().getItemInHand().getType() != Material.WRITTEN_BOOK)
-            return;
+        if (event.getPlayer().getItemInHand() == null || event.getPlayer().getItemInHand().getType() != Material.WRITTEN_BOOK) return;
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getPlayer().getItemInHand());
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
@@ -504,7 +503,9 @@ public class ShopListener implements Listener {
         if (shop == null) return;
         if (!shop.isopen) return;
         if (event.getPlayer().getName().equalsIgnoreCase(ownerName)) return;
+        if (shop.uniqueViewers.contains(event.getPlayer().getName())) return;
         shop.viewCount = shop.viewCount + 1;
+        shop.uniqueViewers.add(event.getPlayer().getName());
         shop.hologram.removeLine(1);
         shop.hologram.insertTextLine(1, String.valueOf(shop.viewCount) + ChatColor.RED + " ❤");
     }

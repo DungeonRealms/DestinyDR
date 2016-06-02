@@ -133,25 +133,29 @@ public class Teleportation implements GenericMechanic {
 
         assert location != null;
 
+        String message = ChatColor.WHITE.toString() + ChatColor.BOLD + "TELEPORTING" +  " - " + ChatColor.AQUA + "";
+
         if (location.equals(Cyrennica)) {
-            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to Cyrennica.");
+            message += "Cyrennica";
         } else if (location.equals(Harrison_Field)) {
-            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to Harrison Field.");
+            message += "Harrison Field";
         } else if (location.equals(Dark_Oak_Tavern)) {
-            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to Dark Oak Tavern.");
+            message += "Dark Oak Tavern";
         } else if (location.equals(Deadpeaks_Mountain_Camp)) {
-            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to DeadPeaks Camp.");
+            message += "DeadPeaks Camp";
         } else if (location.equals(Trollsbane_tavern)) {
-            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to Trollsbane Tavern.");
+            message += "Trollsbane Tavern";
         } else if (location.equals(Tripoli)) {
-            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to Tripoli.");
+            message += "Tripoli";
         } else if (location.equals(Gloomy_Hollows)) {
-            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to Gloomy Hollows.");
+            message += "Gloomy Hollows";
         } else if (location.equals(Crestguard_Keep)) {
-            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to Crestgaurd Keep.");
+            message += "Crestgaurd Keep";
         } else if (location.equals(Tutorial)) {
-            player.sendMessage(ChatColor.YELLOW.toString() + ChatColor.BOLD + "Teleporting to the Tutorial Island");
+            message += "Tutorial Island";
         }
+
+        player.sendMessage(message);
 
         ParticleAPI.ParticleEffect[] particleEffect = new ParticleAPI.ParticleEffect[2];
         final int[] taskTimer = {7};
@@ -159,7 +163,7 @@ public class Teleportation implements GenericMechanic {
             case HEARTHSTONE:
                 particleEffect[0] = ParticleAPI.ParticleEffect.SPELL;
                 particleEffect[1] = ParticleAPI.ParticleEffect.SPELL;
-                player.playSound(player.getLocation(), Sound.WITHER_DEATH, 1F, 1F);
+                taskTimer[0] = 10;
                 break;
             case TELEPORT_BOOK:
                 particleEffect[0] = ParticleAPI.ParticleEffect.WITCH_MAGIC;
@@ -167,6 +171,7 @@ public class Teleportation implements GenericMechanic {
                 player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 220, 2));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 220, 1));
                 player.playSound(player.getLocation(), Sound.AMBIENCE_CAVE, 1F, 1F);
+                taskTimer[0] = 5;
                 break;
         }
 
@@ -174,7 +179,7 @@ public class Teleportation implements GenericMechanic {
         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
                 if (player.getLocation().distanceSquared(startingLocation) <= 4 && !CombatLog.isInCombat(player)) {
-                    player.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + taskTimer[0] + "s...");
+                    player.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + "TELEPORTING ... "+ taskTimer[0] + "s");
                     try {
                         ParticleAPI.sendParticleToLocation(particleEffect[0], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
                         ParticleAPI.sendParticleToLocation(particleEffect[1], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 4F, 400);
