@@ -55,11 +55,12 @@ public class SpawningMechanics implements GenericMechanic {
             String tierString = line.substring(line.indexOf(":"), line.indexOf(";"));
             tierString = tierString.substring(1);
             int tier = Integer.parseInt(tierString);
-            String stringAmount = line.split(";")[1].replace("-", "");
-            stringAmount = stringAmount.replace("+", "");
-            int spawnAmount = Integer.parseInt(stringAmount);
+            Character strAmount = line.charAt(line.indexOf(";") + 1);
+            //String stringAmount = line.substring(line.indexOf(";") + 1, line.indexOf(";"))[1].replace("-", "");
+            //strAmount = strAmount.replace("+", "");
+            int spawnAmount = Integer.parseInt(String.valueOf(strAmount));
             String monster = line.split("=")[1].split(":")[0];
-            String spawnRange = String.valueOf(line.charAt(line.length() - 1));
+            String spawnRange = String.valueOf(line.charAt(line.lastIndexOf("@") - 1));
             int spawnDelay = Integer.parseInt(line.substring(line.lastIndexOf("@") + 1, line.indexOf("#")));
             if (spawnDelay < 20) {
                 spawnDelay = 20;
@@ -88,10 +89,7 @@ public class SpawningMechanics implements GenericMechanic {
             stringAmount = stringAmount.replace("+", "");
             int spawnAmount = Integer.parseInt(stringAmount);
             String monster = line.split("=")[1].split(":")[0];
-            int spawnDelay = Integer.parseInt(line.substring(line.lastIndexOf("@") + 1, line.indexOf("#")));
-            if (spawnDelay < 20) {
-                spawnDelay = 20;
-            }
+            int spawnDelay = 0;
             MobSpawner spawner;
             spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, BanditTroveSpawns.size(), "high", spawnDelay);
             spawner.setDungeonSpawner(true);
@@ -115,9 +113,10 @@ public class SpawningMechanics implements GenericMechanic {
         String tierString = line.substring(line.indexOf(":"), line.indexOf(";"));
         tierString = tierString.substring(1);
         int tier = Integer.parseInt(tierString);
-        int spawnAmount = Integer.parseInt(line.split(";")[1]);
+        Character strAmount = line.charAt(line.indexOf(";") + 1);
+        int spawnAmount = Integer.parseInt(String.valueOf(strAmount));
         String monster = line.split("=")[1].split(":")[0];
-        String spawnRange = String.valueOf(line.charAt(line.length() - 1));
+        String spawnRange = String.valueOf(line.charAt(line.lastIndexOf("@") - 1));
         MobSpawner spawner;
         int spawnDelay = Integer.parseInt(line.substring(line.lastIndexOf("@") + 1, line.indexOf("#")));
         if (spawnDelay < 20) {
