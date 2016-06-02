@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.listeners;
 
 //import com.codingforcookies.armorequip.ArmorEquipEvent;
+
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
@@ -294,6 +295,7 @@ public class InventoryListener implements Listener {
 
 
     //TODO: Re-enable when ArmorEquipEvent is fixed, or our own individual one is created.
+
     /**
      * Called when a player equips armor
      *
