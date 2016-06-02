@@ -5,6 +5,8 @@
   <artifactId>DungeonRealms</artifactId>
   <version>1.0-SNAPSHOT</version>
   <build>
+    <defaultGoal>clean install</defaultGoal>
+    <finalName>${project.artifactId}</finalName>
     <plugins>
       <plugin>
         <artifactId>maven-compiler-plugin</artifactId>
@@ -353,6 +355,13 @@
       <version>1.0</version>
       <scope>system</scope>
       <systemPath>${project.basedir}/lib/VoidGenerator.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.projectlombok</groupId>
+      <artifactId>lombok</artifactId>
+      <version>1.16.8</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/lombok.jar</systemPath>
     </dependency>
   </dependencies>
 </project>
