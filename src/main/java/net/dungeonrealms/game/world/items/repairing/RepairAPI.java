@@ -1,9 +1,6 @@
 package net.dungeonrealms.game.world.items.repairing;
 
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -25,175 +22,174 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
  */
 public class RepairAPI {
 
-	public static int getItemRepairCost(ItemStack i) {
-		double repair_cost = 0;
-		
-		if(API.isArmor(i)) { // It's a piece of armor.
-			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(i);
-			if(!nms.hasTag() && !nms.getTag().hasKey("itemTier"))
-				return -1;
-			int item_tier = nms.getTag().getInt("itemTier");
-			double avg_armor = 0;
-			if(nms.getTag().hasKey("armorMin"))
-				avg_armor = nms.getTag().getInt("armorMin");
-			else
-				avg_armor = nms.getTag().getInt("dmgMin");
-			double percent_durability_left =   (getCustomDurability(i) / 1550) * 100;  // getDurabilityValueAsPercent(i, getCustomDurability(i));
-			if(percent_durability_left > 99) {
-				percent_durability_left = 99;
-			}
-			double armor_cost = avg_armor * 0.8; // This is the cost PER PERCENT kinda
-			
-			double global_multiplier = 0.20; // Additional 0.06 less
-			double multiplier = 1;
-			double missing_percent = 100 - percent_durability_left;
-			double total_armor_cost = missing_percent * armor_cost;
-			
-			if(item_tier == 1) {
-				multiplier = 1.0;
-				repair_cost = total_armor_cost * multiplier;
-			}
-			if(item_tier == 2) {
-				multiplier = 1.25;
-				repair_cost = total_armor_cost * multiplier;
-			}
-			if(item_tier == 3) {
-				multiplier = 1.5;
-				repair_cost = total_armor_cost * multiplier;
-			}
-			if(item_tier == 4) {
-				multiplier = 2;
-				repair_cost = total_armor_cost * multiplier;
-			}
-			if(item_tier == 5) {
-				multiplier = 2.75;
-				repair_cost = total_armor_cost * multiplier;
-			}
+    public static int getItemRepairCost(ItemStack i) {
+        double repair_cost = 0;
 
-			repair_cost += repair_cost * global_multiplier;
-		}
-		
-		if(API.isWeapon(i)) { // It's a weapon.
-			net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(i);
-			if(!nms.hasTag() && !nms.getTag().hasKey("itemTier"))
-				return -1;
-			int item_tier = nms.getTag().getInt("itemTier");
-	        NBTTagCompound tag = CraftItemStack.asNMSCopy(i).getTag();
-			double percent_durability_left =   (getCustomDurability(i) / 1550) * 100;  // getDurabilityValueAsPercent(i, getCustomDurability(i));
-			if(percent_durability_left > 99) {
-				percent_durability_left = 99;
-			}
-			
-			double global_multiplier = 0.20;
-			double multiplier = 1.0; // 100%
-			double missing_percent = 100 - percent_durability_left;
-			double total_dmg_cost = missing_percent;
-			if(item_tier == 1) {
-				multiplier = 1.0;
-				repair_cost = total_dmg_cost * multiplier;
-			}
-			if(item_tier == 2) {
-				multiplier = 1.25;
-				repair_cost = total_dmg_cost * multiplier;
-			}
-			if(item_tier == 3) {
-				multiplier = 1.75;
-				repair_cost = total_dmg_cost * multiplier;
-			}
-			if(item_tier == 4) {
-				multiplier = 2.5;
-				repair_cost = total_dmg_cost * multiplier;
-			}
-			if(item_tier == 5) {
-				multiplier = 3.75;
-				repair_cost = total_dmg_cost * multiplier;
-			}
-			repair_cost += repair_cost * global_multiplier;
-		}
-		
-		if(Mining.isDRPickaxe(i)) {
-			int item_tier = Mining.getPickTier(i);
-			double dmg_cost = Math.pow(Mining.getLvl(i), 2) / 100D; // This is the cost PER PERCENT
-			double percent_durability_left =   (getCustomDurability(i) / 1550) * 100; 
-			if(percent_durability_left > 99) {
-				percent_durability_left = 99;
-			}
-			
-			double global_multiplier = 0.8;
-			double multiplier = 1.0; // 100%
-			double missing_percent = 100 - percent_durability_left;
-			double total_dmg_cost = missing_percent * dmg_cost;
-			
-			if(item_tier == 1) {
-				multiplier = 0.75;
-				repair_cost = total_dmg_cost * multiplier;
-			}
-			if(item_tier == 2) {
-				multiplier = 1.0;
-				repair_cost = total_dmg_cost * multiplier;
-			}
-			if(item_tier == 3) {
-				multiplier = 1.5;
-				repair_cost = total_dmg_cost * multiplier;
-			}
-			if(item_tier == 4) {
-				multiplier = 2.0;
-				repair_cost = total_dmg_cost * multiplier;
-			}
-			if(item_tier == 5) {
-				multiplier = 3.0;
-				repair_cost = total_dmg_cost * multiplier;
-			}
-			repair_cost += repair_cost * global_multiplier;
-		}
-		
-		if(Fishing.isDRFishingPole(i) ){
-			int item_tier = Fishing.getRodTier(i);
-			double dmg_cost = 2; // This is the cost PER PERCENT
-			double percent_durability_left =   (getCustomDurability(i) / 1550) * 100; 
-			double global_multiplier = 0.4;
-			double multiplier = 1.0; // 100%
-			double missing_percent = 100 - percent_durability_left;
-			double total_dmg_cost = missing_percent * dmg_cost;
+        if (API.isArmor(i)) { // It's a piece of armor.
+            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(i);
+            if (!nms.hasTag() && !nms.getTag().hasKey("itemTier"))
+                return -1;
+            int item_tier = nms.getTag().getInt("itemTier");
+            double avg_armor = 0;
+            if (nms.getTag().hasKey("armorMin"))
+                avg_armor = nms.getTag().getInt("armorMin");
+            else
+                avg_armor = nms.getTag().getInt("dmgMin");
+            double percent_durability_left = (getCustomDurability(i) / 1550) * 100;  // getDurabilityValueAsPercent(i, getCustomDurability(i));
+            if (percent_durability_left > 99) {
+                percent_durability_left = 99;
+            }
+            double armor_cost = avg_armor * 0.8; // This is the cost PER PERCENT kinda
 
-			if(percent_durability_left > 99) {
-				percent_durability_left = 99;
-			}
-			if(item_tier == 1) {
-				multiplier = 0.5;
-				repair_cost = total_dmg_cost * multiplier;
-			}
-			if(item_tier == 2) {
-				multiplier = 0.75;
-				repair_cost = total_dmg_cost * multiplier;
-			}
-			if(item_tier == 3) {
-				multiplier = 1.0;
-				repair_cost = total_dmg_cost * multiplier;
-			}
-			if(item_tier == 4) {
-				multiplier = 2.0;
-				repair_cost = total_dmg_cost * multiplier;
-			}
-			if(item_tier == 5) {
-				multiplier = 3.0;
-				repair_cost = total_dmg_cost * multiplier;
-			}
-			repair_cost += repair_cost * global_multiplier;
-		}
-		if(repair_cost < 1) {
-			repair_cost = 1;
-		}
-		int cost = (int) Math.round(repair_cost) / 2; // Divide by 2
-		if(cost < 10)
-		{
-			return 10; // Minimum of 10 gems yeh?
-		}
-		return cost;
-	}
-	
-	
-	/**
+            double global_multiplier = 0.20; // Additional 0.06 less
+            double multiplier = 1;
+            double missing_percent = 100 - percent_durability_left;
+            double total_armor_cost = missing_percent * armor_cost;
+
+            if (item_tier == 1) {
+                multiplier = 1.0;
+                repair_cost = total_armor_cost * multiplier;
+            }
+            if (item_tier == 2) {
+                multiplier = 1.25;
+                repair_cost = total_armor_cost * multiplier;
+            }
+            if (item_tier == 3) {
+                multiplier = 1.5;
+                repair_cost = total_armor_cost * multiplier;
+            }
+            if (item_tier == 4) {
+                multiplier = 2;
+                repair_cost = total_armor_cost * multiplier;
+            }
+            if (item_tier == 5) {
+                multiplier = 2.75;
+                repair_cost = total_armor_cost * multiplier;
+            }
+
+            repair_cost += repair_cost * global_multiplier;
+        }
+
+        if (API.isWeapon(i)) { // It's a weapon.
+            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(i);
+            if (!nms.hasTag() && !nms.getTag().hasKey("itemTier"))
+                return -1;
+            int item_tier = nms.getTag().getInt("itemTier");
+            NBTTagCompound tag = CraftItemStack.asNMSCopy(i).getTag();
+            double percent_durability_left = (getCustomDurability(i) / 1550) * 100;  // getDurabilityValueAsPercent(i, getCustomDurability(i));
+            if (percent_durability_left > 99) {
+                percent_durability_left = 99;
+            }
+
+            double global_multiplier = 0.20;
+            double multiplier = 1.0; // 100%
+            double missing_percent = 100 - percent_durability_left;
+            double total_dmg_cost = missing_percent;
+            if (item_tier == 1) {
+                multiplier = 1.0;
+                repair_cost = total_dmg_cost * multiplier;
+            }
+            if (item_tier == 2) {
+                multiplier = 1.25;
+                repair_cost = total_dmg_cost * multiplier;
+            }
+            if (item_tier == 3) {
+                multiplier = 1.75;
+                repair_cost = total_dmg_cost * multiplier;
+            }
+            if (item_tier == 4) {
+                multiplier = 2.5;
+                repair_cost = total_dmg_cost * multiplier;
+            }
+            if (item_tier == 5) {
+                multiplier = 3.75;
+                repair_cost = total_dmg_cost * multiplier;
+            }
+            repair_cost += repair_cost * global_multiplier;
+        }
+
+        if (Mining.isDRPickaxe(i)) {
+            int item_tier = Mining.getPickTier(i);
+            double dmg_cost = Math.pow(Mining.getLvl(i), 2) / 100D; // This is the cost PER PERCENT
+            double percent_durability_left = (getCustomDurability(i) / 1550) * 100;
+            if (percent_durability_left > 99) {
+                percent_durability_left = 99;
+            }
+
+            double global_multiplier = 0.8;
+            double multiplier = 1.0; // 100%
+            double missing_percent = 100 - percent_durability_left;
+            double total_dmg_cost = missing_percent * dmg_cost;
+
+            if (item_tier == 1) {
+                multiplier = 0.75;
+                repair_cost = total_dmg_cost * multiplier;
+            }
+            if (item_tier == 2) {
+                multiplier = 1.0;
+                repair_cost = total_dmg_cost * multiplier;
+            }
+            if (item_tier == 3) {
+                multiplier = 1.5;
+                repair_cost = total_dmg_cost * multiplier;
+            }
+            if (item_tier == 4) {
+                multiplier = 2.0;
+                repair_cost = total_dmg_cost * multiplier;
+            }
+            if (item_tier == 5) {
+                multiplier = 3.0;
+                repair_cost = total_dmg_cost * multiplier;
+            }
+            repair_cost += repair_cost * global_multiplier;
+        }
+
+        if (Fishing.isDRFishingPole(i)) {
+            int item_tier = Fishing.getRodTier(i);
+            double dmg_cost = 2; // This is the cost PER PERCENT
+            double percent_durability_left = (getCustomDurability(i) / 1550) * 100;
+            double global_multiplier = 0.4;
+            double multiplier = 1.0; // 100%
+            double missing_percent = 100 - percent_durability_left;
+            double total_dmg_cost = missing_percent * dmg_cost;
+
+            if (percent_durability_left > 99) {
+                percent_durability_left = 99;
+            }
+            if (item_tier == 1) {
+                multiplier = 0.5;
+                repair_cost = total_dmg_cost * multiplier;
+            }
+            if (item_tier == 2) {
+                multiplier = 0.75;
+                repair_cost = total_dmg_cost * multiplier;
+            }
+            if (item_tier == 3) {
+                multiplier = 1.0;
+                repair_cost = total_dmg_cost * multiplier;
+            }
+            if (item_tier == 4) {
+                multiplier = 2.0;
+                repair_cost = total_dmg_cost * multiplier;
+            }
+            if (item_tier == 5) {
+                multiplier = 3.0;
+                repair_cost = total_dmg_cost * multiplier;
+            }
+            repair_cost += repair_cost * global_multiplier;
+        }
+        if (repair_cost < 1) {
+            repair_cost = 1;
+        }
+        int cost = (int) Math.round(repair_cost) / 2; // Divide by 2
+        if (cost < 10) {
+            return 10; // Minimum of 10 gems yeh?
+        }
+        return cost;
+    }
+
+
+    /**
      * Returns the base durability
      * of a specified itemstack
      *
@@ -208,7 +204,8 @@ public class RepairAPI {
         if (tag.getInt("itemTier") == 0 && tag.getInt("armorTier") == 0) return 0;
         double percentDurability = ((itemStack.getType().getMaxDurability() - itemStack.getDurability()) / itemStack.getType().getMaxDurability());
         if (tag.getString("type").equalsIgnoreCase("weapon")) {
-            return Math.round(percentDurability * (1450 / 15));
+            //Get the full durability, not sure why its lowballing.
+            return Math.round(percentDurability * (1500 / 15));
         }
         if (tag.getString("type").equalsIgnoreCase("armor")) {
             return Math.round(percentDurability * (1550 / 15));
@@ -229,10 +226,10 @@ public class RepairAPI {
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return 0;
         if (tag.getInt("itemTier") == 0 && tag.getInt("armorTier") == 0) return 0;
-        
+
         double durabilityHitsLeft = durability / 1500;
         double percentDurability = itemStack.getType().getMaxDurability() - (itemStack.getType().getMaxDurability() * durabilityHitsLeft);
-        
+
         if (percentDurability == itemStack.getType().getMaxDurability()) {
             percentDurability = itemStack.getType().getMaxDurability() - 1;
         }
@@ -268,18 +265,17 @@ public class RepairAPI {
                 durabilityPercent = getItemDurabilityValue(itemStack);
                 setCustomItemDurability(itemStack, (durabilityPercent * 15));
                 durabilityPercent = durabilityPercent * 15;
-            }else if (tag.getString("type").equalsIgnoreCase("armor")) {
+            } else if (tag.getString("type").equalsIgnoreCase("armor")) {
                 durabilityPercent = getItemDurabilityValue(itemStack);
                 setCustomItemDurability(itemStack, (durabilityPercent * 15));
                 durabilityPercent = durabilityPercent * 15;
-            }else{
+            } else {
                 durabilityPercent = getItemDurabilityValue(itemStack);
                 setCustomItemDurability(itemStack, (durabilityPercent * 15));
                 durabilityPercent = durabilityPercent * 15;
             }
-            
-            
-            
+
+
             return durabilityPercent;
         } catch (Exception ex) {
             Utils.log.warning("[REPAIR] Item durability was not registered! Registering it now for item " + itemStack.toString());
@@ -288,7 +284,7 @@ public class RepairAPI {
             NBTTagCompound tag = nmsItem.getTag();
             if (tag == null) return 0;
             if (tag.getInt("itemTier") == 0 && tag.getInt("armorTier") == 0) return 0;
-            double durabilityPercent =  getItemDurabilityValue(itemStack);
+            double durabilityPercent = getItemDurabilityValue(itemStack);
             if (tag.getString("type").equalsIgnoreCase("weapon")) {
                 durabilityPercent = getItemDurabilityValue(itemStack);
                 setCustomItemDurability(itemStack, (durabilityPercent * 15));
@@ -314,7 +310,7 @@ public class RepairAPI {
      * @since 1.0
      */
     public static boolean isItemArmorScrap(ItemStack itemStack) {
-        if (!(itemStack.getType() == Material.LEATHER || itemStack.getType() == Material.IRON_FENCE || itemStack.getType() == Material.IRON_INGOT || itemStack.getType() == Material.DIAMOND || itemStack.getType() == Material.GOLD_INGOT))
+        if (!(itemStack.getType() == Material.LEATHER || itemStack.getType() == Material.IRON_FENCE || (itemStack.getType() == Material.INK_SACK && (itemStack.getDurability() == DyeColor.YELLOW.getDyeData() || itemStack.getDurability() == DyeColor.LIGHT_BLUE.getDyeData() || itemStack.getDurability() == (short) 7))))
             return false;
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         if (nmsItem == null) {
@@ -334,8 +330,7 @@ public class RepairAPI {
      * @since 1.0
      */
     public static int getScrapTier(ItemStack itemStack) {
-        if (!(itemStack.getType() == Material.LEATHER || itemStack.getType() == Material.IRON_FENCE || itemStack.getType() == Material.IRON_INGOT || itemStack.getType() == Material.DIAMOND || itemStack.getType() == Material.GOLD_INGOT))
-            return 0;
+        if (!isItemArmorScrap(itemStack)) return 0;
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         if (nmsItem == null) {
             return 0;
@@ -384,7 +379,7 @@ public class RepairAPI {
      * @since 1.0
      */
     public static boolean isItemArmorOrWeapon(ItemStack itemStack) {
-    	
+
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         if (nmsItem == null) {
             return false;
@@ -413,10 +408,10 @@ public class RepairAPI {
         }
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return false;
-        if(Mining.isDRPickaxe(itemStack)|| Fishing.isDRFishingPole(itemStack)){
-        	Utils.log.info(getCustomDurability(itemStack) + " "  + "< 1500");
-            if (getCustomDurability(itemStack) < 1500) 
-        	return true;
+        if (Mining.isDRPickaxe(itemStack) || Fishing.isDRFishingPole(itemStack)) {
+            Utils.log.info(getCustomDurability(itemStack) + " " + "< 1500");
+            if (getCustomDurability(itemStack) < 1500)
+                return true;
         }
         if (tag.getInt("itemTier") == 0 && tag.getInt("armorTier") == 0) return false;
         if (tag.getString("type").equalsIgnoreCase("weapon") || tag.getString("type").equalsIgnoreCase("armor")) {
@@ -426,6 +421,7 @@ public class RepairAPI {
         }
         return false;
     }
+
     /**
      * Sets the custom durability
      * of a specified itemstack
@@ -451,6 +447,7 @@ public class RepairAPI {
             e.printStackTrace();
         }
     }
+
     /**
      * Sets the custom durability
      * bar of a specified itemstack

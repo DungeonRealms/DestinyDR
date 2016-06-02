@@ -22,6 +22,7 @@ import net.minecraft.server.v1_8_R3.NBTTagInt;
 import net.minecraft.server.v1_8_R3.NBTTagList;
 import net.minecraft.server.v1_8_R3.NBTTagString;
 import org.bukkit.ChatColor;
+import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -184,15 +185,15 @@ public class ItemManager {
                 name = ChatColor.GREEN+ "Chain";
                 break;
             case 3:
-                rawStack = new ItemStack(Material.IRON_INGOT, 64);
+                rawStack = new ItemStack(Material.INK_SACK, 64, (short)7);
                 name = ChatColor.AQUA + "Iron";
                 break;
             case 4:
-                rawStack = new ItemStack(Material.DIAMOND, 64);
+                rawStack = new ItemStack(Material.INK_SACK, 64, DyeColor.LIGHT_BLUE.getDyeData());
                 name = ChatColor.LIGHT_PURPLE + "Diamond";
                 break;
             case 5:
-                rawStack = new ItemStack(Material.GOLD_INGOT, 64);
+                rawStack = new ItemStack(Material.INK_SACK, 64, DyeColor.YELLOW.getDyeData());
                 name = ChatColor.YELLOW + "Gold";
                 break;
             default:
