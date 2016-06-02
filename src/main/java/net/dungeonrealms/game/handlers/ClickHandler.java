@@ -515,7 +515,10 @@ public class ClickHandler {
                             player.closeInventory();
                             return;
                         } else {
-                            player.sendMessage(ChatColor.RED + "You do NOT have enough gems to purchase this scroll");
+                            String color = nmsStack.getTag().getString("shardColor");
+                            player.sendMessage(ChatColor.RED + "You do " + ChatColor.UNDERLINE + "NOT" + ChatColor.RED + " have enough " + color + "Portal Key Shards" + ChatColor.RED + " to buy a " + event.getCurrentItem().getItemMeta().getDisplayName());
+                            player.sendMessage(ChatColor.RED + "COST: " + ChatColor.WHITE + nmsStack.getTag().getInt("shardCost") + color + " Portal Key Shards");
+                            player.sendMessage(ChatColor.GRAY + "Defeat " + ChatColor.UNDERLINE + "Instanced Dungeons" + ChatColor.GRAY + " to obtain Portal Key Shards.");
                             return;
                         }
                     }

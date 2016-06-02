@@ -521,8 +521,8 @@ public class MainListener implements Listener {
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Dungeoneer")) {
-            //NPCMenus.openDungeoneerMenu(event.getPlayer());
-            event.getPlayer().sendMessage(ChatColor.RED + "Sorry, I'm restocking my wares!");
+            NPCMenus.openDungeoneerMenu(event.getPlayer());
+//            event.getPlayer().sendMessage(ChatColor.RED + "Sorry, I'm restocking my wares!");
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Skill Trainer")) {
