@@ -526,7 +526,7 @@ public class ClickHandler {
                     if (API.removePortalShardsFromPlayer(player, nmsStack.getTag().getInt("shardTier"), nmsStack.getTag().getInt("shardCost"))) {
                         player.sendMessage(ChatColor.GREEN + "Transaction successful.");
                         player.closeInventory();
-                        //player.getInventory().addItem(SandS.getInstance().getScroll(SandS.ScrollType.WHITE_SCROLL, nmsStack.getTag().getInt("shardTier")));
+                        player.getInventory().addItem(ItemManager.createProtectScroll(nmsStack.getTag().getInt("shardTier")));
                         return;
                     } else {
                         player.sendMessage(ChatColor.RED + "You do NOT have enough gems to purchase this scroll");
