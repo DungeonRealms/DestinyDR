@@ -15,6 +15,7 @@ import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.loot.LootSpawner;
 import net.dungeonrealms.game.world.realms.Instance;
+import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.md_5.bungee.api.ChatColor;
@@ -564,28 +565,32 @@ public class BlockListener implements Listener {
             if (!nms.hasTag() && !nms.getTag().hasKey("journal")) return;
             Block b1 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(0, 1, 0));
             Block b2 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(1, 1, 0));
+            Player player = e.getPlayer();
             if (b1.getType() == Material.AIR && b2.getType() == Material.AIR && API.isInSafeRegion(e.getClickedBlock().getLocation())) {
-                if (ShopMechanics.ALLSHOPS.containsKey(e.getPlayer().getUniqueId())) {
-                    e.getPlayer().sendMessage(ChatColor.RED + "You already have an open shop!");
+                if (ShopMechanics.ALLSHOPS.containsKey(player.getName())) {
+                    Shop shop = ShopMechanics.getShop(player.getName());
+                    player.sendMessage(ChatColor.YELLOW + "You already have an open shop on " + ChatColor.UNDERLINE + "this" + ChatColor.YELLOW + " server.");
+                    player.sendMessage(ChatColor.GRAY + "Shop Location: " + (int) shop.block1.getLocation().getX() + ", " + (int) shop.block1.getLocation().getY() + ", " + (int) shop.block1.getLocation().getZ());
                     return;
                 }
                 if (API.isInSafeRegion(b1.getLocation()) && !API.isMaterialNearby(b1, 2, Material.CHEST) && !API.isMaterialNearby(b1, 10, Material.ENDER_CHEST)) {
-                    if (!API.getGamePlayer(e.getPlayer()).hasShopOpen()) {
-                        if (BankMechanics.getInstance().getStorage(e.getPlayer().getUniqueId()).collection_bin != null) {
-                            e.getPlayer().sendMessage(ChatColor.RED + "You must collect your items from the collection bin!");
+                    if (!API.getGamePlayer(player).hasShopOpen()) {
+                        if (BankMechanics.getInstance().getStorage(player.getUniqueId()).collection_bin != null) {
+                            player.sendMessage(ChatColor.RED + "You have item(s) waiting in your collection bin.");
+                            player.sendMessage(ChatColor.GRAY + "Access your bank chest to claim them.");
                             e.setCancelled(true);
                             return;
                         }
                         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () ->
-                                ShopMechanics.setupShop(e.getClickedBlock(), e.getPlayer().getUniqueId()));
+                                ShopMechanics.setupShop(e.getClickedBlock(), player.getUniqueId()));
                     } else {
-                        e.getPlayer().sendMessage(ChatColor.RED + " You have a shop open already! It may be on another shard.");
+                        player.sendMessage(ChatColor.RED + " You have a shop open already! It may be on another shard.");
                     }
                 } else {
-                    e.getPlayer().sendMessage(ChatColor.RED + "You can not place a shop here.");
+                    player.sendMessage(ChatColor.RED + "You can not place a shop here.");
                 }
             } else {
-                e.getPlayer().sendMessage(ChatColor.RED + "You can not place a shop here.");
+                player.sendMessage(ChatColor.RED + "You can not place a shop here.");
             }
         }
     }

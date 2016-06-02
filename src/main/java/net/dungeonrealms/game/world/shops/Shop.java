@@ -8,11 +8,7 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.player.rank.Rank;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.dungeonrealms.game.player.chat.Chat;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
@@ -58,8 +54,8 @@ public class Shop {
     }
 
     private Inventory createNewInv(UUID uuid) {
-        Inventory inv = Bukkit.createInventory(null, getInvSize(),
-                shopName + " - @" + Bukkit.getPlayer(uuid).getName());
+        int invSize = getInvSize();
+        Inventory inv = Bukkit.createInventory(null, invSize, shopName + " - @" + Bukkit.getPlayer(uuid).getName());
         ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.GRAY.getDyeData());
         ItemMeta meta = button.getItemMeta();
         meta.setDisplayName(ChatColor.GREEN.toString() + "Click to OPEN Shop");
@@ -69,13 +65,12 @@ public class Shop {
         button.setItemMeta(meta);
         net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
         nmsButton.getTag().setString("status", "off");
-        inv.setItem(8, CraftItemStack.asBukkitCopy(nmsButton));
+        inv.setItem(invSize - 1, CraftItemStack.asBukkitCopy(nmsButton));
         return inv;
     }
 
     public int getInvSize() {
-        int lvl = (int) DatabaseAPI.getInstance().getData(EnumData.SHOPLEVEL,
-                ownerUUID);
+        int lvl = (int) DatabaseAPI.getInstance().getData(EnumData.SHOPLEVEL, ownerUUID);
         return 9 * lvl;
     }
 
@@ -203,9 +198,12 @@ public class Shop {
         isopen = !isopen;
         hologram.clearLines();
         if (!isopen) {
+            List<HumanEntity> viewers = new ArrayList<>();
             if (inventory.getViewers().size() > 0) {
-                inventory.getViewers().forEach(HumanEntity::closeInventory);
+                inventory.getViewers().forEach(viewers::add);
             }
+            viewers.stream().forEach(HumanEntity::closeInventory);
+            viewers.clear();
             ItemStack button = new ItemStack(Material.INK_SACK, 1, DyeColor.GRAY.getDyeData());
             ItemMeta meta = button.getItemMeta();
             meta.setDisplayName(ChatColor.GREEN.toString() + "Click to OPEN Shop");
@@ -215,7 +213,7 @@ public class Shop {
             button.setItemMeta(meta);
             net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
             nmsButton.getTag().setString("status", "off");
-            inventory.setItem(8, CraftItemStack.asBukkitCopy(nmsButton));
+            inventory.setItem(inventory.getSize() - 1, CraftItemStack.asBukkitCopy(nmsButton));
             hologram.clearLines();
             hologram.insertTextLine(0, ChatColor.RED + shopName);
             hologram.insertTextLine(1, String.valueOf(viewCount) + ChatColor.RED + " ❤");
@@ -229,7 +227,7 @@ public class Shop {
             button.setItemMeta(meta);
             net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
             nmsButton.getTag().setString("status", "on");
-            inventory.setItem(8, CraftItemStack.asBukkitCopy(nmsButton));
+            inventory.setItem(inventory.getSize() - 1, CraftItemStack.asBukkitCopy(nmsButton));
             hologram.clearLines();
             hologram.insertTextLine(0, ChatColor.GREEN + "[S] " + shopName);
             hologram.insertTextLine(1, String.valueOf(viewCount) + ChatColor.RED + " ❤");
@@ -248,7 +246,7 @@ public class Shop {
             return;
         int new_tier = (int) DatabaseAPI.getInstance().getData(EnumData.SHOPLEVEL, ownerUUID) + 1;
 
-        if (Rank.getInstance().getRank(p.getUniqueId()).getName().equalsIgnoreCase("DEFAULT")) {
+        /*if (Rank.getInstance().getRank(p.getUniqueId()).getName().equalsIgnoreCase("DEFAULT")) {
             if (new_tier >= 4) {
                 //Click to view shop!
                 TextComponent bungeeMessage = new TextComponent(ChatColor.YELLOW.toString() + ChatColor.UNDERLINE + ChatColor.BOLD + "SHOP");
@@ -260,29 +258,45 @@ public class Shop {
                 p.spigot().sendMessage(test);
                 return;
             }
-        }
+        }*/
 
-        if (new_tier > 7) {
-            p.sendMessage(ChatColor.RED + "You cannot upgrade your shop; already at highest available tier.");
+        if (new_tier >= 6) {
+            p.sendMessage(ChatColor.RED + "Your shop is already at it's maximum size. (54 slots)");
             return;
         }
         int cost = getShopUpgradeCost(new_tier);
-        if (!promptUpgrade) {
-            promptUpgrade = true;
-            p.sendMessage(ChatColor.GREEN + "Upgrade " + ChatColor.BOLD + "COST: " + cost + ChatColor.GREEN + ChatColor.BOLD.toString() + "G");
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> promptUpgrade = false, 20 * 10);
-            return;
-        }
-        if (BankMechanics.getInstance().takeGemsFromInventory(cost, p)) {
+        p.sendMessage("");
+        p.sendMessage(ChatColor.DARK_GRAY + "           *** " + ChatColor.GREEN + ChatColor.BOLD + "Shop Upgrade Confirmation" + ChatColor.DARK_GRAY + " ***");
+        p.sendMessage(ChatColor.DARK_GRAY + "           CURRENT Slots: " + ChatColor.GREEN + (new_tier - 1) * 9 + ChatColor.DARK_GRAY + "          NEW Slots: " + ChatColor.GREEN + new_tier * 9);
+        p.sendMessage(ChatColor.DARK_GRAY + "                  Upgrade Cost: " + ChatColor.GREEN + "" + cost + " Gem(s)");
+        p.sendMessage("");
+        p.sendMessage(ChatColor.GREEN + "Type 'confirm' to confirm your upgrade.");
+        p.sendMessage("");
+        p.sendMessage("" + ChatColor.RED + ChatColor.BOLD + "WARNING:" + ChatColor.RED + " Player owned shop upgrades are " + ChatColor.BOLD + ChatColor.RED + "NOT" + ChatColor.RED + " reversible or refundable. Type 'cancel' to void this upgrade request.");
+        p.sendMessage("");
+        Chat.listenForMessage(p, chat -> {
+            if (chat.getMessage().equalsIgnoreCase("cancel")) {
+                p.sendMessage(ChatColor.RED + "Shop upgrade cancelled.");
+                return;
+            }
+            if (!chat.getMessage().equalsIgnoreCase("confirm")) {
+                p.sendMessage(ChatColor.RED + "Shop upgrade cancelled.");
+                return;
+            }
+            if (BankMechanics.getInstance().getTotalGemsInInventory(p) < cost) {
+                p.sendMessage(ChatColor.RED + "You do not have enough gems to purchase this upgrade. Upgrade cancelled.");
+                p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "COST: " + ChatColor.RED + cost + ChatColor.BOLD + "G");
+                return;
+            }
+            BankMechanics.getInstance().takeGemsFromInventory(cost, p);
             upgradeShop(p, new_tier);
             p.sendMessage("");
             p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "*** SHOP UPGRADE TO LEVEL " + new_tier + " COMPLETE ***");
             p.sendMessage(ChatColor.GRAY + "You now have " + (new_tier * 9) + " shop slots available.");
+            p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + cost + ChatColor.BOLD + "G");
             p.playSound(p.getLocation(), Sound.LEVEL_UP, 1F, 1.25F);
-        } else {
-            p.sendMessage(ChatColor.RED + "You do not have enough gems to purchase this upgrade. Upgrade cancelled.");
-            p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "COST: " + ChatColor.RED + cost + ChatColor.BOLD + "G");
-        }
+
+        }, player -> player.sendMessage(ChatColor.RED + "Action cancelled."));
     }
 
     /**
@@ -333,6 +347,15 @@ public class Shop {
             return 2000;
         }
         return 0;
+    }
+
+    public boolean hasCustomName(ItemStack itemStack) {
+        if (itemStack.hasItemMeta()) {
+            if (itemStack.getItemMeta().hasDisplayName()) {
+                return true;
+            }
+        }
+        return false;
     }
 
 

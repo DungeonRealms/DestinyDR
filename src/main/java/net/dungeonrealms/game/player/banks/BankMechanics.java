@@ -99,11 +99,9 @@ public class BankMechanics implements GenericMechanic {
 
         HashMap<Integer, ? extends ItemStack> invItems = i.all(Material.EMERALD);
         for (Map.Entry<Integer, ? extends ItemStack> entry : invItems.entrySet()) {
-            int index = entry.getKey();
             ItemStack item = entry.getValue();
             net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
-            if (!nms.hasTag() || !nms.getTag().hasKey("type") || !nms.getTag().getString("type").equalsIgnoreCase("money"))
-                continue;
+            if (!nms.hasTag() || !nms.getTag().hasKey("type") || !nms.getTag().getString("type").equalsIgnoreCase("money")) continue;
             int stackAmount = item.getAmount();
             found += stackAmount;
         }
@@ -156,7 +154,6 @@ public class BankMechanics implements GenericMechanic {
         if (amount <= 0) {
             return true; // It's free.
         }
-
         HashMap<Integer, ? extends ItemStack> invItems = i.all(Material.EMERALD);
         for (Map.Entry<Integer, ? extends ItemStack> entry : invItems.entrySet()) {
             int index = entry.getKey();
@@ -178,11 +175,6 @@ public class BankMechanics implements GenericMechanic {
                 p.updateInventory();
                 return true;
             }
-        }
-
-        if (paid_off > 0) {
-            p.getInventory().addItem(createGems(paid_off));
-            paid_off = 0;
         }
 
         //TODO GEM POUCH
@@ -239,8 +231,11 @@ public class BankMechanics implements GenericMechanic {
         }
 
         if (paid_off > 0) {
-            p.getInventory().addItem(createBankNote(paid_off));
-            paid_off = 0;
+            if (paid_off < 64) {
+                p.getInventory().addItem(createGems(paid_off));
+            } else {
+                p.getInventory().addItem(createBankNote(paid_off));
+            }
         }
         return false;
     }

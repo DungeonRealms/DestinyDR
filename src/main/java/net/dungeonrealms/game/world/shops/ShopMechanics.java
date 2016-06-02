@@ -11,6 +11,7 @@ import net.dungeonrealms.game.player.inventory.NPCMenus;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -47,24 +48,19 @@ public class ShopMechanics implements GenericMechanic {
 
     public static void setupShop(Block block, UUID uniqueId) {
         Player player = Bukkit.getPlayer(uniqueId);
-        player.sendMessage(ChatColor.GREEN + "Please enter shop name:");
+        player.sendMessage(ChatColor.YELLOW + "Please enter a " + ChatColor.BOLD + "SHOP NAME." + ChatColor.YELLOW + " [max. 12 characters]");
+        player.playSound(player.getLocation(), Sound.WOOD_CLICK, 1F, 0.8F);
         Chat.listenForMessage(player, event -> {
-            if (event.getMessage().equalsIgnoreCase("Shop Name?")) {
-                player.sendMessage("Please enter a valid shop name");
+            String shopName = event.getMessage();
+            if (shopName.length() > 12) {
+                player.sendMessage(ChatColor.RED + "Shop name '" + ChatColor.BOLD + shopName + ChatColor.RED + "' exceeds the MAX character limit of 12.");
+                return;
+            } else if (shopName.length() <= 2) {
+                player.sendMessage(ChatColor.RED.toString() + "Shop name must be at least 3 characters.");
                 return;
             }
-            String shopName;
-            try {
-                shopName = event.getMessage();
-                if (shopName.length() > 14) {
-                    player.sendMessage(ChatColor.RED.toString() + "Shop name must be less than 14 characters.");
-                    return;
-                } else if (shopName.length() <= 2) {
-                    player.sendMessage(ChatColor.RED.toString() + "Shop name must be at least 3 characters.");
-                    return;
-                }
-            } catch (Exception exc) {
-                event.getPlayer().sendMessage("Please enter a valid number");
+            if (shopName.contains("@")) {
+                player.sendMessage(ChatColor.RED + "Invalid character '@' in name.");
                 return;
             }
 
@@ -77,7 +73,9 @@ public class ShopMechanics implements GenericMechanic {
                     Shop shop = new Shop(uniqueId, b.getLocation(), Chat.getInstance().checkForBannedWords(shopName));
                     DatabaseAPI.getInstance().update(uniqueId, EnumOperators.$SET, EnumData.HASSHOP, true, true);
                     ALLSHOPS.put(player.getName(), shop);
-                    player.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "YOU'VE CREATED A SHOP!");
+                    player.sendMessage(ChatColor.YELLOW + "Shop name assigned.");
+                    player.sendMessage("");
+                    player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "YOU'VE CREATED A SHOP!");
                     player.sendMessage(ChatColor.YELLOW + "To stock your shop, simply drag items into your shop's inventory.");
                 }, 1L);
             } else {

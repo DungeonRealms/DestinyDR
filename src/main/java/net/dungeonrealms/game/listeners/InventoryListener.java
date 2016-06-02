@@ -1,19 +1,16 @@
 package net.dungeonrealms.game.listeners;
 
-import com.codingforcookies.armorequip.ArmorEquipEvent;
+//import com.codingforcookies.armorequip.ArmorEquipEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.handlers.ClickHandler;
-import net.dungeonrealms.game.handlers.EnergyHandler;
-import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
-import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.stats.PlayerStats;
@@ -67,7 +64,6 @@ public class InventoryListener implements Listener {
     public void onImportantInventoryClick(InventoryClickEvent event) {
 
         if (event.getCurrentItem() != null && !event.getCurrentItem().getType().equals(Material.AIR) && event.getCursor() != null && !event.getCursor().getType().equals(Material.AIR)) {
-            if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
             if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
         }
 
@@ -296,13 +292,15 @@ public class InventoryListener implements Listener {
         }
     }
 
+
+    //TODO: Re-enable when ArmorEquipEvent is fixed, or our own individual one is created.
     /**
      * Called when a player equips armor
      *
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.MONITOR)
+    /*@EventHandler(priority = EventPriority.MONITOR)
     public void playerEquipArmor(ArmorEquipEvent event) {
         Player player = event.getPlayer();
         if (event.getNewArmorPiece() != null && event.getNewArmorPiece().getType() != Material.AIR) {

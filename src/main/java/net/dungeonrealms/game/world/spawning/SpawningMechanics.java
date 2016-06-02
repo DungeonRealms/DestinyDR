@@ -56,8 +56,6 @@ public class SpawningMechanics implements GenericMechanic {
             tierString = tierString.substring(1);
             int tier = Integer.parseInt(tierString);
             Character strAmount = line.charAt(line.indexOf(";") + 1);
-            //String stringAmount = line.substring(line.indexOf(";") + 1, line.indexOf(";"))[1].replace("-", "");
-            //strAmount = strAmount.replace("+", "");
             int spawnAmount = Integer.parseInt(String.valueOf(strAmount));
             String monster = line.split("=")[1].split(":")[0];
             String spawnRange = String.valueOf(line.charAt(line.lastIndexOf("@") - 1));
