@@ -206,8 +206,8 @@ public class GamePlayer {
      */
     public void addExperience(double experienceToAdd, boolean isParty) {
         int level = getLevel();
-        double experience = getExperience();
         if (level > 100) return;
+        double experience = getExperience();
         String expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "        + ";
         if (isParty) {
             expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "            " + ChatColor.AQUA.toString() + ChatColor.BOLD + "P " + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+";

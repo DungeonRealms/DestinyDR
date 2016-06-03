@@ -122,6 +122,10 @@ public class ShopListener implements Listener {
             event.setCancelled(true);
             return;
         }
+        if (event.getAction().equals(InventoryAction.HOTBAR_MOVE_AND_READD) || event.getAction().equals(InventoryAction.HOTBAR_SWAP)) {
+            event.setCancelled(true);
+            return;
+        }
         if (clicker.getUniqueId().toString().equalsIgnoreCase(shop.ownerUUID.toString())) {
             // Owner is Clicking
             if (event.getRawSlot() == (shop.getInvSize() - 1)) {
@@ -138,8 +142,7 @@ public class ShopListener implements Listener {
                 event.setCancelled(true);
                 return;
             }
-            if (stackInSlot != null && stackInSlot.getType() != Material.AIR && itemHeld.getType() != Material.AIR
-                    && itemHeld.getType() != stackInSlot.getType()) {
+            if (stackInSlot != null && stackInSlot.getType() != Material.AIR && itemHeld.getType() != Material.AIR && itemHeld.getType() != stackInSlot.getType()) {
                 clicker.sendMessage(ChatColor.RED.toString() + "Move item in slot first.");
                 event.setCancelled(true);
             } else {
@@ -153,8 +156,7 @@ public class ShopListener implements Listener {
                             event.setCancelled(true);
                             return;
                         }
-                        if (nms.hasTag() && nms.getTag().hasKey("subtype")
-                                && nms.getTag().getString("subtype").equalsIgnoreCase("starter")) {
+                        if (nms.hasTag() && nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter")) {
                             event.setCancelled(true);
                             clicker.sendMessage("Can't sell starter Items!");
                             return;

@@ -1,19 +1,14 @@
 package net.dungeonrealms.game.commands;
 
-import java.lang.management.ManagementFactory;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Chunk;
-import org.bukkit.Server;
-import org.bukkit.World;
+import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.mastery.Utils;
+import org.bukkit.*;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 
-import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.mastery.Utils;
+import java.lang.management.ManagementFactory;
+import java.util.List;
 
 /**
  * Created by Kieran on 9/17/2015.
@@ -45,9 +40,17 @@ public class CommandLag extends BasicCommand {
         long fmtMinutes = totalMinutes - totalHours * 60L;
         long fmtHours = totalHours - totalDays * 24L;
 
+        int currentThreads = 0;
+        for (Thread thread : Thread.getAllStackTraces().keySet()) {
+            if (thread.getState() == Thread.State.RUNNABLE) {
+                currentThreads++;
+            }
+        }
+
         commandSender.sendMessage(ChatColor.GREEN + "Current Uptime: " + ChatColor.WHITE + fmtHours + "h " + fmtMinutes + "m " + fmtSeconds + "s");
         commandSender.sendMessage(ChatColor.GREEN + "RAM Usage: " + ChatColor.WHITE + (Runtime.getRuntime().freeMemory() / 1024 / 1024) + "MB"
                 + ChatColor.GREEN + "/" + ChatColor.WHITE + (Runtime.getRuntime().maxMemory() / 1024 / 1024 + "MB"));
+        commandSender.sendMessage(ChatColor.GREEN + "Current Threads: " + ChatColor.WHITE + currentThreads);
         commandSender.sendMessage("");
 
         final Server server = Bukkit.getServer();
