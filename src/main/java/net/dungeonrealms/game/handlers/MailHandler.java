@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.handlers;
 
 import net.dungeonrealms.API;
-import net.dungeonrealms.core.Core;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -94,7 +93,9 @@ public class MailHandler {
     public void sendMail(Player player, String to, ItemStack itemStack) {
 
         UUID fromUUID = player.getUniqueId();
-        UUID toUUID = Core.getInstance().getUUIDFromName(to);
+
+        //TODO
+        UUID toUUID = UUID.randomUUID();
 
         String serializedItem = ItemSerialization.itemStackToBase64(itemStack);
 

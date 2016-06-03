@@ -10,20 +10,13 @@ public enum EnumGuildData {
     CLAN_TAG("info.clanTag"),
 
     OWNER("info.owner"),
-    CO_OWNER("info.coOwner"),
 
     OFFICERS("info.officers"),
     MEMBERS("info.members"),
-    CREATION_UNIX_DATA("info.unixCreation"),
-    INVITATIONS("info.invitations"),
-
-    BOOSTERS_ACTIVE("boosters.active"),
-    BOOSTERS_AVAILABLE("boosters.available"),
-
-    ICON("logs.icon"),
 
     LEVEL("info.netLevel"),
-    EXPERIENCE("info.experience");
+    EXPERIENCE("info.experience")
+    ;
 
     public String key;
 

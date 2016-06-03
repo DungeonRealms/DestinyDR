@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.player.chat;
 
-import net.dungeonrealms.game.guild.Guild;
+import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -35,8 +35,8 @@ public final class GameChat {
 
         StringBuilder message = new StringBuilder();
 
-        if (!Guild.getInstance().isGuildNull(player.getUniqueId())) {
-            String clanTag = Guild.getInstance().getClanTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
+        if (!GuildDatabaseAPI.getInstance().isGuildNull(player.getUniqueId())) {
+            String clanTag = GuildDatabaseAPI.getInstance().getClanTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
             message.append(ChatColor.GRAY + "<").append(ChatColor.DARK_AQUA.toString()).append(ChatColor.BOLD).append(clanTag).append(ChatColor.GRAY).append(">").append(ChatColor.RESET).append(" ");
         }
 

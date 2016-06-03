@@ -68,9 +68,8 @@ public class Notice {
             FriendHandler.getInstance().sendFriendMessage(player, ChatColor.GREEN + "You have " + ChatColor.AQUA + friendRequests.size() + ChatColor.GREEN + " pending friend request!");
         }
 
-        if (mailbox.size() > 0) {
+        if (mailbox.size() > 0)
             MailHandler.getInstance().sendMailMessage(player, ChatColor.GREEN + "You have " + ChatColor.AQUA + mailbox.size() + ChatColor.GREEN + " new mail!");
-        }
     }
 
 }

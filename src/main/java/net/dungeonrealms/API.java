@@ -7,7 +7,9 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import net.dungeonrealms.game.guild.Guild;
+import net.dungeonrealms.game.guild.GuildDatabaseAPI;
+import net.dungeonrealms.game.guild.GuildMechanics;
+import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
@@ -580,7 +582,7 @@ public class API {
         //Subscription.getInstance().handleJoin(player);
         Rank.getInstance().doGet(uuid);
         // Guilds
-        Guild.getInstance().doLogin(player);
+        GuildMechanics.getInstance().doLogin(player);
 
         // Notices
         Notice.getInstance().doLogin(player);
@@ -695,7 +697,7 @@ public class API {
         //Subscription.getInstance().handleJoin(player);
         Rank.getInstance().doGet(uuid);
         // Guilds
-        Guild.getInstance().doLogin(player);
+        GuildMechanics.getInstance().doLogin(player);
 
         // Notices
         Notice.getInstance().doLogin(player);

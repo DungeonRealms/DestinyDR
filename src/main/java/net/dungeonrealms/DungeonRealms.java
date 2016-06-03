@@ -10,7 +10,7 @@ import net.dungeonrealms.game.commands.menualias.CommandProfile;
 import net.dungeonrealms.game.commands.menualias.CommandTrail;
 import net.dungeonrealms.game.commands.newcommands.*;
 import net.dungeonrealms.game.donate.DonationEffects;
-import net.dungeonrealms.game.guild.Guild;
+import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.listeners.*;
 import net.dungeonrealms.game.mastery.AsyncUtils;
@@ -332,7 +332,7 @@ public class DungeonRealms extends JavaPlugin {
     	ps.onDisable();
     	hs.onDisable();
         saveConfig();
-        Guild.getInstance().saveAllGuilds();
+        GuildDatabaseAPI.getInstance().saveAllGuilds();
         ShopMechanics.deleteAllShops();
         mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
