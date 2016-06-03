@@ -1,7 +1,6 @@
 package net.dungeonrealms;
 
 import com.connorlinfoot.bountifulapi.BountifulAPI;
-import net.dungeonrealms.core.Core;
 import net.dungeonrealms.game.commands.*;
 import net.dungeonrealms.game.commands.generic.CommandManager;
 import net.dungeonrealms.game.commands.menualias.CommandMount;
@@ -11,6 +10,7 @@ import net.dungeonrealms.game.commands.menualias.CommandTrail;
 import net.dungeonrealms.game.commands.newcommands.*;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
+import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.listeners.*;
 import net.dungeonrealms.game.mastery.AsyncUtils;
@@ -70,23 +70,23 @@ public class DungeonRealms extends JavaPlugin {
     public MechanicManager mm = null;
     boolean hasFinishedSetup = false;
     public static String version = "3.0";
-    
+
     // Menus
-    
+
     private static HearthStone hs;
     private static Profile ps;
-    
+
     // End of Menus
-    
+
     // Shard Config
-    
+
     public boolean isInstanceServer = false;
     public String bungeeName = "Lobby";
     public int realmnumber = -1;
     public int realmport = -1;
     public int realmmax = 0;
     public int realmpmax = 0;
-    
+
     // End of Shard Config
 
     public boolean hasFinishedSetup() {
@@ -101,26 +101,26 @@ public class DungeonRealms extends JavaPlugin {
         long START_TIME = System.currentTimeMillis() / 1000L;
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
         saveDefaultConfig();
-        
+
         Utils.log.info("Reading shard config...");
         Ini ini = new Ini();
         try {
-			ini.load(new FileReader("shardconfig.ini"));
-			isInstanceServer = ini.get("Main", "instanced", Boolean.class);
-			bungeeName = ini.get("Bungee", "name", String.class);
-			realmnumber = ini.get("RealmInstance", "number", int.class);
-			realmport = ini.get("RealmInstance", "port", int.class);
-			realmmax = ini.get("RealmInstance", "maxrealms", int.class);
-			realmpmax = ini.get("RealmInstance", "maxplayers", int.class);
-		} catch (InvalidFileFormatException e1) {
-			Utils.log.info("InvalidFileFormat in shard config!");
-		} catch (FileNotFoundException e1) {
-			Utils.log.info("Shard Config not found!");
-		} catch (IOException e1) {
-			Utils.log.info("IOException in shard config!");
-		}
+            ini.load(new FileReader("shardconfig.ini"));
+            isInstanceServer = ini.get("Main", "instanced", Boolean.class);
+            bungeeName = ini.get("Bungee", "name", String.class);
+            realmnumber = ini.get("RealmInstance", "number", int.class);
+            realmport = ini.get("RealmInstance", "port", int.class);
+            realmmax = ini.get("RealmInstance", "maxrealms", int.class);
+            realmpmax = ini.get("RealmInstance", "maxplayers", int.class);
+        } catch (InvalidFileFormatException e1) {
+            Utils.log.info("InvalidFileFormat in shard config!");
+        } catch (FileNotFoundException e1) {
+            Utils.log.info("Shard Config not found!");
+        } catch (IOException e1) {
+            Utils.log.info("IOException in shard config!");
+        }
         Utils.log.info("Done reading shard config!");
-        
+
         Database.getInstance().startInitialization();
         DatabaseAPI.getInstance().startInitialization();
         NetworkAPI.getInstance().startInitialization();
@@ -128,12 +128,11 @@ public class DungeonRealms extends JavaPlugin {
         ItemGenerator.loadModifiers();
 
         //new Spar().startInitialization();
-        
+
         ItemGenerator.loadModifiers();
 
         mm = new MechanicManager();
-        if(!isInstanceServer) {
-            mm.registerMechanic(Core.getInstance());
+        if (!isInstanceServer) {
             mm.registerMechanic(PetUtils.getInstance());
             mm.registerMechanic(Teleportation.getInstance());
             mm.registerMechanic(CombatLog.getInstance());
@@ -156,9 +155,8 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(BuffManager.getInstance());
             mm.registerMechanic(new LootManager());
             mm.registerMechanic(Affair.getInstance());
-            mm.registerMechanic(TutorialIslandHandler.getInstance());	
+            mm.registerMechanic(TutorialIslandHandler.getInstance());
         } else {
-            mm.registerMechanic(Core.getInstance());
             mm.registerMechanic(PetUtils.getInstance());
             mm.registerMechanic(CombatLog.getInstance());
             mm.registerMechanic(EnergyHandler.getInstance());
@@ -176,9 +174,8 @@ public class DungeonRealms extends JavaPlugin {
             mm.registerMechanic(AchievementManager.getInstance());
             mm.registerMechanic(new LootManager());
             mm.registerMechanic(Affair.getInstance());
-            if(realmnumber >= 0)
-            {
-            	mm.registerMechanic(RealmManager.getInstance());
+            if (realmnumber >= 0) {
+                mm.registerMechanic(RealmManager.getInstance());
             }
         }
 
@@ -186,8 +183,8 @@ public class DungeonRealms extends JavaPlugin {
 
         PluginManager pm = Bukkit.getPluginManager();
         Utils.log.info("DungeonRealms Registering Events() ... STARTING ...");
-        
-        if(!isInstanceServer) {
+
+        if (!isInstanceServer) {
             pm.registerEvents(new MainListener(), this);
             pm.registerEvents(new DamageListener(), this);
             pm.registerEvents(new ItemListener(), this);
@@ -197,7 +194,7 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new EnergyListener(), this);
             pm.registerEvents(new AntiCheatListener(), this);
             pm.registerEvents(new ShopListener(), this);
-            pm.registerEvents(new AchievementManager(), this);         
+            pm.registerEvents(new AchievementManager(), this);
             hs = new HearthStone();
             ps = new Profile();
             hs.onEnable();
@@ -213,8 +210,8 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new AntiCheatListener(), this);
             pm.registerEvents(new AchievementManager(), this);
             pm.registerEvents(new TabbedChatListener(), this);
-        }        
-        
+        }
+
         //pm.registerEvents(new MainListener(), this);
         //pm.registerEvents(new DamageListener(), this);
         //pm.registerEvents(new ItemListener(), this);
@@ -232,7 +229,7 @@ public class DungeonRealms extends JavaPlugin {
         CommandManager cm = new CommandManager();
 
         if (isInstanceServer) {
-            cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menu!"));
+            // cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menu!"));
             cm.registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
             cm.registerCommand(new CommandSet("set", "/<command> [args]", "SETS THE YEAH."));
             cm.registerCommand(new CommandEss("essentials", "/<command> [args]", "The essentials command."));
@@ -252,7 +249,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandTell("tell", "/<command> [args]", "tell a player something."));
             cm.registerCommand(new CommandTell("isay", "/<command> [args]", "Prints message to players in dungeon world from command block."));
         } else {
-            cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menu!"));
+            // cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menu!"));
             cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "Spawns a mob? idk chase"));
             cm.registerCommand(new CommandAdd("ad", "/<command> [args]", "Adds shit"));
             cm.registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
@@ -329,10 +326,10 @@ public class DungeonRealms extends JavaPlugin {
 
     public void onDisable() {
         API.logoutAllPlayers(false);
-    	ps.onDisable();
-    	hs.onDisable();
+        ps.onDisable();
+        hs.onDisable();
         saveConfig();
-        GuildDatabaseAPI.getInstance().saveAllGuilds();
+        GuildDatabase.getInstance().saveAllGuilds();
         ShopMechanics.deleteAllShops();
         mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
