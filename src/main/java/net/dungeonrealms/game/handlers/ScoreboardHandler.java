@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.handlers;
 
 import net.dungeonrealms.API;
-import net.dungeonrealms.game.guild.Guild;
+import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
@@ -111,8 +111,8 @@ public class ScoreboardHandler implements GenericMechanic {
      */
     public void setPlayerHeadScoreboard(Player player, ChatColor chatColor, int playerLevel) {
         String suffix = "";
-        if (!Guild.getInstance().isGuildNull(player.getUniqueId())) {
-            String clanTag = Guild.getInstance().getClanTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
+        if (!GuildDatabaseAPI.getInstance().isGuildNull(player.getUniqueId())) {
+            String clanTag = GuildDatabaseAPI.getInstance().getClanTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
             suffix = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + " [" + clanTag + ChatColor.RESET + "]");
         }
 
@@ -150,8 +150,8 @@ public class ScoreboardHandler implements GenericMechanic {
 //        Scoreboard scoreboard = player1.getScoreboard() != null ? player1.getScoreboard() : getPlayerScoreboardObject(player);
 
         String suffix = "";
-        if (!Guild.getInstance().isGuildNull(toSetFor.getUniqueId())) {
-            String clanTag = Guild.getInstance().getClanTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, toSetFor.getUniqueId()).toString());
+        if (!GuildDatabaseAPI.getInstance().isGuildNull(toSetFor.getUniqueId())) {
+            String clanTag = GuildDatabaseAPI.getInstance().getClanTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, toSetFor.getUniqueId()).toString());
             suffix = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + " [" + clanTag + ChatColor.RESET + "]");
         }
         GamePlayer gamePlayer = API.getGamePlayer(toSetFor);
@@ -175,8 +175,8 @@ public class ScoreboardHandler implements GenericMechanic {
     public void setCurrentPlayerLevels(Scoreboard scoreboard) {
         for (Player player1 : Bukkit.getOnlinePlayers()) {
             String suffix = "";
-            if (!Guild.getInstance().isGuildNull(player1.getUniqueId())) {
-                String clanTag = Guild.getInstance().getClanTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player1.getUniqueId()).toString());
+            if (!GuildDatabaseAPI.getInstance().isGuildNull(player1.getUniqueId())) {
+                String clanTag = GuildDatabaseAPI.getInstance().getClanTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player1.getUniqueId()).toString());
                 suffix = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + " [" + clanTag + ChatColor.RESET + "]");
             }
             GamePlayer gamePlayer = API.getGamePlayer(player1);

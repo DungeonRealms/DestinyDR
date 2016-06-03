@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.guild.Guild;
+import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -33,7 +33,7 @@ public class CommandAccept extends BasicCommand {
             switch (args[0]) {
                 case "guild":
                     assert args[1] != null : "arg[1] is null!";
-                    if (!Guild.getInstance().isGuildNull(player.getUniqueId())) {
+                    if (!GuildDatabaseAPI.getInstance().isGuildNull(player.getUniqueId())) {
                         player.sendMessage(ChatColor.RED + "You must leave your current guild to accept invitations to others!");
                         return true;
                     }

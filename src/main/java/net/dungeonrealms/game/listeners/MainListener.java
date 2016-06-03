@@ -6,7 +6,6 @@ import com.vexsoftware.votifier.model.VotifierEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.Callback;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.core.Core;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.events.PlayerMessagePlayerEvent;
@@ -238,7 +237,7 @@ public class MainListener implements Listener {
         event.setJoinMessage(null);
         DatabaseAPI.getInstance().PLAYER_TIME.put(event.getPlayer().getUniqueId(), 0);
         Player player = event.getPlayer();
-        Core.getInstance().verifyPlayerIntegrity(player.getUniqueId(), player.getName());
+        //Core.getInstance().verifyPlayerIntegrity(player.getUniqueId(), player.getName());
         player.getInventory().clear();
         player.setGameMode(GameMode.ADVENTURE);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 4));
@@ -540,6 +539,8 @@ public class MainListener implements Listener {
         }
         if (npcNameStripped.equalsIgnoreCase("Guild Registrar")) {
             // TODO: Open Guild Registrar
+
+
             event.getPlayer().sendMessage(ChatColor.RED + "Guilds are coming soon.");
             return;
         }
@@ -738,9 +739,7 @@ public class MainListener implements Listener {
             }
             if (nms == null || !nms.hasTag())
                 return;
-            if (nms.getTag().hasKey("subtype")) {
-                event.getItemDrop().remove();
-            }
+            if (nms.getTag().hasKey("subtype")) event.getItemDrop().remove();
         }
     }
 
