@@ -2,6 +2,7 @@ package net.dungeonrealms.game.listeners;
 
 //import com.codingforcookies.armorequip.ArmorEquipEvent;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
@@ -19,6 +20,8 @@ import net.dungeonrealms.game.player.stats.StatsManager;
 import net.dungeonrealms.game.player.trade.Trade;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
+import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ArmorAttributeType;
@@ -34,6 +37,7 @@ import org.bukkit.block.Block;
 import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -1291,6 +1295,84 @@ public class InventoryListener implements Listener {
                     if (i < inventorySize) {
                         event.setCancelled(true);
                         break;
+                    }
+                }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerApplyMuleUpgrade(InventoryClickEvent event) {
+        if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
+        if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
+        if (event.getCurrentItem() != null && event.getCursor() != null &&
+                event.getCursor().getType() != Material.AIR && event.getCurrentItem().getType() != Material.AIR) {
+            ItemStack cursor = event.getCursor();
+            ItemStack current = event.getCurrentItem();
+
+            Player pl = (Player) event.getWhoClicked();
+            if (current.getType() == Material.LEASH && cursor.getType() == Material.CHEST) {
+                //Check for mule upgrade?
+                net.minecraft.server.v1_8_R3.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursor);
+                net.minecraft.server.v1_8_R3.ItemStack nmsCurrent = CraftItemStack.asNMSCopy(current);
+                if (nmsCursor.hasTag() && nmsCurrent.hasTag()) {
+                    NBTTagCompound tag = nmsCursor.getTag();
+
+                    //Mule upgrade item.
+                    if (tag.hasKey("usage") && tag.hasKey("muleLevel") && tag.getString("usage").equals("muleUpgrade")) {
+                        NBTTagCompound currentTag = nmsCurrent.getTag();
+                        if (currentTag.hasKey("usage") && currentTag.hasKey("muleTier") && tag.getString("usage").equals("mule")) {
+                            event.setCancelled(true);
+                            event.setResult(Event.Result.DENY);
+                            //Upgrading mule.
+                            //Check if its the right upgrade.
+                            int upgradeLevel = tag.getInt("muleLevel");
+                            int currentTier = currentTag.getInt("muleTier");
+
+                            if (currentTier + 1 < upgradeLevel) {
+                                //Cant upgrade.
+                                pl.sendMessage(ChatColor.RED + "You cannot apply this upgrade to this mule!");
+                                return;
+                            }
+
+                            if (event.getCursor().getAmount() > 1) {
+                                event.getCursor().setAmount(event.getCurrentItem().getAmount() - 1);
+                            } else {
+                                event.setCursor(null);
+                                pl.setItemOnCursor(null);
+                            }
+                            MuleTier newTier = MuleTier.getTier(upgradeLevel);
+                            if (newTier == null) {
+                                pl.sendMessage(ChatColor.RED + "Unable to find proper upgrade level.");
+                                return;
+                            }
+                            pl.sendMessage(ChatColor.GREEN + "Mule upgraded to " + newTier.getName());
+
+                            DatabaseAPI.getInstance().update(pl.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, newTier.getTier(), false);
+
+                            if (MountUtils.inventories.containsKey(pl.getUniqueId())) {
+                                Inventory inv = MountUtils.inventories.get(pl.getUniqueId());
+                                //Close all people viewing this inventory.
+                                Lists.newArrayList(inv.getViewers()).forEach(HumanEntity::closeInventory);
+
+                                if (newTier.getSize() != inv.getSize()) {
+                                    Inventory upgradeInventory = Bukkit.createInventory(null, newTier.getSize(), "Mule Storage");
+                                    //Upgrade that shit.
+                                    for (int i = 0; i < inv.getSize(); i++) {
+                                        //Set that inventory of the items.
+                                        upgradeInventory.setItem(i, inv.getItem(i));
+                                    }
+
+                                    //Clear the old inventory.
+                                    inv.clear();
+                                    MountUtils.inventories.put(pl.getUniqueId(), inv);
+                                }
+                            }
+
+                            ItemStack newMule = ItemManager.getPlayerMuleItem(newTier);
+                            pl.getInventory().setItem(event.getRawSlot(), newMule);
+                            pl.playSound(pl.getLocation(), Sound.LEVEL_UP, 1, 1.4F);
+                        }
                     }
                 }
             }

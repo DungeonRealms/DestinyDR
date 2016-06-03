@@ -1,11 +1,14 @@
 package net.dungeonrealms.game.mechanics;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.API;
+import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
+import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
@@ -63,64 +66,64 @@ public class ItemManager {
         tag.set("type", new NBTTagString("important"));
         tag.set("usage", new NBTTagString("hearthstone"));
         nmsStack.setTag(tag);
-    	return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
+        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
-    
-    public static ItemStack createOrbofAlteration(){
-    	ItemStack rawStack = createItem(Material.MAGMA_CREAM, ChatColor.LIGHT_PURPLE.toString() + "Orb of Alteration", new String[]{(ChatColor.GRAY.toString() + "Randomizes bonus stats of selected equipment")});
-    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
-    	nms.getTag().setString("type", "orb");
-    	return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
-    }
-    
-    public static ItemStack createWeaponEnchant(int tier){
-    	String material = getMatString(tier);
-    	ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() +ChatColor.BOLD.toString() + "Scroll: " + API.getTierColor(tier) + "Enchant "+material + " Weapon" , new String[]{ChatColor.RED + "+5% DMG", ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "Weapon will VANISH if enchant above +3 FAILS."});
-    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
-    	nms.getTag().setString("type", "weaponenchant");
-    	nms.getTag().setInt("tier", tier);
-    	return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
-    }
-    
-    public static ItemStack createArmorEnchant(int tier){
-    	String material = getMatString(tier);
-    	ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() +ChatColor.BOLD.toString() + "Scroll: " + API.getTierColor(tier) + "Enchant "+ material + " Armor" , new String[]{ChatColor.RED + "+5% HP",ChatColor.RED + "+5% HP REGEN", ChatColor.GRAY.toString() + ChatColor.ITALIC + "    - OR -", ChatColor.RED + "+1% ENERGY REGEN" ,ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "Armor will VANISH if enchant above +3 FAILS."});
-    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
-    	nms.getTag().setString("type", "armorenchant");
-    	nms.getTag().setInt("tier", tier);
-    	return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
-    }
-    
-    /**
-	 * @param tier
-	 * @return
-	 */
-	private static String getMatString(int tier) {
-		switch(tier){
-		case 1:
-			return "Leather";
-		case 2:
-			return "Chainmail";
-		case 3: 
-			return "Iron";
-		case 4:
-			return "Diamond";
-		case 5:
-			return "Gold";
-		}
-		return null;
-	}
 
-	public static ItemStack createProtectScroll(int tier){
-    	String material = getMatString(tier);
-    	ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() +ChatColor.BOLD.toString() + "White Scroll: " + API.getTierColor(tier) + "Protect " + material + " Equipment" , new String[]{
-    			ChatColor.GRAY.toString() + "Apply to any T" + tier + " item to " + ChatColor.UNDERLINE + " prevent " + ChatColor.GRAY + " it from being", ChatColor.GRAY + "destroyed if the next enchantment scroll fails."});
-    	net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
-    	nms.getTag().setString("type", "protection");
-    	nms.getTag().setInt("tier", tier);
-    	return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
+    public static ItemStack createOrbofAlteration() {
+        ItemStack rawStack = createItem(Material.MAGMA_CREAM, ChatColor.LIGHT_PURPLE.toString() + "Orb of Alteration", new String[]{(ChatColor.GRAY.toString() + "Randomizes bonus stats of selected equipment")});
+        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
+        nms.getTag().setString("type", "orb");
+        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
-    
+
+    public static ItemStack createWeaponEnchant(int tier) {
+        String material = getMatString(tier);
+        ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() + ChatColor.BOLD.toString() + "Scroll: " + API.getTierColor(tier) + "Enchant " + material + " Weapon", new String[]{ChatColor.RED + "+5% DMG", ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "Weapon will VANISH if enchant above +3 FAILS."});
+        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
+        nms.getTag().setString("type", "weaponenchant");
+        nms.getTag().setInt("tier", tier);
+        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
+    }
+
+    public static ItemStack createArmorEnchant(int tier) {
+        String material = getMatString(tier);
+        ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() + ChatColor.BOLD.toString() + "Scroll: " + API.getTierColor(tier) + "Enchant " + material + " Armor", new String[]{ChatColor.RED + "+5% HP", ChatColor.RED + "+5% HP REGEN", ChatColor.GRAY.toString() + ChatColor.ITALIC + "    - OR -", ChatColor.RED + "+1% ENERGY REGEN", ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "Armor will VANISH if enchant above +3 FAILS."});
+        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
+        nms.getTag().setString("type", "armorenchant");
+        nms.getTag().setInt("tier", tier);
+        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
+    }
+
+    /**
+     * @param tier
+     * @return
+     */
+    private static String getMatString(int tier) {
+        switch (tier) {
+            case 1:
+                return "Leather";
+            case 2:
+                return "Chainmail";
+            case 3:
+                return "Iron";
+            case 4:
+                return "Diamond";
+            case 5:
+                return "Gold";
+        }
+        return null;
+    }
+
+    public static ItemStack createProtectScroll(int tier) {
+        String material = getMatString(tier);
+        ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() + ChatColor.BOLD.toString() + "White Scroll: " + API.getTierColor(tier) + "Protect " + material + " Equipment", new String[]{
+                ChatColor.GRAY.toString() + "Apply to any T" + tier + " item to " + ChatColor.UNDERLINE + " prevent " + ChatColor.GRAY + " it from being", ChatColor.GRAY + "destroyed if the next enchantment scroll fails."});
+        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
+        nms.getTag().setString("type", "protection");
+        nms.getTag().setInt("tier", tier);
+        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
+    }
+
     /**
      * Creates a random Teleport book
      *
@@ -163,7 +166,7 @@ public class ItemManager {
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
-    
+
     /**
      * Creates a scrap piece based on
      * given tier
@@ -182,10 +185,10 @@ public class ItemManager {
                 break;
             case 2:
                 rawStack = new ItemStack(Material.IRON_FENCE, 64);
-                name = ChatColor.GREEN+ "Chain";
+                name = ChatColor.GREEN + "Chain";
                 break;
             case 3:
-                rawStack = new ItemStack(Material.INK_SACK, 64, (short)7);
+                rawStack = new ItemStack(Material.INK_SACK, 64, (short) 7);
                 name = ChatColor.AQUA + "Iron";
                 break;
             case 4:
@@ -212,6 +215,36 @@ public class ItemManager {
             return CraftItemStack.asBukkitCopy(nmsStack);
         }
         return null;
+    }
+
+    public static ItemStack getPlayerMuleItem(MuleTier tier) {
+        ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.LEASH), tier.getName(), new String[]{
+                ChatColor.RED + "Storage Size: " + tier.getSize() + " Items", ChatColor.RED + "An old worn mule."
+        });
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set("type", new NBTTagString("important"));
+        tag.setInt("muleTier", tier.getTier());
+        tag.set("usage", new NBTTagString("mule"));
+        nmsStack.setTag(tag);
+        return CraftItemStack.asBukkitCopy(nmsStack);
+    }
+
+
+    public static ItemStack createMuleUpgrade(int tier) {
+        ItemStack is = null;
+        if (tier == 2)
+            is = new ItemBuilder().setItem(createItem(Material.CHEST, ChatColor.AQUA + "Adventurer's Storage Mule Chest", new String[]{
+                    ChatColor.RED + "18 Max Storage Size", ChatColor.GRAY + "Apply to your " + ChatColor.GREEN + "Old Storage Mule" + ChatColor.GRAY + " to expand its inventory!"}))
+//                    .addLore(ChatColor.WHITE + "5000" + ChatColor.AQUA + " Portal Key Shards")
+                    .setNBTInt("muleLevel", 2).setNBTString("type", "important").setNBTString("usage", "muleUpgrade").build();
+        else if (tier == 3)
+            is = new ItemBuilder().setItem(createItem(Material.CHEST, ChatColor.AQUA + "Royal Storage Mule Chest", new String[]{
+                    ChatColor.RED + "27 Max Storage Size", ChatColor.GRAY + "Apply to your " + ChatColor.AQUA + "Adventurer's Storage Mule", ChatColor.GRAY + "to further expand its inventory!"}))
+//                    .addLore(ChatColor.WHITE + "8000" + ChatColor.LIGHT_PURPLE + " Portal Key Shards")
+                    .setNBTInt("muleLevel", 3).setNBTString("type", "important").setNBTString("usage", "muleUpgrade").build();
+
+        return is;
     }
 
     /**
@@ -476,7 +509,7 @@ public class ItemManager {
         ItemStack rawStack = null;
         String name = "";
         ArrayList<String> lore = new ArrayList<>();
-        
+
         String expBar = ChatColor.RED + "||||||||||" + "||||||||||" + "||||||||||";
         int lvl = Mining.getTierLvl(tier);
         lore.add(ChatColor.GRAY.toString() + "Level: " + ChatColor.WHITE.toString() + lvl);
@@ -661,17 +694,17 @@ public class ItemManager {
         PlayerStats stats = gp.getStats();
 
         if (pretty_align.contains("CHAOTIC")) {
-        String time  = String.valueOf(KarmaHandler.getInstance().getAlignmentTime(p));
-		page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character" + "\n" 
-                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + "\n" +  ChatColor.RED.toString() + ChatColor.BOLD  + time + "s.." + new_line
-                + ChatColor.BLACK.toString() + gp.getPlayerAlignment().description + new_line + ChatColor.BLACK.toString() + "   " + gp.getPlayerCurrentHP()
-                + " / " + gp.getPlayerMaxHP() + "" + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK.toString()
-                + "   " + Math.round(gp.getStats().getDPS()) + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
-                + "   " + (HealthHandler.getInstance().getPlayerHPRegenLive(p)) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n" + ChatColor.BLACK.toString()
-                + "   " + EnergyHandler.getInstance().getPlayerEnergyPercentage(p.getUniqueId()) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString()
-                + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString() 
-                + "   " + gp.getPlayerGemFind() + ChatColor.BOLD.toString() + " GEM FIND" + "\n" + ChatColor.BLACK.toString()
-                + "   " + gp.getPlayerItemFind() + ChatColor.BOLD.toString() + " ITEM FIND";
+            String time = String.valueOf(KarmaHandler.getInstance().getAlignmentTime(p));
+            page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character" + "\n"
+                    + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + "\n" + ChatColor.RED.toString() + ChatColor.BOLD + time + "s.." + new_line
+                    + ChatColor.BLACK.toString() + gp.getPlayerAlignment().description + new_line + ChatColor.BLACK.toString() + "   " + gp.getPlayerCurrentHP()
+                    + " / " + gp.getPlayerMaxHP() + "" + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK.toString()
+                    + "   " + Math.round(gp.getStats().getDPS()) + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
+                    + "   " + (HealthHandler.getInstance().getPlayerHPRegenLive(p)) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n" + ChatColor.BLACK.toString()
+                    + "   " + EnergyHandler.getInstance().getPlayerEnergyPercentage(p.getUniqueId()) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString()
+                    + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString()
+                    + "   " + gp.getPlayerGemFind() + ChatColor.BOLD.toString() + " GEM FIND" + "\n" + ChatColor.BLACK.toString()
+                    + "   " + gp.getPlayerItemFind() + ChatColor.BOLD.toString() + " ITEM FIND";
         } else {
             page1_string = ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "  Your Character" + "\n" + new_line
                     + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "Alignment: " + pretty_align + new_line
@@ -712,24 +745,24 @@ public class ItemManager {
                 + ChatColor.BLACK.toString() + "+" + df.format(stats.getEnergyRegen() * 100) + "% Energy" + "\n"
                 + ChatColor.BLACK.toString() + "+" + df.format(stats.getCritChance() * 100) + "% Critical Hit" + "\n"
                 + ChatColor.BLACK.toString() + "+" + df.format(stats.getStaffDMG() * 100) + "% Staff DMG";
-        
+
         String page5_string = (ChatColor.BLACK.toString() + "" + ChatColor.BOLD.toString() + ChatColor.UNDERLINE.toString() + "   Command Guide  " + new_line
-				+ ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "@<PLAYER> <MSG>" + "\n" + ChatColor.BLACK.toString() + "Sends a PM." + new_line
-				+ ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/pinvite"
-				+ "\n"
-				+ ChatColor.BLACK.toString()
-				+ "Invite to party"
-				+ new_line + ChatColor.BLACK + ChatColor.BOLD.toString() + "/premove " + "\n" + ChatColor.BLACK.toString()
-				+ "Kick player from party" + new_line + ChatColor.BLACK + ChatColor.BOLD.toString() + "/pleave " + "\n"
-				+ ChatColor.BLACK.toString() + "Leave your party" + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString());
-        
-        
-        String page6_string =(ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/roll " + "\n" + ChatColor.BLACK.toString() + "Rolls a random number."
-				+ new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/logout " + "\n" + ChatColor.BLACK.toString()
-				+ "Safetly logs out your character."
-				+ new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/stats" + "\n" + ChatColor.BLACK.toString() + "Set Attributes"
-				+ new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/toggles" + "\n" + ChatColor.BLACK.toString() + "Open Toggles Menu");
-        		
+                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "@<PLAYER> <MSG>" + "\n" + ChatColor.BLACK.toString() + "Sends a PM." + new_line
+                + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/pinvite"
+                + "\n"
+                + ChatColor.BLACK.toString()
+                + "Invite to party"
+                + new_line + ChatColor.BLACK + ChatColor.BOLD.toString() + "/premove " + "\n" + ChatColor.BLACK.toString()
+                + "Kick player from party" + new_line + ChatColor.BLACK + ChatColor.BOLD.toString() + "/pleave " + "\n"
+                + ChatColor.BLACK.toString() + "Leave your party" + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString());
+
+
+        String page6_string = (ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/roll " + "\n" + ChatColor.BLACK.toString() + "Rolls a random number."
+                + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/logout " + "\n" + ChatColor.BLACK.toString()
+                + "Safetly logs out your character."
+                + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/stats" + "\n" + ChatColor.BLACK.toString() + "Set Attributes"
+                + new_line + ChatColor.BLACK.toString() + ChatColor.BOLD.toString() + "/toggles" + "\n" + ChatColor.BLACK.toString() + "Open Toggles Menu");
+
         bm.setAuthor("King Bulwar");
         pages.add(page1_string);
         pages.add(page2_string);
@@ -737,7 +770,7 @@ public class ItemManager {
         pages.add(page4_string);
         pages.add(page5_string);
         pages.add(page6_string);
-        
+
         bm.setPages(pages);
         stack.setItemMeta(bm);
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
@@ -787,6 +820,7 @@ public class ItemManager {
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
+
 
     public static ItemStack getPlayerMountItem() {
         ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.SADDLE), ChatColor.GREEN + "Mount", new String[]{
@@ -847,21 +881,21 @@ public class ItemManager {
         return item;
     }
 
-	/**
-	 * @param stack
-	 * @return
-	 */
-	public static boolean isEnchantScroll(ItemStack stack) {
+    /**
+     * @param stack
+     * @return
+     */
+    public static boolean isEnchantScroll(ItemStack stack) {
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-        return stack.getType() == Material.EMPTY_MAP && nms.getTag() != null && nms.getTag().hasKey("type") &&(nms.getTag().getString("type").equalsIgnoreCase("armorenchant") || nms.getTag().getString("type").equalsIgnoreCase("weaponenchant"));
-	}
+        return stack.getType() == Material.EMPTY_MAP && nms.getTag() != null && nms.getTag().hasKey("type") && (nms.getTag().getString("type").equalsIgnoreCase("armorenchant") || nms.getTag().getString("type").equalsIgnoreCase("weaponenchant"));
+    }
 
-	/**
-	 * @param stack
-	 * @return
-	 */
-	public static boolean isProtectScroll(ItemStack stack) {
+    /**
+     * @param stack
+     * @return
+     */
+    public static boolean isProtectScroll(ItemStack stack) {
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         return stack.getType() == Material.EMPTY_MAP && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("protection");
-	}
+    }
 }

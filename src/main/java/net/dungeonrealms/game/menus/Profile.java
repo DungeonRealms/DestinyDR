@@ -9,10 +9,16 @@ import com.comphenix.protocol.events.PacketListener;
 import com.comphenix.protocol.wrappers.EnumWrappers;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
+import net.dungeonrealms.game.world.entities.types.mounts.Mule;
+import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -71,6 +77,20 @@ public class Profile implements Listener {
         player.getInventory().addItem(ItemManager.getPlayerPetItem());
     }
 
+    private static void addMuleItem(Player player) {
+        if(player.getInventory().contains(Material.LEASH))return;
+
+        Object muleTier = DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
+        if(muleTier == null){
+            player.sendMessage(ChatColor.RED + "No mule data found.");
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, false);
+            muleTier = 1;
+        }
+        MuleTier tier = MuleTier.getTier((int)muleTier);
+        if(tier == null)return;
+        player.getInventory().addItem(ItemManager.getPlayerMuleItem(tier));
+    }
+
     private static void addTrailItem(Player player) {
         player.getInventory().addItem(ItemManager.getPlayerTrailItem());
     }
@@ -100,6 +120,10 @@ public class Profile implements Listener {
                     case 8:
                         event.setCancelled(true);
                         addPetItem((Player) event.getWhoClicked());
+                        break;
+                    case 16:
+                        event.setCancelled(true);
+                        addMuleItem((Player)event.getWhoClicked());
                         break;
                 }
             }

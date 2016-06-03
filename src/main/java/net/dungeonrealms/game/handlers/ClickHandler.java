@@ -510,14 +510,30 @@ public class ClickHandler {
                     if (nmsStack == null) return;
                     if (nmsStack.getTag() == null) return;
                     if (nmsStack.getTag().hasKey("shardTier") && nmsStack.getTag().hasKey("shardCost")) {
+                        int shardCost = nmsStack.getTag().getInt("shardCost");
+                        if (player.getInventory().firstEmpty() == -1) {
+                            player.sendMessage(ChatColor.RED + "Your inventory is currently full!");
+                            return;
+                        }
                         if (API.removePortalShardsFromPlayer(player, nmsStack.getTag().getInt("shardTier"), nmsStack.getTag().getInt("shardCost"))) {
+                            player.sendMessage(ChatColor.RED + "- " + shardCost + ChatColor.BOLD + "PKS");
                             player.sendMessage(ChatColor.GREEN + "Transaction successful.");
                             player.closeInventory();
+
+                            //Give them their scroll.
+                            if (event.getCurrentItem().getType() == Material.CHEST) {
+                                //Add the storage mule upgrade.
+                                ItemStack muleUpgrade = ItemManager.createMuleUpgrade(nmsStack.getTag().getInt("muleLevel"));
+                                player.getInventory().addItem(muleUpgrade);
+                            } else {
+                                //Give them their scroll.
+                                player.getInventory().addItem(ItemManager.createProtectScroll(nmsStack.getTag().getInt("shardTier")));
+                            }
                             return;
                         } else {
                             String color = nmsStack.getTag().getString("shardColor");
                             player.sendMessage(ChatColor.RED + "You do " + ChatColor.UNDERLINE + "NOT" + ChatColor.RED + " have enough " + color + "Portal Key Shards" + ChatColor.RED + " to buy a " + event.getCurrentItem().getItemMeta().getDisplayName());
-                            player.sendMessage(ChatColor.RED + "COST: " + ChatColor.WHITE + nmsStack.getTag().getInt("shardCost") + color + " Portal Key Shards");
+                            player.sendMessage(ChatColor.RED + "COST: " + ChatColor.WHITE + shardCost + color + " Portal Key Shards");
                             player.sendMessage(ChatColor.GRAY + "Defeat " + ChatColor.UNDERLINE + "Instanced Dungeons" + ChatColor.GRAY + " to obtain Portal Key Shards.");
                             return;
                         }
