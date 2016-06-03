@@ -179,7 +179,7 @@ public class Teleportation implements GenericMechanic {
         int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
                 if (player.getLocation().distanceSquared(startingLocation) <= 4 && !CombatLog.isInCombat(player)) {
-                    player.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + "TELEPORTING ... "+ taskTimer[0] + "s");
+                    player.sendMessage(ChatColor.WHITE.toString() + ChatColor.BOLD + "TELEPORTING " + ChatColor.RESET + "... " + taskTimer[0] + "s");
                     try {
                         ParticleAPI.sendParticleToLocation(particleEffect[0], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
                         ParticleAPI.sendParticleToLocation(particleEffect[1], player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 4F, 400);
@@ -214,6 +214,6 @@ public class Teleportation implements GenericMechanic {
                 }
             }
         }, 0, 20L);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 160L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 220L);
     }
 }
