@@ -1,6 +1,5 @@
 package net.dungeonrealms.bounty;
 
-import net.dungeonrealms.core.Core;
 
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -33,20 +32,20 @@ public class Bounty {
      * @param action
      */
     public void getBountiesOn(UUID uuid, Consumer<HashMap<String, Integer>> action) {
-        Executors.newSingleThreadExecutor().submit(() -> {
-            try (
-                    PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT placer, reward FROM `bounties` WHERE victim='" + uuid.toString() + "';");
-                    ResultSet resultSet = statement.executeQuery()
-            ) {
-                HashMap<String, Integer> temp = new HashMap<>();
-                while (resultSet.next()) {
-                    temp.put(Core.getInstance().getNameFromUUID(UUID.fromString(resultSet.getString("placer"))), resultSet.getInt("reward"));
-                }
-                action.accept(temp);
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+//        Executors.newSingleThreadExecutor().submit(() -> {
+//            try (
+//                  //  PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT placer, reward FROM `bounties` WHERE victim='" + uuid.toString() + "';");
+//                   // ResultSet resultSet = statement.executeQuery()
+//
+//                HashMap<String, Integer> temp = new HashMap<>();
+//                //while (resultSet.next()) {
+//                  //  temp.put(Core.getInstance().getNameFromUUID(UUID.fromString(resultSet.getString("placer"))), resultSet.getInt("reward"));
+//              //  }
+//                action.accept(temp);
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//        });
     }
 
     /**
@@ -55,23 +54,23 @@ public class Bounty {
      * @param uuid
      */
     public boolean hasBountyOn(UUID uuid) {
-        Future<?> doesContain = Executors.newSingleThreadExecutor().submit(() -> {
-            boolean contains = true;
-            try (
-                    PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT placer FROM `bounties` WHERE victim='" + uuid.toString() + "';");
-                    ResultSet resultSet = statement.executeQuery()
-            ) {
-                contains = resultSet.next();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-            return contains;
-        });
-        try {
-            return (Boolean) doesContain.get();
-        } catch (InterruptedException | ExecutionException e) {
-            e.printStackTrace();
-        }
+//        Future<?> doesContain = Executors.newSingleThreadExecutor().submit(() -> {
+//            boolean contains = true;
+//            try (
+//                    PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT placer FROM `bounties` WHERE victim='" + uuid.toString() + "';");
+//                    ResultSet resultSet = statement.executeQuery()
+//            ) {
+//                contains = resultSet.next();
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//            return contains;
+//        });
+//        try {
+//            return (Boolean) doesContain.get();
+//        } catch (InterruptedException | ExecutionException e) {
+//            e.printStackTrace();
+//        }
         return false;
     }
 
@@ -82,22 +81,22 @@ public class Bounty {
      * @param action
      */
     public void getPlacedBounties(UUID uuid, Consumer<HashMap<String, Integer>> action) {
-        Executors.newSingleThreadExecutor().submit(() -> {
-            try (
-                    PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT * FROM `bounties` WHERE placer='" + uuid.toString() + "';");
-                    ResultSet resultSet = statement.executeQuery()
-            ) {
-                HashMap<String, Integer> temp = new HashMap<>();
-                while (resultSet.next()) {
-                    temp.put(Core.getInstance().getNameFromUUID(UUID.fromString(resultSet.getString("victim"))), resultSet.getInt("reward"));
-                }
-
-                action.accept(temp);
-
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        });
+//        Executors.newSingleThreadExecutor().submit(() -> {
+//            try (
+//                    PreparedStatement statement = Core.getInstance().connection.prepareStatement("SELECT * FROM `bounties` WHERE placer='" + uuid.toString() + "';");
+//                    ResultSet resultSet = statement.executeQuery()
+//            ) {
+//                HashMap<String, Integer> temp = new HashMap<>();
+//                while (resultSet.next()) {
+//                    temp.put(Core.getInstance().getNameFromUUID(UUID.fromString(resultSet.getString("victim"))), resultSet.getInt("reward"));
+//                }
+//
+//                action.accept(temp);
+//
+//            } catch (SQLException e) {
+//                e.printStackTrace();
+//            }
+//        });
     }
 
 }
