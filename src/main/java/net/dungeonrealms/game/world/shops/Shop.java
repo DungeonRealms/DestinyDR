@@ -37,6 +37,7 @@ public class Shop {
     public Inventory inventory;
     public String shopName;
     public int viewCount;
+    public List<String> uniqueViewers = new ArrayList<>();
 
     public Shop(UUID uuid, Location loc, String shopName) {
         this.ownerUUID = uuid;
@@ -51,6 +52,7 @@ public class Shop {
         isopen = false;
         inventory = createNewInv(ownerUUID);
         viewCount = 0;
+        this.uniqueViewers = new ArrayList<>();
     }
 
     private Inventory createNewInv(UUID uuid) {
@@ -89,6 +91,8 @@ public class Shop {
         block1.setType(Material.AIR);
         block2.setType(Material.AIR);
         block1.getWorld().playSound(block1.getLocation(), Sound.PISTON_RETRACT, 1, 1);
+        uniqueViewers.clear();
+        viewCount = 0;
 
         if (getOwner() == null) {
             saveCollectionBin();
@@ -260,7 +264,7 @@ public class Shop {
             }
         }*/
 
-        if (new_tier >= 6) {
+        if (new_tier >= 7) {
             p.sendMessage(ChatColor.RED + "Your shop is already at it's maximum size. (54 slots)");
             return;
         }

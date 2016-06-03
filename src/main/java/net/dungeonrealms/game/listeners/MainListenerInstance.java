@@ -6,6 +6,7 @@ import com.vexsoftware.votifier.model.VotifierEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.Callback;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.core.Core;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.events.PlayerMessagePlayerEvent;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -219,7 +220,7 @@ public class MainListenerInstance implements Listener {
         event.setJoinMessage(null);
         DatabaseAPI.getInstance().PLAYER_TIME.put(event.getPlayer().getUniqueId(), 0);
         Player player = event.getPlayer();
-        //Core.getInstance().verifyPlayerIntegrity(player.getUniqueId(), player.getName());
+        Core.getInstance().verifyPlayerIntegrity(player.getUniqueId(), player.getName());
         player.getInventory().clear();
         player.setGameMode(GameMode.ADVENTURE);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 4));

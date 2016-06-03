@@ -11,12 +11,15 @@ import net.minecraft.server.v1_8_R3.DamageSource;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 /**
  * Created by Chase on Sep 28, 2015
@@ -255,5 +258,9 @@ public class SpawningMechanics implements GenericMechanic {
         if (instance == null)
             instance = new SpawningMechanics();
         return instance;
+    }
+
+    public List<MobSpawner> getChunkMobSpawners(Chunk chunk) {
+        return ALLSPAWNERS.stream().filter(mobSpawner -> mobSpawner.loc.getChunk().equals(chunk)).collect(Collectors.toList());
     }
 }

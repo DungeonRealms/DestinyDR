@@ -30,6 +30,7 @@ import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
+import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -746,6 +747,8 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void chunkUNload(ChunkUnloadEvent event) {
         if (event.getWorld() == Bukkit.getWorlds().get(0)) {
+            SpawningMechanics.getInstance().getChunkMobSpawners(event.getChunk()).stream().filter(spawner -> spawner.SPAWNED_MONSTERS.size() > 1).
+                    forEach(spawner -> spawner.firstSpawn = true);
             if (event.getChunk().getEntities().length > 0) {
                 for (Entity ent : event.getChunk().getEntities()) {
                     net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity) ent).getHandle();

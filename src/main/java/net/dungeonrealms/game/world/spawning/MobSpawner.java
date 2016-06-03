@@ -48,7 +48,7 @@ public class MobSpawner {
     public int timerID = -1;
     public String lvlRange;
     public String monsterCustomName;
-    boolean firstSpawn = true;
+    public boolean firstSpawn = true;
     public boolean isDungeonSpawner;
     public boolean hasCustomName = false;
     private int respawnDelay;
