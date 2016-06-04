@@ -77,7 +77,9 @@ public class NetworkAPI implements PluginMessageListener {
         out.writeUTF(playerName);
         out.writeUTF(serverName);
         Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-        player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
+
+        if (player != null)
+            player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
     }
 
     /**
@@ -86,13 +88,15 @@ public class NetworkAPI implements PluginMessageListener {
      * @param contents Contents of the internal guts.
      * @since 1.0
      */
-    public void sendNetworkMessage(String channel, String message, String contents) {
+    public void sendNetworkMessage(String channel, String subChannel, String message, String contents) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF(channel);
+        out.writeUTF(subChannel);
         out.writeUTF(message);
         out.writeUTF(contents);
         Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-        player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
+
+        if (player != null)
+            player.sendPluginMessage(DungeonRealms.getInstance(), channel, out.toByteArray());
     }
 
     /**
@@ -109,6 +113,7 @@ public class NetworkAPI implements PluginMessageListener {
         out.writeUTF(playerName);
         out.writeUTF(message);
         Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
-        player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
+        if (player != null)
+            player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
     }
 }

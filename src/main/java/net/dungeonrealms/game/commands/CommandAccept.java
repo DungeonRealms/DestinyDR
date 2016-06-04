@@ -57,8 +57,8 @@ public class CommandAccept extends BasicCommand {
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, guildName, true);
 
 
-                    NetworkAPI.getInstance().sendNetworkMessage("guild", "update", guildName);
-                    NetworkAPI.getInstance().sendNetworkMessage("guild", "message", player.getName() + " has joined the Guild!");
+                    //NetworkAPI.getInstance().sendNetworkMessage("guild", "update", guildName);
+                    ///NetworkAPI.getInstance().sendNetworkMessage("guild", "message", player.getName() + " has joined the Guild!");
                     player.sendMessage(ChatColor.GREEN + "Congratulations! You have successfully joined " + ChatColor.AQUA + guildName);
 
 

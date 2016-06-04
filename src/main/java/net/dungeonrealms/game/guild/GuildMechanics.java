@@ -1,13 +1,8 @@
 package net.dungeonrealms.game.guild;
 
-import com.google.common.io.ByteArrayDataOutput;
-import com.google.common.io.ByteStreams;
-import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import org.bukkit.entity.Player;
-
-import java.util.Arrays;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/2/2016
@@ -46,15 +41,6 @@ public class GuildMechanics implements GenericMechanic {
 
     }
 
-
-    public void sendGuildMessage(Player player, String[] message) {
-        ByteArrayDataOutput out = ByteStreams.newDataOutput();
-        out.writeUTF("Guilds");
-
-        Arrays.asList(message).stream().forEach(out::writeUTF);
-
-        player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", out.toByteArray());
-    }
 
 
 }
