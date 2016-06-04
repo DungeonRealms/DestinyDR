@@ -1312,19 +1312,15 @@ public class InventoryListener implements Listener {
 
             Player pl = (Player) event.getWhoClicked();
             if (current.getType() == Material.LEASH && cursor.getType() == Material.CHEST) {
-                System.out.println("Check 1");
                 //Check for mule upgrade?
                 net.minecraft.server.v1_8_R3.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursor);
                 net.minecraft.server.v1_8_R3.ItemStack nmsCurrent = CraftItemStack.asNMSCopy(current);
                 if (nmsCursor.hasTag() && nmsCurrent.hasTag()) {
                     NBTTagCompound tag = nmsCursor.getTag();
-                    System.out.println("Check 2");
                     //Mule upgrade item.
                     if (tag.hasKey("usage") && tag.hasKey("muleLevel") && tag.getString("usage").equals("muleUpgrade")) {
-                        System.out.println("Check 3");
                         NBTTagCompound currentTag = nmsCurrent.getTag();
                         if (currentTag.hasKey("usage") && currentTag.hasKey("muleTier") && currentTag.getString("usage").equals("mule")) {
-                            System.out.println("Check 4");
                             event.setCancelled(true);
                             event.setResult(Event.Result.DENY);
                             //Upgrading mule.
