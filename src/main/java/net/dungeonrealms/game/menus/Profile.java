@@ -87,7 +87,10 @@ public class Profile implements Listener {
             muleTier = 1;
         }
         MuleTier tier = MuleTier.getTier((int)muleTier);
-        if(tier == null)return;
+        if(tier == null){
+            System.out.println("Invalid mule tier!");
+            return;
+        }
         player.getInventory().addItem(ItemManager.getPlayerMuleItem(tier));
     }
 

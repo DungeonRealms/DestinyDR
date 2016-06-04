@@ -123,7 +123,7 @@ public class ItemSerialization {
             configuration.loadFromString(Base64Coder.decodeString(s));
             Inventory i = Bukkit.createInventory(null, overrideSize, configuration.getString("Title"));
             ConfigurationSection contents = configuration.getConfigurationSection("Contents");
-            contents.getKeys(false).stream().filter(index -> contents.getItemStack(index) != null).forEach(index -> i.setItem(Integer.parseInt(index), contents.getItemStack(index)));
+            contents.getKeys(false).stream().filter(index -> contents.getItemStack(index) != null && Integer.parseInt(index) < overrideSize).forEach(index -> i.setItem(Integer.parseInt(index), contents.getItemStack(index)));
             return i;
         } catch (InvalidConfigurationException e) {
             return null;

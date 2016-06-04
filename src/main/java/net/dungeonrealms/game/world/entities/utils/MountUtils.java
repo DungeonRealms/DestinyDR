@@ -173,7 +173,7 @@ public class MountUtils {
                 if (tier == null) {
                     return;
                 }
-                h.setCustomName(h.getColor() + player.getName() + "'s " + h.getName());
+                h.setCustomName(tier.getColor().toString() + player.getName() + "'s " + tier.getName());
                 player.closeInventory();
                 player.playSound(player.getLocation(), Sound.DONKEY_IDLE, 1F, 1F);
                 EntityAPI.addPlayerMountList(player.getUniqueId(), ((CraftEntity) h).getHandle());

@@ -1301,7 +1301,7 @@ public class InventoryListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOW, ignoreCancelled = true)
     public void onPlayerApplyMuleUpgrade(InventoryClickEvent event) {
         if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
         if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
@@ -1312,16 +1312,19 @@ public class InventoryListener implements Listener {
 
             Player pl = (Player) event.getWhoClicked();
             if (current.getType() == Material.LEASH && cursor.getType() == Material.CHEST) {
+                System.out.println("Check 1");
                 //Check for mule upgrade?
                 net.minecraft.server.v1_8_R3.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursor);
                 net.minecraft.server.v1_8_R3.ItemStack nmsCurrent = CraftItemStack.asNMSCopy(current);
                 if (nmsCursor.hasTag() && nmsCurrent.hasTag()) {
                     NBTTagCompound tag = nmsCursor.getTag();
-
+                    System.out.println("Check 2");
                     //Mule upgrade item.
                     if (tag.hasKey("usage") && tag.hasKey("muleLevel") && tag.getString("usage").equals("muleUpgrade")) {
+                        System.out.println("Check 3");
                         NBTTagCompound currentTag = nmsCurrent.getTag();
-                        if (currentTag.hasKey("usage") && currentTag.hasKey("muleTier") && tag.getString("usage").equals("mule")) {
+                        if (currentTag.hasKey("usage") && currentTag.hasKey("muleTier") && currentTag.getString("usage").equals("mule")) {
+                            System.out.println("Check 4");
                             event.setCancelled(true);
                             event.setResult(Event.Result.DENY);
                             //Upgrading mule.
@@ -1329,24 +1332,26 @@ public class InventoryListener implements Listener {
                             int upgradeLevel = tag.getInt("muleLevel");
                             int currentTier = currentTag.getInt("muleTier");
 
-                            if (currentTier + 1 < upgradeLevel) {
+                            if (currentTier + 1 < upgradeLevel || currentTier == upgradeLevel) {
                                 //Cant upgrade.
                                 pl.sendMessage(ChatColor.RED + "You cannot apply this upgrade to this mule!");
                                 return;
                             }
 
                             if (event.getCursor().getAmount() > 1) {
-                                event.getCursor().setAmount(event.getCurrentItem().getAmount() - 1);
+                                cursor.setAmount(cursor.getAmount() - 1);
+                                pl.setItemOnCursor(cursor);
                             } else {
                                 event.setCursor(null);
                                 pl.setItemOnCursor(null);
                             }
+
                             MuleTier newTier = MuleTier.getTier(upgradeLevel);
                             if (newTier == null) {
                                 pl.sendMessage(ChatColor.RED + "Unable to find proper upgrade level.");
                                 return;
                             }
-                            pl.sendMessage(ChatColor.GREEN + "Mule upgraded to " + newTier.getName());
+                            pl.sendMessage(ChatColor.GREEN + "Mule upgraded to " + newTier.getName() + "!");
 
                             DatabaseAPI.getInstance().update(pl.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, newTier.getTier(), false);
 
@@ -1360,17 +1365,24 @@ public class InventoryListener implements Listener {
                                     //Upgrade that shit.
                                     for (int i = 0; i < inv.getSize(); i++) {
                                         //Set that inventory of the items.
-                                        upgradeInventory.setItem(i, inv.getItem(i));
+                                        if (upgradeInventory.getSize() > i)
+                                            upgradeInventory.setItem(i, inv.getItem(i));
                                     }
 
                                     //Clear the old inventory.
                                     inv.clear();
-                                    MountUtils.inventories.put(pl.getUniqueId(), inv);
+                                    MountUtils.inventories.put(pl.getUniqueId(), upgradeInventory);
                                 }
                             }
 
                             ItemStack newMule = ItemManager.getPlayerMuleItem(newTier);
-                            pl.getInventory().setItem(event.getRawSlot(), newMule);
+
+                            ItemStack[] contents = pl.getInventory().getContents();
+                            contents[event.getSlot()] = newMule;
+                            pl.getInventory().setContents(contents);
+                            pl.updateInventory();
+//                            event.getClickedInventory().setItem(event.getRawSlot(), newMule);
+//                            pl.updateInventory();
                             pl.playSound(pl.getLocation(), Sound.LEVEL_UP, 1, 1.4F);
                         }
                     }

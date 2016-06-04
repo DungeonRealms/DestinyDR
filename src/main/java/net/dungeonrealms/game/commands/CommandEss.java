@@ -3,6 +3,7 @@ package net.dungeonrealms.game.commands;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.dungeonrealms.game.mongo.Database;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -185,6 +186,10 @@ public class CommandEss extends BasicCommand {
                         commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials ecash add Proxying 100)");
                         return false;
                     }
+                case "resetmule":
+                    DatabaseAPI.getInstance().update(((Player)commandSender).getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, false);
+                    commandSender.sendMessage(ChatColor.RED + "Mule level reset.");
+                    break;
                 default:
                     break;
             }

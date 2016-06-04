@@ -225,7 +225,7 @@ public class ItemManager {
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
         tag.setInt("muleTier", tier.getTier());
-        tag.set("usage", new NBTTagString("mule"));
+        tag.setString("usage", "mule");
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
