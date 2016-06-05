@@ -60,7 +60,6 @@ public class BlockListener implements Listener {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemInHand());
         if (nmsItem == null) return;
         if (!event.getBlockPlaced().getWorld().equals(Bukkit.getWorlds().get(0))) return;
-        NBTTagCompound tag = nmsItem.getTag();
         event.setCancelled(true);
     }
 
@@ -76,7 +75,7 @@ public class BlockListener implements Listener {
         Block block = e.getBlock();
         if (block == null) return;
         if (block.getType() == Material.ARMOR_STAND) {
-            SpawningMechanics.ALLSPAWNERS.stream().filter(spawner -> spawner.loc == block.getLocation()).forEach(SpawningMechanics::remove);
+            SpawningMechanics.ALLSPAWNERS.stream().filter(spawner -> spawner.getLoc() == block.getLocation()).forEach(SpawningMechanics::remove);
         }
     }
 
@@ -361,21 +360,6 @@ public class BlockListener implements Listener {
                 repairMap.remove(block.getLocation());
                 p.sendMessage(ChatColor.RED + "Item Repair - " + ChatColor.RED + ChatColor.BOLD.toString() + "CANCELLED");
             });
-//            	Inventory inv = Bukkit.createInventory(null, 9, "Repair your item for " + ChatColor.BOLD + newCost + "g?");
-//            	inv.setItem(3, ItemManager.createItemWithData(Material.WOOL, ChatColor.YELLOW + "Accept", new String[] {ChatColor.GRAY + "Repairs your item fully for specified amount."}, DyeColor.LIME.getData()));
-//            	inv.setItem(5, ItemManager.createItemWithData(Material.WOOL, ChatColor.YELLOW + "Deny", new String[] {ChatColor.GRAY + "Deny the repair of your item."}, DyeColor.RED.getData()));
-//
-//            	player.openInventory(inv);
-//                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
-//                    int finalCost = RepairAPI.getItemRepairCost(event.getPlayer().getItemInHand());
-//                	Inventory finalinv = Bukkit.createInventory(null, 9, "Repair your item for " + ChatColor.BOLD + finalCost + "g?");
-//                	finalinv.setItem(3, ItemManager.createItemWithData(Material.WOOL, ChatColor.YELLOW + "Accept", new String[] {ChatColor.GRAY + "Repairs your item fully for specified amount."}, DyeColor.LIME.getData()));
-//                	finalinv.setItem(5, ItemManager.createItemWithData(Material.WOOL, ChatColor.YELLOW + "Deny", new String[] {ChatColor.GRAY + "Deny the repair of your item."}, DyeColor.RED.getData()));
-//
-//                	player.openInventory(finalinv);
-//                }, 10L);
-
-
         } else {
             event.setCancelled(true);
             event.getPlayer().sendMessage(ChatColor.RED + "This item is already repaired all the way!");
@@ -419,8 +403,7 @@ public class BlockListener implements Listener {
                     e.setCancelled(true);
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         Block blockLook = e.getPlayer().getTargetBlock((Set<Material>) null, 7);
-                        if (blockLook.getType() != Material.CHEST) {
-                        } else {
+                        if (blockLook.getType() == Material.CHEST) {
                             e.getPlayer().openInventory(loot.inv);
                         }
                     }, 10);
@@ -441,46 +424,6 @@ public class BlockListener implements Listener {
             e.getPlayer().sendMessage(ChatColor.RED + "You can't open this while monsters are around!");
             e.setCancelled(true);
         }
-
-//        Shop shop = ShopMechanics.getShop(block);
-//        if (shop == null){
-//        	e.setCancelled(true);
-//            return;
-//        }
-//        Action actionType = e.getAction();
-////        switch (actionType) {
-////            case RIGHT_CLICK_BLOCK:
-////                e.getPlayer().sendMessage(ChatColor.RED + "Shops have been disabled whilst a critical error is resolved.");
-////                e.setCancelled(true);
-////                break;
-////            case LEFT_CLICK_BLOCK:
-////                if (shop.ownerUUID.toString().equalsIgnoreCase(e.getPlayer().getUniqueId().toString())) {
-////                    e.setCancelled(true);
-////                    e.getPlayer().sendMessage(ChatColor.RED + "Shops have been disabled whilst a critical error is resolved.");
-////                    shop.deleteShop();
-////                }
-////                break;
-////            default:
-////        }
-//
-//        switch (actionType) {
-//            case RIGHT_CLICK_BLOCK:
-//                if (shop.isopen || shop.ownerUUID.toString().equalsIgnoreCase(e.getPlayer().getUniqueId().toString())) {
-//                    e.setCancelled(true);
-//                    e.getPlayer().openInventory(shop.getInventory());
-//                } else {
-//                    e.setCancelled(true);
-//                    e.getPlayer().sendMessage(ChatColor.RED + "This shop is closed!");
-//                }
-//                break;
-//            case LEFT_CLICK_BLOCK:
-//                if (shop.ownerUUID.toString().equalsIgnoreCase(e.getPlayer().getUniqueId().toString())) {
-//                    e.setCancelled(true);
-//                    shop.deleteShop();
-//                }
-//                break;
-//            default:
-//        }
     }
 
     /**
@@ -553,7 +496,6 @@ public class BlockListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void shiftRightClickJournal(PlayerInteractEvent e) {
-        // MORE SHOP CODE FOR XFIN TO PULL?
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getPlayer().isSneaking()) {
             ItemStack stack = e.getItem();
             if (stack == null) return;
@@ -579,8 +521,7 @@ public class BlockListener implements Listener {
                             e.setCancelled(true);
                             return;
                         }
-                        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () ->
-                                ShopMechanics.setupShop(e.getClickedBlock(), player.getUniqueId()));
+                        ShopMechanics.setupShop(e.getClickedBlock(), player.getUniqueId());
                     } else {
                         player.sendMessage(ChatColor.RED + " You have a shop open already! It may be on another shard.");
                     }

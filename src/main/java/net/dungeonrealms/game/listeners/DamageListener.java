@@ -140,8 +140,8 @@ public class DamageListener implements Listener {
             if (attacker.isOp() || attacker.getGameMode() == GameMode.CREATIVE) {
                 ArrayList<MobSpawner> list = SpawningMechanics.ALLSPAWNERS;
                 for (MobSpawner current : list) {
-                    if (current.loc.getBlockX() == event.getEntity().getLocation().getBlockX() && current.loc.getBlockY() == event.getEntity().getLocation().getBlockY() &&
-                            current.loc.getBlockZ() == event.getEntity().getLocation().getBlockZ()) {
+                    if (current.getLoc().getBlockX() == event.getEntity().getLocation().getBlockX() && current.getLoc().getBlockY() == event.getEntity().getLocation().getBlockY() &&
+                            current.getLoc().getBlockZ() == event.getEntity().getLocation().getBlockZ()) {
                         current.remove();
                         current.kill();
                         break;
