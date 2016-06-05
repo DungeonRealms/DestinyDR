@@ -37,20 +37,20 @@ import java.util.concurrent.CopyOnWriteArrayList;
  */
 public class MobSpawner {
 
-    public Location loc;
-    public String spawnType;
-    public EntityArmorStand armorstand;
-    public int tier;
-    public List<Entity> SPAWNED_MONSTERS = new CopyOnWriteArrayList<>();
-    public boolean isElite = false;
-    public int spawnAmount;
-    public int id;
-    public int timerID = -1;
-    public String lvlRange;
-    public String monsterCustomName;
-    public boolean firstSpawn = true;
-    public boolean isDungeonSpawner;
-    public boolean hasCustomName = false;
+    private Location loc;
+    private String spawnType;
+    private EntityArmorStand armorstand;
+    private int tier;
+    private List<Entity> SPAWNED_MONSTERS = new CopyOnWriteArrayList<>();
+    private boolean isElite = false;
+    private int spawnAmount;
+    private int id;
+    private int timerID = -1;
+    private String lvlRange;
+    private String monsterCustomName;
+    private boolean firstSpawn = true;
+    private boolean isDungeonSpawner;
+    private boolean hasCustomName = false;
     private int respawnDelay;
     private int counter;
 
@@ -106,10 +106,6 @@ public class MobSpawner {
      * Does 1 rotation of spawning for this mob spawner.
      */
     private void spawnIn() {
-//    	if(isDungeonSpawner){
-//    		dungeonSpawn();
-//    		return;
-//    	}
         if (!SPAWNED_MONSTERS.isEmpty()) {
             for (Entity monster : SPAWNED_MONSTERS) {
                 if (monster.isAlive()) {
@@ -406,5 +402,137 @@ public class MobSpawner {
         }
         counter = 0;
         return true;
+    }
+
+    public Location getLoc() {
+        return loc;
+    }
+
+    public void setLoc(Location loc) {
+        this.loc = loc;
+    }
+
+    public String getSpawnType() {
+        return spawnType;
+    }
+
+    public void setSpawnType(String spawnType) {
+        this.spawnType = spawnType;
+    }
+
+    public EntityArmorStand getArmorstand() {
+        return armorstand;
+    }
+
+    public void setArmorstand(EntityArmorStand armorstand) {
+        this.armorstand = armorstand;
+    }
+
+    public int getTier() {
+        return tier;
+    }
+
+    public void setTier(int tier) {
+        this.tier = tier;
+    }
+
+    public List<Entity> getSPAWNED_MONSTERS() {
+        return SPAWNED_MONSTERS;
+    }
+
+    public void setSPAWNED_MONSTERS(List<Entity> SPAWNED_MONSTERS) {
+        this.SPAWNED_MONSTERS = SPAWNED_MONSTERS;
+    }
+
+    public boolean isElite() {
+        return isElite;
+    }
+
+    public void setElite(boolean elite) {
+        isElite = elite;
+    }
+
+    public int getSpawnAmount() {
+        return spawnAmount;
+    }
+
+    public void setSpawnAmount(int spawnAmount) {
+        this.spawnAmount = spawnAmount;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getTimerID() {
+        return timerID;
+    }
+
+    public void setTimerID(int timerID) {
+        this.timerID = timerID;
+    }
+
+    public String getLvlRange() {
+        return lvlRange;
+    }
+
+    public void setLvlRange(String lvlRange) {
+        this.lvlRange = lvlRange;
+    }
+
+    public String getMonsterCustomName() {
+        return monsterCustomName;
+    }
+
+    public void setMonsterCustomName(String monsterCustomName) {
+        this.monsterCustomName = monsterCustomName;
+    }
+
+    public boolean isFirstSpawn() {
+        return firstSpawn;
+    }
+
+    public void setFirstSpawn(boolean firstSpawn) {
+        this.firstSpawn = firstSpawn;
+    }
+
+    public boolean isDungeonSpawner() {
+        return isDungeonSpawner;
+    }
+
+    public boolean isHasCustomName() {
+        return hasCustomName;
+    }
+
+    public void setHasCustomName(boolean hasCustomName) {
+        this.hasCustomName = hasCustomName;
+    }
+
+    public int getRespawnDelay() {
+        return respawnDelay;
+    }
+
+    public void setRespawnDelay(int respawnDelay) {
+        this.respawnDelay = respawnDelay;
+    }
+
+    public int getCounter() {
+        return counter;
+    }
+
+    public void setCounter(int counter) {
+        this.counter = counter;
+    }
+
+    public boolean isRemoved() {
+        return isRemoved;
+    }
+
+    public void setRemoved(boolean removed) {
+        isRemoved = removed;
     }
 }

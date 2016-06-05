@@ -378,9 +378,9 @@ public class DungeonManager implements GenericMechanic {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 DungeonObject object = this.getDungeon(w);
                 for (MobSpawner spawner : SpawningMechanics.BanditTroveSpawns) {
-                    Location loc = spawner.loc;
+                    Location loc = spawner.getLoc();
                     loc.setWorld(w);
-                    spawner.loc = loc;
+                    spawner.setLoc(loc);
                     spawner.setDungeonSpawner(true);
                     spawner.dungeonSpawn(object);
                 }

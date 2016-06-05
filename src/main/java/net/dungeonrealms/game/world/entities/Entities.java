@@ -174,17 +174,16 @@ public class Entities implements GenericMechanic {
 		SpawningMechanics.ALLSPAWNERS.stream().filter(mobSpawner -> mobSpawner.getSpawnedMonsters().contains(entity))
 		        .forEach(mobSpawner -> {
 			        EntityInsentient entityInsentient = (EntityInsentient) entity;
-			        entityInsentient.setGoalTarget(mobSpawner.armorstand, EntityTargetEvent.TargetReason.CLOSEST_PLAYER,
+			        entityInsentient.setGoalTarget(mobSpawner.getArmorstand(), EntityTargetEvent.TargetReason.CLOSEST_PLAYER,
 		                    true);
-			        PathEntity path = entityInsentient.getNavigation().a(mobSpawner.armorstand.locX,
-		                    mobSpawner.armorstand.locY, mobSpawner.armorstand.locZ);
+			        PathEntity path = entityInsentient.getNavigation().a(mobSpawner.getArmorstand().locX,
+		                    mobSpawner.getArmorstand().locY, mobSpawner.getArmorstand().locZ);
 			        entityInsentient.getNavigation().a(path, 2);
-			        double distance = mobSpawner.armorstand.getBukkitEntity().getLocation()
+			        double distance = mobSpawner.getArmorstand().getBukkitEntity().getLocation()
 		                    .distance(entity.getBukkitEntity().getLocation());
 			        if (distance > 30 && !entity.dead) {
-				        entity.getBukkitEntity().teleport(mobSpawner.armorstand.getBukkitEntity().getLocation());
-				        entityInsentient.setGoalTarget(mobSpawner.armorstand,
-		                        EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);
+				        entity.getBukkitEntity().teleport(mobSpawner.getArmorstand().getBukkitEntity().getLocation());
+				        entityInsentient.setGoalTarget(mobSpawner.getArmorstand(), EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);
 			        }
 		        });
 	}
