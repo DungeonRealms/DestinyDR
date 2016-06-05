@@ -127,6 +127,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("foodLevel", Integer.class);
             case SHOPLEVEL:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("shopLevel", Integer.class);
+            case MULELEVEL:
+             return ((Document) PLAYERS.get(uuid).get("info")).get("muleLevel", Integer.class);
             case LOGGERDIED:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("loggerdied", Boolean.class);
             case CURRENTSERVER:
@@ -295,6 +297,7 @@ public class DatabaseAPI {
                                 .append("shopOpen", false)
                                 .append("foodLevel", 20)
                                 .append("shopLevel", 1)
+                                .append("muleLevel", 1)
                                 .append("loggerdied", false)
                 				.append("current", DungeonRealms.getInstance().bungeeName)
                 				.append("enteringrealm", "")

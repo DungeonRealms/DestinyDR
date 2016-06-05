@@ -12,9 +12,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.Arrays;
 import java.util.List;
 
-/**
- * Created by Nick on 10/31/2015.
- */
+
 public class ItemBuilder {
 
     private ItemStack itemStack;
@@ -28,6 +26,15 @@ public class ItemBuilder {
         return this;
     }
 
+    public ItemBuilder setName(String name)
+    {
+        ItemStack item = itemStack;
+        ItemMeta meta = item.getItemMeta();
+        meta.setDisplayName(name);
+        item.setItemMeta(meta);
+        this.itemStack = item;
+        return this;
+    }
     public ItemBuilder setItem(Material material, short shortID, String name, String[] lore) {
         ItemStack tempItem = new ItemStack(material, 1, shortID);
         ItemMeta meta = tempItem.getItemMeta();

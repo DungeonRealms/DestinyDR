@@ -1,23 +1,35 @@
 package net.dungeonrealms.game.guild;
 
+import org.bson.Document;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-@SuppressWarnings("unchecked")
+
 public interface GuildDatabaseAPI {
 
-    void startInitialization();
-
+    static Document getDocumentTemplate(String owner, String guildName, String clanTag) {
+        return new Document("info",
+                new Document("owner", owner)
+                        .append("name", guildName)
+                        .append("clanTag", clanTag))
+                .append("motd", "Default MOTDO :(")
+                .append("officers", new ArrayList<String>())
+                .append("members", new ArrayList<String>())
+                .append("netLevel", 1)
+                .append("experience", 0);
+    }
 
     /**
      * @param guildName Guild Name.
      * @param clanTag   Clan Tag.
      * @param owner     owner UUID
-     * @param action    boolean.
+     * @param callback Call back method
      */
 
-    void createGuild(String guildName, String clanTag, UUID owner, Consumer<Boolean> action);
+    void createGuild(String guildName, String clanTag, UUID owner, Consumer<Boolean> callback);
 
 
     boolean isGuildNull(UUID uuid);

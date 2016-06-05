@@ -25,6 +25,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -37,6 +38,9 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Kieran on 9/18/2015.
@@ -93,30 +97,29 @@ public class ItemListener implements Listener {
                     ChatColor.GREEN.toString() + ChatColor.BOLD + "TELEPORT " + ChatColor.RED + "You are in combat! " + ChatColor.RED.toString() + "(" + ChatColor.UNDERLINE + CombatLog.COMBAT.get(player.getUniqueId()) + "s" + ChatColor.RED + ")");
         }
     }
-    
+
     /**
      * Handles Right Click of Character Journal
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerUseMap(PlayerInteractEvent event){
+    public void onPlayerUseMap(PlayerInteractEvent event) {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         Player p = event.getPlayer();
         if (p.getItemInHand() == null || p.getItemInHand().getType() != Material.EMPTY_MAP) return;
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getItemInHand());
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
-        if (tag.hasKey("type")){
-        	event.setCancelled(true);
+        if (tag.hasKey("type")) {
+            event.setCancelled(true);
         }
     }
-    
-    
-    
+
+
     /**
      * Handles Right Click of Character Journal
      */
     @EventHandler(priority = EventPriority.MONITOR)
-    public void onPlayerUseCharacterJournal(PlayerInteractEvent event){
+    public void onPlayerUseCharacterJournal(PlayerInteractEvent event) {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         Player p = event.getPlayer();
         if (p.getItemInHand() == null || p.getItemInHand().getType() != Material.WRITTEN_BOOK) return;
@@ -125,63 +128,63 @@ public class ItemListener implements Listener {
         if (tag == null) return;
         if (tag.hasKey("journal") && !(tag.getString("journal").equalsIgnoreCase("true"))) return;
         ItemStack stack = ItemManager.createCharacterJournal(p);
-        
+
         p.getInventory().setItem(7, stack);
-        p.updateInventory(); 
+        p.updateInventory();
     }
-    
-    
+
+
     /**
      * Handles player right clicking a stat reset book
-     * 
+     *
      * @param event
      * @since 1.0
      */
-    
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void useEcashItem(PlayerInteractEvent event) {
-    	if (event.getItem() != null) {
-    	if (event.getItem().getType() == Material.ENCHANTED_BOOK) {
-    		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
-    		if (nms.hasTag() && nms.getTag().hasKey("retrainingBook")) {
-                event.getPlayer().sendMessage(ChatColor.GREEN + "Reset stat points? Type 'yes' or 'y' to confirm");
-                Chat.listenForMessage(event.getPlayer(), chat -> {
-                    if (chat.getMessage().equalsIgnoreCase("Yes") || chat.getMessage().equalsIgnoreCase("y")) {
-                        if (event.getItem().getAmount() > 1) {
-                            event.getItem().setAmount(event.getItem().getAmount() - 1);
-                        } else {
-                            event.getPlayer().getInventory().remove(event.getItem());
+        if (event.getItem() != null) {
+            if (event.getItem().getType() == Material.ENCHANTED_BOOK) {
+                net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
+                if (nms.hasTag() && nms.getTag().hasKey("retrainingBook")) {
+                    event.getPlayer().sendMessage(ChatColor.GREEN + "Reset stat points? Type 'yes' or 'y' to confirm");
+                    Chat.listenForMessage(event.getPlayer(), chat -> {
+                        if (chat.getMessage().equalsIgnoreCase("Yes") || chat.getMessage().equalsIgnoreCase("y")) {
+                            if (event.getItem().getAmount() > 1) {
+                                event.getItem().setAmount(event.getItem().getAmount() - 1);
+                            } else {
+                                event.getPlayer().getInventory().remove(event.getItem());
+                            }
+                            API.getGamePlayer(event.getPlayer()).getStats().unallocateAllPoints();
+                            event.getPlayer().sendMessage(ChatColor.YELLOW + "All Stat Points have been unallocated!");
                         }
-                        API.getGamePlayer(event.getPlayer()).getStats().unallocateAllPoints();
-                        event.getPlayer().sendMessage(ChatColor.YELLOW + "All Stat Points have been unallocated!");
+                    }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
+                }
+            } else if (event.getItem().getType() == Material.ENDER_CHEST) {
+                net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
+                if (nms.hasTag() && nms.getTag().hasKey("type")) {
+                    if (nms.getTag().getString("type").equalsIgnoreCase("upgrade")) {
+                        Player player = event.getPlayer();
+                        int invlvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
+                        if (invlvl == 6) {
+                            player.sendMessage(ChatColor.RED + "Sorry you've reached the current maximum storage size!");
+                            return;
+                        }
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl + 1, true);
+                        Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () ->
+                                BankMechanics.getInstance().getStorage(player.getUniqueId()).update(), 20);
+                        if (event.getPlayer().getItemInHand().getAmount() == 1) {
+                            event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
+                        } else {
+                            ItemStack item = event.getPlayer().getItemInHand();
+                            item.setAmount(item.getAmount() - 1);
+                            event.getPlayer().setItemInHand(item);
+                        }
+                        event.getPlayer().sendMessage(ChatColor.YELLOW + "Your banks storage has been increased by 9 slots.");
                     }
-                }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
-    		}
-    	} else if (event.getItem().getType() == Material.ENDER_CHEST ){
-    		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
-    			if (nms.hasTag() && nms.getTag().hasKey("type")) {
-    				if (nms.getTag().getString("type").equalsIgnoreCase("upgrade")) {
-    					Player player = event.getPlayer();
-    					int invlvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
-    					if(invlvl == 6){
-    						player.sendMessage(ChatColor.RED + "Sorry you've reached the current maximum storage size!");
-    						return;
-    					}
-    					DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl + 1, true);
-    					Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), ()->
-    					BankMechanics.getInstance().getStorage(player.getUniqueId()).update(), 20);
-    					if(event.getPlayer().getItemInHand().getAmount() == 1){
-    						event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
-    					}else{
-    						ItemStack item = event.getPlayer().getItemInHand();
-    						item.setAmount(item.getAmount() - 1);
-    						event.getPlayer().setItemInHand(item);
-    					}
-    					event.getPlayer().sendMessage(ChatColor.YELLOW + "Your banks storage has been increased by 9 slots.");
-    				}
-    			}
-    		}
-    	}
+                }
+            }
+        }
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
@@ -239,7 +242,7 @@ public class ItemListener implements Listener {
                         event.getPlayer().sendMessage(ChatColor.RED + "Healing Cancelled!");
                     }
                 }
-            },0L, 20L);
+            }, 0L, 20L);
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 Bukkit.getScheduler().cancelTask(taskID);
                 if (event.getPlayer().hasMetadata("FoodRegen")) {
@@ -247,13 +250,13 @@ public class ItemListener implements Listener {
                 }
             }, 300L);
         } else if (event.getItem().getType() == Material.COOKED_FISH && nmsItem.getTag().getString("type").equalsIgnoreCase("fishBuff") && nmsItem.getTag().hasKey("buff")) {
-        	if(Fishing.fishBuffs.containsKey(event.getPlayer().getUniqueId())){
-        		event.getPlayer().sendMessage(ChatColor.RED + "You have an active fish buff already!");
-        		return;
-        	}
-        	Fishing.fishBuffs.put(event.getPlayer().getUniqueId(), nmsItem.getTag().getString("buff"));
-        	event.getPlayer().sendMessage("    " + ChatColor.BOLD.toString() + ChatColor.YELLOW + nmsItem.getTag().getString("buff") + " Active for 10 seconds!");
-        	Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()-> Fishing.fishBuffs.remove(event.getPlayer().getUniqueId()));
+            if (Fishing.fishBuffs.containsKey(event.getPlayer().getUniqueId())) {
+                event.getPlayer().sendMessage(ChatColor.RED + "You have an active fish buff already!");
+                return;
+            }
+            Fishing.fishBuffs.put(event.getPlayer().getUniqueId(), nmsItem.getTag().getString("buff"));
+            event.getPlayer().sendMessage("    " + ChatColor.BOLD.toString() + ChatColor.YELLOW + nmsItem.getTag().getString("buff") + " Active for 10 seconds!");
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Fishing.fishBuffs.remove(event.getPlayer().getUniqueId()));
         }
     }
 
@@ -280,13 +283,14 @@ public class ItemListener implements Listener {
         if (player.getItemInHand() == null || player.getItemInHand().getType() == Material.AIR) {
             return;
         }
-        if (player.getItemInHand().getType() == Material.SADDLE || player.getItemInHand().getType() == Material.EYE_OF_ENDER || player.getItemInHand().getType() == Material.NAME_TAG) {
+        if (player.getItemInHand().getType() == Material.SADDLE || player.getItemInHand().getType() == Material.EYE_OF_ENDER || player.getItemInHand().getType() == Material.NAME_TAG || player.getItemInHand().getType() == Material.LEASH) {
             net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(player.getItemInHand());
             NBTTagCompound tag = nmsStack.getTag();
             if (tag == null) return;
             if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
             switch (tag.getString("usage")) {
                 case "mount":
+                case "mule":
                     if (EntityAPI.hasMountOut(player.getUniqueId())) {
                         Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
                         if (entity.isAlive()) {
@@ -303,11 +307,18 @@ public class ItemListener implements Listener {
                         player.sendMessage(ChatColor.RED + "You cannot summon a mount while in Combat!");
                         return;
                     }
-                    String mountType = (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId());
+                    String mountType = tag.getString("usage").equals("mule") ? "MULE": (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId());
                     if (mountType == null || mountType.equals("")) {
                         player.sendMessage(ChatColor.RED + "You don't have an active mount, please enter the mounts section in your profile to set one.");
                         player.closeInventory();
                         return;
+                    }
+                    if(tag.getString("usage").equals("mule")) {
+                        List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
+                        if (!playerMounts.contains("MULE")) {
+                            player.sendMessage(ChatColor.RED + "Purchase a storage mule from the Animal Tamer.");
+                            return;
+                        }
                     }
                     player.sendMessage(ChatColor.GREEN + "Your Mount is being summoned into this world!");
                     final int[] count = {0};
@@ -320,6 +331,7 @@ public class ItemListener implements Listener {
                                     if (!cancelled[0]) {
                                         if (count[0] < 3) {
                                             count[0]++;
+                                            ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.SPELL, player.getLocation(), 1F, 0F, 1F, .1F, 40);
                                         } else {
                                             MountUtils.spawnMount(player.getUniqueId(), mountType, (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT_SKIN, player.getUniqueId()));
                                         }

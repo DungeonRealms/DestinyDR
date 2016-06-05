@@ -10,6 +10,7 @@ import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entities.types.mounts.Horse;
+import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -32,8 +33,8 @@ import java.util.concurrent.ConcurrentHashMap;
  * Created by Kieran on 9/18/2015.
  */
 public class MountUtils {
-	
-	public static ConcurrentHashMap<UUID, Inventory> inventories = new ConcurrentHashMap<>();
+
+    public static ConcurrentHashMap<UUID, Inventory> inventories = new ConcurrentHashMap<>();
 
     public static boolean hasMountPrerequisites(EnumMounts mountType, List<String> playerMounts) {
         switch (mountType) {
@@ -65,7 +66,7 @@ public class MountUtils {
                 return true;
         }
     }
-	
+
     public static void spawnMount(UUID uuid, String mountType, String mountSkin) {
         Player player = Bukkit.getPlayer(uuid);
         World world = ((CraftWorld) player.getWorld()).getHandle();
@@ -75,16 +76,16 @@ public class MountUtils {
         }
         int horseType = 0;
         if (API.isStringMountSkin(mountSkin)) {
-           switch (EnumMountSkins.getByName(mountSkin.toUpperCase())) {
-               case SKELETON_HORSE:
-                   horseType = 4;
-                   break;
-               case ZOMBIE_HORSE:
-                   horseType = 3;
-                   break;
-               default:
-                   break;
-           }
+            switch (EnumMountSkins.getByName(mountSkin.toUpperCase())) {
+                case SKELETON_HORSE:
+                    horseType = 4;
+                    break;
+                case ZOMBIE_HORSE:
+                    horseType = 3;
+                    break;
+                default:
+                    break;
+            }
         }
         EnumMounts enumMounts = EnumMounts.getByName(mountType.toUpperCase());
         switch (enumMounts) {
@@ -152,8 +153,8 @@ public class MountUtils {
                 player.closeInventory();
                 break;
             }
-            case MULE :{
-            	org.bukkit.entity.Horse h = (org.bukkit.entity.Horse) player.getWorld().spawnEntity(player.getLocation(), EntityType.HORSE);
+            case MULE: {
+                org.bukkit.entity.Horse h = (org.bukkit.entity.Horse) player.getWorld().spawnEntity(player.getLocation(), EntityType.HORSE);
                 h.setAdult();
                 h.setAgeLock(true);
                 h.setVariant(org.bukkit.entity.Horse.Variant.MULE);
@@ -162,20 +163,32 @@ public class MountUtils {
                 h.setLeashHolder(player);
                 h.setOwner(player);
                 h.setColor(org.bukkit.entity.Horse.Color.BROWN);
-            	MetadataUtils.registerEntityMetadata(((CraftEntity)h).getHandle(), EnumEntityType.MOUNT, 0, 0);
-            	h.setCustomName(player.getName() + "'s Storage Mule");
-            	h.setCustomNameVisible(true);
+                MetadataUtils.registerEntityMetadata(((CraftEntity) h).getHandle(), EnumEntityType.MOUNT, 0, 0);
+//                h.setCustomName(player.getName() + "'s Storage Mule");
+                h.setCustomNameVisible(true);
                 h.setMetadata("mule", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
                 String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, uuid);
+                int muleLevel = (int) DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
+                MuleTier tier = MuleTier.getTier(muleLevel);
+                if (tier == null) {
+                    return;
+                }
+                h.setCustomName(tier.getColor().toString() + player.getName() + "'s " + tier.getName());
                 player.closeInventory();
                 player.playSound(player.getLocation(), Sound.DONKEY_IDLE, 1F, 1F);
-                EntityAPI.addPlayerMountList(player.getUniqueId(), ((CraftEntity)h).getHandle());
-                if(!inventories.containsKey(player.getUniqueId())){
-                	Inventory inv = Bukkit.createInventory(player, 9, "Mule Storage");
-                	if(!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4){
-                		inv = ItemSerialization.fromString(invString);
-                	}
-                	inventories.put(uuid, inv);
+                EntityAPI.addPlayerMountList(player.getUniqueId(), ((CraftEntity) h).getHandle());
+                if (!inventories.containsKey(player.getUniqueId())) {
+//                    int muleLevel = (int) DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
+                    if (muleLevel > 3)
+                        //Impossible
+                        muleLevel = 3;
+
+                    Inventory inv = Bukkit.createInventory(player, tier.getSize(), "Mule Storage");
+                    if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4) {
+                        //Make sure the inventory is as big as we need
+                        inv = ItemSerialization.fromString(invString, tier.getSize());
+                    }
+                    inventories.put(uuid, inv);
                 }
             }
             /*case 7: {

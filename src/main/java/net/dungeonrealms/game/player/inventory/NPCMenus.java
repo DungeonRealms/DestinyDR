@@ -158,15 +158,19 @@ public class NPCMenus {
     public static void openDungeoneerMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 9, "Dungeoneer");
 
-        inv.setItem(0, new ItemBuilder().setItem(ItemManager.createProtectScroll(1)).addLore(ChatColor.WHITE + "1500 Portal Shards").setNBTInt("shardTier", 1)
+        inv.setItem(0, new ItemBuilder().setItem(ItemManager.createMuleUpgrade(2)).addLore(ChatColor.WHITE + "5000" + ChatColor.AQUA + " Portal Key Shards")
+                .setNBTInt("shardCost", 5000).setNBTInt("shardTier", 3).build());
+        inv.setItem(1, new ItemBuilder().setItem(ItemManager.createMuleUpgrade(3)).addLore(ChatColor.WHITE + "8000" + ChatColor.LIGHT_PURPLE + " Portal Key Shards")
+                .setNBTInt("shardCost", 8000).setNBTInt("shardTier", 4).build());
+        inv.setItem(2, new ItemBuilder().setItem(ItemManager.createProtectScroll(1)).addLore(ChatColor.WHITE + "1500 Portal Shards").setNBTInt("shardTier", 1)
                 .setNBTString("shardColor", ChatColor.WHITE.toString()).setNBTInt("shardCost", 1500).build());
-        inv.setItem(1, new ItemBuilder().setItem(ItemManager.createProtectScroll(2)).addLore(ChatColor.WHITE + "1500 " + ChatColor.GREEN + "Portal Shards").setNBTInt("shardTier", 2)
+        inv.setItem(3, new ItemBuilder().setItem(ItemManager.createProtectScroll(2)).addLore(ChatColor.WHITE + "1500 " + ChatColor.GREEN + "Portal Shards").setNBTInt("shardTier", 2)
                 .setNBTString("shardColor", ChatColor.GREEN.toString()).setNBTInt("shardCost", 1500).build());
-        inv.setItem(2, new ItemBuilder().setItem(ItemManager.createProtectScroll(3)).addLore(ChatColor.WHITE + "1500 " + ChatColor.AQUA + "Portal Shards").setNBTInt("shardTier", 3)
+        inv.setItem(4, new ItemBuilder().setItem(ItemManager.createProtectScroll(3)).addLore(ChatColor.WHITE + "1500 " + ChatColor.AQUA + "Portal Shards").setNBTInt("shardTier", 3)
                 .setNBTString("shardColor", ChatColor.AQUA.toString()).setNBTInt("shardCost", 1500).build());
-        inv.setItem(3, new ItemBuilder().setItem(ItemManager.createProtectScroll(4)).addLore(ChatColor.WHITE + "1500 " + ChatColor.LIGHT_PURPLE + "Portal Shards").setNBTInt("shardTier", 4)
+        inv.setItem(5, new ItemBuilder().setItem(ItemManager.createProtectScroll(4)).addLore(ChatColor.WHITE + "1500 " + ChatColor.LIGHT_PURPLE + "Portal Shards").setNBTInt("shardTier", 4)
                 .setNBTString("shardColor", ChatColor.LIGHT_PURPLE.toString()).setNBTInt("shardCost", 1500).build());
-        inv.setItem(4, new ItemBuilder().setItem(ItemManager.createProtectScroll(5)).addLore(ChatColor.WHITE + "1500 " + ChatColor.YELLOW + "Portal Shards").setNBTInt("shardTier", 5)
+        inv.setItem(6, new ItemBuilder().setItem(ItemManager.createProtectScroll(5)).addLore(ChatColor.WHITE + "1500 " + ChatColor.YELLOW + "Portal Shards").setNBTInt("shardTier", 5)
                 .setNBTString("shardColor", ChatColor.YELLOW.toString()).setNBTInt("shardCost", 1500).build());
 
         player.openInventory(inv);

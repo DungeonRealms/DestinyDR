@@ -44,7 +44,17 @@ public class ProxyChannelListener implements Listener {
             String subChannel = in.readUTF();
 
 
+            if (subChannel.equals("Guilds")) {
 
+                String command = in.readUTF();
+
+
+                switch (command) {
+                    //TODO
+                }
+
+
+            }
 
         } catch (EOFException e) {
             // Do nothing.
