@@ -222,6 +222,14 @@ public class DamageListener implements Listener {
                 }
                 return;
             }
+            if (attacker.hasMetadata("last_Attack")) {
+                if (System.currentTimeMillis() - attacker.getMetadata("last_Attack").get(0).asLong() < 70){
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
+                }
+            }
+            attacker.setMetadata("last_Attack", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
             if (CombatLog.isInCombat(attacker)) {
                 CombatLog.updateCombat(attacker);
             } else {

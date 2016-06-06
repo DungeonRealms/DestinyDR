@@ -133,14 +133,14 @@ public class EnergyHandler implements GenericMechanic {
             float regenAmount = getPlayerEnergyRegenerationAmount(player.getUniqueId());
             if (!(player.hasPotionEffect(PotionEffectType.SLOW_DIGGING))) {
                 if (player.hasMetadata("starving")) {
-                    regenAmount = 0.07F;
+                    regenAmount = 0.06F;
                 }
                 regenAmount = regenAmount / 6.3F;
                 GamePlayer gp = API.getGamePlayer(player);
                 if (gp == null || gp.getStats() == null) return;
                 regenAmount += (int) (regenAmount * gp.getStats().getEnergyRegen());
                 if(Fishing.fishBuffs.containsKey(player.getUniqueId()) && Fishing.fishBuffs.get(player.getUniqueId()).equalsIgnoreCase("Energy Regen")){
-                	regenAmount += .15;
+                	regenAmount += .15F;
                 }
                 addEnergyToPlayerAndUpdate(player, regenAmount);
             }
@@ -187,20 +187,30 @@ public class EnergyHandler implements GenericMechanic {
      * @since 1.0
      */
     public float getPlayerEnergyRegenerationAmount(UUID uuid) {
-        float regenAmount = 0.19F;
+        float regenAmount;
         Player player = Bukkit.getPlayer(uuid);
+        double regenMod = 0;
         for (ItemStack itemStack : player.getEquipment().getArmorContents()) {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
                 continue;
             }
-            regenAmount += (regenAmount / 100F) * (getEnergyValueOfArmor(itemStack) + 1);
+            regenMod += getEnergyValueOfArmor(itemStack);
         }
 
+        regenAmount = ((float) regenMod / 100.0F);
+        regenAmount += 0.10F;
+        double intMod = 0;
         for (ItemStack itemStack : player.getEquipment().getArmorContents()) {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
                 continue;
             }
-            regenAmount = getIntellectValueOfArmor(itemStack, regenAmount);
+            intMod += getIntellectValueOfArmor(itemStack);
+            //regenAmount = getIntellectValueOfArmor(itemStack, regenAmount);
+        }
+
+        //regenAmount += (regenAmount / 100F) * (getEnergyValueOfArmor(itemStack) + 1);
+        if (intMod > 0) {
+            regenAmount += (float) (((intMod * 0.015F) / 100.0F));
         }
 
         return regenAmount;
@@ -237,18 +247,33 @@ public class EnergyHandler implements GenericMechanic {
      * @return int
      * @since 1.0
      */
-    public float getIntellectValueOfArmor(ItemStack itemStack, float regenTotal) {
+    /*public float getIntellectValueOfArmor(ItemStack itemStack, float regenTotal) {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
         if (nmsItem == null || nmsItem.getTag() == null) {
-            return (int) regenTotal;
+            return regenTotal;
         }
         if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor"))) {
-            return (int) regenTotal;
+            return regenTotal;
         }
         if (nmsItem.getTag().getInt("intellect") > 0) {
             regenTotal += regenTotal * ((nmsItem.getTag().getInt("intellect") * 0.015F) / 100.0f);
         }
         return regenTotal;
+    }*/
+
+    public int getIntellectValueOfArmor(ItemStack itemStack) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
+        int intMod = 0;
+        if (nmsItem == null || nmsItem.getTag() == null) {
+            return intMod;
+        }
+        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor"))) {
+            return intMod;
+        }
+        if (nmsItem.getTag().getInt("intellect") > 0) {
+            intMod += nmsItem.getTag().getInt("intellect");
+        }
+        return intMod;
     }
 
 
@@ -322,7 +347,7 @@ public class EnergyHandler implements GenericMechanic {
      */
     private void removePlayerEnergySprint() {
         Bukkit.getOnlinePlayers().stream().filter(Player::isSprinting).forEach(player -> {
-            removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 0.12F);
+            removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 0.15F);
             if (getPlayerCurrentEnergy(player) <= 0 || player.hasMetadata("starving")) {
                 player.setSprinting(false);
                 player.removeMetadata("sprinting", DungeonRealms.getInstance());
@@ -333,7 +358,7 @@ public class EnergyHandler implements GenericMechanic {
                     }
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "**EXHAUSTED**");
                     if (foodLevel > 1) {
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.setFoodLevel(foodLevel), 60L);
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.setFoodLevel(foodLevel), 40L);
                     }
                 }
             }

@@ -3,11 +3,13 @@ package net.dungeonrealms.game.listeners;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.EnergyHandler;
+import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.profession.Mining;
 import net.minecraft.server.v1_8_R3.EntityExperienceOrb;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.ExperienceOrb;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -99,11 +101,21 @@ public class EnergyListener implements Listener {
                 return;
             }
         }
+        if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player) <= 0) {
+            event.setCancelled(true);
+            event.setUseItemInHand(Event.Result.DENY);
+            player.playSound(player.getLocation(), Sound.WOLF_PANT, 12F, 1.5F);
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, player.getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            return;
+        }
         float energyToRemove = EnergyHandler.getWeaponSwingEnergyCost(weapon);
         if (weapon.getType() == Material.BOW) {
             energyToRemove += 0.15F;
         }
-        player.setMetadata("last_Attack", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
         EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), energyToRemove);
     }
 
