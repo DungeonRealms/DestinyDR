@@ -25,16 +25,13 @@ import static com.mongodb.client.model.Filters.eq;
 @SuppressWarnings("unchecked")
 public class GuildDatabase implements GuildDatabaseAPI {
 
-    private static GuildDatabase instance = null;
+    private static GuildDatabaseAPI instance = null;
 
 
-    public static GuildDatabase getInstance() {
-        if (instance == null) {
-            instance = new GuildDatabase();
-        }
+    public static GuildDatabaseAPI getInstance() {
+        if (instance == null) instance = new GuildDatabase();
         return instance;
     }
-
 
     public void createGuild(String guildName, String clanTag, UUID owner, Consumer<Boolean> callback) {
         Database.guilds.insertOne(GuildDatabaseAPI.getDocumentTemplate(owner.toString(), guildName, clanTag));
@@ -94,30 +91,39 @@ public class GuildDatabase implements GuildDatabaseAPI {
     public void promotePlayer(String guildName, UUID uuid) {
         if (getGuildOf(uuid) == null) return;
 
-        List<String> officers = (List<String>) get(guildName, "officers", ArrayList.class);
-        if (!officers.contains(uuid.toString())) {
-
-            //ADD TO OFFICERS
-            update(guildName, "officers", EnumOperators.$PUSH, uuid.toString());
-
-            // REMOVE FROM MEMBERS
-            update(guildName, "members", EnumOperators.$PULL, uuid.toString());
-        }
+        modifyRank(guildName, uuid, true);
     }
 
 
     public void demotePlayer(String guildName, UUID uuid) {
         if (getGuildOf(uuid) == null) return;
 
+        modifyRank(guildName, uuid, false);
+    }
+
+
+    private void modifyRank(String guildName, UUID uuid, boolean promote) {
         List<String> officers = (List<String>) get(guildName, "officers", ArrayList.class);
+
+
         if (!officers.contains(uuid.toString())) {
+            if (promote) {
+                //ADD TO OFFICERS
+                update(guildName, "officers", EnumOperators.$PUSH, uuid.toString());
+                // REMOVE FROM MEMBERS
+                update(guildName, "members", EnumOperators.$PULL, uuid.toString());
+            } else {
+                //REMOVE FROM OFFICERS
+                update(guildName, "officers", EnumOperators.$PULL, uuid.toString());
+                // ADD TO MEMBERS
+                update(guildName, "members", EnumOperators.$PUSH, uuid.toString());
 
-            //REMOVE FROM OFFICERS
-            update(guildName, "officers", EnumOperators.$PULL, uuid.toString());
-
-            // ADD TO MEMBERS
-            update(guildName, "members", EnumOperators.$PUSH, uuid.toString());
+            }
         }
+    }
+
+    public void setMotdOf(String guildName, String motd) {
+        update(guildName, "motd", EnumOperators.$SET, motd);
     }
 
 
@@ -137,11 +143,6 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
 
     public void saveAllGuilds() {
-
-    }
-
-
-    public void setMotdOf(String guildName, String motd) {
 
     }
 
