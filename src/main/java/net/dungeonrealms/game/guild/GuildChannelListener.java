@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.listeners.channel;
+package net.dungeonrealms.game.guild;
 
 import net.dungeonrealms.DungeonRealms;
 import org.bukkit.Bukkit;
@@ -10,18 +10,18 @@ import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
 
-public class BukkitChannelListener implements PluginMessageListener {
+public class GuildChannelListener implements PluginMessageListener {
 
-    private static BukkitChannelListener instance;
+    private static GuildChannelListener instance;
 
-    public static BukkitChannelListener getInstance() {
+    public static GuildChannelListener getInstance() {
         if (instance == null) {
-            instance = new BukkitChannelListener(DungeonRealms.getInstance());
+            instance = new GuildChannelListener(DungeonRealms.getInstance());
         }
         return instance;
     }
 
-    public BukkitChannelListener(DungeonRealms plugin) {
+    public GuildChannelListener(DungeonRealms plugin) {
         Bukkit.getMessenger().registerOutgoingPluginChannel(plugin, "DungeonRealms");
         Bukkit.getMessenger().registerIncomingPluginChannel(plugin, "DungeonRealms", this);
     }
@@ -35,6 +35,20 @@ public class BukkitChannelListener implements PluginMessageListener {
 
         try {
             String subChannel = in.readUTF();
+
+            if (subChannel.equals("Guilds")) {
+
+                String command = in.readUTF();
+
+
+                switch (command) {
+                    //TODO
+                }
+
+
+            }
+
+
 
 
         } catch (EOFException e) {

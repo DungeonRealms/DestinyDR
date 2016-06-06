@@ -57,6 +57,8 @@ public class Chat {
             "cunt", "titty", "anus", "faggot", "gay", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "titanrift", "fucked"));
 
 
+
+
     /**
      * Monitor the players primary language also check for bad words.
      *
@@ -188,5 +190,6 @@ public class Chat {
 
         return returnMessage;
     }
+
 
 }

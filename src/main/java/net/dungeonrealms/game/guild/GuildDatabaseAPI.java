@@ -22,6 +22,8 @@ public interface GuildDatabaseAPI {
                 .append("experience", 0);
     }
 
+
+
     /**
      * @param guildName Guild Name.
      * @param clanTag   Clan Tag.
@@ -32,6 +34,10 @@ public interface GuildDatabaseAPI {
     void createGuild(String guildName, String clanTag, UUID owner, Consumer<Boolean> callback);
 
 
+    /**
+     * @param uuid Player
+     * @return If guild is considered null
+     */
     boolean isGuildNull(UUID uuid);
 
     /**
@@ -84,11 +90,6 @@ public interface GuildDatabaseAPI {
     boolean isOfficer(UUID uuid, String guildName);
 
     /**
-     * Saves all guilds.
-     */
-    void saveAllGuilds();
-
-    /**
      * @param guildName Name of guild.
      * @param motd      the motd
      */
@@ -118,8 +119,6 @@ public interface GuildDatabaseAPI {
      */
     void sendAlert(String guildName, String message);
 
-
-    void saveGuild(String guildName);
 
     /**
      * @param guildName targeted guild.

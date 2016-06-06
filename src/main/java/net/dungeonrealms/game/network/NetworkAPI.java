@@ -88,6 +88,7 @@ public class NetworkAPI implements PluginMessageListener {
      * @param contents Contents of the internal guts.
      * @since 1.0
      */
+
     public void sendNetworkMessage(String channel, String subChannel, String message, String contents) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(subChannel);
