@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.listeners.channel;
+package net.dungeonrealms.game.listeners;
 
 
 import net.dungeonrealms.DungeonRealmsProxy;

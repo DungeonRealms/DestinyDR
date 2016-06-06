@@ -1,6 +1,6 @@
 package net.dungeonrealms;
 
-import net.dungeonrealms.game.listeners.channel.ProxyChannelListener;
+import net.dungeonrealms.game.listeners.ProxyChannelListener;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.Database;
 import net.md_5.bungee.api.plugin.Plugin;

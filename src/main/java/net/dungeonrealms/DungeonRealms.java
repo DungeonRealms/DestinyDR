@@ -329,7 +329,6 @@ public class DungeonRealms extends JavaPlugin {
         ps.onDisable();
         hs.onDisable();
         saveConfig();
-        GuildDatabase.getInstance().saveAllGuilds();
         ShopMechanics.deleteAllShops();
         mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
