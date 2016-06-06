@@ -1,13 +1,14 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
+import net.dungeonrealms.game.miscellaneous.SkullCreator;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRSkeleton;
 import net.dungeonrealms.game.world.items.DamageAPI;
-import net.dungeonrealms.game.mastery.Utils;
 import net.minecraft.server.v1_8_R3.EntityLiving;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 
 /**
  * Created by Chase on Sep 19, 2015
@@ -19,29 +20,16 @@ public class EntityRangedPirate extends DRSkeleton {
         super(world, EnumMonster.RangedPirate, tier, entityType);
         this.entityType = entityType;
         this.tier = tier;
+        this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.PIRATE.getSkull()));
     }
 
     public EntityRangedPirate(World world) {
         super(world);
     }
 
-    private static String getRandomHead() {
-        String[] list = new String[]{"samsamsam1234"};
-        return list[Utils.randInt(0, list.length - 1)];
-    }
 
     @Override
     public void a(EntityLiving entityliving, float f) {
-        /*EntityArrow entityarrow = new EntityArrow(this.world, this, entityliving, 1.6F, 14 - 2 * 4);
-        entityarrow.b(f * 2.0F + this.random.nextGaussian() * 0.25D + 2 * 0.11F);
-        Projectile arrowProjectile = (Projectile) entityarrow.getBukkitEntity();
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
-        NBTTagCompound tag = nmsItem.getTag();
-        MetadataUtils.registerProjectileMetadata(tag, arrowProjectile, tier);
-        this.makeSound("random.bow", 1.0F, 1.0F / (0.8F));
-        this.world.addEntity(entityarrow);*/
-
-
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
         NBTTagCompound tag = nmsItem.getTag();
         DamageAPI.fireArrowFromMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entityliving.getBukkitEntity());

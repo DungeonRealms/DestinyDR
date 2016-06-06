@@ -1,14 +1,5 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
-import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.metadata.FixedMetadataValue;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
@@ -19,6 +10,13 @@ import net.dungeonrealms.game.world.entities.types.monsters.Monster;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
+import net.minecraft.server.v1_8_R3.*;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * Created by Chase on Sep 19, 2015
@@ -34,11 +32,6 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
      */
     protected DRSkeleton(World world, EnumMonster monster, int tier, EnumEntityType entityType) {
         super(world);
-//        this.goalSelector.a(1, new PathfinderGoalFloat(this));
-//        this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
-//        this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-//        this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
-//        this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(18d);
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
         this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
@@ -47,13 +40,14 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
         this.mobHead = monster.mobHead;
         this.entityType = entityType;
         setArmor(tier);
-        if(this.getEquipment(0) != null && this.getEquipment(0).hasTag())
-        if(this.getEquipment(0).getTag().hasKey("itemType") && this.getEquipment(0).getTag().getInt("itemType") == 3){
-            this.goalSelector.a(1, new PathfinderGoalFloat(this));
-            this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
-            this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-            this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
-            this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+        if (this.getEquipment(0) != null && this.getEquipment(0).hasTag()) {
+            if (this.getEquipment(0).getTag().hasKey("itemType") && this.getEquipment(0).getTag().getInt("itemType") == 3) {
+                this.goalSelector.a(1, new PathfinderGoalFloat(this));
+                this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
+                this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+                this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
+                this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+            }
         }
         this.getBukkitEntity().setCustomNameVisible(true);
         String customName = monster.getPrefix() + " " + name + " " + monster.getSuffix() + " ";
@@ -90,20 +84,19 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster{
         this.setEquipment(1, CraftItemStack.asNMSCopy(armor0));
         this.setEquipment(2, CraftItemStack.asNMSCopy(armor1));
         this.setEquipment(3, CraftItemStack.asNMSCopy(armor2));
-        this.setEquipment(4, this.getHead());
     }
 
     protected String getCustomEntityName() {
         return this.name;
     }
 
-    protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
+    /*protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
         ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
         SkullMeta meta = (SkullMeta) head.getItemMeta();
         meta.setOwner(mobHead);
         head.setItemMeta(meta);
         return CraftItemStack.asNMSCopy(head);
-    }
+    }*/
 
     private ItemStack getTierWeapon(int tier) {
         ItemStack item = new ItemGenerator().setType(ItemType.getRandomWeapon()).setRarity(API.getItemRarity())

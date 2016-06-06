@@ -1,8 +1,10 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
+import net.dungeonrealms.game.miscellaneous.SkullCreator;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRZombie;
 import net.minecraft.server.v1_8_R3.World;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 
 /**
  * Created by Chase on Oct 2, 2015
@@ -19,6 +21,31 @@ public class BasicMeleeMonster extends DRZombie {
 	
     public BasicMeleeMonster(World world, EnumMonster type, int tier) {
         super(world, type, tier, EnumEntityType.HOSTILE_MOB, true);
+        switch (type) {
+            case Troll:
+            case Troll1:
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.TROLL.getSkull()));
+                break;
+            case Goblin:
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.GOBLIN.getSkull()));
+                break;
+            case Naga:
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.NAGA.getSkull()));
+                break;
+            case Lizardman:
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.LIZARD.getSkull()));
+                break;
+            case Zombie:
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.ZOMBIE.getSkull()));
+                break;
+            case Monk:
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.MONK.getSkull()));
+                break;
+            case Tripoli:
+            case Tripoli1:
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.TRIPOLI_SOLDIER.getSkull()));
+                break;
+        }
     }
 
     public BasicMeleeMonster(World world) {

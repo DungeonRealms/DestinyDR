@@ -20,7 +20,6 @@ import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.ArmorStand;
@@ -29,7 +28,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.Random;
@@ -76,7 +74,7 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 		this.setEquipment(1, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("mayelboot")));
 		this.setEquipment(2, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("mayelpants")));
 		this.setEquipment(3, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("mayelchest")));
-		this.setEquipment(4, getHead());
+		//this.setEquipment(4, getHead());
 	}
 
 	/**
@@ -105,7 +103,7 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 		DamageAPI.fireArrowFromMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entityliving.getBukkitEntity());
 	}
 
-	@Override
+	/*@Override
 	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
 	    int bandit_type = new Random().nextInt(2) + 1;
         String skin_name = "";
@@ -124,7 +122,7 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 		meta.setOwner(skin_name);
 		head.setItemMeta(meta);
 		return CraftItemStack.asNMSCopy(head);
-	}
+	}*/
 
 	@Override
 	public void onBossDeath() {

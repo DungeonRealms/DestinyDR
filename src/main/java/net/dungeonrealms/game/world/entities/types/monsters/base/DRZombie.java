@@ -15,11 +15,9 @@ import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -71,13 +69,13 @@ public abstract class DRZombie extends EntityZombie implements Monster{
         return this.name;
     }
 
-    protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
+    /*protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
         ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
         SkullMeta meta = (SkullMeta) head.getItemMeta();
         meta.setOwner(mobHead);
         head.setItemMeta(meta);
         return CraftItemStack.asNMSCopy(head);
-    }
+    }*/
 
     public void setArmor(int tier) {
         ItemStack[] armor = API.getTierArmor(tier);
@@ -92,7 +90,7 @@ public abstract class DRZombie extends EntityZombie implements Monster{
         this.setEquipment(1, CraftItemStack.asNMSCopy(armor0));
         this.setEquipment(2, CraftItemStack.asNMSCopy(armor1));
         this.setEquipment(3, CraftItemStack.asNMSCopy(armor2));
-        this.setEquipment(4, this.getHead());
+        //this.setEquipment(4, this.getHead());
     }
 
     private ItemStack getTierWeapon(int tier) {

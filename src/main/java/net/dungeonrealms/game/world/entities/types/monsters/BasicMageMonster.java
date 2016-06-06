@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
+import net.dungeonrealms.game.miscellaneous.SkullCreator;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 
@@ -36,14 +37,21 @@ public class BasicMageMonster extends DRSkeleton {
 
     public BasicMageMonster(World world, EnumMonster mons, int tier) {
         super(world, mons, tier, EnumEntityType.HOSTILE_MOB);
-      this.goalSelector.a(1, new PathfinderGoalFloat(this));
-      this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
-      this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-      this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
-      this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
-      this.tier = tier;
-        this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().setType(ItemType.STAFF)
-                .setTier(ItemTier.getByTier(tier)).setRarity(API.getItemRarity()).generateItem().getItem()));
+        this.goalSelector.a(1, new PathfinderGoalFloat(this));
+        this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
+        this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
+        this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
+        this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+        this.tier = tier;
+        this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().setType(ItemType.STAFF).setTier(ItemTier.getByTier(tier)).setRarity(API.getItemRarity()).generateItem().getItem()));
+        switch (mons) {
+            case Naga:
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.NAGA.getSkull()));
+                break;
+            case Mage:
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.MAGE.getSkull()));
+                break;
+        }
     }
 
     public BasicMageMonster(World world) {

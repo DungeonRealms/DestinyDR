@@ -404,6 +404,7 @@ public class BlockListener implements Listener {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         Block blockLook = e.getPlayer().getTargetBlock((Set<Material>) null, 7);
                         if (blockLook.getType() == Material.CHEST) {
+                            e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.CHEST_OPEN, 1f, 1f);
                             e.getPlayer().openInventory(loot.inv);
                         }
                     }, 10);
@@ -411,17 +412,20 @@ public class BlockListener implements Listener {
                 case LEFT_CLICK_BLOCK:
                     e.setCancelled(true);
                     for (ItemStack stack : loot.inv.getContents()) {
-                        if (stack == null)
+                        if (stack == null) {
                             continue;
+                        }
                         loot.inv.remove(stack);
-                        if (stack.getType() != Material.AIR)
+                        if (stack.getType() != Material.AIR) {
                             e.getPlayer().getWorld().dropItemNaturally(loot.location, stack);
+                        }
                     }
                     loot.update();
                     break;
             }
         } else {
-            e.getPlayer().sendMessage(ChatColor.RED + "You can't open this while monsters are around!");
+            e.getPlayer().sendMessage(ChatColor.RED + "It is " + org.bukkit.ChatColor.BOLD + "NOT" + org.bukkit.ChatColor.RESET + org.bukkit.ChatColor.RED + " safe to open that right now");
+            e.getPlayer().sendMessage(ChatColor.GRAY + "Eliminate the monsters in the area first.");
             e.setCancelled(true);
         }
     }

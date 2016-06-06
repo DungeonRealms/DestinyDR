@@ -1,7 +1,9 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
+import net.dungeonrealms.game.miscellaneous.SkullCreator;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.ChatColor;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import net.dungeonrealms.DungeonRealms;
@@ -24,6 +26,7 @@ public class EntityBandit extends DRZombie {
      */
     public EntityBandit(World world, int tier, EnumEntityType entityType) {
         super(world, EnumMonster.Bandit, tier, entityType, true);
+        this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.BANDIT.getSkull()));
         checkSpecial();
     }
 
@@ -46,14 +49,6 @@ public class EntityBandit extends DRZombie {
 
         	}
         }
-    }
-
-    /**
-     * @return
-     */
-    private static String getRandomHead() {
-        String[] list = new String[]{"Spy", "Demoman"};
-        return list[Utils.randInt(0, list.length - 1)];
     }
     
 	@Override

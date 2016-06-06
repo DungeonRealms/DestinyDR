@@ -177,7 +177,7 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new EntityGolem(world, tier, type);
                 break;
             case Naga:
-            	if(new Random().nextBoolean())
+            	if (new Random().nextBoolean())
             		entity = new BasicMageMonster(world, EnumMonster.Naga, tier);
             	else
             		entity = new BasicMeleeMonster(world, EnumMonster.Naga, tier);
