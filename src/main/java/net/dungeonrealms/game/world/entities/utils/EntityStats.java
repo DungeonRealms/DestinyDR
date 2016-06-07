@@ -22,6 +22,8 @@ import net.minecraft.server.v1_8_R3.Entity;
  */
 public class EntityStats {
 
+    public static Random random = new Random();
+
     public static class Stats {
         public int def;
         public int hp;
@@ -40,7 +42,6 @@ public class EntityStats {
             int lvlatk;
             int lvlhp;
             int lvlspd;
-            Random random = new Random();
             switch (tier) {
                 case 1:
                     lvldef = (lvl + 5) + (random.nextInt(5) - 3);
@@ -120,8 +121,38 @@ public class EntityStats {
     public static void setMonsterRandomStats(Entity entity, int lvl, int tier) {
         Stats stat = Stats.getRandomStats(lvl, tier);
 //        entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), stat.hp));
-        entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
-        HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) entity.getBukkitEntity()));
+        int maxHp = HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity());
+        switch (tier) {
+            case 1:
+                if (maxHp > 50) {
+                    maxHp = 25 + (random.nextInt(25) - 10);
+                }
+                break;
+            case 2:
+                if (maxHp > 300) {
+                    maxHp -= 100;
+                }
+                break;
+            case 3:
+                if (maxHp > 1000) {
+                    maxHp -= 200;
+                }
+                break;
+            case 4:
+                if (maxHp > 1600) {
+                    maxHp -= 350;
+                }
+                break;
+            case 5:
+                if (maxHp > 2500) {
+                    maxHp -= 500;
+                }
+                break;
+            default:
+                break;
+        }
+        entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHp));
+        HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), maxHp);
 //        entity.getBukkitEntity().setMetadata("def", new FixedMetadataValue(DungeonRealms.getInstance(), stat.def));
         entity.getBukkitEntity().setMetadata("attack", new FixedMetadataValue(DungeonRealms.getInstance(), stat.atk));
 //        entity.getBukkitEntity().setMetadata("spd", new FixedMetadataValue(DungeonRealms.getInstance(), stat.spd));

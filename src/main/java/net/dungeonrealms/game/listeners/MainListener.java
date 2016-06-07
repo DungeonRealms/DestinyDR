@@ -319,6 +319,12 @@ public class MainListener implements Listener {
         if (DatabaseAPI.getInstance().PLAYER_TIME.containsKey(event.getPlayer().getUniqueId()) && DatabaseAPI.getInstance().PLAYER_TIME.get(event.getPlayer().getUniqueId()) > 5) {
             DatabaseAPI.getInstance().PLAYER_TIME.remove(event.getPlayer().getUniqueId());
             Player player = event.getPlayer();
+            // Player leaves while in duel
+            if (DuelingMechanics.isDueling(player.getUniqueId())) {
+                DuelingMechanics.getOffer(player.getUniqueId()).handleLogOut(player);
+            }
+            API.handleLogout(player.getUniqueId());
+
             if (EntityAPI.hasPetOut(player.getUniqueId())) {
                 net.minecraft.server.v1_8_R3.Entity playerPet = EntityAPI.getPlayerPet(player.getUniqueId());
                 if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(playerPet)) {
@@ -344,12 +350,6 @@ public class MainListener implements Listener {
                 }
                 EntityAPI.removePlayerMountList(player.getUniqueId());
             }
-
-            // Player leaves while in duel
-            if (DuelingMechanics.isDueling(player.getUniqueId())) {
-                DuelingMechanics.getOffer(player.getUniqueId()).handleLogOut(player);
-            }
-            API.handleLogout(player.getUniqueId());
         }
     }
 

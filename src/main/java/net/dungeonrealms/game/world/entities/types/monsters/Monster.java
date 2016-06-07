@@ -28,136 +28,136 @@ import java.util.Random;
  */
 public interface Monster {
 
-	void onMonsterAttack(Player p);
+    void onMonsterAttack(Player p);
 
-	void onMonsterDeath(Player killer);
+    void onMonsterDeath(Player killer);
 
-	EnumMonster getEnum();
+    EnumMonster getEnum();
 
-	default void checkItemDrop(int tier, EnumMonster monster, Entity ent, Player killer) {
-		int killerGemFind = DamageAPI.calculatePlayerStat(killer, Item.ArmorAttributeType.GEM_FIND);
-		int killerItemFind = DamageAPI.calculatePlayerStat(killer, Item.ArmorAttributeType.ITEM_FIND);
-		Location loc = ent.getLocation();
-		World world = ((CraftWorld) loc.getWorld()).getHandle();
-		int gemRoll = new Random().nextInt(99);
-		if (gemRoll <= (20 + (20 * killerGemFind / 100))) {
-			if (gemRoll > 20) {
-				if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId()).toString())) {
-					killer.sendMessage(ChatColor.GREEN + "Your " + killerGemFind + "% Gem Find has resulted in a drop.");
-				}
-			}
-			double gem_drop_amount = 0;
-			double drop_multiplier = 1;
-			boolean is_elite = false;
-			// Elite = 1.5x money chance / item chance.
-			if (ent.hasMetadata("elite")) {
-				is_elite = true;
-			}
+    default void checkItemDrop(int tier, EnumMonster monster, Entity ent, Player killer) {
+        int killerGemFind = DamageAPI.calculatePlayerStat(killer, Item.ArmorAttributeType.GEM_FIND);
+        int killerItemFind = DamageAPI.calculatePlayerStat(killer, Item.ArmorAttributeType.ITEM_FIND);
+        Location loc = ent.getLocation();
+        World world = ((CraftWorld) loc.getWorld()).getHandle();
+        int gemRoll = new Random().nextInt(99);
+        if (gemRoll <= (20 + (20 * killerGemFind / 100))) {
+            if (gemRoll > 20) {
+                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId()).toString())) {
+                    killer.sendMessage(ChatColor.GREEN + "Your " + killerGemFind + "% Gem Find has resulted in a drop.");
+                }
+            }
+            double gem_drop_amount = 0;
+            double drop_multiplier = 1;
+            boolean is_elite = false;
+            // Elite = 1.5x money chance / item chance.
+            if (ent.hasMetadata("elite")) {
+                is_elite = true;
+            }
 
-			if (is_elite) {
-				drop_multiplier = 1.5;
-			}
-			double gold_drop_multiplier = 1;
+            if (is_elite) {
+                drop_multiplier = 1.5;
+            }
+            double gold_drop_multiplier = 1;
 
-			switch (tier) {
-			case 1:
-				gem_drop_amount = (new Random().nextInt(8 - 1) + 1) * gold_drop_multiplier;
-				break;
-			case 2:
-				gem_drop_amount = (new Random().nextInt(18 - 2) + 2) * gold_drop_multiplier;
-				break;
-			case 3:
-				gem_drop_amount = (new Random().nextInt(34 - 10) + 10) * gold_drop_multiplier;
-				break;
-			case 4:
-				gem_drop_amount = (new Random().nextInt(64 - 20) + 20) * gold_drop_multiplier;
-				break;
-			case 5:
-				gem_drop_amount = (new Random().nextInt(175 - 75) + 75) * gold_drop_multiplier;
-				break;
-			}
+            switch (tier) {
+                case 1:
+                    gem_drop_amount = (new Random().nextInt(8 - 1) + 1) * gold_drop_multiplier;
+                    break;
+                case 2:
+                    gem_drop_amount = (new Random().nextInt(18 - 2) + 2) * gold_drop_multiplier;
+                    break;
+                case 3:
+                    gem_drop_amount = (new Random().nextInt(34 - 10) + 10) * gold_drop_multiplier;
+                    break;
+                case 4:
+                    gem_drop_amount = (new Random().nextInt(64 - 20) + 20) * gold_drop_multiplier;
+                    break;
+                case 5:
+                    gem_drop_amount = (new Random().nextInt(175 - 75) + 75) * gold_drop_multiplier;
+                    break;
+            }
 
-			ItemStack item = BankMechanics.gem.clone();
-			item.setAmount((int) (gem_drop_amount * drop_multiplier));
-			world.getWorld().dropItemNaturally(loc.add(0, 1, 0), item);
-			return;
-		}
+            ItemStack item = BankMechanics.gem.clone();
+            item.setAmount((int) (gem_drop_amount * drop_multiplier));
+            world.getWorld().dropItemNaturally(loc.add(0, 1, 0), item);
+            return;
+        }
 
-		if (((LivingEntity) ent).getEquipment().getItemInHand().getType() == Material.BOW) {
-			int arrowRoll = new Random().nextInt(99);
-			if (arrowRoll <= (25 + (25 * killerItemFind / 100))) {
-				if (arrowRoll > 25) {
-					if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId()).toString())) {
-						killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
-					}
-				}
-				ItemStack item = new ItemStack(Material.ARROW);
-				int amount = (tier * 2);
-				item.setAmount(amount);
-				world.getWorld().dropItemNaturally(loc.add(0, 1, 0), item);
-			}
-		}
+        if (((LivingEntity) ent).getEquipment().getItemInHand().getType() == Material.BOW) {
+            int arrowRoll = new Random().nextInt(99);
+            if (arrowRoll <= (25 + (25 * killerItemFind / 100))) {
+                if (arrowRoll > 25) {
+                    if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId()).toString())) {
+                        killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
+                    }
+                }
+                ItemStack item = new ItemStack(Material.ARROW);
+                int amount = (tier * 2);
+                item.setAmount(amount);
+                world.getWorld().dropItemNaturally(loc.add(0, 1, 0), item);
+            }
+        }
 
-		int chance = 0;
-		switch (tier) {
-		case 1:
-			chance = 100;
-			break;
-		case 2:
-			chance = 60;
-			break;
-		case 3:
-			chance = 30;
-			break;
-		case 4:
-			chance = 15;
-			break;
-		case 5:
-			chance = 6;
-			break;
-		}
-		int armorRoll = new Random().nextInt(1000);
-		if (armorRoll <= chance + (chance * killerItemFind / 100)) {
-			if (armorRoll > chance) {
-				if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId()).toString())) {
-					killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
-				}
-			}
-			ItemStack[] loot;
-			ItemStack[] armor = ((LivingEntity) ent).getEquipment().getArmorContents();
-			ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
-			if (ent.hasMetadata("elite"))
-			    armor[3] = new ItemGenerator().setType(ItemType.HELMET).setTier(ItemTier.getById(tier)).setRarity(Item.ItemRarity.UNIQUE).getItem();
-			else
-	            armor[3] = new ItemGenerator().setType(ItemType.HELMET).setTier(ItemTier.getById(tier)).setRarity(API.getItemRarity()).getItem();
+        int chance = 0;
+        switch (tier) {
+            case 1:
+                chance = 100;
+                break;
+            case 2:
+                chance = 60;
+                break;
+            case 3:
+                chance = 30;
+                break;
+            case 4:
+                chance = 15;
+                break;
+            case 5:
+                chance = 6;
+                break;
+        }
+        int armorRoll = new Random().nextInt(1000);
+        if (armorRoll <= chance + (chance * killerItemFind / 100)) {
+            if (armorRoll > chance) {
+                if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId()).toString())) {
+                    killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
+                }
+            }
+            ItemStack[] loot;
+            ItemStack[] armor = ((LivingEntity) ent).getEquipment().getArmorContents();
+            ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
+            if (ent.hasMetadata("elite"))
+                armor[3] = new ItemGenerator().setType(ItemType.HELMET).setTier(ItemTier.getById(tier)).setRarity(Item.ItemRarity.UNIQUE).getItem();
+            else
+                armor[3] = new ItemGenerator().setType(ItemType.HELMET).setTier(ItemTier.getById(tier)).setRarity(API.getItemRarity()).getItem();
 
-			loot = new ItemStack[] { armor[0], armor[1], armor[2], armor[3], weapon };
-			ItemStack armorToDrop;
-			switch (new Random().nextInt(6)) {
-			case 0:
-				armorToDrop = loot[0];
-				break;
-			case 1:
-				armorToDrop = loot[1];
-				break;
-			case 2:
-				armorToDrop = loot[2];
-				break;
-			case 3:
-				armorToDrop = loot[3];
-				break;
-			case 4:
-				armorToDrop = loot[4];
-				break;
-			case 5:
-				armorToDrop = loot[4];
-				break;
-			default:
-				armorToDrop = loot[1];
-				break;
-			}
-			RepairAPI.setCustomItemDurability(armorToDrop, RandomHelper.getRandomNumberBetween(200, 1000));
-			world.getWorld().dropItemNaturally(loc.add(0, 1, 0), armorToDrop);
-		}
-	}
+            loot = new ItemStack[]{armor[0], armor[1], armor[2], armor[3], weapon};
+            ItemStack armorToDrop;
+            switch (new Random().nextInt(6)) {
+                case 0:
+                    armorToDrop = loot[0];
+                    break;
+                case 1:
+                    armorToDrop = loot[1];
+                    break;
+                case 2:
+                    armorToDrop = loot[2];
+                    break;
+                case 3:
+                    armorToDrop = loot[3];
+                    break;
+                case 4:
+                    armorToDrop = loot[4];
+                    break;
+                case 5:
+                    armorToDrop = loot[4];
+                    break;
+                default:
+                    armorToDrop = loot[1];
+                    break;
+            }
+            RepairAPI.setCustomItemDurability(armorToDrop, RandomHelper.getRandomNumberBetween(200, 1000));
+            world.getWorld().dropItemNaturally(loc.add(0, 1, 0), armorToDrop);
+        }
+    }
 }

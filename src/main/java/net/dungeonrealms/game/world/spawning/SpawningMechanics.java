@@ -123,10 +123,11 @@ public class SpawningMechanics implements GenericMechanic {
         if (spawnDelay < 20) {
             spawnDelay = 20;
         }
-        if(spawnRange.equalsIgnoreCase("+"))
-         spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "high", spawnDelay);
-        else
-         spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low", spawnDelay);
+        if (spawnRange.equalsIgnoreCase("+")) {
+            spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "high", spawnDelay);
+        } else {
+            spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low", spawnDelay);
+        }
         ALLSPAWNERS.add(spawner);
         spawner.init();
     }
@@ -221,6 +222,9 @@ public class SpawningMechanics implements GenericMechanic {
             case Zombie:
             	entity = new BasicMeleeMonster(world, EnumMonster.Zombie, tier);
             	break;
+            case Wolf:
+                entity = new DRWolf(world, EnumMonster.Wolf, tier);
+                break;
             default:
                 Utils.log.info("[SPAWNING] Tried to create " + monsEnum.idName + " but it has failed.");
                 return null;

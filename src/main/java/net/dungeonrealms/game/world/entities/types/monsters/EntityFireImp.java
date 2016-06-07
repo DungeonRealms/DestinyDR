@@ -51,6 +51,7 @@ public class EntityFireImp extends DRSkeleton {
         this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
         this.tier = tier;
         this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.IMP.getSkull()));
+        setArmor(tier);
     }
 
     @Override

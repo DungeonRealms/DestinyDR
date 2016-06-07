@@ -21,7 +21,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 /**
  * Created by Chase on Sep 19, 2015
  */
-public abstract class DRSkeleton extends EntitySkeleton implements Monster{
+public abstract class DRSkeleton extends EntitySkeleton implements Monster {
     private String name;
     private String mobHead;
     protected EnumEntityType entityType;

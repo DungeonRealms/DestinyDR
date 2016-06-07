@@ -776,7 +776,14 @@ public class DamageListener implements Listener {
             event.setDamage(0);
             event.getEntity().setFireTicks(0);
         }
-        if (event.getCause() == DamageCause.LAVA || event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FIRE_TICK) {
+        if (event.getCause() == DamageCause.LAVA) {
+            if (event.getEntity() instanceof Player) {
+                event.setDamage(0);
+                event.setCancelled(true);
+                event.getEntity().setFireTicks(0);
+            }
+        }
+        if (event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FIRE_TICK) {
             if (event.getEntity() instanceof Player) {
                 event.setDamage(0);
                 event.setCancelled(true);
@@ -791,9 +798,6 @@ public class DamageListener implements Listener {
         if(!(event.getEntity() instanceof Player) && event.getCause() == DamageCause.FALL){
             event.setDamage(0);
         	event.setCancelled(true);
-        }
-        if((event.getEntity() instanceof Player) && event.getCause() == DamageCause.CONTACT){
-        	event.setDamage(1);
         }
     }
 
@@ -1157,7 +1161,8 @@ public class DamageListener implements Listener {
             }
         } else if (event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
             if (event.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION || event.getCause() == EntityDamageEvent.DamageCause.DROWNING
-                    || event.getCause() == EntityDamageEvent.DamageCause.LAVA || event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+                    || event.getCause() == EntityDamageEvent.DamageCause.LAVA || event.getCause() == EntityDamageEvent.DamageCause.FALL
+                    || event.getCause() == DamageCause.FIRE_TICK || event.getCause() == DamageCause.FIRE) {
                 if (event.getEntity().hasMetadata("last_environment_damage")) {
                     if (System.currentTimeMillis() - event.getEntity().getMetadata("last_environment_damage").get(0).asLong() < 500) {
                         event.setCancelled(true);
