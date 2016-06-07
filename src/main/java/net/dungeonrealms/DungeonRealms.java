@@ -3,6 +3,8 @@ package net.dungeonrealms;
 import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.game.commands.*;
 import net.dungeonrealms.game.commands.generic.CommandManager;
+import net.dungeonrealms.game.commands.guild.CommandGInfo;
+import net.dungeonrealms.game.commands.guild.CommandGQuit;
 import net.dungeonrealms.game.commands.menualias.CommandMount;
 import net.dungeonrealms.game.commands.menualias.CommandPet;
 import net.dungeonrealms.game.commands.menualias.CommandProfile;
@@ -52,6 +54,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.Collections;
 
 public class DungeonRealms extends JavaPlugin {
@@ -249,7 +252,11 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandTell("tell", "/<command> [args]", "tell a player something."));
             cm.registerCommand(new CommandTell("isay", "/<command> [args]", "Prints message to players in dungeon world from command block."));
         } else {
-            // cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menu!"));
+
+            //GUILD STUFF
+            cm.registerCommand(new CommandGInfo("ginfo", "/<command>", "Guild info command."));
+            cm.registerCommand(new CommandGQuit("gquit", "/<command>", "Guild quit command.", Arrays.asList("gleave", "gdisband")));
+
             cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "Spawns a mob? idk chase"));
             cm.registerCommand(new CommandAdd("ad", "/<command> [args]", "Adds shit"));
             cm.registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
