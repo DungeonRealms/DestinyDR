@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
  */
 public final class GameChat {
 
-    public static final String GLOBAL = ChatColor.GRAY + "<" + ChatColor.AQUA.toString() + ChatColor.BOLD + "G" + ChatColor.GRAY + ">" + ChatColor.RESET + " ";
+    public static final String GLOBAL = ChatColor.AQUA + "<" + ChatColor.AQUA.toString() + ChatColor.BOLD + "G" + ChatColor.AQUA + ">" + ChatColor.RESET;
 
 
     public static final String SUB = ChatColor.GREEN.toString() + ChatColor.BOLD + "S" + ChatColor.RESET + " ";
@@ -34,28 +34,35 @@ public final class GameChat {
     public static String getPreMessage(Player player) {
 
         StringBuilder message = new StringBuilder();
-
-        if (!GuildDatabase.getAPI().isGuildNull(player.getUniqueId())) {
-            String clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
-            message.append(ChatColor.GRAY + "<").append(ChatColor.DARK_AQUA.toString()).append(ChatColor.BOLD).append(clanTag).append(ChatColor.GRAY).append(">").append(ChatColor.RESET).append(" ");
-        }
-
         Rank.RankBlob r = Rank.getInstance().getRank(player.getUniqueId());
 
-        if (r != null && !r.getName().toLowerCase().contains("default")) {
+
+        String clanTag = "";
+        if (!GuildDatabase.getAPI().isGuildNull(player.getUniqueId())) {
+            clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
+        }
+
+        if (r == null) {
             boolean gChat = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
             if (gChat) {
-                message.append(GLOBAL).append(getRankPrefix(r.getName())).append(getName(player, r.getName().toLowerCase()));
+                message.append(GLOBAL).append(org.bukkit.ChatColor.translateAlternateColorCodes('&', org.bukkit.ChatColor.WHITE + "[" + clanTag + org.bukkit.ChatColor.RESET + "] ")).append(getName(player, "default"));
             } else {
-                message.append(getRankPrefix(r.getName())).append(getName(player, r.getName().toLowerCase()));
+                message.append(org.bukkit.ChatColor.translateAlternateColorCodes('&', org.bukkit.ChatColor.WHITE + "[" + clanTag + org.bukkit.ChatColor.RESET + "] ")).append(getName(player, "default"));
+            }
+        } else if (!r.getName().toLowerCase().contains("default")) {
+            boolean gChat = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
+            if (gChat) {
+                message.append(GLOBAL).append(getRankPrefix(r.getName())).append(org.bukkit.ChatColor.translateAlternateColorCodes('&', org.bukkit.ChatColor.WHITE + "[" + clanTag + org.bukkit.ChatColor.RESET + "] ")).append(getName(player, r.getName().toLowerCase()));
+            } else {
+                message.append(getRankPrefix(r.getName())).append(org.bukkit.ChatColor.translateAlternateColorCodes('&', org.bukkit.ChatColor.WHITE + "[" + clanTag + org.bukkit.ChatColor.RESET + "] ")).append(getName(player, r.getName().toLowerCase()));
             }
         } else {
             //Player is default.
             boolean gChat = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
             if (gChat) {
-                message.append(GLOBAL).append(getName(player, r.getName().toLowerCase()));
+                message.append(GLOBAL).append(org.bukkit.ChatColor.translateAlternateColorCodes('&', org.bukkit.ChatColor.WHITE + "[" + clanTag + org.bukkit.ChatColor.RESET + "] ")).append(getName(player, r.getName().toLowerCase()));
             } else {
-                message.append(getName(player, r.getName().toLowerCase()));
+                message.append(org.bukkit.ChatColor.translateAlternateColorCodes('&', org.bukkit.ChatColor.WHITE + "[" + clanTag + org.bukkit.ChatColor.RESET + "] ")).append(getName(player, r.getName().toLowerCase()));
             }
         }
 
@@ -66,23 +73,22 @@ public final class GameChat {
     public static String getName(Player player, String rank) {
         switch (rank.toLowerCase()) {
             case "default":
-                return ChatColor.GRAY + player.getName() + ChatColor.GRAY + ":" + ChatColor.RESET + " ";
+                return ChatColor.GRAY + player.getName() + ":" + ChatColor.WHITE + " ";
             case "sub":
-                return ChatColor.WHITE + player.getName() + ChatColor.GRAY + ":" + ChatColor.RESET + " ";
+                return ChatColor.GRAY + player.getName() + ":" + ChatColor.WHITE + " ";
             case "sub+":
-                return ChatColor.WHITE + player.getName() + ChatColor.GRAY + ":" + ChatColor.RESET + " ";
+                return ChatColor.GRAY + player.getName() + ":" + ChatColor.WHITE + " ";
             case "dev":
-                return ChatColor.DARK_AQUA + player.getName() + ":" + ChatColor.RESET + " ";
+                return ChatColor.AQUA + player.getName() + ":" + ChatColor.WHITE + " ";
             case "gm":
-                return ChatColor.AQUA + player.getName() + ":" + ChatColor.RESET + " ";
+                return ChatColor.AQUA + player.getName() + ":" + ChatColor.WHITE + " ";
             case "support":
-                return ChatColor.BLUE + player.getName() + ChatColor.GRAY + ":" + ChatColor.RESET + " ";
+                return ChatColor.BLUE + player.getName() + ":" + ChatColor.WHITE + " ";
             case "youtube":
-                return ChatColor.RED + player.getName() + ChatColor.GRAY + ":" + ChatColor.RESET + " ";
+                return ChatColor.RED + player.getName() + ":" + ChatColor.WHITE + " ";
             case "pmod":
-                return ChatColor.WHITE + player.getName() + ChatColor.GRAY + ":" + ChatColor.RESET + " ";
+                return ChatColor.WHITE + player.getName() + ":" + ChatColor.WHITE + " ";
         }
-        System.out.println(rank);
         return "NULL";
     }
 

@@ -35,12 +35,12 @@ public class CommandRank extends BasicCommand {
                     Utils.log.warning("Unable to rank: " + args[1] + " due to them not being online!");
                 }
             } else if (args[0].equals("create")) {
-                if (args[1] == null || args[2] == null || args[3] == null) return false;
-                boolean didCreate = Rank.getInstance().createNewRank(args[1], args[2], args[3]);
+                if (args[1] == null) return false;
+                boolean didCreate = Rank.getInstance().createNewRank(args[1]);
                 if (didCreate) {
                     s.sendMessage(ChatColor.GREEN + "[RANK] " + ChatColor.YELLOW + "Created a new rank " + args[1]);
                 } else {
-                    s.sendMessage(ChatColor.RED + "[RANK] " + ChatColor.YELLOW + "That rank already exist!?");
+                    s.sendMessage(ChatColor.RED + "[RANK] " + ChatColor.YELLOW + "That rank already exists!?");
                 }
             } else if (args[0].equalsIgnoreCase("addpermission") || args[0].equalsIgnoreCase("addp")) {
                 if (args[1] == null || args[2] == null) return false;

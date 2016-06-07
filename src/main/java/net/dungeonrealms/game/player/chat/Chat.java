@@ -1,8 +1,10 @@
 package net.dungeonrealms.game.player.chat;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.mongo.achievements.Achievements;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -81,11 +83,9 @@ public class Chat {
 
         if (fixedMessage.startsWith("@") && !fixedMessage.contains("@i@")) {
             String playerName = fixedMessage.replace("@", "").split(" ")[0];
-            /*if( playerName.equalsIgnoreCase("Kayaba")){
-            	Achievements.getInstance().giveAchievement(uuid, EnumAchievements.PM_KAYABA);
-                event.setCancelled(true);
-            	return;
-            }*/
+            if (DungeonRealms.getInstance().getDEVS().contains(playerName)) {
+                Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.PM_DEV);
+            }
             fixedMessage = fixedMessage.replace("@" + playerName, "");
             String tempFixedMessage = fixedMessage.replace("@" + playerName, "");
             Bukkit.getOnlinePlayers().stream().filter(player -> player.getName().equalsIgnoreCase(playerName)).limit(1).forEach(theTargetPlayer -> {
@@ -155,6 +155,7 @@ public class Chat {
                 API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
             } else {
                 event.setCancelled(true);
+                event.getPlayer().sendMessage(GameChat.getPreMessage(event.getPlayer()) + fixedMessage);
                 event.getPlayer().sendMessage(ChatColor.GRAY + "No one heard you...");
             }
 

@@ -10,6 +10,7 @@ import net.dungeonrealms.game.mongo.Database;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.player.chat.GameChat;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -43,10 +44,8 @@ public class Rank implements GenericMechanic {
         Object info = document.get("rank");
         String name = ((Document) info).getString("name");
         long created = ((Document) info).getLong("created");
-        String prefix = ((Document) info).getString("prefix");
-        String suffix = ((Document) info).getString("suffix");
         List<String> permissions = (ArrayList<String>) ((Document) info).get("permissions");
-        RAW_RANKS.put(name, new RankBlob(name, created, prefix, suffix, permissions));
+        RAW_RANKS.put(name, new RankBlob(name, created, permissions));
         Utils.log.info("[RANK] [ASYNC] Grabbed Rank: " + ((Document) info).get("name") + " Storing its permissions!");
     };
 
@@ -85,14 +84,12 @@ public class Rank implements GenericMechanic {
      * @param rankName
      * @since 1.0
      */
-    public boolean createNewRank(String rankName, String prefix, String suffix) {
+    public boolean createNewRank(String rankName) {
         if (RAW_RANKS.containsKey(rankName.toUpperCase())) return false;
         Document blankRankDocument =
                 new Document("rank",
                         new Document("name", rankName)
                                 .append("created", System.currentTimeMillis() / 1000L)
-                                .append("prefix", prefix)
-                                .append("suffix", suffix)
                                 .append("permissions", new ArrayList<String>())
                 );
         Database.ranks.insertOne(blankRankDocument);
@@ -128,7 +125,7 @@ public class Rank implements GenericMechanic {
 
         PermissionAttachment attachment = player.addAttachment(DungeonRealms.getInstance());
         RankBlob rank = RAW_RANKS.get(sRank.toUpperCase());
-        player.sendMessage(ChatColor.GREEN + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "RANK" + ChatColor.GREEN + "] " + ChatColor.YELLOW + "Congratulations! Your rank is now: " + ChatColor.AQUA + ChatColor.translateAlternateColorCodes('&', rank.getPrefix()));
+        player.sendMessage(ChatColor.GREEN + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "RANK" + ChatColor.GREEN + "] " + ChatColor.YELLOW + "Congratulations! Your rank is now: " + ChatColor.AQUA + ChatColor.translateAlternateColorCodes('&', GameChat.getPreMessage(player)));
         player.playSound(player.getLocation(), Sound.NOTE_PLING, 1f, 63f);
         for (String s : rank.getPermissions()) {
             attachment.setPermission(s, true);
@@ -149,15 +146,11 @@ public class Rank implements GenericMechanic {
     public class RankBlob {
         private String name;
         private long created;
-        private String prefix;
-        private String suffix;
         private List<String> permissions;
 
-        public RankBlob(String name, long created, String prefix, String suffix, List<String> permissions) {
+        public RankBlob(String name, long created, List<String> permissions) {
             this.name = name;
             this.created = created;
-            this.prefix = prefix;
-            this.suffix = suffix;
             this.permissions = permissions;
         }
 
@@ -167,14 +160,6 @@ public class Rank implements GenericMechanic {
 
         public long getCreated() {
             return created;
-        }
-
-        public String getPrefix() {
-            return prefix;
-        }
-
-        public String getSuffix() {
-            return suffix;
         }
 
         public List<String> getPermissions() {
