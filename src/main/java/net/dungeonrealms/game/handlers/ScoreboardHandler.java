@@ -111,8 +111,8 @@ public class ScoreboardHandler implements GenericMechanic {
      */
     public void setPlayerHeadScoreboard(Player player, ChatColor chatColor, int playerLevel) {
         String suffix = "";
-        if (!GuildDatabase.getInstance().isGuildNull(player.getUniqueId())) {
-            String clanTag = GuildDatabase.getInstance().getClanTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
+        if (!GuildDatabase.getAPI().isGuildNull(player.getUniqueId())) {
+            String clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
             suffix = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + " [" + clanTag + ChatColor.RESET + "]");
         }
 
@@ -150,8 +150,8 @@ public class ScoreboardHandler implements GenericMechanic {
 //        Scoreboard scoreboard = player1.getScoreboard() != null ? player1.getScoreboard() : getPlayerScoreboardObject(player);
 
         String suffix = "";
-        if (!GuildDatabase.getInstance().isGuildNull(toSetFor.getUniqueId())) {
-            String clanTag = GuildDatabase.getInstance().getClanTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, toSetFor.getUniqueId()).toString());
+        if (!GuildDatabase.getAPI().isGuildNull(toSetFor.getUniqueId())) {
+            String clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, toSetFor.getUniqueId()).toString());
             suffix = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + " [" + clanTag + ChatColor.RESET + "]");
         }
         GamePlayer gamePlayer = API.getGamePlayer(toSetFor);
@@ -175,8 +175,8 @@ public class ScoreboardHandler implements GenericMechanic {
     public void setCurrentPlayerLevels(Scoreboard scoreboard) {
         for (Player player1 : Bukkit.getOnlinePlayers()) {
             String suffix = "";
-            if (!GuildDatabase.getInstance().isGuildNull(player1.getUniqueId())) {
-                String clanTag = GuildDatabase.getInstance().getClanTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player1.getUniqueId()).toString());
+            if (!GuildDatabase.getAPI().isGuildNull(player1.getUniqueId())) {
+                String clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player1.getUniqueId()).toString());
                 suffix = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + " [" + clanTag + ChatColor.RESET + "]");
             }
             GamePlayer gamePlayer = API.getGamePlayer(player1);

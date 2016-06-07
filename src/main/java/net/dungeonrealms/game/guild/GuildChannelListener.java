@@ -40,16 +40,11 @@ public class GuildChannelListener implements PluginMessageListener {
 
                 String command = in.readUTF();
 
-
                 switch (command) {
                     //TODO
                 }
 
-
             }
-
-
-
 
         } catch (EOFException e) {
             // Do nothing.

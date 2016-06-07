@@ -2,7 +2,6 @@ package net.dungeonrealms.game.player.chat;
 
 import java.util.UUID;
 
-import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.db.GuildDatabase;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -46,8 +45,8 @@ public class TabbedChatListener implements Listener {
 
         }
 
-        if (!GuildDatabase.getInstance().isGuildNull(uuid)) {
-            String clanTag = GuildDatabase.getInstance().getClanTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
+        if (!GuildDatabase.getAPI().isGuildNull(uuid)) {
+            String clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
             prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.WHITE + " [" + clanTag + ChatColor.RESET + "]"));
         }
 

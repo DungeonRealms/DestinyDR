@@ -1,12 +1,10 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.network.NetworkAPI;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -34,7 +32,7 @@ public class CommandAccept extends BasicCommand {
             switch (args[0]) {
                 case "guild":
                     assert args[1] != null : "arg[1] is null!";
-                    if (!GuildDatabase.getInstance().isGuildNull(player.getUniqueId())) {
+                    if (!GuildDatabase.getAPI().isGuildNull(player.getUniqueId())) {
                         player.sendMessage(ChatColor.RED + "You must leave your current guild to accept invitations to others!");
                         return true;
                     }

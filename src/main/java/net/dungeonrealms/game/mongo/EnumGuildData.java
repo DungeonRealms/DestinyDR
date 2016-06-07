@@ -7,7 +7,7 @@ public enum EnumGuildData {
 
     NAME("info.name"),
     MOTD("info.motd"),
-    CLAN_TAG("info.clanTag"),
+    TAG("info.tag"),
 
     OWNER("info.owner"),
 
@@ -15,8 +15,7 @@ public enum EnumGuildData {
     MEMBERS("info.members"),
 
     LEVEL("info.netLevel"),
-    EXPERIENCE("info.experience")
-    ;
+    EXPERIENCE("info.experience");
 
     public String key;
 
