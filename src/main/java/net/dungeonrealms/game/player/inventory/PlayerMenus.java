@@ -329,7 +329,7 @@ public class PlayerMenus {
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Stand out amongst the rest",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "with a powerful trail.",
                 "",
-                ChatColor.WHITE + "Use: View obtained trails.",
+                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View obtained trails.",
                 ChatColor.WHITE + "Middle-Click: Receive trail item."
         }));
         inv.setItem(7, editItem(new ItemStack(Material.SADDLE), ChatColor.GOLD + "Mounts", new String[]{
