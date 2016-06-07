@@ -4,13 +4,14 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
-import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.mongo.achievements.Achievements;
+import net.dungeonrealms.game.player.stats.PlayerStats;
+import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.party.Affair;
-import net.dungeonrealms.game.player.stats.PlayerStats;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
@@ -92,8 +93,8 @@ public class GamePlayer {
      * @return the experience
      * @since 1.0
      */
-    public double getExperience() {
-        return Double.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, T.getUniqueId())));
+    public int getExperience() {
+        return (int) DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, T.getUniqueId());
     }
 
     /**
@@ -204,28 +205,45 @@ public class GamePlayer {
      * @apiNote Will automagically level the player up if the experience is enough.
      * @since 1.0
      */
-    public void addExperience(double experienceToAdd, boolean isParty) {
+    public void addExperience(int experienceToAdd, boolean isParty) {
         int level = getLevel();
         if (level > 100) return;
-        double experience = getExperience();
+        int experience = getExperience();
         String expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "        + ";
         if (isParty) {
             expPrefix = ChatColor.YELLOW.toString() + ChatColor.BOLD + "            " + ChatColor.AQUA.toString() + ChatColor.BOLD + "P " + ChatColor.RESET + ChatColor.GRAY + " >> " + ChatColor.YELLOW.toString() + ChatColor.BOLD + "+";
         }
-        double subBonus = 0;
-        double subPlusBonus = 0;
-        double futureExperience = experience + experienceToAdd + subBonus + subPlusBonus;
+        int subBonus = 0;
+        int subPlusBonus = 0;
+        int futureExperience = experience + experienceToAdd + subBonus + subPlusBonus;
         int xpNeeded = getEXPNeeded(level);
         if (futureExperience >= xpNeeded) {
-            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, 0, true);
+            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, 0, false);
+            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.LEVEL, 1, true);
             getStats().lvlUp();
             T.playSound(T.getLocation(), Sound.LEVEL_UP, 0.5F, 1F);
             T.sendMessage(ChatColor.GREEN + "You have reached level " + ChatColor.AQUA + (level + 1) + ChatColor.GREEN + " and have gained " + ChatColor.AQUA + Integer.toString(PlayerStats.POINTS_PER_LEVEL) + ChatColor.GREEN + " Attribute Points!");
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(T, getPlayerAlignment().getAlignmentColor(), (level + 1));
+            switch (level + 1) {
+                case 10:
+                    Achievements.getInstance().giveAchievement(T.getUniqueId(), Achievements.EnumAchievements.LEVEL_10);
+                    break;
+                case 25:
+                    Achievements.getInstance().giveAchievement(T.getUniqueId(), Achievements.EnumAchievements.LEVEL_25);
+                    break;
+                case 50:
+                    Achievements.getInstance().giveAchievement(T.getUniqueId(), Achievements.EnumAchievements.LEVEL_50);
+                    break;
+                case 100:
+                    Achievements.getInstance().giveAchievement(T.getUniqueId(), Achievements.EnumAchievements.LEVEL_100);
+                    break;
+                default:
+                    break;
+            }
         } else {
-            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.EXPERIENCE, (experienceToAdd + subBonus + subPlusBonus), true);
+            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.EXPERIENCE, experienceToAdd + subBonus + subPlusBonus, true);
             if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
-                    T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(getExperience() + experienceToAdd) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
+                    T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
             }
         }
     }

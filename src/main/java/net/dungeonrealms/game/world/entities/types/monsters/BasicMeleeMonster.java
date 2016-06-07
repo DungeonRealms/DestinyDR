@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
-import net.dungeonrealms.game.miscellaneous.SkullCreator;
+import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRZombie;
 import net.minecraft.server.v1_8_R3.World;
@@ -24,26 +24,26 @@ public class BasicMeleeMonster extends DRZombie {
         switch (type) {
             case Troll:
             case Troll1:
-                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.TROLL.getSkull()));
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.TROLL.getSkull()));
                 break;
             case Goblin:
-                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.GOBLIN.getSkull()));
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.GOBLIN.getSkull()));
                 break;
             case Naga:
-                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.NAGA.getSkull()));
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.NAGA.getSkull()));
                 break;
             case Lizardman:
-                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.LIZARD.getSkull()));
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.LIZARD.getSkull()));
                 break;
             case Zombie:
-                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.ZOMBIE.getSkull()));
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.ZOMBIE.getSkull()));
                 break;
             case Monk:
-                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.MONK.getSkull()));
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.MONK.getSkull()));
                 break;
             case Tripoli:
             case Tripoli1:
-                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.TRIPOLI_SOLDIER.getSkull()));
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.TRIPOLI_SOLDIER.getSkull()));
                 break;
         }
     }

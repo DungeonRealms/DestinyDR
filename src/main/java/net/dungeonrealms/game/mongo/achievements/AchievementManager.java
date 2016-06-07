@@ -3,16 +3,22 @@ package net.dungeonrealms.game.mongo.achievements;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
+import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.player.banks.BankMechanics;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -64,14 +70,35 @@ public class AchievementManager implements GenericMechanic, Listener {
     /**
      * Checks the players online to see if they have earned my achievement.
      *
-     * @param player
+     * @param uuid
      * @since 1.0
      */
-    public void handleLogin(Player player) {
+    public void handleLogin(UUID uuid) {
         //if (!player.getUniqueId().toString().equals("e0926362-9a92-4ffb-8d1f-7dfa5f4b4dd0")) return;
-
-        //Bukkit.getOnlinePlayers().stream().forEach(player1 -> Achievements.getInstance().giveAchievement(player1.getUniqueId(), Achievements.EnumAchievements.PLAY_WITH_KAYABA));
-
+        if (Bukkit.getPlayer(uuid) == null) return;
+        List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid);
+        if (playerPets.size() > 0) {
+            Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.PET_COMPANION);
+        }
+        if (playerPets.size() >= 3) {
+            Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ANIMAL_TAMER);
+        }
+        int playerBankGems = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, uuid);
+        BankMechanics.getInstance().checkBankAchievements(uuid, playerBankGems);
+        if (!GuildDatabaseAPI.get().isGuildNull(uuid)) {
+            Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.GUILD_MEMBER);
+            //TODO: Check if they are Officer when method is implemented.
+        }
+        //TODO: Realm level/tier checks when they are implemented.
+        //TODO: Rank (PMOD/GM/SUB/SUB+/SUB++) checks when they are implemented.
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            for (String dev : DungeonRealms.getInstance().getDEVS()) {
+                if (player.getName().equalsIgnoreCase(dev)) {
+                    Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.PLAY_WITH_DEV);
+                    break;
+                }
+            }
+        }
     }
 
     /**
@@ -145,10 +172,10 @@ public class AchievementManager implements GenericMechanic, Listener {
                 Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.SEBRATA);
                 break;
             case "fireydungeon":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.FIREY_DUNGEON);
+                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.FIERY_DUNGEON);
                 break;
             case "tutorial_island":
-                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.TUTORAL_ISLAND);
+                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.TUTORIAL_ISLAND);
                 break;
         }
     }

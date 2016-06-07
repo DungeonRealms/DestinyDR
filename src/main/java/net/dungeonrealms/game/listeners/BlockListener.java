@@ -6,6 +6,7 @@ import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.miscellaneous.Repair;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.mongo.achievements.Achievements;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.profession.Fishing;
@@ -406,6 +407,7 @@ public class BlockListener implements Listener {
                         if (blockLook.getType() == Material.CHEST) {
                             e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.CHEST_OPEN, 1f, 1f);
                             e.getPlayer().openInventory(loot.inv);
+                            Achievements.getInstance().giveAchievement(e.getPlayer().getUniqueId(), Achievements.EnumAchievements.OPEN_LOOT_CHEST);
                         }
                     }, 10);
                     break;

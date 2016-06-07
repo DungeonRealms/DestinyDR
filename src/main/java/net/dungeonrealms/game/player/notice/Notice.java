@@ -1,8 +1,6 @@
 package net.dungeonrealms.game.player.notice;
 
-import com.mongodb.client.result.UpdateResult;
 import net.dungeonrealms.API;
-import net.dungeonrealms.Callback;
 import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.handlers.MailHandler;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
@@ -53,16 +51,8 @@ public class Notice {
                 long diffHours = differenceInTime / (60 * 60 * 1000);
 
                 if (24 - diffHours <= 0) {
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, s, true, new Callback<UpdateResult>(UpdateResult.class) {
-                        @Override
-                        public void callback(Throwable failCause, UpdateResult result) {
-                            if (result.wasAcknowledged()) {
-                                FriendHandler.getInstance().sendFriendMessage(player, ChatColor.RED + "Friend request for " + ChatColor.AQUA + name + ChatColor.RED + " has expired!");
-                            } else {
-                                player.sendMessage(ChatColor.RED + "Unable to remove invalid friend, please report this issue. (error_Notice:friendRequests Removal");
-                            }
-                        }
-                    });
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, s, true);
+                    FriendHandler.getInstance().sendFriendMessage(player, ChatColor.RED + "Friend request for " + ChatColor.AQUA + name + ChatColor.RED + " has expired!");
                 }
             }
             FriendHandler.getInstance().sendFriendMessage(player, ChatColor.GREEN + "You have " + ChatColor.AQUA + friendRequests.size() + ChatColor.GREEN + " pending friend request!");

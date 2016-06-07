@@ -7,6 +7,7 @@ import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.mongo.achievements.Achievements;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import org.bukkit.*;
@@ -299,7 +300,7 @@ public class Shop {
             p.sendMessage(ChatColor.GRAY + "You now have " + (new_tier * 9) + " shop slots available.");
             p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + cost + ChatColor.BOLD + "G");
             p.playSound(p.getLocation(), Sound.LEVEL_UP, 1F, 1.25F);
-
+            Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.SHOP_UPGRADE_1);
         }, player -> player.sendMessage(ChatColor.RED + "Action cancelled."));
     }
 

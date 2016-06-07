@@ -1,8 +1,8 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
+import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.miscellaneous.SkullCreator;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRZombie;
 import net.minecraft.server.v1_8_R3.World;
@@ -25,7 +25,7 @@ public class EntityBandit extends DRZombie {
      */
     public EntityBandit(World world, int tier, EnumEntityType entityType) {
         super(world, EnumMonster.Bandit, tier, entityType, true);
-        this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.BANDIT.getSkull()));
+        this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.BANDIT.getSkull()));
         checkSpecial();
     }
 

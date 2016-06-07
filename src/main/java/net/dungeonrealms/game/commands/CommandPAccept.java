@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.mongo.achievements.Achievements;
 import net.dungeonrealms.game.world.party.Affair;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -28,6 +29,7 @@ public class CommandPAccept extends BasicCommand {
                 Affair._invitations.get(player).getMembers().add(player);
                 Affair._invitations.remove(player);
                 player.sendMessage(ChatColor.GREEN + "You have joined the party!");
+                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.PARTY_UP);
             } else {
                 player.sendMessage(ChatColor.RED + "You do not have any pending invitations!");
             }

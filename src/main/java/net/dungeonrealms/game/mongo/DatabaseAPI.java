@@ -1,8 +1,6 @@
 package net.dungeonrealms.game.mongo;
 
 import com.mongodb.client.model.Filters;
-import com.mongodb.client.result.UpdateResult;
-import net.dungeonrealms.Callback;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
 import org.bson.Document;
@@ -52,31 +50,6 @@ public class DatabaseAPI {
     }
 
     /**
-     * Updates a players information in Mongo and returns the updated result.
-     *
-     * @param uuid
-     * @param EO
-     * @param variable
-     * @param object
-     * @param requestNew TRUE = WILL GET NEW DATA FROM MONGO.
-     * @param callback   Calls back the result.
-     * @since 1.0
-     */
-    public void update(UUID uuid, EnumOperators EO, EnumData variable, Object object, boolean requestNew, Callback<UpdateResult> callback) {
-        Database.collection.updateOne(Filters.eq("info.uuid", uuid.toString()), new Document(EO.getUO(), new Document(variable.getKey(), object)));
-        if (requestNew) {
-            requestPlayer(uuid);
-        }
-                /*(result, exception) -> {
-                    callback.callback(exception, result);
-                    Utils.log.info("DatabaseAPI update() called ...");
-                    if (exception == null && requestNew) {
-                        requestPlayer(uuid);
-                    }
-                });*/
-    }
-
-    /**
      * Returns the object that's requested.
      *
      * @param data
@@ -102,7 +75,7 @@ public class DatabaseAPI {
             case LEVEL:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("netLevel", Integer.class);
             case EXPERIENCE:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("experience", Double.class);
+                return ((Document) PLAYERS.get(uuid).get("info")).get("experience", Integer.class);
             case GEMS:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("gems", Integer.class);
             case HEARTHSTONE:
@@ -287,7 +260,7 @@ public class DatabaseAPI {
                                 .append("lastLogin", 0L)
                                 .append("lastLogout", 0L)
                                 .append("netLevel", 1)
-                                .append("experience", 0d)
+                                .append("experience", 0)
                                 .append("hearthstone", "Cyrennica")
                                 .append("currentLocation", "")
                                 .append("isPlaying", true)

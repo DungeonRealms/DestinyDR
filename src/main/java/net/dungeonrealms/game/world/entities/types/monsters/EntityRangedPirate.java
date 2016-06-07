@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
-import net.dungeonrealms.game.miscellaneous.SkullCreator;
+import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRSkeleton;
 import net.dungeonrealms.game.world.items.DamageAPI;
@@ -20,7 +20,7 @@ public class EntityRangedPirate extends DRSkeleton {
         super(world, EnumMonster.RangedPirate, tier, entityType);
         this.entityType = entityType;
         this.tier = tier;
-        this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.PIRATE.getSkull()));
+        this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.PIRATE.getSkull()));
     }
 
     public EntityRangedPirate(World world) {

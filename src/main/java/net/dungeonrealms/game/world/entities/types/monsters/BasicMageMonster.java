@@ -1,9 +1,9 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
-import net.dungeonrealms.game.miscellaneous.SkullCreator;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 
+import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRSkeleton;
@@ -46,10 +46,10 @@ public class BasicMageMonster extends DRSkeleton {
         this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().setType(ItemType.STAFF).setTier(ItemTier.getByTier(tier)).setRarity(API.getItemRarity()).generateItem().getItem()));
         switch (mons) {
             case Naga:
-                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.NAGA.getSkull()));
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.NAGA.getSkull()));
                 break;
             case Mage:
-                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.MAGE.getSkull()));
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.MAGE.getSkull()));
                 break;
         }
     }

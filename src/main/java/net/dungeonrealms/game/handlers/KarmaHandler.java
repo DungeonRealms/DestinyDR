@@ -141,7 +141,7 @@ public class KarmaHandler implements GenericMechanic {
         if (PLAYER_ALIGNMENT_TIMES.containsKey(player)) {
             PLAYER_ALIGNMENT_TIMES.remove(player);
         }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> setPlayerAlignment(player, getAlignmentOnLogin(player.getUniqueId()), true), 40L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> setPlayerAlignment(player, getAlignmentOnLogin(player.getUniqueId()), true), 20L);
     }
 
     /**

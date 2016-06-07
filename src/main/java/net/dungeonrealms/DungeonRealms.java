@@ -11,8 +11,6 @@ import net.dungeonrealms.game.commands.menualias.CommandProfile;
 import net.dungeonrealms.game.commands.menualias.CommandTrail;
 import net.dungeonrealms.game.commands.newcommands.*;
 import net.dungeonrealms.game.donate.DonationEffects;
-import net.dungeonrealms.game.guild.GuildDatabaseAPI;
-import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.listeners.*;
 import net.dungeonrealms.game.mastery.AsyncUtils;
@@ -56,6 +54,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
 
 public class DungeonRealms extends JavaPlugin {
 
@@ -91,6 +90,12 @@ public class DungeonRealms extends JavaPlugin {
     public int realmpmax = 0;
 
     // End of Shard Config
+
+    public List<String> getDEVS() {
+        return DEVS;
+    }
+
+    private List<String> DEVS = Arrays.asList("Proxying", "Atlas__", "iFamasssxD", "APOLLO_IO", "Bradez1571", "EtheralTemplar");
 
     public boolean hasFinishedSetup() {
         return hasFinishedSetup;
@@ -263,7 +268,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandSet("set", "/<command> [args]", "SETS THE YEAH."));
             cm.registerCommand(new CommandList("list", "/<command> [args]", "THE LIST"));
             cm.registerCommand(new CommandRank("rank", "/<command> [args]", "The rank command!"));
-            cm.registerCommand(new CommandEss("essentials", "/<command> [args]", "The essentials command."));
+            cm.registerCommand(new CommandEss("dr", "/<command> [args]", "The essentials command."));
             cm.registerCommand(new CommandMail("mailbox", "/<command> [args]", "The mail command."));
             cm.registerCommand(new CommandAccept("accept", "/<command> [args]", "The accept command."));
             cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));

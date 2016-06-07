@@ -351,7 +351,8 @@ public class PlayerMenus {
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Inventory getting full on your travels?",
 				ChatColor.GRAY.toString() + ChatColor.ITALIC + "purchase a Mule from the Animal Tamer.",
                 "",
-                ChatColor.WHITE + "Use: Spawn Storage Mule."
+                ChatColor.WHITE + "Use: Spawn Storage Mule.",
+                ChatColor.WHITE + "Middle-Click: Receive Mule Leash."
         }));
         inv.setItem(17, editItem(new ItemStack(Material.ARMOR_STAND), ChatColor.GOLD + "Mount Skins", new String[]{
                 "",

@@ -6,6 +6,7 @@ import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.mongo.achievements.Achievements;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 import org.bukkit.Bukkit;
@@ -77,6 +78,7 @@ public class ShopMechanics implements GenericMechanic {
                     player.sendMessage("");
                     player.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "YOU'VE CREATED A SHOP!");
                     player.sendMessage(ChatColor.YELLOW + "To stock your shop, simply drag items into your shop's inventory.");
+                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SHOP_CREATOR);
                 }, 1L);
             } else {
                 player.sendMessage("You can't place a shop there");

@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
-import net.dungeonrealms.game.miscellaneous.SkullCreator;
+import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRSkeleton;
 import net.dungeonrealms.game.world.items.DamageAPI;
@@ -23,7 +23,7 @@ public class BasicEntitySkeleton extends DRSkeleton {
 	public BasicEntitySkeleton(World world, int tier) {
 		super(world, EnumMonster.Skeleton, tier, EnumEntityType.HOSTILE_MOB);
         this.tier = tier;
-        this.setEquipment(4, CraftItemStack.asNMSCopy(SkullCreator.SkullTextures.SKELETON.getSkull()));
+        this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.SKELETON.getSkull()));
 	}
 
 	/**

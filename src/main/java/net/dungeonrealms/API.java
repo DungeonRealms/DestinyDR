@@ -7,9 +7,7 @@ import com.sk89q.worldguard.bukkit.WorldGuardPlugin;
 import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
-import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.GuildMechanics;
-import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
@@ -541,7 +539,6 @@ public class API {
 
 //        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
 
-        AchievementManager.getInstance().handleLogin(player);
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
             ItemStack[] items = ItemSerialization.fromString(playerInv).getContents();
@@ -620,6 +617,7 @@ public class API {
                 }
             }, 100);
         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENTSERVER, DungeonRealms.getInstance().bungeeName, true);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> AchievementManager.getInstance().handleLogin(player.getUniqueId()), 70L);
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
     }
     
@@ -662,7 +660,6 @@ public class API {
 
 //        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
 
-        AchievementManager.getInstance().handleLogin(player);
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
             ItemStack[] items = ItemSerialization.fromString(playerInv).getContents();
@@ -707,6 +704,7 @@ public class API {
         player.setGameMode(GameMode.SURVIVAL);
         player.setMaximumNoDamageTicks(0);
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
+        AchievementManager.getInstance().handleLogin(player.getUniqueId());
 		// DO REALM CHECKS and begin code now!
         String cs = (String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid);
 		//NetworkAPI.getInstance().sendToServer(player.getName(), cs);

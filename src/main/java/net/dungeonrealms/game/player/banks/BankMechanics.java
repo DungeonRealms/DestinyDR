@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import net.dungeonrealms.game.mongo.achievements.Achievements;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -485,6 +486,33 @@ public class BankMechanics implements GenericMechanic {
     public boolean isBankNote(ItemStack stack) {
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         return stack.getType() == Material.PAPER && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money");
+    }
+
+    public void checkBankAchievements(UUID uuid, int bankGemAmount) {
+        if (bankGemAmount >= 100) {
+            Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_1);
+            if (bankGemAmount >= 1000) {
+                Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_2);
+                if (bankGemAmount >= 5000) {
+                    Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_3);
+                    if (bankGemAmount >= 10000) {
+                        Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_4);
+                        if (bankGemAmount >= 50000) {
+                            Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_5);
+                            if (bankGemAmount >= 100000) {
+                                Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_6);
+                                if (bankGemAmount >= 500000) {
+                                    Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_7);
+                                    if (bankGemAmount >= 1000000) {
+                                        Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.ACQUIRE_CURRENCY_8);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
     }
 
 }

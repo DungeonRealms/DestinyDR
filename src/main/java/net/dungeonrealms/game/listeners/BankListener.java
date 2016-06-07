@@ -187,6 +187,7 @@ public class BankListener implements Listener {
                                 }
                                 int newBalance = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, player.getUniqueId()) + size;
                                 BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
+                                BankMechanics.getInstance().checkBankAchievements(player.getUniqueId(), newBalance);
                                 player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + ChatColor.GREEN + size + ChatColor.BOLD + "G, New Balance: " + ChatColor.GREEN + newBalance + " GEM(s)");
                                 ItemStack bankItem = new ItemStack(Material.EMERALD);
                                 ItemMeta meta = bankItem.getItemMeta();
@@ -274,6 +275,7 @@ public class BankListener implements Listener {
                             ArrayList<String> lore = new ArrayList<>();
                             int newBalance = (int) DatabaseAPI.getInstance().getData(EnumData.GEMS, player.getUniqueId()) + size;
                             BankMechanics.getInstance().addGemsToPlayerBank(player.getUniqueId(), size);
+                            BankMechanics.getInstance().checkBankAchievements(player.getUniqueId(), newBalance);
                             player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "+" + ChatColor.GREEN + size + ChatColor.BOLD + "G, New Balance: " + ChatColor.GREEN + newBalance + " GEM(s)");
                             lore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to withdraw " + ChatColor.GREEN.toString() + ChatColor.BOLD + "RAW GEMS");
                             lore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to create " + ChatColor.GREEN.toString() + ChatColor.BOLD + "A GEM NOTE");

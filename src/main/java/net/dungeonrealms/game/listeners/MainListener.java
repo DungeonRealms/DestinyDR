@@ -1,10 +1,8 @@
 package net.dungeonrealms.game.listeners;
 
 import com.connorlinfoot.bountifulapi.BountifulAPI;
-import com.mongodb.client.result.UpdateResult;
 import com.vexsoftware.votifier.model.VotifierEvent;
 import net.dungeonrealms.API;
-import net.dungeonrealms.Callback;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
@@ -84,102 +82,59 @@ public class MainListener implements Listener {
 
             String rank = Rank.getInstance().getRank(player.getUniqueId()).getName();
 
+            GamePlayer gamePlayer = API.getGamePlayer(player);
+            int expToLevel = gamePlayer.getEXPNeeded(gamePlayer.getLevel());
+            int expToGive = expToLevel / 20;
+            expToGive += 100;
+            TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
+            bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/server/298658"));
+            bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
+
             switch (rank.toLowerCase()) {
                 case "default":
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 15, true, new Callback<UpdateResult>(UpdateResult.class) {
-                        @Override
-                        public void callback(Throwable failCause, UpdateResult result) {
-                            if (result.wasAcknowledged()) {
-                                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
-                                if (API.getGamePlayer(player) == null) {
-                                    return;
-                                }
-                                GamePlayer gamePlayer = API.getGamePlayer(player);
-                                int expToLevel = gamePlayer.getEXPNeeded(gamePlayer.getLevel());
-                                int expToGive = expToLevel / 20;
-                                expToGive += 100;
-                                gamePlayer.addExperience(expToGive, false);
-                                TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
-                                bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/server/298658"));
-                                bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
-                                TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ");
-                                test.addExtra(bungeeMessage);
-                                Bukkit.spigot().broadcast(test);
-                            }
-                        }
-                    });
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 15, true);
+                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
+                    if (API.getGamePlayer(player) == null) {
+                        return;
+                    }
+                    gamePlayer.addExperience(expToGive, false);
+                    TextComponent defaultRank = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ");
+                    defaultRank.addExtra(bungeeMessage);
+                    Bukkit.spigot().broadcast(defaultRank);
                     break;
                 case "sub":
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 20, true, new Callback<UpdateResult>(UpdateResult.class) {
-                        @Override
-                        public void callback(Throwable failCause, UpdateResult result) {
-                            if (result.wasAcknowledged()) {
-                                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB);
-                                if (API.getGamePlayer(player) == null) {
-                                    return;
-                                }
-                                GamePlayer gamePlayer = API.getGamePlayer(player);
-                                int expToLevel = gamePlayer.getEXPNeeded(gamePlayer.getLevel());
-                                int expToGive = expToLevel / 20;
-                                expToGive += 100;
-                                gamePlayer.addExperience(expToGive, false);
-                                TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
-                                bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/server/298658"));
-                                bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
-                                TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 20 ECASH & 5% EXP @ vote ");
-                                test.addExtra(bungeeMessage);
-                                Bukkit.spigot().broadcast(test);
-                            }
-                        }
-                    });
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 20, true);
+                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB);
+                    if (API.getGamePlayer(player) == null) {
+                        return;
+                    }
+                    gamePlayer.addExperience(expToGive, false);
+                    TextComponent sub = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 20 ECASH & 5% EXP @ vote ");
+                    sub.addExtra(bungeeMessage);
+                    Bukkit.spigot().broadcast(sub);
                     break;
                 case "sub+":
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 25, true, new Callback<UpdateResult>(UpdateResult.class) {
-                        @Override
-                        public void callback(Throwable failCause, UpdateResult result) {
-                            if (result.wasAcknowledged()) {
-                                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB_PLUS);
-                                if (API.getGamePlayer(player) == null) {
-                                    return;
-                                }
-                                GamePlayer gamePlayer = API.getGamePlayer(player);
-                                int expToLevel = gamePlayer.getEXPNeeded(gamePlayer.getLevel());
-                                int expToGive = expToLevel / 20;
-                                expToGive += 100;
-                                gamePlayer.addExperience(expToGive, false);
-                                TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
-                                bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/server/298658"));
-                                bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
-                                TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 25 ECASH & 5% EXP @ vote ");
-                                test.addExtra(bungeeMessage);
-                                Bukkit.spigot().broadcast(test);
-                            }
-                        }
-                    });
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 25, true);
+                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB_PLUS);
+                    if (API.getGamePlayer(player) == null) {
+                        return;
+                    }
+                    gamePlayer.addExperience(expToGive, false);
+                    TextComponent subplus = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 25 ECASH & 5% EXP @ vote ");
+                    subplus.addExtra(bungeeMessage);
+                    Bukkit.spigot().broadcast(subplus);
                     break;
                 default:
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 15, true, new Callback<UpdateResult>(UpdateResult.class) {
-                        @Override
-                        public void callback(Throwable failCause, UpdateResult result) {
-                            if (result.wasAcknowledged()) {
-                                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
-                                if (API.getGamePlayer(player) == null) {
-                                    return;
-                                }
-                                GamePlayer gamePlayer = API.getGamePlayer(player);
-                                int expToLevel = gamePlayer.getEXPNeeded(gamePlayer.getLevel());
-                                int expToGive = expToLevel / 20;
-                                expToGive += 100;
-                                gamePlayer.addExperience(expToGive, false);
-                                TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
-                                bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://minecraftservers.org/server/298658"));
-                                bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
-                                TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ");
-                                test.addExtra(bungeeMessage);
-                                Bukkit.spigot().broadcast(test);
-                            }
-                        }
-                    });
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 15, true);
+                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE);
+                    if (API.getGamePlayer(player) == null) {
+                        return;
+                    }
+                    gamePlayer.addExperience(expToGive, false);
+                    TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ");
+                    test.addExtra(bungeeMessage);
+                    Bukkit.spigot().broadcast(test);
+                    break;
             }
         } else {
             /*
@@ -189,6 +144,7 @@ public class MainListener implements Listener {
             DatabaseAPI.getInstance().update(UUID.fromString(event.getVote().getUsername()), EnumOperators.$INC, EnumData.ECASH, 15, false);
             Utils.log.warning("Unable to process rank for user: " + event.getVote().getUsername() + " the vote was passed to the server and the player ISNT ONLINE WTF?");
         }
+
     }
 
     @EventHandler
@@ -219,7 +175,7 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onAsyncJoin(AsyncPlayerPreLoginEvent event) {
-        if (!DungeonRealms.getInstance().hasFinishedSetup() && !event.getName().equalsIgnoreCase("Kayaba")) {
+        if (!DungeonRealms.getInstance().hasFinishedSetup() && !DungeonRealms.getInstance().getDEVS().contains(event.getName())) {
             event.disallow(Result.KICK_OTHER, ChatColor.GREEN + "The server is still setting up reconnect shortly!");
             return;
         }
@@ -239,7 +195,6 @@ public class MainListener implements Listener {
         event.setJoinMessage(null);
         DatabaseAPI.getInstance().PLAYER_TIME.put(event.getPlayer().getUniqueId(), 0);
         Player player = event.getPlayer();
-        //Core.getInstance().verifyPlayerIntegrity(player.getUniqueId(), player.getName());
         player.getInventory().clear();
         player.setGameMode(GameMode.ADVENTURE);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 4));
@@ -670,6 +625,7 @@ public class MainListener implements Listener {
                     player.getInventory().addItem(map);
                     player.updateInventory();
                     player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1F, 0.8F);
+                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.CARTOGRAPHER);
                 }
             }
         }

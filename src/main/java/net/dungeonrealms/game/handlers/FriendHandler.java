@@ -1,11 +1,8 @@
 package net.dungeonrealms.game.handlers;
 
-import com.mongodb.client.result.UpdateResult;
-import net.dungeonrealms.Callback;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.ChatColor;
@@ -51,13 +48,9 @@ public class FriendHandler {
             case RIGHT:
                 //Remove Pending request
                 player.closeInventory();
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIENDS, friend.toString(), true, new Callback<UpdateResult>(UpdateResult.class) {
-                    @Override
-                    public void callback(Throwable failCause, UpdateResult result) {
-                        sendFriendMessage(player, ChatColor.GREEN + "You have deleted " + itemStack.getItemMeta().getDisplayName().split("'")[0] + " from your friends list!");
-                        PlayerMenus.openFriendInventory(player);
-                    }
-                });
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIENDS, friend.toString(), true);
+                sendFriendMessage(player, ChatColor.GREEN + "You have deleted " + itemStack.getItemMeta().getDisplayName().split("'")[0] + " from your friends list!");
+                PlayerMenus.openFriendInventory(player);
                 DatabaseAPI.getInstance().update(friend, EnumOperators.$PULL, EnumData.FRIENDS, player.toString(), true);
                 break;
         }
@@ -81,24 +74,16 @@ public class FriendHandler {
             case RIGHT:
                 //Remove Pending request
                 player.closeInventory();
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, tag.getString("info"), true, new Callback<UpdateResult>(UpdateResult.class) {
-                    @Override
-                    public void callback(Throwable failCause, UpdateResult result) {
-                        sendFriendMessage(player, ChatColor.GREEN + "You have successfully removed pending request for " + itemStack.getItemMeta().getDisplayName().split("'")[0]);
-                        PlayerMenus.openFriendInventory(player);
-                    }
-                });
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, tag.getString("info"), true);
+                sendFriendMessage(player, ChatColor.GREEN + "You have successfully removed pending request for " + itemStack.getItemMeta().getDisplayName().split("'")[0]);
+                PlayerMenus.openFriendInventory(player);
                 break;
             case LEFT:
                 //Add Friend
                 player.closeInventory();
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.FRIEND_REQUSTS, tag.getString("info"), true);
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIENDS, friend.toString(), true, new Callback<UpdateResult>(UpdateResult.class) {
-                    @Override
-                    public void callback(Throwable failCause, UpdateResult result) {
-                        sendFriendMessage(player, ChatColor.GREEN + "You have successfully added " + ChatColor.AQUA + itemStack.getItemMeta().getDisplayName().split("'")[0]);
-                    }
-                });
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIENDS, friend.toString(), true);
+                sendFriendMessage(player, ChatColor.GREEN + "You have successfully added " + ChatColor.AQUA + itemStack.getItemMeta().getDisplayName().split("'")[0]);
                 DatabaseAPI.getInstance().update(friend, EnumOperators.$PUSH, EnumData.FRIENDS, player.getUniqueId().toString(), true);
                 break;
         }
@@ -114,20 +99,11 @@ public class FriendHandler {
     public void sendRequest(Player player, Player friend) {
         if (areFriends(player, friend.getUniqueId())) return;
 
-        DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUSTS, player.getUniqueId() + "," + (System.currentTimeMillis() / 1000L), true, new Callback<UpdateResult>(UpdateResult.class) {
-            @Override
-            public void callback(Throwable failCause, UpdateResult result) {
-                if (result.wasAcknowledged()) {
-                    sendFriendMessage(player, ChatColor.GREEN + "Friend request was successfully sent.");
+        DatabaseAPI.getInstance().update(friend.getUniqueId(), EnumOperators.$PUSH, EnumData.FRIEND_REQUSTS, player.getUniqueId() + "," + (System.currentTimeMillis() / 1000L), true);
+        sendFriendMessage(player, ChatColor.GREEN + "Friend request was successfully sent.");
 
-                    sendFriendMessage(friend, ChatColor.AQUA + player.getName() + ChatColor.GREEN + " sent you a friend request! Check your friend management UI to accept / deny!");
-                    //NetworkAPI.getInstance().sendNetworkMessage("player", "update", friend.getName());
-                } else {
-                    sendFriendMessage(player, ChatColor.RED + "Unable to process request MatchCount: " + result.getMatchedCount() + " ModifiedCount:" + result.getModifiedCount());
-                }
-            }
-        });
-
+        sendFriendMessage(friend, ChatColor.AQUA + player.getName() + ChatColor.GREEN + " sent you a friend request! Check your friend management UI to accept / deny!");
+        //NetworkAPI.getInstance().sendNetworkMessage("player", "update", friend.getName());
     }
 
     /**
