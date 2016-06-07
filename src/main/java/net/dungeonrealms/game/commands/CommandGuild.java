@@ -254,7 +254,7 @@
 //            case "create":
 //                GuildDatabaseAPI.getInstance().doesGuildNameExist(args[1], doesExist -> {
 //                    if (!doesExist) {
-//                        GuildDatabaseAPI.getInstance().doesClanTagExist(args[2], clanTag -> {
+//                        GuildDatabaseAPI.getInstance().doesTagExist(args[2], clanTag -> {
 //                            if (!clanTag) {
 //                                player.sendMessage(ChatColor.GREEN + "That clanTag is available!");
 //                                GuildDatabaseAPI.getInstance().createGuild(args[1], args[2], player.getUniqueId(), creation -> player.sendMessage(creation ? ChatColor.GREEN + "Your guild has been created!" : ChatColor.RED + "AN ERROR occurred"));

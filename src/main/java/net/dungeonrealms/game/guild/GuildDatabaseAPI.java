@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.guild;
 
+import net.dungeonrealms.game.guild.db.GuildDatabase;
 import org.bson.Document;
 
 import java.util.ArrayList;
@@ -10,29 +11,49 @@ import java.util.function.Consumer;
 
 public interface GuildDatabaseAPI {
 
-    static Document getDocumentTemplate(String owner, String guildName, String clanTag) {
+    static GuildDatabaseAPI get() {
+        return GuildDatabase.getAPI();
+    }
+
+
+    /**
+     * [DATA STRUCTURE]
+     * <p>
+     * {
+     * -> info:
+     * -> name
+     * -> owner
+     * -> tag
+     * -> motd
+     * -> officers
+     * -> members
+     * -> netLevel
+     * -> experience
+     * }
+     *
+     * @return Returns default document template
+     */
+    static Document getDocumentTemplate(String owner, String guildName, String tag) {
         return new Document("info",
                 new Document("owner", owner)
                         .append("name", guildName)
-                        .append("clanTag", clanTag))
-                .append("motd", "Default MOTDO :(")
-                .append("officers", new ArrayList<String>())
-                .append("members", new ArrayList<String>())
-                .append("netLevel", 1)
-                .append("experience", 0);
+                        .append("tag", tag)
+                        .append("motd", "Default MOTD :(")
+                        .append("officers", new ArrayList<String>())
+                        .append("members", new ArrayList<String>())
+                        .append("netLevel", 1)
+                        .append("experience", 0));
     }
-
 
 
     /**
      * @param guildName Guild Name.
      * @param clanTag   Clan Tag.
      * @param owner     owner UUID
-     * @param callback Call back method
+     * @param callback  Call back method
      */
 
     void createGuild(String guildName, String clanTag, UUID owner, Consumer<Boolean> callback);
-
 
     /**
      * @param uuid Player
@@ -47,6 +68,14 @@ public interface GuildDatabaseAPI {
      * @return Gets guild that player is in
      */
     String getGuildOf(UUID uuid);
+
+    /**
+     * Removes from guild
+     *
+     * @param uuid Player
+     */
+
+    void leaveGuild(UUID uuid);
 
     /**
      * Demotes a player from [OFFICER] to [MEMBER]
@@ -96,6 +125,12 @@ public interface GuildDatabaseAPI {
     void setMotdOf(String guildName, String motd);
 
     /**
+     * @param guildName Name of guild.
+     */
+    String getMotdOf(String guildName);
+
+
+    /**
      * @param player target player
      * @return boolean
      */
@@ -122,9 +157,9 @@ public interface GuildDatabaseAPI {
 
     /**
      * @param guildName targeted guild.
-     * @return The clanTag
+     * @return The tag
      */
-    String getClanTagOf(String guildName);
+    String getTagOf(String guildName);
 
     /**
      * @param guildName name wanting the players.
@@ -142,7 +177,7 @@ public interface GuildDatabaseAPI {
      * @param guildName name wanting the players.
      * @return The online players of a guild.
      */
-    List<UUID> getAllOnlineOf(String guildName);
+    List<UUID> getAllGuildMembers(String guildName);
 
     /**
      * Sets the players guild.
@@ -158,7 +193,7 @@ public interface GuildDatabaseAPI {
      * @param action  ASync Callback.
      * @return boolean.
      */
-    boolean doesClanTagExist(String clanTag, Consumer<Boolean> action);
+    boolean doesTagExist(String clanTag, Consumer<Boolean> action);
 
     /**
      * @param guildName Name of the Guild.

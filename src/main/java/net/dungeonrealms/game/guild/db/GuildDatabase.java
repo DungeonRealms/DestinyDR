@@ -3,10 +3,7 @@ package net.dungeonrealms.game.guild.db;
 import com.mongodb.client.model.Filters;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mongo.Database;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.mongo.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -28,7 +25,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
     private static GuildDatabaseAPI instance = null;
 
 
-    public static GuildDatabaseAPI getInstance() {
+    public static GuildDatabaseAPI getAPI() {
         if (instance == null) instance = new GuildDatabase();
         return instance;
     }
@@ -36,55 +33,59 @@ public class GuildDatabase implements GuildDatabaseAPI {
     public void createGuild(String guildName, String clanTag, UUID owner, Consumer<Boolean> callback) {
         Database.guilds.insertOne(GuildDatabaseAPI.getDocumentTemplate(owner.toString(), guildName, clanTag));
         Utils.log.warning("New guild created: " + guildName);
-        doesGuildNameExist(guildName, callback);
+        callback.accept(true);
+        setGuild(owner, guildName);
     }
 
-
-    public boolean doesClanTagExist(String clanTag, Consumer<Boolean> action) {
-        return get("clanTag", clanTag, String.class) != null;
-    }
 
     public boolean doesGuildNameExist(String guildName, Consumer<Boolean> action) {
-        return get("name", guildName, String.class) != null;
+        boolean doesGuildNameExist = get(EnumGuildData.NAME, guildName) != null;
+        action.accept(doesGuildNameExist);
+
+        return doesGuildNameExist;
     }
 
-    private Object get(String guildName, String key, Class<?> clazz) {
-        Bson query = and(eq("name", guildName));
+    private Object get(String guildName, EnumGuildData data, Class<?> clazz) {
+        Document doc = (Document) get(EnumGuildData.NAME, guildName);
+        if (doc == null) return null;
 
-        return ((Document) Database.guilds.find(query).first().get("info")).get(key, clazz);
+        return ((Document) doc.get("info")).get(data.getKey().substring(5), clazz);
     }
 
 
-    private Object get(String guildName, String key, Object value, Class<?> clazz) {
-        Bson query = and(eq("name", guildName), eq(key, value));
-
-        return ((Document) Database.guilds.find(query).first().get("info")).get(key, clazz);
+    private Object get(EnumGuildData data, Object value) {
+        Bson query = Filters.eq(data.getKey(), value);
+        return Database.guilds.find(query).first();
     }
 
-    private Object get(String key, Object value, Class<?> clazz) {
-        Bson query = eq(key, value);
-
-        return ((Document) Database.guilds.find(query).first().get("info")).get(key, clazz);
-    }
-
-    private void update(String guildName, String key, EnumOperators EO, Object value) {
+    private void update(String guildName, EnumGuildData data, EnumOperators EO, Object value) {
 
         // INSTANTLY UPDATES THE MONGODB SERVER //
-        Database.guilds.updateOne(Filters.eq("info.guildName", guildName), new Document(EO.getUO(), new Document("info." + key, value)));
+        Database.guilds.updateOne(eq("info.name", guildName), new Document(EO.getUO(), new Document(data.getKey(), value)));
     }
 
 
+    public boolean doesTagExist(String tag, Consumer<Boolean> action) {
+        boolean doesTagExist = get(EnumGuildData.TAG, tag) != null;
+        action.accept(doesTagExist);
+
+        return doesTagExist;
+    }
+
     public boolean isOwner(UUID uuid, String guildName) {
-        return get(guildName, "owner", uuid.toString(), String.class) != null;
+        return get(guildName, EnumGuildData.OWNER, String.class) == uuid.toString();
     }
 
     public boolean isGuildNull(UUID uuid) {
-        return getGuildOf(uuid) != null;
+        return getGuildOf(uuid) == null || (getGuildOf(uuid) != null && getGuildOf(uuid).equals(""));
     }
-
 
     public String getGuildOf(UUID uuid) {
         return (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid);
+    }
+
+    public void leaveGuild(UUID uuid) {
+
     }
 
 
@@ -103,27 +104,33 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
 
     private void modifyRank(String guildName, UUID uuid, boolean promote) {
-        List<String> officers = (List<String>) get(guildName, "officers", ArrayList.class);
+        List<String> officers = (List<String>) get(guildName, EnumGuildData.OFFICERS, ArrayList.class);
 
-
+        assert officers != null;
         if (!officers.contains(uuid.toString())) {
             if (promote) {
                 //ADD TO OFFICERS
-                update(guildName, "officers", EnumOperators.$PUSH, uuid.toString());
+                update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PUSH, uuid.toString());
                 // REMOVE FROM MEMBERS
-                update(guildName, "members", EnumOperators.$PULL, uuid.toString());
+                update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PULL, uuid.toString());
             } else {
                 //REMOVE FROM OFFICERS
-                update(guildName, "officers", EnumOperators.$PULL, uuid.toString());
+                update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString());
                 // ADD TO MEMBERS
-                update(guildName, "members", EnumOperators.$PUSH, uuid.toString());
+                update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PUSH, uuid.toString());
 
             }
         }
     }
 
+
+    public String getMotdOf(String guildName) {
+        return (String) get(guildName, EnumGuildData.MOTD, String.class);
+    }
+
+
     public void setMotdOf(String guildName, String motd) {
-        update(guildName, "motd", EnumOperators.$SET, motd);
+        update(guildName, EnumGuildData.MOTD, EnumOperators.$SET, motd);
     }
 
 
@@ -139,11 +146,6 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
     public boolean isOfficer(UUID uuid, String guildName) {
         return false;
-    }
-
-
-    public void saveAllGuilds() {
-
     }
 
 
@@ -167,13 +169,8 @@ public class GuildDatabase implements GuildDatabaseAPI {
     }
 
 
-    public void saveGuild(String guildName) {
-
-    }
-
-
-    public String getClanTagOf(String guildName) {
-        return null;
+    public String getTagOf(String guildName) {
+        return (String) get(guildName, EnumGuildData.TAG, String.class);
     }
 
 
@@ -186,6 +183,11 @@ public class GuildDatabase implements GuildDatabaseAPI {
         return null;
     }
 
+    @Override
+    public List<UUID> getAllGuildMembers(String guildName) {
+        return null;
+    }
+
 
     public List<UUID> getAllOnlineOf(String guildName) {
         return null;
@@ -193,9 +195,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
 
     public void setGuild(UUID uuid, String guildName) {
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.GUILD, guildName, false);
-
-        saveGuild(guildName);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.GUILD, guildName, true);
     }
 
 
