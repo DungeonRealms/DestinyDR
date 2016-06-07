@@ -9,6 +9,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.events.PlayerMessagePlayerEvent;
+import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.handlers.TutorialIslandHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -243,7 +244,7 @@ public class MainListener implements Listener {
         player.setGameMode(GameMode.ADVENTURE);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 4));
         player.teleport(new Location(Bukkit.getWorlds().get(0), 0, 255, 0, 0f, 0f));
-        BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.GREEN.toString() + ChatColor.BOLD + "Fetching Data...");
+        BountifulAPI.sendTitle(player, 1, 20 * 3, 1, ChatColor.GREEN.toString() + ChatColor.BOLD + "Logging in '" + player.getName() + "' ...", ChatColor.GRAY.toString() + "Do not disconnect");
         ItemStack[] armor = player.getInventory().getArmorContents();
         for (int i = 0; i < armor.length; i++) {
             armor[i] = new ItemStack(Material.AIR);
@@ -487,7 +488,7 @@ public class MainListener implements Listener {
             player.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "cannot" + ChatColor.RED + " enter " + ChatColor.BOLD.toString() + "NON-PVP" + ChatColor.RED + " zones with a Chaotic alignment.");
         }
     }
-    
+
     /**
      * Checks for player interacting with NPC Players, opens an inventory if
      * they have one.
@@ -539,10 +540,7 @@ public class MainListener implements Listener {
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Guild Registrar")) {
-            // TODO: Open Guild Registrar
-
-
-            event.getPlayer().sendMessage(ChatColor.RED + "Guilds are coming soon.");
+            GuildMechanics.getInstance().startGuildCreationDialogue(event.getPlayer());
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Innkeeper")) {
