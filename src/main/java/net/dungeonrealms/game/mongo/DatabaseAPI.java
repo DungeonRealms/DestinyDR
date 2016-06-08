@@ -253,6 +253,15 @@ public class DatabaseAPI {
         }
     }
 
+    public String getOfflineName(UUID uuid) {
+        Document doc = Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
+        if (doc == null) {
+            return "";
+        } else {
+            return ((Document) doc.get("info")).get("username", String.class);
+        }
+    }
+
     /**
      * Adds a new player to Mongo Creates Document here.
      *

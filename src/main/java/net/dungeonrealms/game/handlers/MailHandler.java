@@ -91,9 +91,6 @@ public class MailHandler {
      * @since 1.0
      */
     public void sendMail(Player player, String to, ItemStack itemStack) {
-
-        UUID fromUUID = player.getUniqueId();
-
         UUID toUUID;
         String result = DatabaseAPI.getInstance().getUUIDFromName(to);
         if (result.equals("")) {
@@ -123,7 +120,7 @@ public class MailHandler {
      * @since 1.0
      */
     public void sendMailMessage(Player player, String message) {
-        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "NORTH POLE" + ChatColor.WHITE + "]" + " " + message);
+        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "Mail" + ChatColor.WHITE + "]" + " " + message);
     }
 
 }
