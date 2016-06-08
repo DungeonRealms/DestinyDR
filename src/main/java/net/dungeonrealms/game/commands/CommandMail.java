@@ -3,8 +3,6 @@ package net.dungeonrealms.game.commands;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.handlers.MailHandler;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -23,17 +21,14 @@ public class CommandMail extends BasicCommand {
         if (s instanceof ConsoleCommandSender) return false;
 
         Player player = (Player) s;
-        if (args.length > 0) {
-            if (!player.isOp()) {
-                return false;
-            }
+        if (args.length == 2) {
             if (args[0].equals("send")) {
-                if(args[1].equalsIgnoreCase("a")) {
+                /*if (args[1].equalsIgnoreCase("a")) {
                     Bukkit.getOnlinePlayers().stream().forEach(player1 -> MailHandler.getInstance().sendMail(player, player1.getName(), player.getItemInHand()));
-                }else {
-                    MailHandler.getInstance().sendMail(player, args[1], player.getItemInHand());
+                }*/
+                if (MailHandler.getInstance().sendMail(player, args[1], player.getItemInHand())) {
+                    player.setItemInHand(null);
                 }
-
             }
             return true;
         }

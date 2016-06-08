@@ -25,7 +25,6 @@ import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -54,10 +53,15 @@ public class ItemListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onItemDrop(PlayerDropItemEvent event) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
-        NBTTagCompound tag = nmsItem.getTag();
-        if (tag == null || !tag.getString("type").equalsIgnoreCase("important")) return;
-        event.getItemDrop().remove();
+        if (!API.isItemTradeable(event.getItemDrop().getItemStack())) {
+            net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
+            NBTTagCompound tag = nmsItem.getTag();
+            if (tag.hasKey("destroy")) {
+                event.getItemDrop().remove();
+            } else {
+                event.setCancelled(true);
+            }
+        }
     }
 
     /**

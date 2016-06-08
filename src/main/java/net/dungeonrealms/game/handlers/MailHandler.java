@@ -90,12 +90,16 @@ public class MailHandler {
      * @param itemStack The package!
      * @since 1.0
      */
-    public void sendMail(Player player, String to, ItemStack itemStack) {
+    public boolean sendMail(Player player, String to, ItemStack itemStack) {
         UUID toUUID;
+        if (!API.isItemTradeable(itemStack)) {
+            player.sendMessage(ChatColor.RED + "This item cannot be sent via mail.");
+            return false;
+        }
         String result = DatabaseAPI.getInstance().getUUIDFromName(to);
         if (result.equals("")) {
             player.sendMessage(ChatColor.RED + "This player does not exist.");
-            return;
+            return false;
         } else {
             toUUID = UUID.fromString(result);
         }
@@ -112,12 +116,14 @@ public class MailHandler {
         }
 
         sendMailMessage(player, ChatColor.GREEN + "You have sent " + ChatColor.GOLD + to + ChatColor.GREEN + " a present!");
+
+        return true;
     }
 
     /**
      * @param player  who to send message to?
      * @param message string message.
-     * @since 1.0
+     * @since 1.0N
      */
     public void sendMailMessage(Player player, String message) {
         player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "Mail" + ChatColor.WHITE + "]" + " " + message);

@@ -784,11 +784,6 @@ public class HealthHandler implements GenericMechanic {
         if (entity.hasMetadata("boss")) {
             totalHP *= 4;
         }
-
-        if (totalHP < 80) {
-            totalHP = 120;
-        }
-
         return (int) totalHP;
     }
 

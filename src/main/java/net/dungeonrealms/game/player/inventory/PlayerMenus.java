@@ -136,14 +136,13 @@ public class PlayerMenus {
             long unix = Long.valueOf(s.split(",")[1]);
             String serializedItem = s.split(",")[2];
             Date sentDate = new Date(unix * 1000);
-            String loginTime = sdf.format(sentDate);
             ItemStack item = ItemSerialization.itemStackFromBase64(serializedItem);
 
             ItemStack mailTemplateItem = MailHandler.getInstance().setItemAsMail(editItem(item, new String[]{
                     ChatColor.GRAY + "From: " + ChatColor.AQUA + from,
                     ChatColor.GRAY + "Sent: " + ChatColor.AQUA + sentDate,
                     "",
-                    ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "Left-Click: " + ChatColor.GREEN + "Receive item."
+                    ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "Left-Click:" + ChatColor.GREEN + " Receive item."
             }), s);
             inv.setItem(slot, mailTemplateItem);
             if (slot >= 44) break;

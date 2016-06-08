@@ -972,13 +972,20 @@ public class API {
      * @return
      */
     public static boolean isOrb(ItemStack is) {
-
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(is);
         return is.getType() == Material.MAGMA_CREAM && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("orb");
     }
 
-    public static boolean isItemNonTradeable(ItemStack itemStack) {
+    public static boolean isItemTradeable(ItemStack itemStack) {
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
-        return nms != null && nms.getTag() != null && nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter");
+        if (nms != null && nms.getTag() != null) {
+            if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")) {
+                return false;
+            }
+            if (nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter")) {
+                return false;
+            }
+        }
+        return true;
     }
 }

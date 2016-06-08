@@ -105,6 +105,12 @@ public class DungeonRealms extends JavaPlugin {
         hasFinishedSetup = bool;
     }
 
+    public static long getServerStart() {
+        return serverStart;
+    }
+
+    private static final long serverStart = System.currentTimeMillis();
+
     public void onEnable() {
         long START_TIME = System.currentTimeMillis() / 1000L;
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
@@ -271,6 +277,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandRank("rank", "/<command> [args]", "The rank command!"));
             cm.registerCommand(new CommandEss("dr", "/<command> [args]", "The essentials command."));
             cm.registerCommand(new CommandMail("mailbox", "/<command> [args]", "The mail command."));
+            cm.registerCommand(new CommandReboot("reboot", "/<command>", "Check reboot time."));
             cm.registerCommand(new CommandAccept("accept", "/<command> [args]", "The accept command."));
             cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
 
@@ -334,7 +341,6 @@ public class DungeonRealms extends JavaPlugin {
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000L) / START_TIME) + "/s");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> this.hasFinishedSetup = true, 240L);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> DatabaseAPI.getInstance().PLAYER_TIME.entrySet().stream().forEach(e -> DatabaseAPI.getInstance().PLAYER_TIME.put(e.getKey(), (e.getValue() + 1))), 0, 20);
-
     }
 
     public void onDisable() {

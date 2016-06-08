@@ -64,7 +64,8 @@ public class ItemManager {
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
-        tag.set("usage", new NBTTagString("hearthstone"));
+        tag.set("type", new NBTTagString("important"));
+        tag.set("destroy", new NBTTagString("yes"));
         nmsStack.setTag(tag);
         return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nmsStack));
     }
@@ -224,6 +225,7 @@ public class ItemManager {
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
+        tag.set("destroy", new NBTTagString("yes"));
         tag.setInt("muleTier", tier.getTier());
         tag.setString("usage", "mule");
         nmsStack.setTag(tag);
@@ -237,12 +239,12 @@ public class ItemManager {
             is = new ItemBuilder().setItem(createItem(Material.CHEST, ChatColor.AQUA + "Adventurer's Storage Mule Chest", new String[]{
                     ChatColor.RED + "18 Max Storage Size", ChatColor.GRAY + "Apply to your " + ChatColor.GREEN + "Old Storage Mule" + ChatColor.GRAY + " to expand its inventory!"}))
 //                    .addLore(ChatColor.WHITE + "5000" + ChatColor.AQUA + " Portal Key Shards")
-                    .setNBTInt("muleLevel", 2).setNBTString("type", "important").setNBTString("usage", "muleUpgrade").build();
+                    .setNBTInt("muleLevel", 2).setNBTString("type", "important").setNBTString("usage", "muleUpgrade").setNBTString("destroy", "yes").build();
         else if (tier == 3)
             is = new ItemBuilder().setItem(createItem(Material.CHEST, ChatColor.AQUA + "Royal Storage Mule Chest", new String[]{
                     ChatColor.RED + "27 Max Storage Size", ChatColor.GRAY + "Apply to your " + ChatColor.AQUA + "Adventurer's Storage Mule", ChatColor.GRAY + "to further expand its inventory!"}))
 //                    .addLore(ChatColor.WHITE + "8000" + ChatColor.LIGHT_PURPLE + " Portal Key Shards")
-                    .setNBTInt("muleLevel", 3).setNBTString("type", "important").setNBTString("usage", "muleUpgrade").build();
+                    .setNBTInt("muleLevel", 3).setNBTString("type", "important").setNBTString("usage", "muleUpgrade").setNBTString("destroy", "yes").build();
 
         return is;
     }
@@ -800,6 +802,7 @@ public class ItemManager {
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
         tag.set("usage", new NBTTagString("profile"));
+        tag.set("destroy", new NBTTagString("yes"));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
@@ -817,6 +820,7 @@ public class ItemManager {
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
         tag.set("usage", new NBTTagString("hearthstone"));
+        tag.set("destroy", new NBTTagString("yes"));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
@@ -830,6 +834,7 @@ public class ItemManager {
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
         tag.set("usage", new NBTTagString("mount"));
+        tag.set("destroy", new NBTTagString("yes"));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
@@ -842,6 +847,7 @@ public class ItemManager {
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
         tag.set("usage", new NBTTagString("pet"));
+        tag.set("destroy", new NBTTagString("yes"));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
@@ -854,6 +860,7 @@ public class ItemManager {
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
         tag.set("usage", new NBTTagString("trail"));
+        tag.set("destroy", new NBTTagString("yes"));
         nmsStack.setTag(tag);
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
