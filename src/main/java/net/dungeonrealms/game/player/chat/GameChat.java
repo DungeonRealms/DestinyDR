@@ -59,6 +59,8 @@ public final class GameChat {
         if (gChat) {
             // Determine which global type we should use, default is GLOBAL.
             switch (globalType.toLowerCase()) {
+                case "local": // This allows us to do a cheap hack for "/l".
+                    break;
                 case "trade":
                     message.append(TRADE);
                     break;
@@ -140,6 +142,7 @@ public final class GameChat {
      * @return boolean
      */
     public static boolean isTradeChat(String message) {
+        message = message.toLowerCase();
         return (message.startsWith("wtb") || message.startsWith("wts") || message.startsWith("wtt") || message.startsWith("trade")
                 || message.startsWith("trading") || message.startsWith("buying") || message.startsWith("selling"));
     }

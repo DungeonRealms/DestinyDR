@@ -274,6 +274,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
 
             cm.registerCommand(new CommandGlobalChat("gl", "/<command> [args]", "The invoke command."));
+            cm.registerCommand(new CommandLocalChat("l", "/<command> [args]", "The invoke command."));
 
             cm.registerCommand(new CommandStats("stat", "/<command> [args]", "The stats command.", Collections.singletonList("stats")));
             cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "The stop command.", Collections.singletonList("drstop")));
