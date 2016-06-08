@@ -265,7 +265,7 @@ public class Achievements {
 
         OPEN_LOOT_CHEST("A chest within a chest", new String[]{
                 "You've opened your first loot chest."
-        }, 250, "achievement.misc_open_loot_chest"),
+        }, 250, "achievement.explorer_open_loot_chest"),
 
         REALM_EXPANSION_1("Expanding I", new String[]{
                 "You've begun work on your realm."

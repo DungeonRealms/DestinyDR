@@ -341,11 +341,6 @@ public class PlayerMenus {
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to your Realm",
                 "",
         }));
-        inv.setItem(8, editItem(new ItemStack(Material.GHAST_TEAR), ChatColor.GOLD + "Miscellaneous", new String[]{
-                "",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Miscellaneous Achievements",
-                "",
-        }));
         player.openInventory(inv);
     }
 
@@ -459,39 +454,6 @@ public class PlayerMenus {
 
         for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
             if (achievement.getMongoName().contains(".realm_")) {
-                if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
-                    inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
-                            "",
-                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
-                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
-                            "",
-                            ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
-                    }));
-                } else {
-                    inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
-                            "",
-                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
-                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
-                            "",
-                            ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
-                    }));
-                }
-            }
-        }
-        player.openInventory(inv);
-    }
-
-    public static void openMiscellaneousAchievementMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 27, "Miscellaneous Achievements");
-        UUID uuid = player.getUniqueId();
-        List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
-
-        boolean noAchievements;
-        noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
-        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
-
-        for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
-            if (achievement.getMongoName().contains(".misc_")) {
                 if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
                     inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
                             "",

@@ -1008,8 +1008,7 @@ public class ClickHandler {
                     case 7:
                         PlayerMenus.openRealmAchievementMenu(player);
                         break;
-                    case 8:
-                        PlayerMenus.openMiscellaneousAchievementMenu(player);
+                    default:
                         break;
                 }
                 break;
@@ -1049,13 +1048,6 @@ public class ClickHandler {
                 }
                 break;
             case "Realm Achievements":
-                event.setCancelled(true);
-                if (slot == 0) {
-                    PlayerMenus.openPlayerAchievementsMenu(player);
-                    return;
-                }
-                break;
-            case "Miscellaneous Achievements":
                 event.setCancelled(true);
                 if (slot == 0) {
                     PlayerMenus.openPlayerAchievementsMenu(player);
