@@ -62,6 +62,8 @@ public class DatabaseAPI {
             /*
             Player Variables Main Document().
              */
+            case USERNAME:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("username", String.class);
             case HEALTH:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("health", Integer.class);
             case FIRST_LOGIN:
@@ -242,6 +244,15 @@ public class DatabaseAPI {
         });*/
     }
 
+    public String getUUIDFromName(String playerName) {
+        Document doc = Database.collection.find(Filters.eq("info.username", playerName.toLowerCase())).first();
+        if (doc == null) {
+            return "";
+        } else {
+            return ((Document) doc.get("info")).get("uuid", String.class);
+        }
+    }
+
     /**
      * Adds a new player to Mongo Creates Document here.
      *
@@ -253,6 +264,7 @@ public class DatabaseAPI {
         Document newPlayerDocument =
                 new Document("info",
                         new Document("uuid", uuid.toString())
+                                .append("username", "")
                                 .append("health", 50)
                                 .append("gems", 0)
                                 .append("ecash", 0)

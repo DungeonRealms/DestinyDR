@@ -94,8 +94,14 @@ public class MailHandler {
 
         UUID fromUUID = player.getUniqueId();
 
-        //TODO
-        UUID toUUID = UUID.randomUUID();
+        UUID toUUID;
+        String result = DatabaseAPI.getInstance().getUUIDFromName(to);
+        if (result.equals("")) {
+            player.sendMessage(ChatColor.RED + "This player does not exist.");
+            return;
+        } else {
+            toUUID = UUID.fromString(result);
+        }
 
         String serializedItem = ItemSerialization.itemStackToBase64(itemStack);
 

@@ -13,7 +13,6 @@ import net.dungeonrealms.game.commands.newcommands.*;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.listeners.*;
-import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.RealmManager;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.MechanicManager;
@@ -322,7 +321,6 @@ public class DungeonRealms extends JavaPlugin {
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     DungeonRealms.getInstance().mm.stopInvocation();
                     Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
-                    AsyncUtils.pool.shutdown();
                     Database.mongoClient.close();
                 }, 200);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getOnlinePlayers().stream().forEach(player -> BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE")), (20 * 60) * 4);
@@ -337,14 +335,13 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     public void onDisable() {
+        ShopMechanics.deleteAllShops();
         API.logoutAllPlayers(false);
         ps.onDisable();
         hs.onDisable();
         saveConfig();
-        ShopMechanics.deleteAllShops();
         mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
-        AsyncUtils.pool.shutdown();
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Database.mongoClient::close, 20);
     }
 

@@ -572,19 +572,22 @@ public class ClickHandler {
                 if (slot >= 54) return;
                 if (slot == 0) {
                     PlayerMenus.openFriendInventory(player);
+                    return;
                 }
                 FriendHandler.getInstance().remove(player, event.getClick(), event.getCurrentItem());
                 break;
             case "Mailbox":
                 event.setCancelled(true);
-                switch (slot) {
-                    case 0:
-                        player.sendMessage(ChatColor.RED + "You cannot send mail yet! It's coming soon! :-)");
-                        break;
-                }
-                if (event.getCurrentItem() != null) {
-                    ItemStack clickedItem = event.getCurrentItem();
-                    MailHandler.getInstance().giveItemToPlayer(clickedItem, player);
+                if (slot == 0) {
+                    player.sendMessage(ChatColor.RED + "You cannot send mail yet! It's coming soon! :-)");
+                    return;
+                } else if (slot == 8) {
+                    return;
+                } else {
+                    if (event.getCurrentItem() != null) {
+                        ItemStack clickedItem = event.getCurrentItem();
+                        MailHandler.getInstance().giveItemToPlayer(clickedItem, player);
+                    }
                 }
                 break;
             case "Pet Selection":

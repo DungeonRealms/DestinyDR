@@ -1,12 +1,6 @@
 package net.dungeonrealms.game.statistics;
 
-import java.io.IOException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.UUID;
-
-import net.dungeonrealms.game.mastery.AsyncUtils;
-import net.dungeonrealms.game.mastery.Utils;
 
 /**
  * Created by Nick on 9/26/2015.
@@ -51,16 +45,6 @@ public class Statistics {
      * @since 1.0
      */
     public void sendStatisticUpdate(UUID uuid, StatisticType type, int amount) {
-        AsyncUtils.pool.submit(() -> {
-            Utils.log.info("[MONITOR] [ASYNC] Sending update packet for " + uuid.toString() + " type " + type.name());
-            try {
-                URL url = new URL("http://www.dungeonrealms.net/api/statistics.php?uuid=" + uuid.toString() + "&type=" + type.getId() + "&object=" + amount + "&verification=" + "trump2016");
-                URLConnection connection = url.openConnection();
-                connection.connect();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        });
     }
 
 

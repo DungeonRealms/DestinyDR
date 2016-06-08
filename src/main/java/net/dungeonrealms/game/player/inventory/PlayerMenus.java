@@ -2,6 +2,7 @@ package net.dungeonrealms.game.player.inventory;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.handlers.MailHandler;
+import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
@@ -136,14 +137,14 @@ public class PlayerMenus {
             String serializedItem = s.split(",")[2];
             Date sentDate = new Date(unix * 1000);
             String loginTime = sdf.format(sentDate);
+            ItemStack item = ItemSerialization.itemStackFromBase64(serializedItem);
 
-            ItemStack mailTemplateItem = MailHandler.getInstance().setItemAsMail(editItem(new ItemStack(Material.CHEST), ChatColor.GREEN + "Mail Item", new String[]{
+            ItemStack mailTemplateItem = MailHandler.getInstance().setItemAsMail(editItem(item, new String[]{
                     ChatColor.GRAY + "From: " + ChatColor.AQUA + from,
                     ChatColor.GRAY + "Sent: " + ChatColor.AQUA + sentDate,
                     "",
-                    ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Left-Click " + ChatColor.GRAY + "to open!"
+                    ChatColor.GRAY.toString() + ChatColor.UNDERLINE + "Left-Click: " + ChatColor.GREEN + "Receive item."
             }), s);
-
             inv.setItem(slot, mailTemplateItem);
             if (slot >= 44) break;
             slot++;
@@ -607,6 +608,14 @@ public class PlayerMenus {
         ItemMeta meta = itemStack.getItemMeta();
         meta.setDisplayName(name);
         itemStack.setDurability(shortID);
+        meta.setLore(Arrays.asList(lore));
+        itemStack.setItemMeta(meta);
+        itemStack.setAmount(1);
+        return itemStack;
+    }
+
+    public static ItemStack editItem(ItemStack itemStack, String[] lore) {
+        ItemMeta meta = itemStack.getItemMeta();
         meta.setLore(Arrays.asList(lore));
         itemStack.setItemMeta(meta);
         itemStack.setAmount(1);

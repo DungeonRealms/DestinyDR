@@ -5,6 +5,7 @@ package net.dungeonrealms.game.mongo;
  */
 public enum EnumData {
 
+    USERNAME("info.username"),
     HEALTH("info.health"),
     FIRST_LOGIN("info.firstLogin"),
     LAST_LOGIN("info.lastLogin"),
