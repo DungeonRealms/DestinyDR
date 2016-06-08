@@ -63,8 +63,7 @@ public class Achievements {
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$PUSH, EnumData.ACHIEVEMENTS, achievement.getMongoName(), true);
         if (Bukkit.getPlayer(uuid) == null) return;
         Player player = Bukkit.getPlayer(uuid);
-        player.sendMessage(ChatColor.GREEN + "[Achievement Earned] " + ChatColor.YELLOW + achievement.getName());
-        player.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + "             " + achievement.getMessage()[0]);
+        player.sendMessage(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD.toString() + ">> " + ChatColor.DARK_AQUA.toString() + ChatColor.UNDERLINE.toString() + "Achievement Unlocked:" + ChatColor.DARK_AQUA.toString() + " '" + ChatColor.GRAY + achievement.getName() + ChatColor.DARK_AQUA.toString() + "'!");
         player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
         try {
             ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.TOWN_AURA, player.getLocation().add(0, 2, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 10);
