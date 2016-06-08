@@ -360,7 +360,7 @@ public class PlayerStats {
         this.dexPoints = 0;
         this.strPoints = 0;
         this.vitPoints = 0;
-        updateDatabase();
+        updateDatabase(false);
     }
 
     /**

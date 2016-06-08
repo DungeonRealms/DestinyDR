@@ -62,7 +62,7 @@ public class NetworkAPI implements PluginMessageListener {
                 if (in.readUTF().equalsIgnoreCase("close")) {
                     Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> {
                         if (ShopMechanics.getShop(p.getName()) != null) {
-                            ShopMechanics.getShop(p.getName()).deleteShop();
+                            ShopMechanics.getShop(p.getName()).deleteShop(false);
                         }
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
                     });

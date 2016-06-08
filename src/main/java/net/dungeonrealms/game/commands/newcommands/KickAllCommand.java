@@ -19,7 +19,7 @@ public class KickAllCommand extends BasicCommand {
     	if (!p.isOp()) {
     		return false;
     	}
-		ShopMechanics.deleteAllShops();
+		ShopMechanics.deleteAllShops(true);
 		API.logoutAllPlayers(true);
     	return true;
     }
