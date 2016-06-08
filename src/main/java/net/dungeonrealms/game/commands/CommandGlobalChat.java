@@ -51,21 +51,21 @@ public class CommandGlobalChat extends BasicCommand {
 
         StringBuilder prefix = new StringBuilder();
 
-        prefix.append(ChatColor.AQUA + "<" + ChatColor.BOLD + "G" + ChatColor.AQUA + ">" + ChatColor.RESET + "");
+        prefix.append(GameChat.GLOBAL);
 
         Rank.RankBlob r = Rank.getInstance().getRank(uuid);
-        if (r != null && !r.getPrefix().equals("null")) {
+        if (r != null && !GameChat.getRankPrefix(r.getName()).equals("null")) {
             if (r.getName().equalsIgnoreCase("default")) {
                 prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.GRAY + ""));
             } else {
-                prefix.append(ChatColor.translateAlternateColorCodes('&', " " + r.getPrefix() + ChatColor.RESET));
+                prefix.append(ChatColor.translateAlternateColorCodes('&', " " + GameChat.getRankPrefix(r.getName()) + ChatColor.RESET));
             }
 
         }
 
         if (!GuildDatabase.getAPI().isGuildNull(uuid)) {
             String clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
-            prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.WHITE + " [" + clanTag + ChatColor.RESET + "]"));
+            prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.WHITE + " [" + clanTag + ChatColor.RESET + "] "));
         }
 
        	if(finalChat.contains("@i@") && player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR){
@@ -89,8 +89,10 @@ public class CommandGlobalChat extends BasicCommand {
             });
             return true;
         }
-        
-        Bukkit.broadcastMessage(prefix.toString().trim() + " " + player.getName() + ChatColor.GRAY + ": " + finalChat);
+
+        prefix.append(GameChat.getName(player, r.getName()));
+
+        Bukkit.broadcastMessage(prefix.toString() + finalChat);
 
         return true;
     }

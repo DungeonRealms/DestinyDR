@@ -1,8 +1,10 @@
 package net.dungeonrealms.game.player.chat;
 
-import java.util.UUID;
-
 import net.dungeonrealms.game.guild.db.GuildDatabase;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.player.json.JSONMessage;
+import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -11,43 +13,37 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
 
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.player.json.JSONMessage;
-import net.dungeonrealms.game.player.rank.Rank;
+import java.util.UUID;
 
 public class TabbedChatListener implements Listener {
 	
 	@EventHandler
     public void onPlayerChatTabCompleteEvent(PlayerChatTabCompleteEvent e) {
         final Player player = e.getPlayer();
-        StringBuilder chatMessage = new StringBuilder();
-        
-        chatMessage.append(e.getChatMessage());
-        
+
         player.closeInventory(); // Closes the chat after it grabs it!
 
-        String finalChat = Chat.getInstance().checkForBannedWords(chatMessage.toString());
+        String finalChat = Chat.getInstance().checkForBannedWords(e.getChatMessage());
 
         UUID uuid = player.getUniqueId();
 
         StringBuilder prefix = new StringBuilder();
 
-        prefix.append(ChatColor.AQUA + "<" + ChatColor.BOLD + "G" + ChatColor.AQUA + ">" + ChatColor.RESET + "");
+        prefix.append(GameChat.GLOBAL);
 
         Rank.RankBlob r = Rank.getInstance().getRank(uuid);
-        if (r != null && !r.getPrefix().equals("null")) {
+        if (r != null && !GameChat.getRankPrefix(r.getName()).equals("null")) {
             if (r.getName().equalsIgnoreCase("default")) {
                 prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.GRAY + ""));
             } else {
-                prefix.append(ChatColor.translateAlternateColorCodes('&', " " + r.getPrefix() + ChatColor.RESET));
+                prefix.append(ChatColor.translateAlternateColorCodes('&', " " + GameChat.getRankPrefix(r.getName()) + ChatColor.RESET));
             }
 
         }
 
         if (!GuildDatabase.getAPI().isGuildNull(uuid)) {
             String clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
-            prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.WHITE + " [" + clanTag + ChatColor.RESET + "]"));
+            prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.WHITE + " [" + clanTag + ChatColor.RESET + "] "));
         }
 
        	if(finalChat.contains("@i@") && player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR){
@@ -71,8 +67,10 @@ public class TabbedChatListener implements Listener {
             });
             return;
         }
+
+        prefix.append(GameChat.getName(player, r.getName()));
         
-        Bukkit.broadcastMessage(prefix.toString().trim() + " " + player.getName() + ChatColor.GRAY + ": " + finalChat);
+        Bukkit.broadcastMessage(prefix.toString() + finalChat);
     }
 
 }
