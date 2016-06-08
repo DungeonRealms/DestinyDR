@@ -28,7 +28,6 @@ public class CommandStop extends BasicCommand {
         if (s instanceof Player) {
             Player player = (Player) s;
             if (!player.isOp()) {
-                player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
                 return false;
             }
         }

@@ -6,6 +6,7 @@ package net.dungeonrealms.game.mongo;
 public enum EnumGuildData {
 
     NAME("info.name"),
+    DISPLAY_NAME("info.displayName"),
     MOTD("info.motd"),
     TAG("info.tag"),
 

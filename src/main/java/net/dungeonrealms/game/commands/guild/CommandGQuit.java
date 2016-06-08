@@ -12,7 +12,7 @@ import org.bukkit.entity.Player;
 import java.util.List;
 
 /**
- * Class written by APOLLOSOFTWARE.IO on 6/2/2016
+ * Class written by APOLLOSOFTWARE.IO on 6/6/2016
  */
 
 

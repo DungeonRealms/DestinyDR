@@ -33,10 +33,11 @@ public interface GuildDatabaseAPI {
      *
      * @return Returns default document template
      */
-    static Document getDocumentTemplate(String owner, String guildName, String tag) {
+    static Document getDocumentTemplate(String owner, String guildName, String displayName, String tag) {
         return new Document("info",
                 new Document("owner", owner)
                         .append("name", guildName)
+                        .append("displayName", displayName)
                         .append("tag", tag)
                         .append("motd", "Default MOTD :(")
                         .append("officers", new ArrayList<String>())
@@ -48,12 +49,12 @@ public interface GuildDatabaseAPI {
 
     /**
      * @param guildName Guild Name.
-     * @param clanTag   Clan Tag.
+     * @param tag   Clan Tag.
      * @param owner     owner UUID
      * @param callback  Call back method
      */
 
-    void createGuild(String guildName, String clanTag, UUID owner, Consumer<Boolean> callback);
+    void createGuild(String guildName, String displayName, String tag, UUID owner, Consumer<Boolean> callback);
 
     /**
      * @param uuid Player
@@ -138,18 +139,6 @@ public interface GuildDatabaseAPI {
 
     /**
      * @param guildName targeted guild.
-     * @return Ally list.
-     */
-    List<String> getEnemiesOf(String guildName);
-
-    /**
-     * @param guildName targeted guild.
-     * @return Ally list.
-     */
-    List<String> getAlliesOf(String guildName);
-
-    /**
-     * @param guildName targeted guild.
      * @param message   sends all a message.
      */
     void sendAlert(String guildName, String message);
@@ -162,22 +151,23 @@ public interface GuildDatabaseAPI {
     String getTagOf(String guildName);
 
     /**
-     * @param guildName name wanting the players.
-     * @return The offline players of a guild.
+     * @param guildName targeted guild.
+     * @return The display name
      */
-    List<String> getAllOfflineOf(String guildName);
+    String getDisplayNameOf(String guildName);
 
-    /**
-     * @param guildName name wanting the players.
-     * @return The online players of a guild.
-     */
-    List<String> getAllOnlineNamesOf(String guildName);
 
     /**
      * @param guildName name wanting the players.
      * @return The online players of a guild.
      */
     List<UUID> getAllGuildMembers(String guildName);
+
+    /**
+     * @param guildName name wanting the players.
+     * @return The online players of a guild.
+     */
+    List<UUID> getAllOfGuild(String guildName);
 
     /**
      * Sets the players guild.

@@ -25,7 +25,6 @@ public class CommandList extends BasicCommand  {
             return false;
         }
         if (!(commandSender.isOp())) {
-            commandSender.sendMessage("You're not OP.");
             return false;
         }
 
