@@ -86,7 +86,7 @@ public class Shop {
      *
      * @since 1.0
      */
-    public void deleteShop() {
+    public void deleteShop(boolean shutDown) {
         DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true);
         hologram.delete();
         block1.setType(Material.AIR);
@@ -95,7 +95,7 @@ public class Shop {
         uniqueViewers.clear();
         viewCount = 0;
 
-        if (getOwner() == null) {
+        if (getOwner() == null || shutDown) {
             saveCollectionBin();
             block1.setType(Material.AIR);
             block2.setType(Material.AIR);
@@ -180,8 +180,9 @@ public class Shop {
             }
         }
         if (count > 0) {
-            if (BankMechanics.getInstance().getStorage(ownerUUID) != null)
+            if (BankMechanics.getInstance().getStorage(ownerUUID) != null) {
                 BankMechanics.getInstance().getStorage(ownerUUID).collection_bin = inv;
+            }
             String invToString = ItemSerialization.toString(inv);
             DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, invToString, true);
         } else {

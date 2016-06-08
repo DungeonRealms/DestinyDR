@@ -492,10 +492,10 @@ public class ShopListener implements Listener {
         Shop shop = ShopMechanics.getShop(event.getClickedBlock());
         if (shop == null) return;
         if (event.getPlayer().getUniqueId().toString().equalsIgnoreCase(shop.ownerUUID.toString())) {
-            shop.deleteShop();
+            shop.deleteShop(false);
         }
         if (event.getPlayer().isOp()) {
-            shop.deleteShop();
+            shop.deleteShop(false);
         }
     }
 

@@ -31,8 +31,8 @@ public class CommandStop extends BasicCommand {
         }
         DungeonRealms.getInstance().setFinishedSetup(false);
         DungeonRealms.getInstance().saveConfig();
-        ShopMechanics.deleteAllShops();
         API.logoutAllPlayers(true);
+        ShopMechanics.deleteAllShops(true);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             DungeonRealms.getInstance().mm.stopInvocation();

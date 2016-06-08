@@ -326,32 +326,33 @@ public class DungeonRealms extends JavaPlugin {
             Bukkit.getOnlinePlayers().stream().forEach(player -> BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 5 MINUTES"));
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 DungeonRealms.getInstance().setFinishedSetup(false);
-                ShopMechanics.deleteAllShops();
+                ShopMechanics.deleteAllShops(true);
                 API.logoutAllPlayers(true);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     DungeonRealms.getInstance().mm.stopInvocation();
                     Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
                     Database.mongoClient.close();
-                }, 200);
+                }, 200L);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getOnlinePlayers().stream().forEach(player -> BountifulAPI.sendTitle(player, 1, 20 * 3, 1, "", ChatColor.YELLOW + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.RED + "A SCHEDULED  " + ChatColor.BOLD + "REBOOT" + ChatColor.RED + " WILL TAKE PLACE IN 1 MINUTE")), (20 * 60) * 4);
 
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 1200);
-            }, 6000);
-        }, 288000);
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Bukkit::shutdown, 1200L);
+            }, 6000L);
+        }, 288000L);
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000L) / START_TIME) + "/s");
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> this.hasFinishedSetup = true, 240L);
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> DatabaseAPI.getInstance().PLAYER_TIME.entrySet().stream().forEach(e -> DatabaseAPI.getInstance().PLAYER_TIME.put(e.getKey(), (e.getValue() + 1))), 0, 20);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> this.hasFinishedSetup = true, 240L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> DatabaseAPI.getInstance().PLAYER_TIME.entrySet().stream().forEach(e -> DatabaseAPI.getInstance().PLAYER_TIME.put(e.getKey(), (e.getValue() + 1))), 0L, 20L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> Database.getInstance().backupDatabase(), 18000L, 18000L);
     }
 
     public void onDisable() {
-        ShopMechanics.deleteAllShops();
         API.logoutAllPlayers(false);
+        ShopMechanics.deleteAllShops(true);
         ps.onDisable();
         hs.onDisable();
         saveConfig();
         mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Database.mongoClient::close, 20);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Database.mongoClient::close, 20L);
     }
 
 }

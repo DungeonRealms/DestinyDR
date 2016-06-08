@@ -399,12 +399,11 @@ public class API {
         }
         if (GAMEPLAYERS.size() > 0)
             GAMEPLAYERS.stream().filter(gPlayer -> gPlayer.getPlayer().getName().equalsIgnoreCase(player.getName())).forEach(gPlayer -> {
-                gPlayer.getStats().updateDatabase();
+                gPlayer.getStats().updateDatabase(true);
                 GAMEPLAYERS.remove(gPlayer);
             });
         String inventory = ItemSerialization.toString(inv);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
-
     }
 
     /**
@@ -473,7 +472,7 @@ public class API {
         }
         if (GAMEPLAYERS.size() > 0)
             GAMEPLAYERS.stream().filter(gPlayer -> gPlayer.getPlayer().getName().equalsIgnoreCase(player.getName())).forEach(gPlayer -> {
-                gPlayer.getStats().updateDatabase();
+                gPlayer.getStats().updateDatabase(true);
                 GAMEPLAYERS.remove(gPlayer);
             });
         String inventory = ItemSerialization.toString(inv);
