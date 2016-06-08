@@ -110,7 +110,6 @@ public class ShopMechanics implements GenericMechanic {
 
     @Override
     public void stopInvocation() {
-        sh
     }
 
     /**
