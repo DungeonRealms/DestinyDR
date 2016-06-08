@@ -150,7 +150,7 @@ public class Chat {
                     API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
                 } else {
                     event.getPlayer().sendMessage(GameChat.getPreMessage(event.getPlayer()) + fixedMessage);
-                    event.getPlayer().sendMessage(ChatColor.GRAY + "No one heard you...");
+                    event.getPlayer().sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "No one heard you...");
                 }
         }
     }

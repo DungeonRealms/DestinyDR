@@ -72,7 +72,7 @@ public class CommandLocalChat extends BasicCommand {
             API.getNearbyPlayers(player.getLocation(), 75).stream().forEach(otherPlayer -> otherPlayer.sendMessage(GameChat.getPreMessage(player, false, "local") + finalChat));
         } else {
             player.sendMessage(GameChat.getPreMessage(player, false, "local") + finalChat);
-            player.sendMessage(ChatColor.GRAY + "No one heard you...");
+            player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "No one heard you...");
         }
         return true;
     }
