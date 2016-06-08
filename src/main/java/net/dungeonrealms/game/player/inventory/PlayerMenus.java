@@ -8,6 +8,7 @@ import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.mongo.achievements.Achievements;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
@@ -307,8 +308,246 @@ public class PlayerMenus {
         player.openInventory(inv);
     }
 
-    public static void openPlayerProfileMenu(Player player) {
+    public static void openPlayerAchievementsMenu(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 9, "Achievements");
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+        inv.setItem(2, editItem(new ItemStack(Material.MAP), ChatColor.GOLD + "Exploration", new String[]{
+                "",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to Exploration",
+                "",
+        }));
+        inv.setItem(3, editItem(new ItemStack(Material.GOLD_SWORD), ChatColor.GOLD + "Combat", new String[]{
+                "",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to Combat",
+                "",
+        }));
+        inv.setItem(4, editItem(new ItemStack(Material.ARMOR_STAND), ChatColor.GOLD + "Character", new String[]{
+                "",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to Character customization",
+                "",
+        }));
+        inv.setItem(5, editItem(new ItemStack(Material.EMERALD), ChatColor.GOLD + "Currency", new String[]{
+                "",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to Currency",
+                "",
+        }));
+        inv.setItem(6, editItem(new ItemStack(Material.WRITTEN_BOOK), ChatColor.GOLD + "Social", new String[]{
+                "",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Social Achievements",
+                "",
+        }));
+        inv.setItem(7, editItem(new ItemStack(Material.NETHER_STAR), ChatColor.GOLD + "Realm", new String[]{
+                "",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Achievements related to your Realm",
+                "",
+        }));
+        inv.setItem(8, editItem(new ItemStack(Material.GHAST_TEAR), ChatColor.GOLD + "Miscellaneous", new String[]{
+                "",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Miscellaneous Achievements",
+                "",
+        }));
+        player.openInventory(inv);
+    }
 
+    public static void openExplorationAchievementMenu(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 27, "Exploration Achievements");
+        UUID uuid = player.getUniqueId();
+        List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
+
+        boolean noAchievements;
+        noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+
+        for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
+            if (achievement.getMongoName().contains(".explorer_")) {
+                if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+                    inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
+                            "",
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
+                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
+                            "",
+                            ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
+                    }));
+                } else {
+                    inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
+                            "",
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
+                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
+                            "",
+                            ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
+                    }));
+                }
+            }
+        }
+        player.openInventory(inv);
+    }
+
+    public static void openSocialAchievementMenu(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 27, "Social Achievements");
+        UUID uuid = player.getUniqueId();
+        List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
+
+        boolean noAchievements;
+        noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+
+        for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
+            if (achievement.getMongoName().contains(".social_")) {
+                if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+                    inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
+                            "",
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
+                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
+                            "",
+                            ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
+                    }));
+                } else {
+                    inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
+                            "",
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
+                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
+                            "",
+                            ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
+                    }));
+                }
+            }
+        }
+        player.openInventory(inv);
+    }
+
+    public static void openCurrencyAchievementMenu(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 27, "Currency Achievements");
+        UUID uuid = player.getUniqueId();
+        List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
+
+        boolean noAchievements;
+        noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+
+        for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
+            if (achievement.getMongoName().contains(".currency_")) {
+                if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+                    inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
+                            "",
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
+                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
+                            "",
+                            ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
+                    }));
+                } else {
+                    inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
+                            "",
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
+                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
+                            "",
+                            ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
+                    }));
+                }
+            }
+        }
+        player.openInventory(inv);
+    }
+
+    public static void openRealmAchievementMenu(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 27, "Realm Achievements");
+        UUID uuid = player.getUniqueId();
+        List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
+
+        boolean noAchievements;
+        noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+
+        for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
+            if (achievement.getMongoName().contains(".realm_")) {
+                if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+                    inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
+                            "",
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
+                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
+                            "",
+                            ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
+                    }));
+                } else {
+                    inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
+                            "",
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
+                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
+                            "",
+                            ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
+                    }));
+                }
+            }
+        }
+        player.openInventory(inv);
+    }
+
+    public static void openMiscellaneousAchievementMenu(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 27, "Miscellaneous Achievements");
+        UUID uuid = player.getUniqueId();
+        List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
+
+        boolean noAchievements;
+        noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+
+        for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
+            if (achievement.getMongoName().contains(".misc_")) {
+                if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+                    inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
+                            "",
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
+                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
+                            "",
+                            ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
+                    }));
+                } else {
+                    inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
+                            "",
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
+                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
+                            "",
+                            ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
+                    }));
+                }
+            }
+        }
+        player.openInventory(inv);
+    }
+
+    public static void openCharacterAchievementMenu(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 27, "Character Achievements");
+        UUID uuid = player.getUniqueId();
+        List<String> playerAchievements = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ACHIEVEMENTS, uuid);
+
+        boolean noAchievements;
+        noAchievements = (playerAchievements == null || playerAchievements.size() <= 0);
+        inv.setItem(0, editItem(new ItemStack(Material.BARRIER), ChatColor.GREEN + "Back", new String[]{}));
+
+        for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
+            if (achievement.getMongoName().contains(".character_")) {
+                if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+                    inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
+                            "",
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
+                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
+                            "",
+                            ChatColor.RED.toString() + ChatColor.BOLD + "Incomplete",
+                    }));
+                } else {
+                    inv.addItem(editItem(new ItemStack(Material.SLIME_BALL), ChatColor.GREEN + achievement.getName(), new String[]{
+                            "",
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
+                            ChatColor.GRAY + "Reward : " + achievement.getReward() + " EXP",
+                            "",
+                            ChatColor.GREEN.toString() + ChatColor.BOLD + "Complete",
+                    }));
+                }
+            }
+        }
+        player.openInventory(inv);
+    }
+
+    public static void openPlayerProfileMenu(Player player) {
         Inventory inv = Bukkit.createInventory(null, 27, "Profile");
         inv.setItem(0, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GOLD + "Stat Distribution", new String[]{
                 "",
@@ -366,6 +605,12 @@ public class PlayerMenus {
 				ChatColor.GRAY + "http://dungeonrealms.net/shop",
                 "",
                 ChatColor.WHITE + "Use: Open the E-Cash Vendor."
+        }));
+        inv.setItem(24, editItem(new ItemStack(Material.TORCH), ChatColor.GOLD + "Achievements", new String[]{
+                "",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Check your progress.",
+                "",
+                ChatColor.WHITE + "Use: View achievements."
         }));
         inv.setItem(26, editItem(new ItemStack(Material.REDSTONE_COMPARATOR), ChatColor.GOLD + "Toggles", new String[]{
                 "",

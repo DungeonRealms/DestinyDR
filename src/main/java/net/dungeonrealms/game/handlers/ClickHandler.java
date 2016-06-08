@@ -814,6 +814,9 @@ public class ClickHandler {
                     case 18:
                         NPCMenus.openECashPurchaseMenu(player);
                         break;
+                    case 24:
+                        PlayerMenus.openPlayerAchievementsMenu(player);
+                        break;
                     case 26:
                         PlayerMenus.openToggleMenu(player);
                         break;
@@ -979,6 +982,84 @@ public class ClickHandler {
                     }
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_MOUNT_SKIN, nmsStack.getTag().getString("skinType"), true);
                     player.sendMessage(ChatColor.AQUA + "Mount skin set. Please re-summon your mount.");
+                }
+                break;
+            case "Achievements":
+                event.setCancelled(true);
+                if (slot > 9) return;
+                switch (slot) {
+                    case 0:
+                        PlayerMenus.openPlayerProfileMenu(player);
+                        break;
+                    case 2:
+                        PlayerMenus.openExplorationAchievementMenu(player);
+                        break;
+                    case 3:
+                        break;
+                    case 4:
+                        PlayerMenus.openCharacterAchievementMenu(player);
+                        break;
+                    case 5:
+                        PlayerMenus.openCurrencyAchievementMenu(player);
+                        break;
+                    case 6:
+                        PlayerMenus.openSocialAchievementMenu(player);
+                        break;
+                    case 7:
+                        PlayerMenus.openRealmAchievementMenu(player);
+                        break;
+                    case 8:
+                        PlayerMenus.openMiscellaneousAchievementMenu(player);
+                        break;
+                }
+                break;
+            case "Exploration Achievements":
+                event.setCancelled(true);
+                if (slot == 0) {
+                    PlayerMenus.openPlayerAchievementsMenu(player);
+                    return;
+                }
+                break;
+            case "Character Achievements":
+                event.setCancelled(true);
+                if (slot == 0) {
+                    PlayerMenus.openPlayerAchievementsMenu(player);
+                    return;
+                }
+                break;
+            case "Social Achievements":
+                event.setCancelled(true);
+                if (slot == 0) {
+                    PlayerMenus.openPlayerAchievementsMenu(player);
+                    return;
+                }
+                break;
+            case "Combat Achievements":
+                event.setCancelled(true);
+                if (slot == 0) {
+                    PlayerMenus.openPlayerAchievementsMenu(player);
+                    return;
+                }
+                break;
+            case "Currency Achievements":
+                event.setCancelled(true);
+                if (slot == 0) {
+                    PlayerMenus.openPlayerAchievementsMenu(player);
+                    return;
+                }
+                break;
+            case "Realm Achievements":
+                event.setCancelled(true);
+                if (slot == 0) {
+                    PlayerMenus.openPlayerAchievementsMenu(player);
+                    return;
+                }
+                break;
+            case "Miscellaneous Achievements":
+                event.setCancelled(true);
+                if (slot == 0) {
+                    PlayerMenus.openPlayerAchievementsMenu(player);
+                    return;
                 }
                 break;
             default:
