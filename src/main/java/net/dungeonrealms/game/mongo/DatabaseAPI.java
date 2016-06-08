@@ -296,7 +296,7 @@ public class DatabaseAPI {
                                 new Document("debug", true)
                                         .append("trade", false)
                                         .append("tradeChat", false)
-                                        .append("globalChat", false)
+                                        .append("globalChat", true)
                                         .append("receiveMessage", true)
                                         .append("pvp", false)
                                         .append("duel", false)

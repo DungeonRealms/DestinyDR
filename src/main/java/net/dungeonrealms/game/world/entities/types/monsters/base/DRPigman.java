@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
+import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -74,19 +75,11 @@ public class DRPigman extends EntityPigZombie implements Monster {
         this.setEquipment(1, CraftItemStack.asNMSCopy(armor0));
         this.setEquipment(2, CraftItemStack.asNMSCopy(armor1));
         this.setEquipment(3, CraftItemStack.asNMSCopy(armor2));
-        this.setEquipment(4, this.getHead());
+        this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull());
     }
 
 	protected String getCustomEntityName() {
 		return this.enumMonster.name;
-	}
-
-	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
-		ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-		SkullMeta meta = (SkullMeta) head.getItemMeta();
-		meta.setOwner(enumMonster.mobHead);
-		head.setItemMeta(meta);
-		return CraftItemStack.asNMSCopy(head);
 	}
 
     private ItemStack getTierWeapon(int tier) {

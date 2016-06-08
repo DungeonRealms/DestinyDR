@@ -114,21 +114,15 @@ public class Chat {
 
                 final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
                 normal.addText(before + "");
-                normal.addItem(p.getItemInHand(), ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOW" + ChatColor.WHITE, ChatColor.UNDERLINE);
+                normal.addItem(p.getItemInHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + "SHOW" + ChatColor.WHITE, ChatColor.UNDERLINE);
                 normal.addText(after);
-                Bukkit.getOnlinePlayers().stream().forEach(player -> {
-                    if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId())) {
-                        normal.sendToPlayer(player);
-                    }
-                });
+                Bukkit.getOnlinePlayers().stream().forEach(normal::sendToPlayer);
                 event.setCancelled(true);
                 return;
             }
-
-
-            if ((Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, event.getPlayer().getUniqueId())) {
-                event.setFormat(GameChat.getPreMessage(event.getPlayer()) + fixedMessage);
-            }
+            event.setCancelled(true);
+            final String finalFixedMessage = fixedMessage;
+            Bukkit.getOnlinePlayers().stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
         } else {
             if (API.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() >= 2) {
                 if (fixedMessage.contains("@i@") && event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType() != Material.AIR) {
@@ -144,7 +138,7 @@ public class Chat {
 
                     final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
                     normal.addText(before + "");
-                    normal.addItem(p.getItemInHand(), ChatColor.AQUA + ChatColor.BOLD.toString() + "SHOW" + ChatColor.WHITE, ChatColor.UNDERLINE);
+                    normal.addItem(event.getPlayer().getItemInHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + "SHOW" + ChatColor.WHITE, ChatColor.UNDERLINE);
                     normal.addText(after);
                     API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(normal::sendToPlayer);
                     event.setCancelled(true);

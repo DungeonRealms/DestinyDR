@@ -36,18 +36,20 @@ public class TabbedChatListener implements Listener {
             if (r.getName().equalsIgnoreCase("default")) {
                 prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.GRAY + ""));
             } else {
-                prefix.append(ChatColor.translateAlternateColorCodes('&', " " + GameChat.getRankPrefix(r.getName()) + ChatColor.RESET));
+                prefix.append(ChatColor.translateAlternateColorCodes('&', GameChat.getRankPrefix(r.getName()) + ChatColor.RESET));
             }
 
         }
 
         if (!GuildDatabase.getAPI().isGuildNull(uuid)) {
             String clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
-            prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.WHITE + " [" + clanTag + ChatColor.RESET + "] "));
+            prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.WHITE + "[" + clanTag + ChatColor.RESET + "] "));
         }
 
-       	if(finalChat.contains("@i@") && player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR){
-            String aprefix = GameChat.getPreMessage(player);
+        prefix.append(GameChat.getName(player, r.getName()));
+
+       	if (finalChat.contains("@i@") && player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR) {
+            String aprefix = prefix.toString();
             String[] split = finalChat.split("@i@");
             String after = "";
             String before = "";
@@ -58,19 +60,13 @@ public class TabbedChatListener implements Listener {
 
             final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
             normal.addText(before + "");
-            normal.addItem(player.getItemInHand(), ChatColor.GREEN + ChatColor.BOLD.toString() + "SHOW" + ChatColor.WHITE, ChatColor.UNDERLINE);
+            normal.addItem(player.getItemInHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + "SHOW" + ChatColor.WHITE, ChatColor.UNDERLINE);
             normal.addText(after);
-            Bukkit.getOnlinePlayers().stream().forEach(newPlayer ->{
-                if((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, newPlayer.getUniqueId())){
-                    normal.sendToPlayer(newPlayer);
-                }
-            });
+            Bukkit.getOnlinePlayers().stream().forEach(normal::sendToPlayer);
             return;
         }
 
-        prefix.append(GameChat.getName(player, r.getName()));
-        
-        Bukkit.broadcastMessage(prefix.toString() + finalChat);
+        Bukkit.getOnlinePlayers().stream().forEach(newPlayer -> newPlayer.sendMessage(prefix.toString() + finalChat));
     }
 
 }

@@ -13,7 +13,7 @@ import org.bukkit.entity.Player;
  */
 public final class GameChat {
 
-    public static final String GLOBAL = ChatColor.AQUA + "<" + ChatColor.AQUA.toString() + ChatColor.BOLD + "G" + ChatColor.AQUA + ">" + ChatColor.RESET;
+    public static final String GLOBAL = ChatColor.AQUA + "<" + ChatColor.AQUA.toString() + ChatColor.BOLD + "G" + ChatColor.AQUA + ">" + ChatColor.RESET + " ";
 
 
     public static final String SUB = ChatColor.GREEN.toString() + ChatColor.BOLD + "S" + ChatColor.RESET + " ";
@@ -93,7 +93,6 @@ public final class GameChat {
     }
 
     public static String getRankPrefix(String rank) {
-        System.out.println(rank);
         switch (rank.toLowerCase()) {
             case "default":
                 return "";
