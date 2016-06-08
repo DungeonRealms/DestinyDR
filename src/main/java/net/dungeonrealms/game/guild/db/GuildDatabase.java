@@ -12,7 +12,6 @@ import java.util.List;
 import java.util.UUID;
 import java.util.function.Consumer;
 
-import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 
 /**
@@ -30,8 +29,9 @@ public class GuildDatabase implements GuildDatabaseAPI {
         return instance;
     }
 
-    public void createGuild(String guildName, String clanTag, UUID owner, Consumer<Boolean> callback) {
-        Database.guilds.insertOne(GuildDatabaseAPI.getDocumentTemplate(owner.toString(), guildName, clanTag));
+    public void createGuild(String guildName, String displayName, String tag, UUID owner, Consumer<Boolean> callback) {
+        Database.guilds.insertOne(GuildDatabaseAPI.getDocumentTemplate(owner.toString(), guildName, displayName, tag));
+
         Utils.log.warning("New guild created: " + guildName);
         callback.accept(true);
         setGuild(owner, guildName);
@@ -154,42 +154,26 @@ public class GuildDatabase implements GuildDatabaseAPI {
     }
 
 
-    public List<String> getEnemiesOf(String guildName) {
-        return null;
-    }
-
-
-    public List<String> getAlliesOf(String guildName) {
-        return null;
-    }
-
-
     public void sendAlert(String guildName, String message) {
 
     }
-
 
     public String getTagOf(String guildName) {
         return (String) get(guildName, EnumGuildData.TAG, String.class);
     }
 
-
-    public List<String> getAllOfflineOf(String guildName) {
-        return null;
-    }
-
-
-    public List<String> getAllOnlineNamesOf(String guildName) {
-        return null;
-    }
-
     @Override
+    public String getDisplayNameOf(String guildName) {
+        return (String) get(guildName, EnumGuildData.DISPLAY_NAME, String.class);
+    }
+
+
     public List<UUID> getAllGuildMembers(String guildName) {
         return null;
     }
 
-
-    public List<UUID> getAllOnlineOf(String guildName) {
+    @Override
+    public List<UUID> getAllOfGuild(String guildName) {
         return null;
     }
 

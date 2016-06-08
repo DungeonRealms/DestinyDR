@@ -58,12 +58,13 @@ public class GuildMechanics implements GenericMechanic {
      * @param guildName Guild
      */
     public void showGuildInfo(Player player, String guildName) {
+        String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String motd = GuildDatabaseAPI.get().getMotdOf(guildName);
 
         player.sendMessage(org.bukkit.ChatColor.GRAY + "              *** " + org.bukkit.ChatColor.DARK_AQUA + org.bukkit.ChatColor.BOLD + "Guild Info" + org.bukkit.ChatColor.GRAY + " ***");
         player.sendMessage(" ");
-        player.sendMessage(org.bukkit.ChatColor.GRAY + "Guild Name: " + org.bukkit.ChatColor.WHITE + guildName);
+        player.sendMessage(org.bukkit.ChatColor.GRAY + "Guild Name: " + org.bukkit.ChatColor.WHITE + displayName);
         player.sendMessage(org.bukkit.ChatColor.GRAY + "Guild Tag: " + org.bukkit.ChatColor.DARK_AQUA + "[" + org.bukkit.ChatColor.GRAY + tag + org.bukkit.ChatColor.DARK_AQUA + "]");
         player.sendMessage(" ");
         player.sendMessage(org.bukkit.ChatColor.GRAY + "Message of the Day: \"" + org.bukkit.ChatColor.WHITE + motd + org.bukkit.ChatColor.GRAY + "\"");
@@ -132,7 +133,9 @@ public class GuildMechanics implements GenericMechanic {
                     return;
                 }
 
+
                 String guildDisplayName = guildNameRequest.getMessage();
+                String guildName = guildDisplayName.replaceAll("\\s", "").toLowerCase();
 
                 // Name must be below 16 characters
                 if (guildDisplayName.length() > 16) {
@@ -142,23 +145,23 @@ public class GuildMechanics implements GenericMechanic {
                 }
 
                 Pattern pattern = Pattern.compile("^([A-Za-z]|[0-9])+$");
-                Matcher matcher = pattern.matcher(guildDisplayName);
+                Matcher matcher = pattern.matcher(guildName);
 
                 // Name must be alphanumerical
                 if (!matcher.find()) {
-                    player.sendMessage(ChatColor.RED + "Guild Registrar: You guild name can only contain alphanumerical values.");
+                    player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Your guild name can only contain alphanumerical values.");
                     return;
                 }
 
                 // Checks for profanity
-                if (checkForProfanity(guildDisplayName)) {
+                if (checkForProfanity(guildName)) {
                     player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Your guild name has an illegal/censored word in it. Please enter an alternative name.");
                     return;
                 }
 
 
                 // Checks if guild already exists
-                GuildDatabaseAPI.get().doesGuildNameExist(guildDisplayName, guildExists -> {
+                GuildDatabaseAPI.get().doesGuildNameExist(guildName, guildExists -> {
                     if (!guildExists) {
 
 
@@ -228,7 +231,7 @@ public class GuildMechanics implements GenericMechanic {
 
 
                                                     // Registers guild in database
-                                                    GuildDatabaseAPI.get().createGuild(guildDisplayName, tag, player.getUniqueId(), onComplete -> {
+                                                    GuildDatabaseAPI.get().createGuild(guildName, guildDisplayName, tag, player.getUniqueId(), onComplete -> {
                                                         if (!onComplete) {
                                                             player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.RED + "We have an error. Failed to create guild in database. Please try again later");
                                                             return;

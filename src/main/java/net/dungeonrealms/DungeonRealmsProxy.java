@@ -5,6 +5,10 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.Database;
 import net.md_5.bungee.api.plugin.Plugin;
 
+/**
+ * Class written by APOLLOSOFTWARE.IO on 5/31/2016
+ */
+
 public class DungeonRealmsProxy extends Plugin {
 
     private static DungeonRealmsProxy instance;
