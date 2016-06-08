@@ -34,7 +34,12 @@ public final class GameChat {
 
     event.setFormat(getPreMessage(player) + event.getMessage());
      */
+
     public static String getPreMessage(Player player) {
+        return GameChat.getPreMessage(player, false);
+    }
+
+    public static String getPreMessage(Player player, boolean isGlobal) {
 
         StringBuilder message = new StringBuilder();
         Rank.RankBlob r = Rank.getInstance().getRank(player.getUniqueId());
@@ -45,7 +50,7 @@ public final class GameChat {
         }
 
         // We're using global chat, append global prefix.
-        boolean gChat = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
+        boolean gChat =  isGlobal || (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
         if (gChat) {
             message.append(GLOBAL);
         }
@@ -64,7 +69,6 @@ public final class GameChat {
         message.append(getName(player, (r == null ? "default" : r.getName().toLowerCase())));
 
         return message.toString();
-
     }
 
     public static String getName(Player player, String rank) {

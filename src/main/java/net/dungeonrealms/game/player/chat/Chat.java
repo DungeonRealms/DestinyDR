@@ -114,7 +114,7 @@ public class Chat {
 
                 final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
                 normal.addText(before + "");
-                normal.addItem(p.getItemInHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + "SHOW" + ChatColor.WHITE, ChatColor.UNDERLINE);
+                normal.addItem(p.getItemInHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
                 normal.addText(after);
                 Bukkit.getOnlinePlayers().stream().forEach(normal::sendToPlayer);
                 event.setCancelled(true);
@@ -138,7 +138,7 @@ public class Chat {
 
                     final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
                     normal.addText(before + "");
-                    normal.addItem(event.getPlayer().getItemInHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + "SHOW" + ChatColor.WHITE, ChatColor.UNDERLINE);
+                    normal.addItem(event.getPlayer().getItemInHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
                     normal.addText(after);
                     API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(normal::sendToPlayer);
                     event.setCancelled(true);

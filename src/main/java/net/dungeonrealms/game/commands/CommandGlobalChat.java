@@ -51,24 +51,7 @@ public class CommandGlobalChat extends BasicCommand {
 
         StringBuilder prefix = new StringBuilder();
 
-        prefix.append(GameChat.GLOBAL);
-
-        Rank.RankBlob r = Rank.getInstance().getRank(uuid);
-        if (r != null && !GameChat.getRankPrefix(r.getName()).equals("null")) {
-            if (r.getName().equalsIgnoreCase("default")) {
-                prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.GRAY + ""));
-            } else {
-                prefix.append(ChatColor.translateAlternateColorCodes('&', GameChat.getRankPrefix(r.getName()) + ChatColor.RESET));
-            }
-
-        }
-
-        if (!GuildDatabase.getAPI().isGuildNull(uuid)) {
-            String clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
-            prefix.append(ChatColor.translateAlternateColorCodes('&', ChatColor.WHITE + "[" + clanTag + ChatColor.RESET + "] "));
-        }
-
-        prefix.append(GameChat.getName(player, r.getName()));
+        prefix.append(GameChat.getPreMessage(player, true));
 
         if (finalChat.contains("@i@") && player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR) {
             String aprefix = prefix.toString();
@@ -82,7 +65,7 @@ public class CommandGlobalChat extends BasicCommand {
 
             final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
             normal.addText(before + "");
-            normal.addItem(player.getItemInHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + "SHOW" + ChatColor.WHITE, ChatColor.UNDERLINE);
+            normal.addItem(player.getItemInHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
             normal.addText(after);
             Bukkit.getOnlinePlayers().stream().forEach(normal::sendToPlayer);
             return true;
