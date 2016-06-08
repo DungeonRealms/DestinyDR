@@ -18,11 +18,6 @@ public class CommandTell extends BasicCommand {
 
         if (args.length >= 1) {
             String targetPlayer = args[0];
-            if(targetPlayer.equalsIgnoreCase("Kayaba"))
-            {
-                sender.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "ERROR" + ChatColor.GRAY + ":" + " " + ChatColor.GRAY + "Kayaba is not available for messaging. Please message a GM or PMod..");
-            	return true;
-            }
             
             Bukkit.getOnlinePlayers().stream().limit(1).filter(player -> player.getName().equalsIgnoreCase(targetPlayer)).forEach(player1 -> {
                 StringBuilder message = new StringBuilder();

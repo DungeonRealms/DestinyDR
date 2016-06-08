@@ -30,14 +30,12 @@ public class CommandEss extends BasicCommand {
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
         if (!commandSender.isOp() && !(commandSender instanceof ConsoleCommandSender)) {
-            commandSender.sendMessage(ChatColor.RED + "You are not OP/Console!");
             return false;
         }
         
         if(commandSender instanceof Player){
         	Player player = (Player)commandSender;
             if (!player.isOp()) {
-                player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
                 return false;
             }
         }

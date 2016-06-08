@@ -22,7 +22,6 @@ public class CommandISay extends BasicCommand{
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
     	if(commandSender instanceof Player){
     		if(!commandSender.isOp()){
-    			commandSender.sendMessage(ChatColor.RED + "You're not OP.");
     			return false;
     		}
     		Bukkit.broadcastMessage(strings[1]);
