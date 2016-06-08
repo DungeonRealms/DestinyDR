@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.player.chat;
 
 import net.dungeonrealms.game.guild.db.GuildDatabase;
-import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.API;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.rank.Rank;
@@ -73,26 +73,21 @@ public final class GameChat {
 
     public static String getName(Player player, String rank) {
         switch (rank.toLowerCase()) {
-            case "pmod":
-                return ChatColor.WHITE + player.getName() + ":" + ChatColor.WHITE + " ";
-
             case "gm":
             case "dev":
                 return ChatColor.AQUA + player.getName() + ":" + ChatColor.WHITE + " ";
-
-            case "youtube":
-                return ChatColor.RED + player.getName() + ":" + ChatColor.WHITE + " ";
-
-            case "support":
-                return ChatColor.BLUE + player.getName() + ":" + ChatColor.WHITE + " ";
 
             case "default":
             case "sub":
             case "sub+":
             case "sub++":
             case "builder":
+            case "support":
+            case "youtube":
+            case "pmod":
             default:
-                return ChatColor.GRAY + player.getName() + ":" +    ChatColor.WHITE + " ";
+                String alignmentName = API.getGamePlayer(player).getPlayerAlignment().name();
+                return (alignmentName.equalsIgnoreCase("chaotic") ? ChatColor.RED : (alignmentName.equalsIgnoreCase("neutral") ? ChatColor.YELLOW : ChatColor.GRAY)) + player.getName() + ":" +    ChatColor.WHITE + " ";
         }
     }
 

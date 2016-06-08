@@ -123,6 +123,9 @@ public class CommandSet extends BasicCommand {
                 case "chaotic":
                     KarmaHandler.getInstance().setPlayerAlignment(player, "chaotic", false);
                     break;
+                case "neutral":
+                    KarmaHandler.getInstance().setPlayerAlignment(player, "neutral", false);
+                    break;
                 case "lawful":
                     KarmaHandler.getInstance().setPlayerAlignment(player, "lawful", false);
                     break;
