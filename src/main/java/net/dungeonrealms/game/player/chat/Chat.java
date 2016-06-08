@@ -122,7 +122,7 @@ public class Chat {
             }
             event.setCancelled(true);
             final String finalFixedMessage = fixedMessage;
-            Bukkit.getOnlinePlayers().stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
+            Bukkit.getOnlinePlayers().stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer(), true, GameChat.getGlobalType(finalFixedMessage)) + finalFixedMessage));
         } else {
                 if (fixedMessage.contains("@i@") && event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType() != Material.AIR) {
                     final Player p = event.getPlayer();

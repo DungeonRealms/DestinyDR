@@ -29,7 +29,7 @@ public class TabbedChatListener implements Listener {
 
         StringBuilder prefix = new StringBuilder();
 
-        prefix.append(GameChat.getPreMessage(player, true));
+        prefix.append(GameChat.getPreMessage(player, true, GameChat.getGlobalType(finalChat)));
 
        	if (finalChat.contains("@i@") && player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR) {
             String aprefix = prefix.toString();

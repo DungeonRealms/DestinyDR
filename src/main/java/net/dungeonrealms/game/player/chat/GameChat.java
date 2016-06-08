@@ -36,10 +36,15 @@ public final class GameChat {
      */
 
     public static String getPreMessage(Player player) {
-        return GameChat.getPreMessage(player, false);
+        return GameChat.getPreMessage(player, false, null);
     }
 
     public static String getPreMessage(Player player, boolean isGlobal) {
+        return GameChat.getPreMessage(player, isGlobal, null);
+    }
+
+    public static String getPreMessage(Player player, boolean isGlobal, String globalType) {
+        globalType = (globalType == null ? "global" : globalType);
 
         StringBuilder message = new StringBuilder();
         Rank.RankBlob r = Rank.getInstance().getRank(player.getUniqueId());
@@ -52,7 +57,18 @@ public final class GameChat {
         // We're using global chat, append global prefix.
         boolean gChat =  isGlobal || (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
         if (gChat) {
-            message.append(GLOBAL);
+            // Determine which global type we should use, default is GLOBAL.
+            switch (globalType.toLowerCase()) {
+                case "trade":
+                    message.append(TRADE);
+                    break;
+                case "recruit":
+                    message.append(RECRUIT);
+                    break;
+                default:
+                    message.append(GLOBAL);
+                    break;
+            }
         }
 
         // The user is in a clan, append their clan tag.
@@ -137,6 +153,16 @@ public final class GameChat {
     public static boolean isRecruiting(String message) {
         message = message.toLowerCase();
         return (message.startsWith("recruiting") || message.startsWith("guild") || message.startsWith("guilds"));
+    }
+
+    public static String getGlobalType(String message) {
+        if (GameChat.isTradeChat(message)) {
+            return "trade";
+        } else if (GameChat.isRecruiting(message)) {
+            return "recruit";
+        }
+
+        return "global";
     }
 
 }
