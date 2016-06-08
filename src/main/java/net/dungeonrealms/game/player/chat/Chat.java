@@ -124,7 +124,6 @@ public class Chat {
             final String finalFixedMessage = fixedMessage;
             Bukkit.getOnlinePlayers().stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
         } else {
-            if (API.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() >= 2) {
                 if (fixedMessage.contains("@i@") && event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType() != Material.AIR) {
                     final Player p = event.getPlayer();
                     String aprefix = GameChat.getPreMessage(p);
@@ -146,13 +145,13 @@ public class Chat {
                 }
                 event.setCancelled(true);
                 final String finalFixedMessage = fixedMessage;
-                API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
-            } else {
-                event.setCancelled(true);
-                event.getPlayer().sendMessage(GameChat.getPreMessage(event.getPlayer()) + fixedMessage);
-                event.getPlayer().sendMessage(ChatColor.GRAY + "No one heard you...");
-            }
 
+                if (API.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() >= 2) {
+                    API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
+                } else {
+                    event.getPlayer().sendMessage(GameChat.getPreMessage(event.getPlayer()) + fixedMessage);
+                    event.getPlayer().sendMessage(ChatColor.GRAY + "No one heard you...");
+                }
         }
     }
 
