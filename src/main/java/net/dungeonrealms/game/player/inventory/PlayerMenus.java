@@ -516,13 +516,13 @@ public class PlayerMenus {
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Place stat points on different attributes. ",
                 "",
-                ChatColor.WHITE + "Use: View Attributes."
+                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View Attributes."
         }));
         inv.setItem(1, editItem("Shrek", ChatColor.GOLD + "Friend List", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Add or remove friends.",
                 "",
-                ChatColor.WHITE + "Use: View Friend list."
+                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View Friend list."
         }));
         inv.setItem(4, editItem(Utils.getPlayerHead(player), ChatColor.GREEN + "Player Profile", new String[]{
         }));
@@ -532,42 +532,42 @@ public class PlayerMenus {
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "with a powerful trail.",
                 "",
                 ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View obtained trails.",
-                ChatColor.WHITE + "Middle-Click: Receive trail item."
+                ChatColor.WHITE + "Middle-Click:" + ChatColor.GREEN + " Receive trail item."
         }));
         inv.setItem(7, editItem(new ItemStack(Material.SADDLE), ChatColor.GOLD + "Mounts", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Travel Andalucia quickly.",
                 "",
-                ChatColor.WHITE + "Use: View obtained mounts.",
-                ChatColor.WHITE + "Middle Click: Receive Saddle."
+                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View obtained mounts.",
+                ChatColor.WHITE + "Middle Click:" + ChatColor.GREEN + " Receive Saddle."
         }));
         inv.setItem(8, editItem(new ItemStack(Material.NAME_TAG), ChatColor.GOLD + "Pets", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Travel with a cute companion.",
                 "",
-                ChatColor.WHITE + "Use: View available pets.",
-                ChatColor.WHITE + "Middle-Click: Receive Pet Leash."
+                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View available pets.",
+                ChatColor.WHITE + "Middle-Click:" + ChatColor.GREEN + " Receive Pet Leash."
         }));
         inv.setItem(16, editItem(new ItemStack(Material.CHEST), ChatColor.GOLD + "Storage Mule", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Inventory getting full on your travels?",
 				ChatColor.GRAY.toString() + ChatColor.ITALIC + "purchase a Mule from the Animal Tamer.",
                 "",
-                ChatColor.WHITE + "Use: Spawn Storage Mule.",
-                ChatColor.WHITE + "Middle-Click: Receive Mule Leash."
+                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " Spawn Storage Mule.",
+                ChatColor.WHITE + "Middle-Click:" + ChatColor.GREEN + " Receive Mule Leash."
         }));
         inv.setItem(17, editItem(new ItemStack(Material.ARMOR_STAND), ChatColor.GOLD + "Mount Skins", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Equip your mount with a fancy skin.",
                 "",
-                ChatColor.WHITE + "Use: View obtained mount skins."
+                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View obtained mount skins."
         }));
         inv.setItem(18, editItem(new ItemStack(Material.EMERALD), ChatColor.GOLD + "E-Cash Vendor", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "E-Cash is obtained by voting and online store purchase.",
 				ChatColor.GRAY + "http://dungeonrealms.net/shop",
                 "",
-                ChatColor.WHITE + "Use: Open the E-Cash Vendor."
+                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " Open the E-Cash Vendor."
         }));
         inv.setItem(24, editItem(new ItemStack(Material.TORCH), ChatColor.GOLD + "Achievements", new String[]{
                 "",
@@ -579,7 +579,7 @@ public class PlayerMenus {
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Adjust preferences here.",
                 "",
-                ChatColor.WHITE + "Use: Open toggles menu."
+                ChatColor.WHITE + "Use:" + ChatColor.GREEN + " Open toggles menu."
         }));
 
         player.openInventory(inv);

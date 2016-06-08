@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.player.chat;
 
 import net.dungeonrealms.game.guild.db.GuildDatabase;
-import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.API;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.rank.Rank;
@@ -34,7 +34,17 @@ public final class GameChat {
 
     event.setFormat(getPreMessage(player) + event.getMessage());
      */
+
     public static String getPreMessage(Player player) {
+        return GameChat.getPreMessage(player, false, null);
+    }
+
+    public static String getPreMessage(Player player, boolean isGlobal) {
+        return GameChat.getPreMessage(player, isGlobal, null);
+    }
+
+    public static String getPreMessage(Player player, boolean isGlobal, String globalType) {
+        globalType = (globalType == null ? "global" : globalType);
 
         StringBuilder message = new StringBuilder();
         Rank.RankBlob r = Rank.getInstance().getRank(player.getUniqueId());
@@ -45,9 +55,22 @@ public final class GameChat {
         }
 
         // We're using global chat, append global prefix.
-        boolean gChat = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
+        boolean gChat =  isGlobal || (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
         if (gChat) {
-            message.append(GLOBAL);
+            // Determine which global type we should use, default is GLOBAL.
+            switch (globalType.toLowerCase()) {
+                case "local": // This allows us to do a cheap hack for "/l".
+                    break;
+                case "trade":
+                    message.append(TRADE);
+                    break;
+                case "recruit":
+                    message.append(RECRUIT);
+                    break;
+                default:
+                    message.append(GLOBAL);
+                    break;
+            }
         }
 
         // The user is in a clan, append their clan tag.
@@ -64,31 +87,25 @@ public final class GameChat {
         message.append(getName(player, (r == null ? "default" : r.getName().toLowerCase())));
 
         return message.toString();
-
     }
 
     public static String getName(Player player, String rank) {
         switch (rank.toLowerCase()) {
-            case "pmod":
-                return ChatColor.WHITE + player.getName() + ":" + ChatColor.WHITE + " ";
-
             case "gm":
             case "dev":
                 return ChatColor.AQUA + player.getName() + ":" + ChatColor.WHITE + " ";
-
-            case "youtube":
-                return ChatColor.RED + player.getName() + ":" + ChatColor.WHITE + " ";
-
-            case "support":
-                return ChatColor.BLUE + player.getName() + ":" + ChatColor.WHITE + " ";
 
             case "default":
             case "sub":
             case "sub+":
             case "sub++":
             case "builder":
+            case "support":
+            case "youtube":
+            case "pmod":
             default:
-                return ChatColor.GRAY + player.getName() + ":" +    ChatColor.WHITE + " ";
+                String alignmentName = API.getGamePlayer(player).getPlayerAlignment().name();
+                return (alignmentName.equalsIgnoreCase("chaotic") ? ChatColor.RED : (alignmentName.equalsIgnoreCase("neutral") ? ChatColor.YELLOW : ChatColor.GRAY)) + player.getName() + ":" +    ChatColor.WHITE + " ";
         }
     }
 
@@ -125,6 +142,7 @@ public final class GameChat {
      * @return boolean
      */
     public static boolean isTradeChat(String message) {
+        message = message.toLowerCase();
         return (message.startsWith("wtb") || message.startsWith("wts") || message.startsWith("wtt") || message.startsWith("trade")
                 || message.startsWith("trading") || message.startsWith("buying") || message.startsWith("selling"));
     }
@@ -138,6 +156,16 @@ public final class GameChat {
     public static boolean isRecruiting(String message) {
         message = message.toLowerCase();
         return (message.startsWith("recruiting") || message.startsWith("guild") || message.startsWith("guilds"));
+    }
+
+    public static String getGlobalType(String message) {
+        if (GameChat.isTradeChat(message)) {
+            return "trade";
+        } else if (GameChat.isRecruiting(message)) {
+            return "recruit";
+        }
+
+        return "global";
     }
 
 }

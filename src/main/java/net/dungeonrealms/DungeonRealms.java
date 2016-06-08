@@ -87,6 +87,7 @@ public class DungeonRealms extends JavaPlugin {
     public int realmport = -1;
     public int realmmax = 0;
     public int realmpmax = 0;
+    public String shardid = "US-666";
 
     // End of Shard Config
 
@@ -114,6 +115,7 @@ public class DungeonRealms extends JavaPlugin {
         try {
             ini.load(new FileReader("shardconfig.ini"));
             isInstanceServer = ini.get("Main", "instanced", Boolean.class);
+            shardid = ini.get("Main", "shardid", String.class);
             bungeeName = ini.get("Bungee", "name", String.class);
             realmnumber = ini.get("RealmInstance", "number", int.class);
             realmport = ini.get("RealmInstance", "port", int.class);
@@ -273,6 +275,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
 
             cm.registerCommand(new CommandGlobalChat("gl", "/<command> [args]", "The invoke command."));
+            cm.registerCommand(new CommandLocalChat("l", "/<command> [args]", "The invoke command."));
 
             cm.registerCommand(new CommandStats("stat", "/<command> [args]", "The stats command.", Collections.singletonList("stats")));
             cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "The stop command.", Collections.singletonList("drstop")));

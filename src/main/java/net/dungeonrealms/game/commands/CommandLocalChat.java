@@ -1,13 +1,10 @@
 package net.dungeonrealms.game.commands;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.guild.db.GuildDatabase;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.json.JSONMessage;
-import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -19,11 +16,11 @@ import org.bukkit.entity.Player;
 import java.util.UUID;
 
 /**
- * Created by Nick on 10/31/2015.
+ * Created by Brad on 08/06/2015.
  */
-public class CommandGlobalChat extends BasicCommand {
+public class CommandLocalChat extends BasicCommand {
 
-    public CommandGlobalChat(String command, String usage, String description) {
+    public CommandLocalChat(String command, String usage, String description) {
         super(command, usage, description);
     }
 
@@ -33,7 +30,7 @@ public class CommandGlobalChat extends BasicCommand {
         if (sender instanceof ConsoleCommandSender) return false;
 
         if (args.length <= 0) {
-            sender.sendMessage(ChatColor.RED + "/gl <message>");
+            sender.sendMessage(ChatColor.RED + "/l <message>");
             return true;
         }
 
@@ -51,7 +48,7 @@ public class CommandGlobalChat extends BasicCommand {
 
         StringBuilder prefix = new StringBuilder();
 
-        prefix.append(GameChat.getPreMessage(player, true, GameChat.getGlobalType(finalChat)));
+        prefix.append(GameChat.getPreMessage(player, true, "local"));
 
         if (finalChat.contains("@i@") && player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR) {
             String aprefix = prefix.toString();
@@ -71,7 +68,12 @@ public class CommandGlobalChat extends BasicCommand {
             return true;
         }
 
-        Bukkit.getOnlinePlayers().stream().forEach(newPlayer -> newPlayer.sendMessage(prefix.toString() + finalChat));
+        if (API.getNearbyPlayers(player.getLocation(), 75).size() >= 2) {
+            API.getNearbyPlayers(player.getLocation(), 75).stream().forEach(otherPlayer -> otherPlayer.sendMessage(GameChat.getPreMessage(player, false, "local") + finalChat));
+        } else {
+            player.sendMessage(GameChat.getPreMessage(player, false, "local") + finalChat);
+            player.sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "No one heard you...");
+        }
         return true;
     }
 }

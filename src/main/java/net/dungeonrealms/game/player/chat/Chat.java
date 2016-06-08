@@ -114,7 +114,7 @@ public class Chat {
 
                 final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
                 normal.addText(before + "");
-                normal.addItem(p.getItemInHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + "SHOW" + ChatColor.WHITE, ChatColor.UNDERLINE);
+                normal.addItem(p.getItemInHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
                 normal.addText(after);
                 Bukkit.getOnlinePlayers().stream().forEach(normal::sendToPlayer);
                 event.setCancelled(true);
@@ -122,9 +122,8 @@ public class Chat {
             }
             event.setCancelled(true);
             final String finalFixedMessage = fixedMessage;
-            Bukkit.getOnlinePlayers().stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
+            Bukkit.getOnlinePlayers().stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer(), true, GameChat.getGlobalType(finalFixedMessage)) + finalFixedMessage));
         } else {
-            if (API.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() >= 2) {
                 if (fixedMessage.contains("@i@") && event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType() != Material.AIR) {
                     final Player p = event.getPlayer();
                     String aprefix = GameChat.getPreMessage(p);
@@ -138,7 +137,7 @@ public class Chat {
 
                     final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
                     normal.addText(before + "");
-                    normal.addItem(event.getPlayer().getItemInHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + "SHOW" + ChatColor.WHITE, ChatColor.UNDERLINE);
+                    normal.addItem(event.getPlayer().getItemInHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
                     normal.addText(after);
                     API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(normal::sendToPlayer);
                     event.setCancelled(true);
@@ -146,13 +145,13 @@ public class Chat {
                 }
                 event.setCancelled(true);
                 final String finalFixedMessage = fixedMessage;
-                API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
-            } else {
-                event.setCancelled(true);
-                event.getPlayer().sendMessage(GameChat.getPreMessage(event.getPlayer()) + fixedMessage);
-                event.getPlayer().sendMessage(ChatColor.GRAY + "No one heard you...");
-            }
 
+                if (API.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() >= 2) {
+                    API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
+                } else {
+                    event.getPlayer().sendMessage(GameChat.getPreMessage(event.getPlayer()) + fixedMessage);
+                    event.getPlayer().sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "No one heard you...");
+                }
         }
     }
 
