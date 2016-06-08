@@ -228,14 +228,14 @@ public class KarmaHandler implements GenericMechanic {
         }
         switch (alignmentTo) {
             case LAWFUL:
-                player.sendMessage(new String[]{
+                // Don't show alignment on player login.
+                if (!login) {
+                    player.sendMessage(new String[]{
                             "",
                             ChatColor.GREEN + "              " + "* YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + "LAWFUL" + ChatColor.RESET + ChatColor.GREEN + " ALIGNMENT *",
                             ChatColor.GRAY + "While lawful, you will not lose any equipped armor on death, instead, all armor will lose 30% of its durability when you die.",
                             ""
                     });
-                if(API.getGamePlayer(player) == null) {
-                    Bukkit.broadcastMessage("player is null!");
                 }
                 ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, ChatColor.WHITE, API.getGamePlayer(player).getLevel());
                 /*if (Instance.getInstance().getPlayerRealm(player) != null && Instance.getInstance().getPlayerRealm(player).isRealmPortalOpen()) {
@@ -245,7 +245,7 @@ public class KarmaHandler implements GenericMechanic {
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.LAWFUL.name, true);
                 break;
             case NEUTRAL:
-                if (!(alignmentPlayer.equals(EnumPlayerAlignments.NEUTRAL))) {
+                if (!(alignmentPlayer.equals(EnumPlayerAlignments.NEUTRAL)) && !login) {
                     player.sendMessage(new String[]{
                             "",
                             ChatColor.YELLOW + "              " + "* YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + "NEUTRAL" + ChatColor.RESET + ChatColor.YELLOW + " ALIGNMENT *",
@@ -267,7 +267,7 @@ public class KarmaHandler implements GenericMechanic {
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.NEUTRAL.name, true);
                 break;
             case CHAOTIC:
-                if (!(alignmentPlayer.equals(EnumPlayerAlignments.CHAOTIC))) {
+                if (!(alignmentPlayer.equals(EnumPlayerAlignments.CHAOTIC)) && !login) {
                     player.sendMessage(new String[]{
                             "",
                             ChatColor.RED + "              " + "* YOU ARE NOW " + ChatColor.BOLD + ChatColor.UNDERLINE + "CHAOTIC" + ChatColor.RESET + ChatColor.RED + " ALIGNMENT *",
