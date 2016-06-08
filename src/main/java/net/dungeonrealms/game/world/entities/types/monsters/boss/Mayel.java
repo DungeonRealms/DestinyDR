@@ -103,27 +103,6 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 		DamageAPI.fireArrowFromMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entityliving.getBukkitEntity());
 	}
 
-	/*@Override
-	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
-	    int bandit_type = new Random().nextInt(2) + 1;
-        String skin_name = "";
-
-        if (bandit_type == 0) {
-            skin_name = "hway234";
-        }
-        if (bandit_type == 1) {
-            skin_name = "Xmattpt";
-        }
-        if (bandit_type == 2) {
-            skin_name = "Kayaba"; // niv330
-        }
-		ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-		SkullMeta meta = (SkullMeta) head.getItemMeta();
-		meta.setOwner(skin_name);
-		head.setItemMeta(meta);
-		return CraftItemStack.asNMSCopy(head);
-	}*/
-
 	@Override
 	public void onBossDeath() {
 		say(this.getBukkitEntity(), getEnumBoss().death);

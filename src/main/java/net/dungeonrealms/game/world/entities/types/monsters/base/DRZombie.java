@@ -69,14 +69,6 @@ public abstract class DRZombie extends EntityZombie implements Monster{
         return this.name;
     }
 
-    /*protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
-        ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-        SkullMeta meta = (SkullMeta) head.getItemMeta();
-        meta.setOwner(mobHead);
-        head.setItemMeta(meta);
-        return CraftItemStack.asNMSCopy(head);
-    }*/
-
     public void setArmor(int tier) {
         ItemStack[] armor = API.getTierArmor(tier);
         // weapon, boots, legs, chest, helmet/head
@@ -90,7 +82,6 @@ public abstract class DRZombie extends EntityZombie implements Monster{
         this.setEquipment(1, CraftItemStack.asNMSCopy(armor0));
         this.setEquipment(2, CraftItemStack.asNMSCopy(armor1));
         this.setEquipment(3, CraftItemStack.asNMSCopy(armor2));
-        //this.setEquipment(4, this.getHead());
     }
 
     private ItemStack getTierWeapon(int tier) {

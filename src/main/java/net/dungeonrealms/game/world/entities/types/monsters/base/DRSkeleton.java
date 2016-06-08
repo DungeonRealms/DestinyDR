@@ -90,14 +90,6 @@ public abstract class DRSkeleton extends EntitySkeleton implements Monster {
         return this.name;
     }
 
-    /*protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
-        ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-        SkullMeta meta = (SkullMeta) head.getItemMeta();
-        meta.setOwner(mobHead);
-        head.setItemMeta(meta);
-        return CraftItemStack.asNMSCopy(head);
-    }*/
-
     private ItemStack getTierWeapon(int tier) {
         ItemStack item = new ItemGenerator().setType(ItemType.getRandomWeapon()).setRarity(API.getItemRarity())
                 .setTier(ItemTier.getByTier(tier)).generateItem().getItem();

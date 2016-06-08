@@ -1,23 +1,21 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
-import net.dungeonrealms.game.miscellaneous.SkullTextures;
-import net.minecraft.server.v1_8_R3.*;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.metadata.FixedMetadataValue;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.Monster;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
-import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
+import net.minecraft.server.v1_8_R3.*;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.Random;
 
 /**
  * Created by Chase on Oct 18, 2015
@@ -35,7 +33,7 @@ public class DRPigman extends EntityPigZombie implements Monster {
 
 	/**
 	 * @param world
-	 * @param daemon
+	 * @param mon
 	 * @param tier
 	 */
 	public DRPigman(World world, EnumMonster mon, int tier) {
@@ -49,7 +47,7 @@ public class DRPigman extends EntityPigZombie implements Monster {
         String customName = enumMonster.getPrefix() + " " + enumMonster.name + " " + enumMonster.getSuffix() + " ";
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
-		this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
+		this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
 	}
 
 	@Override
@@ -75,19 +73,31 @@ public class DRPigman extends EntityPigZombie implements Monster {
         this.setEquipment(1, CraftItemStack.asNMSCopy(armor0));
         this.setEquipment(2, CraftItemStack.asNMSCopy(armor1));
         this.setEquipment(3, CraftItemStack.asNMSCopy(armor2));
-        this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull());
+		this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
     }
 
 	protected String getCustomEntityName() {
 		return this.enumMonster.name;
 	}
 
-    private ItemStack getTierWeapon(int tier) {
-        ItemStack item = new ItemGenerator().setType(ItemType.getRandomWeapon()).setRarity(API.getItemRarity())
-                .setTier(ItemTier.getByTier(tier)).generateItem().getItem();
-        AntiCheat.getInstance().applyAntiDupe(item);
-        return item;
-    }
+	private ItemStack getTierWeapon(int tier) {
+		net.dungeonrealms.game.world.items.Item.ItemType itemType = net.dungeonrealms.game.world.items.Item.ItemType.AXE;
+		switch (new Random().nextInt(2)) {
+			case 0:
+				itemType = net.dungeonrealms.game.world.items.Item.ItemType.SWORD;
+				break;
+			case 1:
+				itemType = net.dungeonrealms.game.world.items.Item.ItemType.POLEARM;
+				break;
+			case 2:
+				itemType = net.dungeonrealms.game.world.items.Item.ItemType.AXE;
+				break;
+		}
+		ItemStack item = new ItemGenerator().setType(itemType).setRarity(API.getItemRarity())
+				.setTier(ItemTier.getByTier(tier)).generateItem().getItem();
+		AntiCheat.getInstance().applyAntiDupe(item);
+		return item;
+	}
 
 	@Override
 	protected String z() {

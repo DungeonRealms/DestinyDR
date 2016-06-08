@@ -1,13 +1,5 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
-import org.bukkit.metadata.FixedMetadataValue;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
@@ -19,6 +11,11 @@ import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_8_R3.EntitySilverfish;
 import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.World;
+import org.bukkit.Bukkit;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * Created by Chase on Oct 21, 2015
@@ -55,20 +52,12 @@ public class DRSilverfish extends EntitySilverfish implements Monster{
         this.setEquipment(1, CraftItemStack.asNMSCopy(armor0));
         this.setEquipment(2, CraftItemStack.asNMSCopy(armor1));
         this.setEquipment(3, CraftItemStack.asNMSCopy(armor2));
-        this.setEquipment(4, this.getHead());
     }
 
 	protected String getCustomEntityName() {
 		return this.enumMonster.name;
 	}
 
-	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
-		ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-		SkullMeta meta = (SkullMeta) head.getItemMeta();
-		meta.setOwner(enumMonster.mobHead);
-		head.setItemMeta(meta);
-		return CraftItemStack.asNMSCopy(head);
-	}
 
     private ItemStack getTierWeapon(int tier) {
         ItemStack item = new ItemGenerator().setType(ItemType.getRandomWeapon()).setRarity(API.getItemRarity())

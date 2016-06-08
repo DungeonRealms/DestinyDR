@@ -86,15 +86,6 @@ public class Burick extends BasicEntitySkeleton implements Boss {
 	    return ItemGenerator.getNamedItem("up_axe");
 	}
 
-	/*@Override
-	protected net.minecraft.server.v1_8_R3.ItemStack getHead() {
-		ItemStack head = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-		SkullMeta meta = (SkullMeta) head.getItemMeta();
-		meta.setOwner("Steve");
-		head.setItemMeta(meta);
-		return CraftItemStack.asNMSCopy(head);
-	}*/
-
 	@Override
 	public void onBossDeath() {
 		say(this.getBukkitEntity(), getEnumBoss().death);

@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.entities.types.monsters;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.miscellaneous.SkullTextures;
+import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRSkeleton;
 import net.dungeonrealms.game.world.items.DamageAPI;
@@ -35,26 +36,11 @@ public class EntityFireImp extends DRSkeleton {
     @SuppressWarnings("unchecked")
     public EntityFireImp(World world, int tier, EnumEntityType entityType) {
         super(world, EnumMonster.FireImp, tier, entityType);
-        this.goalSelector.a(1, new PathfinderGoalFloat(this));
-        this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
-        this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-        this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
-        this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
         this.tier = tier;
-        this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.IMP.getSkull()));
-        setArmor(tier);
-    }
-
-    @Override
-    public void setArmor(int tier) {
-        ItemStack leggings = new ItemGenerator().setType(ItemType.LEGGINGS).setTier(ItemTier.getByTier(tier)).setRarity(API.getItemRarity()).getItem();
-        ItemStack chestplate = new ItemGenerator().setType(ItemType.CHESTPLATE).setTier(ItemTier.getByTier(tier)).setRarity(API.getItemRarity()).getItem();
-        ItemStack boots = new ItemGenerator().setType(ItemType.BOOTS).setTier(ItemTier.getByTier(tier)).setRarity(API.getItemRarity()).getItem();
-        ItemStack staff = new ItemGenerator().setType(ItemType.STAFF).setTier(ItemTier.getByTier(tier)).setRarity(API.getItemRarity()).getItem();
-        this.setEquipment(0, CraftItemStack.asNMSCopy(staff));
-        this.setEquipment(1, CraftItemStack.asNMSCopy(boots));
-        this.setEquipment(2, CraftItemStack.asNMSCopy(leggings));
-        this.setEquipment(3, CraftItemStack.asNMSCopy(chestplate));
+        this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
+        ItemStack weapon =  new ItemGenerator().setType(ItemType.STAFF).setRarity(API.getItemRarity()).setTier(ItemTier.getByTier(tier)).generateItem().getItem();
+        AntiCheat.getInstance().applyAntiDupe(weapon);
+        this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
     }
 
     @Override
@@ -69,7 +55,6 @@ public class EntityFireImp extends DRSkeleton {
 
     @Override
     public void setStats() {
-
     }
 
     @Override
@@ -77,6 +62,21 @@ public class EntityFireImp extends DRSkeleton {
         net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
         NBTTagCompound tag = nmsItem.getTag();
         DamageAPI.fireStaffProjectileMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entity.getBukkitEntity());
+    }
+
+    @Override
+    protected String z() {
+        return "";
+    }
+
+    @Override
+    protected String bo() {
+        return "game.player.hurt";
+    }
+
+    @Override
+    protected String bp() {
+        return "";
     }
 
 }
