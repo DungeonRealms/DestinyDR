@@ -144,7 +144,8 @@ public final class GameChat {
     public static boolean isTradeChat(String message) {
         message = message.toLowerCase();
         return (message.startsWith("wtb") || message.startsWith("wts") || message.startsWith("wtt") || message.startsWith("trade")
-                || message.startsWith("trading") || message.startsWith("buying") || message.startsWith("selling"));
+                || message.startsWith("trading") || message.startsWith("buying") || message.startsWith("selling")
+                || message.contains("casino"));
     }
 
     /**
