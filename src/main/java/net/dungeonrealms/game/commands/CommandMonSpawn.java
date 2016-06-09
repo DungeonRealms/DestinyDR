@@ -8,6 +8,7 @@ import net.dungeonrealms.game.mastery.NBTUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.mechanics.DungeonManager.DungeonObject;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
@@ -57,7 +58,7 @@ public class CommandMonSpawn extends BasicCommand {
                 switch (args[0]) {
                     case "boss":
                         if (args.length < 5) {
-                            s.sendMessage("/spawn boss (monster name) (x) (y) (z)");
+                            s.sendMessage("/monspawn boss (monster name) (x) (y) (z)");
                             return false;
                         }
                         String bossName = args[1];
@@ -115,9 +116,9 @@ public class CommandMonSpawn extends BasicCommand {
                 }
             return false;
         }
+
         Player player = (Player) s;
-        if (!player.isOp()) {
-            player.sendMessage(ChatColor.RED + "[WARNING] " + ChatColor.YELLOW + "You do not have permissions for this!");
+        if (!Rank.isGM(player)) {
             return false;
         }
         if (args.length > 0) {

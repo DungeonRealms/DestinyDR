@@ -119,13 +119,16 @@ public class Rank implements GenericMechanic {
      * @since 1.0
      */
     public void setRank(UUID uuid, String sRank) {
-        if (!RAW_RANKS.containsKey(sRank)) return;
+        String newRank = Rank.rankFromPrefix(sRank);
+
+        if (!RAW_RANKS.containsKey(sRank) || newRank == null) return; // @todo: Remove RAW_RANKS, replace with the fixed list.
+
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, sRank, true);
         Player player = Bukkit.getPlayer(uuid);
 
         PermissionAttachment attachment = player.addAttachment(DungeonRealms.getInstance());
         RankBlob rank = RAW_RANKS.get(sRank.toUpperCase());
-        player.sendMessage(ChatColor.GREEN + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "RANK" + ChatColor.GREEN + "] " + ChatColor.YELLOW + "Congratulations! Your rank is now: " + ChatColor.AQUA + ChatColor.translateAlternateColorCodes('&', GameChat.getPreMessage(player)));
+        player.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + newRank);
         player.playSound(player.getLocation(), Sound.NOTE_PLING, 1f, 63f);
         for (String s : rank.getPermissions()) {
             attachment.setPermission(s, true);
@@ -165,6 +168,106 @@ public class Rank implements GenericMechanic {
         public List<String> getPermissions() {
             return permissions;
         }
+    }
+
+    /*
+     * Check rank ("permission") functions
+     * @todo: Consider moving to "Permissions" class instead.
+     */
+
+    /**
+     * Returns true if user has the rank "dev".
+     * @todo: Remove "DEV" rank, use "GM" rank and check if in getDEVS array in the DungeonRealms class.
+     *
+     * @param player
+     * @return boolean
+     */
+    public static boolean isDev(Player player) {
+        String rank = Rank.getInstance().getRank(player.getUniqueId()).getName();
+        return rank.equalsIgnoreCase("dev");
+    }
+
+    /**
+     * Returns true if the user has the rank "dev" or "gm". Opped players are also considered a GM.
+     *
+     * @param player
+     * @return boolean
+     */
+    public static boolean isGM(Player player) {
+        String rank = Rank.getInstance().getRank(player.getUniqueId()).getName();
+        return rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev") || player.isOp();
+    }
+
+    /**
+     * Returns true if the user has the rank "dev" or "support".
+     *
+     * @param player
+     * @return boolean
+     */
+    public static boolean isSupport(Player player) {
+        String rank = Rank.getInstance().getRank(player.getUniqueId()).getName();
+        return rank.equalsIgnoreCase("support") || rank.equalsIgnoreCase("dev");
+    }
+
+    /**
+     * Returns true if the user has the rank "dev", "gm" or "pmod".
+     *
+     * @param player
+     * @return boolean
+     */
+    public static boolean isPMOD(Player player) {
+        String rank = Rank.getInstance().getRank(player.getUniqueId()).getName();
+        return rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev");
+    }
+
+    /**
+     * Returns true if the user has the rank "dev", "gm", "pmod" or "youtube".
+     *
+     * @param player
+     * @return boolean
+     */
+    public static boolean isYouTuber(Player player) {
+        String rank = Rank.getInstance().getRank(player.getUniqueId()).getName();
+        return rank.equalsIgnoreCase("youtube") || rank.equalsIgnoreCase("pmod") || rank.equalsIgnoreCase("gm") || rank.equalsIgnoreCase("dev");
+    }
+
+    /**
+     * Returns true if the user does not have the "default" rank.
+     *
+     * @param player
+     * @return boolean
+     */
+    public static boolean isSubscriber(Player player) {
+        String rank = Rank.getInstance().getRank(player.getUniqueId()).getName();
+        return rank != null && !rank.equalsIgnoreCase("default");
+    }
+
+    public static String rankFromPrefix(String prefix) {
+        switch (prefix.toLowerCase()) {
+            case "dev":
+                return ChatColor.DARK_AQUA + "Developer";
+            case "gm":
+                return ChatColor.AQUA + "Game Master";
+            case "pmod":
+                return ChatColor.WHITE + "Player Moderator";
+            case "support":
+                return ChatColor.BLUE + "Support Agent";
+            case "youtube":
+                return ChatColor.RED + "YouTuber";
+            case "builder":
+                return ChatColor.DARK_AQUA + "Builder";
+            case "sub++":
+                return ChatColor.DARK_AQUA + "Subscriber++";
+            case "sub+":
+                return ChatColor.GOLD + "Subscriber+";
+            case "sub":
+                return ChatColor.GREEN + "Subscriber";
+            case "default":
+                return ChatColor.GRAY + "Default";
+        }
+
+        // Could not find rank.
+        return null;
     }
 
 }

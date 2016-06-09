@@ -243,27 +243,34 @@ public class DungeonRealms extends JavaPlugin {
 
         CommandManager cm = new CommandManager();
 
+        // Commands always registered regardless of server.
+        cm.registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
+        cm.registerCommand(new CommandSet("set", "/<command> [args]", "Development command for modifying account variables."));
+        cm.registerCommand(new CommandEss("dr", "/<command> [args]", "The essentials command."));
+        cm.registerCommand(new CommandTell("tell", "/<command> [args]", "Send a private message to a player."));
+        cm.registerCommand(new CommandISay("isay", "/<command> [args]", "Prints message to players in dungeon world from command block."));
+        cm.registerCommand(new CommandModeration("moderation", "/<command> [args]", "Moderation command for Dungeon Realms staff."));
+
+        cm.registerCommand(new CommandPAccept("paccept", "/<command> [args]", "Accept a party invitation."));
+        cm.registerCommand(new CommandPRemove("premove", "/<command> [args]", "Remove player from party."));
+        cm.registerCommand(new CommandPLeave("pleave", "/<command> [args]", "Remove player from party."));
+        cm.registerCommand(new CommandPChat("pchat", "/<command> [args]", "Talk in party chat."));
+
+        cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "The Logout command."));
+        cm.registerCommand(new CommandToggle("toggles", "/<command> [args]", "The Toggle command."));
+        cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "The roll command."));
+
+        cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Check epoch time of item."));
+        cm.registerCommand(new CommandStats("stat", "/<command> [args]", "The stats command.", Collections.singletonList("stats")));
+        cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "The stop command.", Collections.singletonList("drstop")));
+        cm.registerCommand(new CommandAccept("accept", "/<command> [args]", "The accept command."));
+
+        // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {
             // cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menu!"));
-            cm.registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
-            cm.registerCommand(new CommandSet("set", "/<command> [args]", "SETS THE YEAH."));
-            cm.registerCommand(new CommandEss("dr", "/<command> [args]", "The essential DR command."));
-            cm.registerCommand(new CommandMail("mailbox", "/<command> [args]", "The mail command."));
-            cm.registerCommand(new CommandAccept("accept", "/<command> [args]", "The accept command."));
-            cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
-            cm.registerCommand(new CommandStats("stat", "/<command> [args]", "The stats command.", Collections.singletonList("stats")));
-            cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "The stop command.", Collections.singletonList("drstop")));
-            cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "The roll command."));
-            cm.registerCommand(new CommandPRemove("premove", "/<command> [args]", "Remove player from party."));
-            cm.registerCommand(new CommandPLeave("pleave", "/<command> [args]", "Remove player from party."));
-            cm.registerCommand(new CommandPChat("pchat", "/<command> [args]", "Talk in party chat."));
-            cm.registerCommand(new CommandModeration("dr", "/<command> [args]", "The dr moderation command."));
-            cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "The Logout command."));
-            cm.registerCommand(new CommandToggle("toggles", "/<command> [args]", "The Toggle command."));
-            cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Check epoch time of item."));
-            cm.registerCommand(new CommandTell("tell", "/<command> [args]", "tell a player something."));
-            cm.registerCommand(new CommandTell("isay", "/<command> [args]", "Prints message to players in dungeon world from command block."));
-        } else {
+        }
+        // Commands only registered for live servers (including always registered).
+        else {
 
             //GUILD STUFF
             cm.registerCommand(new CommandGInfo("ginfo", "/<command>", "Guild info command."));
@@ -271,46 +278,29 @@ public class DungeonRealms extends JavaPlugin {
 
             cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "Spawns a mob? idk chase"));
             cm.registerCommand(new CommandAdd("ad", "/<command> [args]", "Adds shit"));
-            cm.registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
-            cm.registerCommand(new CommandSet("set", "/<command> [args]", "SETS THE YEAH."));
-            cm.registerCommand(new CommandList("list", "/<command> [args]", "THE LIST"));
-            cm.registerCommand(new CommandRank("rank", "/<command> [args]", "The rank command!"));
-            cm.registerCommand(new CommandEss("dr", "/<command> [args]", "The essentials command."));
+            cm.registerCommand(new CommandList("list", "/<command> [args]", "List online players."));
+            cm.registerCommand(new CommandSetRank("setrank", "/<command> [args]", "Manage a players rank!"));
             cm.registerCommand(new CommandMail("mailbox", "/<command> [args]", "The mail command."));
             cm.registerCommand(new CommandReboot("reboot", "/<command>", "Check reboot time."));
-            cm.registerCommand(new CommandAccept("accept", "/<command> [args]", "The accept command."));
             cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
 
-            cm.registerCommand(new CommandGlobalChat("gl", "/<command> [args]", "The invoke command."));
-            cm.registerCommand(new CommandLocalChat("l", "/<command> [args]", "The invoke command."));
+            cm.registerCommand(new CommandGlobalChat("gl", "/<command> [args]", "Use global chat."));
+            cm.registerCommand(new CommandLocalChat("l", "/<command> [args]", "Use local chat."));
 
-            cm.registerCommand(new CommandStats("stat", "/<command> [args]", "The stats command.", Collections.singletonList("stats")));
-            cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "The stop command.", Collections.singletonList("drstop")));
-            cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "The roll command."));
             cm.registerCommand(new CommandStuck("stuck", "/<command> [args]", "The stuck command."));
 
-            cm.registerCommand(new CommandPl("pinvite", "/<command> [args]", "Will invite a player to a party and create one!"));
-            cm.registerCommand(new CommandPAccept("paccept", "/<command> [args]", "Accept a party invitation."));
-            cm.registerCommand(new CommandPRemove("premove", "/<command> [args]", "Remove player from party."));
-            cm.registerCommand(new CommandPLeave("pleave", "/<command> [args]", "Remove player from party."));
-            cm.registerCommand(new CommandPChat("pchat", "/<command> [args]", "Talk in party chat."));
-            cm.registerCommand(new CommandModeration("dr", "/<command> [args]", "The dr moderation command."));
-            cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "The Logout command."));
-            cm.registerCommand(new CommandToggle("toggles", "/<command> [args]", "The Toggle command."));
             cm.registerCommand(new CommandSkip("skip", "/<command> [args]", "Skip the tutorial island."));
             cm.registerCommand(new CommandShopClose("closeshop", "/<command>", "Close Shop on all shards."));
             cm.registerCommand(new CommandPurchase("purchase", "/<command> [args]", "Purchase broadcast command."));
 
-            cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Check epoch time of item."));
-            cm.registerCommand(new CommandTell("tell", "/<command> [args]", "tell a player something."));
-            cm.registerCommand(new CommandTell("isay", "/<command> [args]", "Prints message to players in dungeon world from command block."));
+            cm.registerCommand(new CommandPl("pinvite", "/<command> [args]", "Will invite a player to a party and create one!"));
 
             cm.registerCommand(new CommandMount("mount", "/<command> [args]", "The mount command.", Collections.singletonList("mounts")));
             cm.registerCommand(new CommandPet("pet", "/<command> [args]", "The pet command.", Collections.singletonList("pets")));
             cm.registerCommand(new CommandTrail("trail", "/<command> [args]", "The trails command.", Collections.singletonList("trails")));
             cm.registerCommand(new CommandProfile("profile", "/<command> [args]", "The profile command."));
 
-            cm.registerCommand(new TestingCommand("gotesting", "/<command> [args]", "This is a test command"));
+            cm.registerCommand(new TestingCommand("gotesting", "/<command> [args]", "This is a test command."));
             cm.registerCommand(new StarterCommand("givestarter", "/<command> [args]", "Gives a starter kit to someone"));
             cm.registerCommand(new RealmTestCommand("realmtest", "/<command> [args]", "Puts you in your realm"));
             cm.registerCommand(new KickAllCommand("kickall", "/<command> [args]", "Kicks all players from the server"));

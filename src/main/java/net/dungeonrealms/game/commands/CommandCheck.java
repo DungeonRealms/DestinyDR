@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.commands;
 
+import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -26,15 +27,11 @@ public class CommandCheck extends BasicCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-        if (!(sender instanceof Player)) {
-            return false;
-        }
+        if (!(sender instanceof Player)) return false;
 
         Player player = (Player) sender;
 
-        if(!player.isOp()) {
-            return true;
-        }
+        if(!Rank.isDev(player)) return true;
 
         if (player.getItemInHand() == null) {
             player.sendMessage(ChatColor.RED + "There is nothing in your hand.");

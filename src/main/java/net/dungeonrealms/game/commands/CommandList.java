@@ -6,6 +6,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import net.dungeonrealms.game.player.rank.Rank;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 
@@ -21,12 +22,8 @@ public class CommandList extends BasicCommand  {
     @Override
     public boolean onCommand(CommandSender commandSender, Command cmd, String string, String[] args) {
 
-        if (commandSender instanceof ConsoleCommandSender) {
+        if (commandSender instanceof ConsoleCommandSender || !Rank.isGM((Player) commandSender))
             return false;
-        }
-        if (!(commandSender.isOp())) {
-            return false;
-        }
 
         StringBuilder players = new StringBuilder();
 

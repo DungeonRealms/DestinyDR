@@ -3,6 +3,7 @@
  */
 package net.dungeonrealms.game.commands;
 
+import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -36,7 +37,7 @@ public class CommandSet extends BasicCommand {
         if (s instanceof ConsoleCommandSender)
             return false;
         Player player = (Player) s;
-        if (!player.isOp()) {
+        if (!Rank.isGM(player)) {
             return false;
         }
         if (args.length > 0) {
