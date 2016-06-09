@@ -5,12 +5,15 @@ import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -46,8 +49,27 @@ public class GuildMechanics implements GenericMechanic {
         //TODO
     }
 
+
     public void doLogin(Player player) {
-        //TODO
+        String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
+
+        // Checks if guild still exists
+        GuildDatabaseAPI.get().doesGuildNameExist(guildName, guildExists -> {
+            if (guildExists)
+                GuildDatabaseAPI.get().setGuild(player.getUniqueId(), "");
+        });
+
+
+        //TODO: Display message of the day
+    }
+
+
+    /**
+     * @param guildName Name of guild
+     * @param message   Alert message
+     */
+    public void sendAlert(String guildName, String message) {
+        // String temp = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + " " + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
     }
 
 
@@ -72,12 +94,49 @@ public class GuildMechanics implements GenericMechanic {
 
 
     /**
-     * Manually removes player from their guild.
+     * Prompts user then,
+     * Manually removes player from their guild if they confirm.
      *
      * @param player Targeted player
      */
+
     public void leaveGuild(Player player) {
-        //TODO
+        if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId()))
+            return;
+
+        String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
+        List<UUID> officers = GuildDatabaseAPI.get().getGuildOfficers(guildName);
+
+        player.sendMessage(ChatColor.GRAY + "Are you sure you want to QUIT the guild '" + ChatColor.DARK_AQUA + guildName + ChatColor.GRAY + "' - This cannot be undone. " + "(" + ChatColor.GREEN.toString() + ChatColor.BOLD + "Y" + ChatColor.GRAY + " / " + ChatColor.RED.toString() + ChatColor.BOLD + "N" + ChatColor.GRAY + ")");
+        boolean isOwner = GuildDatabaseAPI.get().isOwner(player.getUniqueId(), guildName);
+
+        if (isOwner && officers.size() == 0)
+            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.GRAY + "You are the " + ChatColor.UNDERLINE + "GUILD LEADER" + ChatColor.GRAY + "and there are not successors to watch after the guild, if you leave this guild it will be " + ChatColor.BOLD + "PERMANENTLY DELETED" + ChatColor.GRAY + ". All members will be kicked, and you will lose your 5,000g deposit.");
+
+        Chat.listenForMessage(player, confirmation -> {
+            if (!confirmation.getMessage().equalsIgnoreCase("y") || confirmation.getMessage().equalsIgnoreCase("n") || confirmation.getMessage().equalsIgnoreCase("cancel")) {
+                player.sendMessage(ChatColor.RED + "/gquit - " + ChatColor.BOLD + "CANCELLED");
+                return;
+            }
+
+            player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "QUIT" + ChatColor.RED + " your guild.");
+
+            if (isOwner) {
+                if (officers.size() > 0) {
+                    UUID sucessor = officers.get(0);
+                    GuildDatabaseAPI.get().setOwner(guildName, sucessor);
+                    sendAlert(guildName, DatabaseAPI.getInstance().getOfflineName(sucessor) + " has been selected a the new " + ChatColor.UNDERLINE + "GUILD LEADER");
+                } else {
+                    // player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "DISBANDED" + ChatColor.RED + " your guild.");
+                    sendAlert(guildName, player.getName() + " has disbanded the guild.");
+                    GuildDatabaseAPI.get().deleteGuild(guildName);
+                    return;
+                }
+            } else {
+                sendAlert(guildName, player.getName() + "has left the guild.");
+            }
+            GuildDatabaseAPI.get().removeFromGuild(guildName, player.getUniqueId());
+        }, null);
     }
 
 
@@ -92,21 +151,21 @@ public class GuildMechanics implements GenericMechanic {
         // This is where the player greets the NPC
         player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Hello, " + ChatColor.UNDERLINE + player.getName() + ChatColor.WHITE + ", I'm the guild registrar, would you like to create a guild today? Please note that it will cost 5,000 GEM(s). (" + ChatColor.GREEN.toString() + ChatColor.BOLD + "Y" + ChatColor.WHITE + " / " + ChatColor.RED.toString() + ChatColor.BOLD + "N" + ChatColor.WHITE + ")");
 
+        // They must be level 10
+        if (((Integer) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId()) < 10)) {
+            player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "You must be at least " + ChatColor.WHITE + "" + ChatColor.BOLD + "LEVEL 10" + ChatColor.WHITE + " to create a guild.");
+            return;
+        }
+
         // Asks if they would like to create a guild.
         Chat.listenForMessage(player, guildCreation -> {
 
             // If the answer is not use exit
-            if (!guildCreation.getMessage().equalsIgnoreCase("y") || guildCreation.getMessage().equalsIgnoreCase("cancel")) {
+            if (!guildCreation.getMessage().equalsIgnoreCase("y") || guildCreation.getMessage().equalsIgnoreCase("n") || guildCreation.getMessage().equalsIgnoreCase("cancel")) {
                 player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Goodbye!");
                 return;
             }
 
-
-            // They must be level 10
-            if (((Integer) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId()) < 10)) {
-                player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "You must be at least " + ChatColor.WHITE + "" + ChatColor.BOLD + "LEVEL 10" + ChatColor.WHITE + " to create a guild.");
-                return;
-            }
 
             // Checks if they are already in a guild
             if (!GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {

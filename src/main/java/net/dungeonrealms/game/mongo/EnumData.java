@@ -46,7 +46,7 @@ public enum EnumData {
 
     GUILD("info.guild"),
 
-    GUILD_INVITES("notices.guildInvites"),
+    GUILD_INVITE("notices.guildInvite"),
     FRIEND_REQUSTS("notices.friendRequest"),
 
     MOUNTS("collectibles.mounts"),

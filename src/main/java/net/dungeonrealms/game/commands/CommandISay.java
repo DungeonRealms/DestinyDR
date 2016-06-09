@@ -6,6 +6,7 @@ import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
+import net.dungeonrealms.game.player.rank.Rank;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 
@@ -21,7 +22,7 @@ public class CommandISay extends BasicCommand{
     @Override
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
     	if(commandSender instanceof Player){
-    		if(!commandSender.isOp()){
+    		if(!Rank.isGM((Player) commandSender)){
     			return false;
     		}
     		Bukkit.broadcastMessage(strings[1]);

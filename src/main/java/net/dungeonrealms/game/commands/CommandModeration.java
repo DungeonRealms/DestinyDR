@@ -14,6 +14,7 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import net.dungeonrealms.game.player.rank.Rank;
 
 /**
  * Created by Chase on Nov 11, 2015
@@ -28,7 +29,7 @@ public class CommandModeration extends BasicCommand {
         if (s instanceof ConsoleCommandSender) return false;
         Player sender = (Player) s;
 
-        if (!sender.isOp()) return false;
+        if (!Rank.isGM(sender)) return false;
 
         switch (args[0]) {
             case "tp":

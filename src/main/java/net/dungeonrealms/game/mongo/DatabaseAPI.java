@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.mongo;
 
+import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Filters;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
@@ -88,8 +90,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("friends", ArrayList.class);
             case GUILD:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("guild", String.class);
-            case GUILD_INVITES:
-                return ((Document) PLAYERS.get(uuid).get("notices")).get("guildInvites", ArrayList.class);
+            case GUILD_INVITE:
+                return ((Document) PLAYERS.get(uuid).get("notices")).get("guildInvites", BasicDBObject.class);
             case FRIEND_REQUSTS:
                 return ((Document) PLAYERS.get(uuid).get("notices")).get("friendRequest", ArrayList.class);
             case MAILBOX:
@@ -103,7 +105,7 @@ public class DatabaseAPI {
             case SHOPLEVEL:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("shopLevel", Integer.class);
             case MULELEVEL:
-             return ((Document) PLAYERS.get(uuid).get("info")).get("muleLevel", Integer.class);
+                return ((Document) PLAYERS.get(uuid).get("info")).get("muleLevel", Integer.class);
             case LOGGERDIED:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("loggerdied", Boolean.class);
             case CURRENTSERVER:
@@ -293,8 +295,8 @@ public class DatabaseAPI {
                                 .append("shopLevel", 1)
                                 .append("muleLevel", 1)
                                 .append("loggerdied", false)
-                				.append("current", DungeonRealms.getInstance().bungeeName)
-                				.append("enteringrealm", "")
+                                .append("current", DungeonRealms.getInstance().bungeeName)
+                                .append("enteringrealm", "")
                                 .append("activepet", "")
                                 .append("activemount", "")
                                 .append("activetrail", "")
@@ -329,7 +331,7 @@ public class DatabaseAPI {
                                         .append("tier4", 0)
                                         .append("tier5", 0))
                         .append("notices",
-                                new Document("guildInvites", new ArrayList<String>())
+                                new Document("guildInvites", null)
                                         .append("friendRequest", new ArrayList<String>())
                                         .append("mailbox", new ArrayList<String>()))
                         .append("rank",
