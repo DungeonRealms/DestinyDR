@@ -397,13 +397,13 @@ public class API {
             mount.dead = true;
             EntityAPI.removePlayerMountList(uuid);
         }
+        String inventory = ItemSerialization.toString(inv);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
         if (GAMEPLAYERS.size() > 0)
             GAMEPLAYERS.stream().filter(gPlayer -> gPlayer.getPlayer().getName().equalsIgnoreCase(player.getName())).forEach(gPlayer -> {
                 gPlayer.getStats().updateDatabase(true);
                 GAMEPLAYERS.remove(gPlayer);
             });
-        String inventory = ItemSerialization.toString(inv);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
     }
 
     /**
@@ -470,15 +470,14 @@ public class API {
             mount.dead = true;
             EntityAPI.removePlayerMountList(uuid);
         }
+        String inventory = ItemSerialization.toString(inv);
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ENTERINGREALM, "", false);
         if (GAMEPLAYERS.size() > 0)
             GAMEPLAYERS.stream().filter(gPlayer -> gPlayer.getPlayer().getName().equalsIgnoreCase(player.getName())).forEach(gPlayer -> {
                 gPlayer.getStats().updateDatabase(true);
                 GAMEPLAYERS.remove(gPlayer);
             });
-        String inventory = ItemSerialization.toString(inv);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ENTERINGREALM, "", true);
-
     }
     
     /**
@@ -600,7 +599,7 @@ public class API {
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + " Use " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/logout " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "to safely change your server instance."
         });
 
-        if (gp.getPlayer() != null)
+        if (gp.getPlayer() != null) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 if (gp.getStats().freePoints > 0) {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -616,6 +615,7 @@ public class API {
                     });
                 }
             }, 100);
+        }
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.USERNAME, player.getName().toLowerCase(), false);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, DungeonRealms.getInstance().bungeeName, true);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> AchievementManager.getInstance().handleLogin(player.getUniqueId()), 70L);

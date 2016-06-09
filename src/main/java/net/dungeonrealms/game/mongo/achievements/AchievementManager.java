@@ -74,7 +74,6 @@ public class AchievementManager implements GenericMechanic, Listener {
      * @since 1.0
      */
     public void handleLogin(UUID uuid) {
-        //if (!player.getUniqueId().toString().equals("e0926362-9a92-4ffb-8d1f-7dfa5f4b4dd0")) return;
         if (Bukkit.getPlayer(uuid) == null) return;
         List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, uuid);
         if (playerPets.size() > 0) {
