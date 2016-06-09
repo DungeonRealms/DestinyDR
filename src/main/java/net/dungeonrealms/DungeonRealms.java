@@ -80,6 +80,8 @@ public class DungeonRealms extends JavaPlugin {
 
     // End of Menus
 
+    private static TabCompleteCommands tcc;
+
     // Shard Config
 
     public boolean isInstanceServer = false;
@@ -89,6 +91,13 @@ public class DungeonRealms extends JavaPlugin {
     public int realmmax = 0;
     public int realmpmax = 0;
     public String shardid = "US-666";
+    public boolean isMasterShard = false; // Master shard (US-0) - handles rollout / editable / etc.
+    public boolean isSubscriberShard = false; // Subscriber shard - only allow subsribers.
+    public boolean isSupportShard = false; // Custom support shard - should we enable support commands?
+    public boolean isYouTubeShard = false; // YouTuber shard - only YTers / staff allowed.
+    public boolean isBrazilianShard = false; // Brazilian shard - eventually create DR localization, etc.
+    public boolean isRoleplayShard = false; // Role playing shard - prompt user its a RP shard.
+    public boolean isBetaShard = false; // Beta shard - enable extended capabilities / alert user about bugs.
 
     // End of Shard Config
 
@@ -121,13 +130,23 @@ public class DungeonRealms extends JavaPlugin {
         Ini ini = new Ini();
         try {
             ini.load(new FileReader("shardconfig.ini"));
+            // Main
             isInstanceServer = ini.get("Main", "instanced", Boolean.class);
             shardid = ini.get("Main", "shardid", String.class);
             bungeeName = ini.get("Bungee", "name", String.class);
+
             realmnumber = ini.get("RealmInstance", "number", int.class);
             realmport = ini.get("RealmInstance", "port", int.class);
             realmmax = ini.get("RealmInstance", "maxrealms", int.class);
             realmpmax = ini.get("RealmInstance", "maxplayers", int.class);
+            // Shard Settings
+            isMasterShard = ini.get("Settings", "master_shard", Boolean.class);
+            isSubscriberShard = ini.get("Settings", "support_shard", Boolean.class);
+            isSupportShard = ini.get("Settings", "subscriber_shard", Boolean.class);
+            isYouTubeShard = ini.get("Settings", "youtube_shard", Boolean.class);
+            isBrazilianShard = ini.get("Settings", "brazilian_shard", Boolean.class);
+            isRoleplayShard = ini.get("Settings", "roleplay_shard", Boolean.class);
+            isBetaShard = ini.get("Settings", "beta_shard", Boolean.class);
         } catch (InvalidFileFormatException e1) {
             Utils.log.info("InvalidFileFormat in shard config!");
         } catch (FileNotFoundException e1) {
@@ -213,8 +232,10 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new AchievementManager(), this);
             hs = new HearthStone();
             ps = new Profile();
+            tcc = new TabCompleteCommands();
             hs.onEnable();
             ps.onEnable();
+            tcc.onEnable();
             pm.registerEvents(new TabbedChatListener(), this);
         } else {
             pm.registerEvents(new MainListenerInstance(), this);
@@ -260,6 +281,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "The Logout command."));
         cm.registerCommand(new CommandToggle("toggles", "/<command> [args]", "The Toggle command."));
         cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "The roll command."));
+        cm.registerCommand(new CommandShard("shard", "/<command> [args]", "This command will allow the user to change shards."));
 
         cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Check epoch time of item."));
         cm.registerCommand(new CommandStats("stat", "/<command> [args]", "The stats command.", Collections.singletonList("stats")));
@@ -309,7 +331,7 @@ public class DungeonRealms extends JavaPlugin {
         }
 
         // Commands exclusive to support agents on their special server.
-        if (shardid.equalsIgnoreCase("us-0")) {
+        if (isMasterShard || isSupportShard) {
             cm.registerCommand(new CommandSupport("support", "/<command> [args]", "The main command for accessing all support features and tools."));
         }
 
@@ -346,6 +368,7 @@ public class DungeonRealms extends JavaPlugin {
         ShopMechanics.deleteAllShops(true);
         ps.onDisable();
         hs.onDisable();
+        tcc.onDisable();
         saveConfig();
         mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");

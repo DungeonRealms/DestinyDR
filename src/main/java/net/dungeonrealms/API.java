@@ -516,6 +516,11 @@ public class API {
         } else {
             if (player != null) {
                 player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
+
+                if (DungeonRealms.getInstance().isSubscriberShard && Rank.getInstance().getRank(player.getUniqueId()).getName().equalsIgnoreCase("default")) {
+                    player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to a subscriber only shard.\n\n" +
+                    ChatColor.GRAY + "Subscriber at http://www.dungeonrealms.net/shop to gain instant access!");
+                }
             }
         }
 
@@ -582,17 +587,51 @@ public class API {
 
         player.setGameMode(GameMode.SURVIVAL);
 
-        player.sendMessage(ChatColor.GREEN + "");
+        for (int j = 0; j < 20; j++) {
+            player.sendMessage("");
+        }
 
         player.setMaximumNoDamageTicks(0);
 
         player.sendMessage(new String[]{
-                "               " + ChatColor.WHITE.toString() + ChatColor.BOLD + "Dungeon Realms Patch " + ChatColor.AQUA.toString() + ChatColor.BOLD + String.valueOf(DungeonRealms.version),
+                "               " + ChatColor.WHITE.toString() + ChatColor.BOLD + "Dungeon Realms Patch " + String.valueOf(DungeonRealms.version),
                 ChatColor.GRAY + "               http://www.dungeonrealms.net/",
                 ChatColor.YELLOW + "                You are on the " + ChatColor.BOLD + DungeonRealms.getInstance().shardid + ChatColor.YELLOW + " shard.",
                 "",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + " Use " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/logout " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "to safely change your server instance."
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "Type " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/shard" + ChatColor.GRAY.toString() + ChatColor.ITALIC + " to change your shard instance at any time.",
         });
+
+        if (DungeonRealms.getInstance().isMasterShard) {
+            player.sendMessage(new String[]{
+                    "",
+                    ChatColor.DARK_AQUA + "This is the Dungeon Realms " + ChatColor.UNDERLINE + "MASTER" + ChatColor.DARK_AQUA + " shard.",
+                    ChatColor.GRAY + "Changes made on this shard will be rolled out as a content patch to all other shards."
+            });
+        }
+        if (DungeonRealms.getInstance().isRoleplayShard) {
+            player.sendMessage(new String[]{
+                    "",
+                    ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "ROLEPLAY" + ChatColor.DARK_AQUA + " shard. Local chat should always be in character, Global/Trade chat may be OOC.",
+                    ChatColor.GRAY + "Please be respectful to those who want to roleplay. You " + ChatColor.UNDERLINE + "will" + ChatColor.GRAY + " be banned for trolling / local OOC."
+            });
+        }
+        if (DungeonRealms.getInstance().isBrazilianShard) {
+            player.sendMessage(new String[]{
+                    "",
+                    ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "BRAZILIAN" + ChatColor.DARK_AQUA + " shard.",
+                    ChatColor.GRAY + "The official language of this server is " + ChatColor.UNDERLINE + "Portuguese."
+            });
+        }
+        if (DungeonRealms.getInstance().isBetaShard) {
+            player.sendMessage(new String[]{
+                    "",
+                    ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "BETA" + ChatColor.DARK_AQUA + " shard.",
+                    ChatColor.GRAY + "You will be testing " + ChatColor.UNDERLINE + "new" + ChatColor.GRAY + " and " + ChatColor.UNDERLINE + "unfinished" + ChatColor.GRAY + " versions of Dungeon Realms.",
+                    ChatColor.GRAY + "Report all bugs at: " + ChatColor.BOLD + ChatColor.UNDERLINE + "http://bug.dungeonrealms.net/"
+            });
+        }
+
+        player.sendMessage("");
 
         // Guilds
         GuildMechanics.getInstance().doLogin(player);
