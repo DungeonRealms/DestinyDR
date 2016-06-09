@@ -28,7 +28,6 @@ public class CommandGQuit extends BasicCommand {
 
         Player player = (Player) sender;
 
-
         if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
             player.sendMessage(ChatColor.RED + "You must be in a " + ChatColor.BOLD + "GUILD" + ChatColor.RED + " to quit.");
             return true;

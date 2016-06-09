@@ -7,9 +7,7 @@ import net.dungeonrealms.game.mongo.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -58,12 +56,34 @@ public class GuildDatabase implements GuildDatabaseAPI {
         return Database.guilds.find(query).first();
     }
 
+    public EnumGuildData get(UUID uuid, String guildName) {
+        if (isMember(uuid, guildName))
+            return EnumGuildData.MEMBERS;
+
+        if (isOfficer(uuid, guildName))
+            return EnumGuildData.OFFICERS;
+
+        if (isOwner(uuid, guildName))
+            return EnumGuildData.OWNER;
+
+        return null;
+    }
+
+    private List<UUID> get(String guildName, EnumGuildData data) {
+        List<String> users = (List<String>) get(guildName, data, ArrayList.class);
+        List<UUID> usersUUIDs = new ArrayList<>();
+
+        if (users != null) users.stream().forEach(u -> usersUUIDs
+                .add(UUID.fromString(u)));
+
+        return usersUUIDs;
+    }
+
     private void update(String guildName, EnumGuildData data, EnumOperators EO, Object value) {
 
         // INSTANTLY UPDATES THE MONGODB SERVER //
         Database.guilds.updateOne(eq("info.name", guildName), new Document(EO.getUO(), new Document(data.getKey(), value)));
     }
-
 
     public boolean doesTagExist(String tag, Consumer<Boolean> action) {
         boolean doesTagExist = get(EnumGuildData.TAG, tag) != null;
@@ -84,8 +104,12 @@ public class GuildDatabase implements GuildDatabaseAPI {
         return (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid);
     }
 
-    public void leaveGuild(UUID uuid) {
 
+    @Override
+    public void deleteGuild(String guildName) {
+        Database.guilds.deleteOne(eq("info.name", guildName));
+
+        Utils.log.warning("Guild deleted: " + guildName);
     }
 
 
@@ -128,14 +152,35 @@ public class GuildDatabase implements GuildDatabaseAPI {
         return (String) get(guildName, EnumGuildData.MOTD, String.class);
     }
 
+    @Override
+    public String getOwnerOf(String guildName) {
+        return (String) get(guildName, EnumGuildData.OWNER, String.class);
+    }
+
+    @Override
+    public void setOwner(String guildName, UUID uuid) {
+        update(guildName, EnumGuildData.OWNER, EnumOperators.$SET, uuid.toString());
+    }
+
 
     public void setMotdOf(String guildName, String motd) {
         update(guildName, EnumGuildData.MOTD, EnumOperators.$SET, motd);
     }
 
+    public void removeFromGuild(String guildName, UUID uuid) {
+        switch (get(uuid, guildName)) {
 
-    public void kickFrom(UUID executor, String guildName, UUID uuid) {
+            case MEMBERS:
+                update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PULL, uuid.toString());
 
+            case OFFICERS:
+                update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString());
+
+            case OWNER:
+                update(guildName, EnumGuildData.OWNER, EnumOperators.$SET, "");
+        }
+
+        setGuild(uuid, "");
     }
 
 
@@ -169,12 +214,23 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
 
     public List<UUID> getAllGuildMembers(String guildName) {
-        return null;
+        return get(guildName, EnumGuildData.MEMBERS);
+    }
+
+    @Override
+    public List<UUID> getGuildOfficers(String guildName) {
+        return get(guildName, EnumGuildData.OFFICERS);
     }
 
     @Override
     public List<UUID> getAllOfGuild(String guildName) {
-        return null;
+        String owner = (String) get(guildName, EnumGuildData.OWNER, String.class);
+
+        List<UUID> all = owner != null ? Collections.singletonList(UUID.fromString(owner)) : new ArrayList<>();
+        all.addAll(getAllGuildMembers(guildName));
+        all.addAll(getGuildOfficers(guildName));
+
+        return all;
     }
 
 

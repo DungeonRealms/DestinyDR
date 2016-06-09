@@ -37,7 +37,7 @@ public class CommandAccept extends BasicCommand {
                         return true;
                     }
                     String guildAccepting = args[1].toUpperCase();
-                    List<String> guildInvitations = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.GUILD_INVITES, player.getUniqueId());
+                    List<String> guildInvitations = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.GUILD_INVITE, player.getUniqueId());
                     if (guildInvitations.size() <= 0) {
                         player.sendMessage(ChatColor.RED + "You have no pending invitations!");
                         return true;
@@ -51,7 +51,7 @@ public class CommandAccept extends BasicCommand {
 
                     String guildName = invitation.split(",")[0];
 
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.GUILD_INVITES, guildName + "," + invitation.split(",")[1], true);
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.GUILD_INVITE, guildName + "," + invitation.split(",")[1], true);
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, guildName, true);
 
 

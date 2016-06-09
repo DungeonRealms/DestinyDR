@@ -49,7 +49,7 @@ public interface GuildDatabaseAPI {
 
     /**
      * @param guildName Guild Name.
-     * @param tag   Clan Tag.
+     * @param tag       Clan Tag.
      * @param owner     owner UUID
      * @param callback  Call back method
      */
@@ -71,12 +71,13 @@ public interface GuildDatabaseAPI {
     String getGuildOf(UUID uuid);
 
     /**
-     * Removes from guild
+     * Remove guild
      *
-     * @param uuid Player
+     * @param guildName Guild name
      */
 
-    void leaveGuild(UUID uuid);
+    void deleteGuild(String guildName);
+
 
     /**
      * Demotes a player from [OFFICER] to [MEMBER]
@@ -95,11 +96,10 @@ public interface GuildDatabaseAPI {
     void promotePlayer(String guildName, UUID uuid);
 
     /**
-     * @param executor  Executor
      * @param guildName Name of guild
      * @param uuid      Player
      */
-    void kickFrom(UUID executor, String guildName, UUID uuid);
+    void removeFromGuild(String guildName, UUID uuid);
 
     /**
      * @param uuid      Player
@@ -129,6 +129,18 @@ public interface GuildDatabaseAPI {
      * @param guildName Name of guild.
      */
     String getMotdOf(String guildName);
+
+
+    /**
+     * @param guildName Name of guild.
+     */
+    String getOwnerOf(String guildName);
+
+
+    /**
+     * @param guildName Name of guild.
+     */
+    void setOwner(String guildName, UUID uuid);
 
 
     /**
@@ -162,6 +174,12 @@ public interface GuildDatabaseAPI {
      * @return The online players of a guild.
      */
     List<UUID> getAllGuildMembers(String guildName);
+
+    /**
+     * @param guildName name wanting the players.
+     * @return The online players of a guild.
+     */
+    List<UUID> getGuildOfficers(String guildName);
 
     /**
      * @param guildName name wanting the players.
