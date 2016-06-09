@@ -25,13 +25,17 @@ public class BasicEntitySkeleton extends DRSkeleton {
      * @param world
      * @param tier
      */
-    public BasicEntitySkeleton(World world, int tier) {
+    public BasicEntitySkeleton(World world, int tier, EnumMonster type) {
         super(world, EnumMonster.Skeleton, tier, EnumEntityType.HOSTILE_MOB);
         this.tier = tier;
         ItemStack weapon = new ItemGenerator().setType(Item.ItemType.BOW).setRarity(API.getItemRarity()).setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
         AntiCheat.getInstance().applyAntiDupe(weapon);
         this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-        this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.SKELETON.getSkull()));
+        if (type == EnumMonster.FrozenSkeleton) {
+            this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.FROZEN_SKELETON.getSkull()));
+        } else {
+            this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.SKELETON.getSkull()));
+        }
     }
 
     /**

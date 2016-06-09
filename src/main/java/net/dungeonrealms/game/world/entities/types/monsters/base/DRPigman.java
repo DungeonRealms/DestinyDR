@@ -5,7 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.Monster;
+import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_8_R3.*;
@@ -20,7 +20,7 @@ import java.util.Random;
 /**
  * Created by Chase on Oct 18, 2015
  */
-public class DRPigman extends EntityPigZombie implements Monster {
+public class DRPigman extends EntityPigZombie implements DRMonster {
 
 	/**
 	 * @param name

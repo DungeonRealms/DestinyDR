@@ -11,8 +11,7 @@ public class BasicEntityBlaze extends DRBlaze {
 
 	/**
 	 * @param world
-	 * @param mobName
-	 * @param mobHead
+	 * @param mons
 	 * @param tier
 	 */
 	public BasicEntityBlaze(World world, EnumMonster mons, int tier) {

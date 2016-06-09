@@ -9,12 +9,11 @@ import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.SoundAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.minecraft.server.v1_8_R3.EntityMonster;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftMonster;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
@@ -75,12 +74,10 @@ public class DamageAPI {
             if (tag.getDouble("vsPlayers") != 0) {
                 damage += ((tag.getDouble("vsPlayers") / 100) * damage);
             }
-            if(attacker.hasMetadata("type")) {
-                if(attacker.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
-                    EntityMonster nms = ((CraftMonster)attacker).getHandle();
-                    if(nms instanceof net.dungeonrealms.game.world.entities.types.monsters.Monster){
-                        net.dungeonrealms.game.world.entities.types.monsters.Monster mons = (net.dungeonrealms.game.world.entities.types.monsters.Monster)nms;
-                        mons.onMonsterAttack((Player) receiver);
+            if (attacker.hasMetadata("type")) {
+                if (attacker.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
+                    if (((CraftLivingEntity)attacker).getHandle() instanceof DRMonster) {
+                        ((DRMonster) ((CraftLivingEntity)attacker).getHandle()).onMonsterAttack((Player) receiver);
                     }
                 }
             }

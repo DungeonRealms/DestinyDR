@@ -4,7 +4,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.Monster;
+import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
@@ -20,7 +20,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 /**
  * Created by Chase on Oct 21, 2015
  */
-public class DRSilverfish extends EntitySilverfish implements Monster{
+public class DRSilverfish extends EntitySilverfish implements DRMonster {
 
 	public EnumMonster enumMonster;
 

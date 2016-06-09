@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
-import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -11,7 +10,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.Monster;
+import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
@@ -22,7 +21,7 @@ import net.minecraft.server.v1_8_R3.World;
 /**
  * Created by Chase on Oct 17, 2015
  */
-public class DRMagma extends EntityMagmaCube implements Monster{
+public class DRMagma extends EntityMagmaCube implements DRMonster {
 
 	private EnumMonster monsterType;
 

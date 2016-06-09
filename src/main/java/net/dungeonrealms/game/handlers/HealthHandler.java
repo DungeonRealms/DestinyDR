@@ -16,7 +16,8 @@ import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.entities.Entities;
-import net.dungeonrealms.game.world.party.Affair;
+    import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
+    import net.dungeonrealms.game.world.party.Affair;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
@@ -403,23 +404,23 @@ public class HealthHandler implements GenericMechanic {
         double currentHP = getMonsterHPLive(entity);
         double maxHP = getMonsterMaxHPLive(entity);
         if (currentHP + 1 > maxHP) {
-            if (entity.getHealth() != 20) {
-                entity.setHealth(20);
+            if (entity.getHealth() != entity.getMaxHealth()) {
+                entity.setHealth(entity.getMaxHealth());
             }
         }
 
         if ((currentHP + (double) amount) >= maxHP) {
-            entity.setHealth(20);
+            entity.setHealth(entity.getMaxHealth());
             setMonsterHPLive(entity, (int) maxHP);
-        } else if (entity.getHealth() <= 19 && ((currentHP + (double) amount) < maxHP)) {
+        } else if (entity.getHealth() <= (entity.getMaxHealth() - 1) && ((currentHP + (double) amount) < maxHP)) {
             setMonsterHPLive(entity, (int) (getMonsterHPLive(entity) + (double) amount));
             double monsterHPPercent = (getMonsterHPLive(entity) + (double) amount) / maxHP;
-            double newMonsterHP = monsterHPPercent * 20;
-            if (newMonsterHP >= 19.50D) {
+            double newMonsterHP = monsterHPPercent * entity.getMaxHealth();
+            if (newMonsterHP >= (entity.getMaxHealth() - 0.5D)) {
                 if (monsterHPPercent >= 1.0D) {
-                    newMonsterHP = 20;
+                    newMonsterHP = entity.getMaxHealth();
                 } else {
-                    newMonsterHP = 19;
+                    newMonsterHP = entity.getMaxHealth();
                 }
             }
             if (newMonsterHP < 1) {
@@ -541,7 +542,7 @@ public class HealthHandler implements GenericMechanic {
                     final LivingEntity finalLeAttacker = leAttacker;
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-                        player.damage(25);
+                        player.damage(player.getMaxHealth());
                         if (finalLeAttacker != null) {
                             KarmaHandler.getInstance().handlePlayerPsuedoDeath(player, finalLeAttacker);
                         }
@@ -630,7 +631,7 @@ public class HealthHandler implements GenericMechanic {
         }
 
         if (newHP <= 0) {
-            //entity.playEffect(EntityEffect.DEATH);
+            entity.playEffect(EntityEffect.DEATH);
             setMonsterHPLive(entity, 0);
             net.minecraft.server.v1_8_R3.Entity entity1 = ((CraftEntity) entity).getHandle();
             entity.damage(entity.getHealth());
@@ -657,7 +658,7 @@ public class HealthHandler implements GenericMechanic {
             if (entity.hasMetadata("type") && entity.getMetadata("type").get(0).asString().equalsIgnoreCase("hostile") && !entity.hasMetadata("uuid") && !entity.hasMetadata("boss")) {
                 if (attacker != null) {
                     if (attacker instanceof Player) {
-                        ((net.dungeonrealms.game.world.entities.types.monsters.Monster) entity1).onMonsterDeath((Player) attacker);
+                        ((DRMonster) entity1).onMonsterDeath((Player) attacker);
                         int exp = API.getMonsterExp((Player) attacker, entity);
                         if (API.getGamePlayer((Player) attacker) == null) {
                             return;
@@ -728,22 +729,27 @@ public class HealthHandler implements GenericMechanic {
             if (entity != null) {
                 setMonsterHPLive(entity, (int) newHP);
                 double monsterHPPercent = (newHP / maxHP);
-                double newMonsterHPToDisplay = monsterHPPercent * 20.0D;
+                double newMonsterHPToDisplay = monsterHPPercent * entity.getMaxHealth();
                 int convHPToDisplay = (int) newMonsterHPToDisplay;
                 if (convHPToDisplay <= 1) {
                     convHPToDisplay = 1;
                 }
-                if (convHPToDisplay > 20) {
-                    convHPToDisplay = 20;
+                if (convHPToDisplay > entity.getMaxHealth()) {
+                    convHPToDisplay = (int) entity.getMaxHealth();
                 }
                 if (entity.hasMetadata("type") && entity.hasMetadata("level")) {
                     int level = entity.getMetadata("level").get(0).asInt();
                     String lvlName = ChatColor.LIGHT_PURPLE + "[" + level + "] ";
                     String hpBar = "||||||||||||||||||||";
+                    if (entity.getMaxHealth() < 20) {
+                        hpBar = hpBar.substring((hpBar.length() + 1) - (int) entity.getMaxHealth());
+                    }
                     hpBar = ChatColor.GREEN + hpBar.substring(0, convHPToDisplay) + ChatColor.DARK_GRAY + hpBar.substring(convHPToDisplay, hpBar.length() - 1);
-                    if (!entity.hasMetadata("elite") && !entity.hasMetadata("boss") && !entity.hasMetadata("uuid"))
+                    if (!entity.hasMetadata("elite") && !entity.hasMetadata("boss") && !entity.hasMetadata("uuid")) {
+
+                    }
                         //"/u287/" BLOCK THING
-                        entity.setCustomName(lvlName + hpBar);
+                    entity.setCustomName(lvlName + hpBar);
                     entity.setHealth(convHPToDisplay);
                     if (!Entities.MONSTERS_LEASHED.contains(entity)) {
                         Entities.MONSTERS_LEASHED.add(entity);

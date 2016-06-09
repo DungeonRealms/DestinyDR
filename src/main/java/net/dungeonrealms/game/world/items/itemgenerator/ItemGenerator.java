@@ -1,33 +1,9 @@
 package net.dungeonrealms.game.world.items.itemgenerator;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
-
-import net.dungeonrealms.API;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.items.Item.ArmorAttributeType;
-import net.dungeonrealms.game.world.items.Item.WeaponAttributeType;
-import net.dungeonrealms.game.world.items.Item.ItemRarity;
-import net.dungeonrealms.game.world.items.Item.ItemTier;
-import net.dungeonrealms.game.world.items.Item.ItemType;
+import net.dungeonrealms.game.world.items.Item.*;
 import net.dungeonrealms.game.world.items.itemgenerator.engine.ItemModifier;
 import net.dungeonrealms.game.world.items.itemgenerator.engine.ModifierCondition;
 import net.dungeonrealms.game.world.items.itemgenerator.engine.ModifierType;
@@ -37,6 +13,17 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagInt;
 import net.minecraft.server.v1_8_R3.NBTTagList;
 import net.minecraft.server.v1_8_R3.NBTTagString;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
+
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.*;
 
 public class ItemGenerator {
 	
@@ -480,7 +467,7 @@ public class ItemGenerator {
         try {
             reader = new BufferedReader(new FileReader(template));
 
-            String line = "";
+            String line;
             while ((line = reader.readLine()) != null) {
                 if (line.startsWith("item_name=")) {
                     line = ChatColor.translateAlternateColorCodes('&', line);

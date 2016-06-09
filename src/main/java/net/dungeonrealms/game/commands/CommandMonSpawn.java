@@ -180,7 +180,7 @@ public class CommandMonSpawn extends BasicCommand {
                     int spawnDelay = 20;
                     if (args.length == 4)
                         spawnDelay = Integer.parseInt(args[3]);
-                    MobSpawner spawner = new MobSpawner(player.getLocation(), monster, tier, 4, SpawningMechanics.ALLSPAWNERS.size(), "high", spawnDelay);
+                    MobSpawner spawner = new MobSpawner(player.getLocation(), monster, tier, 4, SpawningMechanics.ALLSPAWNERS.size(), "high", spawnDelay, 1, 2);
                     String text = (player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + "=" + monster + ":" + tier + "@" + spawnDelay + "#");
                     SpawningMechanics.SPAWNER_CONFIG.add(text);
                     DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);

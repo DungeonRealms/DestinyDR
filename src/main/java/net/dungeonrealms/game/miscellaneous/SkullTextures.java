@@ -40,7 +40,8 @@ public enum SkullTextures {
     TRIPOLI_SOLDIER("4c31753d3440b2a7d115f6a7542cd4b2487cb7ada0c945be4d4df62bb39d4067"),
     MAGE("15a4c33adda9ade4a2379eedb5e6cd0c5f3aaa772cd689cd6788c8314fab56"),
     IMP("15c23b79bedc5ca92d84878495d69dfc6b47224b51c57f1caea55e7c2a8537"),
-    SKELETON("5cd713c5f5e46da436a8f54b523d43af29f7ae8fb184792cca73b1717feaa61");
+    SKELETON("5cd713c5f5e46da436a8f54b523d43af29f7ae8fb184792cca73b1717feaa61"),
+    FROZEN_SKELETON("041646c03f8b4cdbbf81f7164dd63a29c963a6c6cebfe1caf19a2ee92c");
 
     private String b64String;
 

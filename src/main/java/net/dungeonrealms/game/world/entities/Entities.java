@@ -75,6 +75,8 @@ public class Entities implements GenericMechanic {
 		nmsUtils.registerEntity("DRMagma", 62, EntityMagmaCube.class, DRMagma.class);
 		nmsUtils.registerEntity("DRPigman", 57, EntityPigZombie.class, DRPigman.class);
 		nmsUtils.registerEntity("DRSilverfish", 60, EntitySilverfish.class, DRSilverfish.class);
+		nmsUtils.registerEntity("DRWolf", 95, EntityWolf.class, DRWolf.class);
+		nmsUtils.registerEntity("DRWitch", 66, EntityWitch.class, DRWitch.class);
 
 		// Tier 1 Boss
 		nmsUtils.registerEntity("Mayel", 51, EntitySkeleton.class, Mayel.class);

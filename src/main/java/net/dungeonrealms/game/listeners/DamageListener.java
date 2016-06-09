@@ -169,10 +169,10 @@ public class DamageListener implements Listener {
     public void onPlayerHitEntity(EntityDamageByEntityEvent event) {
         if ((!(API.isPlayer(event.getDamager()))) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL)))
             return;
-        if (!(event.getEntity() instanceof CraftLivingEntity) && !(API.isPlayer(event.getEntity()))) return;
+        if (!(event.getEntity() instanceof LivingEntity) && !(API.isPlayer(event.getEntity()))) return;
         if (Entities.PLAYER_PETS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
         if (Entities.PLAYER_MOUNTS.containsValue(((CraftEntity) event.getEntity()).getHandle())) return;
-        if (event.getEntity() instanceof CraftLivingEntity) {
+        if (event.getEntity() instanceof LivingEntity) {
             if (!(event.getEntity() instanceof Player)) {
                 if (!event.getEntity().hasMetadata("type")) return;
             }
@@ -293,7 +293,7 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
     	if(API.isPlayer(event.getDamager()))return; // THIS METHOD WAS BREAKING EVERYTHING BECAUSE IT WASN'T MAKING SURE DAMAGER WAS A PLAYER FCKING NIGGERS I SPENT SO LONG ON THIS
-        if ((!(event.getDamager() instanceof CraftLivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL)))
+        if ((!(event.getDamager() instanceof LivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL)))
             return;
         if (!(API.isPlayer(event.getEntity()))) return;
         if (API.isInSafeRegion(event.getDamager().getLocation()) || API.isInSafeRegion(event.getEntity().getLocation())) {
@@ -303,8 +303,8 @@ public class DamageListener implements Listener {
         }
         double finalDamage = 0;
         Player player = (Player) event.getEntity();
-        if (event.getDamager() instanceof CraftLivingEntity) {
-            CraftLivingEntity attacker = (CraftLivingEntity) event.getDamager();
+        if (event.getDamager() instanceof LivingEntity) {
+            LivingEntity attacker = (LivingEntity) event.getDamager();
             EntityEquipment attackerEquipment = attacker.getEquipment();
             if (attackerEquipment.getItemInHand() == null) return;
             attackerEquipment.getItemInHand().setDurability(((short) -1));

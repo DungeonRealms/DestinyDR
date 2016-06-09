@@ -6,10 +6,9 @@ import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.*;
+import net.dungeonrealms.game.world.entities.types.monsters.EntityGolem;
 import net.dungeonrealms.game.world.entities.types.monsters.base.*;
-import net.minecraft.server.v1_8_R3.DamageSource;
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_8_R3.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -44,12 +43,16 @@ public class SpawningMechanics implements GenericMechanic {
         });
     }
 
-    public static void loadSpawners() {
+    public static void loadBaseSpawners() {
     	Utils.log.info("LOADING ALL DUNGEON REALMS MONSTERS...");
         SPAWNER_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("spawners");
         for (String line : SPAWNER_CONFIG) {
-            if (line == null || line.equalsIgnoreCase("null"))
+            if (line == null || line.equalsIgnoreCase("null")) {
                 continue;
+            }
+            if (line.contains("*")) {
+                continue;
+            }
             String[] coords = line.split("=")[0].split(",");
             double x, y, z;
             x = Double.parseDouble(coords[0]);
@@ -66,11 +69,15 @@ public class SpawningMechanics implements GenericMechanic {
             if (spawnDelay < 20) {
                 spawnDelay = 20;
             }
+            String locationRange[] = line.substring(line.indexOf("#") + 1, line.lastIndexOf("$")).split("-");
+            int minXZ = Integer.parseInt(locationRange[0]);
+            int maxXZ = Integer.parseInt(locationRange[1]);
             MobSpawner spawner;
-            if(spawnRange.equalsIgnoreCase("+"))
-             spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "high", spawnDelay);
-            else
-             spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low", spawnDelay);
+            if (spawnRange.equalsIgnoreCase("+")) {
+                spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "high", spawnDelay, minXZ, maxXZ);
+            } else {
+                spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low", spawnDelay, minXZ, maxXZ);
+            }
             ALLSPAWNERS.add(spawner);
         }
         ArrayList<String> BANDIT_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("banditTrove");
@@ -92,7 +99,7 @@ public class SpawningMechanics implements GenericMechanic {
             String monster = line.split("=")[1].split(":")[0];
             int spawnDelay = 0;
             MobSpawner spawner;
-            spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, BanditTroveSpawns.size(), "high", spawnDelay);
+            spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, BanditTroveSpawns.size(), "high", spawnDelay, 1, 2);
             spawner.setDungeonSpawner(true);
             BanditTroveSpawns.add(spawner);
         }
@@ -123,10 +130,13 @@ public class SpawningMechanics implements GenericMechanic {
         if (spawnDelay < 20) {
             spawnDelay = 20;
         }
+        String locationRange[] = line.substring(line.indexOf("#") + 1, line.indexOf("$")).split("-");
+        int minXZ = Integer.parseInt(locationRange[0]);
+        int maxXZ = Integer.parseInt(locationRange[1]);
         if (spawnRange.equalsIgnoreCase("+")) {
-            spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "high", spawnDelay);
+            spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "high", spawnDelay, minXZ, maxXZ);
         } else {
-            spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low", spawnDelay);
+            spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low", spawnDelay, minXZ, maxXZ);
         }
         ALLSPAWNERS.add(spawner);
         spawner.init();
@@ -178,10 +188,11 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new EntityGolem(world, tier, type);
                 break;
             case Naga:
-            	if (new Random().nextBoolean())
-            		entity = new BasicMageMonster(world, EnumMonster.Naga, tier);
-            	else
-            		entity = new BasicMeleeMonster(world, EnumMonster.Naga, tier);
+            	if (new Random().nextBoolean()) {
+                    entity = new BasicMageMonster(world, EnumMonster.Naga, tier);
+                } else {
+                    entity = new BasicMeleeMonster(world, EnumMonster.Naga, tier);
+                }
                 break;
             case Tripoli1:
             case Tripoli:
@@ -190,12 +201,16 @@ public class SpawningMechanics implements GenericMechanic {
             case Blaze:
                 entity = new BasicEntityBlaze(world, EnumMonster.Blaze, tier);
                 break;
+            case Skeleton2:
             case Skeleton1:
             case Skeleton:
-                entity = new BasicEntitySkeleton(world, tier);
+                entity = new BasicEntitySkeleton(world, tier, monsEnum);
+                break;
+            case FrozenSkeleton:
+                entity = new DRWitherSkeleton(world, monsEnum, tier);
                 break;
             case Wither:
-                entity = new DRWitherSkeleton(world, EnumMonster.Wither, tier);
+                entity = new DRWitherSkeleton(world, monsEnum, tier);
                 break;
             case MagmaCube:
                 entity = new DRMagma(world, EnumMonster.MagmaCube, tier);
@@ -225,6 +240,21 @@ public class SpawningMechanics implements GenericMechanic {
             case Wolf:
                 entity = new DRWolf(world, EnumMonster.Wolf, tier);
                 break;
+            case Undead:
+                entity = new BasicMeleeMonster(world, EnumMonster.Undead, tier);
+                break;
+            case Witch:
+                entity = new DRWitch(world, EnumMonster.Witch, tier);
+                break;
+            case Pig:
+                entity = new EntityPig(world);
+                break;
+            case Bat:
+                entity = new EntityBat(world);
+                break;
+            case Cow:
+                entity = new EntityCow(world);
+                break;
             default:
                 Utils.log.info("[SPAWNING] Tried to create " + monsEnum.idName + " but it has failed.");
                 return null;
@@ -239,7 +269,7 @@ public class SpawningMechanics implements GenericMechanic {
 
     @Override
     public void startInitialization() {
-        loadSpawners();
+        loadBaseSpawners();
     }
 
     @Override

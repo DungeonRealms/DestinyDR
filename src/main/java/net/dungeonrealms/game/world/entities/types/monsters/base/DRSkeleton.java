@@ -6,7 +6,7 @@ import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.Monster;
+import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
@@ -21,7 +21,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 /**
  * Created by Chase on Sep 19, 2015
  */
-public abstract class DRSkeleton extends EntitySkeleton implements Monster {
+public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
     private String name;
     private String mobHead;
     protected EnumEntityType entityType;

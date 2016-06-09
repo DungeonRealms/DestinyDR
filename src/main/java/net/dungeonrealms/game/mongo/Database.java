@@ -54,6 +54,7 @@ public class Database {
     }
 
     public void backupDatabase() {
+        if (Bukkit.getOnlinePlayers().size() == 0) return;
         DungeonRealms.getInstance().getLogger().info("Beginning Mongo Database Backup");
         for (Player player : Bukkit.getOnlinePlayers()) {
             if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {

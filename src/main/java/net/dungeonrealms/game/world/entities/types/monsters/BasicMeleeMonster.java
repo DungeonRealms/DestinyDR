@@ -45,6 +45,15 @@ public class BasicMeleeMonster extends DRZombie {
             case Tripoli1:
                 this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.TRIPOLI_SOLDIER.getSkull()));
                 break;
+            case Undead:
+                if (random.nextBoolean()) {
+                    this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.ZOMBIE.getSkull()));
+                } else {
+                    this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.SKELETON.getSkull()));
+                }
+                break;
+            default:
+                break;
         }
     }
 

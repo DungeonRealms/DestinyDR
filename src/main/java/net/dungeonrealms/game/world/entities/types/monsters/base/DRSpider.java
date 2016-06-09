@@ -8,7 +8,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.Monster;
+import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.Item;
 import net.minecraft.server.v1_8_R3.World;
@@ -16,7 +16,7 @@ import net.minecraft.server.v1_8_R3.World;
 /**
  * Created by Chase on Oct 2, 2015
  */
-public class DRSpider extends DRZombie implements Monster{
+public class DRSpider extends DRZombie implements DRMonster {
 
 	/**
 	 * @param world

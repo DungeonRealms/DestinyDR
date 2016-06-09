@@ -28,6 +28,7 @@ public enum EnumMonster {
     Mage("mage", "Mage", "Mage", new String[]{""}, new String[]{""}),
     Skeleton("skeleton", "Skeleton", "Steve", new String[]{"Scary", "Spooky", "Spooky Scary"}, new String[]{""}),
     Skeleton1("skeleton1", "Skeleton", "Steve", new String[]{"Scary", "Spooky", "Spooky Scary"}, new String[]{""}),
+    Skeleton2("skeleton2", "Skeleton", "",  new String[]{"Scary", "Spooky", "Spooky Scary"}, new String[]{""}),
     MagmaCube("magmacube", "Magma Cube", "Steve", new String[]{"Weak"}, new String[]{""}),
     Wither("skeleton2", "Chaos Skeleton", "Wither", new String[]{""}, new String[]{""}),
     Daemon("daemon", "Daemon", "Steve", new String[]{""}, new String[]{""}),
@@ -37,7 +38,13 @@ public enum EnumMonster {
 	Monk("monk", "Crimson Crusader", "Yhmen", new String[] {""}, new String[] {""}),
 	Lizardman("lizardman", "Lizardman", "Steve", new String[] {"Giant", "Tough"}, new String[] {""}),
 	Zombie("zombie", "Greater Zombie", "Steve", new String[]{""}, new String[] {""}),
-    Wolf("wolf", "Fierce Wolf", "", new String[]{""}, new String[]{""});
+    Wolf("wolf", "Fierce Wolf", "", new String[]{""}, new String[]{""}),
+    Undead("undead", "Undead", "", new String[]{""}, new String[]{""}),
+    FrozenSkeleton("frozenskeleton", "Mountain Walker", "", new String[]{""}, new String[]{""}),
+    Witch("witch", "Old Hag", "", new String[]{""}, new String[]{""}),
+    Pig("pig", "Pig", "", new String[]{""}, new String[]{""}),
+    Bat("bat", "Bat", "", new String[]{""}, new String[]{""}),
+    Cow("cow", "Cow", "", new String[]{""}, new String[]{""});
 
 	public String idName;
     public String name;
@@ -82,9 +89,10 @@ public enum EnumMonster {
 	 * @return
 	 */
 	public static EnumMonster getMonsterByString(String mob) {
-		for(EnumMonster mons : values()){
-			if(mob.equalsIgnoreCase(mons.idName))
-				return mons;
+		for (EnumMonster mons : values()) {
+			if (mob.equalsIgnoreCase(mons.idName)) {
+                return mons;
+            }
 		}
 		return null;
 	}

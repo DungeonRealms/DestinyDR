@@ -1,15 +1,11 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.items.Item.ItemTier;
-import net.dungeonrealms.game.world.items.Item.ItemType;
-import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.ChatColor;
@@ -26,7 +22,7 @@ import java.util.Random;
 /**
  * Created by Chase on Oct 21, 2015
  */
-public interface Monster {
+public interface DRMonster {
 
     void onMonsterAttack(Player p);
 
@@ -126,10 +122,6 @@ public interface Monster {
             ItemStack[] loot;
             ItemStack[] armor = ((LivingEntity) ent).getEquipment().getArmorContents();
             ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
-            if (ent.hasMetadata("elite"))
-                armor[3] = new ItemGenerator().setType(ItemType.HELMET).setTier(ItemTier.getById(tier)).setRarity(Item.ItemRarity.UNIQUE).getItem();
-            else
-                armor[3] = new ItemGenerator().setType(ItemType.HELMET).setTier(ItemTier.getById(tier)).setRarity(API.getItemRarity()).getItem();
 
             loot = new ItemStack[]{armor[0], armor[1], armor[2], armor[3], weapon};
             ItemStack armorToDrop;
@@ -156,8 +148,10 @@ public interface Monster {
                     armorToDrop = loot[1];
                     break;
             }
-            RepairAPI.setCustomItemDurability(armorToDrop, RandomHelper.getRandomNumberBetween(200, 1000));
-            world.getWorld().dropItemNaturally(loc.add(0, 1, 0), armorToDrop);
+            if (armorToDrop != null) {
+                RepairAPI.setCustomItemDurability(armorToDrop, RandomHelper.getRandomNumberBetween(200, 1000));
+                world.getWorld().dropItemNaturally(loc.add(0, 1, 0), armorToDrop);
+            }
         }
     }
 }

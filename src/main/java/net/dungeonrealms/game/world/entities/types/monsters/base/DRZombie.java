@@ -6,7 +6,7 @@ import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.Monster;
+import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
@@ -28,7 +28,7 @@ import java.util.Random;
  * Created by Xwaffle on 8/29/2015.
  */
 
-public abstract class DRZombie extends EntityZombie implements Monster{
+public abstract class DRZombie extends EntityZombie implements DRMonster {
 
     protected String name;
     protected String mobHead;
@@ -49,8 +49,9 @@ public abstract class DRZombie extends EntityZombie implements Monster{
         this.name = monster.name;
         this.mobHead = monster.mobHead;
         this.entityType = entityType;
-        if (setArmor)
+        if (setArmor) {
             setArmor(tier);
+        }
         setStats();
         String customName = monster.getPrefix() + " " + name + " " + monster.getSuffix() + " ";
         this.setCustomName(customName);

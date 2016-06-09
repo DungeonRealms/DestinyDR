@@ -6,7 +6,7 @@ import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.Monster;
+import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
@@ -25,7 +25,7 @@ import java.util.Random;
 /**
  * Created by Chase on Oct 4, 2015
  */
-public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze implements Monster {
+public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze implements DRMonster {
 
 	protected String name;
 	protected String mobHead;
