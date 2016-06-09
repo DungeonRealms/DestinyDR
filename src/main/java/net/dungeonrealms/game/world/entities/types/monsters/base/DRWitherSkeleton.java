@@ -65,16 +65,26 @@ public class DRWitherSkeleton extends EntitySkeleton implements Monster {
         ItemStack[] armor = API.getTierArmor(tier);
         // weapon, boots, legs, chest, helmet/head
         ItemStack weapon = getTierWeapon(tier);
-
-        ItemStack armor0 = AntiCheat.getInstance().applyAntiDupe(armor[0]);
-        ItemStack armor1 = AntiCheat.getInstance().applyAntiDupe(armor[1]);
-        ItemStack armor2 = AntiCheat.getInstance().applyAntiDupe(armor[2]);
-
+        boolean armorMissing = false;
+        if (random.nextInt(10) <= 5) {
+            ItemStack armor0 = AntiCheat.getInstance().applyAntiDupe(armor[0]);
+            this.setEquipment(1, CraftItemStack.asNMSCopy(armor0));
+        } else {
+            armorMissing = true;
+        }
+        if (random.nextInt(10) <= 5 || armorMissing) {
+            ItemStack armor1 = AntiCheat.getInstance().applyAntiDupe(armor[1]);
+            this.setEquipment(2, CraftItemStack.asNMSCopy(armor1));
+            armorMissing = false;
+        } else {
+            armorMissing = true;
+        }
+        if (random.nextInt(10) <= 5 || armorMissing) {
+            ItemStack armor2 = AntiCheat.getInstance().applyAntiDupe(armor[2]);
+            this.setEquipment(3, CraftItemStack.asNMSCopy(armor2));
+        }
         this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-        this.setEquipment(1, CraftItemStack.asNMSCopy(armor0));
-        this.setEquipment(2, CraftItemStack.asNMSCopy(armor1));
-        this.setEquipment(3, CraftItemStack.asNMSCopy(armor2));
-        this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.BB8.getSkull()));
+        this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.SKELETON.getSkull()));
     }
 
     protected String getCustomEntityName() {

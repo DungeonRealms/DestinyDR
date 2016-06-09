@@ -77,17 +77,28 @@ public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze i
 	
     private void setArmor(int tier) {
         ItemStack[] armor = API.getTierArmor(tier);
+		boolean armorMissing = false;
+		if (random.nextInt(10) <= 5) {
+			ItemStack armor0 = AntiCheat.getInstance().applyAntiDupe(armor[0]);
+			this.setEquipment(1, CraftItemStack.asNMSCopy(armor0));
+		} else {
+			armorMissing = true;
+		}
+		if (random.nextInt(10) <= 5 || armorMissing) {
+			ItemStack armor1 = AntiCheat.getInstance().applyAntiDupe(armor[1]);
+			this.setEquipment(2, CraftItemStack.asNMSCopy(armor1));
+			armorMissing = false;
+		} else {
+			armorMissing = true;
+		}
+		if (random.nextInt(10) <= 5 || armorMissing) {
+			ItemStack armor2 = AntiCheat.getInstance().applyAntiDupe(armor[2]);
+			this.setEquipment(3, CraftItemStack.asNMSCopy(armor2));
+		}
+
         // weapon, boots, legs, chest, helmet/head
         ItemStack weapon = getTierWeapon(tier);
-        
-        ItemStack armor0 = AntiCheat.getInstance().applyAntiDupe(armor[0]);
-        ItemStack armor1 = AntiCheat.getInstance().applyAntiDupe(armor[1]);
-        ItemStack armor2 = AntiCheat.getInstance().applyAntiDupe(armor[2]);
-
         this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-        this.setEquipment(1, CraftItemStack.asNMSCopy(armor0));
-        this.setEquipment(2, CraftItemStack.asNMSCopy(armor1));
-        this.setEquipment(3, CraftItemStack.asNMSCopy(armor2));
         this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
     }
 

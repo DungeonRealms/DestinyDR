@@ -222,7 +222,7 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     public int getMonsterMaxHPOnSpawn(LivingEntity entity) {
-           return calculateMaxHPFromItems(entity) - 80;
+           return calculateMaxHPFromItems(entity);
     }
 
     /**
@@ -784,6 +784,7 @@ public class HealthHandler implements GenericMechanic {
         if (entity.hasMetadata("boss")) {
             totalHP *= 4;
         }
+
 
         return (int) totalHP;
     }

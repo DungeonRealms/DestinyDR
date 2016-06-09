@@ -1,12 +1,5 @@
 package net.dungeonrealms.game.world.entities.utils;
 
-import java.util.Random;
-
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.LivingEntity;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.metadata.FixedMetadataValue;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
@@ -16,6 +9,12 @@ import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.Entity;
+import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.Random;
 
 /**
  * Created by Chase on Sep 18, 2015
@@ -119,13 +118,11 @@ public class EntityStats {
     }
     
     public static void setMonsterRandomStats(Entity entity, int lvl, int tier) {
-        Stats stat = Stats.getRandomStats(lvl, tier);
-//        entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), stat.hp));
         int maxHp = HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity());
         switch (tier) {
             case 1:
-                if (maxHp > 50) {
-                    maxHp = 25 + (random.nextInt(25) - 10);
+                if (maxHp >= 60) {
+                    maxHp = 35 + (random.nextInt(25) - 10);
                 }
                 break;
             case 2:
@@ -153,30 +150,17 @@ public class EntityStats {
         }
         entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHp));
         HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), maxHp);
-//        entity.getBukkitEntity().setMetadata("def", new FixedMetadataValue(DungeonRealms.getInstance(), stat.def));
-        entity.getBukkitEntity().setMetadata("attack", new FixedMetadataValue(DungeonRealms.getInstance(), stat.atk));
-//        entity.getBukkitEntity().setMetadata("spd", new FixedMetadataValue(DungeonRealms.getInstance(), stat.spd));
     }
 
 	/**
-	 * @param mayel
+	 * @param entity
 	 * @param level
-	 * @param i
+	 * @param tier
 	 */
 	public static void setBossRandomStats(Entity entity, int level, int tier) {
 		entity.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
-    	Stats stat = Stats.getRandomStats(level, tier);
-    	stat.atk *= 10;
-    	stat.hp *= 50;
-    	stat.def *= 10;
-        stat.spd *= 10;
-        entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), stat.hp));
         entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
         HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) entity.getBukkitEntity()));
-        entity.getBukkitEntity().setMetadata("def", new FixedMetadataValue(DungeonRealms.getInstance(), stat.def));
-        entity.getBukkitEntity().setMetadata("attack", new FixedMetadataValue(DungeonRealms.getInstance(), stat.atk));
-        entity.getBukkitEntity().setMetadata("spd", new FixedMetadataValue(DungeonRealms.getInstance(), stat.spd));
-
 	}
 
 }

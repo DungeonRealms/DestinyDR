@@ -1184,4 +1184,9 @@ public class DamageListener implements Listener {
             event.setDamage(event.getDamage());
         }
     }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void entityCombust(EntityCombustEvent event) {
+        event.setCancelled(true);
+    }
 }
