@@ -19,7 +19,7 @@ public class CommandReboot extends BasicCommand {
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
         long timeDifference = System.currentTimeMillis() - DungeonRealms.getServerStart();
         timeDifference = (4 * 60 * 60 * 1000) - timeDifference;
-        commandSender.sendMessage(ChatColor.YELLOW.toString() + ChatColor.UNDERLINE + "Next Scheduled Reboot:" + ChatColor.YELLOW + " " + (int) (timeDifference / 3600000 % 24) + ChatColor.BOLD + "h " + ChatColor.YELLOW + (int) (timeDifference / 60000 % 60) + ChatColor.BOLD + "m " + ChatColor.YELLOW + (int) (timeDifference / 1000 % 60) + ChatColor.BOLD + "s");
+        commandSender.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "Next Scheduled Reboot:" + ChatColor.YELLOW + " " + (int) (timeDifference / 3600000 % 24) + ChatColor.BOLD + "h " + ChatColor.YELLOW + (int) (timeDifference / 60000 % 60) + ChatColor.BOLD + "m " + ChatColor.YELLOW + (int) (timeDifference / 1000 % 60) + ChatColor.BOLD + "s");
         return true;
     }
 }
