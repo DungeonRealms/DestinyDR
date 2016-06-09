@@ -10,6 +10,7 @@ import net.dungeonrealms.game.commands.menualias.CommandPet;
 import net.dungeonrealms.game.commands.menualias.CommandProfile;
 import net.dungeonrealms.game.commands.menualias.CommandTrail;
 import net.dungeonrealms.game.commands.newcommands.*;
+import net.dungeonrealms.game.commands.support.*;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.listeners.*;
@@ -306,6 +307,12 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new KickAllCommand("kickall", "/<command> [args]", "Kicks all players from the server"));
             cm.registerCommand(new GlobalBroadcastCommand("glbroadcast", "/<command> [args]", "Broadcast Global message across all shards!"));
         }
+
+        // Commands exclusive to support agents on their special server.
+        if (shardid.equalsIgnoreCase("us-0")) {
+            cm.registerCommand(new CommandSupport("support", "/<command> [args]", "The main command for accessing all support features and tools."));
+        }
+
         try {
             FileUtils.deleteDirectory(new File("world" + File.separator + "playerdata"));
         } catch (IOException e) {
