@@ -105,6 +105,7 @@ public class Subscription implements GenericMechanic {
      * @param player
      * @since 1.0
      */
+    // @todo: Change this to appear like current DR & do this on player join.
     public void handleJoin(Player player) {
         if (!PLAYER_SUBSCRIPTION.contains(player.getUniqueId())) {
             PLAYER_SUBSCRIPTION.add(player.getUniqueId());
@@ -114,15 +115,15 @@ public class Subscription implements GenericMechanic {
         int hoursLeft = (int) ((endTime - currentTime) / 1000L);
 
         if (hoursLeft > 10) {
-            TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
+            TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
             bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "profile"));
             bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to view Profile!").create()));
-            TextComponent test = new TextComponent(ChatColor.WHITE + "[" + ChatColor.YELLOW + ChatColor.BOLD + "SUB" + ChatColor.RESET + ChatColor.WHITE + "] " + ChatColor.RED + "Your subscription is active!! Click ");
+            TextComponent test = new TextComponent(ChatColor.WHITE + "[" + ChatColor.YELLOW + ChatColor.BOLD + "SUB" + ChatColor.RESET + ChatColor.WHITE + "] " + ChatColor.RED + "Your subscription is active! Click ");
             test.addExtra(bungeeMessage);
             test.addExtra(ChatColor.RED + " for more information!");
             player.spigot().sendMessage(test);
         } else if (hoursLeft <= 9 && hoursLeft >= 3) {
-            player.sendMessage(ChatColor.WHITE + "[" + ChatColor.YELLOW.toString() + ChatColor.BOLD + "SUB" + ChatColor.WHITE + "] " + ChatColor.RED + "Your subscription will end in " + ChatColor.AQUA + hoursLeft + ChatColor.RED + " hours. :-(");
+            player.sendMessage(ChatColor.WHITE + "[" + ChatColor.YELLOW.toString() + ChatColor.BOLD + "SUB" + ChatColor.WHITE + "] " + ChatColor.RED + "Your subscription will end in " + ChatColor.AQUA + hoursLeft + ChatColor.RED + " hours.");
         } else if (hoursLeft <= 0) {
             TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
             bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://shop.dungeonrealms.net"));
