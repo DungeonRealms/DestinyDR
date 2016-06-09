@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.commands.support;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -22,8 +23,12 @@ public class CommandSupport extends BasicCommand {
         if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;
         if (!Rank.isSupport(player)) return false;
+        if (args.length < 1) {
+            player.sendMessage(ChatColor.RED + "Invalid usage: /support <name>");
+            return false;
+        }
 
-        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " Support features are coming soon, hang in there.");
+        PlayerMenus.openSupportMenu(player, args[0]);
         return true;
     }
 

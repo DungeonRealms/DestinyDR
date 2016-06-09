@@ -512,10 +512,10 @@ public class API {
         }
         Player player = Bukkit.getPlayer(uuid);
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
-            player.kickPlayer(ChatColor.RED + "Unable to grab your data.. rejoin!");
+            player.kickPlayer(ChatColor.RED + "Unable to grab your data, please reconnect!");
         } else {
             if (player != null) {
-                player.sendMessage(ChatColor.GREEN + "Successfully received your data.. loading now...");
+                player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
             }
         }
 
@@ -576,11 +576,6 @@ public class API {
         // Essentials
         //Subscription.getInstance().handleJoin(player);
         Rank.getInstance().doGet(uuid);
-        // Guilds
-        GuildMechanics.getInstance().doLogin(player);
-
-        // Notices
-        Notice.getInstance().doLogin(player);
 
         // Scoreboard Safety
         ScoreboardHandler.getInstance().matchMainScoreboard(player);
@@ -598,6 +593,12 @@ public class API {
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + " Use " + ChatColor.YELLOW.toString() + ChatColor.ITALIC + "/logout " + ChatColor.GRAY.toString() + ChatColor.ITALIC + "to safely change your server instance."
         });
+
+        // Guilds
+        GuildMechanics.getInstance().doLogin(player);
+
+        // Notices
+        Notice.getInstance().doLogin(player);
 
         if (gp.getPlayer() != null) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -636,10 +637,10 @@ public class API {
         }
         Player player = Bukkit.getPlayer(uuid);
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
-            player.kickPlayer(ChatColor.RED + "Unable to grab your data.. rejoin!");
+            player.kickPlayer(ChatColor.RED + "Unable to grab your data, please reconnect!");
         } else {
             if (player != null) {
-                player.sendMessage(ChatColor.GREEN + "Successfully received your data.. loading now...");
+                player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
             }
         }
 

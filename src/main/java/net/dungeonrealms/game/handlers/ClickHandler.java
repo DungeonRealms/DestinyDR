@@ -1057,6 +1057,22 @@ public class ClickHandler {
                     return;
                 }
                 break;
+            case "Customer Support Tools":
+                event.setCancelled(true);
+                switch (slot) {
+                    case 19:
+                    case 22:
+                    case 25:
+                    case 28:
+                    case 31:
+                    case 34:
+                        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
+                        break;
+
+                    default:
+                        break;
+                }
+                break;
             default:
                 break;
         }

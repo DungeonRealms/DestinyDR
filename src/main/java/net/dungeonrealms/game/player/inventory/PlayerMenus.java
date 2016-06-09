@@ -10,6 +10,7 @@ import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.achievements.Achievements;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
@@ -695,6 +696,74 @@ public class PlayerMenus {
         inv.setItem(7, stack8);
         inv.setItem(8, back);
         player.openInventory(inv);
+    }
+
+
+
+    public static void openSupportMenu(Player player, String playerName) {
+        try {
+            UUID uuid = Bukkit.getPlayer(playerName) != null ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
+            DatabaseAPI.getInstance().requestPlayer(uuid);
+            String playerRank = Rank.getInstance().getRank(uuid).getName();
+            if (!Rank.isDev(player) && (playerRank.equalsIgnoreCase("gm") || playerRank.equalsIgnoreCase("dev"))) {
+                player.sendMessage(ChatColor.RED + "You " + ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "DO NOT" + ChatColor.RED + " have permission to manage this user.");
+                return;
+            }
+
+            Inventory inv = Bukkit.createInventory(null, 45, "Customer Support Tools");
+
+            inv.setItem(4, editItem(playerName, ChatColor.GREEN + playerName, new String[]{
+                    ChatColor.WHITE + "Rank: " + Rank.rankFromPrefix(playerRank),
+                    ChatColor.WHITE + "Level: " + DatabaseAPI.getInstance().getData(EnumData.LEVEL, uuid),
+                    ChatColor.WHITE + "Experience: " + DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, uuid),
+                    ChatColor.WHITE + "E-Cash: " + DatabaseAPI.getInstance().getData(EnumData.ECASH, uuid),
+                    ChatColor.WHITE + "Bank Balance: " + DatabaseAPI.getInstance().getData(EnumData.GEMS, uuid),
+                    ChatColor.WHITE + "Hearthstone Location: " + DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid),
+                    ChatColor.WHITE + "Alignment: " + Utils.ucfirst(DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid).toString())
+            }));
+
+            inv.setItem(19, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GOLD + "PLACEHOLDER", new String[]{
+                    ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                    "",
+                    ChatColor.WHITE + "One day, a tool for support will go here."
+            }));
+
+            inv.setItem(22, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GOLD + "PLACEHOLDER", new String[]{
+                    ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                    "",
+                    ChatColor.WHITE + "One day, a tool for support will go here."
+            }));
+
+            inv.setItem(25, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GOLD + "PLACEHOLDER", new String[]{
+                    ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                    "",
+                    ChatColor.WHITE + "One day, a tool for support will go here."
+            }));
+
+            inv.setItem(28, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GOLD + "PLACEHOLDER", new String[]{
+                    ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                    "",
+                    ChatColor.WHITE + "One day, a tool for support will go here."
+            }));
+
+            inv.setItem(31, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GOLD + "PLACEHOLDER", new String[]{
+                    ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                    "",
+                    ChatColor.WHITE + "One day, a tool for support will go here."
+            }));
+
+            inv.setItem(34, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GOLD + "PLACEHOLDER", new String[]{
+                    ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                    "",
+                    ChatColor.WHITE + "One day, a tool for support will go here."
+            }));
+
+            player.openInventory(inv);
+        } catch (IllegalArgumentException ex) {
+            // This exception is thrown if the UUID doesn't exist in the database.
+            player.sendMessage(ChatColor.RED + "Unable to identify anybody with the player name: " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.RED + "!");
+            player.sendMessage(ChatColor.RED + "It's likely the user has never played on the Dungeon Realms servers before.");
+        }
     }
 
 }
