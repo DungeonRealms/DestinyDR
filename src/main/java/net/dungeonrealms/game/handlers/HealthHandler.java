@@ -734,15 +734,15 @@ public class HealthHandler implements GenericMechanic {
                 if (convHPToDisplay <= 1) {
                     convHPToDisplay = 1;
                 }
-                if (convHPToDisplay > entity.getMaxHealth()) {
+                if (convHPToDisplay > (int) entity.getMaxHealth()) {
                     convHPToDisplay = (int) entity.getMaxHealth();
                 }
                 if (entity.hasMetadata("type") && entity.hasMetadata("level")) {
                     int level = entity.getMetadata("level").get(0).asInt();
                     String lvlName = ChatColor.LIGHT_PURPLE + "[" + level + "] ";
-                    String hpBar = "||||||||||||||||||||";
-                    if (entity.getMaxHealth() < 20) {
-                        hpBar = hpBar.substring((hpBar.length() + 1) - (int) entity.getMaxHealth());
+                    String hpBar = "";
+                    for (int i = 0; i < entity.getMaxHealth(); i++) {
+                        hpBar += "|";
                     }
                     hpBar = ChatColor.GREEN + hpBar.substring(0, convHPToDisplay) + ChatColor.DARK_GRAY + hpBar.substring(convHPToDisplay, hpBar.length() - 1);
                     if (!entity.hasMetadata("elite") && !entity.hasMetadata("boss") && !entity.hasMetadata("uuid")) {

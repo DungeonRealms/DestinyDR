@@ -3,15 +3,6 @@
  */
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.game.player.rank.Rank;
-import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandSender;
-import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.entity.Player;
-
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
@@ -19,9 +10,18 @@ import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.loot.LootManager;
+import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.ConsoleCommandSender;
+import org.bukkit.entity.Player;
 
 /**
  * Created by Chase on Sep 22, 2015

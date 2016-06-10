@@ -32,7 +32,7 @@ public enum EnumMonster {
     Skeleton2("skeleton2", "Skeleton", "",  new String[]{"Scary", "Spooky", "Spooky Scary"}, new String[]{""}),
     MagmaCube("magmacube", "Magma Cube", "Steve", new String[]{"Weak"}, new String[]{""}),
     Wither("skeleton2", "Chaos Skeleton", "Wither", new String[]{""}, new String[]{""}),
-    Daemon("daemon", "Daemon", "Steve", new String[]{""}, new String[]{""}),
+    Daemon("daemon", "Daemon", "", new String[]{""}, new String[]{""}),
     Silverfish("silverfish", "Silverfish", "Steve", new String[]{""}, new String[]{""}),
 	SpawnOfInferno("spawnofinferno", "Spawn of Inferno", "Steve", new String[]{""},new String[]{""} ),
 	GreaterAbyssalDemon("demon", "Greater Abyssal Demon", "Steve", new String[]{""}, new String[] {""}),
@@ -43,6 +43,7 @@ public enum EnumMonster {
     Undead("undead", "Undead", "", new String[]{""}, new String[]{""}),
     FrozenSkeleton("frozenskeleton", "Mountain Walker", "", new String[]{""}, new String[]{""}),
     Witch("witch", "Old Hag", "", new String[]{""}, new String[]{""}),
+    Daemon2("daemon2", "Daemon", "", new String[]{""}, new String[]{""}),
     Pig("pig", "Pig", "", new String[]{""}, new String[]{""}),
     Bat("bat", "Bat", "", new String[]{""}, new String[]{""}),
     Cow("cow", "Cow", "", new String[]{""}, new String[]{""});

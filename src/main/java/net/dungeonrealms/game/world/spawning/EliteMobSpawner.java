@@ -142,10 +142,12 @@ public class EliteMobSpawner {
                 } else if (toSpawn.clone().add(0, 2, 0).getBlock().getType() == Material.AIR) {
                     toSpawn.add(0, 2, 0);
                 } else {
+                    counter = respawnDelay;
                     return;
                 }
             }
             if (API.isInSafeRegion(toSpawn)) {
+                counter = respawnDelay;
                 return;
             }
             World world = armorstand.getWorld();
@@ -160,6 +162,8 @@ public class EliteMobSpawner {
                         }
                     } else if (customName.toLowerCase().contains("mountain")) {
                         mob = "frozenskeleton";
+                    } else if (customName.toLowerCase().contains("daemon")) {
+                        mob = "daemon2";
                     }
                 }
                 monsterType = EnumMonster.getMonsterByString(mob);
@@ -198,9 +202,9 @@ public class EliteMobSpawner {
             }
             entity.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
             giveCustomEquipment(eliteType, entity);
-            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+            entity.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
             world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
-            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+            entity.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
             entity.getBukkitEntity().setCustomName(entity.getBukkitEntity().getMetadata("customname").get(0).asString().trim());
             SPAWNED_MONSTERS.add(entity);
         }
@@ -292,13 +296,14 @@ public class EliteMobSpawner {
     }
 
     void kill() {
-        if (SPAWNED_MONSTERS.size() > 0)
+        if (SPAWNED_MONSTERS.size() > 0) {
             for (Entity spawnedMonster : SPAWNED_MONSTERS) {
                 spawnedMonster.getBukkitEntity().remove();
                 spawnedMonster.dead = true;
                 armorstand.getWorld().kill(spawnedMonster);
             }
-        SPAWNED_MONSTERS.clear();
+            SPAWNED_MONSTERS.clear();
+        }
     }
 
     //Checks whether mobs can spawn based on their delay set in config.

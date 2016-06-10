@@ -74,7 +74,9 @@ public interface DRMonster {
             ItemStack item = BankMechanics.gem.clone();
             item.setAmount((int) (gem_drop_amount * drop_multiplier));
             world.getWorld().dropItemNaturally(loc.add(0, 1, 0), item);
-            return;
+            if (!ent.hasMetadata("elite")) {
+                return;
+            }
         }
 
         int chance = 0;
@@ -94,6 +96,15 @@ public interface DRMonster {
             case 5:
                 chance = 6;
                 break;
+        }
+        //TODO: VERY DANGEROUS CODE. REMOVE BEFORE RELEASEs
+        if (ent.hasMetadata("elite")) {
+            for (ItemStack stack : ((LivingEntity) ent).getEquipment().getArmorContents()) {
+                world.getWorld().dropItemNaturally(loc.add(0, 1, 0), stack);
+            }
+            ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
+            world.getWorld().dropItemNaturally(loc.add(0, 1, 0), weapon);
+            return;
         }
         int armorRoll = random.nextInt(1000);
         int drops = 0;

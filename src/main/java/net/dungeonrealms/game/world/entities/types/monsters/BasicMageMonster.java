@@ -51,6 +51,9 @@ public class BasicMageMonster extends DRSkeleton {
             case Mage:
                 this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.MAGE.getSkull()));
                 break;
+            case Daemon2:
+                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
+                break;
         }
     }
 

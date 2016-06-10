@@ -128,10 +128,12 @@ public class BaseMobSpawner {
                 } else if (location.clone().add(0, 2, 0).getBlock().getType() == Material.AIR) {
                     location.add(0, 2, 0);
                 } else {
+                    counter = respawnDelay;
                     return;
                 }
             }
             if (API.isInSafeRegion(location)) {
+                counter = respawnDelay;
                 return;
             }
             World world = armorstand.getWorld();
@@ -171,15 +173,15 @@ public class BaseMobSpawner {
                 try {
                     mobName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
                 } catch (Exception exc) {
-                    mobName = monsterType.name;
+                    mobName = monsterType.name.trim();
                 }
                 if (this.hasCustomName) {
-                    entity.setCustomName(lvlName + API.getTierColor(tier) + monsterCustomName);
-                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + monsterCustomName));
+                    entity.setCustomName(lvlName + API.getTierColor(tier) + monsterCustomName.trim());
+                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + monsterCustomName.trim()));
 
                 } else {
-                    entity.setCustomName(lvlName + API.getTierColor(tier) + mobName);
-                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + mobName));
+                    entity.setCustomName(lvlName + API.getTierColor(tier) + mobName.trim());
+                    entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + mobName.trim()));
                 }
             }
 
@@ -214,14 +216,14 @@ public class BaseMobSpawner {
                             try {
                                 newMobName = newEntity.getBukkitEntity().getMetadata("customname").get(0).asString();
                             } catch (Exception exc) {
-                                newMobName = monsterType.name;
+                                newMobName = monsterType.name.trim();
                             }
                             if (this.hasCustomName) {
-                                newEntity.setCustomName(newLevelName + API.getTierColor(tier) + monsterCustomName);
-                                newEntity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + monsterCustomName));
+                                newEntity.setCustomName(newLevelName + API.getTierColor(tier) + monsterCustomName.trim());
+                                newEntity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + monsterCustomName.trim()));
                             } else {
-                                newEntity.setCustomName(newLevelName + API.getTierColor(tier) + newMobName);
-                                newEntity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + newMobName));
+                                newEntity.setCustomName(newLevelName + API.getTierColor(tier) + newMobName.trim());
+                                newEntity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + newMobName.trim()));
                             }
                         }
                         newEntity.setLocation(firstSpawn.getX(), firstSpawn.getY(), firstSpawn.getZ(), 1, 1);

@@ -519,14 +519,17 @@ public class ItemGenerator {
                         }
                         
                         if (line.contains("-")) { // range
-                            int lowVal = Integer.parseInt(line.substring(line.indexOf(':') + 2, line.indexOf(':') + 3));
-                            int highVal = Integer.parseInt(line.substring(line.indexOf('-') + 2, line.indexOf('-') + 3));
+                            String lowVal = line.split("-")[0];
+                            String highVal = line.split("-")[1];
+
+                            int lowInt = Integer.parseInt(lowVal.replaceAll("\\D", ""));
+                            int highInt = Integer.parseInt(highVal.replaceAll("\\D", ""));
                             
-                            NBTModifiers.put(attribute.getNBTName() + "Min", new NBTTagInt(lowVal));
-                            NBTModifiers.put(attribute.getNBTName() + "Max", new NBTTagInt(highVal));
+                            NBTModifiers.put(attribute.getNBTName() + "Min", new NBTTagInt(lowInt));
+                            NBTModifiers.put(attribute.getNBTName() + "Max", new NBTTagInt(highInt));
                         }
                         else { // static val
-                            int val = Integer.parseInt(line.substring(line.indexOf('+') + 1, line.indexOf('+') + 2));
+                            int val = Integer.parseInt(line.replaceAll("\\D", ""));
                             
                             NBTModifiers.put(attribute.getNBTName(), new NBTTagInt(val));
                         }
@@ -540,14 +543,22 @@ public class ItemGenerator {
                         }
                         
                         if (line.contains("-")) { // range
+                            String lowVal = line.split("-")[0];
+                            String highVal = line.split("-")[1];
+
+                            int lowInt = Integer.parseInt(lowVal.replaceAll("\\D", ""));
+                            int highInt = Integer.parseInt(highVal.replaceAll("\\D", ""));
+                            //Better way of doing it above? Still to fully test.
+                            /*int lowVal = Integer.parseInt(line.substring(line.indexOf(':')))
                             int lowVal = Integer.parseInt(line.substring(line.indexOf(':') + 2, line.indexOf(':') + 3));
-                            int highVal = Integer.parseInt(line.substring(line.indexOf('-') + 2, line.indexOf('-') + 3));
+                            int highVal = Integer.parseInt(line.substring(line.indexOf('-') + 2, line.indexOf('-') + 3));*/
                             
-                            NBTModifiers.put(attribute.getNBTName() + "Min", new NBTTagInt(lowVal));
-                            NBTModifiers.put(attribute.getNBTName() + "Max", new NBTTagInt(highVal));
+                            NBTModifiers.put(attribute.getNBTName() + "Min", new NBTTagInt(lowInt));
+                            NBTModifiers.put(attribute.getNBTName() + "Max", new NBTTagInt(highInt));
                         } else { // static val
-                            //TODO: This currently only works for integers from 1-9. So 10 strength will return 1.
-                            int val = Integer.parseInt(line.substring(line.indexOf('+') + 1, line.indexOf('+') + 2));
+                            int val = Integer.parseInt(line.replaceAll("\\D", ""));
+                            //Better way of doing it above? Still to fully test.
+                            //int val = Integer.parseInt(line.substring(line.indexOf('+') + 1, line.indexOf('+') + 2));
                             
                             NBTModifiers.put(attribute.getNBTName(), new NBTTagInt(val));
                         }

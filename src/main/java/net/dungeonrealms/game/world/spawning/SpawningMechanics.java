@@ -244,6 +244,9 @@ public class SpawningMechanics implements GenericMechanic {
             case Daemon:
                 entity = new DRPigman(world, EnumMonster.Daemon, tier);
                 break;
+            case Daemon2:
+                entity = new BasicMageMonster(world, EnumMonster.Daemon2, tier);
+                break;
             case Silverfish:
                 entity = new DRSilverfish(world, EnumMonster.Silverfish, tier);
                 break;
