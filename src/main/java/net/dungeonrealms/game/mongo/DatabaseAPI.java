@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.mongo;
 
-import com.mongodb.BasicDBList;
 import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Filters;
 import net.dungeonrealms.DungeonRealms;
@@ -90,8 +89,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("info")).get("friends", ArrayList.class);
             case GUILD:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("guild", String.class);
-            case GUILD_INVITE:
-                return ((Document) PLAYERS.get(uuid).get("notices")).get("guildInvites", BasicDBObject.class);
+            case GUILD_INVITATION:
+                return ((Document) PLAYERS.get(uuid).get("notices")).get("guildInvitation", BasicDBObject.class);
             case FRIEND_REQUSTS:
                 return ((Document) PLAYERS.get(uuid).get("notices")).get("friendRequest", ArrayList.class);
             case MAILBOX:
@@ -331,7 +330,7 @@ public class DatabaseAPI {
                                         .append("tier4", 0)
                                         .append("tier5", 0))
                         .append("notices",
-                                new Document("guildInvites", null)
+                                new Document("guildInvitation", null)
                                         .append("friendRequest", new ArrayList<String>())
                                         .append("mailbox", new ArrayList<String>()))
                         .append("rank",

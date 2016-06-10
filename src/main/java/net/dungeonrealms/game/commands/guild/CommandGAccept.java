@@ -1,9 +1,11 @@
 package net.dungeonrealms.game.commands.guild;
 
-import com.mongodb.BasicDBList;
+import com.mongodb.BasicDBObject;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.mongo.EnumOperators;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -25,19 +27,26 @@ public class CommandGAccept extends BasicCommand {
 
         Player player = (Player) sender;
 
+        BasicDBObject guildInvitation = (BasicDBObject) DatabaseAPI.getInstance().getData(EnumData.GUILD_INVITATION, player.getUniqueId());
 
-        BasicDBList invitations = (BasicDBList) DatabaseAPI.getInstance().getData(EnumData.GUILD_INVITE, player.getUniqueId());
-
-
-        if (invitations.size() == 0) {
-            player.sendMessage(ChatColor.RED + "No pending guilds invites.");
+        if (guildInvitation == null) {
+            player.sendMessage(ChatColor.RED + "No pending guild invitation.");
             return true;
         }
 
 
-       // invitations.stream().forEach();
+        String guildName = guildInvitation.getString("guild");
+        String referrer = guildInvitation.getString("referrer");
+        long time = guildInvitation.getLong("time");
 
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD_INVITATION, null, true);
 
+        if (time > 300000L) {
+            player.sendMessage(ChatColor.RED + "Your invitation has expired.");
+            return true;
+        }
+
+        GuildMechanics.getInstance().joinGuild(player, referrer, guildName);
         return false;
     }
 

@@ -3,8 +3,7 @@ package net.dungeonrealms;
 import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.game.commands.*;
 import net.dungeonrealms.game.commands.generic.CommandManager;
-import net.dungeonrealms.game.commands.guild.CommandGInfo;
-import net.dungeonrealms.game.commands.guild.CommandGQuit;
+import net.dungeonrealms.game.commands.guild.*;
 import net.dungeonrealms.game.commands.menualias.CommandMount;
 import net.dungeonrealms.game.commands.menualias.CommandPet;
 import net.dungeonrealms.game.commands.menualias.CommandProfile;
@@ -286,7 +285,6 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Check epoch time of item."));
         cm.registerCommand(new CommandStats("stat", "/<command> [args]", "The stats command.", Collections.singletonList("stats")));
         cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "The stop command.", Collections.singletonList("drstop")));
-        cm.registerCommand(new CommandAccept("accept", "/<command> [args]", "The accept command."));
 
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {
@@ -298,6 +296,9 @@ public class DungeonRealms extends JavaPlugin {
             //GUILD STUFF
             cm.registerCommand(new CommandGInfo("ginfo", "/<command>", "Guild info command."));
             cm.registerCommand(new CommandGQuit("gquit", "/<command>", "Guild quit command.", Arrays.asList("gleave", "gdisband")));
+            cm.registerCommand(new CommandGAccept("gaccept", "/<command>", "Guild accept invitation command."));
+            cm.registerCommand(new CommandGInvite("ginvite", "/<command> [args]", "Guild invitation command."));
+            cm.registerCommand(new CommandGDeny("gdecline", "/<command>", "Guild decline invitation command.", Collections.singletonList("gdeny")));
 
             cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "Spawns a mob? idk chase"));
             cm.registerCommand(new CommandAdd("ad", "/<command> [args]", "Adds shit"));
