@@ -90,7 +90,7 @@ public class DatabaseAPI {
             case GUILD:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("guild", String.class);
             case GUILD_INVITATION:
-                return ((Document) PLAYERS.get(uuid).get("notices")).get("guildInvitation", BasicDBObject.class);
+                return ((Document) PLAYERS.get(uuid).get("notices")).get("guildInvitation", Document.class);
             case FRIEND_REQUSTS:
                 return ((Document) PLAYERS.get(uuid).get("notices")).get("friendRequest", ArrayList.class);
             case MAILBOX:

@@ -298,6 +298,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandGQuit("gquit", "/<command>", "Guild quit command.", Arrays.asList("gleave", "gdisband")));
             cm.registerCommand(new CommandGAccept("gaccept", "/<command>", "Guild accept invitation command."));
             cm.registerCommand(new CommandGInvite("ginvite", "/<command> [args]", "Guild invitation command."));
+            cm.registerCommand(new CommandGMotd("gmotd", "/<command> [args]", "Guild motd command."));
             cm.registerCommand(new CommandGDeny("gdecline", "/<command>", "Guild decline invitation command.", Collections.singletonList("gdeny")));
 
             cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "Spawns a mob? idk chase"));

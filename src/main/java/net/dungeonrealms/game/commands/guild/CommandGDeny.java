@@ -1,11 +1,11 @@
 package net.dungeonrealms.game.commands.guild;
 
-import com.mongodb.BasicDBObject;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -21,13 +21,13 @@ import java.util.List;
 public class CommandGDeny extends BasicCommand {
 
     public CommandGDeny(String command, String usage, String description, List<String> aliases) {
-        super(command, usage, description);
+        super(command, usage, description, aliases);
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
         Player player = (Player) sender;
-        BasicDBObject guildInvitation = (BasicDBObject) DatabaseAPI.getInstance().getData(EnumData.GUILD_INVITATION, player.getUniqueId());
+        Document guildInvitation = (Document) DatabaseAPI.getInstance().getData(EnumData.GUILD_INVITATION, player.getUniqueId());
 
         if (guildInvitation == null) {
             player.sendMessage(ChatColor.RED + "No pending guild invitation.");

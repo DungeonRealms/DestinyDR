@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.guild;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
@@ -51,15 +52,17 @@ public class GuildMechanics implements GenericMechanic {
 
 
     public void doLogin(Player player) {
+        if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) return;
+
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
 
         // Checks if guild still exists
         GuildDatabaseAPI.get().doesGuildNameExist(guildName, guildExists -> {
-            if (guildExists)
+            if (!guildExists)
                 GuildDatabaseAPI.get().setGuild(player.getUniqueId(), "");
         });
 
-        //TODO: Display message of the day
+        showMotd(player, guildName);
     }
 
 
@@ -71,6 +74,19 @@ public class GuildMechanics implements GenericMechanic {
         // String temp = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + " " + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
     }
 
+
+    /**
+     * Displays the guild Message of the day
+     *
+     * @param player    Player to show Message of The Day
+     * @param guildName Guild
+     */
+    public void showMotd(Player player, String guildName) {
+        String tag = GuildDatabaseAPI.get().getTagOf(guildName);
+        String motd = GuildDatabaseAPI.get().getMotdOf(guildName);
+
+        player.sendMessage(ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.BOLD + "MOTD: " + ChatColor.DARK_AQUA + motd);
+    }
 
     /**
      * Displays guild information in chat format
@@ -137,7 +153,7 @@ public class GuildMechanics implements GenericMechanic {
         boolean isOwner = GuildDatabaseAPI.get().isOwner(player.getUniqueId(), guildName);
 
         if (isOwner && officers.size() == 0)
-            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.GRAY + "You are the " + ChatColor.UNDERLINE + "GUILD LEADER" + ChatColor.GRAY + "and there are not successors to watch after the guild, if you leave this guild it will be " + ChatColor.BOLD + "PERMANENTLY DELETED" + ChatColor.GRAY + ". All members will be kicked, and you will lose your 5,000g deposit.");
+            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.GRAY + "You are the " + ChatColor.UNDERLINE + "GUILD LEADER" + ChatColor.GRAY + " and there are not successors to watch after the guild, if you leave this guild it will be " + ChatColor.BOLD + "PERMANENTLY DELETED" + ChatColor.GRAY + ". All members will be kicked, and you will lose your 5,000g deposit.");
 
         Chat.listenForMessage(player, confirmation -> {
             if (!confirmation.getMessage().equalsIgnoreCase("y") || confirmation.getMessage().equalsIgnoreCase("n") || confirmation.getMessage().equalsIgnoreCase("cancel")) {
@@ -146,6 +162,7 @@ public class GuildMechanics implements GenericMechanic {
             }
 
             player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "QUIT" + ChatColor.RED + " your guild.");
+            GuildDatabaseAPI.get().removeFromGuild(guildName, player.getUniqueId());
 
             if (isOwner) {
                 if (officers.size() > 0) {
@@ -156,12 +173,11 @@ public class GuildMechanics implements GenericMechanic {
                     // player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "DISBANDED" + ChatColor.RED + " your guild.");
                     sendAlert(guildName, player.getName() + " has disbanded the guild.");
                     GuildDatabaseAPI.get().deleteGuild(guildName);
-                    return;
                 }
             } else {
                 sendAlert(guildName, player.getName() + "has left the guild.");
             }
-            GuildDatabaseAPI.get().removeFromGuild(guildName, player.getUniqueId());
+
         }, null);
     }
 
@@ -239,7 +255,7 @@ public class GuildMechanics implements GenericMechanic {
                 }
 
                 // Checks for profanity
-                if (checkForProfanity(guildName)) {
+                if (checkForProfanity(guildDisplayName)) {
                     player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Your guild name has an illegal/censored word in it. Please enter an alternative name.");
                     return;
                 }
@@ -357,7 +373,7 @@ public class GuildMechanics implements GenericMechanic {
 
     private boolean checkForProfanity(String text) {
         for (String s : Chat.bannedWords)
-            if (text.equalsIgnoreCase(s) || s.contains(text))
+            if (text.equalsIgnoreCase(s) || s.toLowerCase().contains(text.toLowerCase()))
                 return true;
         return false;
     }
