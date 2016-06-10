@@ -5,11 +5,11 @@ import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.network.NetworkAPI;
+import net.dungeonrealms.game.mongo.achievements.Achievements;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 
 import java.util.List;
@@ -59,7 +59,6 @@ public class GuildMechanics implements GenericMechanic {
                 GuildDatabaseAPI.get().setGuild(player.getUniqueId(), "");
         });
 
-
         //TODO: Display message of the day
     }
 
@@ -84,14 +83,40 @@ public class GuildMechanics implements GenericMechanic {
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String motd = GuildDatabaseAPI.get().getMotdOf(guildName);
 
-        player.sendMessage(org.bukkit.ChatColor.GRAY + "              *** " + org.bukkit.ChatColor.DARK_AQUA + org.bukkit.ChatColor.BOLD + "Guild Info" + org.bukkit.ChatColor.GRAY + " ***");
+        player.sendMessage(ChatColor.GRAY + "              *** " + ChatColor.DARK_AQUA + ChatColor.BOLD + "Guild Info" + ChatColor.GRAY + " ***");
         player.sendMessage(" ");
-        player.sendMessage(org.bukkit.ChatColor.GRAY + "Guild Name: " + org.bukkit.ChatColor.WHITE + displayName);
-        player.sendMessage(org.bukkit.ChatColor.GRAY + "Guild Tag: " + org.bukkit.ChatColor.DARK_AQUA + "[" + org.bukkit.ChatColor.GRAY + tag + org.bukkit.ChatColor.DARK_AQUA + "]");
+        player.sendMessage(ChatColor.GRAY + "Guild Name: " + ChatColor.WHITE + displayName);
+        player.sendMessage(ChatColor.GRAY + "Guild Tag: " + ChatColor.DARK_AQUA + "[" + ChatColor.GRAY + tag + ChatColor.DARK_AQUA + "]");
         player.sendMessage(" ");
-        player.sendMessage(org.bukkit.ChatColor.GRAY + "Message of the Day: \"" + org.bukkit.ChatColor.WHITE + motd + org.bukkit.ChatColor.GRAY + "\"");
+        player.sendMessage(ChatColor.GRAY + "Message of the Day: \"" + ChatColor.WHITE + motd + ChatColor.GRAY + "\"");
     }
 
+    /**
+     * Adds player to members in guild.
+     *
+     * @param player    Player to join guild
+     * @param referrer  Player who sent invitation
+     * @param guildName Guild
+     */
+    public void joinGuild(Player player, String referrer, String guildName) {
+        String guildDisplayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
+
+        GuildDatabaseAPI.get().doesGuildNameExist(guildName, guildExists -> {
+
+            if (guildExists) {
+                player.sendMessage(ChatColor.DARK_AQUA + "You have joined '" + ChatColor.BOLD + guildDisplayName + "'" + ChatColor.DARK_AQUA + ".");
+                player.sendMessage(ChatColor.GRAY + "To chat with your new guild, use " + ChatColor.BOLD + "/g" + ChatColor.GRAY + " OR " + ChatColor.BOLD + " /g <message>");
+                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.GUILD_MEMBER);
+                GuildDatabaseAPI.get().addPlayer(guildName, player.getUniqueId());
+
+                sendAlert(guildName, player.getName() + ChatColor.GRAY.toString() + " has " +
+                        ChatColor.UNDERLINE + "joined" + ChatColor.GRAY + " your guild." + (referrer != null ? "[INVITE: " + ChatColor.ITALIC + referrer + ChatColor.GRAY + "]" : ""));
+            } else {
+                player.sendMessage(ChatColor.RED + "This guild no longer exists.");
+
+            }
+        });
+    }
 
     /**
      * Prompts user then,
@@ -105,9 +130,10 @@ public class GuildMechanics implements GenericMechanic {
             return;
 
         String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
+        String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
         List<UUID> officers = GuildDatabaseAPI.get().getGuildOfficers(guildName);
 
-        player.sendMessage(ChatColor.GRAY + "Are you sure you want to QUIT the guild '" + ChatColor.DARK_AQUA + guildName + ChatColor.GRAY + "' - This cannot be undone. " + "(" + ChatColor.GREEN.toString() + ChatColor.BOLD + "Y" + ChatColor.GRAY + " / " + ChatColor.RED.toString() + ChatColor.BOLD + "N" + ChatColor.GRAY + ")");
+        player.sendMessage(ChatColor.GRAY + "Are you sure you want to QUIT the guild '" + ChatColor.DARK_AQUA + displayName + ChatColor.GRAY + "' - This cannot be undone. " + "(" + ChatColor.GREEN.toString() + ChatColor.BOLD + "Y" + ChatColor.GRAY + " / " + ChatColor.RED.toString() + ChatColor.BOLD + "N" + ChatColor.GRAY + ")");
         boolean isOwner = GuildDatabaseAPI.get().isOwner(player.getUniqueId(), guildName);
 
         if (isOwner && officers.size() == 0)
@@ -148,14 +174,14 @@ public class GuildMechanics implements GenericMechanic {
      */
     public void startGuildCreationDialogue(Player player) {
 
-        // This is where the player greets the NPC
-        player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Hello, " + ChatColor.UNDERLINE + player.getName() + ChatColor.WHITE + ", I'm the guild registrar, would you like to create a guild today? Please note that it will cost 5,000 GEM(s). (" + ChatColor.GREEN.toString() + ChatColor.BOLD + "Y" + ChatColor.WHITE + " / " + ChatColor.RED.toString() + ChatColor.BOLD + "N" + ChatColor.WHITE + ")");
-
         // They must be level 10
         if (((Integer) DatabaseAPI.getInstance().getData(EnumData.LEVEL, player.getUniqueId()) < 10)) {
             player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "You must be at least " + ChatColor.WHITE + "" + ChatColor.BOLD + "LEVEL 10" + ChatColor.WHITE + " to create a guild.");
             return;
         }
+
+        // This is where the player greets the NPC
+        player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Hello, " + ChatColor.UNDERLINE + player.getName() + ChatColor.WHITE + ", I'm the guild registrar, would you like to create a guild today? Please note that it will cost 5,000 GEM(s). (" + ChatColor.GREEN.toString() + ChatColor.BOLD + "Y" + ChatColor.WHITE + " / " + ChatColor.RED.toString() + ChatColor.BOLD + "N" + ChatColor.WHITE + ")");
 
         // Asks if they would like to create a guild.
         Chat.listenForMessage(player, guildCreation -> {
@@ -295,6 +321,8 @@ public class GuildMechanics implements GenericMechanic {
                                                             player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.RED + "We have an error. Failed to create guild in database. Please try again later");
                                                             return;
                                                         }
+
+                                                        Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.CREATE_A_GUILD);
 
                                                         player.sendMessage("");
                                                         player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Congratulations, you are now the proud owner of the '" + guildDisplayName + "' guild!");

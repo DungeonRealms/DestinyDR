@@ -22,6 +22,7 @@ public interface GuildDatabaseAPI {
      * {
      * -> info:
      * -> name
+     * -> display name
      * -> owner
      * -> tag
      * -> motd
@@ -86,6 +87,15 @@ public interface GuildDatabaseAPI {
      * @param uuid      Player
      */
     void demotePlayer(String guildName, UUID uuid);
+
+    /**
+     * Adds player to guild
+     *
+     * @param guildName Name of guild
+     * @param uuid      Player
+     */
+    void addPlayer(String guildName, UUID uuid);
+
 
     /**
      * Promotes a player, like [MEMBER] to [OFFICER]

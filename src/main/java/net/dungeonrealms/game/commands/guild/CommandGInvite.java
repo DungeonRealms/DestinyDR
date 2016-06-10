@@ -13,6 +13,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/2/2016
  */
@@ -34,6 +36,13 @@ public class CommandGInvite extends BasicCommand {
             return true;
         }
 
+
+        if (args.length == 0) {
+            player.sendMessage(usage);
+            return true;
+        }
+
+
         String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
         String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
 
@@ -49,27 +58,36 @@ public class CommandGInvite extends BasicCommand {
             return true;
         }
 
-        if (Bukkit.getPlayer(p_name) == null) {
-            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " is OFFLINE");
+        if (DatabaseAPI.getInstance().getUUIDFromName(args[0]).equals("")) {
+            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " does not exist in our database.");
             return true;
         }
 
-        Player invitee = Bukkit.getPlayer(p_name);
+        Player p = Bukkit.getPlayer(p_name);
+        UUID p_uuid = UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(args[0]));
+
+        if (DatabaseAPI.getInstance().getData(EnumData.GUILD_INVITATION, p_uuid) != null) {
+            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " already has a pending guild invitation.");
+            return true;
+        }
 
         DBObject invitation = new BasicDBObject();
 
-        invitation.put("guildName", guildName);
+        invitation.put("guild", guildName);
         invitation.put("referrer", sender.getName());
         invitation.put("time", System.currentTimeMillis());
 
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.GUILD_INVITE, invitation, true);
 
+        DatabaseAPI.getInstance().update(p_uuid, EnumOperators.$SET, EnumData.GUILD_INVITATION, invitation, true);
 
         player.sendMessage(ChatColor.GRAY + "You have invited " + ChatColor.BOLD.toString() + ChatColor.DARK_AQUA + p_name + ChatColor.GRAY + " to join your guild.");
 
-        invitee.sendMessage("");
-        invitee.sendMessage(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + player + ChatColor.GRAY + " has invited you to join their guild, " + ChatColor.DARK_AQUA + displayName + ChatColor.GRAY + ". To accept, type " + ChatColor.DARK_AQUA.toString() + "/gaccept" + ChatColor.GRAY + " to decline, type " + ChatColor.DARK_AQUA.toString() + "/gdecline");
-        invitee.sendMessage("");
+        if (p != null) {
+            p.sendMessage("");
+            p.sendMessage(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + player + ChatColor.GRAY + " has invited you to join their guild, " + ChatColor.DARK_AQUA + displayName + ChatColor.GRAY + ". To accept, type " + ChatColor.DARK_AQUA.toString() + "/gaccept" + ChatColor.GRAY + " to decline, type " + ChatColor.DARK_AQUA.toString() + "/gdecline");
+            p.sendMessage("");
+        }
+
         return false;
     }
 }

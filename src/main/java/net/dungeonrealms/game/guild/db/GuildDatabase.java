@@ -7,7 +7,10 @@ import net.dungeonrealms.game.mongo.*;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 import static com.mongodb.client.model.Filters.eq;
@@ -31,14 +34,18 @@ public class GuildDatabase implements GuildDatabaseAPI {
         Database.guilds.insertOne(GuildDatabaseAPI.getDocumentTemplate(owner.toString(), guildName, displayName, tag));
 
         Utils.log.warning("New guild created: " + guildName);
-        callback.accept(true);
+
+        if (callback != null)
+            callback.accept(true);
         setGuild(owner, guildName);
     }
 
 
     public boolean doesGuildNameExist(String guildName, Consumer<Boolean> action) {
         boolean doesGuildNameExist = get(EnumGuildData.NAME, guildName) != null;
-        action.accept(doesGuildNameExist);
+
+        if (action != null)
+            action.accept(doesGuildNameExist);
 
         return doesGuildNameExist;
     }
@@ -69,7 +76,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
         return null;
     }
 
-    private List<UUID> get(String guildName, EnumGuildData data) {
+    private List<UUID> getList(String guildName, EnumGuildData data) {
         List<String> users = (List<String>) get(guildName, data, ArrayList.class);
         List<UUID> usersUUIDs = new ArrayList<>();
 
@@ -87,7 +94,9 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
     public boolean doesTagExist(String tag, Consumer<Boolean> action) {
         boolean doesTagExist = get(EnumGuildData.TAG, tag) != null;
-        action.accept(doesTagExist);
+
+        if (action != null)
+            action.accept(doesTagExist);
 
         return doesTagExist;
     }
@@ -126,6 +135,11 @@ public class GuildDatabase implements GuildDatabaseAPI {
         modifyRank(guildName, uuid, false);
     }
 
+    @Override
+    public void addPlayer(String guildName, UUID uuid) {
+        update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PUSH, uuid.toString());
+        setGuild(uuid, guildName);
+    }
 
     private void modifyRank(String guildName, UUID uuid, boolean promote) {
         List<String> officers = (List<String>) get(guildName, EnumGuildData.OFFICERS, ArrayList.class);
@@ -185,19 +199,17 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
 
     public boolean isMember(UUID uuid, String guildName) {
-        return false;
+        return getList(guildName, EnumGuildData.MEMBERS).contains(uuid);
     }
 
 
     public boolean isOfficer(UUID uuid, String guildName) {
-        return false;
+        return getList(guildName, EnumGuildData.OFFICERS).contains(uuid);
     }
-
 
     public boolean isOwnerOfGuild(UUID player) {
-        return false;
+        return get(EnumGuildData.OWNER, player) != null;
     }
-
 
     public void sendAlert(String guildName, String message) {
 
@@ -214,12 +226,12 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
 
     public List<UUID> getAllGuildMembers(String guildName) {
-        return get(guildName, EnumGuildData.MEMBERS);
+        return getList(guildName, EnumGuildData.MEMBERS);
     }
 
     @Override
     public List<UUID> getGuildOfficers(String guildName) {
-        return get(guildName, EnumGuildData.OFFICERS);
+        return getList(guildName, EnumGuildData.OFFICERS);
     }
 
     @Override
