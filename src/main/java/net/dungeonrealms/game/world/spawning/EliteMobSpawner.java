@@ -192,7 +192,7 @@ public class EliteMobSpawner {
             }
             int level = Utils.getRandomFromTier(tier, levelRange);
             MetadataUtils.registerEntityMetadata(entity, type, tier, level);
-            EntityStats.setMonsterElite(entity, eliteType, tier);
+            EntityStats.setMonsterElite(entity, eliteType, tier, monsterType);
             if (hasCustomName) {
                 entity.setCustomName(API.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim());
                 entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));

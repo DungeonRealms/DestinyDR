@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.entities.utils;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumNamedElite;
 import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
@@ -90,17 +91,75 @@ public class EntityStats {
         return new Stats(def, hp, atk, spd);
     }
 
-    public static void setMonsterElite(Entity entity , EnumNamedElite namedElite, int tier) {
+    public static void setMonsterElite(Entity entity , EnumNamedElite namedElite, int tier, EnumMonster monster) {
         entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
         HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) entity.getBukkitEntity()));
         //TODO confirm working for elites of all types
         if (namedElite == EnumNamedElite.NONE) {
+            ItemType weaponType;
+            switch (monster) {
+                case Zombie:
+                    weaponType = ItemType.SWORD;
+                    break;
+                case Bandit:
+                case Bandit1:
+                    weaponType = ItemType.AXE;
+                    break;
+                case FireImp:
+                case Daemon2:
+                    weaponType = ItemType.STAFF;
+                    break;
+                case Daemon:
+                    weaponType = ItemType.POLEARM;
+                    break;
+                case Skeleton:
+                case Skeleton1:
+                case Skeleton2:
+                    weaponType = ItemType.BOW;
+                    break;
+                case Silverfish:
+                case GreaterAbyssalDemon:
+                    weaponType = ItemType.SWORD;
+                    break;
+                case Tripoli1:
+                case Tripoli:
+                    weaponType = ItemType.AXE;
+                    break;
+                case Monk:
+                    weaponType = ItemType.POLEARM;
+                    break;
+                case Lizardman:
+                    weaponType = ItemType.POLEARM;
+                    break;
+                case Undead:
+                    weaponType = ItemType.SWORD;
+                    break;
+                case Blaze:
+                    weaponType = ItemType.STAFF;
+                    break;
+                case Spider:
+                    weaponType = ItemType.SWORD;
+                    break;
+                case Mage:
+                    weaponType = ItemType.STAFF;
+                    break;
+                case Golem:
+                    weaponType = ItemType.SWORD;
+                    break;
+                case Goblin:
+                    weaponType = ItemType.AXE;
+                    break;
+                default:
+                    weaponType = ItemType.getRandomWeapon();
+                    break;
+            }
             ItemStack[] armor = new ItemGenerator().setRarity(ItemRarity.UNIQUE).setTier(ItemTier.getByTier(tier)).getArmorSet();
-            ItemStack weapon = new ItemGenerator().setType(ItemType.getRandomWeapon()).setRarity(ItemRarity.UNIQUE).setTier(ItemTier.getByTier(tier)).generateItem().getItem();
+            ItemStack weapon = new ItemGenerator().setType(weaponType).setRarity(ItemRarity.UNIQUE).setTier(ItemTier.getByTier(tier)).generateItem().getItem();
             entity.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
             entity.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
             entity.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
             entity.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
+            entity.setEquipment(4, CraftItemStack.asNMSCopy(armor[3]));
         }
 
     }

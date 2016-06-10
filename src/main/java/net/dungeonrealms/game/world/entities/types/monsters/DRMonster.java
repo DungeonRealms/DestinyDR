@@ -1,11 +1,14 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.ChatColor;
@@ -97,9 +100,12 @@ public interface DRMonster {
                 chance = 6;
                 break;
         }
-        //TODO: VERY DANGEROUS CODE. REMOVE BEFORE RELEASEs
+        //TODO: VERY DANGEROUS CODE. REMOVE BEFORE RELEASE
         if (ent.hasMetadata("elite")) {
             for (ItemStack stack : ((LivingEntity) ent).getEquipment().getArmorContents()) {
+                if (stack == null || stack.getType() == Material.AIR || stack.getType() == Material.SKULL) {
+                    continue;
+                }
                 world.getWorld().dropItemNaturally(loc.add(0, 1, 0), stack);
             }
             ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
@@ -109,49 +115,64 @@ public interface DRMonster {
         int armorRoll = random.nextInt(1000);
         int drops = 0;
         for (ItemStack stack : ((LivingEntity) ent).getEquipment().getArmorContents()) {
-            if (stack == null || stack.getType() == Material.AIR) {
+            if (stack == null || stack.getType() == Material.AIR || stack.getType() == Material.SKULL) {
                 continue;
             }
-            if (drops < 2) {
+            if (drops < 1) {
                 if (armorRoll <= chance + (chance * killerItemFind / 100)) {
                     if (armorRoll > chance) {
                         if (toggleDebug) {
                             killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
                         }
-                        RepairAPI.setCustomItemDurability(stack, RandomHelper.getRandomNumberBetween(200, 1000));
-                        world.getWorld().dropItemNaturally(loc.add(0, 1, 0), stack);
-                        drops++;
                     }
+                    RepairAPI.setCustomItemDurability(stack, RandomHelper.getRandomNumberBetween(200, 1000));
+                    world.getWorld().dropItemNaturally(loc.add(0, 1, 0), stack);
+                    drops++;
+                }
+            }
+        }
+        if (!ent.hasMetadata("elite")) {
+            ItemStack helmet = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier)).setType(Item.ItemType.HELMET).setRarity(API.getItemRarity()).generateItem().getItem();
+            AntiCheat.getInstance().applyAntiDupe(helmet);
+            if (drops < 1) {
+                if (armorRoll <= chance + (chance * killerItemFind / 100)) {
+                    if (armorRoll > chance) {
+                        if (toggleDebug) {
+                            killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
+                        }
+                    }
+                    RepairAPI.setCustomItemDurability(helmet, RandomHelper.getRandomNumberBetween(200, 1000));
+                    world.getWorld().dropItemNaturally(loc.add(0, 1, 0), helmet);
+                    drops++;
                 }
             }
         }
         ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
         if (weapon != null && weapon.getType() != Material.AIR) {
-            if (drops < 2) {
+            if (drops < 1) {
                 if (armorRoll <= chance + (chance * killerItemFind / 100)) {
                     if (armorRoll > chance) {
                         if (toggleDebug) {
                             killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
                         }
-                        RepairAPI.setCustomItemDurability(weapon, RandomHelper.getRandomNumberBetween(200, 1000));
-                        world.getWorld().dropItemNaturally(loc.add(0, 1, 0), weapon);
-                        return;
                     }
+                    RepairAPI.setCustomItemDurability(weapon, RandomHelper.getRandomNumberBetween(200, 1000));
+                    world.getWorld().dropItemNaturally(loc.add(0, 1, 0), weapon);
                 }
             }
-            if (weapon.getType() == Material.BOW) {
-                int arrowRoll = random.nextInt(99);
-                if (arrowRoll <= (25 + (25 * killerItemFind / 100))) {
-                    if (arrowRoll > 25) {
-                        if (toggleDebug) {
-                            killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
-                        }
+        }
+        if (weapon.getType() == Material.BOW) {
+            int arrowRoll = random.nextInt(99);
+            if (arrowRoll <= (25 + (25 * killerItemFind / 100))) {
+                if (arrowRoll > 25) {
+                    if (toggleDebug) {
+                        killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
                     }
-                    ItemStack item = new ItemStack(Material.ARROW);
-                    int amount = (tier * 2);
-                    item.setAmount(amount);
-                    world.getWorld().dropItemNaturally(loc.add(0, 1, 0), item);
                 }
+                ItemStack item = new ItemStack(Material.ARROW);
+                int amount = (tier * 2);
+                item.setAmount(amount);
+                world.getWorld().dropItemNaturally(loc.add(0, 1, 0), item);
             }
         }
     }

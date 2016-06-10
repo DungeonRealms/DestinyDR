@@ -159,7 +159,7 @@ public class CommandMonSpawn extends BasicCommand {
 
                         World world = ((CraftWorld) player.getWorld()).getHandle();
                         if (elite) {
-                            EntityStats.setMonsterElite(entity, EnumNamedElite.NONE, tier);
+                            EntityStats.setMonsterElite(entity, EnumNamedElite.NONE, tier, monsEnum);
                         }
                         
                         String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET;

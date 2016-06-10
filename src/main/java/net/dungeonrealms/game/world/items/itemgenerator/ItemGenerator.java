@@ -484,7 +484,7 @@ public class ItemGenerator {
                     
                     // It's lore!
                     line = ChatColor.translateAlternateColorCodes('&', line);
-                    line = ChatColor.stripColor(line);
+                    //line = ChatColor.stripColor(line);
                     
                     String modifierName = ChatColor.stripColor(line);
                     modifierName = modifierName.substring(0, modifierName.indexOf(':'));
