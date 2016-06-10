@@ -26,6 +26,9 @@ public class CommandSupport extends BasicCommand {
         if (args.length < 1) {
             player.sendMessage(ChatColor.RED + "Invalid usage: /support <name>");
             return false;
+        } else if (args[0].equalsIgnoreCase(player.getDisplayName())) {
+            player.sendMessage(ChatColor.RED + "You " + ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "CANNOT" + ChatColor.RED + " manage your own account.");
+            return false;
         }
 
         PlayerMenus.openSupportMenu(player, args[0]);
