@@ -22,7 +22,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
  * Created by Chase on Nov 17, 2015
@@ -36,6 +35,7 @@ public class Shop {
     public Hologram hologram;
     public boolean isopen;
     public Inventory inventory;
+    public Inventory collectionBin;
     public String shopName;
     public int viewCount;
     public List<String> uniqueViewers = new ArrayList<>();
@@ -87,65 +87,15 @@ public class Shop {
      * @since 1.0
      */
     public void deleteShop(boolean shutDown) {
-        DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, true);
+        DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, false);
         hologram.delete();
         block1.setType(Material.AIR);
         block2.setType(Material.AIR);
         block1.getWorld().playSound(block1.getLocation(), Sound.PISTON_RETRACT, 1, 1);
         uniqueViewers.clear();
         viewCount = 0;
-
-        if (getOwner() == null || shutDown) {
-            saveCollectionBin();
-            block1.setType(Material.AIR);
-            block2.setType(Material.AIR);
-            block1.getWorld().playSound(block1.getLocation(), Sound.PISTON_RETRACT, 1, 1);
-            block1.getWorld().save();
-            ShopMechanics.ALLSHOPS.remove(ownerName);
-        } else {
-            CopyOnWriteArrayList<ItemStack> contents = new CopyOnWriteArrayList<>();
-            for (ItemStack stack : inventory.getContents()) {
-                if (stack == null || stack.getType() == Material.AIR)
-                    continue;
-                net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-                if (nms.hasTag()) {
-                    if (nms.getTag().hasKey("status"))
-                        continue;
-                }
-                contents.add(stack);
-            }
-            if (contents.size() > 0) {
-                for (ItemStack stack : contents) {
-                    if (getOwner() != null) {
-                        if (getOwner().getInventory().firstEmpty() < 0) {
-                            getOwner().sendMessage(ChatColor.YELLOW + "Some of your shop items have been sent to the collection bin.");
-                            saveCollectionBin();
-                        } else {
-                            contents.remove(stack);
-                            ItemMeta meta = stack.getItemMeta();
-                            List<String> lore = meta.getLore();
-                            for (int j = 0; j < lore.size(); j++) {
-                                String currentStr = lore.get(j);
-                                if (currentStr.contains("Price")) {
-                                    lore.remove(j);
-                                    break;
-                                }
-                            }
-                            meta.setLore(lore);
-                            stack.setItemMeta(meta);
-                            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
-                            nms.getTag().remove("worth");
-                            getOwner().getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
-                            inventory.setContents(contents.toArray(new ItemStack[contents.size()]));
-                        }
-                    } else {
-                        saveCollectionBin();
-                    }
-                }
-            }
-            block1.getWorld().save();
-            ShopMechanics.ALLSHOPS.remove(ownerName);
-        }
+        saveCollectionBin();
+        ShopMechanics.ALLSHOPS.remove(ownerName);
     }
 
     /**
@@ -180,6 +130,9 @@ public class Shop {
             }
         }
         if (count > 0) {
+            if (Bukkit.getPlayer(ownerUUID) != null) {
+                Bukkit.getPlayer(ownerUUID).sendMessage(ChatColor.GREEN + "Your shop was saved and can now be found in your Collection Bin.");
+            }
             if (BankMechanics.getInstance().getStorage(ownerUUID) != null) {
                 BankMechanics.getInstance().getStorage(ownerUUID).collection_bin = inv;
             }

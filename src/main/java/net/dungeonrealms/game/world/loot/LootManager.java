@@ -1,19 +1,21 @@
 package net.dungeonrealms.game.world.loot;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.Material;
-import org.bukkit.World;
-import org.bukkit.block.Block;
-
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.world.loot.types.LootType;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.World;
+import org.bukkit.block.Block;
+import org.bukkit.inventory.Inventory;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by Chase on Oct 9, 2015
@@ -22,6 +24,12 @@ public class LootManager implements GenericMechanic {
 
 	public static List<LootSpawner> LOOT_SPAWNERS = new ArrayList<>();
 	public static List<String> SPAWNER_CONFIG = new ArrayList<>();
+
+	public static Map<String, Inventory> getOpenChests() {
+		return OPEN_CHESTS;
+	}
+
+	private static Map<String, Inventory> OPEN_CHESTS = new HashMap<>();
 	/**
 	 * Weapons/Armor 1% Glyphs .2%
 	 * 

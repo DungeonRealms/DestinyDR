@@ -32,9 +32,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.*;
 import org.bukkit.event.entity.EntityExplodeEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.PlayerAnimationEvent;
 import org.bukkit.event.player.PlayerAnimationType;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -402,14 +404,18 @@ public class BlockListener implements Listener {
             switch (actionType) {
                 case RIGHT_CLICK_BLOCK:
                     e.setCancelled(true);
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.CHEST_OPEN, 1f, 1f);
+                    e.getPlayer().openInventory(loot.inv);
+                    LootManager.getOpenChests().put(e.getPlayer().getName(), loot.inv);
+                    Achievements.getInstance().giveAchievement(e.getPlayer().getUniqueId(), Achievements.EnumAchievements.OPEN_LOOT_CHEST);
+                    /*Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         Block blockLook = e.getPlayer().getTargetBlock((Set<Material>) null, 7);
                         if (blockLook.getType() == Material.CHEST) {
                             e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.CHEST_OPEN, 1f, 1f);
                             e.getPlayer().openInventory(loot.inv);
                             Achievements.getInstance().giveAchievement(e.getPlayer().getUniqueId(), Achievements.EnumAchievements.OPEN_LOOT_CHEST);
                         }
-                    }, 10);
+                    }, 10);*/
                     break;
                 case LEFT_CLICK_BLOCK:
                     e.setCancelled(true);
@@ -536,6 +542,21 @@ public class BlockListener implements Listener {
                 }
             } else {
                 player.sendMessage(ChatColor.RED + "You can not place a shop here.");
+            }
+        }
+    }
+
+    @EventHandler (priority = EventPriority.HIGHEST)
+    public void playerCloseLootChest(InventoryCloseEvent event) {
+        if (LootManager.getOpenChests().containsKey(event.getPlayer().getName())) {
+            Inventory inventory = LootManager.getOpenChests().get(event.getPlayer().getName());
+            if (inventory.equals(event.getInventory())) {
+                LootManager.LOOT_SPAWNERS.stream().forEach(lootSpawner1 -> {
+                    if (lootSpawner1.inv.equals(inventory)) {
+                        lootSpawner1.update();
+                        LootManager.getOpenChests().remove(event.getPlayer().getName());
+                    }
+                });
             }
         }
     }
