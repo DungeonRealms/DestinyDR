@@ -3,10 +3,7 @@ package net.dungeonrealms;
 import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.game.commands.*;
 import net.dungeonrealms.game.commands.generic.CommandManager;
-import net.dungeonrealms.game.commands.guild.CommandGAccept;
-import net.dungeonrealms.game.commands.guild.CommandGDeny;
-import net.dungeonrealms.game.commands.guild.CommandGInfo;
-import net.dungeonrealms.game.commands.guild.CommandGQuit;
+import net.dungeonrealms.game.commands.guild.*;
 import net.dungeonrealms.game.commands.menualias.CommandMount;
 import net.dungeonrealms.game.commands.menualias.CommandPet;
 import net.dungeonrealms.game.commands.menualias.CommandProfile;
@@ -300,7 +297,7 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandGInfo("ginfo", "/<command>", "Guild info command."));
             cm.registerCommand(new CommandGQuit("gquit", "/<command>", "Guild quit command.", Arrays.asList("gleave", "gdisband")));
             cm.registerCommand(new CommandGAccept("gaccept", "/<command>", "Guild accept invitation command."));
-            cm.registerCommand(new CommandGAccept("ginvite", "/<command> [args]", "Guild invitation command."));
+            cm.registerCommand(new CommandGInvite("ginvite", "/<command> [args]", "Guild invitation command."));
             cm.registerCommand(new CommandGDeny("gdecline", "/<command>", "Guild decline invitation command.", Collections.singletonList("gdeny")));
 
             cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "Spawns a mob? idk chase"));
