@@ -121,7 +121,7 @@ public class DRWitherSkeleton extends EntitySkeleton implements DRMonster {
                 isRanged = true;
                 break;
         }
-        ItemStack item = new ItemGenerator().setType(itemType).setRarity(API.getItemRarity()).setTier(ItemTier.getByTier(tier)).generateItem().getItem();
+        ItemStack item = new ItemGenerator().setType(itemType).setRarity(API.getItemRarity(false)).setTier(ItemTier.getByTier(tier)).generateItem().getItem();
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;
     }

@@ -72,7 +72,7 @@ public class DRWitch extends EntityWitch implements DRMonster {
 
     private ItemStack getTierWeapon(int tier) {
         ItemStack item = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier)).setType(Item.ItemType.STAFF)
-                .setRarity(API.getItemRarity()).generateItem().getItem();
+                .setRarity(API.getItemRarity(false)).generateItem().getItem();
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;
     }

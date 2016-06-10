@@ -132,7 +132,7 @@ public interface DRMonster {
             }
         }
         if (!ent.hasMetadata("elite")) {
-            ItemStack helmet = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier)).setType(Item.ItemType.HELMET).setRarity(API.getItemRarity()).generateItem().getItem();
+            ItemStack helmet = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier)).setType(Item.ItemType.HELMET).setRarity(API.getItemRarity(false)).generateItem().getItem();
             AntiCheat.getInstance().applyAntiDupe(helmet);
             if (drops < 1) {
                 if (armorRoll <= chance + (chance * killerItemFind / 100)) {

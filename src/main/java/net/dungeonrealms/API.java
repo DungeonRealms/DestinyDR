@@ -149,8 +149,11 @@ public class API {
         }
     }
 
-    public static ItemRarity getItemRarity() {
+    public static ItemRarity getItemRarity(boolean isElite) {
         int chance = RandomHelper.getRandomNumberBetween(1, 500);
+        if (isElite) {
+            chance *= 0.9;
+        }
         if (chance <= 10) {
             return ItemRarity.UNIQUE;
         } else if (chance > 10 && chance <= 50) {

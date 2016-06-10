@@ -1,10 +1,10 @@
 package net.dungeonrealms.game.world.entities.utils;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumNamedElite;
-import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
@@ -153,8 +153,8 @@ public class EntityStats {
                     weaponType = ItemType.getRandomWeapon();
                     break;
             }
-            ItemStack[] armor = new ItemGenerator().setRarity(ItemRarity.UNIQUE).setTier(ItemTier.getByTier(tier)).getArmorSet();
-            ItemStack weapon = new ItemGenerator().setType(weaponType).setRarity(ItemRarity.UNIQUE).setTier(ItemTier.getByTier(tier)).generateItem().getItem();
+            ItemStack[] armor = new ItemGenerator().setRarity(API.getItemRarity(true)).setTier(ItemTier.getByTier(tier)).getArmorSet();
+            ItemStack weapon = new ItemGenerator().setType(weaponType).setRarity(API.getItemRarity(true)).setTier(ItemTier.getByTier(tier)).generateItem().getItem();
             entity.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
             entity.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
             entity.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));

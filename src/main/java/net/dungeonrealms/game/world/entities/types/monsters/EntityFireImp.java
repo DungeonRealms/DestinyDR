@@ -38,7 +38,7 @@ public class EntityFireImp extends DRSkeleton {
         super(world, EnumMonster.FireImp, tier, entityType);
         this.tier = tier;
         this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
-        ItemStack weapon =  new ItemGenerator().setType(ItemType.STAFF).setRarity(API.getItemRarity()).setTier(ItemTier.getByTier(tier)).generateItem().getItem();
+        ItemStack weapon =  new ItemGenerator().setType(ItemType.STAFF).setRarity(API.getItemRarity(false)).setTier(ItemTier.getByTier(tier)).generateItem().getItem();
         AntiCheat.getInstance().applyAntiDupe(weapon);
         this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
     }

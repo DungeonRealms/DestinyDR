@@ -43,7 +43,7 @@ public class BasicMageMonster extends DRSkeleton {
         this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
         this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
         this.tier = tier;
-        this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().setType(ItemType.STAFF).setTier(ItemTier.getByTier(tier)).setRarity(API.getItemRarity()).generateItem().getItem()));
+        this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().setType(ItemType.STAFF).setTier(ItemTier.getByTier(tier)).setRarity(API.getItemRarity(false)).generateItem().getItem()));
         switch (mons) {
             case Naga:
                 this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.NAGA.getSkull()));

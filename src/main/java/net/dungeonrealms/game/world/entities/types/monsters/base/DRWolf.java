@@ -69,7 +69,7 @@ public class DRWolf extends EntityWolf implements DRMonster {
     }
 
     private ItemStack getTierWeapon(int tier) {
-        ItemStack item = new ItemGenerator().setType(Item.ItemType.getRandomWeapon()).setRarity(API.getItemRarity())
+        ItemStack item = new ItemGenerator().setType(Item.ItemType.getRandomWeapon()).setRarity(API.getItemRarity(false))
                 .setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;

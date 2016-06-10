@@ -28,7 +28,7 @@ public class BasicEntitySkeleton extends DRSkeleton {
     public BasicEntitySkeleton(World world, int tier, EnumMonster type) {
         super(world, EnumMonster.Skeleton, tier, EnumEntityType.HOSTILE_MOB);
         this.tier = tier;
-        ItemStack weapon = new ItemGenerator().setType(Item.ItemType.BOW).setRarity(API.getItemRarity()).setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
+        ItemStack weapon = new ItemGenerator().setType(Item.ItemType.BOW).setRarity(API.getItemRarity(false)).setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
         AntiCheat.getInstance().applyAntiDupe(weapon);
         this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
         if (type == EnumMonster.FrozenSkeleton) {

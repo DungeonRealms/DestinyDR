@@ -104,7 +104,7 @@ public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze i
 
     private ItemStack getTierWeapon(int tier) {
         ItemStack item = new ItemGenerator().setTier(ItemTier.getByTier(tier)).setType(ItemType.STAFF)
-                .setRarity(API.getItemRarity()).generateItem().getItem();
+                .setRarity(API.getItemRarity(false)).generateItem().getItem();
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;
     }

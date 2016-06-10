@@ -108,7 +108,7 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
                 itemType = Item.ItemType.AXE;
                 break;
         }
-        ItemStack item = new ItemGenerator().setType(itemType).setRarity(API.getItemRarity())
+        ItemStack item = new ItemGenerator().setType(itemType).setRarity(API.getItemRarity(false))
                 .setTier(ItemTier.getByTier(tier)).generateItem().getItem();
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;

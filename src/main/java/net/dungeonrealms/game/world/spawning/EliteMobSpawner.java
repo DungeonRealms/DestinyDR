@@ -193,20 +193,20 @@ public class EliteMobSpawner {
             int level = Utils.getRandomFromTier(tier, levelRange);
             MetadataUtils.registerEntityMetadata(entity, type, tier, level);
             EntityStats.setMonsterElite(entity, eliteType, tier, monsterType);
-            if (hasCustomName) {
-                entity.setCustomName(API.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim());
-                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));
-            } else {
-                entity.setCustomName(API.getTierColor(tier) + ChatColor.BOLD.toString() + monsterType.name().trim());
-                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() +  monsterType.name().trim()));
-            }
-            entity.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
             giveCustomEquipment(eliteType, entity);
             entity.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
             world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
             entity.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
-            entity.getBukkitEntity().setCustomName(entity.getBukkitEntity().getMetadata("customname").get(0).asString().trim());
             SPAWNED_MONSTERS.add(entity);
+            entity.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
+            if (hasCustomName) {
+                entity.setCustomName(API.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim());
+                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));
+                entity.getBukkitEntity().setMetadata("namedElite", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));
+            } else {
+                entity.setCustomName(API.getTierColor(tier) + ChatColor.BOLD.toString() + monsterType.name.trim());
+                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() +  monsterType.name.trim()));
+            }
         }
     }
     /**

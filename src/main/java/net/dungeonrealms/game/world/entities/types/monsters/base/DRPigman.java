@@ -103,7 +103,7 @@ public class DRPigman extends EntityPigZombie implements DRMonster {
 				itemType = net.dungeonrealms.game.world.items.Item.ItemType.AXE;
 				break;
 		}
-		ItemStack item = new ItemGenerator().setType(itemType).setRarity(API.getItemRarity())
+		ItemStack item = new ItemGenerator().setType(itemType).setRarity(API.getItemRarity(false))
 				.setTier(ItemTier.getByTier(tier)).generateItem().getItem();
 		AntiCheat.getInstance().applyAntiDupe(item);
 		return item;

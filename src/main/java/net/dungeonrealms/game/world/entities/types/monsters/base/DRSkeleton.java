@@ -101,7 +101,7 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
     }
 
     private ItemStack getTierWeapon(int tier) {
-        ItemStack item = new ItemGenerator().setType(ItemType.getRandomWeapon()).setRarity(API.getItemRarity())
+        ItemStack item = new ItemGenerator().setType(ItemType.getRandomWeapon()).setRarity(API.getItemRarity(false))
                 .setTier(ItemTier.getByTier(tier)).generateItem().getItem();
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;

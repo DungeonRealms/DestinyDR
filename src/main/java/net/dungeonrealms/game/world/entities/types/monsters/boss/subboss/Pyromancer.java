@@ -62,7 +62,7 @@ public class Pyromancer extends EntitySkeleton implements Boss{
 	 * @return
 	 */
 	private ItemStack getWeapon() {
-        return new ItemGenerator().setType(ItemType.STAFF).setTier(ItemTier.TIER_1).setRarity(API.getItemRarity())
+        return new ItemGenerator().setType(ItemType.STAFF).setTier(ItemTier.TIER_1).setRarity(API.getItemRarity(false))
                 .generateItem().getItem();
 	}
 

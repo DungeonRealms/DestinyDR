@@ -75,7 +75,7 @@ public class InfernalLordsGuard extends EntitySkeleton implements Boss {
 	 * @return
 	 */
 	private ItemStack getWeapon() {
-        return new ItemGenerator().setType(ItemType.SWORD).setTier(ItemTier.TIER_4).setRarity(API.getItemRarity())
+        return new ItemGenerator().setType(ItemType.SWORD).setTier(ItemTier.TIER_4).setRarity(API.getItemRarity(false))
                 .generateItem().getItem();
 	}
 
