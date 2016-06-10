@@ -698,7 +698,18 @@ public class PlayerMenus {
         player.openInventory(inv);
     }
 
+    /*
+     * -- Customer Support --
+     */
 
+    private static ItemStack applySupportItemTags(ItemStack item, String playerName, UUID uuid) {
+        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+        NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
+        tag.set("name", new NBTTagString(playerName));
+        tag.set("uuid", new NBTTagString(uuid.toString()));
+        nmsStack.setTag(tag);
+        return CraftItemStack.asBukkitCopy(nmsStack);
+    }
 
     public static void openSupportMenu(Player player, String playerName) {
         try {
@@ -710,7 +721,9 @@ public class PlayerMenus {
                 return;
             }
 
-            Inventory inv = Bukkit.createInventory(null, 45, "Customer Support Tools");
+            ItemStack item;
+
+            Inventory inv = Bukkit.createInventory(null, 45, "Support Tools");
 
             inv.setItem(4, editItem(playerName, ChatColor.GREEN + playerName, new String[]{
                     ChatColor.WHITE + "Rank: " + Rank.rankFromPrefix(playerRank),
@@ -722,41 +735,44 @@ public class PlayerMenus {
                     ChatColor.WHITE + "Alignment: " + Utils.ucfirst(DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid).toString())
             }));
 
-            inv.setItem(19, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GOLD + "PLACEHOLDER", new String[]{
-                    ChatColor.WHITE + "This is a placeholder, it does nothing.",
-                    "",
-                    ChatColor.WHITE + "One day, a tool for support will go here."
-            }));
+            // Rank Manager
+            item = editItem(new ItemStack(Material.DIAMOND), ChatColor.GOLD + "Rank Manager", new String[]{
+                    ChatColor.WHITE + "Modify the rank of " + playerName + ".",
+                    ChatColor.WHITE + "Current rank: " + Rank.rankFromPrefix(playerRank)
+            });
+            inv.setItem(19, applySupportItemTags(item, playerName, uuid));
 
-            inv.setItem(22, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GOLD + "PLACEHOLDER", new String[]{
-                    ChatColor.WHITE + "This is a placeholder, it does nothing.",
-                    "",
-                    ChatColor.WHITE + "One day, a tool for support will go here."
-            }));
+            // Level Manager
+            item = editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GOLD + "Level Manager", new String[]{
+                    ChatColor.WHITE + "Manage the level/experience of " + playerName + "."
+            });
+            inv.setItem(22, applySupportItemTags(item, playerName, uuid));
 
-            inv.setItem(25, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GOLD + "PLACEHOLDER", new String[]{
-                    ChatColor.WHITE + "This is a placeholder, it does nothing.",
-                    "",
-                    ChatColor.WHITE + "One day, a tool for support will go here."
-            }));
+            // E-Cash Manager
+            item = editItem(new ItemStack(Material.GOLDEN_CARROT), ChatColor.GOLD + "E-Cash Manager", new String[]{
+                    ChatColor.WHITE + "Manage the e-cash of " + playerName + "."
+            });
+            inv.setItem(25, applySupportItemTags(item, playerName, uuid));
 
-            inv.setItem(28, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GOLD + "PLACEHOLDER", new String[]{
-                    ChatColor.WHITE + "This is a placeholder, it does nothing.",
-                    "",
-                    ChatColor.WHITE + "One day, a tool for support will go here."
-            }));
+            // Bank Manager
+            item = editItem(new ItemStack(Material.ENDER_CHEST), ChatColor.GOLD + "Bank Manager", new String[]{
+                    ChatColor.WHITE + "Manage the bank of " + playerName + "."
+            });
+            inv.setItem(29, applySupportItemTags(item, playerName, uuid));
 
-            inv.setItem(31, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GOLD + "PLACEHOLDER", new String[]{
-                    ChatColor.WHITE + "This is a placeholder, it does nothing.",
-                    "",
-                    ChatColor.WHITE + "One day, a tool for support will go here."
-            }));
+            // Hearthstone Manager
+            item = editItem(new ItemStack(Material.QUARTZ_ORE), ChatColor.GOLD + "Hearthstone Manager", new String[]{
+                    ChatColor.WHITE + "Manage the Hearthstone Location of " + playerName + "."
+            });
+            inv.setItem(33, applySupportItemTags(item, playerName, uuid));
 
-            inv.setItem(34, editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GOLD + "PLACEHOLDER", new String[]{
+            // PLACEHOLDER
+            /*item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLACK.getData()), ChatColor.GOLD + "PLACEHOLDER", new String[]{
                     ChatColor.WHITE + "This is a placeholder, it does nothing.",
                     "",
                     ChatColor.WHITE + "One day, a tool for support will go here."
-            }));
+            });
+            inv.setItem(34, applySupportItemTags(item, playerName, uuid));*/
 
             player.openInventory(inv);
         } catch (IllegalArgumentException ex) {
@@ -764,6 +780,156 @@ public class PlayerMenus {
             player.sendMessage(ChatColor.RED + "Unable to identify anybody with the player name: " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.RED + "!");
             player.sendMessage(ChatColor.RED + "It's likely the user has never played on the Dungeon Realms servers before.");
         }
+    }
+
+    public static void openSupportRankMenu(Player player, String playerName, UUID uuid) {
+        ItemStack item;
+        Inventory inv = Bukkit.createInventory(null, 45, "Support Tools (Rank)");
+
+        item = editItem(playerName, ChatColor.GREEN + playerName, new String[]{
+                ChatColor.WHITE + "Return to Menu"
+        });
+        inv.setItem(4, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.GRAY.getData()), Rank.rankFromPrefix("default"), new String[]{
+                ChatColor.WHITE + "Set user rank to: Default"
+        });
+        inv.setItem(20, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), Rank.rankFromPrefix("sub"), new String[]{
+                ChatColor.WHITE + "Set user rank to: Subscriber",
+                ChatColor.WHITE + "User will have access to the subscriber server."
+        });
+        inv.setItem(21, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.ORANGE.getData()), Rank.rankFromPrefix("sub+"), new String[]{
+                ChatColor.WHITE + "Set user rank to: Subscriber+",
+                ChatColor.WHITE + "User will have access to the subscriber server."
+        });
+        inv.setItem(22, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.CYAN.getData()), Rank.rankFromPrefix("sub++"), new String[]{
+                ChatColor.WHITE + "Set user rank to: Subscriber++",
+                ChatColor.WHITE + "User will have access to the subscriber server."
+        });
+        inv.setItem(23, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.WHITE.getData()), Rank.rankFromPrefix("pmod"), new String[]{
+                ChatColor.WHITE + "Set user rank to: Player Moderator",
+                ChatColor.WHITE + "User will have access to the subscriber server.",
+                ChatColor.WHITE + "User will have access to limited moderation tools."
+        });
+        inv.setItem(24, applySupportItemTags(item, playerName, uuid));
+
+        // Ranks that can only be applied by developers.
+        if (Rank.isDev(player)) {
+            item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.CYAN.getData()), Rank.rankFromPrefix("builder"), new String[]{
+                    ChatColor.WHITE + "Set user rank to: Builder",
+                    ChatColor.WHITE + "User will have identical permissions as a Subscriber."
+            });
+            inv.setItem(29, applySupportItemTags(item, playerName, uuid));
+
+            item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()), Rank.rankFromPrefix("youtube"), new String[]{
+                    ChatColor.WHITE + "Set user rank to: YouTuber",
+                    ChatColor.WHITE + "User will have identical permissions as a Subscriber.",
+                    ChatColor.WHITE + "User will have access to a special 'YouTube' server."
+            });
+            inv.setItem(30, applySupportItemTags(item, playerName, uuid));
+
+            item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLUE.getData()), Rank.rankFromPrefix("support"), new String[]{
+                    ChatColor.WHITE + "Set user rank to: Support Agent",
+                    ChatColor.WHITE + "User will " + ChatColor.BOLD + "NOT" + ChatColor.WHITE + " have access to moderation tools.",
+                    ChatColor.WHITE + "User will have access to a special command set.",
+                    ChatColor.WHITE + "User will have access a special 'Support' server."
+            });
+            inv.setItem(32, applySupportItemTags(item, playerName, uuid));
+
+            item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.LIGHT_BLUE.getData()), Rank.rankFromPrefix("gm"), new String[]{
+                    ChatColor.WHITE + "Set user rank to: Game Master",
+                    ChatColor.WHITE + "User will " + ChatColor.BOLD + "NOT" + ChatColor.WHITE + " have access to support tools.",
+                    ChatColor.WHITE + "User will have access to almost all commands.",
+                    ChatColor.WHITE + "User will have access to the MASTER server."
+            });
+            inv.setItem(33, applySupportItemTags(item, playerName, uuid));
+        }
+
+        player.openInventory(inv);
+    }
+
+    public static void openSupportLevelMenu(Player player, String playerName, UUID uuid) {
+        ItemStack item;
+        Inventory inv = Bukkit.createInventory(null, 45, "Support Tools (Level)");
+
+        item = editItem(playerName, ChatColor.GREEN + playerName, new String[]{
+                ChatColor.WHITE + "Return to Menu"
+        });
+        inv.setItem(4, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLACK.getData()), ChatColor.GOLD + "PLACEHOLDER", new String[]{
+                ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                "",
+                ChatColor.WHITE + "One day, a tool for support will go here."
+        });
+        inv.setItem(22, applySupportItemTags(item, playerName, uuid));
+
+        player.openInventory(inv);
+    }
+
+    public static void openSupportECashMenu(Player player, String playerName, UUID uuid) {
+        ItemStack item;
+        Inventory inv = Bukkit.createInventory(null, 45, "Support Tools (E-Cash)");
+
+        item = editItem(playerName, ChatColor.GREEN + playerName, new String[]{
+                ChatColor.WHITE + "Return to Menu"
+        });
+        inv.setItem(4, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLACK.getData()), ChatColor.GOLD + "PLACEHOLDER", new String[]{
+                ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                "",
+                ChatColor.WHITE + "One day, a tool for support will go here."
+        });
+        inv.setItem(22, applySupportItemTags(item, playerName, uuid));
+
+        player.openInventory(inv);
+    }
+
+    public static void openSupportBankMenu(Player player, String playerName, UUID uuid) {
+        ItemStack item;
+        Inventory inv = Bukkit.createInventory(null, 45, "Support Tools (Bank)");
+
+        item = editItem(playerName, ChatColor.GREEN + playerName, new String[]{
+                ChatColor.WHITE + "Return to Menu"
+        });
+        inv.setItem(4, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLACK.getData()), ChatColor.GOLD + "PLACEHOLDER", new String[]{
+                ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                "",
+                ChatColor.WHITE + "One day, a tool for support will go here."
+        });
+        inv.setItem(22, applySupportItemTags(item, playerName, uuid));
+
+        player.openInventory(inv);
+    }
+
+    public static void openSupportHearthstoneMenu(Player player, String playerName, UUID uuid) {
+        ItemStack item;
+        Inventory inv = Bukkit.createInventory(null, 45, "Support Tools (Hearthstone)");
+
+        item = editItem(playerName, ChatColor.GREEN + playerName, new String[]{
+                ChatColor.WHITE + "Return to Menu"
+        });
+        inv.setItem(4, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLACK.getData()), ChatColor.GOLD + "PLACEHOLDER", new String[]{
+                ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                "",
+                ChatColor.WHITE + "One day, a tool for support will go here."
+        });
+        inv.setItem(22, applySupportItemTags(item, playerName, uuid));
+
+        player.openInventory(inv);
     }
 
 }
