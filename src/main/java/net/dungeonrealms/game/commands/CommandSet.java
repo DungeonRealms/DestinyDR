@@ -133,6 +133,24 @@ public class CommandSet extends BasicCommand {
                 case "g":
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GUILD, "", true);
                     break;
+                case "ecash":
+                    int ecash = 0;
+                    if (args.length > 1) {
+                        try {
+                            ecash = Integer.parseInt(args[1]);
+                            if (ecash < 0) {
+                                player.sendMessage(ChatColor.RED + "Failed to set E-Cash value because " + ecash + " is too small.");
+                                break;
+                            }
+                        } catch (NumberFormatException ex) {
+                            player.sendMessage(ChatColor.RED + "Failed to set E-Cash value because " + args[1] + " isn't a valid number.");
+                            break;
+                        }
+                    }
+
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ECASH, ecash, true);
+                    player.sendMessage(ChatColor.GREEN + "Successfully set your E-Cash value to: " + ecash + ".");
+                    break;
             }
         }
         return true;

@@ -17,6 +17,7 @@ import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.stats.StatsManager;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
@@ -31,6 +32,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
@@ -41,6 +43,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Nick on 10/2/2015.
@@ -1055,6 +1058,182 @@ public class ClickHandler {
                 if (slot == 0) {
                     PlayerMenus.openPlayerAchievementsMenu(player);
                     return;
+                }
+                break;
+            case "Support Tools":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+
+                NBTTagCompound tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
+                String playerName = tag.getString("name");
+                UUID uuid = UUID.fromString(tag.getString("uuid"));
+
+                // Only continue if the playerName & uuid aren't empty.
+                if (playerName.isEmpty() || uuid.toString().isEmpty()) break;
+
+                switch (slot) {
+                    case 4: break;
+                    case 19:
+                        PlayerMenus.openSupportRankMenu(player, playerName, uuid);
+                        break;
+                    case 22:
+                        PlayerMenus.openSupportLevelMenu(player, playerName, uuid);
+                        break;
+                    case 25:
+                        PlayerMenus.openSupportECashMenu(player, playerName, uuid);
+                        break;
+                    case 29:
+                        PlayerMenus.openSupportBankMenu(player, playerName, uuid);
+                        break;
+                    case 33:
+                        PlayerMenus.openSupportHearthstoneMenu(player, playerName, uuid);
+                        break;
+
+                    default:
+                        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
+                        break;
+                }
+                break;
+            case "Support Tools (Rank)":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+
+                tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
+                playerName = tag.getString("name");
+                uuid = UUID.fromString(tag.getString("uuid"));
+
+                // Only continue if the playerName & uuid aren't empty.
+                if (playerName.isEmpty() || uuid.toString().isEmpty()) break;
+                // Only developers can apply certain ranks (GM / Builder / Support)
+                if (!Rank.isDev(player) && (slot == 29 || slot == 30 || slot == 32 || slot == 33)) break;
+
+                String newRank;
+
+                switch (slot) {
+                    case 4:
+                        PlayerMenus.openSupportMenu(player, playerName);
+                        return;
+                    case 20:
+                        newRank = "DEFAULT";
+                        break;
+                    case 21:
+                        newRank = "SUB";
+                        break;
+                    case 22:
+                        newRank = "SUB+";
+                        break;
+                    case 23:
+                        newRank = "SUB++";
+                        break;
+                    case 24:
+                        newRank = "PMOD";
+                        break;
+                    case 29:
+                        newRank = "BUILDER";
+                        break;
+                    case 30:
+                        newRank = "YOUTUBE";
+                        break;
+                    case 32:
+                        newRank = "SUPPORT";
+                        break;
+                    case 33:
+                        newRank = "GM";
+                        break;
+                    default:
+                        return;
+                }
+
+                if (Bukkit.getPlayer(playerName) != null) {
+                    Rank.getInstance().setRank(uuid, newRank);
+                } else {
+                    // @todo: Send a server packet with the new rank just in-case they're logged in elsewhere.
+                }
+
+                // Always update the database with the new rank.
+                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, newRank, true);
+
+                player.sendMessage(ChatColor.GREEN + "Successfully set the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + newRank + ChatColor.GREEN + ".");
+                PlayerMenus.openSupportMenu(player, playerName);
+                break;
+            case "Support Tools (Level)":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+
+                tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
+                playerName = tag.getString("name");
+                uuid = UUID.fromString(tag.getString("uuid"));
+
+                // Only continue if the playerName & uuid aren't empty.
+                if (playerName.isEmpty() || uuid.toString().isEmpty()) break;
+
+                switch (slot) {
+                    case 4:
+                        PlayerMenus.openSupportMenu(player, playerName);
+                        break;
+                    default:
+                        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
+                        break;
+                }
+                break;
+            case "Support Tools (E-Cash)":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+
+                tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
+                playerName = tag.getString("name");
+                uuid = UUID.fromString(tag.getString("uuid"));
+
+                // Only continue if the playerName & uuid aren't empty.
+                if (playerName.isEmpty() || uuid.toString().isEmpty()) break;
+
+                switch (slot) {
+                    case 4:
+                        PlayerMenus.openSupportMenu(player, playerName);
+                        break;
+                    default:
+                        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
+                        break;
+                }
+                break;
+            case "Support Tools (Bank)":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+
+                tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
+                playerName = tag.getString("name");
+                uuid = UUID.fromString(tag.getString("uuid"));
+
+                // Only continue if the playerName & uuid aren't empty.
+                if (playerName.isEmpty() || uuid.toString().isEmpty()) break;
+
+                switch (slot) {
+                    case 4:
+                        PlayerMenus.openSupportMenu(player, playerName);
+                        break;
+                    default:
+                        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
+                        break;
+                }
+                break;
+            case "Support Tools (Hearthstone)":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+
+                tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
+                playerName = tag.getString("name");
+                uuid = UUID.fromString(tag.getString("uuid"));
+
+                // Only continue if the playerName & uuid aren't empty.
+                if (playerName.isEmpty() || uuid.toString().isEmpty()) break;
+
+                switch (slot) {
+                    case 4:
+                        PlayerMenus.openSupportMenu(player, playerName);
+                        break;
+                    default:
+                        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
+                        break;
                 }
                 break;
             default:

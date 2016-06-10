@@ -34,6 +34,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Random;
+import java.text.NumberFormat;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -249,6 +250,23 @@ public class CommandAdd extends BasicCommand {
                     TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ");
                     test.addExtra(bungeeMessage);
                     Bukkit.spigot().broadcast(test);
+                    break;
+                case "banknote":
+                    int quantity = 1000;
+                    if (args.length >= 2) {
+                        try {
+                            quantity = Integer.parseInt(args[1]);
+                            if (quantity <= 0) {
+                                player.sendMessage(ChatColor.RED + "Failed to create bank note because " + quantity + " is too small.");
+                                break;
+                            }
+                        } catch (NumberFormatException ex) {
+                            player.sendMessage(ChatColor.RED + "Failed to create bank note because " + args[1] + " isn't a valid number.");
+                            break;
+                        }
+                    }
+                    player.getInventory().addItem(BankMechanics.createBankNote(quantity));
+                    player.sendMessage(ChatColor.GREEN + "Successfully created a bank note worth " + NumberFormat.getIntegerInstance().format(quantity) + " gems.");
                     break;
             }
         }

@@ -93,4 +93,8 @@ public class Utils {
         return 1;
     }
 
+    public static String ucfirst(String string) {
+        return Character.toUpperCase(string.charAt(0)) + string.substring(1);
+    }
+
 }

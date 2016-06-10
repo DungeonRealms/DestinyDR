@@ -10,6 +10,8 @@ import net.dungeonrealms.game.player.rank.Rank;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 
+import java.util.Arrays;
+
 
 /**
  * Created by Chase on Dec 14, 2015
@@ -20,16 +22,19 @@ public class CommandISay extends BasicCommand{
     }
 
     @Override
-    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] strings) {
+    public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
+
+        String message = ChatColor.translateAlternateColorCodes('&', String.join(" ", Arrays.asList(args)));
+
     	if(commandSender instanceof Player){
     		if(!Rank.isGM((Player) commandSender)){
     			return false;
     		}
-    		Bukkit.broadcastMessage(strings[1]);
+    		Bukkit.broadcastMessage(message);
     	}else if (commandSender instanceof BlockCommandSender) {
             BlockCommandSender block = (BlockCommandSender) commandSender;
             for(Player p : block.getBlock().getWorld().getPlayers()){
-            	p.sendMessage(strings[1]);
+            	p.sendMessage(message);
             }
     	}
 		return true;
