@@ -18,17 +18,29 @@ import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.Pyroman
 import net.dungeonrealms.game.world.entities.types.mounts.EnderDragon;
 import net.dungeonrealms.game.world.entities.types.mounts.Horse;
 import net.dungeonrealms.game.world.entities.types.pets.*;
+import net.dungeonrealms.game.world.entities.types.pets.Bat;
+import net.dungeonrealms.game.world.entities.types.pets.CaveSpider;
+import net.dungeonrealms.game.world.entities.types.pets.Chicken;
+import net.dungeonrealms.game.world.entities.types.pets.Endermite;
+import net.dungeonrealms.game.world.entities.types.pets.MagmaCube;
+import net.dungeonrealms.game.world.entities.types.pets.Ocelot;
+import net.dungeonrealms.game.world.entities.types.pets.Rabbit;
+import net.dungeonrealms.game.world.entities.types.pets.Silverfish;
+import net.dungeonrealms.game.world.entities.types.pets.Slime;
+import net.dungeonrealms.game.world.entities.types.pets.Snowman;
+import net.dungeonrealms.game.world.entities.types.pets.Wolf;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_8_R3.Entity;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.entity.LivingEntity;
+import org.bukkit.entity.*;
 import org.bukkit.event.entity.EntityTargetEvent;
 
+import java.text.DecimalFormat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -42,7 +54,7 @@ public class Entities implements GenericMechanic {
 	public static HashMap<UUID, Entity> PLAYER_PETS = new HashMap<>();
 	public static HashMap<UUID, Entity> PLAYER_MOUNTS = new HashMap<>();
 	public static ConcurrentHashMap<LivingEntity, Integer> MONSTER_LAST_ATTACK = new ConcurrentHashMap<>();
-	public static List<LivingEntity> MONSTERS_LEASHED = new CopyOnWriteArrayList<>();
+	public static CopyOnWriteArrayList<LivingEntity> MONSTERS_LEASHED = new CopyOnWriteArrayList<>();
 
 	public static Entities getInstance() {
 		if (instance == null) {
@@ -122,7 +134,6 @@ public class Entities implements GenericMechanic {
 					Utils.log.warning("[ENTITIES] [ASYNC] Mob is somehow leashed but null, safety removing!");
 					continue;
 				}
-				
 				if (MONSTER_LAST_ATTACK.containsKey(entity)) {
 					if (MONSTER_LAST_ATTACK.get(entity) == 11) {
 						EntityInsentient entityInsentient = (EntityInsentient) ((CraftEntity)entity).getHandle();
@@ -135,20 +146,22 @@ public class Entities implements GenericMechanic {
 								}
 							}
 						}
-						return;
+						continue;
 					} 
-					if (MONSTER_LAST_ATTACK.get(entity) == 10){
-						if (!entity.hasMetadata("elite") && !entity.hasMetadata("boss")) {
+					if (MONSTER_LAST_ATTACK.get(entity) == 10) {
+						if (entity.hasMetadata("elite")) {
+							Bukkit.broadcastMessage("Elite Monster Resetting Health Bar To Name");
+							if (entity.hasMetadata("customname")) {
+								entity.setCustomName(entity.getMetadata("customname").get(0).asString().trim());
+							}
+						} else {
 							String lvlName = ChatColor.LIGHT_PURPLE + "[" + entity.getMetadata("level").get(0).asInt() + "] " + ChatColor.RESET;
 							if (entity.hasMetadata("customname")) {
 								entity.setCustomName(lvlName + entity.getMetadata("customname").get(0).asString());
 							}
-						} else {
-							if (entity.hasMetadata("customname")) {
-								entity.setCustomName(entity.getMetadata("customname").get(0).asString().trim());
-							}
 						}
-						return;
+						entity.setCustomNameVisible(true);
+						continue;
 					}
 					if (MONSTER_LAST_ATTACK.get(entity) <= 0) {
 						MONSTERS_LEASHED.remove(entity);
@@ -191,6 +204,88 @@ public class Entities implements GenericMechanic {
 				        entityInsentient.setGoalTarget(mobSpawner.getArmorstand(), EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);
 			        }
 		        });
+	}
+
+	public int getBarLength(int tier) {
+		if (tier == 1) {
+			return 25;
+		}
+		if (tier == 2) {
+			return 30;
+		}
+		if (tier == 3) {
+			return 35;
+		}
+		if (tier == 4) {
+			return 40;
+		}
+		if (tier == 5) {
+			return 50;
+		}
+		return 25;
+	}
+
+	public String generateOverheadBar(org.bukkit.entity.Entity ent, double cur_hp, double max_hp, int tier, boolean elite) {
+		int max_bar = getBarLength(tier);
+
+		boolean boss = ent.hasMetadata("boss");
+		ChatColor cc;
+
+		DecimalFormat df = new DecimalFormat("##.#");
+		double percent_hp = (double) (Math.round(100.0D * Double.parseDouble((df.format((cur_hp / max_hp)))))); // EX: 0.5054134131
+
+		if (percent_hp <= 0 && cur_hp > 0) {
+			percent_hp = 1;
+		}
+
+		cc = ChatColor.GREEN;
+
+		if (boss) {
+			max_bar = 60;
+			cc = ChatColor.GOLD;
+		}
+
+		double percent_interval = (100.0D / max_bar);
+		int bar_count = 0;
+
+		if (percent_hp <= 45) {
+			cc = ChatColor.YELLOW;
+		}
+		if (percent_hp <= 20) {
+			cc = ChatColor.RED;
+		}
+
+		//TODO: Special Attack Light Purple
+
+		String return_string = cc + ChatColor.BOLD.toString() + "║" + ChatColor.RESET.toString() + cc.toString() + "";
+		if (elite || boss) {
+			return_string += ChatColor.BOLD.toString();
+		}
+
+		while (percent_hp > 0 && bar_count < max_bar) {
+			percent_hp -= percent_interval;
+			bar_count++;
+			return_string += "|";
+		}
+
+		return_string += ChatColor.BLACK.toString();
+
+		if (elite) {
+			return_string += ChatColor.BOLD.toString();
+		}
+
+		while (bar_count < max_bar) {
+			return_string += "|";
+			bar_count++;
+		}
+
+		return_string = return_string + cc + ChatColor.BOLD.toString() + "║";
+		if (!elite && !boss) {
+			return return_string + ChatColor.LIGHT_PURPLE + " [" + ent.getMetadata("level").get(0).asInt() + "]";
+		} else {
+			return return_string;
+			// 20 Bars, that's 5% HP per bar
+		}
 	}
 }
 

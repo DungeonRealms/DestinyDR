@@ -737,19 +737,23 @@ public class HealthHandler implements GenericMechanic {
                 if (convHPToDisplay > (int) entity.getMaxHealth()) {
                     convHPToDisplay = (int) entity.getMaxHealth();
                 }
-                if (entity.hasMetadata("type") && entity.hasMetadata("level")) {
+                if (entity.hasMetadata("type") && entity.hasMetadata("level") && entity.hasMetadata("tier")) {
                     int level = entity.getMetadata("level").get(0).asInt();
+                    int tier = entity.getMetadata("tier").get(0).asInt();
                     String lvlName = ChatColor.LIGHT_PURPLE + "[" + level + "] ";
                     String hpBar = "";
                     for (int i = 0; i < entity.getMaxHealth(); i++) {
                         hpBar += "|";
                     }
-                    hpBar = ChatColor.GREEN + hpBar.substring(0, convHPToDisplay) + ChatColor.DARK_GRAY + hpBar.substring(convHPToDisplay, hpBar.length() - 1);
+                    boolean elite = entity.hasMetadata("elite");
+                    entity.setCustomName(Entities.getInstance().generateOverheadBar(entity, newHP, maxHP, tier, elite));
+                    entity.setCustomNameVisible(true);
+                    /*hpBar = ChatColor.GREEN + hpBar.substring(0, convHPToDisplay) + ChatColor.DARK_GRAY + hpBar.substring(convHPToDisplay, hpBar.length() - 1);
                     if (!entity.hasMetadata("elite") && !entity.hasMetadata("boss") && !entity.hasMetadata("uuid")) {
                         entity.setCustomName(lvlName + hpBar);
                     } else {
                         entity.setCustomName(hpBar);
-                    }
+                    }*/
                     entity.setHealth(convHPToDisplay);
                     if (!Entities.MONSTERS_LEASHED.contains(entity)) {
                         Entities.MONSTERS_LEASHED.add(entity);
