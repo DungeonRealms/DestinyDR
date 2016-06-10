@@ -141,8 +141,8 @@ public class DungeonRealms extends JavaPlugin {
             realmpmax = ini.get("RealmInstance", "maxplayers", int.class);
             // Shard Settings
             isMasterShard = ini.get("Settings", "master_shard", Boolean.class);
-            isSubscriberShard = ini.get("Settings", "support_shard", Boolean.class);
-            isSupportShard = ini.get("Settings", "subscriber_shard", Boolean.class);
+            isSubscriberShard = ini.get("Settings", "subscriber_shard", Boolean.class);
+            isSupportShard = ini.get("Settings", "support_shard", Boolean.class);
             isYouTubeShard = ini.get("Settings", "youtube_shard", Boolean.class);
             isBrazilianShard = ini.get("Settings", "brazilian_shard", Boolean.class);
             isRoleplayShard = ini.get("Settings", "roleplay_shard", Boolean.class);
