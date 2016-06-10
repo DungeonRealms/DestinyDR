@@ -725,7 +725,7 @@ public class PlayerMenus {
 
             Inventory inv = Bukkit.createInventory(null, 45, "Support Tools");
 
-            inv.setItem(4, editItem(playerName, ChatColor.GREEN + playerName, new String[]{
+            item = editItem(playerName, ChatColor.GREEN + playerName, new String[]{
                     ChatColor.WHITE + "Rank: " + Rank.rankFromPrefix(playerRank),
                     ChatColor.WHITE + "Level: " + DatabaseAPI.getInstance().getData(EnumData.LEVEL, uuid),
                     ChatColor.WHITE + "Experience: " + DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, uuid),
@@ -733,7 +733,8 @@ public class PlayerMenus {
                     ChatColor.WHITE + "Bank Balance: " + DatabaseAPI.getInstance().getData(EnumData.GEMS, uuid),
                     ChatColor.WHITE + "Hearthstone Location: " + DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid),
                     ChatColor.WHITE + "Alignment: " + Utils.ucfirst(DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid).toString())
-            }));
+            });
+            inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
             // Rank Manager
             item = editItem(new ItemStack(Material.DIAMOND), ChatColor.GOLD + "Rank Manager", new String[]{

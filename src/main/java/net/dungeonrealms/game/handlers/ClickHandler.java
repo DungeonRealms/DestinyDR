@@ -1072,6 +1072,7 @@ public class ClickHandler {
                 if (playerName.isEmpty() || uuid.toString().isEmpty()) break;
 
                 switch (slot) {
+                    case 4: break;
                     case 19:
                         PlayerMenus.openSupportRankMenu(player, playerName, uuid);
                         break;
