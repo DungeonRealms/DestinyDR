@@ -23,9 +23,13 @@ public class EntityBandit extends DRZombie {
      * @param tier
      * @param entityType
      */
-    public EntityBandit(World world, int tier, EnumEntityType entityType) {
+    public EntityBandit(World world, int tier, EnumEntityType entityType, EnumMonster monster) {
         super(world, EnumMonster.Bandit, tier, entityType, true);
-        this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.BANDIT.getSkull()));
+        if (monster == EnumMonster.Bandit) {
+            this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.BANDIT.getSkull()));
+        } else {
+            this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.BANDIT_2.getSkull()));
+        }
         checkSpecial();
     }
 

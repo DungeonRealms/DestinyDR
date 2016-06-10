@@ -3,34 +3,24 @@ package net.dungeonrealms.game.world.entities.types.monsters.boss;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.BasicEntitySkeleton;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
-import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.dungeonrealms.game.world.spawning.SpawningMechanics;
-import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityLiving;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.World;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-
-import java.util.Random;
 
 /**
  * Created by Chase on Oct 18, 2015
@@ -117,7 +107,7 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 
 	@Override
 	public void onBossHit(EntityDamageByEntityEvent event) {
-		LivingEntity en = (LivingEntity) event.getEntity();
+		/*LivingEntity en = (LivingEntity) event.getEntity();
 		if (canSpawn) {
 			for (int i = 0; i < 5; i++) {
 				Entity entity = SpawningMechanics.getMob(world, 1, EnumMonster.MayelPirate);
@@ -155,7 +145,7 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 			say(this.getBukkitEntity(), "Come to my call, brothers!");
 			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> canSpawn = true, 20 * 5);
 		}
-
+*/ //TODO: Re-write.
 	}
 
 	@Override

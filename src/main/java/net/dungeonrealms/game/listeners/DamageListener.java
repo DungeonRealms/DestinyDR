@@ -30,7 +30,7 @@ import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.spawning.BuffManager;
-import net.dungeonrealms.game.world.spawning.MobSpawner;
+import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.ChatColor;
@@ -138,8 +138,8 @@ public class DamageListener implements Listener {
         if (event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("spawner")) {
             Player attacker = (Player) event.getDamager();
             if (attacker.isOp() || attacker.getGameMode() == GameMode.CREATIVE) {
-                ArrayList<MobSpawner> list = SpawningMechanics.ALLSPAWNERS;
-                for (MobSpawner current : list) {
+                ArrayList<BaseMobSpawner> list = SpawningMechanics.getALLSPAWNERS();
+                for (BaseMobSpawner current : list) {
                     if (current.getLoc().getBlockX() == event.getEntity().getLocation().getBlockX() && current.getLoc().getBlockY() == event.getEntity().getLocation().getBlockY() &&
                             current.getLoc().getBlockZ() == event.getEntity().getLocation().getBlockZ()) {
                         current.remove();

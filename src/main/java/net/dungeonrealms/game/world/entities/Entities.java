@@ -135,14 +135,20 @@ public class Entities implements GenericMechanic {
 								}
 							}
 						}
+						return;
 					} 
-					if(MONSTER_LAST_ATTACK.get(entity) == 10){
-						if(!entity.hasMetadata("elite") && !entity.hasMetadata("boss")){
+					if (MONSTER_LAST_ATTACK.get(entity) == 10){
+						if (!entity.hasMetadata("elite") && !entity.hasMetadata("boss")) {
 							String lvlName = ChatColor.LIGHT_PURPLE + "[" + entity.getMetadata("level").get(0).asInt() + "] " + ChatColor.RESET;
 							if (entity.hasMetadata("customname")) {
 								entity.setCustomName(lvlName + entity.getMetadata("customname").get(0).asString());
 							}
+						} else {
+							if (entity.hasMetadata("customname")) {
+								entity.setCustomName(entity.getMetadata("customname").get(0).asString().trim());
+							}
 						}
+						return;
 					}
 					if (MONSTER_LAST_ATTACK.get(entity) <= 0) {
 						MONSTERS_LEASHED.remove(entity);
@@ -173,16 +179,13 @@ public class Entities implements GenericMechanic {
 	}
 
 	private void tryToReturnMobToBase(Entity entity) {
-		SpawningMechanics.ALLSPAWNERS.stream().filter(mobSpawner -> mobSpawner.getSpawnedMonsters().contains(entity))
+		SpawningMechanics.getALLSPAWNERS().stream().filter(mobSpawner -> mobSpawner.getSpawnedMonsters().contains(entity))
 		        .forEach(mobSpawner -> {
 			        EntityInsentient entityInsentient = (EntityInsentient) entity;
-			        entityInsentient.setGoalTarget(mobSpawner.getArmorstand(), EntityTargetEvent.TargetReason.CLOSEST_PLAYER,
-		                    true);
-			        PathEntity path = entityInsentient.getNavigation().a(mobSpawner.getArmorstand().locX,
-		                    mobSpawner.getArmorstand().locY, mobSpawner.getArmorstand().locZ);
+			        entityInsentient.setGoalTarget(mobSpawner.getArmorstand(), EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);
+			        PathEntity path = entityInsentient.getNavigation().a(mobSpawner.getArmorstand().locX, mobSpawner.getArmorstand().locY, mobSpawner.getArmorstand().locZ);
 			        entityInsentient.getNavigation().a(path, 2);
-			        double distance = mobSpawner.getArmorstand().getBukkitEntity().getLocation()
-		                    .distance(entity.getBukkitEntity().getLocation());
+			        double distance = mobSpawner.getArmorstand().getBukkitEntity().getLocation().distance(entity.getBukkitEntity().getLocation());
 			        if (distance > 30 && !entity.dead) {
 				        entity.getBukkitEntity().teleport(mobSpawner.getArmorstand().getBukkitEntity().getLocation());
 				        entityInsentient.setGoalTarget(mobSpawner.getArmorstand(), EntityTargetEvent.TargetReason.CLOSEST_PLAYER, true);

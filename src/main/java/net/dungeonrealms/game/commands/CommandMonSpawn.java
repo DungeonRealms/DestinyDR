@@ -12,13 +12,14 @@ import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumNamedElite;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Burick;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.InfernalAbyss;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Mayel;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.Pyromancer;
 import net.dungeonrealms.game.world.entities.utils.BuffUtils;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
-import net.dungeonrealms.game.world.spawning.MobSpawner;
+import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.World;
@@ -158,7 +159,7 @@ public class CommandMonSpawn extends BasicCommand {
 
                         World world = ((CraftWorld) player.getWorld()).getHandle();
                         if (elite) {
-                            EntityStats.setMonsterElite(entity, level, tier);
+                            EntityStats.setMonsterElite(entity, EnumNamedElite.NONE, tier);
                         }
                         
                         String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET;
@@ -181,11 +182,11 @@ public class CommandMonSpawn extends BasicCommand {
                     int spawnDelay = 20;
                     if (args.length == 4)
                         spawnDelay = Integer.parseInt(args[3]);
-                    MobSpawner spawner = new MobSpawner(player.getLocation(), monster, tier, 4, SpawningMechanics.ALLSPAWNERS.size(), "high", spawnDelay, 1, 2);
+                    BaseMobSpawner spawner = new BaseMobSpawner(player.getLocation(), monster, tier, 4, SpawningMechanics.getALLSPAWNERS().size(), "high", spawnDelay, 1, 2);
                     String text = (player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + "=" + monster + ":" + tier + "@" + spawnDelay + "#");
                     SpawningMechanics.SPAWNER_CONFIG.add(text);
                     DungeonRealms.getInstance().getConfig().set("spawners", SpawningMechanics.SPAWNER_CONFIG);
-                    SpawningMechanics.ALLSPAWNERS.add(spawner);
+                    SpawningMechanics.getALLSPAWNERS().add(spawner);
                     break;
                 case "boss":
                     String bossName = args[1];

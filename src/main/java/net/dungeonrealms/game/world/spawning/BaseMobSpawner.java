@@ -10,17 +10,14 @@ import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.Pyromancer;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
-import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_8_R3.Entity;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
-import net.minecraft.server.v1_8_R3.EntityInsentient;
 import net.minecraft.server.v1_8_R3.World;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
@@ -33,14 +30,13 @@ import java.util.concurrent.CopyOnWriteArrayList;
 /**
  * Created by Chase on Sep 25, 2015
  */
-public class MobSpawner {
+public class BaseMobSpawner {
 
     private Location loc;
     private String spawnType;
     private EntityArmorStand armorstand;
     private int tier;
     private List<Entity> SPAWNED_MONSTERS = new CopyOnWriteArrayList<>();
-    //private boolean isElite = false; //TODO: Move this over to seperate objects for Elites.
     private int spawnAmount;
     private int id;
     private int timerID = -1;
@@ -55,26 +51,15 @@ public class MobSpawner {
     private int mininmumXZ;
     private int maximumXZ;
 
-    public MobSpawner(Location location, String type, int tier, int spawnAmount, int configid, String lvlRange, int respawnDelay, int mininmumXZ, int maximumXZ) {
-        if (type.contains("(") && type.contains("*")) {
-            //isElite = true;
-        } else if (type.contains("(")) {
+    public BaseMobSpawner(Location location, String type, int tier, int spawnAmount, int configid, String lvlRange, int respawnDelay, int mininmumXZ, int maximumXZ) {
+        if (type.contains("(")) {
             hasCustomName = true;
         }
-        if (/*isElite ||*/ hasCustomName) {
+        if (hasCustomName) {
             monsterCustomName = type.substring(type.indexOf("(") + 1, type.indexOf(")"));
             monsterCustomName = monsterCustomName.replace("_", " ");
             type = type.substring(0, type.indexOf("("));
-            /*if (type.contains("*")) {
-                type = type.replace("*", "");
-            }*/
-            /*if (isElite) {
-                spawnAmount = 1;
-            }*/
         }
-        /*if (type.contains("*")) {
-            type = type.replace("*", "");
-        }*/
         if (spawnAmount > 6) {
             spawnAmount = 6;
         }
@@ -118,7 +103,7 @@ public class MobSpawner {
                         monster.setPosition(loc.getX(), loc.getY(), loc.getZ());
                     }
                     double num = monster.getBukkitEntity().getLocation().distanceSquared(loc);
-                    if (num > 1600) {
+                    if (num > 900) {
                         monster.setPosition(loc.getX() + 2, loc.getY(), loc.getZ() + 2);
                     }
 
@@ -127,44 +112,6 @@ public class MobSpawner {
                 }
             }
         }
-        /*if (spawnType.contains("*")) {
-            spawnType = spawnType.replace("*", "");
-        }*/
-
-        /*if (isElite) {
-            if (SPAWNED_MONSTERS.size() == 0) {
-                Location location = loc;
-                if (location.getBlock().getType() != Material.AIR || location.add(0, 1, 0).getBlock().getType() != Material.AIR) return;
-                Material type = location.getBlock().getType();
-                if (type == Material.ACACIA_STAIRS || type == Material.BIRCH_WOOD_STAIRS || type == Material.COBBLESTONE_STAIRS || type == Material.DARK_OAK_STAIRS
-                        || type == Material.JUNGLE_WOOD_STAIRS || type == Material.WOOD_STAIRS || type == Material.STONE_SLAB2 || type == Material.DOUBLE_STONE_SLAB2
-                        || type == Material.DOUBLE_STEP || type == Material.WOOD_DOUBLE_STEP) return;
-                String mob = spawnType;
-                World world = armorstand.getWorld();
-                EnumMonster monsEnum = EnumMonster.getMonsterByString(mob);
-                if (monsEnum == null) return;
-                Entity entity = SpawningMechanics.getMob(world, tier, monsEnum);
-                if (entity == null) return;
-                String customName = monsterCustomName.trim();
-                entity.setCustomName(ChatColor.BOLD.toString() + API.getTierColor(tier) + customName.trim());
-                int level = Utils.getRandomFromTier(tier, lvlRange);
-                MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
-                EntityStats.setMonsterElite(entity, level, tier);
-                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), ChatColor.BOLD.toString() + API.getTierColor(tier) + monsterCustomName.trim()));
-                giveCustomEquipment(entity);
-                if (LocationUtils.getNearbyEntities(location, 15).size() > 7) {
-                    return; // Lets not spawn more than 15 entities in a radius of 7
-                }
-                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                    world.addEntity(entity, SpawnReason.CUSTOM);
-                    entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                    SPAWNED_MONSTERS.add(entity);
-                    if (firstSpawn)
-                        firstSpawn = false;
-                }, firstSpawn ? 0 : 1200 * 2L);
-            }
-        } else*/
         if (SPAWNED_MONSTERS.size() < spawnAmount) {
             if (!firstSpawn) {
                 if (!canMobsSpawn()) {
@@ -175,9 +122,6 @@ public class MobSpawner {
             }
             Location location = getRandomLocation(loc, ((loc.getX() - mininmumXZ) - maximumXZ), ((loc.getX() + mininmumXZ) + maximumXZ),
                     ((loc.getZ() - mininmumXZ) - maximumXZ), ((loc.getZ() + mininmumXZ) + maximumXZ));
-            //TODO: Parse #1-10$ from config (add it first pls help Brad) for min/max spawn ranges. Then use them. (Use getRandomLocation())
-            //TODO: Check for type in mob name (IE. Mob might be "Tripoli" but named "Undead", in that case, change his head from the default "Tripoli" head
-            //Location location = new Location(Bukkit.getWorlds().get(0), loc.getBlockX() + new Random().nextInt(6), loc.getBlockY() + 1, loc.getBlockZ() + new Random().nextInt(6));
             if (location.getBlock().getType() != Material.AIR) {
                 if (location.clone().add(0, 1, 0).getBlock().getType() == Material.AIR) {
                     location.add(0, 1, 0);
@@ -292,20 +236,6 @@ public class MobSpawner {
                 entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                 SPAWNED_MONSTERS.add(entity);
             }
-        }
-    }
-
-    /**
-     * @param entity
-     */
-    private void giveCustomEquipment(Entity entity) {
-        if (monsterCustomName.equalsIgnoreCase("Blayshan The Naga")) {
-            EntityInsentient ent = (EntityInsentient) entity;
-            ent.setEquipment(0, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("blayshanaxe")));
-            ent.setEquipment(1, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("blayshanboots")));
-            ent.setEquipment(2, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("blayshanlegs")));
-            ent.setEquipment(3, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("blayshanplate")));
-            ent.setEquipment(4, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("blayshanhelm")));
         }
     }
 
@@ -504,14 +434,6 @@ public class MobSpawner {
     public void setSPAWNED_MONSTERS(List<Entity> SPAWNED_MONSTERS) {
         this.SPAWNED_MONSTERS = SPAWNED_MONSTERS;
     }
-
-    /*public boolean isElite() {
-        return isElite;
-    }*/
-
-    /*public void setElite(boolean elite) {
-        isElite = elite;
-    }*/
 
     public int getSpawnAmount() {
         return spawnAmount;

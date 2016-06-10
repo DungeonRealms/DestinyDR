@@ -25,33 +25,41 @@ import java.util.stream.Collectors;
  */
 public class SpawningMechanics implements GenericMechanic {
 
-    public static ArrayList<MobSpawner> ALLSPAWNERS = new ArrayList<>();
+    private static ArrayList<BaseMobSpawner> ALLSPAWNERS = new ArrayList<>();
+    private static ArrayList<EliteMobSpawner> ELITESPAWNERS = new ArrayList<>();
     public static ArrayList<String> SPAWNER_CONFIG = new ArrayList<>();
-    public static ArrayList<MobSpawner> BanditTroveSpawns = new ArrayList<>();
+    public static ArrayList<BaseMobSpawner> BanditTroveSpawns = new ArrayList<>();
     private static SpawningMechanics instance;
 
 
-    public static void initSpawners() {
-        ALLSPAWNERS.forEach(MobSpawner::init);
+    private static void initAllSpawners() {
+        ALLSPAWNERS.forEach(BaseMobSpawner::init);
+        ELITESPAWNERS.forEach(EliteMobSpawner::init);
     }
 
-    public static void killAll() {
+    private static void killAll() {
         ALLSPAWNERS.stream().forEach(mobSpawner -> {
             mobSpawner.kill();
             mobSpawner.getArmorstand().getBukkitEntity().remove();
             mobSpawner.getArmorstand().getWorld().removeEntity(mobSpawner.getArmorstand());
         });
+        ELITESPAWNERS.stream().forEach(eliteMobSpawner -> {
+            eliteMobSpawner.kill();
+            eliteMobSpawner.getArmorstand().getBukkitEntity().remove();
+            eliteMobSpawner.getArmorstand().getWorld().removeEntity(eliteMobSpawner.getArmorstand());
+        });
     }
 
-    public static void loadBaseSpawners() {
+    private static void loadBaseSpawners() {
     	Utils.log.info("LOADING ALL DUNGEON REALMS MONSTERS...");
         SPAWNER_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("spawners");
         for (String line : SPAWNER_CONFIG) {
             if (line == null || line.equalsIgnoreCase("null")) {
                 continue;
             }
+            boolean isElite = false;
             if (line.contains("*")) {
-                continue;
+                isElite = true;
             }
             String[] coords = line.split("=")[0].split(",");
             double x, y, z;
@@ -67,20 +75,37 @@ public class SpawningMechanics implements GenericMechanic {
             String spawnRange = String.valueOf(line.charAt(line.lastIndexOf("@") - 1));
             int spawnDelay = Integer.parseInt(line.substring(line.lastIndexOf("@") + 1, line.indexOf("#")));
             if (spawnDelay < 20) {
-                spawnDelay = 20;
+                if (!isElite) {
+                    spawnDelay = 20;
+                } else {
+                    spawnDelay = 60;
+                }
             }
             String locationRange[] = line.substring(line.indexOf("#") + 1, line.lastIndexOf("$")).split("-");
             int minXZ = Integer.parseInt(locationRange[0]);
             int maxXZ = Integer.parseInt(locationRange[1]);
-            MobSpawner spawner;
-            if (spawnRange.equalsIgnoreCase("+")) {
-                spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "high", spawnDelay, minXZ, maxXZ);
+            if (!isElite) {
+                BaseMobSpawner spawner;
+                if (spawnRange.equalsIgnoreCase("+")) {
+                    spawner = new BaseMobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "high", spawnDelay, minXZ, maxXZ);
+                } else {
+                    spawner = new BaseMobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low", spawnDelay, minXZ, maxXZ);
+                }
+                ALLSPAWNERS.add(spawner);
             } else {
-                spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low", spawnDelay, minXZ, maxXZ);
+                //TODO: Dangerous code!!! REMOVE BEFORE RELEASE!!!
+                spawnDelay = 60;
+                EliteMobSpawner spawner;
+                if (spawnRange.equalsIgnoreCase("+")) {
+                    spawner = new EliteMobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, ELITESPAWNERS.size(), "high", spawnDelay, minXZ, maxXZ);
+                } else {
+                    spawner = new EliteMobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, ELITESPAWNERS.size(), "low", spawnDelay, minXZ, maxXZ);
+                }
+                ELITESPAWNERS.add(spawner);
             }
-            ALLSPAWNERS.add(spawner);
         }
-        ArrayList<String> BANDIT_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("banditTrove");
+        //TODO: Dungeons.
+        /*ArrayList<String> BANDIT_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("banditTrove");
         Utils.log.info("LOADING DUNGEON SPAWNS...");
         for(String line : BANDIT_CONFIG){
             if (line == null || line.equalsIgnoreCase("null"))
@@ -98,13 +123,13 @@ public class SpawningMechanics implements GenericMechanic {
             int spawnAmount = Integer.parseInt(stringAmount);
             String monster = line.split("=")[1].split(":")[0];
             int spawnDelay = 0;
-            MobSpawner spawner;
-            spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, BanditTroveSpawns.size(), "high", spawnDelay, 1, 2);
+            BaseMobSpawner spawner;
+            spawner = new BaseMobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, BanditTroveSpawns.size(), "high", spawnDelay, 1, 2);
             spawner.setDungeonSpawner(true);
             BanditTroveSpawns.add(spawner);
         }
-        Utils.log.info("FINISHED LOADING DUNGEON SPAWNS");
-        SpawningMechanics.initSpawners();
+        Utils.log.info("FINISHED LOADING DUNGEON SPAWNS");*/
+        SpawningMechanics.initAllSpawners();
         Bukkit.getWorlds().get(0).getEntities().forEach(entity -> {
             ((CraftEntity) entity).getHandle().damageEntity(DamageSource.GENERIC, 20f);
             entity.remove();
@@ -125,7 +150,7 @@ public class SpawningMechanics implements GenericMechanic {
         int spawnAmount = Integer.parseInt(String.valueOf(strAmount));
         String monster = line.split("=")[1].split(":")[0];
         String spawnRange = String.valueOf(line.charAt(line.lastIndexOf("@") - 1));
-        MobSpawner spawner;
+        BaseMobSpawner spawner;
         int spawnDelay = Integer.parseInt(line.substring(line.lastIndexOf("@") + 1, line.indexOf("#")));
         if (spawnDelay < 20) {
             spawnDelay = 20;
@@ -134,15 +159,15 @@ public class SpawningMechanics implements GenericMechanic {
         int minXZ = Integer.parseInt(locationRange[0]);
         int maxXZ = Integer.parseInt(locationRange[1]);
         if (spawnRange.equalsIgnoreCase("+")) {
-            spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "high", spawnDelay, minXZ, maxXZ);
+            spawner = new BaseMobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "high", spawnDelay, minXZ, maxXZ);
         } else {
-            spawner = new MobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low", spawnDelay, minXZ, maxXZ);
+            spawner = new BaseMobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, ALLSPAWNERS.size(), "low", spawnDelay, minXZ, maxXZ);
         }
         ALLSPAWNERS.add(spawner);
         spawner.init();
     }
     
-    public static void remove(MobSpawner mobSpawner) {
+    public static void remove(BaseMobSpawner mobSpawner) {
         ALLSPAWNERS.remove(mobSpawner);
     }
 
@@ -155,7 +180,8 @@ public class SpawningMechanics implements GenericMechanic {
         Entity entity;
         switch (monsEnum) {
             case Bandit:
-                entity = new EntityBandit(world, tier, type);
+            case Bandit1:
+                entity = new EntityBandit(world, tier, type, monsEnum);
                 break;
             case RangedPirate:
                 entity = new EntityRangedPirate(world, type, tier);
@@ -289,12 +315,26 @@ public class SpawningMechanics implements GenericMechanic {
      * @return
      */
     public static SpawningMechanics getInstance() {
-        if (instance == null)
+        if (instance == null) {
             instance = new SpawningMechanics();
+        }
         return instance;
     }
 
-    public List<MobSpawner> getChunkMobSpawners(Chunk chunk) {
+    public List<BaseMobSpawner> getChunkMobBaseSpawners(Chunk chunk) {
         return ALLSPAWNERS.stream().filter(mobSpawner -> mobSpawner.getLoc().getChunk().equals(chunk)).collect(Collectors.toList());
+    }
+
+    public List<EliteMobSpawner> getChunkEliteMobSpawners(Chunk chunk) {
+        return ELITESPAWNERS.stream().filter(mobSpawner -> mobSpawner.getLocation().getChunk().equals(chunk)).collect(Collectors.toList());
+    }
+
+
+    public static ArrayList<BaseMobSpawner> getALLSPAWNERS() {
+        return ALLSPAWNERS;
+    }
+
+    public static ArrayList<EliteMobSpawner> getELITESPAWNERS() {
+        return ELITESPAWNERS;
     }
 }

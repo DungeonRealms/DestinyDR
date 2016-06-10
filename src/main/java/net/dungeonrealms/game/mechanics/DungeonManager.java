@@ -9,7 +9,7 @@ import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.world.spawning.MobSpawner;
+import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_8_R3.Entity;
@@ -377,7 +377,7 @@ public class DungeonManager implements GenericMechanic {
         if (type.equals(DungeonType.BANDIT_TROVE)) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 DungeonObject object = this.getDungeon(w);
-                for (MobSpawner spawner : SpawningMechanics.BanditTroveSpawns) {
+                for (BaseMobSpawner spawner : SpawningMechanics.BanditTroveSpawns) {
                     Location loc = spawner.getLoc();
                     loc.setWorld(w);
                     spawner.setLoc(loc);

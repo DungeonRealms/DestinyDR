@@ -1,13 +1,12 @@
 package net.dungeonrealms.game.world.entities.utils;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumNamedElite;
 import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.md_5.bungee.api.ChatColor;
 import net.minecraft.server.v1_8_R3.Entity;
 import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
@@ -91,29 +90,18 @@ public class EntityStats {
         return new Stats(def, hp, atk, spd);
     }
 
-    public static void setMonsterElite(Entity entity ,int lvl, int tier) {
-    	String name = ChatColor.BOLD.toString() + API.getTierColor(tier) +  entity.getCustomName();
-    	Stats stat = Stats.getRandomStats(lvl,tier);
-    	stat.atk *= 2.5;
-    	stat.hp *= 5;
-    	stat.def *= 2.5;
-        stat.spd *= 2.5;
-        entity.setCustomName(name);
-        entity.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), 1));
-        entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), stat.hp));
+    public static void setMonsterElite(Entity entity , EnumNamedElite namedElite, int tier) {
         entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
         HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) entity.getBukkitEntity()));
-        entity.getBukkitEntity().setMetadata("def", new FixedMetadataValue(DungeonRealms.getInstance(), stat.def));
-        entity.getBukkitEntity().setMetadata("attack", new FixedMetadataValue(DungeonRealms.getInstance(), stat.atk));
-        entity.getBukkitEntity().setMetadata("spd", new FixedMetadataValue(DungeonRealms.getInstance(), stat.spd));
         //TODO confirm working for elites of all types
-		ItemStack[] armor = new ItemGenerator().setRarity(ItemRarity.UNIQUE).setTier(ItemTier.getByTier(tier)).getArmorSet();
-        ItemStack weapon = new ItemGenerator().setType(ItemType.getRandomWeapon()).setRarity(ItemRarity.UNIQUE)
-                .setTier(ItemTier.getByTier(tier)).generateItem().getItem();
-		entity.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-		entity.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
-		entity.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
-		entity.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
+        if (namedElite == EnumNamedElite.NONE) {
+            ItemStack[] armor = new ItemGenerator().setRarity(ItemRarity.UNIQUE).setTier(ItemTier.getByTier(tier)).getArmorSet();
+            ItemStack weapon = new ItemGenerator().setType(ItemType.getRandomWeapon()).setRarity(ItemRarity.UNIQUE).setTier(ItemTier.getByTier(tier)).generateItem().getItem();
+            entity.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
+            entity.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
+            entity.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
+            entity.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
+        }
 
     }
     

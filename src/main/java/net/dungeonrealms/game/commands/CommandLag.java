@@ -74,7 +74,7 @@ public class CommandLag extends BasicCommand {
                 Utils.log.info("Corrupted Chunk data on world " + w);
             }
             commandSender.sendMessage(ChatColor.GREEN + "World Type: " + ChatColor.WHITE + worldType + ChatColor.GREEN + " World Name: " + ChatColor.WHITE + w.getName());
-            commandSender.sendMessage(ChatColor.YELLOW + "Loaded Chunks: " + ChatColor.WHITE + +w.getLoadedChunks().length + ChatColor.BLUE + " Current Entities: "
+            commandSender.sendMessage(ChatColor.YELLOW + "Loaded Chunks: " + ChatColor.WHITE + w.getLoadedChunks().length + ChatColor.BLUE + " Current Entities: "
                     + ChatColor.WHITE + w.getEntities().size() + ChatColor.LIGHT_PURPLE + " Current TEs: " + ChatColor.WHITE + tileEntities);
             commandSender.sendMessage("");
         }

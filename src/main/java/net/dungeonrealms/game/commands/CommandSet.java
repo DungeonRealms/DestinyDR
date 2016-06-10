@@ -4,8 +4,8 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -105,7 +105,7 @@ public class CommandSet extends BasicCommand {
                     break;
                 case "kill":
                     player.getWorld().getLivingEntities().forEach(org.bukkit.entity.Entity::remove);
-                    SpawningMechanics.ALLSPAWNERS.forEach(net.dungeonrealms.game.world.spawning.MobSpawner::kill);
+                    SpawningMechanics.getALLSPAWNERS().forEach(BaseMobSpawner::kill);
                     break;
                 case "pick":
                     Mining.lvlUp(Mining.getPickTier(player.getItemInHand()), player);

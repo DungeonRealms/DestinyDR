@@ -45,7 +45,7 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(16d);
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
         this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
-        monsterType = monster;
+        this.monsterType = monster;
         this.name = monster.name;
         this.mobHead = monster.mobHead;
         this.entityType = entityType;
@@ -53,7 +53,7 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
             setArmor(tier);
         }
         setStats();
-        String customName = monster.getPrefix() + " " + name + " " + monster.getSuffix() + " ";
+        String customName = monster.getPrefix().trim() + " " + name.trim() + " " + monster.getSuffix().trim();
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
         this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));

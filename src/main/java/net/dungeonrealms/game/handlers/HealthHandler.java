@@ -90,7 +90,7 @@ public class HealthHandler implements GenericMechanic {
             }
             setPlayerHPRegenLive(player, getPlayerHPRegenLive(player));
             player.setMetadata("last_death_time", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-        }, 60L);
+        }, 40L);
     }
 
     /**
@@ -746,10 +746,10 @@ public class HealthHandler implements GenericMechanic {
                     }
                     hpBar = ChatColor.GREEN + hpBar.substring(0, convHPToDisplay) + ChatColor.DARK_GRAY + hpBar.substring(convHPToDisplay, hpBar.length() - 1);
                     if (!entity.hasMetadata("elite") && !entity.hasMetadata("boss") && !entity.hasMetadata("uuid")) {
-
+                        entity.setCustomName(lvlName + hpBar);
+                    } else {
+                        entity.setCustomName(hpBar);
                     }
-                        //"/u287/" BLOCK THING
-                    entity.setCustomName(lvlName + hpBar);
                     entity.setHealth(convHPToDisplay);
                     if (!Entities.MONSTERS_LEASHED.contains(entity)) {
                         Entities.MONSTERS_LEASHED.add(entity);
@@ -784,7 +784,7 @@ public class HealthHandler implements GenericMechanic {
         }
         
         if (entity.hasMetadata("elite")) {
-            totalHP *= 2.5;
+            totalHP *= 3;
         }
 
         if (entity.hasMetadata("boss")) {

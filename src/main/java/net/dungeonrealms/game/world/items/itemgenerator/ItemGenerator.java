@@ -451,7 +451,7 @@ public class ItemGenerator {
 	 * @return
 	 */
 	public static ItemStack getNamedItem(String template_name) {
-        File template = new File("plugins/DungeonRealms/customitems/" + template_name + ".item");
+        File template = new File("plugins/DungeonRealms/custom_items/" + template_name + ".item");
         if (!(template.exists())) {
             Utils.log.warning("[ItemGenerator] Custom item " + template_name + " not found!");
             return null; // No such custom template!
@@ -484,6 +484,7 @@ public class ItemGenerator {
                     
                     // It's lore!
                     line = ChatColor.translateAlternateColorCodes('&', line);
+                    line = ChatColor.stripColor(line);
                     
                     String modifierName = ChatColor.stripColor(line);
                     modifierName = modifierName.substring(0, modifierName.indexOf(':'));
@@ -499,7 +500,13 @@ public class ItemGenerator {
                             int upper = Integer.parseInt(s.substring(s.indexOf("~") + 1, s.indexOf(")")));
 
                             int val = new Random().nextInt((upper - lower)) + lower;
-                            line = line.replace("(" + lower + "~" + upper + ")", String.valueOf(val));
+                            if (line.contains("+") || line.contains("-")) {
+                                line = line.replace("(" + lower + "~" + upper + ")", String.valueOf(val));
+                            } else {
+                                if (!line.contains("-")) {
+                                    line = line.replace("(" + lower + "~" + upper + ")", "+" + String.valueOf(val));
+                                }
+                            }
                         }
                     }
                     
@@ -538,8 +545,8 @@ public class ItemGenerator {
                             
                             NBTModifiers.put(attribute.getNBTName() + "Min", new NBTTagInt(lowVal));
                             NBTModifiers.put(attribute.getNBTName() + "Max", new NBTTagInt(highVal));
-                        }
-                        else { // static val
+                        } else { // static val
+                            //TODO: This currently only works for integers from 1-9. So 10 strength will return 1.
                             int val = Integer.parseInt(line.substring(line.indexOf('+') + 1, line.indexOf('+') + 2));
                             
                             NBTModifiers.put(attribute.getNBTName(), new NBTTagInt(val));
