@@ -380,13 +380,12 @@ public class ItemGenerator {
         tag.set("itemType", new NBTTagInt(type.getId()));
         tag.set("itemRarity", new NBTTagInt(rarity.getId()));
         tag.set("bound", new NBTTagString("false"));
+        tag.set("itemTier", new NBTTagInt(tier.getTierId()));
         
         if (type.getId() <= 4) {
             tag.set("type",  new NBTTagString("weapon"));
-            tag.set("itemTier", new NBTTagInt(tier.getTierId()));
         } else {
             tag.set("type",  new NBTTagString("armor"));
-            tag.set("armorTier", new NBTTagInt(tier.getTierId()));
         }
         
         /*
@@ -613,14 +612,13 @@ public class ItemGenerator {
         E.g. Diamond Sword says, "+7 Attack Damage"
          */
         tag.set("AttributeModifiers", new NBTTagList());
+        tag.set("itemTier", new NBTTagInt(Item.getTierFromMaterial(is.getType()).getTierId()));
         
         // set item type
         if (ItemType.isWeapon(is)) {
             tag.set("type", new NBTTagString("weapon"));
-            tag.set("itemTier", new NBTTagInt(Item.getTierFromMaterial(is.getType()).getTierId()));
         } else if (ItemType.isArmor(is)) {
             tag.set("type", new NBTTagString("armor"));
-            tag.set("armorTier", new NBTTagInt(Item.getTierFromMaterial(is.getType()).getTierId()));
         }
         
         NBTTagList modifiersList = new NBTTagList();

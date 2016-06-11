@@ -308,6 +308,7 @@ public class InventoryListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerEquipArmor(ArmorEquipEvent event) {
+        //TODO: Show all stats that have changed.
         Player player = event.getPlayer();
         if (event.getNewArmorPiece() != null && event.getNewArmorPiece().getType() != Material.AIR) {
             Attribute a = new Attribute(event.getNewArmorPiece());
@@ -635,11 +636,7 @@ public class InventoryListener implements Listener {
             if (!EnchantmentAPI.isItemProtected(slotItem)) {
                 int tier = nmsCursor.getTag().getInt("tier");
                 int itemTier = 1;
-                if (nmsItem.getTag().hasKey("armorTier")) {
-                    itemTier = nmsItem.getTag().getInt("armorTier");
-                } else {
-                    itemTier = nmsItem.getTag().getInt("itemTier");
-                }
+                itemTier = nmsItem.getTag().getInt("itemTier");
                 if (tier != itemTier) {
                     event.getWhoClicked().sendMessage(ChatColor.RED + "This protection scroll is made for a higher tier!");
                     return;
@@ -802,7 +799,7 @@ public class InventoryListener implements Listener {
                 return;
             }
             int tier = nmsCursor.getTag().getInt("tier");
-            int armorTier = nmsItem.getTag().getInt("armorTier");
+            int armorTier = nmsItem.getTag().getInt("itemTier");
             if (tier != armorTier) {
                 event.getWhoClicked().sendMessage(ChatColor.RED + "You can not use that enchant scroll on this armor.");
                 return;
