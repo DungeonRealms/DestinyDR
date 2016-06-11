@@ -520,11 +520,16 @@ public class API {
             if (player != null) {
                 player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
 
-                if (DungeonRealms.getInstance().isSubscriberShard && Rank.getInstance().getRank(player.getUniqueId()).getName().equalsIgnoreCase("default")) {
+                if (!DungeonRealms.getInstance().hasFinishedSetup() && !Rank.isDev(player)) {
+                    player.kickPlayer(ChatColor.RED + "This shard has not finished it's startup process.");
+                    return;
+                } else if (DungeonRealms.getInstance().isSubscriberShard && Rank.getInstance().getRank(player.getUniqueId()).getName().equalsIgnoreCase("default")) {
                     player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to a subscriber only shard.\n\n" +
                     ChatColor.GRAY + "Subscriber at http://www.dungeonrealms.net/shop to gain instant access!");
+                    return;
                 } else if (DungeonRealms.getInstance().isYouTubeShard && !Rank.isYouTuber(player)) {
                     player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to this shard.");
+                    return;
                 }
             }
         }

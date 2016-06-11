@@ -912,10 +912,20 @@ public class InventoryListener implements Listener {
             }
 
             ArrayList<String> lore = (ArrayList<String>) meta2.getLore();
+            boolean toAdd;
             for (String current : lore) {
-                if (current.contains("HP:") || current.contains("HP REGEN:") || current.contains("ENERGY REGEN:"))
+                toAdd = true;
+                if (current.contains("HP:") || current.contains("HP REGEN:") || current.contains("ENERGY REGEN:")) {
                     continue;
-                itemLore.add(current);
+                }
+                for (String oldLore : itemLore) {
+                    if (ChatColor.stripColor(oldLore).toLowerCase().equals(ChatColor.stripColor(current.toLowerCase()))) {
+                        toAdd = false;
+                    }
+                }
+                if (toAdd) {
+                    itemLore.add(current);
+                }
             }
 
             nmsItem.getTag().setInt("enchant", amount + 1);
