@@ -378,15 +378,15 @@ public class ItemGenerator {
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         
         tag.set("itemType", new NBTTagInt(type.getId()));
-        tag.set("itemTier", new NBTTagInt(tier.getTierId()));
         tag.set("itemRarity", new NBTTagInt(rarity.getId()));
         tag.set("bound", new NBTTagString("false"));
         
         if (type.getId() <= 4) {
             tag.set("type",  new NBTTagString("weapon"));
-        }
-        else {
+            tag.set("itemTier", new NBTTagInt(tier.getTierId()));
+        } else {
             tag.set("type",  new NBTTagString("armor"));
+            tag.set("armorTier", new NBTTagInt(tier.getTierId()));
         }
         
         /*
@@ -605,7 +605,6 @@ public class ItemGenerator {
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         
         tag.set("itemType", new NBTTagInt(ItemType.getTypeFromMaterial(is.getType()).getId()));
-        tag.set("itemTier", new NBTTagInt(Item.getTierFromMaterial(is.getType()).getId()));
         tag.set("itemRarity", new NBTTagInt(ItemRarity.UNIQUE.getId()));
         tag.set("bound", new NBTTagString("false"));
 
@@ -618,9 +617,10 @@ public class ItemGenerator {
         // set item type
         if (ItemType.isWeapon(is)) {
             tag.set("type", new NBTTagString("weapon"));
-        }
-        else if (ItemType.isArmor(is)) {
+            tag.set("itemTier", new NBTTagInt(Item.getTierFromMaterial(is.getType()).getId()));
+        } else if (ItemType.isArmor(is)) {
             tag.set("type", new NBTTagString("armor"));
+            tag.set("armorTier", new NBTTagInt(Item.getTierFromMaterial(is.getType()).getId()));
         }
         
         NBTTagList modifiersList = new NBTTagList();
