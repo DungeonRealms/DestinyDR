@@ -211,9 +211,6 @@ public class GuildDatabase implements GuildDatabaseAPI {
         return get(EnumGuildData.OWNER, player) != null;
     }
 
-    public void sendAlert(String guildName, String message) {
-
-    }
 
     public String getTagOf(String guildName) {
         return (String) get(guildName, EnumGuildData.TAG, String.class);

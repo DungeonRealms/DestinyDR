@@ -288,7 +288,7 @@ public class DungeonRealms extends JavaPlugin {
 
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {
-            // cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menu!"));
+            // cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menus!"));
         }
         // Commands only registered for live servers (including always registered).
         else {

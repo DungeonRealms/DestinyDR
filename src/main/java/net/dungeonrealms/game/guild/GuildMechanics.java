@@ -1,17 +1,21 @@
 package net.dungeonrealms.game.guild;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.guild.banner.menus.BannerCreatorMenu;
 import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.achievements.Achievements;
+import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.meta.BannerMeta;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.List;
 import java.util.UUID;
@@ -72,6 +76,9 @@ public class GuildMechanics implements GenericMechanic {
      */
     public void sendAlert(String guildName, String message) {
         // String temp = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + " " + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
+
+
+        NetworkAPI.getInstance();
     }
 
 
@@ -163,6 +170,8 @@ public class GuildMechanics implements GenericMechanic {
 
             player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "QUIT" + ChatColor.RED + " your guild.");
             GuildDatabaseAPI.get().removeFromGuild(guildName, player.getUniqueId());
+            sendAlert(guildName, player.getName() + "has left the guild.");
+
 
             if (isOwner) {
                 if (officers.size() > 0) {
@@ -174,8 +183,6 @@ public class GuildMechanics implements GenericMechanic {
                     sendAlert(guildName, player.getName() + " has disbanded the guild.");
                     GuildDatabaseAPI.get().deleteGuild(guildName);
                 }
-            } else {
-                sendAlert(guildName, player.getName() + "has left the guild.");
             }
 
         }, null);
@@ -265,7 +272,6 @@ public class GuildMechanics implements GenericMechanic {
                 GuildDatabaseAPI.get().doesGuildNameExist(guildName, guildExists -> {
                     if (!guildExists) {
 
-
                         // Prompts the player for desired guild tag
                         player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Ok, your guild will be formally known as        " + ChatColor.DARK_AQUA + guildDisplayName + ChatColor.WHITE + ", now please enter a " + ChatColor.UNDERLINE + "guild prefix tag.");
                         player.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + "This 'prefix tag' can be between 2-3 letters and will appear before all chat messages sent by guild members.");
@@ -295,62 +301,75 @@ public class GuildMechanics implements GenericMechanic {
                                         return;
                                     }
 
-
                                     GuildDatabaseAPI.get().doesTagExist(tag, guildTagExists -> {
                                         if (!guildTagExists) {
 
-                                            // Confirmation stage
-                                            player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Ok, thank you. Let me show you a quick summary of your guild.");
-                                            player.sendMessage("");
+                                            new BannerCreatorMenu(player, banner -> {
 
-                                            player.sendMessage(ChatColor.GRAY + "              *** " + ChatColor.DARK_AQUA + ChatColor.BOLD + "Guild Creation Confirmation" + ChatColor.GRAY + " ***");
-                                            player.sendMessage(ChatColor.GRAY + "Guild Name: " + ChatColor.WHITE + guildDisplayName);
-                                            player.sendMessage(ChatColor.GRAY + "Guild Tag: " + ChatColor.DARK_AQUA + "[" + ChatColor.GRAY + tag + ChatColor.DARK_AQUA + "]");
-                                            // player.sendMessage(ChatColor.GRAY + "Guild Color: " + ChatColor.WHITE + "" + color_rgb);
-                                            player.sendMessage(ChatColor.GRAY + "Cost: " + ChatColor.DARK_AQUA + "5,000" + ChatColor.BOLD + "G");
-                                            player.sendMessage("");
-                                            player.sendMessage(ChatColor.GRAY + "Enter '" + ChatColor.DARK_AQUA + ChatColor.BOLD.toString() + "CONFIRM" + ChatColor.GRAY + "' to confirm your guild creation.");
-                                            player.sendMessage("");
-                                            player.sendMessage("" + ChatColor.RED + ChatColor.BOLD + "WARNING:" + ChatColor.RED + " Guild creation is " + ChatColor.BOLD + ChatColor.RED + "NOT" + ChatColor.RED + " reversible or refundable. Type 'cancel' to void this entire purchase.");
-                                            player.sendMessage("");
-
-                                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Chat.listenForMessage(player, confirmation -> {
-
-                                                // Cancels dialogue
-                                                if (confirmation.getMessage().equalsIgnoreCase("cancel")) {
+                                                if (banner == null) {
                                                     player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Goodbye!");
                                                     return;
                                                 }
 
+                                                // Confirmation stage
+                                                player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Ok, thank you. Let me show you a quick summary of your guild.");
+                                                player.sendMessage("");
 
-                                                // Confirms purchase
-                                                if (confirmation.getMessage().equalsIgnoreCase("confirm")) {
-                                                    if ((BankMechanics.getInstance().getTotalGemsInInventory(player) < 5000)) {
-                                                        player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "You do not have enough GEM(s) -- 5,000, to create a guild.");
+                                                player.sendMessage(ChatColor.GRAY + "              *** " + ChatColor.DARK_AQUA + ChatColor.BOLD + "Guild Creation Confirmation" + ChatColor.GRAY + " ***");
+                                                player.sendMessage(ChatColor.GRAY + "Guild Name: " + ChatColor.WHITE + guildDisplayName);
+                                                player.sendMessage(ChatColor.GRAY + "Guild Tag: " + ChatColor.DARK_AQUA + "[" + ChatColor.GRAY + tag + ChatColor.DARK_AQUA + "]");
+                                                // player.sendMessage(ChatColor.GRAY + "Guild Color: " + ChatColor.WHITE + "" + color_rgb);
+                                                player.sendMessage(ChatColor.GRAY + "Cost: " + ChatColor.DARK_AQUA + "5,000" + ChatColor.BOLD + "G");
+                                                player.sendMessage("");
+                                                player.sendMessage(ChatColor.GRAY + "Enter '" + ChatColor.DARK_AQUA + ChatColor.BOLD.toString() + "CONFIRM" + ChatColor.GRAY + "' to confirm your guild creation.");
+                                                player.sendMessage("");
+                                                player.sendMessage("" + ChatColor.RED + ChatColor.BOLD + "WARNING:" + ChatColor.RED + " Guild creation is " + ChatColor.BOLD + ChatColor.RED + "NOT" + ChatColor.RED + " reversible or refundable. Type 'cancel' to void this entire purchase.");
+                                                player.sendMessage("");
+
+                                                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Chat.listenForMessage(player, confirmation -> {
+
+                                                    // Cancels dialogue
+                                                    if (confirmation.getMessage().equalsIgnoreCase("cancel")) {
+                                                        player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Goodbye!");
                                                         return;
                                                     }
 
 
-                                                    // Registers guild in database
-                                                    GuildDatabaseAPI.get().createGuild(guildName, guildDisplayName, tag, player.getUniqueId(), onComplete -> {
-                                                        if (!onComplete) {
-                                                            player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.RED + "We have an error. Failed to create guild in database. Please try again later");
+                                                    // Confirms purchase
+                                                    if (confirmation.getMessage().equalsIgnoreCase("confirm")) {
+                                                        if ((BankMechanics.getInstance().getTotalGemsInInventory(player) < 5000)) {
+                                                            player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "You do not have enough GEM(s) -- 5,000, to create a guild.");
                                                             return;
                                                         }
 
-                                                        Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.CREATE_A_GUILD);
 
-                                                        player.sendMessage("");
-                                                        player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Congratulations, you are now the proud owner of the '" + guildDisplayName + "' guild!");
-                                                        player.sendMessage(ChatColor.GRAY + "You can now chat in your guild chat with " + ChatColor.BOLD + "/g <msg>" + ChatColor.GRAY + ", invite players with " + ChatColor.BOLD + "/ginvite <player>" + ChatColor.GRAY + " and much more -- Check out your character journal for more information!");
-                                                        BankMechanics.getInstance().takeGemsFromInventory(5000, player);
-                                                    });
+                                                        // Registers guild in database
+                                                        GuildDatabaseAPI.get().createGuild(guildName, guildDisplayName, tag, player.getUniqueId(), onComplete -> {
+                                                            if (!onComplete) {
+                                                                player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.RED + "We have an error. Failed to create guild in database. Please try again later");
+                                                                return;
+                                                            }
 
-                                                }
+                                                            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.CREATE_A_GUILD);
 
-                                            }, null), 1L);
+                                                            player.sendMessage("");
+                                                            player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Congratulations, you are now the proud owner of the '" + guildDisplayName + "' guild!");
+                                                            player.sendMessage(ChatColor.GRAY + "You can now chat in your guild chat with " + ChatColor.BOLD + "/g <msg>" + ChatColor.GRAY + ", invite players with " + ChatColor.BOLD + "/ginvite <player>" + ChatColor.GRAY + " and much more -- Check out your character journal for more information!");
+                                                            BankMechanics.getInstance().takeGemsFromInventory(5000, player);
 
+                                                            BannerMeta bannerMeta = (BannerMeta) banner.getItemMeta();
+                                                            bannerMeta.setDisplayName(ChatColor.AQUA + guildDisplayName + "'s banner");
+                                                            banner.setItemMeta(bannerMeta);
 
+                                                            player.getInventory().addItem(banner);
+
+                                                        });
+
+                                                    }
+
+                                                }, null), 1L);
+
+                                            }).open(player);
                                         } else
                                             player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "I'm sorry, but a guild tag already exists. Please choose a different guild tag.");
 
