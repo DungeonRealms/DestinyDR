@@ -43,21 +43,37 @@ public class CommandSet extends BasicCommand {
         if (args.length > 0) {
             switch (args[0]) {
                 case "level":
+                    if (args.length < 3) {
+                        player.sendMessage(ChatColor.RED + "Invalid usage! /set level <name> <level>");
+                        break;
+                    }
                     String playerName = args[1];
                     Player p = Bukkit.getPlayer(playerName);
                     if (p != null) {
                         int lvl = Integer.parseInt(args[2]);
+                        if (lvl < 1 || lvl > 100) {
+                            player.sendMessage(ChatColor.RED + "Invalid player level (1 - 100).");
+                            break;
+                        }
                         API.getGamePlayer(p).getStats().setPlayerLevel(lvl);
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, lvl, true);
                         s.sendMessage(p.getName() + " lvl set to " + lvl);
                     }
                     break;
                 case "gems":
+                    if (args.length < 2) {
+                        player.sendMessage(ChatColor.RED + "Invalid usage! /set gems <quantity>");
+                        break;
+                    }
                     int gems = Integer.parseInt(args[1]);
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.GEMS, gems, true);
                     s.sendMessage("Gems set to " + gems);
                     break;
                 case "invlevel":
+                    if (args.length < 2) {
+                        player.sendMessage(ChatColor.RED + "Invalid usage! /set invlevel <level>");
+                        break;
+                    }
                     int invlvl = Integer.parseInt(args[1]);
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl, true);
                     break;
@@ -94,14 +110,15 @@ public class CommandSet extends BasicCommand {
                     SpawningMechanics.loadSpawner(text);
                     break;
                 case "loot":
-                    if (args.length == 2) {
-                        int lootTier = Integer.parseInt(args[1]);
-                        String data = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + ":" + lootTier;
-                        LootManager.SPAWNER_CONFIG.add(data);
-                        DungeonRealms.getInstance().getConfig().set("loot", LootManager.SPAWNER_CONFIG);
-                        player.getWorld().getBlockAt(player.getLocation()).setType(Material.SPONGE);
-                        player.sendMessage((LootManager.LOOT_SPAWNERS.size() + 1) + " loot spawner placed");
+                    if (args.length < 2) {
+                        player.sendMessage(ChatColor.RED + "Invalid usage! /set loot <tier>");
                     }
+                    int lootTier = Integer.parseInt(args[1]);
+                    String data = player.getLocation().getX() + "," + player.getLocation().getY() + "," + player.getLocation().getZ() + ":" + lootTier;
+                    LootManager.SPAWNER_CONFIG.add(data);
+                    DungeonRealms.getInstance().getConfig().set("loot", LootManager.SPAWNER_CONFIG);
+                    player.getWorld().getBlockAt(player.getLocation()).setType(Material.SPONGE);
+                    player.sendMessage((LootManager.LOOT_SPAWNERS.size() + 1) + " loot spawner placed");
                     break;
                 case "kill":
                     player.getWorld().getLivingEntities().forEach(org.bukkit.entity.Entity::remove);
@@ -112,12 +129,20 @@ public class CommandSet extends BasicCommand {
                     player.updateInventory();
                     break;
                 case "shopoff":
+                    if (args.length < 2) {
+                        player.sendMessage(ChatColor.RED + "Invalid usage! /set shopoff <name>");
+                        break;
+                    }
                     playerName = args[1];
                     p = Bukkit.getPlayer(playerName);
                     if (p != null)
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
                     break;
                 case "shoplvl":
+                    if (args.length < 2) {
+                        player.sendMessage(ChatColor.RED + "Invalid usage! /set shoplvl <level>");
+                        break;
+                    }
                     invlvl = Integer.parseInt(args[1]);
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.SHOPLEVEL, invlvl, true);
                     break;
@@ -150,6 +175,9 @@ public class CommandSet extends BasicCommand {
 
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ECASH, ecash, true);
                     player.sendMessage(ChatColor.GREEN + "Successfully set your E-Cash value to: " + ecash + ".");
+                    break;
+                default:
+                    player.sendMessage(ChatColor.RED + "Invalid usage! '" + args[0] + "' is not a valid variable.");
                     break;
             }
         }

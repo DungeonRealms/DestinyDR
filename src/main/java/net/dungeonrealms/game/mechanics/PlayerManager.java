@@ -2,6 +2,9 @@ package net.dungeonrealms.game.mechanics;
 
 import java.util.UUID;
 
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.mongo.EnumOperators;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -35,35 +38,66 @@ public class PlayerManager {
     }
 
     public enum PlayerToggles {
-        DEBUG(0, "DEBUG", "Displays statistics such as damage given/taken and health after armor swaps."),
-        TRADE(1, "TRADE", "Disables or enables the ability for you to trade with other players."),
-        TRADE_CHAT(2, "TRADECHAT", "Disables or enables your ability to see the trade chat."),
-        GLOBAL_CHAT(3, "GLOBALCHAT", "Disables or enables your ability to see global chat."),
-        RECEIVE_MESSAGES(4, "RECEIVEMESSAGES", "Disables or enables your ability to receive PMs from players."),
-        PVP(5, "PVP", "Disables or enables the ability enter PvP combat."),
-        DUEL(6, "DUEL", "Disables or enables the ability to participate in duels."),;
+        DEBUG(0, EnumData.TOGGLE_DEBUG, "toggledebug", "Toggles displaying combat debug messages.", "Debug Messages"),
+        TRADE(1, EnumData.TOGGLE_TRADE, "toggletrade", "Toggles trading requests.", "Trade"),
+        TRADE_CHAT(2, EnumData.TOGGLE_TRADE_CHAT, "toggletradechat", "Toggles receiving <T>rade chat.", "Trade Chat"),
+        GLOBAL_CHAT(3, EnumData.TOGGLE_GLOBAL_CHAT, "toggleglobalchat", "Toggles talking only in global chat.", "Global Only Chat"),
+        RECEIVE_MESSAGES(4, EnumData.TOGGLE_RECEIVE_MESSAGE, "toggletells", "Toggles receiving NON-BUD /tell.", "Non-BUG Private Messages"),
+        PVP(5, EnumData.TOGGLE_PVP, "togglepvp", "Toggles all outgoing PvP damage (anti-neutral).", "Outgoing PvP Damage"),
+        DUEL(6, EnumData.TOGGLE_DUEL, "toggleduel", "Toggles dueling requests.", "Dueling Requests"),
+        CHAOTIC_PREVENTION(7, EnumData.TOGGLE_CHAOTIC_PREVENTION, "togglechaos", "Toggles killing blows on lawful players (anti-chaotic).", "Anti-Chaotic");
 
         private int id;
-        private String rawName;
+        private EnumData dbField;
+        private String commandName;
         private String description;
+        private String friendlyName;
 
-        PlayerToggles(int id, String rawName, String description) {
+        PlayerToggles(int id, EnumData dbField, String commandName, String description, String friendlyName) {
             this.id = id;
-            this.rawName = rawName;
+            this.dbField = dbField;
+            this.commandName = commandName;
             this.description = description;
+            this.friendlyName = friendlyName;
+        }
+
+        public EnumData getDbField() {
+            return dbField;
+        }
+
+        public String getFriendlyName() {
+            return friendlyName;
         }
 
         public String getDescription() {
             return description;
         }
 
-        public static PlayerToggles getByName(String rawName) {
+        public String getCommandName() {
+            return commandName;
+        }
+
+        public static PlayerToggles getById(int id) {
             for (PlayerToggles playerToggles : values()) {
-                if (playerToggles.rawName.equalsIgnoreCase(rawName)) {
+                if (playerToggles.id == id) {
                     return playerToggles;
                 }
             }
             return null;
+        }
+
+        public static PlayerToggles getByCommandName(String commandName) {
+            for (PlayerToggles playerToggles : values()) {
+                if (playerToggles.commandName.equalsIgnoreCase(commandName)) {
+                    return playerToggles;
+                }
+            }
+            return null;
+        }
+
+        public void setToggleState(Player player, boolean state) {
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, dbField, state, true);
+            player.sendMessage((state ? ChatColor.GREEN : ChatColor.RED) + friendlyName + " - " + ChatColor.BOLD + (state ? "ENABLED" : "DISABLED"));
         }
     }
 }

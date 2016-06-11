@@ -6,6 +6,7 @@ import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
+import net.dungeonrealms.game.mechanics.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -626,75 +627,16 @@ public class PlayerMenus {
      * @param player
      */
     public static void openToggleMenu(Player player) {
-        Inventory inv = Bukkit.createInventory(null, 9, "Toggles");
-        boolean toggle1 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, player.getUniqueId());
-        boolean toggle2 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId());
-        boolean toggle3 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DUEL, player.getUniqueId());
-        boolean toggle4 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
-        boolean toggle5 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, player.getUniqueId());
-        boolean toggle6 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, player.getUniqueId());
-        boolean toggle7 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, player.getUniqueId());
-        boolean toggle8 = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, player.getUniqueId());
-        ItemStack stack1 = null;
-        ItemStack stack2 = null;
-        ItemStack stack3 = null;
-        ItemStack stack4 = null;
-        ItemStack stack5 = null;
-        ItemStack stack6 = null;
-        ItemStack stack7 = null;
-        ItemStack stack8 = null;
+        Inventory inv = Bukkit.createInventory(null, ((int) Math.ceil((1 + PlayerManager.PlayerToggles.values().length) / 9.0) * 9), "Toggles");
 
-        if (toggle1)
-            stack1 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle CHAOTIC PREVENTION", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
-        else
-            stack1 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle CHAOTIC PREVENTION", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
+        int i = 0;
+        for (PlayerManager.PlayerToggles playerToggles : PlayerManager.PlayerToggles.values()) {
+            boolean isToggled = (boolean) DatabaseAPI.getInstance().getData(playerToggles.getDbField(), player.getUniqueId());
+            inv.setItem(i, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, (short) (isToggled ? 10 : 8)), (isToggled ? ChatColor.GREEN : ChatColor.RED) + "/" + playerToggles.getCommandName(), new String[]{(ChatColor.GRAY + playerToggles.getDescription())}).build());
+            i++;
+        }
 
-        if (toggle2)
-            stack2 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle DEBUG", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
-        else
-            stack2 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle DEBUG", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
-
-        if (toggle3)
-            stack3 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle DUEL", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
-        else
-            stack3 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle DUEL", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
-
-        if (toggle4)
-            stack4 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle GLOBAL CHAT", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
-        else
-            stack4 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle GLOBAL CHAT", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
-
-        if (toggle5)
-            stack5 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle PVP", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
-        else
-            stack5 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle PVP", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
-
-        if (toggle6)
-            stack6 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle RECEIVE MESSAGE", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
-        else
-            stack6 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle RECEIVE MESSAGE", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
-
-        if (toggle7)
-            stack7 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle TRADE", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
-        else
-            stack7 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle TRADE", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
-
-        if (toggle8)
-            stack8 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), "Toggle TRADE CHAT", new String[]{(ChatColor.YELLOW + "Currently ON")}).build();
-        else
-            stack8 = new ItemBuilder().setItem(new ItemStack(Material.WOOL, 1, DyeColor.SILVER.getData()), "Toggle TRADE CHAT", new String[]{(ChatColor.YELLOW + "Currently OFF")}).build();
-
-        ItemStack back = ItemManager.createItem(Material.BARRIER, ChatColor.YELLOW + "Back", new String[]{ChatColor.AQUA + "Back to the Profile Menu!"});
-
-        inv.setItem(0, stack1);
-        inv.setItem(1, stack2);
-        inv.setItem(2, stack3);
-        inv.setItem(3, stack4);
-        inv.setItem(4, stack5);
-        inv.setItem(5, stack6);
-        inv.setItem(6, stack7);
-        inv.setItem(7, stack8);
-        inv.setItem(8, back);
+        inv.setItem(i, ItemManager.createItem(Material.BARRIER, ChatColor.YELLOW + "Back", new String[]{ChatColor.AQUA + "Back to the Profile Menu!"}));
         player.openInventory(inv);
     }
 
@@ -745,27 +687,38 @@ public class PlayerMenus {
 
             // Level Manager
             item = editItem(new ItemStack(Material.EXP_BOTTLE), ChatColor.GOLD + "Level Manager", new String[]{
-                    ChatColor.WHITE + "Manage the level/experience of " + playerName + "."
+                    ChatColor.WHITE + "Manage the level/experience of " + playerName + ".",
+                    ChatColor.WHITE + "Current level: " + DatabaseAPI.getInstance().getData(EnumData.LEVEL, uuid),
+                    ChatColor.WHITE + "Current EXP: " + DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, uuid)
             });
             inv.setItem(22, applySupportItemTags(item, playerName, uuid));
 
             // E-Cash Manager
             item = editItem(new ItemStack(Material.GOLDEN_CARROT), ChatColor.GOLD + "E-Cash Manager", new String[]{
-                    ChatColor.WHITE + "Manage the e-cash of " + playerName + "."
+                    ChatColor.WHITE + "Manage the e-cash of " + playerName + ".",
+                    ChatColor.WHITE + "Current E-Cash: " + DatabaseAPI.getInstance().getData(EnumData.ECASH, uuid)
             });
             inv.setItem(25, applySupportItemTags(item, playerName, uuid));
 
             // Bank Manager
             item = editItem(new ItemStack(Material.ENDER_CHEST), ChatColor.GOLD + "Bank Manager", new String[]{
-                    ChatColor.WHITE + "Manage the bank of " + playerName + "."
+                    ChatColor.WHITE + "Manage the bank of " + playerName + ".",
+                    ChatColor.WHITE + "Current bank balance: " + DatabaseAPI.getInstance().getData(EnumData.GEMS, uuid)
             });
-            inv.setItem(29, applySupportItemTags(item, playerName, uuid));
+            inv.setItem(28, applySupportItemTags(item, playerName, uuid));
 
             // Hearthstone Manager
             item = editItem(new ItemStack(Material.QUARTZ_ORE), ChatColor.GOLD + "Hearthstone Manager", new String[]{
-                    ChatColor.WHITE + "Manage the Hearthstone Location of " + playerName + "."
+                    ChatColor.WHITE + "Manage the Hearthstone Location of " + playerName + ".",
+                    ChatColor.WHITE + "Current location: " + DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid)
             });
-            inv.setItem(33, applySupportItemTags(item, playerName, uuid));
+            inv.setItem(31, applySupportItemTags(item, playerName, uuid));
+
+            // Shop Packages
+            item = editItem(new ItemStack(Material.BOOK_AND_QUILL), ChatColor.GOLD + "Cosmetics", new String[]{
+                    ChatColor.WHITE + "Manage cosmetics of " + playerName + "."
+            });
+            inv.setItem(34, applySupportItemTags(item, playerName, uuid));
 
             // PLACEHOLDER
             /*item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLACK.getData()), ChatColor.GOLD + "PLACEHOLDER", new String[]{
@@ -923,12 +876,148 @@ public class PlayerMenus {
         });
         inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
-        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLACK.getData()), ChatColor.GOLD + "PLACEHOLDER", new String[]{
+        item = editItem(new ItemStack(Material.WOOL, 1, (DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid).toString().equalsIgnoreCase("cyrennica") ? DyeColor.LIME.getData() : DyeColor.RED.getData())), ChatColor.GOLD + "Cyrennica", new String[]{
+                ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                "",
+                ChatColor.WHITE + "One day, a tool for support will go here."
+        });
+        inv.setItem(18, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, (DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid).toString().equalsIgnoreCase("harrison_field") ? DyeColor.LIME.getData() : DyeColor.RED.getData())), ChatColor.GOLD + "Harrison Fields", new String[]{
+                ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                "",
+                ChatColor.WHITE + "One day, a tool for support will go here."
+        });
+        inv.setItem(19, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, (DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid).toString().equalsIgnoreCase("dark_oak") ? DyeColor.LIME.getData() : DyeColor.RED.getData())), ChatColor.GOLD + "Dark Oak Tavern", new String[]{
+                ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                "",
+                ChatColor.WHITE + "One day, a tool for support will go here."
+        });
+        inv.setItem(20, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, (DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid).toString().equalsIgnoreCase("gloomy_hollows") ? DyeColor.LIME.getData() : DyeColor.RED.getData())), ChatColor.GOLD + "Gloomy Hollows", new String[]{
+                ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                "",
+                ChatColor.WHITE + "One day, a tool for support will go here."
+        });
+        inv.setItem(21, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, (DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid).toString().equalsIgnoreCase("tripoli") ? DyeColor.LIME.getData() : DyeColor.RED.getData())), ChatColor.GOLD + "Tripoli", new String[]{
                 ChatColor.WHITE + "This is a placeholder, it does nothing.",
                 "",
                 ChatColor.WHITE + "One day, a tool for support will go here."
         });
         inv.setItem(22, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, (DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid).toString().equalsIgnoreCase("trollsbane") ? DyeColor.LIME.getData() : DyeColor.RED.getData())), ChatColor.GOLD + "Trollsbans Tavern", new String[]{
+                ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                "",
+                ChatColor.WHITE + "One day, a tool for support will go here."
+        });
+        inv.setItem(23, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, (DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid).toString().equalsIgnoreCase("crestguard") ? DyeColor.LIME.getData() : DyeColor.RED.getData())), ChatColor.GOLD + "Crestguard Keep", new String[]{
+                ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                "",
+                ChatColor.WHITE + "One day, a tool for support will go here."
+        });
+        inv.setItem(24, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, (DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid).toString().equalsIgnoreCase("deadpeaks") ? DyeColor.LIME.getData() : DyeColor.RED.getData())), ChatColor.GOLD + "Deadpeaks Mountain", new String[]{
+                ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                "",
+                ChatColor.WHITE + "One day, a tool for support will go here."
+        });
+        inv.setItem(25, applySupportItemTags(item, playerName, uuid));
+
+        player.openInventory(inv);
+    }
+
+    public static void openSupportCoemeticssMenu(Player player, String playerName, UUID uuid) {
+        ItemStack item;
+        Inventory inv = Bukkit.createInventory(null, 45, "Support Tools (Cosmetics)");
+
+        item = editItem(playerName, ChatColor.GREEN + playerName, new String[]{
+                ChatColor.WHITE + "Return to Menu"
+        });
+        inv.setItem(4, applySupportItemTags(item, playerName, uuid));
+
+        // Rank Manager
+        item = editItem(new ItemStack(Material.EYE_OF_ENDER), ChatColor.GOLD + "Trail Manager", new String[]{
+                ChatColor.WHITE + "Modify trails of " + playerName + "."
+        });
+        inv.setItem(19, applySupportItemTags(item, playerName, uuid));
+
+        // Level Manager
+        item = editItem(new ItemStack(Material.SADDLE), ChatColor.GOLD + "Mount / Mule Manager", new String[]{
+                ChatColor.WHITE + "Manage mounts / mules of " + playerName + "."
+        });
+        inv.setItem(22, applySupportItemTags(item, playerName, uuid));
+
+        // E-Cash Manager
+        item = editItem(new ItemStack(Material.NAME_TAG), ChatColor.GOLD + "Pet Manager", new String[]{
+                ChatColor.WHITE + "Manage pets of " + playerName + "."
+        });
+        inv.setItem(25, applySupportItemTags(item, playerName, uuid));
+
+        player.openInventory(inv);
+    }
+
+    public static void openSupportTrailsMenu(Player player, String playerName, UUID uuid) {
+        ItemStack item;
+        Inventory inv = Bukkit.createInventory(null, 45, "Support Tools (Trails)");
+
+        item = editItem(playerName, ChatColor.GREEN + playerName, new String[]{
+                ChatColor.WHITE + "Return to Menu"
+        });
+        inv.setItem(4, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLACK.getData()), ChatColor.GOLD + "Trail", new String[]{
+                ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                "",
+                ChatColor.WHITE + "One day, a tool for support will go here."
+        });
+        inv.setItem(18, applySupportItemTags(item, playerName, uuid));
+
+        player.openInventory(inv);
+    }
+
+    public static void openSupportMountsMenu(Player player, String playerName, UUID uuid) {
+        ItemStack item;
+        Inventory inv = Bukkit.createInventory(null, 45, "Support Tools (Mounts)");
+
+        item = editItem(playerName, ChatColor.GREEN + playerName, new String[]{
+                ChatColor.WHITE + "Return to Menu"
+        });
+        inv.setItem(4, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLACK.getData()), ChatColor.GOLD + "Mount", new String[]{
+                ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                "",
+                ChatColor.WHITE + "One day, a tool for support will go here."
+        });
+        inv.setItem(18, applySupportItemTags(item, playerName, uuid));
+
+        player.openInventory(inv);
+    }
+
+    public static void openSupportPetsMenu(Player player, String playerName, UUID uuid) {
+        ItemStack item;
+        Inventory inv = Bukkit.createInventory(null, 45, "Support Tools (Pets)");
+
+        item = editItem(playerName, ChatColor.GREEN + playerName, new String[]{
+                ChatColor.WHITE + "Return to Menu"
+        });
+        inv.setItem(4, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLACK.getData()), ChatColor.GOLD + "Pet", new String[]{
+                ChatColor.WHITE + "This is a placeholder, it does nothing.",
+                "",
+                ChatColor.WHITE + "One day, a tool for support will go here."
+        });
+        inv.setItem(18, applySupportItemTags(item, playerName, uuid));
 
         player.openInventory(inv);
     }

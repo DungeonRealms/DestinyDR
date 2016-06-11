@@ -252,7 +252,7 @@ public class Achievements {
         }, 450, "achievement.social_pmdev"),
 
         CREATE_A_GUILD("Create a Guild", new String[]{
-                "Congratulations on the creation of your new guild!."
+                "Congratulations on the creation of your new guild!"
         }, 750, "achievement.social_create_a_guild"),
 
         TOURIST("Tourist", new String[]{

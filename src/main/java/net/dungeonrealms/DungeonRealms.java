@@ -10,6 +10,7 @@ import net.dungeonrealms.game.commands.menualias.CommandProfile;
 import net.dungeonrealms.game.commands.menualias.CommandTrail;
 import net.dungeonrealms.game.commands.newcommands.*;
 import net.dungeonrealms.game.commands.support.*;
+import net.dungeonrealms.game.commands.toggles.*;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.listeners.*;
@@ -278,9 +279,17 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandPChat("pchat", "/<command> [args]", "Talk in party chat."));
 
         cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "The Logout command."));
-        cm.registerCommand(new CommandToggle("toggles", "/<command> [args]", "The Toggle command."));
         cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "The roll command."));
         cm.registerCommand(new CommandShard("shard", "/<command> [args]", "This command will allow the user to change shards."));
+
+        cm.registerCommand(new CommandToggle("toggles", "/<command> [args]", "The toggle command."));
+        cm.registerCommand(new CommandToggleDebug("toggledebug", "/<command> [args]", "The toggle command.", Collections.singletonList("debug")));
+        cm.registerCommand(new CommandToggleChaos("togglechaos", "/<command> [args]", "The toggle command."));
+        cm.registerCommand(new CommandToggleGlobalChat("toggleglobalchat", "/<command> [args]", "The toggle command."));
+        cm.registerCommand(new CommandTogglePvp("togglepvp", "/<command> [args]", "The toggle command."));
+        cm.registerCommand(new CommandToggleTells("toggletells", "/<command> [args]", "The toggle command."));
+        cm.registerCommand(new CommandToggleTrade("toggletrade", "/<command> [args]", "The toggle command."));
+        cm.registerCommand(new CommandToggleTradeChat("toggletradechat", "/<command> [args]", "The toggle command."));
 
         cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Check epoch time of item."));
         cm.registerCommand(new CommandStats("stat", "/<command> [args]", "The stats command.", Collections.singletonList("stats")));

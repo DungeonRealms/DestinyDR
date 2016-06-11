@@ -268,6 +268,9 @@ public class CommandAdd extends BasicCommand {
                     player.getInventory().addItem(BankMechanics.createBankNote(quantity));
                     player.sendMessage(ChatColor.GREEN + "Successfully created a bank note worth " + NumberFormat.getIntegerInstance().format(quantity) + " gems.");
                     break;
+                default:
+                    player.sendMessage(ChatColor.RED + "Invalid usage! '" + args[0] + "' is not a valid variable.");
+                    break;
             }
         }
 

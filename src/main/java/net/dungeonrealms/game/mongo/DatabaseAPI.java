@@ -315,13 +315,13 @@ public class DatabaseAPI {
                                         .append("particles", new ArrayList<String>())
                                         .append("mountskins", new ArrayList<String>()))
                         .append("toggles",
-                                new Document("debug", true)
+                                new Document("debug", false)
                                         .append("trade", false)
                                         .append("tradeChat", false)
-                                        .append("globalChat", true)
+                                        .append("globalChat", false)
                                         .append("receiveMessage", true)
-                                        .append("pvp", false)
-                                        .append("duel", false)
+                                        .append("pvp", true)
+                                        .append("duel", true)
                                         .append("chaoticPrevention", true))
                         .append("portalKeyShards",
                                 new Document("tier1", 0)
