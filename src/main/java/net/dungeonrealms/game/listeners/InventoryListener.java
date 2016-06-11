@@ -1336,7 +1336,7 @@ public class InventoryListener implements Listener {
                                 pl.setItemOnCursor(null);
                             }
 
-                            MuleTier newTier = MuleTier.getTier(upgradeLevel);
+                            MuleTier newTier = MuleTier.getByTier(upgradeLevel);
                             if (newTier == null) {
                                 pl.sendMessage(ChatColor.RED + "Unable to find proper upgrade level.");
                                 return;

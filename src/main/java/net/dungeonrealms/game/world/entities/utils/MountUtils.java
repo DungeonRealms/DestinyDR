@@ -169,7 +169,7 @@ public class MountUtils {
                 h.setMetadata("mule", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
                 String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, uuid);
                 int muleLevel = (int) DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
-                MuleTier tier = MuleTier.getTier(muleLevel);
+                MuleTier tier = MuleTier.getByTier(muleLevel);
                 if (tier == null) {
                     return;
                 }

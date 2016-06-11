@@ -26,7 +26,7 @@ public enum MuleTier {
         return color + name;
     }
 
-    public static MuleTier getTier(int tier) {
+    public static MuleTier getByTier(int tier) {
         for (MuleTier muleTier : values()) {
             if (muleTier.getTier() == tier) return muleTier;
         }

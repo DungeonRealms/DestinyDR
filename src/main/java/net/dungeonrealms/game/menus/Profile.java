@@ -13,7 +13,6 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
-import net.dungeonrealms.game.world.entities.types.mounts.Mule;
 import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -86,7 +85,7 @@ public class Profile implements Listener {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, false);
             muleTier = 1;
         }
-        MuleTier tier = MuleTier.getTier((int)muleTier);
+        MuleTier tier = MuleTier.getByTier((int)muleTier);
         if(tier == null){
             System.out.println("Invalid mule tier!");
             return;
