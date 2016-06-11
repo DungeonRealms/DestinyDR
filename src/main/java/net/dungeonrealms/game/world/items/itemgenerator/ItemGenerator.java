@@ -617,10 +617,10 @@ public class ItemGenerator {
         // set item type
         if (ItemType.isWeapon(is)) {
             tag.set("type", new NBTTagString("weapon"));
-            tag.set("itemTier", new NBTTagInt(Item.getTierFromMaterial(is.getType()).getId()));
+            tag.set("itemTier", new NBTTagInt(Item.getTierFromMaterial(is.getType()).getTierId()));
         } else if (ItemType.isArmor(is)) {
             tag.set("type", new NBTTagString("armor"));
-            tag.set("armorTier", new NBTTagInt(Item.getTierFromMaterial(is.getType()).getId()));
+            tag.set("armorTier", new NBTTagInt(Item.getTierFromMaterial(is.getType()).getTierId()));
         }
         
         NBTTagList modifiersList = new NBTTagList();

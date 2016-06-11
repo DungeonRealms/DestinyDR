@@ -37,46 +37,48 @@ public class TradeCalculator {
             }
 
             if (is.getType() == Material.POTION) {
-                net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(is);
-                if (nmsStack != null && nmsStack.getTag() != null && nmsStack.getTag().hasKey("itemTier")) {
-                    switch (nmsStack.getTag().getInt("itemTier")) {
-                        case 1:
-                            if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
-                                t1_pot += is.getAmount();
-                            } else {
-                                t1_Splash_pot += is.getAmount();
-                            }
-                            break;
-                        case 2:
-                            if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
-                                t2_pot += is.getAmount();
-                            } else {
-                                t2_Splash_pot += is.getAmount();
-                            }
-                            break;
-                        case 3:
-                            if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
-                                t3_pot += is.getAmount();
-                            } else {
-                                t3_Splash_pot += is.getAmount();
-                            }
-                            break;
-                        case 4:
-                            if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
-                                t4_pot += is.getAmount();
-                            } else {
-                                t4_Splash_pot += is.getAmount();
-                            }
-                            break;
-                        case 5:
-                            if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
-                                t5_pot += is.getAmount();
-                            } else {
-                                t5_Splash_pot += is.getAmount();
-                            }
-                            break;
+                if (API.isItemTradeable(is)) {
+                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(is);
+                    if (nmsStack != null && nmsStack.getTag() != null && nmsStack.getTag().hasKey("itemTier")) {
+                        switch (nmsStack.getTag().getInt("itemTier")) {
+                            case 1:
+                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                                    t1_pot += is.getAmount();
+                                } else {
+                                    t1_Splash_pot += is.getAmount();
+                                }
+                                break;
+                            case 2:
+                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                                    t2_pot += is.getAmount();
+                                } else {
+                                    t2_Splash_pot += is.getAmount();
+                                }
+                                break;
+                            case 3:
+                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                                    t3_pot += is.getAmount();
+                                } else {
+                                    t3_Splash_pot += is.getAmount();
+                                }
+                                break;
+                            case 4:
+                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                                    t4_pot += is.getAmount();
+                                } else {
+                                    t4_Splash_pot += is.getAmount();
+                                }
+                                break;
+                            case 5:
+                                if (nmsStack.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                                    t5_pot += is.getAmount();
+                                } else {
+                                    t5_Splash_pot += is.getAmount();
+                                }
+                                break;
+                        }
+                        to_remove.add(is);
                     }
-                    to_remove.add(is);
                 }
             }
             if (is.getType() == Material.COAL_ORE || is.getType() == Material.EMERALD_ORE || is.getType() == Material.IRON_ORE
