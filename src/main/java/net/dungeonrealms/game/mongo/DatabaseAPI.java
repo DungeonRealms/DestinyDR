@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.mongo;
 
-import com.mongodb.BasicDBObject;
 import com.mongodb.client.model.Filters;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
@@ -97,6 +96,8 @@ public class DatabaseAPI {
                 return ((Document) PLAYERS.get(uuid).get("notices")).get("mailbox", ArrayList.class);
             case ALIGNMENT:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("alignment", String.class);
+            case ALIGNMENT_TIME:
+                return ((Document) PLAYERS.get(uuid).get("info")).get("alignmentTime", Integer.class);
             case CURRENT_LOCATION:
                 return ((Document) PLAYERS.get(uuid).get("info")).get("currentLocation", String.class);
             case CURRENT_FOOD:
@@ -288,6 +289,7 @@ public class DatabaseAPI {
                                 .append("isPlaying", true)
                                 .append("friends", new ArrayList<>())
                                 .append("alignment", "lawful")
+                                .append("alignmentTime", 0)
                                 .append("guild", "")
                                 .append("shopOpen", false)
                                 .append("foodLevel", 20)

@@ -66,8 +66,8 @@ public class Entities implements GenericMechanic {
         nmsUtils.registerEntity("Fire Imp", 54, EntityZombie.class, EntityFireImp.class);
         nmsUtils.registerEntity("Bandit", 51, EntitySkeleton.class, EntityBandit.class);
         nmsUtils.registerEntity("Enchanted Golem", 99, net.minecraft.server.v1_8_R3.EntityGolem.class, EntityGolem.class);
-        nmsUtils.registerEntity("DR Spider", 59, net.minecraft.server.v1_8_R3.EntitySpider.class, DRSpider.class);
-        nmsUtils.registerEntity("CustomEntity", 54, EntityZombie.class, BasicMeleeMonster.class);
+        nmsUtils.registerEntity("DRSpider", 59, EntitySpider.class, DRSpider.class);
+        nmsUtils.registerEntity("BasicMelee", 54, EntityZombie.class, BasicMeleeMonster.class);
         nmsUtils.registerEntity("BasicMage", 54, EntityZombie.class, BasicMageMonster.class);
         nmsUtils.registerEntity("DRWither", 51, EntitySkeleton.class, DRWitherSkeleton.class);
         nmsUtils.registerEntity("DRBlaze", 61, EntityBlaze.class, DRBlaze.class);
@@ -77,6 +77,8 @@ public class Entities implements GenericMechanic {
         nmsUtils.registerEntity("DRSilverfish", 60, EntitySilverfish.class, DRSilverfish.class);
         nmsUtils.registerEntity("DRWolf", 95, EntityWolf.class, DRWolf.class);
         nmsUtils.registerEntity("DRWitch", 66, EntityWitch.class, DRWitch.class);
+        nmsUtils.registerEntity("BasicBlaze", 61, EntityBlaze.class, BasicEntityBlaze.class);
+        nmsUtils.registerEntity("DRZombie", 54, EntityZombie.class, DRZombie.class);
 
         // Tier 1 Boss
         nmsUtils.registerEntity("Mayel", 51, EntitySkeleton.class, Mayel.class);

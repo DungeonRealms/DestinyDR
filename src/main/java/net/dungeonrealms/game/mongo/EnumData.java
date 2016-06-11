@@ -18,6 +18,7 @@ public enum EnumData {
     ECASH("info.ecash"),
     FRIENDS("info.friends"),
     ALIGNMENT("info.alignment"),
+    ALIGNMENT_TIME("info.alignmentTime"),
     CURRENT_LOCATION("info.currentLocation"),
     HASSHOP("info.shopOpen"),
     SHOPLEVEL("info.shopLevel"),

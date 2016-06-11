@@ -5,11 +5,12 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
+import net.minecraft.server.v1_8_R3.EntityBlaze;
 import net.minecraft.server.v1_8_R3.GenericAttributes;
 import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
 import net.minecraft.server.v1_8_R3.World;
@@ -19,39 +20,36 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.lang.reflect.Field;
 import java.util.Random;
 
 /**
  * Created by Chase on Oct 4, 2015
  */
-public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze implements DRMonster {
+public abstract class DRBlaze extends EntityBlaze implements DRMonster {
 
 	protected String name;
 	protected String mobHead;
 	protected EnumEntityType entityType;
 	protected EnumMonster monsterType;
+
 	public DRBlaze(World world, EnumMonster monster, int tier, EnumEntityType entityType, boolean setArmor) {
 		this(world);
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(16d);
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
-        this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
-		monsterType = monster;
+		this.monsterType = monster;
 		this.name = monster.name;
 		this.mobHead = monster.mobHead;
 		this.entityType = entityType;
-		if (setArmor)
-			setArmor(tier);
+		if (setArmor) {
+            setArmor(tier);
+        }
+        setStats();
 		this.getBukkitEntity().setCustomNameVisible(true);
-        String customName = monster.getPrefix() + " " + name + " " + monster.getSuffix() + " ";
+        String customName = monster.getPrefix().trim() + " " + name.trim()  + " " + monster.getSuffix().trim()  + " ";
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
 		this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
-		setStats();
 	}
-	
-	@Override
-	protected abstract void getRareDrop();
 
 	protected DRBlaze(World world) {
 		super(world);
@@ -59,18 +57,6 @@ public abstract class DRBlaze extends net.minecraft.server.v1_8_R3.EntityBlaze i
 
 	protected abstract void setStats();
 
-	public static Object getPrivateField(String fieldName, Class clazz, Object object) {
-		Field field;
-		Object o = null;
-		try {
-			field = clazz.getDeclaredField(fieldName);
-			field.setAccessible(true);
-			o = field.get(object);
-		} catch (NoSuchFieldException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
-		return o;
-	}
 	protected String getCustomEntityName() {
 		return this.name;
 	}
