@@ -9,6 +9,7 @@ import net.dungeonrealms.game.world.items.itemgenerator.engine.ModifierCondition
 import net.dungeonrealms.game.world.items.itemgenerator.engine.ModifierType;
 import net.dungeonrealms.game.world.items.itemgenerator.modifiers.ArmorModifiers;
 import net.dungeonrealms.game.world.items.itemgenerator.modifiers.WeaponModifiers;
+import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_8_R3.NBTTagCompound;
 import net.minecraft.server.v1_8_R3.NBTTagInt;
 import net.minecraft.server.v1_8_R3.NBTTagList;
@@ -371,6 +372,8 @@ public class ItemGenerator {
 		// set the lore!
 		meta.setDisplayName(name);
 		item.setItemMeta(meta);
+
+        RepairAPI.setCustomItemDurability(item, 1500);
 		
         // set NBT tags
         net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
@@ -596,6 +599,7 @@ public class ItemGenerator {
             item_lore.add(rarity);
             im.setLore(item_lore);
             is.setItemMeta(im);
+            RepairAPI.setCustomItemDurability(is, 1500);
         }
         
         // set NBT tags
