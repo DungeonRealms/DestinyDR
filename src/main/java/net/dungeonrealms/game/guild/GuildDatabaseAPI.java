@@ -161,13 +161,6 @@ public interface GuildDatabaseAPI {
 
     /**
      * @param guildName targeted guild.
-     * @param message   sends all a message.
-     */
-    void sendAlert(String guildName, String message);
-
-
-    /**
-     * @param guildName targeted guild.
      * @return The tag
      */
     String getTagOf(String guildName);

@@ -523,6 +523,8 @@ public class API {
                 if (DungeonRealms.getInstance().isSubscriberShard && Rank.getInstance().getRank(player.getUniqueId()).getName().equalsIgnoreCase("default")) {
                     player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to a subscriber only shard.\n\n" +
                     ChatColor.GRAY + "Subscriber at http://www.dungeonrealms.net/shop to gain instant access!");
+                } else if (DungeonRealms.getInstance().isYouTubeShard && !Rank.isYouTuber(player)) {
+                    player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to this shard.");
                 }
             }
         }
@@ -606,7 +608,13 @@ public class API {
             player.sendMessage(new String[]{
                     "",
                     ChatColor.DARK_AQUA + "This is the Dungeon Realms " + ChatColor.UNDERLINE + "MASTER" + ChatColor.DARK_AQUA + " shard.",
-                    ChatColor.GRAY + "Changes made on this shard will be rolled out as a content patch to all other shards."
+                    ChatColor.GRAY + "Changes made on this shard will be deplyed to all other shards as a " + ChatColor.UNDERLINE + "content patch" + ChatColor.GRAY + "."
+            });
+        }
+        if (DungeonRealms.getInstance().isSupportShard && Rank.isSupport(player)) {
+            player.sendMessage(new String[]{
+                    "",
+                    ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "CUSTOMER SUPPORT" + ChatColor.DARK_AQUA + " shard."
             });
         }
         if (DungeonRealms.getInstance().isRoleplayShard) {
@@ -629,6 +637,13 @@ public class API {
                     ChatColor.DARK_AQUA + "This is a " + ChatColor.UNDERLINE + "BETA" + ChatColor.DARK_AQUA + " shard.",
                     ChatColor.GRAY + "You will be testing " + ChatColor.UNDERLINE + "new" + ChatColor.GRAY + " and " + ChatColor.UNDERLINE + "unfinished" + ChatColor.GRAY + " versions of Dungeon Realms.",
                     ChatColor.GRAY + "Report all bugs at: " + ChatColor.BOLD + ChatColor.UNDERLINE + "http://bug.dungeonrealms.net/"
+            });
+        }
+        if (Rank.isGM(player)) {
+            HealthHandler.getInstance().setPlayerHPLive(player, 10000);
+            player.sendMessage(new String[]{
+                    "",
+                    ChatColor.AQUA + ChatColor.BOLD.toString() + "                 GM INVINCIBILITY",
             });
         }
 

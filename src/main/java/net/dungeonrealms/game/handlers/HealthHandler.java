@@ -1,6 +1,6 @@
-	package net.dungeonrealms.game.handlers;
+package net.dungeonrealms.game.handlers;
 
-    import com.connorlinfoot.actionbarapi.ActionBarAPI;
+import com.connorlinfoot.actionbarapi.ActionBarAPI;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -14,10 +14,11 @@ import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.entities.Entities;
-    import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
-    import net.dungeonrealms.game.world.party.Affair;
+import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
+import net.dungeonrealms.game.world.party.Affair;
 import net.minecraft.server.v1_8_R3.EntityArmorStand;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
@@ -32,7 +33,7 @@ import org.bukkit.potion.PotionEffect;
 import java.util.ArrayList;
 import java.util.List;
 
-    /**
+/**
  * Created by Kieran on 10/3/2015.
  */
 public class HealthHandler implements GenericMechanic {
@@ -78,7 +79,10 @@ public class HealthHandler implements GenericMechanic {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             setPlayerMaxHPLive(player, getPlayerMaxHPOnLogin(player));
             int hp = Integer.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.HEALTH, player.getUniqueId())));
-            if (hp > 0) {
+            if (Rank.isGM(player)) {
+                setPlayerHPLive(player, 10000);
+                healPlayerByAmount(player, 20);
+            } else if (hp > 0) {
                 if (hp > getPlayerMaxHPLive(player)) {
                     hp = getPlayerMaxHPLive(player);
                 }

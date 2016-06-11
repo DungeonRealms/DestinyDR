@@ -18,7 +18,7 @@ public class TestingCommand extends BasicCommand {
 		Player p = (Player)sender;
 
 		// This command can only be executed from US-0 or if the player is an OP on a live shard.
-		if (!DungeonRealms.getInstance().shardid.equalsIgnoreCase("us-0") && !p.isOp()) return false;
+		if (!DungeonRealms.getInstance().isMasterShard && !p.isOp()) return false;
 
 		p.sendMessage("Developer: " + Rank.isDev(p));
 		p.sendMessage("Game Master: " + Rank.isGM(p));

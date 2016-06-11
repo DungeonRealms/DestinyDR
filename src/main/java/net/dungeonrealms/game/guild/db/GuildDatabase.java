@@ -102,7 +102,8 @@ public class GuildDatabase implements GuildDatabaseAPI {
     }
 
     public boolean isOwner(UUID uuid, String guildName) {
-        return get(guildName, EnumGuildData.OWNER, String.class) == uuid.toString();
+        String owner = (String) get(guildName, EnumGuildData.OWNER, String.class);
+        return owner != null && owner.equals(uuid.toString());
     }
 
     public boolean isGuildNull(UUID uuid) {
@@ -114,7 +115,6 @@ public class GuildDatabase implements GuildDatabaseAPI {
     }
 
 
-    @Override
     public void deleteGuild(String guildName) {
         Database.guilds.deleteOne(eq("info.name", guildName));
 
@@ -211,9 +211,6 @@ public class GuildDatabase implements GuildDatabaseAPI {
         return get(EnumGuildData.OWNER, player) != null;
     }
 
-    public void sendAlert(String guildName, String message) {
-
-    }
 
     public String getTagOf(String guildName) {
         return (String) get(guildName, EnumGuildData.TAG, String.class);

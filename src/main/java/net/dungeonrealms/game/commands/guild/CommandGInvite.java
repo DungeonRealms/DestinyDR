@@ -1,12 +1,11 @@
 package net.dungeonrealms.game.commands.guild;
 
-import com.mongodb.BasicDBObject;
-import com.mongodb.DBObject;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -46,7 +45,7 @@ public class CommandGInvite extends BasicCommand {
         String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
         String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
 
-        if (GuildDatabaseAPI.get().isOwner(player.getUniqueId(), guildName) && GuildDatabaseAPI.get().isOfficer(player.getUniqueId(), guildName)) {
+        if (!GuildDatabaseAPI.get().isOwner(player.getUniqueId(), guildName) && !GuildDatabaseAPI.get().isOfficer(player.getUniqueId(), guildName)) {
             player.sendMessage(ChatColor.RED + "You must be at least a guild " + ChatColor.BOLD + "OFFICER" + ChatColor.RED + " to use " + ChatColor.BOLD + "/ginvite");
             return true;
         }
@@ -71,7 +70,12 @@ public class CommandGInvite extends BasicCommand {
             return true;
         }
 
-        DBObject invitation = new BasicDBObject();
+        if (!GuildDatabaseAPI.get().isGuildNull(p_uuid)) {
+            player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " is already in a guild.");
+            return true;
+        }
+
+        Document invitation = new Document();
 
         invitation.put("guild", guildName);
         invitation.put("referrer", sender.getName());

@@ -161,7 +161,7 @@ public class AchievementManager implements GenericMechanic, Listener {
             case "cheifs":
                 Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.CHIEF);
                 break;
-            case "dead_peaks":
+            case "deadpeaks":
                 Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.DEAD_PEAKS);
                 break;
             case "mure":

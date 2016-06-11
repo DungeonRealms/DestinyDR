@@ -101,7 +101,7 @@ public class ScoreboardHandler implements GenericMechanic {
     }
 
     /**
-     * Updates the players name and tab menu
+     * Updates the players name and tab menus
      * (Shown to other players).
      *
      * @param player

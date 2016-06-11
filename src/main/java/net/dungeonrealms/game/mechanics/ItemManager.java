@@ -811,8 +811,7 @@ public class ItemManager {
         ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.QUARTZ), ChatColor.GREEN + "Hearthstone", new String[]{
                 ChatColor.DARK_GRAY + "Home location",
                 "",
-                ChatColor.GRAY + "Use: Returns you to ",
-                ChatColor.YELLOW + TeleportAPI.getLocationFromDatabase(player.getUniqueId()),
+                ChatColor.GRAY + "Use: Returns you to " + ChatColor.YELLOW + TeleportAPI.getLocationFromDatabase(player.getUniqueId()),
                 "",
                 ChatColor.YELLOW + "Speak to an Innkeeper to change location."
         });

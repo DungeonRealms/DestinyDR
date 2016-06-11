@@ -6,6 +6,7 @@ import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
+import net.dungeonrealms.game.mechanics.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.miscellaneous.TradeCalculator;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
@@ -852,52 +853,16 @@ public class ClickHandler {
                 break;
             case "Toggles":
                 event.setCancelled(true);
-                if (slot > 9) return;
-                switch (slot) {
-                    case 0:
-                        boolean bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_CHAOTIC_PREVENTION, player.getUniqueId());
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_CHAOTIC_PREVENTION, !bool, true);
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10L);
-                        break;
-                    case 1:
-                        bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId());
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_DEBUG, !bool, true);
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10L);
-                        break;
-                    case 2:
-                        bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DUEL, player.getUniqueId());
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_DUEL, !bool, true);
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10L);
-                        break;
-                    case 3:
-                        bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, player.getUniqueId());
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_GLOBAL_CHAT, !bool, true);
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10L);
-                        break;
-                    case 4:
-                        bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_PVP, player.getUniqueId());
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_PVP, !bool, true);
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10L);
-                        break;
-                    case 5:
-                        bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_RECEIVE_MESSAGE, player.getUniqueId());
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_RECEIVE_MESSAGE, !bool, true);
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10L);
-                        break;
-                    case 6:
-                        bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE, player.getUniqueId());
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_TRADE, !bool, true);
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10L);
-                        break;
-                    case 7:
-                        bool = (boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_TRADE_CHAT, player.getUniqueId());
-                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.TOGGLE_TRADE_CHAT, !bool, true);
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> PlayerMenus.openToggleMenu(player), 10L);
-                        break;
-                    case 8:
-                        PlayerMenus.openPlayerProfileMenu(player);
-                        break;
+                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR) return;
+
+                PlayerManager.PlayerToggles playerToggle = PlayerManager.PlayerToggles.getByCommandName(event.getCurrentItem().getItemMeta().getDisplayName().substring(3));
+                if (playerToggle != null) {
+                    playerToggle.setToggleState(player, !(boolean) DatabaseAPI.getInstance().getData(playerToggle.getDbField(), player.getUniqueId()));
+                    PlayerMenus.openToggleMenu(player);
+                } else {
+                    PlayerMenus.openPlayerProfileMenu(player);
                 }
+
                 break;
             case "Food Vendor":
                 if (event.isShiftClick()) {
@@ -1082,11 +1047,14 @@ public class ClickHandler {
                     case 25:
                         PlayerMenus.openSupportECashMenu(player, playerName, uuid);
                         break;
-                    case 29:
+                    case 28:
                         PlayerMenus.openSupportBankMenu(player, playerName, uuid);
                         break;
-                    case 33:
+                    case 31:
                         PlayerMenus.openSupportHearthstoneMenu(player, playerName, uuid);
+                        break;
+                    case 34:
+                        PlayerMenus.openSupportCoemeticssMenu(player, playerName, uuid);
                         break;
 
                     default:
@@ -1217,6 +1185,95 @@ public class ClickHandler {
                 }
                 break;
             case "Support Tools (Hearthstone)":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+
+                tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
+                playerName = tag.getString("name");
+                uuid = UUID.fromString(tag.getString("uuid"));
+
+                // Only continue if the playerName & uuid aren't empty.
+                if (playerName.isEmpty() || uuid.toString().isEmpty()) break;
+
+                switch (slot) {
+                    case 4:
+                        PlayerMenus.openSupportMenu(player, playerName);
+                        break;
+                    default:
+                        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
+                        break;
+                }
+                break;
+            case "Support Tools (Cosmetics)":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+
+                tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
+                playerName = tag.getString("name");
+                uuid = UUID.fromString(tag.getString("uuid"));
+
+                // Only continue if the playerName & uuid aren't empty.
+                if (playerName.isEmpty() || uuid.toString().isEmpty()) break;
+
+                switch (slot) {
+                    case 4:
+                        PlayerMenus.openSupportMenu(player, playerName);
+                        break;
+                    case 19:
+                        PlayerMenus.openSupportTrailsMenu(player, playerName, uuid);
+                        break;
+                    case 22:
+                        PlayerMenus.openSupportMountsMenu(player, playerName, uuid);
+                        break;
+                    case 25:
+                        PlayerMenus.openSupportPetsMenu(player, playerName, uuid);
+                        break;
+                    default:
+                        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
+                        break;
+                }
+                break;
+            case "Support Tools (Trails)":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+
+                tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
+                playerName = tag.getString("name");
+                uuid = UUID.fromString(tag.getString("uuid"));
+
+                // Only continue if the playerName & uuid aren't empty.
+                if (playerName.isEmpty() || uuid.toString().isEmpty()) break;
+
+                switch (slot) {
+                    case 4:
+                        PlayerMenus.openSupportMenu(player, playerName);
+                        break;
+                    default:
+                        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
+                        break;
+                }
+                break;
+            case "Support Tools (Mounts)":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+
+                tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
+                playerName = tag.getString("name");
+                uuid = UUID.fromString(tag.getString("uuid"));
+
+                // Only continue if the playerName & uuid aren't empty.
+                if (playerName.isEmpty() || uuid.toString().isEmpty()) break;
+
+                switch (slot) {
+                    case 4:
+                        PlayerMenus.openSupportMenu(player, playerName);
+                        break;
+                    default:
+                        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
+                        break;
+                }
+                break;
+            case "Support Tools (Pets)":
                 event.setCancelled(true);
                 if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
 
