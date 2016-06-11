@@ -320,7 +320,7 @@ public class DatabaseAPI {
                                         .append("tradeChat", false)
                                         .append("globalChat", false)
                                         .append("receiveMessage", true)
-                                        .append("pvp", true)
+                                        .append("pvp", false)
                                         .append("duel", true)
                                         .append("chaoticPrevention", true))
                         .append("portalKeyShards",

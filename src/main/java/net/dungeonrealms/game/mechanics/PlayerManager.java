@@ -42,7 +42,7 @@ public class PlayerManager {
         TRADE(1, EnumData.TOGGLE_TRADE, "toggletrade", "Toggles trading requests.", "Trade"),
         TRADE_CHAT(2, EnumData.TOGGLE_TRADE_CHAT, "toggletradechat", "Toggles receiving <T>rade chat.", "Trade Chat"),
         GLOBAL_CHAT(3, EnumData.TOGGLE_GLOBAL_CHAT, "toggleglobalchat", "Toggles talking only in global chat.", "Global Only Chat"),
-        RECEIVE_MESSAGES(4, EnumData.TOGGLE_RECEIVE_MESSAGE, "toggletells", "Toggles receiving NON-BUD /tell.", "Non-BUG Private Messages"),
+        RECEIVE_MESSAGES(4, EnumData.TOGGLE_RECEIVE_MESSAGE, "toggletells", "Toggles receiving NON-BUD /tell.", "Non-BUD Private Messages"),
         PVP(5, EnumData.TOGGLE_PVP, "togglepvp", "Toggles all outgoing PvP damage (anti-neutral).", "Outgoing PvP Damage"),
         DUEL(6, EnumData.TOGGLE_DUEL, "toggleduel", "Toggles dueling requests.", "Dueling Requests"),
         CHAOTIC_PREVENTION(7, EnumData.TOGGLE_CHAOTIC_PREVENTION, "togglechaos", "Toggles killing blows on lawful players (anti-chaotic).", "Anti-Chaotic");
