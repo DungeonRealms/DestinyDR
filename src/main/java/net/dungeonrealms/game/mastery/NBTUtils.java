@@ -23,7 +23,7 @@ public class NBTUtils {
         nmsEntity.c(tag);
         tag.set("NoAI", new NBTTagInt(1));
         nmsEntity.f(tag);
-        Utils.log.info("Nullified " + e.getName() + "'s AI");
+        //Utils.log.info("Nullified " + e.getName() + "'s AI");
     }
 
 }

@@ -3,13 +3,13 @@ package net.dungeonrealms.game.player.combat;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.NBTUtils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
@@ -19,13 +19,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.ArrayList;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ConcurrentMap;
 
 /**
  * Created by Nick on 8/29/2015.
@@ -45,6 +43,12 @@ public class CombatLog implements GenericMechanic {
     public static ConcurrentHashMap<Player, Integer> COMBAT = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<UUID, Zombie> LOGGER = new ConcurrentHashMap<>();
     public static ConcurrentHashMap<UUID, Inventory> LOGGER_INVENTORY = new ConcurrentHashMap<>();
+
+    public ConcurrentMap<UUID, CombatLogger> getCOMBAT_LOGGERS() {
+        return COMBAT_LOGGERS;
+    }
+
+    private ConcurrentMap<UUID, CombatLogger> COMBAT_LOGGERS = new ConcurrentHashMap<>();
 
     public static boolean isInCombat(Player player) {
         return COMBAT.containsKey(player);
@@ -82,37 +86,81 @@ public class CombatLog implements GenericMechanic {
         }
     }
 
-    public static void handleCombatLogger(Player p) {
-        World world = p.getWorld();
-        Location loc = p.getLocation();
-        Zombie z = (Zombie) world.spawnEntity(loc, EntityType.ZOMBIE);
-        NBTUtils.nullifyAI(z);
-        z.getEquipment().setArmorContents(p.getEquipment().getArmorContents());
-        z.getEquipment().setItemInHand(p.getItemInHand());
-        if (p.getEquipment().getHelmet() == null || p.getEquipment().getHelmet().getType() == Material.AIR) {
-            ItemStack skull = new ItemStack(Material.SKULL_ITEM, 1, (short) 3);
-            SkullMeta meta = (SkullMeta) skull.getItemMeta();
-            meta.setOwner(p.getName());
-            meta.setDisplayName(p.getName());
-            skull.setItemMeta(meta);
-            z.getEquipment().setHelmet(skull);
+    public static void handleCombatLogger(Player player) {
+        final World world = player.getWorld();
+        final Location loc = player.getLocation();
+        CombatLogger combatLogger = new CombatLogger(player.getUniqueId());
+        List<ItemStack> itemsToDrop = new ArrayList<>();
+        List<ItemStack> armorToDrop = new ArrayList<>();
+        List<ItemStack> itemsToSave = new ArrayList<>();
+        List<ItemStack> armorToSave = new ArrayList<>();
+        KarmaHandler.EnumPlayerAlignments alignments = API.getGamePlayer(player).getPlayerAlignment();
+        int lvl = API.getGamePlayer(player).getLevel();
+        if (alignments == null) {
+            return;
         }
-        int lvl = API.getGamePlayer(p).getLevel();
-        z.setCustomName(ChatColor.LIGHT_PURPLE + "[" + lvl + "]" + ChatColor.RED + " " + p.getName());
-        z.setCustomNameVisible(true);
-        MetadataUtils.registerEntityMetadata(((CraftEntity) z).getHandle(), EnumEntityType.HOSTILE_MOB, 4, lvl);
-        HealthHandler.getInstance().setMonsterHPLive(z, HealthHandler.getInstance().getPlayerHPLive(p));
-        z.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getPlayerMaxHPLive(p)));
-        z.setMetadata("combatlog", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
-        z.setMetadata("uuid", new FixedMetadataValue(DungeonRealms.getInstance(), p.getUniqueId().toString()));
-        LOGGER.put(p.getUniqueId(), z);
-        LOGGER_INVENTORY.put(p.getUniqueId(), p.getInventory());
+        Random random = new Random();
+        //TODO: Check if this includes Armor.
+        for (int i = 0; i <= player.getInventory().getContents().length; i++) {
+            if (i > 35) {
+                break;
+            }
+            ItemStack stack = player.getInventory().getItem(i);
+            if (i == 0) {
+                if (alignments == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                    itemsToDrop.add(stack);
+                } else if (alignments == KarmaHandler.EnumPlayerAlignments.NEUTRAL) {
+                    if (random.nextInt(99) < 50) {
+                        itemsToDrop.add(stack);
+                    } else {
+                        itemsToSave.add(stack);
+                    }
+                } else {
+                    itemsToSave.add(stack);
+                }
+            } else {
+                itemsToDrop.add(stack);
+            }
+        }
+        ItemStack melonStack = new ItemStack(Material.MELON);
+        for (ItemStack stack : player.getEquipment().getArmorContents()) {
+            if (alignments == KarmaHandler.EnumPlayerAlignments.NEUTRAL) {
+                if (random.nextInt(99) < 25) {
+                    armorToDrop.add(stack);
+                    armorToSave.add(melonStack);
+                } else {
+                    armorToSave.add(stack);
+                }
+            } else if (alignments == KarmaHandler.EnumPlayerAlignments.CHAOTIC) {
+                armorToSave.add(melonStack);
+                armorToDrop.add(stack);
+            } else {
+                armorToSave.add(stack);
+            }
+        }
+        Zombie combatNPC = (Zombie) world.spawnEntity(loc, EntityType.ZOMBIE);
+        NBTUtils.nullifyAI(combatNPC);
+        combatNPC.getEquipment().setArmorContents(player.getEquipment().getArmorContents());
+        combatNPC.getEquipment().setItemInHand(player.getItemInHand());
+        combatNPC.setCustomName(ChatColor.LIGHT_PURPLE + "[" + lvl + "]" + ChatColor.RED + " " + player.getName());
+        combatNPC.setCustomNameVisible(true);
+        MetadataUtils.registerEntityMetadata(((CraftEntity) combatNPC).getHandle(), EnumEntityType.HOSTILE_MOB, 4, lvl);
+        HealthHandler.getInstance().setMonsterHPLive(combatNPC, HealthHandler.getInstance().getPlayerHPLive(player));
+        combatNPC.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getPlayerMaxHPLive(player)));
+        combatNPC.setMetadata("combatlog", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
+        combatNPC.setMetadata("uuid", new FixedMetadataValue(DungeonRealms.getInstance(), player.getUniqueId().toString()));
+        combatLogger.setArmorToDrop(armorToDrop);
+        combatLogger.setItemsToDrop(itemsToDrop);
+        combatLogger.setLoggerNPC(combatNPC);
+        combatLogger.setPlayerAlignment(alignments);
+        combatLogger.setItemsToSave(itemsToSave);
+        combatLogger.setArmorToSave(armorToSave);
+        CombatLog.getInstance().getCOMBAT_LOGGERS().put(player.getUniqueId(), combatLogger);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            LOGGER.get(p.getUniqueId()).remove();
-            LOGGER.remove(p.getUniqueId());
-            LOGGER_INVENTORY.remove(p.getUniqueId());
-        }, 20 * 10);
-
+            if (CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(player.getUniqueId())) {
+                CombatLog.getInstance().getCOMBAT_LOGGERS().get(player.getUniqueId()).handleTimeOut();
+            }
+        }, 250L);
     }
 
     @Override
@@ -143,7 +191,16 @@ public class CombatLog implements GenericMechanic {
      * @param uuid
      */
     public static void checkCombatLog(UUID uuid) {
-        if (CombatLog.LOGGER.containsKey(uuid)) {
+        if (CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(uuid)) {
+            CombatLogger combatLogger = CombatLog.getInstance().getCOMBAT_LOGGERS().get(uuid);
+            if (combatLogger.getLoggerNPC().isDead()) {
+                combatLogger.handleNPCDeath();
+            } else {
+                HealthHandler.getInstance().setPlayerHPLive(Bukkit.getPlayer(uuid), HealthHandler.getInstance().getMonsterHPLive(combatLogger.getLoggerNPC()));
+                combatLogger.handleTimeOut();
+            }
+        }
+        /*if (CombatLog.LOGGER.containsKey(uuid)) {
             Zombie z = CombatLog.LOGGER.get(uuid);
             if (!z.isDead()) {
                 Player p = Bukkit.getPlayer(uuid);
@@ -155,6 +212,6 @@ public class CombatLog implements GenericMechanic {
                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, "-367,90,390,0,0", false);
                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, "", true);
             }
-        }
+        }*/
     }
 }

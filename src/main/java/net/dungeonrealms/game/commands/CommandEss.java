@@ -1,9 +1,11 @@
 package net.dungeonrealms.game.commands;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import net.dungeonrealms.game.mongo.Database;
+import net.dungeonrealms.API;
+import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -11,12 +13,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.world.teleportation.TeleportAPI;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by Kieran on 10/9/2015.
@@ -184,6 +182,7 @@ public class CommandEss extends BasicCommand {
                         commandSender.sendMessage(ChatColor.RED + "Wrong arguments. (E.g. /Essentials ecash add Proxying 100)");
                         return false;
                     }
+                    break;
                 case "resetmule":
                     DatabaseAPI.getInstance().update(((Player)commandSender).getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, false);
                     commandSender.sendMessage(ChatColor.RED + "Mule level reset.");

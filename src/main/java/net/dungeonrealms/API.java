@@ -543,8 +543,6 @@ public class API {
         }
         player.getInventory().setArmorContents(armorContents);
 
-//        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
-
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
             ItemStack[] items = ItemSerialization.fromString(playerInv).getContents();
@@ -701,8 +699,6 @@ public class API {
             }
         }
         player.getInventory().setArmorContents(armorContents);
-
-//        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LOGGERDIED, false, true);
 
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
@@ -871,8 +867,9 @@ public class API {
 
     public static GamePlayer getGamePlayer(Player p) {
         for (GamePlayer gPlayer : GAMEPLAYERS) {
-            if (gPlayer.getPlayer().getName().equals(p.getName()))
+            if (gPlayer.getPlayer().getName().equals(p.getName())) {
                 return gPlayer;
+            }
         }
         return null;
     }
