@@ -38,7 +38,7 @@ public class CommandStuck extends BasicCommand {
                 !player.getLocation().getBlock().getType().equals(Material.LONG_GRASS)
 
                 ){
-            player.sendMessage(ChatColor.GREEN + "It appears that you're stuck inside of a blocK?");
+            player.sendMessage(ChatColor.GREEN + "It appears that you're stuck inside of a block?");
             player.teleport(player.getLocation().add(0, 2, 0));
             return true;
         }
