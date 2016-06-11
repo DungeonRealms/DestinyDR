@@ -78,7 +78,7 @@ public class ItemManager {
     }
 
     public static ItemStack createWeaponEnchant(int tier) {
-        String material = getMatString(tier);
+        String material = getWeaponMatString(tier);
         ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() + ChatColor.BOLD.toString() + "Scroll: " + API.getTierColor(tier) + "Enchant " + material + " Weapon", new String[]{ChatColor.RED + "+5% DMG", ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "Weapon will VANISH if enchant above +3 FAILS."});
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
         nms.getTag().setString("type", "weaponenchant");
@@ -87,7 +87,7 @@ public class ItemManager {
     }
 
     public static ItemStack createArmorEnchant(int tier) {
-        String material = getMatString(tier);
+        String material = getArmorMatString(tier);
         ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() + ChatColor.BOLD.toString() + "Scroll: " + API.getTierColor(tier) + "Enchant " + material + " Armor", new String[]{ChatColor.RED + "+5% HP", ChatColor.RED + "+5% HP REGEN", ChatColor.GRAY.toString() + ChatColor.ITALIC + "    - OR -", ChatColor.RED + "+1% ENERGY REGEN", ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "Armor will VANISH if enchant above +3 FAILS."});
         net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
         nms.getTag().setString("type", "armorenchant");
@@ -99,12 +99,28 @@ public class ItemManager {
      * @param tier
      * @return
      */
-    private static String getMatString(int tier) {
+    private static String getArmorMatString(int tier) {
         switch (tier) {
             case 1:
                 return "Leather";
             case 2:
                 return "Chainmail";
+            case 3:
+                return "Iron";
+            case 4:
+                return "Diamond";
+            case 5:
+                return "Gold";
+        }
+        return null;
+    }
+
+    private static String getWeaponMatString(int tier) {
+        switch (tier) {
+            case 1:
+                return "Wooden";
+            case 2:
+                return "Stone";
             case 3:
                 return "Iron";
             case 4:
