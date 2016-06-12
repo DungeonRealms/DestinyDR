@@ -283,7 +283,7 @@ public class GuildMechanics implements GenericMechanic {
                     BankMechanics.getInstance().takeGemsFromInventory(5000, player);
 
 
-                    BannerMeta meta = (BannerMeta) info.getCurrentBanner();
+                    BannerMeta meta = (BannerMeta) info.getCurrentBanner().getItemMeta();
                     meta.setLore(new ArrayList<>());
                     meta.setDisplayName(ChatColor.GREEN + info.getDisplayName());
                     info.getCurrentBanner().setItemMeta(meta);
