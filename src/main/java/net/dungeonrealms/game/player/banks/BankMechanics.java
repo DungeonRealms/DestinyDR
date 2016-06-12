@@ -10,11 +10,8 @@ import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -24,7 +21,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-
 import java.util.*;
 
 /**
@@ -66,15 +62,13 @@ public class BankMechanics implements GenericMechanic {
                     continue;
                 if (gp.getStats().freePoints > 0) {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        TextComponent bungeeMessage = new TextComponent(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
-                        bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats"));
-                        bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Allocate Points").create()));
-                        TextComponent test = new TextComponent(ChatColor.GREEN + "*" + ChatColor.GRAY +
-                                "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
-                                "To allocate click ");
-                        test.addExtra(bungeeMessage);
-                        test.addExtra(ChatColor.GREEN + "*");
-                        gp.getPlayer().spigot().sendMessage(test);
+                        final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
+                                "To allocate click ", ChatColor.WHITE);
+                        normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats");
+                        normal.addText(ChatColor.GREEN + "*");
+                        for (Player player1 : Bukkit.getOnlinePlayers()) {
+                            normal.sendToPlayer(player1);
+                        }
                     });
                 }
             }
@@ -434,7 +428,7 @@ public class BankMechanics implements GenericMechanic {
     /**
      * Add gems to player database
      *
-     * @param p
+     * @param uuid
      * @param num
      */
     public void addGemsToPlayerInventory(Player p, int num) {

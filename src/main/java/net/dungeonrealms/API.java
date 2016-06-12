@@ -26,6 +26,7 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
+import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.Entities;
@@ -694,17 +695,13 @@ public class API {
         if (gp.getPlayer() != null) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 if (gp.getStats().freePoints > 0) {
-                    /*Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        TextComponent bungeeMessage = new TextComponent(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
-                        bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats"));
-                        bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Allocate Points").create()));
-                        TextComponent test = new TextComponent(ChatColor.GREEN + "*" + ChatColor.GRAY +
-                                "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
-                                "To allocate click ");
-                        test.addExtra(bungeeMessage);
-                        test.addExtra(ChatColor.GREEN + "*");
-                        gp.getPlayer().spigot().sendMessage(test);
-                    });*/
+                    final JSONMessage normal = new JSONMessage(ChatColor.GREEN + "*" + ChatColor.GRAY + "You have available " + ChatColor.GREEN + "stat points. " + ChatColor.GRAY +
+                            "To allocate click ", ChatColor.WHITE);
+                    normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats");
+                    normal.addText(ChatColor.GREEN + "*");
+                    for (Player player1 : Bukkit.getOnlinePlayers()) {
+                        normal.sendToPlayer(player1);
+                    }
                 }
             }, 100);
         }

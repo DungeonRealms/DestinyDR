@@ -222,7 +222,9 @@ public class PlayerMenus {
         ItemStack itemStack;
         String mountType = null;
 
-        if (playerMounts.contains(EnumMounts.TIER3_HORSE.getRawName())) {
+        if (playerMounts.contains(EnumMounts.TIER4_HORSE.getRawName())) {
+            mountType = EnumMounts.TIER4_HORSE.getRawName();
+        } else if (playerMounts.contains(EnumMounts.TIER3_HORSE.getRawName())) {
             mountType = EnumMounts.TIER3_HORSE.getRawName();
         } else if (playerMounts.contains(EnumMounts.TIER2_HORSE.getRawName())) {
             mountType = EnumMounts.TIER2_HORSE.getRawName();

@@ -283,7 +283,7 @@
     <dependency>
       <groupId>org.spigotmc</groupId>
       <artifactId>spigot-api</artifactId>
-      <version>1.9.4-R.01</version>
+      <version>1.9.4</version>
       <scope>system</scope>
       <systemPath>${project.basedir}/lib/spigot-1.9.4-R0.1-SNAPSHOT-latest.jar</systemPath>
     </dependency>

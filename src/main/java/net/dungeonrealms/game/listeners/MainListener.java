@@ -25,6 +25,7 @@ import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.inventory.GUI;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
+import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
@@ -102,9 +103,11 @@ public class MainListener implements Listener {
                         return;
                     }
                     gamePlayer.addExperience(expToGive, false);
-                    TextComponent defaultRank = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ");
-                    defaultRank.addExtra(bungeeMessage);
-                    Bukkit.spigot().broadcast(defaultRank);
+                    final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
+                    normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/server/298658");
+                    for (Player player1 : Bukkit.getOnlinePlayers()) {
+                        normal.sendToPlayer(player1);
+                    }
                     break;
                 case "sub":
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 20, true);
@@ -112,10 +115,11 @@ public class MainListener implements Listener {
                     if (API.getGamePlayer(player) == null) {
                         return;
                     }
-                    gamePlayer.addExperience(expToGive, false);
-                    TextComponent sub = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 20 ECASH & 5% EXP @ vote ");
-                    sub.addExtra(bungeeMessage);
-                    Bukkit.spigot().broadcast(sub);
+                    final JSONMessage normal2 = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 25 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
+                    normal2.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/server/298658");
+                    for (Player player1 : Bukkit.getOnlinePlayers()) {
+                        normal2.sendToPlayer(player1);
+                    }
                     break;
                 case "sub+":
                 case "sub++":
@@ -125,9 +129,11 @@ public class MainListener implements Listener {
                         return;
                     }
                     gamePlayer.addExperience(expToGive, false);
-                    TextComponent subplus = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 25 ECASH & 5% EXP @ vote ");
-                    subplus.addExtra(bungeeMessage);
-                    Bukkit.spigot().broadcast(subplus);
+                    final JSONMessage normal3 = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 25 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
+                    normal3.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/server/298658");
+                    for (Player player1 : Bukkit.getOnlinePlayers()) {
+                        normal3.sendToPlayer(player1);
+                    }
                     break;
                 default:
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 15, true);
@@ -136,9 +142,11 @@ public class MainListener implements Listener {
                         return;
                     }
                     gamePlayer.addExperience(expToGive, false);
-                    TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ");
-                    test.addExtra(bungeeMessage);
-                    Bukkit.spigot().broadcast(test);
+                    final JSONMessage normal4 = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
+                    normal4.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/server/298658");
+                    for (Player player1 : Bukkit.getOnlinePlayers()) {
+                        normal4.sendToPlayer(player1);
+                    }
                     break;
             }
         } else {
