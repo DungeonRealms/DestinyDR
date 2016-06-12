@@ -173,6 +173,13 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
     @Override
     public void setOwner(String guildName, UUID uuid) {
+        switch (get(uuid, guildName)) {
+            case OFFICERS:
+                update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString());
+
+            case MEMBERS:
+                update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString());
+        }
         update(guildName, EnumGuildData.OWNER, EnumOperators.$SET, uuid.toString());
     }
 

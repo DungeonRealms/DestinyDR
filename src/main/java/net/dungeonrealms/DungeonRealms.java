@@ -1,6 +1,7 @@
 package net.dungeonrealms;
 
 import com.connorlinfoot.bountifulapi.BountifulAPI;
+import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.commands.*;
 import net.dungeonrealms.game.commands.generic.CommandManager;
 import net.dungeonrealms.game.commands.guild.*;
@@ -8,7 +9,10 @@ import net.dungeonrealms.game.commands.menualias.CommandMount;
 import net.dungeonrealms.game.commands.menualias.CommandPet;
 import net.dungeonrealms.game.commands.menualias.CommandProfile;
 import net.dungeonrealms.game.commands.menualias.CommandTrail;
-import net.dungeonrealms.game.commands.newcommands.*;
+import net.dungeonrealms.game.commands.newcommands.GlobalBroadcastCommand;
+import net.dungeonrealms.game.commands.newcommands.KickAllCommand;
+import net.dungeonrealms.game.commands.newcommands.RealmTestCommand;
+import net.dungeonrealms.game.commands.newcommands.StarterCommand;
 import net.dungeonrealms.game.commands.support.CommandSupport;
 import net.dungeonrealms.game.commands.testcommands.CommandTestRank;
 import net.dungeonrealms.game.commands.testcommands.CommandTestingHall;
@@ -23,7 +27,6 @@ import net.dungeonrealms.game.menus.HearthStone;
 import net.dungeonrealms.game.menus.Profile;
 import net.dungeonrealms.game.mongo.Database;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.achievements.AchievementManager;
 import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.TabbedChatListener;

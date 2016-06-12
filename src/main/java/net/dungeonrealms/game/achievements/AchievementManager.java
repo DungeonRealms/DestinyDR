@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.mongo.achievements;
+package net.dungeonrealms.game.achievements;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
