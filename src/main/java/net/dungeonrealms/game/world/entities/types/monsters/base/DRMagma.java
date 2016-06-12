@@ -1,7 +1,9 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
+import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -14,9 +16,9 @@ import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_8_R3.EntityMagmaCube;
-import net.minecraft.server.v1_8_R3.GenericAttributes;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R2.EntityMagmaCube;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
+import net.minecraft.server.v1_9_R2.World;
 
 /**
  * Created by Chase on Oct 17, 2015
@@ -48,43 +50,43 @@ public class DRMagma extends EntityMagmaCube implements DRMonster {
         String customName = monsterType.getPrefix() + " " + monsterType.name + " " + monsterType.getSuffix() + " ";
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
-
+		setSize(4);
 	}
-    private void setArmor(int tier) {
-        ItemStack[] armor = API.getTierArmor(tier);
-        // weapon, boots, legs, chest, helmet/head
-        ItemStack weapon = getTierWeapon(tier);
-        
-        ItemStack armor0 = AntiCheat.getInstance().applyAntiDupe(armor[0]);
-        ItemStack armor1 = AntiCheat.getInstance().applyAntiDupe(armor[1]);
-        ItemStack armor2 = AntiCheat.getInstance().applyAntiDupe(armor[2]);
-
-        this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-        this.setEquipment(1, CraftItemStack.asNMSCopy(armor0));
-        this.setEquipment(2, CraftItemStack.asNMSCopy(armor1));
-        this.setEquipment(3, CraftItemStack.asNMSCopy(armor2));
-    }
+	public void setArmor(int tier) {
+		ItemStack[] armor = API.getTierArmor(tier);
+		// weapon, boots, legs, chest, helmet/head
+		ItemStack weapon = getTierWeapon(tier);
+		LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+		boolean armorMissing = false;
+		if (random.nextInt(10) <= 5) {
+			ItemStack armor0 = AntiCheat.getInstance().applyAntiDupe(armor[0]);
+			livingEntity.getEquipment().setBoots(armor0);
+			this.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor0));
+		} else {
+			armorMissing = true;
+		}
+		if (random.nextInt(10) <= 5 || armorMissing) {
+			ItemStack armor1 = AntiCheat.getInstance().applyAntiDupe(armor[1]);
+			livingEntity.getEquipment().setLeggings(armor1);
+			this.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor1));
+			armorMissing = false;
+		} else {
+			armorMissing = true;
+		}
+		if (random.nextInt(10) <= 5 || armorMissing) {
+			ItemStack armor2 = AntiCheat.getInstance().applyAntiDupe(armor[2]);
+			livingEntity.getEquipment().setChestplate(armor2);
+			this.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor2));
+		}
+		this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
+		livingEntity.getEquipment().setItemInMainHand(weapon);
+	}
 
     private ItemStack getTierWeapon(int tier) {
         ItemStack item = new ItemGenerator().setType(ItemType.getRandomWeapon()).setRarity(API.getItemRarity(false))
                 .setTier(ItemTier.getByTier(tier)).generateItem().getItem();
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;
-    }
-
-    @Override
-    protected String z() {
-        return "";
-    }
-
-    @Override
-    protected String bo() {
-        return "game.player.hurt";
-    }
-
-    @Override
-    protected String bp() {
-        return "";
     }
 
 	@Override
@@ -96,10 +98,8 @@ public class DRMagma extends EntityMagmaCube implements DRMonster {
 	public void onMonsterDeath(Player killer) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
 		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity(), killer);
-		if(this.random.nextInt(100) < 33)
-			this.getRareDrop();
-		});	}
 
+		});	}
 	@Override
 	public EnumMonster getEnum() {
 		return monsterType;

@@ -185,7 +185,7 @@ public class NPCMenus {
         inv.setItem(0, new ItemBuilder().setItem(Material.INK_SACK, (short) 8, ChatColor.YELLOW + "Click to ACCEPT", new String[]{
                 ""
         }).setNBTString("acceptButton", "whynot").build());
-        player.playSound(player.getLocation(), Sound.WOOD_CLICK, 1.f, 1.f);
+        player.playSound(player.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1.f, 1.f);
 
         player.openInventory(inv);
     }

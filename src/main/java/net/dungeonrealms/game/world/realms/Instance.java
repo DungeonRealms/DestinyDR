@@ -221,12 +221,12 @@ public class Instance implements GenericMechanic, Listener {
     public void onPlayerEnterPortal(PlayerPortalEvent event) {
         if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) {
             if (EntityAPI.hasPetOut(event.getPlayer().getUniqueId())) {
-                net.minecraft.server.v1_8_R3.Entity pet = Entities.PLAYER_PETS.get(event.getPlayer().getUniqueId());
+                net.minecraft.server.v1_9_R2.Entity pet = Entities.PLAYER_PETS.get(event.getPlayer().getUniqueId());
                 pet.dead = true;
                 EntityAPI.removePlayerPetList(event.getPlayer().getUniqueId());
             }
             if (EntityAPI.hasMountOut(event.getPlayer().getUniqueId())) {
-                net.minecraft.server.v1_8_R3.Entity mount = Entities.PLAYER_MOUNTS.get(event.getPlayer().getUniqueId());
+                net.minecraft.server.v1_9_R2.Entity mount = Entities.PLAYER_MOUNTS.get(event.getPlayer().getUniqueId());
                 mount.dead = true;
                 EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
             }

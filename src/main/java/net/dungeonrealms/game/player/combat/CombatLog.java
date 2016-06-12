@@ -12,7 +12,7 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
@@ -141,7 +141,7 @@ public class CombatLog implements GenericMechanic {
         Zombie combatNPC = (Zombie) world.spawnEntity(loc, EntityType.ZOMBIE);
         NBTUtils.nullifyAI(combatNPC);
         combatNPC.getEquipment().setArmorContents(player.getEquipment().getArmorContents());
-        combatNPC.getEquipment().setItemInHand(player.getItemInHand());
+        combatNPC.getEquipment().setItemInHand(player.getEquipment().getItemInMainHand());
         combatNPC.setCustomName(ChatColor.LIGHT_PURPLE + "[" + lvl + "]" + ChatColor.RED + " " + player.getName());
         combatNPC.setCustomNameVisible(true);
         MetadataUtils.registerEntityMetadata(((CraftEntity) combatNPC).getHandle(), EnumEntityType.HOSTILE_MOB, 4, lvl);

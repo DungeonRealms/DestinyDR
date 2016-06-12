@@ -1,12 +1,13 @@
 package net.dungeonrealms.game.world.entities.types.mounts;
 
-import java.util.UUID;
-
-import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.minecraft.server.v1_8_R3.EntityHorse;
-import net.minecraft.server.v1_8_R3.GenericAttributes;
-import net.minecraft.server.v1_8_R3.World;
+import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.minecraft.server.v1_9_R2.EntityHorse;
+import net.minecraft.server.v1_9_R2.EnumHorseType;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
+import net.minecraft.server.v1_9_R2.World;
+
+import java.util.UUID;
 
 /**
  * Created by Kieran on 9/18/2015.
@@ -27,9 +28,9 @@ public class Horse extends EntityHorse {
         this.getBukkitEntity().setCustomNameVisible(true);
         this.canPickUpLoot = false;
         this.persistent = true;
-        this.setType(horseType);
+        this.setType(EnumHorseType.a(horseType));
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(horseSpeed);
-        this.setOwnerUUID(ownerUUID.toString());
+        this.setOwnerUUID(ownerUUID);
 
         MetadataUtils.registerEntityMetadata(this, this.entityType, 0, 0);
     }

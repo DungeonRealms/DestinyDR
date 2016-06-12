@@ -1,12 +1,12 @@
 package net.dungeonrealms.game.world.anticheat;
 
 import net.dungeonrealms.DungeonRealms;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.NBTTagString;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.ItemStack;
@@ -58,7 +58,7 @@ public class AntiCheat {
     public void checkPlayer(Player player) {
 
         for (ItemStack item : player.getInventory().getContents()) {
-            if (item != null && item.getType() != null && !item.getType().equals(Material.AIR)) {
+            if (item != null && !item.getType().equals(Material.AIR)) {
                 if (item.getAmount() > 1) {
                     if (isRegistered(item)) {
                         player.getInventory().remove(item);
@@ -87,7 +87,7 @@ public class AntiCheat {
      * @since 1.0
      */
     public String getUniqueEpochIdentifier(ItemStack item) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null || !tag.hasKey("u")) return null;
         return tag.getString("u");
@@ -101,7 +101,7 @@ public class AntiCheat {
      * @since 1.0
      */
     public boolean isRegistered(ItemStack item) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         return !(nmsStack == null || nmsStack.getTag() == null) && nmsStack.getTag().hasKey("u");
     }
 
@@ -113,7 +113,7 @@ public class AntiCheat {
      * @since 1.0
      */
     public ItemStack applyAntiDupe(ItemStack item) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null || tag.hasKey("u")) return item;
         tag.set("u", new NBTTagString(System.currentTimeMillis() + item.getType().toString() + item.getType().getMaxStackSize() + item.getType().getMaxDurability() + item.getDurability() + new Random().nextInt(999) + "R"));

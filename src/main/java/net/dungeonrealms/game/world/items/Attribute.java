@@ -1,9 +1,9 @@
 package net.dungeonrealms.game.world.items;
 
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 /**
  * Created by Nick on 9/19/2015.
@@ -11,7 +11,7 @@ import net.minecraft.server.v1_8_R3.NBTTagCompound;
 public class Attribute {
 
     private ItemStack item;
-    private net.minecraft.server.v1_8_R3.ItemStack nmsStack;
+    private net.minecraft.server.v1_9_R2.ItemStack nmsStack;
 
     public Attribute(ItemStack item) {
         this.item = item;

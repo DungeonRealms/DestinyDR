@@ -4,8 +4,8 @@ import java.util.UUID;
 
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.minecraft.server.v1_8_R3.EntitySilverfish;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R2.EntitySilverfish;
+import net.minecraft.server.v1_9_R2.World;
 
 /**
  * Created by Kieran on 9/5/2015.

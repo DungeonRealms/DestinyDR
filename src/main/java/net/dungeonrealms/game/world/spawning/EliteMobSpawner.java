@@ -9,16 +9,13 @@ import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumNamedElite;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.EntityArmorStand;
-import net.minecraft.server.v1_8_R3.EntityInsentient;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.ArmorStand;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
@@ -282,10 +279,30 @@ public class EliteMobSpawner {
                 break;
         }
         if (eliteType != EnumNamedElite.NONE) {
+            toGive.setEquipment(EnumItemSlot.MAINHAND, null);
+            toGive.setEquipment(EnumItemSlot.FEET, null);
+            toGive.setEquipment(EnumItemSlot.LEGS, null);
+            toGive.setEquipment(EnumItemSlot.CHEST, null);
+            toGive.setEquipment(EnumItemSlot.HEAD, null);
             for (int i = 0; i <= 4; i++) {
-                toGive.setEquipment(i, null);
                 if (armorWeapon[i] != null) {
-                    toGive.setEquipment(i, CraftItemStack.asNMSCopy(armorWeapon[i]));
+                    switch (i) {
+                        case 0:
+                            toGive.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(armorWeapon[i]));
+                            break;
+                        case 1:
+                            toGive.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armorWeapon[i]));
+                            break;
+                        case 2:
+                            toGive.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armorWeapon[i]));
+                            break;
+                        case 3:
+                            toGive.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armorWeapon[i]));
+                            break;
+                        case 4:
+                            toGive.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(armorWeapon[i]));
+                            break;
+                    }
                 }
             }
         }

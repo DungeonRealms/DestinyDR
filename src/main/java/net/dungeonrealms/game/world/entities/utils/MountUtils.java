@@ -11,12 +11,12 @@ import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entities.types.mounts.Horse;
 import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -100,7 +100,7 @@ public class MountUtils {
                 HorseInventory horseInventory = horse.getInventory();
                 horseInventory.setSaddle(new ItemStack(Material.SADDLE));
                 horseInventory.setArmor(new ItemStack(Material.IRON_BARDING));
-                player.playSound(player.getLocation(), Sound.HORSE_IDLE, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.ENTITY_HORSE_AMBIENT, 1F, 1F);
                 EntityAPI.addPlayerMountList(player.getUniqueId(), mountHorse);
                 player.closeInventory();
                 break;
@@ -116,7 +116,7 @@ public class MountUtils {
                 HorseInventory horseInventory = horse.getInventory();
                 horseInventory.setSaddle(new ItemStack(Material.SADDLE));
                 horseInventory.setArmor(new ItemStack(Material.IRON_BARDING));
-                player.playSound(player.getLocation(), Sound.HORSE_IDLE, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.ENTITY_HORSE_AMBIENT, 1F, 1F);
                 EntityAPI.addPlayerMountList(player.getUniqueId(), mountHorse);
                 player.closeInventory();
                 break;
@@ -132,7 +132,7 @@ public class MountUtils {
                 HorseInventory horseInventory = horse.getInventory();
                 horseInventory.setSaddle(new ItemStack(Material.SADDLE));
                 horseInventory.setArmor(new ItemStack(Material.DIAMOND_BARDING));
-                player.playSound(player.getLocation(), Sound.HORSE_IDLE, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.ENTITY_HORSE_AMBIENT, 1F, 1F);
                 EntityAPI.addPlayerMountList(player.getUniqueId(), mountHorse);
                 player.closeInventory();
                 break;
@@ -148,7 +148,7 @@ public class MountUtils {
                 HorseInventory horseInventory = horse.getInventory();
                 horseInventory.setSaddle(new ItemStack(Material.SADDLE));
                 horseInventory.setArmor(new ItemStack(Material.GOLD_BARDING));
-                player.playSound(player.getLocation(), Sound.HORSE_IDLE, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.ENTITY_HORSE_AMBIENT, 1F, 1F);
                 EntityAPI.addPlayerMountList(player.getUniqueId(), mountHorse);
                 player.closeInventory();
                 break;
@@ -175,7 +175,7 @@ public class MountUtils {
                 }
                 h.setCustomName(tier.getColor().toString() + player.getName() + "'s " + tier.getName());
                 player.closeInventory();
-                player.playSound(player.getLocation(), Sound.DONKEY_IDLE, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.ENTITY_DONKEY_AMBIENT, 1F, 1F);
                 EntityAPI.addPlayerMountList(player.getUniqueId(), ((CraftEntity) h).getHandle());
                 if (!inventories.containsKey(player.getUniqueId())) {
 //                    int muleLevel = (int) DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());

@@ -8,12 +8,12 @@ import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.*;
 import net.dungeonrealms.game.world.entities.types.monsters.EntityGolem;
 import net.dungeonrealms.game.world.entities.types.monsters.base.*;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -252,7 +252,6 @@ public class SpawningMechanics implements GenericMechanic {
                 break;
             case SpawnOfInferno:
                 entity = new DRMagma(world, EnumMonster.SpawnOfInferno, tier);
-                ((DRMagma) entity).setSize(4);
                 break;
             case GreaterAbyssalDemon:
                 entity = new DRSilverfish(world, EnumMonster.GreaterAbyssalDemon, tier);

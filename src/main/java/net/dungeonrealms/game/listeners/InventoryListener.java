@@ -30,15 +30,16 @@ import net.dungeonrealms.game.world.items.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
-import net.minecraft.server.v1_8_R3.BlockPosition;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.Packet;
-import net.minecraft.server.v1_8_R3.PacketPlayOutWorldEvent;
+import net.minecraft.server.v1_9_R2.BlockPosition;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.Packet;
+import net.minecraft.server.v1_9_R2.PacketPlayOutWorldEvent;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
@@ -124,7 +125,7 @@ public class InventoryListener implements Listener {
         if (e.getCurrentItem() == null || e.getCurrentItem().getType() == Material.AIR)
             return;
         ItemStack stackClicked = e.getCurrentItem();
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stackClicked);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stackClicked);
         if (nms.hasTag() && nms.getTag().hasKey("status")) {
             String status = nms.getTag().getString("status");
             e.setCancelled(true);
@@ -181,7 +182,7 @@ public class InventoryListener implements Listener {
         int slot = event.getNewSlot();
         if (event.getPlayer().getInventory().getItem(slot) != null) {
             Player p = event.getPlayer();
-            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getPlayer().getInventory().getItem(slot));
+            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getPlayer().getInventory().getItem(slot));
             if (nms.hasTag()) {
                 if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon")) {
                     Player player = event.getPlayer();
@@ -221,7 +222,7 @@ public class InventoryListener implements Listener {
                             }
                             break;
                     }
-                    p.playSound(event.getPlayer().getLocation(), Sound.ITEM_BREAK, 0.5F, 1F);
+                    p.playSound(event.getPlayer().getLocation(), Sound.ENTITY_ITEM_BREAK, 0.5F, 1F);
                 }
             }
         }
@@ -349,7 +350,7 @@ public class InventoryListener implements Listener {
             }
         }
         if (!CombatLog.isInCombat(player)) {
-            player.playSound(player.getLocation(), Sound.ITEM_BREAK, 1f, 1f);
+            player.playSound(player.getLocation(), Sound.ENTITY_ITEM_BREAK, 1f, 1f);
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 if (API.getGamePlayer(player) == null) {
                     return;
@@ -467,10 +468,6 @@ public class InventoryListener implements Listener {
         } else if (event.getInventory().getTitle().contains("Storage Chest")) {
             Storage storage = BankMechanics.getInstance().getStorage(event.getPlayer().getUniqueId());
             storage.inv.setContents(event.getInventory().getContents());
-        } else if (event.getInventory().getTitle().contains("Loot")) {
-            Player p = (Player) event.getPlayer();
-            Block block = p.getTargetBlock((Set<Material>) null, 7);
-            LootManager.LOOT_SPAWNERS.stream().filter(loot -> loot.location.equals(block.getLocation())).forEach(net.dungeonrealms.game.world.loot.LootSpawner::update);
         } else if (event.getInventory().getTitle().contains("Trade Window")) {
             Player p = (Player) event.getPlayer();
             Trade t = net.dungeonrealms.game.player.trade.TradeManager.getTrade(p.getUniqueId());
@@ -548,7 +545,7 @@ public class InventoryListener implements Listener {
             if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR)
                 return;
             ItemStack stackClicked = event.getCurrentItem();
-            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stackClicked);
+            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stackClicked);
             if (nms.hasTag() && nms.getTag().hasKey("status")) {
                 String status = nms.getTag().getString("status");
                 event.setCancelled(true);
@@ -590,7 +587,7 @@ public class InventoryListener implements Listener {
         if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
         if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
         ItemStack cursorItem = event.getCursor();
-        net.minecraft.server.v1_8_R3.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
+        net.minecraft.server.v1_9_R2.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
         if (cursorItem.getType() != Material.MAGMA_CREAM || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type") || nmsCursor.getTag().hasKey("type") && !nmsCursor.getTag().getString("type").equalsIgnoreCase("orb"))
             return;
         if (API.getGamePlayer((Player) event.getWhoClicked()).getLevel() < 30) {
@@ -623,11 +620,11 @@ public class InventoryListener implements Listener {
         if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
         if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
         ItemStack cursorItem = event.getCursor();
-        net.minecraft.server.v1_8_R3.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
+        net.minecraft.server.v1_9_R2.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
         if (cursorItem.getType() != Material.EMPTY_MAP || !nmsCursor.hasTag() || !nmsCursor.getTag().hasKey("type"))
             return;
         ItemStack slotItem = event.getCurrentItem();
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(slotItem);
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(slotItem);
         if (!API.isWeapon(slotItem) && !API.isArmor(slotItem)) return;
         event.setCancelled(true);
 
@@ -964,9 +961,9 @@ public class InventoryListener implements Listener {
         if (event.getCursor().getType() != Material.EMERALD || event.getCurrentItem().getType() != Material.INK_SACK)
             return;
         ItemStack cursorItem = event.getCursor();
-        net.minecraft.server.v1_8_R3.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
+        net.minecraft.server.v1_9_R2.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursorItem);
         ItemStack slotItem = event.getCurrentItem();
-        net.minecraft.server.v1_8_R3.ItemStack nmsSlot = CraftItemStack.asNMSCopy(slotItem);
+        net.minecraft.server.v1_9_R2.ItemStack nmsSlot = CraftItemStack.asNMSCopy(slotItem);
         Player player = (Player) event.getWhoClicked();
         if (!nmsSlot.hasTag() || !nmsCursor.hasTag()) return;
         if (!nmsSlot.getTag().hasKey("type") || !nmsSlot.getTag().getString("type").equalsIgnoreCase("money")) return;
@@ -979,7 +976,7 @@ public class InventoryListener implements Listener {
         int pouchMax = BankMechanics.getInstance().getPouchMax(tier);
 
         if (pouchAmount < pouchMax) {
-            player.playSound(player.getLocation(), Sound.LEVEL_UP, 1, 1);
+            player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
             if (pouchAmount + amount > pouchMax) {
                 amount = (pouchMax - (pouchAmount + amount)) * -1;
                 event.setCurrentItem(BankMechanics.getInstance().createGemPouch(tier, pouchMax));
@@ -1064,7 +1061,7 @@ public class InventoryListener implements Listener {
             }
 
             Packet particles = new PacketPlayOutWorldEvent(2001, new BlockPosition((int) Math.round(player.getLocation().getX()), (int) Math.round(player.getLocation().getY() + 2), (int) Math.round(player.getLocation().getZ())), particleID, false);
-            ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, particles);
+            ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(((CraftPlayer) player).getHandle(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, particles);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
                 player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + (int) newPercent + "/1500");
             }
@@ -1117,7 +1114,7 @@ public class InventoryListener implements Listener {
                 particleID = 5;
             }
             Packet particles = new PacketPlayOutWorldEvent(2001, new BlockPosition((int) Math.round(player.getLocation().getX()), (int) Math.round(player.getLocation().getY() + 2), (int) Math.round(player.getLocation().getZ())), particleID, false);
-            ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, particles);
+            ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(((CraftPlayer) player).getHandle(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, particles);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
                 player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + (int) newPercent + "/1500");
             }
@@ -1223,7 +1220,7 @@ public class InventoryListener implements Listener {
             string = string.replace("g?", "");
             int cost = Integer.parseInt(string);
             if (BankMechanics.getInstance().takeGemsFromInventory(cost, (Player) event.getWhoClicked())) {
-                ItemStack stack = event.getWhoClicked().getItemInHand();
+                ItemStack stack = event.getWhoClicked().getEquipment().getItemInMainHand();
                 RepairAPI.setCustomItemDurability(stack, 1500);
                 event.getWhoClicked().setItemInHand(stack);
                 event.getWhoClicked().closeInventory();
@@ -1250,12 +1247,12 @@ public class InventoryListener implements Listener {
     public void playerShiftClickWithImportantItem(InventoryClickEvent event) {
         if (event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
         if (event.getClick().isShiftClick()) {
-            Inventory clicked = event.getClickedInventory();
+            Inventory clicked = event.getInventory();
             if (clicked == event.getWhoClicked().getInventory()) {
                 ItemStack clickedOn = event.getCurrentItem();
                 if (clickedOn != null) {
                     if (clickedOn.getType() == Material.SADDLE || clickedOn.getType() == Material.EYE_OF_ENDER || clickedOn.getType() == Material.NAME_TAG) {
-                        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(clickedOn);
+                        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(clickedOn);
                         NBTTagCompound tag = nmsStack.getTag();
                         if (tag == null) return;
                         if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
@@ -1269,12 +1266,12 @@ public class InventoryListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void playerClickWithImportantItem(InventoryClickEvent event) {
         if (event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
-        Inventory clicked = event.getClickedInventory();
+        Inventory clicked = event.getInventory();
         if (clicked != event.getWhoClicked().getInventory()) {
             ItemStack onCursor = event.getCursor();
             if (onCursor != null) {
                 if (onCursor.getType() == Material.SADDLE || onCursor.getType() == Material.EYE_OF_ENDER || onCursor.getType() == Material.NAME_TAG) {
-                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(onCursor);
+                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(onCursor);
                     NBTTagCompound tag = nmsStack.getTag();
                     if (tag == null) return;
                     if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
@@ -1290,7 +1287,7 @@ public class InventoryListener implements Listener {
         ItemStack dragged = event.getOldCursor();
         if (dragged != null) {
             if (dragged.getType() == Material.SADDLE || dragged.getType() == Material.EYE_OF_ENDER || dragged.getType() == Material.NAME_TAG) {
-                net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(dragged);
+                net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(dragged);
                 NBTTagCompound tag = nmsStack.getTag();
                 if (tag == null) return;
                 if (!(tag.getString("type").equalsIgnoreCase("important"))) return;
@@ -1317,8 +1314,8 @@ public class InventoryListener implements Listener {
             Player pl = (Player) event.getWhoClicked();
             if (current.getType() == Material.LEASH && cursor.getType() == Material.CHEST) {
                 //Check for mule upgrade?
-                net.minecraft.server.v1_8_R3.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursor);
-                net.minecraft.server.v1_8_R3.ItemStack nmsCurrent = CraftItemStack.asNMSCopy(current);
+                net.minecraft.server.v1_9_R2.ItemStack nmsCursor = CraftItemStack.asNMSCopy(cursor);
+                net.minecraft.server.v1_9_R2.ItemStack nmsCurrent = CraftItemStack.asNMSCopy(current);
                 if (nmsCursor.hasTag() && nmsCurrent.hasTag()) {
                     NBTTagCompound tag = nmsCursor.getTag();
                     //Mule upgrade item.
@@ -1383,7 +1380,7 @@ public class InventoryListener implements Listener {
                             pl.updateInventory();
 //                            event.getClickedInventory().setItem(event.getRawSlot(), newMule);
 //                            pl.updateInventory();
-                            pl.playSound(pl.getLocation(), Sound.LEVEL_UP, 1, 1.4F);
+                            pl.playSound(pl.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1.4F);
                         }
                     }
                 }

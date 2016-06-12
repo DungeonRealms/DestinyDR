@@ -5,13 +5,13 @@ import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.NBTTagString;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -52,7 +52,7 @@ public class MailHandler {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.MAILBOX, from + "," + String.valueOf(unix) + "," + rawItem, true);
             player.getInventory().addItem(actualItem);
             sendMailMessage(player, ChatColor.GREEN + "You opened mail from " + ChatColor.AQUA + from + ChatColor.GREEN + "!");
-            player.playSound(player.getLocation(), Sound.ENDERDRAGON_WINGS, 1f, 63f);
+            player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 1f, 63f);
         }
     }
 
@@ -76,7 +76,7 @@ public class MailHandler {
      * @since 1.0
      */
     public ItemStack setItemAsMail(ItemStack itemStack, String base64SerializedString) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("mail"));
         tag.set("item", new NBTTagString(base64SerializedString));

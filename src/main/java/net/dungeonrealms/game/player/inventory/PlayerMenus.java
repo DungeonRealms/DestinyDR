@@ -15,13 +15,13 @@ import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.NBTTagString;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -55,7 +55,7 @@ public class PlayerMenus {
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to delete!"
             });
 
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("info", new NBTTagString(s));
             nmsStack.setTag(tag);
@@ -103,7 +103,7 @@ public class PlayerMenus {
                     ChatColor.AQUA.toString() + ChatColor.UNDERLINE + "Right-Click " + ChatColor.GRAY + "to deny!"
             });
 
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("info", new NBTTagString(s));
             nmsStack.setTag(tag);
@@ -183,7 +183,7 @@ public class PlayerMenus {
                 petName = ChatColor.GREEN + EnumPets.getByName(petType).getDisplayName();
             }
             ItemStack itemStack = new ItemStack(Material.MONSTER_EGG, 1, (short) EnumPets.getByName(petType).getEggShortData());
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("petType", new NBTTagString(petType));
             if (!particleType.equalsIgnoreCase("")) {
@@ -244,7 +244,7 @@ public class PlayerMenus {
             return;
         }
 
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("mountType", new NBTTagString(mountType));
         nmsStack.setTag(tag);
@@ -271,7 +271,7 @@ public class PlayerMenus {
 
         for (String trailType : playerTrails) {
             ItemStack itemStack = ParticleAPI.ParticleEffect.getByName(trailType).getSelectionItem();
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("playerTrailType", new NBTTagString(trailType));
             nmsStack.setTag(tag);
@@ -299,7 +299,7 @@ public class PlayerMenus {
 
         for (String skinType : playerMountSkins) {
             ItemStack itemStack = EnumMountSkins.getByName(skinType).getSelectionItem();
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("skinType", new NBTTagString(skinType));
             nmsStack.setTag(tag);
@@ -645,7 +645,7 @@ public class PlayerMenus {
      */
 
     private static ItemStack applySupportItemTags(ItemStack item, String playerName, UUID uuid) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("name", new NBTTagString(playerName));
         tag.set("uuid", new NBTTagString(uuid.toString()));

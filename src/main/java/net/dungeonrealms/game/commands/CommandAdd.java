@@ -8,6 +8,7 @@ import net.dungeonrealms.game.mastery.RealmManager;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
+import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ItemRarity;
@@ -21,15 +22,15 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.NBTTagString;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -142,7 +143,7 @@ public class CommandAdd extends BasicCommand {
                         ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.getById(Integer.valueOf(args[1])), player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);
                     break;
                 case "bank":
-                    net.minecraft.server.v1_8_R3.ItemStack nmsBank = CraftItemStack.asNMSCopy(new ItemStack(Material.ENDER_CHEST));
+                    net.minecraft.server.v1_9_R2.ItemStack nmsBank = CraftItemStack.asNMSCopy(new ItemStack(Material.ENDER_CHEST));
                     NBTTagCompound Banktag = nmsBank.getTag() == null ? new NBTTagCompound() : nmsBank.getTag();
                     Banktag.set("type", new NBTTagString("bank"));
                     nmsBank.setTag(Banktag);
@@ -214,7 +215,7 @@ public class CommandAdd extends BasicCommand {
                     player.getInventory().addItem(ItemManager.createHealingFood(5, Item.ItemRarity.UNIQUE));
                     break;
                 case "test":
-                    Bukkit.broadcastMessage("Get2" + String.valueOf(RepairAPI.getCustomDurability(player.getItemInHand())));
+                    Bukkit.broadcastMessage("Get2" + String.valueOf(RepairAPI.getCustomDurability(player.getEquipment().getItemInMainHand())));
                     break;
                 case "orb":
                     player.getInventory().addItem(ItemManager.createOrbofAlteration());
@@ -249,7 +250,16 @@ public class CommandAdd extends BasicCommand {
                     bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
                     TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ");
                     test.addExtra(bungeeMessage);
-                    Bukkit.spigot().broadcast(test);
+                    final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
+                    normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/server/298658");
+                    for (Player player1 : Bukkit.getOnlinePlayers()) {
+                        normal.sendToPlayer(player1);
+                    }
+                    //final JSONMessage normal1 = new JSONMessage(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
+                    //normal.addText(before + "");
+                    //normal.addItem(player.getEquipment().getItemInMainHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
+                    //normal.addText(after);
+                    //Bukkit.spigot.broadcast(test);
                     break;
                 case "banknote":
                     int quantity = 1000;

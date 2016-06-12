@@ -6,8 +6,8 @@ import org.bukkit.potion.PotionEffectType;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.Entity;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 /**
  * Created by Kieran on 9/18/2015.

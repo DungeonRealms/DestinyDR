@@ -221,7 +221,7 @@ public class GamePlayer {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, 0, false);
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.LEVEL, 1, true);
             getStats().lvlUp();
-            T.playSound(T.getLocation(), Sound.LEVEL_UP, 0.5F, 1F);
+            T.playSound(T.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1F);
             T.sendMessage(ChatColor.GREEN + "You have reached level " + ChatColor.AQUA + (level + 1) + ChatColor.GREEN + " and have gained " + ChatColor.AQUA + Integer.toString(PlayerStats.POINTS_PER_LEVEL) + ChatColor.GREEN + " Attribute Points!");
             ScoreboardHandler.getInstance().setPlayerHeadScoreboard(T, getPlayerAlignment().getAlignmentColor(), (level + 1));
             switch (level + 1) {

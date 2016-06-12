@@ -10,11 +10,11 @@ import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -108,7 +108,7 @@ public interface DRMonster {
                 }
                 world.getWorld().dropItemNaturally(loc.add(0, 1, 0), stack);
             }
-            ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
+            ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInMainHand();
             world.getWorld().dropItemNaturally(loc.add(0, 1, 0), weapon);
             return;
         }
@@ -147,7 +147,7 @@ public interface DRMonster {
                 }
             }
         }
-        ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInHand();
+        ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInMainHand();
         if (weapon != null && weapon.getType() != Material.AIR) {
             if (drops < 1) {
                 if (armorRoll <= chance + (chance * killerItemFind / 100)) {

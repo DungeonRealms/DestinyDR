@@ -65,7 +65,7 @@ public class Achievements {
         Player player = Bukkit.getPlayer(uuid);
         player.sendMessage(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD.toString() + ">> " + ChatColor.DARK_AQUA.toString() + "Achievement Unlocked:" + ChatColor.DARK_AQUA.toString() + " '" + ChatColor.GRAY + achievement.getName() + ChatColor.DARK_AQUA.toString() + "'!");
         player.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0]);
-        player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1F);
+        player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1F);
         try {
             ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.TOWN_AURA, player.getLocation().add(0, 2, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 10);
         } catch (Exception e) {

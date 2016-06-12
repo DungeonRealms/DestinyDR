@@ -19,11 +19,11 @@ import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.apache.commons.lang.StringUtils;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Item;
 import org.bukkit.entity.Player;
@@ -60,7 +60,7 @@ public class BlockListener implements Listener {
     public void onBlockPlace(BlockPlaceEvent event) {
         if (event.getPlayer().isOp() || event.getPlayer().getGameMode() == GameMode.CREATIVE) return;
         if (event.getItemInHand() == null) return;
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemInHand());
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemInHand());
         if (nmsItem == null) return;
         if (!event.getBlockPlaced().getWorld().equals(Bukkit.getWorlds().get(0))) return;
         event.setCancelled(true);
@@ -94,7 +94,7 @@ public class BlockListener implements Listener {
     public void onEntityExplode(EntityExplodeEvent event) {
         if (event.getLocation().getWorld().getName().contains("DUNGEON")) {
             event.setCancelled(true);
-            event.getLocation().getWorld().playEffect(event.getLocation(), Effect.EXPLOSION_HUGE, 10);
+            event.getLocation().getWorld().playEffect(event.getLocation(), Effect.WITHER_BREAK_BLOCK, 10);
             List<Block> list = event.blockList();
             for (Block b : list) {
                 b.setType(Material.AIR);
@@ -115,10 +115,10 @@ public class BlockListener implements Listener {
         if (!e.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
 
         if (block == null) return;
-        if (e.getPlayer().getItemInHand() == null || e.getPlayer().getItemInHand().getType() == Material.AIR) return;
+        if (e.getPlayer().getEquipment().getItemInMainHand() == null || e.getPlayer().getEquipment().getItemInMainHand().getType() == Material.AIR) return;
         if (block.getType() == Material.COAL_ORE || block.getType() == Material.IRON_ORE || block.getType() == Material.GOLD_ORE || block.getType() == Material.DIAMOND_ORE || block.getType() == Material.EMERALD_ORE) {
             e.setCancelled(true);
-            ItemStack stackInHand = e.getPlayer().getItemInHand();
+            ItemStack stackInHand = e.getPlayer().getEquipment().getItemInMainHand();
             if (Mining.isDRPickaxe(stackInHand)) {
                 Player p = e.getPlayer();
                 Material type = block.getType();
@@ -133,7 +133,7 @@ public class BlockListener implements Listener {
                 if (API.getGamePlayer(e.getPlayer()) != null) {
                     API.getGamePlayer(e.getPlayer()).addExperience((experienceGain / 8), false);
                 }
-                RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInHand(), RandomHelper.getRandomNumberBetween(2, 5));
+                RepairAPI.subtractCustomDurability(p, p.getEquipment().getItemInMainHand(), RandomHelper.getRandomNumberBetween(2, 5));
                 int break_chance = Mining.getBreakChance(stackInHand);
                 int do_i_break = new Random().nextInt(100);
                 if (do_i_break < break_chance) {
@@ -156,12 +156,12 @@ public class BlockListener implements Listener {
         Block block = e.getClickedBlock();
         if (block == null) return;
         if (block.getType() == Material.TORCH || block.getType() == Material.BURNING_FURNACE || block.getType() == Material.FURNACE) {
-            if (e.getPlayer().getItemInHand() == null || e.getPlayer().getItemInHand().getType() == Material.AIR)
+            if (e.getPlayer().getEquipment().getItemInMainHand() == null || e.getPlayer().getEquipment().getItemInMainHand().getType() == Material.AIR)
                 return;
-            if (e.getPlayer().getItemInHand().getType() == Material.RAW_FISH) {
+            if (e.getPlayer().getEquipment().getItemInMainHand().getType() == Material.RAW_FISH) {
                 e.setCancelled(true);
-                e.getPlayer().getItemInHand().setType(Material.COOKED_FISH);
-                e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.GHAST_FIREBALL, 1, 1);
+                e.getPlayer().getEquipment().getItemInMainHand().setType(Material.COOKED_FISH);
+                e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.ENTITY_GHAST_SHOOT, 1, 1);
             }
         }
     }
@@ -169,12 +169,12 @@ public class BlockListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void handleMiningFatigue(PlayerAnimationEvent event) {
         if (event.getAnimationType() != PlayerAnimationType.ARM_SWING) return;
-        if (event.getPlayer().getItemInHand() == null || event.getPlayer().getItemInHand().getType() == Material.AIR)
+        if (event.getPlayer().getEquipment().getItemInMainHand() == null || event.getPlayer().getEquipment().getItemInMainHand().getType() == Material.AIR)
             return;
-        if (!API.isWeapon(event.getPlayer().getItemInHand()) && !Mining.isDRPickaxe(event.getPlayer().getItemInHand()))
+        if (!API.isWeapon(event.getPlayer().getEquipment().getItemInMainHand()) && !Mining.isDRPickaxe(event.getPlayer().getEquipment().getItemInMainHand()))
             return;
-        if (API.isWeapon(event.getPlayer().getItemInHand())) {
-            int tier = CraftItemStack.asNMSCopy(event.getPlayer().getItemInHand()).getTag().getInt("itemTier");
+        if (API.isWeapon(event.getPlayer().getEquipment().getItemInMainHand())) {
+            int tier = CraftItemStack.asNMSCopy(event.getPlayer().getEquipment().getItemInMainHand()).getTag().getInt("itemTier");
             int playerLvl = API.getGamePlayer(event.getPlayer()).getLevel();
             switch (tier) {
                 case 5:
@@ -191,8 +191,8 @@ public class BlockListener implements Listener {
             }
             return;
         }
-        if (!Mining.isDRPickaxe(event.getPlayer().getItemInHand())) return;
-        ItemStack stackInHand = event.getPlayer().getItemInHand();
+        if (!Mining.isDRPickaxe(event.getPlayer().getEquipment().getItemInMainHand())) return;
+        ItemStack stackInHand = event.getPlayer().getEquipment().getItemInMainHand();
         Block block = event.getPlayer().getTargetBlock((HashSet<Byte>) null, 100);
         if (block == null || block.getType() == Material.AIR) return;
         if (block.getType() == Material.COAL_ORE || block.getType() == Material.IRON_ORE || block.getType() == Material.GOLD_ORE || block.getType() == Material.DIAMOND_ORE || block.getType() == Material.EMERALD_ORE) {
@@ -243,13 +243,13 @@ public class BlockListener implements Listener {
         event.setCancelled(true);
 
         Player player = event.getPlayer();
-        if (player.getItemInHand() == null || player.getItemInHand().getType() == Material.AIR) {
+        if (player.getEquipment().getItemInMainHand() == null || player.getEquipment().getItemInMainHand().getType() == Material.AIR) {
             player.sendMessage(ChatColor.YELLOW + "Equip the item to repair and " + ChatColor.UNDERLINE + "RIGHT CLICK" + ChatColor.RESET + ChatColor.YELLOW + " the ANVIL.");
             player.sendMessage(ChatColor.GRAY + "Or, if you have an item scrap, drag it on top of the item in your inventory.");
             event.setCancelled(true);
             return;
         }
-        ItemStack item = event.getPlayer().getItemInHand();
+        ItemStack item = event.getPlayer().getEquipment().getItemInMainHand();
         if (!API.isWeapon(item) && !API.isArmor(item) && !Mining.isDRPickaxe(item) && !Fishing.isDRFishingPole(item)) {
             event.setCancelled(true);
             return;
@@ -337,8 +337,8 @@ public class BlockListener implements Listener {
                     item.setDurability((short) 0);
                     itemEntity.remove();
                     middle.getWorld().playEffect(middle, Effect.STEP_SOUND, Material.IRON_BLOCK);
-                    middle.getWorld().playSound(middle, Sound.ANVIL_USE, 3, 1.4F);
-                    if (player.getItemInHand() == null) {
+                    middle.getWorld().playSound(middle, Sound.BLOCK_ANVIL_USE, 3, 1.4F);
+                    if (player.getEquipment().getItemInMainHand() == null) {
                         player.setItemInHand(item);
                     } else
                         player.getInventory().addItem(item);
@@ -370,7 +370,7 @@ public class BlockListener implements Listener {
     }
 
     private void returnItem(Player player, ItemStack item) {
-        if (player.getItemInHand() == null) {
+        if (player.getEquipment().getItemInMainHand() == null) {
             player.setItemInHand(item);
         } else {
             if (player.getInventory().firstEmpty() == -1) {
@@ -404,18 +404,10 @@ public class BlockListener implements Listener {
             switch (actionType) {
                 case RIGHT_CLICK_BLOCK:
                     e.setCancelled(true);
-                    e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.CHEST_OPEN, 1f, 1f);
+                    e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLOCK_CHEST_OPEN, 1f, 1f);
                     e.getPlayer().openInventory(loot.inv);
                     LootManager.getOpenChests().put(e.getPlayer().getName(), loot.inv);
                     Achievements.getInstance().giveAchievement(e.getPlayer().getUniqueId(), Achievements.EnumAchievements.OPEN_LOOT_CHEST);
-                    /*Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        Block blockLook = e.getPlayer().getTargetBlock((Set<Material>) null, 7);
-                        if (blockLook.getType() == Material.CHEST) {
-                            e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.CHEST_OPEN, 1f, 1f);
-                            e.getPlayer().openInventory(loot.inv);
-                            Achievements.getInstance().giveAchievement(e.getPlayer().getUniqueId(), Achievements.EnumAchievements.OPEN_LOOT_CHEST);
-                        }
-                    }, 10);*/
                     break;
                 case LEFT_CLICK_BLOCK:
                     e.setCancelled(true);
@@ -428,7 +420,7 @@ public class BlockListener implements Listener {
                             e.getPlayer().getWorld().dropItemNaturally(loot.location, stack);
                         }
                     }
-                    loot.update();
+                    loot.update(e.getPlayer());
                     break;
             }
         } else {
@@ -449,14 +441,14 @@ public class BlockListener implements Listener {
         if (event.getItem() == null) return;
         if (event.getAction().equals(Action.LEFT_CLICK_BLOCK)) {
             if (event.getClickedBlock() == null || event.getClickedBlock().getType() == Material.AIR) return;
-            net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItem());
+            net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItem());
             if (nmsItem == null) return;
             NBTTagCompound tag = nmsItem.getTag();
             if (tag == null || !tag.getString("type").equalsIgnoreCase("important")) return;
             event.setCancelled(true);
             if (event.getPlayer().isSneaking()) {
-                ItemStack item = event.getPlayer().getItemInHand();
-                net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+                ItemStack item = event.getPlayer().getEquipment().getItemInMainHand();
+                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
                 if (nms.getTag().hasKey("usage") && nms.getTag().getString("usage").equalsIgnoreCase("profile")) {
                     if (event.getPlayer().isOp()) {
                         Instance.getInstance().tryToOpenRealm(event.getPlayer(), event.getClickedBlock().getLocation());
@@ -513,7 +505,7 @@ public class BlockListener implements Listener {
             if (stack == null) return;
             if (stack.getType() != Material.WRITTEN_BOOK) return;
             e.setCancelled(true);
-            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
             if (!nms.hasTag() && !nms.getTag().hasKey("journal")) return;
             Block b1 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(0, 1, 0));
             Block b2 = e.getPlayer().getWorld().getBlockAt(e.getClickedBlock().getLocation().add(1, 1, 0));
@@ -553,7 +545,7 @@ public class BlockListener implements Listener {
             if (inventory.equals(event.getInventory())) {
                 LootManager.LOOT_SPAWNERS.stream().forEach(lootSpawner1 -> {
                     if (lootSpawner1.inv.equals(inventory)) {
-                        lootSpawner1.update();
+                        lootSpawner1.update((Player) event.getPlayer());
                         LootManager.getOpenChests().remove(event.getPlayer().getName());
                     }
                 });

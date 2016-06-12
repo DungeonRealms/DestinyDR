@@ -6,7 +6,7 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRWitherSkeleton;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R2.World;
 
 /**
  * Created by Chase on Oct 20, 2015

@@ -6,9 +6,9 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.ArrayList;
@@ -38,7 +38,7 @@ public class TradeCalculator {
 
             if (is.getType() == Material.POTION) {
                 if (API.isItemTradeable(is)) {
-                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(is);
+                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(is);
                     if (nmsStack != null && nmsStack.getTag() != null && nmsStack.getTag().hasKey("itemTier")) {
                         switch (nmsStack.getTag().getInt("itemTier")) {
                             case 1:
@@ -141,7 +141,7 @@ public class TradeCalculator {
             int tier = RepairAPI.getArmorOrWeaponTier(is);
             if (RepairAPI.isItemArmorOrWeapon(is)) {
                 int payout = 0;
-                net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(is);
+                net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(is);
                 NBTTagCompound tag = nmsItem.getTag();
                 if (tag.hasKey("type") && API.isItemTradeable(is)) {
                     if (API.isArmor(is)) {

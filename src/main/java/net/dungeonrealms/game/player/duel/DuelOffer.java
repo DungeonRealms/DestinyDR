@@ -7,9 +7,9 @@ import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.player.chat.GameChat;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -50,7 +50,7 @@ public class DuelOffer {
         ItemStack weaponTier = ItemManager.createItem(Material.GOLD_SWORD, "Weapon Tier Limit", null);
         ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY UP",
                 null, DyeColor.GRAY.getDyeData());
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
         NBTTagCompound nbt = new NBTTagCompound();
         nbt.setString("status", "notready");
         nms.setTag(nbt);
@@ -222,7 +222,7 @@ public class DuelOffer {
     public void updateOffer() {
         ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "NOT READY",
                 null, DyeColor.GRAY.getDyeData());
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
         NBTTagCompound nbt = new NBTTagCompound();
         nbt.setString("status", "notready");
         nms.setTag(nbt);
@@ -336,12 +336,12 @@ public class DuelOffer {
                     pl.getInventory().setBoots(new ItemStack(Material.AIR));
                 }
             }
-            if (RepairAPI.isItemArmorOrWeapon(pl.getItemInHand()))
-                if (pl.getItemInHand() != null && pl.getItemInHand().getType() != Material.AIR) {
-                    if (API.getItemTier(pl.getItemInHand()) != null)
-                        if (API.getItemTier(pl.getItemInHand()).getTierId() > tierWeapon.getTierId()) {
+            if (RepairAPI.isItemArmorOrWeapon(pl.getEquipment().getItemInMainHand()))
+                if (pl.getEquipment().getItemInMainHand() != null && pl.getEquipment().getItemInMainHand().getType() != Material.AIR) {
+                    if (API.getItemTier(pl.getEquipment().getItemInMainHand()) != null)
+                        if (API.getItemTier(pl.getEquipment().getItemInMainHand()).getTierId() > tierWeapon.getTierId()) {
                             pl.sendMessage(ChatColor.RED + "Unequiped Illegal Weapon");
-                            ItemStack stack = pl.getItemInHand();
+                            ItemStack stack = pl.getEquipment().getItemInMainHand();
                             pl.getInventory().setItem(pl.getInventory().firstEmpty(), stack);
                             pl.setItemInHand(new ItemStack(Material.AIR));
 
@@ -393,12 +393,12 @@ public class DuelOffer {
                     pl.getInventory().setBoots(new ItemStack(Material.AIR));
                 }
             }
-            if (RepairAPI.isItemArmorOrWeapon(pl.getItemInHand()))
-                if (pl.getItemInHand() != null && pl.getItemInHand().getType() != Material.AIR) {
-                    if (API.getItemTier(pl.getItemInHand()) != null)
-                        if (API.getItemTier(pl.getItemInHand()).getTierId() > tierWeapon.getTierId()) {
+            if (RepairAPI.isItemArmorOrWeapon(pl.getEquipment().getItemInMainHand()))
+                if (pl.getEquipment().getItemInMainHand() != null && pl.getEquipment().getItemInMainHand().getType() != Material.AIR) {
+                    if (API.getItemTier(pl.getEquipment().getItemInMainHand()) != null)
+                        if (API.getItemTier(pl.getEquipment().getItemInMainHand()).getTierId() > tierWeapon.getTierId()) {
                             pl.sendMessage(ChatColor.RED + "Unequiped Illegal Weapon");
-                            ItemStack stack = pl.getItemInHand();
+                            ItemStack stack = pl.getEquipment().getItemInMainHand();
                             pl.getInventory().setItem(pl.getInventory().firstEmpty(), stack);
                             pl.setItemInHand(new ItemStack(Material.AIR));
 

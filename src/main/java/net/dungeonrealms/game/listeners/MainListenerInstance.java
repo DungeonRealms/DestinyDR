@@ -1,33 +1,25 @@
 package net.dungeonrealms.game.listeners;
 
 import com.connorlinfoot.bountifulapi.BountifulAPI;
-import com.vexsoftware.votifier.model.VotifierEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.events.PlayerMessagePlayerEvent;
-import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.mongo.achievements.Achievements;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.inventory.GUI;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_8_R3.EntityArmorStand;
-import net.minecraft.server.v1_8_R3.EntityItem;
+import net.minecraft.server.v1_9_R2.EntityArmorStand;
+import net.minecraft.server.v1_9_R2.EntityItem;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -48,14 +40,12 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import java.util.UUID;
-
 /**
  * Created by Nick on 9/17/2015.
  */
 public class MainListenerInstance implements Listener {
 
-    @EventHandler(priority = EventPriority.LOWEST)
+    /*@EventHandler(priority = EventPriority.LOWEST)
     public void onVote(VotifierEvent event) {
         if (Bukkit.getPlayer(event.getVote().getUsername()) != null) {
             Player player = Bukkit.getPlayer(event.getVote().getUsername());
@@ -120,12 +110,12 @@ public class MainListenerInstance implements Listener {
             /*
             This shouldn't ever happen because the Bungee plugin passes the vote down to the
             server that the player joins, but.. if it does happen!
-             */
+
             DatabaseAPI.getInstance().update(UUID.fromString(event.getVote().getUsername()), EnumOperators.$INC, EnumData.ECASH, 15, false);
             Utils.log.warning("Unable to process rank for user: " + event.getVote().getUsername() + " the vote was passed to the server and the player ISNT ONLINE WTF?");
         }
 
-    }
+    }*/
 
     @EventHandler
     public void onPm(PlayerMessagePlayerEvent event) {
@@ -261,7 +251,7 @@ public class MainListenerInstance implements Listener {
             DatabaseAPI.getInstance().PLAYER_TIME.remove(event.getPlayer().getUniqueId());
             Player player = event.getPlayer();
             if (EntityAPI.hasPetOut(player.getUniqueId())) {
-                net.minecraft.server.v1_8_R3.Entity playerPet = EntityAPI.getPlayerPet(player.getUniqueId());
+                net.minecraft.server.v1_9_R2.Entity playerPet = EntityAPI.getPlayerPet(player.getUniqueId());
                 if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(playerPet)) {
                     DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(playerPet);
                 }
@@ -273,13 +263,13 @@ public class MainListenerInstance implements Listener {
             }
 
             if (EntityAPI.hasMountOut(player.getUniqueId())) {
-                net.minecraft.server.v1_8_R3.Entity playerMount = EntityAPI.getPlayerMount(player.getUniqueId());
+                net.minecraft.server.v1_9_R2.Entity playerMount = EntityAPI.getPlayerMount(player.getUniqueId());
                 if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(playerMount)) {
                     DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(playerMount);
                 }
                 if (playerMount.isAlive()) { // Safety check
-                    if (playerMount.passenger != null) {
-                        playerMount.passenger = null;
+                    if (playerMount.passengers != null) {
+                        playerMount.passengers.stream().forEach(passenger -> passenger = null);
                     }
                     playerMount.dead = true;
                 }
@@ -371,7 +361,7 @@ public class MainListenerInstance implements Listener {
                 if (!(player.getInventory().contains(map))) {
                     player.getInventory().addItem(map);
                     player.updateInventory();
-                    player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1F, 0.8F);
+                    player.playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 1F, 0.8F);
                 }
             }
         }
@@ -423,18 +413,18 @@ public class MainListenerInstance implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMapDrop(PlayerDropItemEvent event) {
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
         if (!(event.isCancelled())) {
             Player pl = event.getPlayer();
             // The maps gonna drop! DESTROY IT!
             if (event.getItemDrop().getItemStack().getType() == Material.MAP) {
                 event.getItemDrop().remove();
-                if (pl.getItemInHand().getType() == Material.MAP) {
+                if (pl.getEquipment().getItemInMainHand().getType() == Material.MAP) {
                     pl.setItemInHand(new ItemStack(Material.AIR));
                 } else if (pl.getItemOnCursor().getType() == Material.MAP) {
                     pl.setItemOnCursor(new ItemStack(Material.AIR));
                 }
-                pl.playSound(pl.getLocation(), Sound.BAT_TAKEOFF, 1F, 2F);
+                pl.playSound(pl.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 1F, 2F);
                 pl.updateInventory();
                 return;
             }
@@ -451,7 +441,7 @@ public class MainListenerInstance implements Listener {
         if (event.getWorld() == Bukkit.getWorlds().get(0)) {
             if (event.getChunk().getEntities().length > 0) {
                 for (Entity ent : event.getChunk().getEntities()) {
-                    net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity) ent).getHandle();
+                    net.minecraft.server.v1_9_R2.Entity nms = ((CraftEntity) ent).getHandle();
                     if ((!(nms instanceof EntityItem)) && !(ent instanceof Player)) {
                         if (!(ent instanceof ItemFrame) && !(ent instanceof Painting) && !(ent instanceof Hanging)) {
                             ent.remove();
@@ -469,7 +459,7 @@ public class MainListenerInstance implements Listener {
         if (event.getWorld() == Bukkit.getWorlds().get(0)) {
             if (event.getChunk().getEntities().length > 0) {
                 for (Entity ent : event.getChunk().getEntities()) {
-                    net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity) ent).getHandle();
+                    net.minecraft.server.v1_9_R2.Entity nms = ((CraftEntity) ent).getHandle();
                     if ((!(nms instanceof EntityItem)) && !(ent instanceof Player)) {
                         if (!(ent instanceof ItemFrame) && !(ent instanceof Painting) && !(ent instanceof Hanging)) {
                             ent.remove();
@@ -483,11 +473,11 @@ public class MainListenerInstance implements Listener {
     @EventHandler
     public void onItemPickup(PlayerPickupItemEvent event) {
         if (event.getItem().getItemStack().getType() == Material.EMERALD) {
-            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.SUCCESSFUL_HIT, 1f, 1f);
+            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ARROW_HIT, 1f, 1f);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getPlayer().getUniqueId()).toString())) {
                 event.getPlayer().sendMessage("                      " + ChatColor.GREEN + "+" + event.getItem().getItemStack().getAmount() + ChatColor.BOLD + "G");
             }
-            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem().getItemStack());
+            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem().getItemStack());
             if (nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                 int gems = event.getItem().getItemStack().getAmount();
 
@@ -497,7 +487,7 @@ public class MainListenerInstance implements Listener {
                         continue;
                     if (gemPouch.getType() != Material.INK_SACK)
                         continue;
-                    net.minecraft.server.v1_8_R3.ItemStack nmsPouch = CraftItemStack.asNMSCopy(gemPouch);
+                    net.minecraft.server.v1_9_R2.ItemStack nmsPouch = CraftItemStack.asNMSCopy(gemPouch);
                     int currentAmount = nmsPouch.getTag().getInt("worth");
                     int tier = nmsPouch.getTag().getInt("tier");
                     int max = BankMechanics.getInstance().getPouchMax(tier);
@@ -518,7 +508,7 @@ public class MainListenerInstance implements Listener {
                 }
             }
         } else {
-            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.CHICKEN_EGG_POP, 1f, 1f);
+            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_CHICKEN_EGG, 1f, 1f);
         }
     }
 

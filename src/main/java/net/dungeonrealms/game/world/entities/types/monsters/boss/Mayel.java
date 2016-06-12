@@ -10,13 +10,13 @@ import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R2.EntityLiving;
+import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
@@ -59,12 +59,12 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 	@Override
 	public void setArmor(int tier) {
 		// weapon, boots, legs, chest, helmet/head
-		ItemStack weapon = getWeapon();
-		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
+		//ItemStack weapon = getWeapon();
+		/*this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
 		this.setEquipment(1, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("mayelboot")));
 		this.setEquipment(2, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("mayelpants")));
 		this.setEquipment(3, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("mayelchest")));
-		//this.setEquipment(4, getHead());
+		//this.setEquipment(4, getHead());*/
 	}
 
 	/**
@@ -79,16 +79,7 @@ public class Mayel extends BasicEntitySkeleton implements Boss {
 	 */
 	@Override
 	public void a(EntityLiving entityliving, float f) {
-		/*EntityArrow entityarrow = new EntityArrow(this.world, this, entityliving, 1.6F, 14 - 2 * 4);
-		entityarrow.b(f * 2.0F + this.random.nextGaussian() * 0.25D + 2 * 0.11F);
-		Projectile arrowProjectile = (Projectile) entityarrow.getBukkitEntity();
-		net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
-		NBTTagCompound tag = nmsItem.getTag();
-		MetadataUtils.registerProjectileMetadata(tag, arrowProjectile, 2);
-		this.makeSound("random.bow", 1.0F, 1.0F / (0.8F));
-		this.world.addEntity(entityarrow);*/
-
-		net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
+		net.minecraft.server.v1_9_R2.ItemStack nmsItem = this.getEquipment(EnumItemSlot.MAINHAND);
 		NBTTagCompound tag = nmsItem.getTag();
 		DamageAPI.fireArrowFromMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entityliving.getBukkitEntity());
 	}

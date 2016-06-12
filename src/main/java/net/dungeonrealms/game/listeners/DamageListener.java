@@ -36,11 +36,11 @@ import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.entity.Horse.Variant;
 import org.bukkit.event.EventHandler;
@@ -205,9 +205,9 @@ public class DamageListener implements Listener {
                 }
             }
             Player attacker = (Player) event.getDamager();
-            if (attacker.getItemInHand() == null) return;
+            if (attacker.getEquipment().getItemInMainHand() == null) return;
             //Check if the item has NBT, all our custom weapons will have NBT.
-            net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attacker.getItemInHand()));
+            net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attacker.getEquipment().getItemInMainHand()));
             if (nmsItem == null || nmsItem.getTag() == null) return;
             //Get the NBT of the item the player is holding.
             NBTTagCompound tag = nmsItem.getTag();
@@ -216,7 +216,7 @@ public class DamageListener implements Listener {
             if (attacker.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(attacker) <= 0) {
                 event.setCancelled(true);
                 event.setDamage(0);
-                attacker.playSound(attacker.getLocation(), Sound.WOLF_PANT, 12F, 1.5F);
+                attacker.playSound(attacker.getLocation(), Sound.ENTITY_WOLF_PANT, 12F, 1.5F);
                 try {
                     ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, event.getEntity().getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
                 } catch (Exception ex) {
@@ -237,7 +237,7 @@ public class DamageListener implements Listener {
             } else {
                 CombatLog.addToCombat(attacker);
             }
-            EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getItemInHand()));
+            EnergyHandler.removeEnergyFromPlayerAndUpdate(attacker.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(attacker.getEquipment().getItemInMainHand()));
             finalDamage = DamageAPI.calculateWeaponDamage(attacker, event.getEntity(), tag);
 
             if (API.isPlayer(event.getDamager()) && API.isPlayer(event.getEntity())) {
@@ -308,10 +308,10 @@ public class DamageListener implements Listener {
         if (event.getDamager() instanceof LivingEntity) {
             LivingEntity attacker = (LivingEntity) event.getDamager();
             EntityEquipment attackerEquipment = attacker.getEquipment();
-            if (attackerEquipment.getItemInHand() == null) return;
-            attackerEquipment.getItemInHand().setDurability(((short) -1));
+            if (attackerEquipment.getItemInMainHand() == null) return;
+            attackerEquipment.getItemInMainHand().setDurability(((short) -1));
             //Check if the item has NBT, all our custom weapons will have NBT.
-            net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attackerEquipment.getItemInHand()));
+            net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attackerEquipment.getItemInMainHand()));
             if (nmsItem == null || nmsItem.getTag() == null) {
                 return;
             }
@@ -447,10 +447,10 @@ public class DamageListener implements Listener {
             double[] result = DamageAPI.calculateArmorReduction(attacker, defender, defenderArmor, event.getDamage());
             armourReducedDamage = result[0];
             totalArmor = result[1];
-            if (attacker.getEquipment().getItemInHand() != null && attacker.getEquipment().getItemInHand().getType() != Material.AIR) {
-                net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attacker.getEquipment().getItemInHand()));
+            if (attacker.getEquipment().getItemInMainHand() != null && attacker.getEquipment().getItemInMainHand().getType() != Material.AIR) {
+                net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(attacker.getEquipment().getItemInMainHand()));
                 if (nmsItem != null && nmsItem.getTag() != null) {
-                    if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.POLEARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
+                    if (new Attribute(attacker.getEquipment().getItemInMainHand()).getItemType() == Item.ItemType.POLEARM && !(DamageAPI.polearmAOEProcessing.contains(attacker))) {
                         DamageAPI.polearmAOEProcessing.add(attacker);
                         for (Entity entity : event.getEntity().getNearbyEntities(2.5, 3, 2.5)) {
                             if (entity instanceof LivingEntity && entity != event.getEntity() && !(entity instanceof Player)) {
@@ -579,7 +579,7 @@ public class DamageListener implements Listener {
                 } else {
                     attackerName = "Enemy";
                 }
-                ((Player) defender).playSound(defender.getLocation(), Sound.ZOMBIE_INFECT, 1.5F, 2F);
+                ((Player) defender).playSound(defender.getLocation(), Sound.ENTITY_ZOMBIE_INFECT, 1.5F, 2F);
                 defender.sendMessage(org.bukkit.ChatColor.GREEN + "" + org.bukkit.ChatColor.BOLD + "                        *DODGE* (" + org.bukkit.ChatColor.RED + attackerName + org.bukkit.ChatColor.GREEN + ")");
             }
             //The defender dodged the attack
@@ -614,7 +614,7 @@ public class DamageListener implements Listener {
                 } else {
                     attackerName = "Enemy";
                 }
-                ((Player) defender).playSound(defender.getLocation(), Sound.ZOMBIE_METAL, 2F, 1.0F);
+                ((Player) defender).playSound(defender.getLocation(), Sound.ENTITY_ZOMBIE_ATTACK_IRON_DOOR, 2F, 1.0F);
                 defender.sendMessage(org.bukkit.ChatColor.DARK_GREEN + "" + org.bukkit.ChatColor.BOLD + "                        *BLOCK* (" + org.bukkit.ChatColor.RED + attackerName + org.bukkit.ChatColor.DARK_GREEN + ")");
             }
             event.setDamage(0);
@@ -627,7 +627,7 @@ public class DamageListener implements Listener {
             }
         } else {
             if (API.isPlayer(defender)) {
-                if (((Player) defender).isBlocking() && ((Player) defender).getItemInHand() != null && ((Player) defender).getItemInHand().getType() != Material.AIR) {
+                if (((Player) defender).isBlocking() && ((Player) defender).getEquipment().getItemInMainHand() != null && ((Player) defender).getEquipment().getItemInMainHand().getType() != Material.AIR) {
                     if (new Random().nextInt(100) <= 80) {
                         double blockDamage = event.getDamage() / 2;
                         HealthHandler.getInstance().handlePlayerBeingDamaged((Player) event.getEntity(), event.getDamager(), (blockDamage - armourReducedDamage), armourReducedDamage, totalArmor);
@@ -664,9 +664,9 @@ public class DamageListener implements Listener {
             return;
         LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
         EntityEquipment entityEquipment = shooter.getEquipment();
-        if (entityEquipment.getItemInHand() == null) return;
+        if (entityEquipment.getEquipment().getItemInMainHand() == null) return;
         //Check if the item has NBT, all our custom weapons will have NBT.
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(entityEquipment.getItemInHand()));
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(entityEquipment.getItemInMainHand()));
         if (nmsItem == null || nmsItem.getTag() == null) return;
         //Get the NBT of the item the player is holding.
         if (!(shooter instanceof Player)) return;
@@ -677,7 +677,7 @@ public class DamageListener implements Listener {
         }
         int weaponTier = nmsItem.getTag().getInt("itemTier");
         Player player = (Player) shooter;
-        if (Fishing.isDRFishingPole(player.getItemInHand())) return;
+        if (Fishing.isDRFishingPole(player.getItemInMainHand())) return;
         player.updateInventory();
         if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player.getUniqueId()) <= 0) {
             event.setCancelled(true);
@@ -701,9 +701,9 @@ public class DamageListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(player.getItemInHand()));
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(player.getEquipment().getItemInMainHand()));
         if (nmsItem == null || nmsItem.getTag() == null) return;
-        float energyCost = EnergyHandler.getWeaponSwingEnergyCost(player.getItemInHand());
+        float energyCost = EnergyHandler.getWeaponSwingEnergyCost(player.getEquipment().getItemInMainHand());
         int weaponTier = nmsItem.getTag().getInt("itemTier");
         EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), energyCost);
         MetadataUtils.registerProjectileMetadata(nmsItem.getTag(), (Projectile) event.getProjectile(), weaponTier);
@@ -823,7 +823,7 @@ public class DamageListener implements Listener {
         Location respawnLocation = Teleportation.Cyrennica;
         boolean savedArmorContents = false;
         if (EntityAPI.hasPetOut(player.getUniqueId())) {
-            net.minecraft.server.v1_8_R3.Entity pet = EntityAPI.getPlayerPet(player.getUniqueId());
+            net.minecraft.server.v1_9_R2.Entity pet = EntityAPI.getPlayerPet(player.getUniqueId());
             if (!pet.getBukkitEntity().isDead()) { //Safety check
                 pet.getBukkitEntity().remove();
             }
@@ -831,7 +831,7 @@ public class DamageListener implements Listener {
             player.sendMessage("For it's own safety, your pet has returned to its home.");
         }
         if (EntityAPI.hasMountOut(player.getUniqueId())) {
-            net.minecraft.server.v1_8_R3.Entity mount = EntityAPI.getPlayerMount(player.getUniqueId());
+            net.minecraft.server.v1_9_R2.Entity mount = EntityAPI.getPlayerMount(player.getUniqueId());
             if (mount.isAlive()) {
                 mount.getBukkitEntity().remove();
             }
@@ -903,7 +903,7 @@ public class DamageListener implements Listener {
                         //event.getDrops().remove(itemStack);
                         continue;
                     }
-                    net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
+                    net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
                     if (nms != null) {
                         if (nms.getTag() != null) {
                             if ((nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")) || nms.hasTag() && nms.getTag().hasKey("subtype")) {
@@ -1002,10 +1002,10 @@ public class DamageListener implements Listener {
         if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getPlayer().getItemInHand()));
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getPlayer().getEquipment().getItemInMainHand()));
         if (nmsItem == null || nmsItem.getTag() == null || !nmsItem.getTag().hasKey("itemType")) return;
 
-        Item.ItemType itemType = new Attribute(event.getPlayer().getItemInHand()).getItemType();
+        Item.ItemType itemType = new Attribute(event.getPlayer().getEquipment().getItemInMainHand()).getItemType();
         if (itemType != Item.ItemType.STAFF) {
             return;
         }
@@ -1023,7 +1023,7 @@ public class DamageListener implements Listener {
                 return;
         }
         
-    	int tier = CraftItemStack.asNMSCopy(event.getPlayer().getItemInHand()).getTag().getInt("itemTier");
+    	int tier = CraftItemStack.asNMSCopy(event.getPlayer().getEquipment().getItemInMainHand()).getTag().getInt("itemTier");
     	int playerLvl = API.getGamePlayer(event.getPlayer()).getLevel();
     	switch(tier){
             case 5:
@@ -1041,7 +1041,7 @@ public class DamageListener implements Listener {
         
         if (event.getPlayer().hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(event.getPlayer()) <= 0) {
             event.setCancelled(true);
-            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.WOLF_PANT, 12F, 1.5F);
+            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_WOLF_PANT, 12F, 1.5F);
             try {
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, event.getPlayer().getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
             } catch (Exception ex) {
@@ -1051,7 +1051,7 @@ public class DamageListener implements Listener {
         }
         event.setCancelled(true);
         event.getPlayer().setMetadata("last_Staff_Use", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-        DamageAPI.fireStaffProjectile(event.getPlayer(), event.getPlayer().getItemInHand(), nmsItem.getTag());
+        DamageAPI.fireStaffProjectile(event.getPlayer(), event.getPlayer().getEquipment().getItemInMainHand(), nmsItem.getTag());
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
@@ -1104,7 +1104,7 @@ public class DamageListener implements Listener {
                     if (itemStack == null || itemStack.getType() == Material.AIR) {
                         continue;
                     }
-                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
                     if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
                         continue;
                     }
@@ -1116,7 +1116,7 @@ public class DamageListener implements Listener {
                     if (itemStack == null || itemStack.getType() == Material.AIR) {
                         continue;
                     }
-                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
                     if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
                         continue;
                     }
@@ -1162,7 +1162,7 @@ public class DamageListener implements Listener {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
                 continue;
             }
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
             if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
                 continue;
             }
@@ -1172,7 +1172,7 @@ public class DamageListener implements Listener {
             if (itemStack == null || itemStack.getType() == Material.AIR) {
                 continue;
             }
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
             if ((nmsStack.hasTag() && nmsStack.getTag().hasKey("type") && nmsStack.getTag().getString("type").equalsIgnoreCase("important")) || (nmsStack.hasTag() && nmsStack.getTag().hasKey("subtype"))) {
                 continue;
             }

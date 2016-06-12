@@ -5,9 +5,11 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRZombie;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.metadata.FixedMetadataValue;
 
 /**
@@ -25,10 +27,13 @@ public class EntityBandit extends DRZombie {
      */
     public EntityBandit(World world, int tier, EnumEntityType entityType, EnumMonster monster) {
         super(world, EnumMonster.Bandit, tier, entityType, true);
+        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         if (monster == EnumMonster.Bandit) {
-            this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.BANDIT.getSkull()));
+            this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.BANDIT.getSkull()));
+            livingEntity.getEquipment().setHelmet(SkullTextures.BANDIT.getSkull());
         } else {
-            this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.BANDIT_2.getSkull()));
+            this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.BANDIT_2.getSkull()));
+            livingEntity.getEquipment().setHelmet(SkullTextures.BANDIT_2.getSkull());
         }
         checkSpecial();
     }
@@ -59,19 +64,9 @@ public class EntityBandit extends DRZombie {
         return this.monsterType;
     }
 
-    @Override
-    protected void getRareDrop() {
-
-    }
 
     @Override
     public void setStats() {
 
     }
-
-    @Override
-    protected String bo() {
-        return "game.player.hurt";
-    }
-
 }

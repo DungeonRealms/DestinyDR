@@ -240,7 +240,7 @@ public enum LootType {
                     	
                     	//NO ARMOR AND WEAPONS IN LOOT CHESTS...
 //                        ItemStack stack = new ItemStack(Material.IRON_SWORD, 1);
-//                        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+//                        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
 //                        nms.setTag(new NBTTagCompound());
 //                        if(item_tier >= 5)
 //                        	item_tier = 4;

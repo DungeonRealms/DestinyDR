@@ -2,8 +2,8 @@ package net.dungeonrealms.game.world.entities.types.pets;
 
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.minecraft.server.v1_8_R3.EntityBat;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R2.EntityBat;
+import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.util.Vector;
@@ -40,7 +40,7 @@ public class Bat extends EntityBat {
     }
 
     @Override
-    public void E() {
+    public void M() {
         if (getBukkitEntity().getLocation().distanceSquared(target.getLocation()) < 3) {
             return;
         }

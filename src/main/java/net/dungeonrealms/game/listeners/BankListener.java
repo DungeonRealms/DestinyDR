@@ -8,7 +8,7 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -60,7 +60,7 @@ public class BankListener implements Listener {
         Player player = (Player) e.getWhoClicked();
         if (e.getInventory().getTitle().equalsIgnoreCase("Bank Chest")) {
             if (e.getCursor() != null) {
-                net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(e.getCursor());
+                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(e.getCursor());
                 if (e.getRawSlot() < 9) {
                     if (e.getRawSlot() == 8) {
                         e.setCancelled(true);
@@ -68,7 +68,7 @@ public class BankListener implements Listener {
                             if (e.getClick() == ClickType.LEFT) {
                                 int currentGems = getPlayerGems(player.getUniqueId());
                                 player.closeInventory();
-                                player.playSound(player.getLocation(), Sound.CHEST_CLOSE, 1F, 1F);
+                                player.playSound(player.getLocation(), Sound.BLOCK_CHEST_CLOSE, 1F, 1F);
                                 player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Current Balance: " + ChatColor.GREEN + currentGems + " GEM(s)");
                                 player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "How much would you like to WITHDRAW today, " + player.getDisplayName() + "?");
                                 player.sendMessage(ChatColor.GRAY + "Please enter the amount you'd like To WITHDRAW. Alternatively, type " + ChatColor.RED + "'cancel'" + ChatColor.GRAY + " to void this operation.");
@@ -96,7 +96,7 @@ public class BankListener implements Listener {
                                             player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "New Balance: " + ChatColor.GREEN + (currentGems - number) + " GEM(s)");
                                             player.sendMessage(ChatColor.GRAY + "You have withdrawn " + number + " GEM(s) from your bank account.");
                                             player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "Here are your Gems, thank you for your business!");
-                                            player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1F, 1F);
+                                            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
                                             while (number > 0) {
                                                 while (number > 64) {
                                                     ItemStack item = stack.clone();
@@ -115,7 +115,7 @@ public class BankListener implements Listener {
                             } else if (e.getClick() == ClickType.RIGHT) {
                                 int currentGems = getPlayerGems(player.getUniqueId());
                                 player.closeInventory();
-                                player.playSound(player.getLocation(), Sound.CHEST_CLOSE, 1F, 1F);
+                                player.playSound(player.getLocation(), Sound.BLOCK_CHEST_CLOSE, 1F, 1F);
                                 player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Current Balance: " + ChatColor.GREEN + currentGems + " GEM(s)");
                                 player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "How much would you like to CONVERT today, " + player.getDisplayName() + "?");
                                 player.sendMessage(ChatColor.GRAY + "Please enter the amount you'd like To CONVERT into a gem note. Alternatively, type " + ChatColor.RED + "'cancel'" + ChatColor.GRAY + " to void this operation.");
@@ -142,7 +142,7 @@ public class BankListener implements Listener {
                                         player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "New Balance: " + ChatColor.GREEN + (currentGems - number) + " GEM(s)");
                                         player.sendMessage(ChatColor.GRAY + "You have converted " + number + " GEM(s) from your bank account into a " + ChatColor.BOLD.toString() + "GEM NOTE.");
                                         player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "Here are your Gems, thank you for your business!");
-                                        player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1F, 1F);
+                                        player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
                                     }
                                 }, p -> p.sendMessage(ChatColor.RED + "Withdrawal operation - " + ChatColor.BOLD + "CANCELLED"));
                             }
@@ -198,10 +198,10 @@ public class BankListener implements Listener {
                                 lore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to create " + ChatColor.GREEN.toString() + ChatColor.BOLD + "A GEM NOTE");
                                 meta.setLore(lore);
                                 bankItem.setItemMeta(meta);
-                                net.minecraft.server.v1_8_R3.ItemStack nmsBank = CraftItemStack.asNMSCopy(bankItem);
+                                net.minecraft.server.v1_9_R2.ItemStack nmsBank = CraftItemStack.asNMSCopy(bankItem);
                                 nmsBank.getTag().setString("type", "bank");
                                 e.getInventory().setItem(8, CraftItemStack.asBukkitCopy(nmsBank));
-                                player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
+                                player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT, 1, 1);
                             }
                         }
                     } else if (e.getRawSlot() == 0) {
@@ -281,10 +281,10 @@ public class BankListener implements Listener {
                             lore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to create " + ChatColor.GREEN.toString() + ChatColor.BOLD + "A GEM NOTE");
                             meta.setLore(lore);
                             bankItem.setItemMeta(meta);
-                            net.minecraft.server.v1_8_R3.ItemStack nmsBank = CraftItemStack.asNMSCopy(bankItem);
+                            net.minecraft.server.v1_9_R2.ItemStack nmsBank = CraftItemStack.asNMSCopy(bankItem);
                             nmsBank.getTag().setString("type", "bank");
                             e.getInventory().setItem(8, CraftItemStack.asBukkitCopy(nmsBank));
-                            player.playSound(player.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
+                            player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT, 1, 1);
                         }
                     }
                 }
@@ -305,7 +305,7 @@ public class BankListener implements Listener {
                         ItemMeta meta = item.getItemMeta();
                         meta.setDisplayName("Withdraw " + finalNum + " Gems");
                         item.setItemMeta(meta);
-                        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+                        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
                         nms.getTag().setInt("withdraw", finalNum);
                         e.getInventory().setItem(4, CraftItemStack.asBukkitCopy(nms));
                     } else if (current.getType() == Material.INK_SACK) {
@@ -340,7 +340,7 @@ public class BankListener implements Listener {
                                     player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "New Balance: " + ChatColor.GREEN + (currentGems - number) + " GEM(s)");
                                     player.sendMessage(ChatColor.GRAY + "You have withdrawn " + number + " GEM(s) from your bank account.");
                                     player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "Here are your Gems, thank you for your business!");
-                                    player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1F, 1F);
+                                    player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
                                 } else {
                                     player.sendMessage(ChatColor.RED + "You do not have space for all those gems");
                                 }
@@ -369,7 +369,7 @@ public class BankListener implements Listener {
                         ItemMeta meta = item.getItemMeta();
                         meta.setDisplayName("Withdraw " + finalNum + " Gems");
                         item.setItemMeta(meta);
-                        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+                        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
                         nms.getTag().setInt("withdraw", finalNum);
                         e.getInventory().setItem(4, CraftItemStack.asBukkitCopy(nms));
                     } else if (current.getType() == Material.INK_SACK) {
@@ -391,7 +391,7 @@ public class BankListener implements Listener {
                                 lore.add(ChatColor.BOLD.toString() + "Value: " + ChatColor.WHITE.toString() + number);
                                 meta.setLore(lore);
                                 stack.setItemMeta(meta);
-                                net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+                                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
                                 nms.getTag().setInt("worth", number);
                                 Player p = player.getPlayer();
                                 p.getInventory().addItem(CraftItemStack.asBukkitCopy(nms));
@@ -399,7 +399,7 @@ public class BankListener implements Listener {
                                 player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "New Balance: " + ChatColor.GREEN + (currentGems - number) + " GEM(s)");
                                 player.sendMessage(ChatColor.GRAY + "You have converted " + number + " GEM(s) from your bank account into a " + ChatColor.BOLD.toString() + "GEM NOTE.");
                                 player.sendMessage(ChatColor.GRAY + "Banker: " + ChatColor.WHITE + "Here are your Gems, thank you for your business!");
-                                player.playSound(player.getLocation(), Sound.ORB_PICKUP, 1F, 1F);
+                                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
                             }
                             player.closeInventory();
                         } catch (Exception exc) {
@@ -425,7 +425,7 @@ public class BankListener implements Listener {
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invLvl + 1, true);
                     player.sendMessage("");
                     player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "*** BANK UPGRADE TO LEVEL " + invLvl + " COMPLETE ***");
-                    player.playSound(player.getLocation(), Sound.LEVEL_UP, 1F, 1.25F);
+                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1.25F);
                     player.closeInventory();
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> BankMechanics.getInstance().getStorage(player.getUniqueId()).update(), 20L);
                 } else {
@@ -528,7 +528,7 @@ public class BankListener implements Listener {
         storelore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to " + ChatColor.GREEN.toString() + ChatColor.BOLD + "UPGRADE BANK");
         storagetMeta.setLore(storelore);
         storage.setItemMeta(storagetMeta);
-        net.minecraft.server.v1_8_R3.ItemStack storagenms = CraftItemStack.asNMSCopy(storage);
+        net.minecraft.server.v1_9_R2.ItemStack storagenms = CraftItemStack.asNMSCopy(storage);
         storagenms.getTag().setString("type", "storage");
         inv.setItem(0, CraftItemStack.asBukkitCopy(storagenms));
 
@@ -539,7 +539,7 @@ public class BankListener implements Listener {
         lore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to create " + ChatColor.GREEN.toString() + ChatColor.BOLD + "A GEM NOTE");
         meta.setLore(lore);
         bankItem.setItemMeta(meta);
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(bankItem);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(bankItem);
         nms.getTag().setString("type", "bank");
         inv.setItem(8, CraftItemStack.asBukkitCopy(nms));
 
@@ -550,7 +550,7 @@ public class BankListener implements Listener {
         collectionlore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to open " + ChatColor.GREEN.toString() + ChatColor.BOLD + "COLLECTION BIN");
         collectionMeta.setLore(collectionlore);
         storage.setItemMeta(collectionMeta);
-        net.minecraft.server.v1_8_R3.ItemStack collectionBin = CraftItemStack.asNMSCopy(storage);
+        net.minecraft.server.v1_9_R2.ItemStack collectionBin = CraftItemStack.asNMSCopy(storage);
         collectionBin.getTag().setString("type", "collection");
         if (BankMechanics.getInstance().getStorage(uuid).collection_bin != null)
             inv.setItem(4, CraftItemStack.asBukkitCopy(collectionBin));

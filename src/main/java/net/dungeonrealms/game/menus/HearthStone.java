@@ -15,7 +15,7 @@ import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.GameMode;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -68,7 +68,7 @@ public class HearthStone implements Listener {
                 return;
             }
             if (TeleportAPI.canUseHearthstone(player.getUniqueId())) {
-                net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(getItem(player));
+                net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(getItem(player));
                 Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.HEARTHSTONE, nmsItem.getTag());
             } else {
                 player.sendMessage(ChatColor.RED + "You currently cannot use your Hearthstone because of Alignment, World or Cooldown issues!" + " (" + TeleportAPI.getPlayerHearthstoneCD(player.getUniqueId()) + "s)");

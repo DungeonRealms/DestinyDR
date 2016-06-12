@@ -12,7 +12,7 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
-import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_9_R2.Entity;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.*;

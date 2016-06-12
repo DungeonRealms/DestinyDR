@@ -3,8 +3,10 @@ package net.dungeonrealms.game.world.entities.types.monsters;
 import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRZombie;
-import net.minecraft.server.v1_8_R3.World;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import net.minecraft.server.v1_9_R2.World;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.entity.LivingEntity;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -13,7 +15,9 @@ public class EntityPirate extends DRZombie {
 
     public EntityPirate(World world, EnumMonster enumMons, int tier) {
         super(world, enumMons, tier, EnumEntityType.HOSTILE_MOB, true);
-        this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.PIRATE.getSkull()));
+        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+        this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.PIRATE.getSkull()));
+        livingEntity.getEquipment().setHelmet(SkullTextures.PIRATE.getSkull());
     }
 
     public EntityPirate(World world) {
@@ -25,32 +29,8 @@ public class EntityPirate extends DRZombie {
 
     }
 
-    @Override
-    protected void getRareDrop() {
-    }
-
 	@Override
 	public EnumMonster getEnum() {
 		return this.monsterType;
 	}
-    
-    @Override
-    protected String z() {
-        return "";
-    }
-
-    @Override
-    protected String bo() {
-        return "game.player.hurt";
-    }
-
-    @Override
-    protected String bp() {
-        return "";
-    }
-    
-//    @Override
-//	public void onMonsterDeath(){
-//		getLoot();
-//	}
 }

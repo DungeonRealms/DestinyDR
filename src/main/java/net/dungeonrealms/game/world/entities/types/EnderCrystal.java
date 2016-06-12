@@ -2,8 +2,8 @@ package net.dungeonrealms.game.world.entities.types;
 
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.minecraft.server.v1_8_R3.EntityEnderCrystal;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R2.EntityEnderCrystal;
+import net.minecraft.server.v1_9_R2.World;
 
 /**
  * Created by Kieran on 9/18/2015.

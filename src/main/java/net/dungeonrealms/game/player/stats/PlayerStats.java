@@ -330,11 +330,7 @@ public class PlayerStats {
         DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.DEXTERITY, dexPoints, false);
         DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.BUFFER_POINTS, freePoints, false);
         DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.RESETS, resetAmounts, false);
-        if (!logout) {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.FREERESETS, freeResets, true);
-        } else {
-            DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.FREERESETS, freeResets, false);
-        }
+        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$SET, EnumData.FREERESETS, freeResets, true);
     }
 
     /**

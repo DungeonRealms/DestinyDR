@@ -3,11 +3,11 @@ package net.dungeonrealms.game.world.entities.utils;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.EnderCrystal;
 import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.potion.PotionEffectType;
@@ -34,7 +34,7 @@ public class BuffUtils {
         enderCrystal.setLocation(b.getX(), b.getY(), b.getZ(), 0, 0);
         world.addEntity(enderCrystal, CreatureSpawnEvent.SpawnReason.CUSTOM);
         enderCrystal.setLocation(b.getX(), b.getY(), b.getZ(), 0, 0);
-        player.playSound(player.getLocation(), Sound.ENDERDRAGON_WINGS, 1f, 63f);
+        player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 1f, 63f);
         MetadataUtils.registerBuffMetadata(enderCrystal, getRandomPotionEffect(), 10, 600);
         return enderCrystal;
     }

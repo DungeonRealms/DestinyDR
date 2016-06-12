@@ -18,13 +18,13 @@ import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.Entity;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -54,7 +54,7 @@ public class ItemListener implements Listener {
     @EventHandler(priority = EventPriority.MONITOR)
     public void onItemDrop(PlayerDropItemEvent event) {
         if (!API.isItemTradeable(event.getItemDrop().getItemStack())) {
-            net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
+            net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
             NBTTagCompound tag = nmsItem.getTag();
             if (tag.hasKey("destroy")) {
                 event.getItemDrop().remove();
@@ -74,21 +74,21 @@ public class ItemListener implements Listener {
     public void onPlayerUseTeleportItem(PlayerInteractEvent event) {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         Player player = event.getPlayer();
-        if (player.getItemInHand() == null || player.getItemInHand().getType() != Material.BOOK) return;
-        ItemStack itemStack = player.getItemInHand();
+        if (player.getEquipment().getItemInMainHand() == null || player.getEquipment().getItemInMainHand().getType() != Material.BOOK) return;
+        ItemStack itemStack = player.getEquipment().getItemInMainHand();
         if (!(CombatLog.isInCombat(event.getPlayer()))) {
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
                 player.sendMessage("You cannot restart a teleport during a cast!");
                 return;
             }
             if (TeleportAPI.isTeleportBook(itemStack)) {
-                net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+                net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
                 if (TeleportAPI.canTeleportToLocation(player, nmsItem.getTag())) {
                     Teleportation.getInstance().teleportPlayer(player.getUniqueId(), Teleportation.EnumTeleportType.TELEPORT_BOOK, nmsItem.getTag());
-                    if (player.getItemInHand().getAmount() == 1) {
+                    if (player.getEquipment().getItemInMainHand().getAmount() == 1) {
                         player.setItemInHand(new ItemStack(Material.AIR));
                     } else {
-                        player.getItemInHand().setAmount((player.getItemInHand().getAmount() - 1));
+                        player.getEquipment().getItemInMainHand().setAmount((player.getEquipment().getItemInMainHand().getAmount() - 1));
                     }
                 } else {
                     player.sendMessage(ChatColor.RED + "You cannot teleport to Safe Zones while Chaotic!");
@@ -109,8 +109,8 @@ public class ItemListener implements Listener {
     public void onPlayerUseMap(PlayerInteractEvent event) {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         Player p = event.getPlayer();
-        if (p.getItemInHand() == null || p.getItemInHand().getType() != Material.EMPTY_MAP) return;
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getItemInHand());
+        if (p.getEquipment().getItemInMainHand() == null || p.getEquipment().getItemInMainHand().getType() != Material.EMPTY_MAP) return;
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
         if (tag.hasKey("type")) {
@@ -126,8 +126,8 @@ public class ItemListener implements Listener {
     public void onPlayerUseCharacterJournal(PlayerInteractEvent event) {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         Player p = event.getPlayer();
-        if (p.getItemInHand() == null || p.getItemInHand().getType() != Material.WRITTEN_BOOK) return;
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getItemInHand());
+        if (p.getEquipment().getItemInMainHand() == null || p.getEquipment().getItemInMainHand().getType() != Material.WRITTEN_BOOK) return;
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
         if (tag.hasKey("journal") && !(tag.getString("journal").equalsIgnoreCase("true"))) return;
@@ -149,7 +149,7 @@ public class ItemListener implements Listener {
     public void useEcashItem(PlayerInteractEvent event) {
         if (event.getItem() != null) {
             if (event.getItem().getType() == Material.ENCHANTED_BOOK) {
-                net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
+                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
                 if (nms.hasTag() && nms.getTag().hasKey("retrainingBook")) {
                     event.getPlayer().sendMessage(ChatColor.GREEN + "Reset stat points? Type 'yes' or 'y' to confirm");
                     Chat.listenForMessage(event.getPlayer(), chat -> {
@@ -165,7 +165,7 @@ public class ItemListener implements Listener {
                     }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
                 }
             } else if (event.getItem().getType() == Material.ENDER_CHEST) {
-                net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
+                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
                 if (nms.hasTag() && nms.getTag().hasKey("type")) {
                     if (nms.getTag().getString("type").equalsIgnoreCase("upgrade")) {
                         Player player = event.getPlayer();
@@ -177,10 +177,10 @@ public class ItemListener implements Listener {
                         DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invlvl + 1, true);
                         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () ->
                                 BankMechanics.getInstance().getStorage(player.getUniqueId()).update(), 20);
-                        if (event.getPlayer().getItemInHand().getAmount() == 1) {
+                        if (event.getPlayer().getEquipment().getItemInMainHand().getAmount() == 1) {
                             event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
                         } else {
-                            ItemStack item = event.getPlayer().getItemInHand();
+                            ItemStack item = event.getPlayer().getEquipment().getItemInMainHand();
                             item.setAmount(item.getAmount() - 1);
                             event.getPlayer().setItemInHand(item);
                         }
@@ -193,7 +193,7 @@ public class ItemListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerConsumeItem(PlayerItemConsumeEvent event) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getItem()));
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getItem()));
         if (nmsItem == null || nmsItem.getTag() == null) return;
         if (!nmsItem.getTag().hasKey("type")) return;
         if (nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
@@ -266,7 +266,7 @@ public class ItemListener implements Listener {
 
     @EventHandler(priority = EventPriority.NORMAL)
     public void onPotionSplash(PotionSplashEvent event) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getPotion().getItem()));
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getPotion().getItem()));
         if (nmsItem != null && nmsItem.getTag() != null) {
             if (nmsItem.getTag().hasKey("type") && nmsItem.getTag().getString("type").equalsIgnoreCase("splashHealthPotion")) {
                 event.setCancelled(true);
@@ -284,11 +284,11 @@ public class ItemListener implements Listener {
     public void onPlayerUseSpecialItem(PlayerInteractEvent event) {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR)) return;
         Player player = event.getPlayer();
-        if (player.getItemInHand() == null || player.getItemInHand().getType() == Material.AIR) {
+        if (player.getEquipment().getItemInMainHand() == null || player.getEquipment().getItemInMainHand().getType() == Material.AIR) {
             return;
         }
-        if (player.getItemInHand().getType() == Material.SADDLE || player.getItemInHand().getType() == Material.EYE_OF_ENDER || player.getItemInHand().getType() == Material.NAME_TAG || player.getItemInHand().getType() == Material.LEASH) {
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(player.getItemInHand());
+        if (player.getEquipment().getItemInMainHand().getType() == Material.SADDLE || player.getEquipment().getItemInMainHand().getType() == Material.EYE_OF_ENDER || player.getEquipment().getItemInMainHand().getType() == Material.NAME_TAG || player.getEquipment().getItemInMainHand().getType() == Material.LEASH) {
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(player.getEquipment().getItemInMainHand());
             NBTTagCompound tag = nmsStack.getTag();
             if (tag == null) return;
             if (!(tag.getString("type").equalsIgnoreCase("important"))) return;

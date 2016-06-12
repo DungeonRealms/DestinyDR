@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.world.items.repairing;
 
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -11,11 +11,10 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.enchantments.EnchantmentAPI;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanics.SoundAPI;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.items.Attribute;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 /**
  * Created by Kieran on 9/26/2015.
@@ -26,7 +25,7 @@ public class RepairAPI {
         double repair_cost = 0;
 
         if (API.isArmor(i)) { // It's a piece of armor.
-            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(i);
+            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(i);
             if (!nms.hasTag() && !nms.getTag().hasKey("itemTier"))
                 return -1;
             int item_tier = nms.getTag().getInt("itemTier");
@@ -71,7 +70,7 @@ public class RepairAPI {
         }
 
         if (API.isWeapon(i)) { // It's a weapon.
-            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(i);
+            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(i);
             if (!nms.hasTag() && !nms.getTag().hasKey("itemTier"))
                 return -1;
             int item_tier = nms.getTag().getInt("itemTier");
@@ -198,7 +197,7 @@ public class RepairAPI {
      * @since 1.0
      */
     public static double getItemDurabilityValue(ItemStack itemStack) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return 0;
         if (tag.getInt("itemTier") == 0) return 0;
@@ -222,7 +221,7 @@ public class RepairAPI {
      * @since 1.0
      */
     public static double getDurabilityValueAsPercent(ItemStack itemStack, double durability) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return 0;
         if (tag.getInt("itemTier") == 0) return 0;
@@ -247,7 +246,7 @@ public class RepairAPI {
      */
     public static double getCustomDurability(ItemStack itemStack) {
         try {
-            net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+            net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
             NBTTagCompound tag = nmsItem.getTag();
             if (tag == null) return 0;
             if (tag.getInt("itemTier") == 0) return 0;
@@ -280,7 +279,7 @@ public class RepairAPI {
         } catch (Exception ex) {
             Utils.log.warning("[REPAIR] Item durability was not registered! Registering it now for item " + itemStack.toString());
 
-            net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+            net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
             NBTTagCompound tag = nmsItem.getTag();
             if (tag == null) return 0;
             if (tag.getInt("itemTier") == 0) return 0;
@@ -312,7 +311,7 @@ public class RepairAPI {
     public static boolean isItemArmorScrap(ItemStack itemStack) {
         if (!(itemStack.getType() == Material.LEATHER || itemStack.getType() == Material.IRON_FENCE || (itemStack.getType() == Material.INK_SACK && (itemStack.getDurability() == DyeColor.YELLOW.getDyeData() || itemStack.getDurability() == DyeColor.LIGHT_BLUE.getDyeData() || itemStack.getDurability() == (short) 7))))
             return false;
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         if (nmsItem == null) {
             return false;
         }
@@ -331,7 +330,7 @@ public class RepairAPI {
      */
     public static int getScrapTier(ItemStack itemStack) {
         if (!isItemArmorScrap(itemStack)) return 0;
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         if (nmsItem == null) {
             return 0;
         }
@@ -354,7 +353,7 @@ public class RepairAPI {
      * @since 1.0
      */
     public static int getArmorOrWeaponTier(ItemStack itemStack) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         if (nmsItem == null) {
             return 0;
         }
@@ -374,7 +373,7 @@ public class RepairAPI {
      */
     public static boolean isItemArmorOrWeapon(ItemStack itemStack) {
 
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         if (nmsItem == null) {
             return false;
         }
@@ -396,7 +395,7 @@ public class RepairAPI {
      * @since 1.0
      */
     public static boolean canItemBeRepaired(ItemStack itemStack) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         if (nmsItem == null) {
             return false;
         }
@@ -451,7 +450,7 @@ public class RepairAPI {
      * @since 1.0
      */
     public static void setPercentageDurabilityBar(ItemStack itemStack, double percent) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return;
         if (tag.getInt("itemTier") == 0) return; //Broken tier item.
@@ -476,7 +475,7 @@ public class RepairAPI {
      */
     public static void subtractCustomDurability(Player player, ItemStack itemStack, double amountToSubtract) {
         if (player.getGameMode() == GameMode.CREATIVE) return;
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return;
         if (tag.getInt("itemTier") == 0) return;
@@ -484,28 +483,28 @@ public class RepairAPI {
         switch (tag.getString("type")) {
             case "weapon":
                 if (newItemDurability <= 100D && newItemDurability >= 90D) {
-                    SoundAPI.getInstance().playSound("random.anvil_break", player);
+                    player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " **10% DURABILITY " + ChatColor.RED + "Left on " + itemStack.getItemMeta().getDisplayName() + "*");
                 }
                 if (newItemDurability <= 20D && newItemDurability >= 10D) {
-                    SoundAPI.getInstance().playSound("random.anvil_break", player);
+                    player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " **2% DURABILITY " + ChatColor.RED + "Left on " + itemStack.getItemMeta().getDisplayName() + "*");
                 }
                 if (newItemDurability <= 0.1D) {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         player.setItemInHand(new ItemStack(Material.AIR));
-                        SoundAPI.getInstance().playSound("random.anvil_break", player);
+                        player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                         player.updateInventory();
                     }, 10L);
                 }
                 break;
             case "armor":
                 if (newItemDurability <= 150D && newItemDurability >= 140D) {
-                    SoundAPI.getInstance().playSound("random.anvil_break", player);
+                    player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " **10% DURABILITY " + ChatColor.RED + "Left on " + itemStack.getItemMeta().getDisplayName() + "*");
                 }
                 if (newItemDurability <= 30D && newItemDurability >= 20D) {
-                    SoundAPI.getInstance().playSound("random.anvil_break", player);
+                    player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " **2% DURABILITY " + ChatColor.RED + "Left on " + itemStack.getItemMeta().getDisplayName() + "*");
                 }
                 if (newItemDurability <= 0.1D) {
@@ -513,28 +512,28 @@ public class RepairAPI {
                         case 5:
                             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                                 player.getInventory().setHelmet(new ItemStack(Material.AIR));
-                                SoundAPI.getInstance().playSound("random.anvil_break", player);
+                                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                                 player.updateInventory();
                             }, 10L);
                             break;
                         case 6:
                             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                                 player.getInventory().setChestplate(new ItemStack(Material.AIR));
-                                SoundAPI.getInstance().playSound("random.anvil_break", player);
+                                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                                 player.updateInventory();
                             }, 10L);
                             break;
                         case 7:
                             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                                 player.getInventory().setLeggings(new ItemStack(Material.AIR));
-                                SoundAPI.getInstance().playSound("random.anvil_break", player);
+                                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                                 player.updateInventory();
                             }, 10L);
                             break;
                         case 8:
                             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                                 player.getInventory().setBoots(new ItemStack(Material.AIR));
-                                SoundAPI.getInstance().playSound("random.anvil_break", player);
+                                player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                                 player.updateInventory();
                             }, 10L);
                             break;

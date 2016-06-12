@@ -12,20 +12,20 @@ import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_9_R2.DamageSource;
+import net.minecraft.server.v1_9_R2.EntitySkeleton;
+import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.metadata.FixedMetadataValue;
-
-import java.lang.reflect.Field;
 
 /**
  * Created by Chase on Oct 21, 2015
@@ -44,24 +44,6 @@ public class InfernalAbyss extends EntitySkeleton implements Boss {
 	 */
 	public InfernalAbyss(World world, Location loc) {
 		super(world);
-		try {
-			Field bField = PathfinderGoalSelector.class.getDeclaredField("b");
-			bField.setAccessible(true);
-			Field cField = PathfinderGoalSelector.class.getDeclaredField("c");
-			cField.setAccessible(true);
-			bField.set(goalSelector, new UnsafeList<PathfinderGoalSelector>());
-			bField.set(targetSelector, new UnsafeList<PathfinderGoalSelector>());
-			cField.set(goalSelector, new UnsafeList<PathfinderGoalSelector>());
-			cField.set(targetSelector, new UnsafeList<PathfinderGoalSelector>());
-		} catch (Exception exc) {
-			exc.printStackTrace();
-		}
-		this.goalSelector.a(5, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.0D, false));
-		this.goalSelector.a(6, new PathfinderGoalRandomStroll(this, 1.0D));
-		this.goalSelector.a(1, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
-		this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true));
-		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<>(this, EntityHuman.class, true));
 		this.setSkeletonType(1);
 		this.fireProof = true;
 		this.setOnFire(Integer.MAX_VALUE);
@@ -90,11 +72,11 @@ public class InfernalAbyss extends EntitySkeleton implements Boss {
 
 	protected void setArmor(int tier) {
 		// weapon.addEnchantment(Enchantment.DAMAGE_ALL, 1);
-		this.setEquipment(0, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("infernalstaff")));
-		this.setEquipment(1, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("infernalboot")));
-		this.setEquipment(2, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("infernallegging")));
-		this.setEquipment(3, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("infernalchest")));
-		this.setEquipment(4, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("infernalhelmet")));
+		this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("infernalstaff")));
+		this.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("infernalboot")));
+		this.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("infernallegging")));
+		this.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("infernalchest")));
+		this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("infernalhelmet")));
         ghast.setArmor(new ItemGenerator().setTier(ItemTier.getByTier(tier)).setRarity(ItemRarity.UNIQUE).getArmorSet(),
                 new ItemGenerator().setTier(ItemTier.getByTier(tier)).setRarity(ItemRarity.UNIQUE)
                         .setType(ItemType.getRandomWeapon()).generateItem().getItem());
@@ -119,7 +101,7 @@ public class InfernalAbyss extends EntitySkeleton implements Boss {
 	@Override
 	public void onBossHit(EntityDamageByEntityEvent event) {
 		if(!finalForm)
-		if (this.ghast.isAddedToChunk() || this.guard.isAddedToChunk()) {
+		if (this.ghast.isAlive() || this.guard.isAlive()) {
 			say(this.getBukkitEntity(), "Hah! You must take out my ");
 			event.setDamage(0);
 			event.setCancelled(true);
@@ -135,10 +117,6 @@ public class InfernalAbyss extends EntitySkeleton implements Boss {
 			ghast.init();
 			this.isInvulnerable(DamageSource.STUCK);
 			this.setLocation(locX, locY + 100, locZ, 1, 1);
-			// this.damageEntity(DamageSource.GENERIC, 20F);
-			// if (!this.dead) {
-			// this.dead = true;
-			// }
 			hasFiredGhast = true;
 		}
 	}

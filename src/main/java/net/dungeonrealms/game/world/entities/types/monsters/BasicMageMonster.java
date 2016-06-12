@@ -1,25 +1,20 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-
-import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.API;
+import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRSkeleton;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_8_R3.EntityHuman;
-import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.PathfinderGoalArrowAttack;
-import net.minecraft.server.v1_8_R3.PathfinderGoalFloat;
-import net.minecraft.server.v1_8_R3.PathfinderGoalHurtByTarget;
-import net.minecraft.server.v1_8_R3.PathfinderGoalLookAtPlayer;
-import net.minecraft.server.v1_8_R3.PathfinderGoalNearestAttackableTarget;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R2.EntityLiving;
+import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.World;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.entity.LivingEntity;
 
 /**
  * Created by Chase on Oct 2, 2015
@@ -37,22 +32,23 @@ public class BasicMageMonster extends DRSkeleton {
 
     public BasicMageMonster(World world, EnumMonster mons, int tier) {
         super(world, mons, tier, EnumEntityType.HOSTILE_MOB);
-        this.goalSelector.a(1, new PathfinderGoalFloat(this));
-        this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
-        this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-        this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
-        this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
         this.tier = tier;
-        this.setEquipment(0, CraftItemStack.asNMSCopy(new ItemGenerator().setType(ItemType.STAFF).setTier(ItemTier.getByTier(tier)).setRarity(API.getItemRarity(false)).generateItem().getItem()));
+        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+        org.bukkit.inventory.ItemStack weapon = new ItemGenerator().setType(ItemType.STAFF).setTier(ItemTier.getByTier(tier)).setRarity(API.getItemRarity(false)).generateItem().getItem();
+        this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
+        livingEntity.getEquipment().setItemInMainHand(weapon);
         switch (mons) {
             case Naga:
-                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.NAGA.getSkull()));
+                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.NAGA.getSkull()));
+                livingEntity.getEquipment().setHelmet(SkullTextures.NAGA.getSkull());
                 break;
             case Mage:
-                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.MAGE.getSkull()));
+                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.MAGE.getSkull()));
+                livingEntity.getEquipment().setHelmet(SkullTextures.MAGE.getSkull());
                 break;
             case Daemon2:
-                this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
+                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
+                livingEntity.getEquipment().setHelmet(SkullTextures.DEVIL.getSkull());
                 break;
         }
     }
@@ -61,10 +57,6 @@ public class BasicMageMonster extends DRSkeleton {
         super(world);
     }
 
-    @Override
-    protected void getRareDrop() {
-
-    }
 
     @Override
     public void setStats() {
@@ -88,7 +80,7 @@ public class BasicMageMonster extends DRSkeleton {
         this.makeSound("random.bow", 1.0F, 1.0F / (0.8F));
         this.world.addEntity(entityWitherSkull);*/
 
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = this.getEquipment(EnumItemSlot.MAINHAND);
         NBTTagCompound tag = nmsItem.getTag();
         DamageAPI.fireStaffProjectileMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entity.getBukkitEntity());
     }

@@ -6,11 +6,11 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 
-import net.minecraft.server.v1_8_R3.BiomeBase;
-import net.minecraft.server.v1_8_R3.EntityInsentient;
-import net.minecraft.server.v1_8_R3.EntityTypes;
+import net.minecraft.server.v1_9_R2.BiomeBase;
+import net.minecraft.server.v1_9_R2.EntityInsentient;
+import net.minecraft.server.v1_9_R2.EntityTypes;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -66,7 +66,7 @@ public class NMSUtils {
         }
     }
 
-    public static net.minecraft.server.v1_8_R3.Entity getNMSEntity(org.bukkit.entity.Entity ent) {
+    public static net.minecraft.server.v1_9_R2.Entity getNMSEntity(org.bukkit.entity.Entity ent) {
         return (((CraftEntity) ent).getHandle());
     }
 }

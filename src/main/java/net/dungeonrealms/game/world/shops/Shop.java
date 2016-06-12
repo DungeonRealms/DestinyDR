@@ -12,7 +12,7 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import org.bukkit.*;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
@@ -66,7 +66,7 @@ public class Shop {
         lore.add(ChatColor.GRAY + "This will open your shop to the public.");
         meta.setLore(lore);
         button.setItemMeta(meta);
-        net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
+        net.minecraft.server.v1_9_R2.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
         nmsButton.getTag().setString("status", "off");
         inv.setItem(invSize - 1, CraftItemStack.asBukkitCopy(nmsButton));
         return inv;
@@ -91,7 +91,7 @@ public class Shop {
         hologram.delete();
         block1.setType(Material.AIR);
         block2.setType(Material.AIR);
-        block1.getWorld().playSound(block1.getLocation(), Sound.PISTON_RETRACT, 1, 1);
+        block1.getWorld().playSound(block1.getLocation(), Sound.ENTITY_CHICKEN_EGG, 1, 1);
         uniqueViewers.clear();
         viewCount = 0;
         saveCollectionBin();
@@ -105,7 +105,7 @@ public class Shop {
         Inventory inv = Bukkit.createInventory(null, inventory.getSize(), "Collection Bin");
         int count = 0;
         for (ItemStack stack : inventory) {
-            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
             if (stack != null && stack.getType() != Material.AIR) {
                 if (stack.getType() == Material.INK_SACK && nms.hasTag() && nms.getTag().hasKey("status"))
                     continue;
@@ -170,7 +170,7 @@ public class Shop {
             lore.add(ChatColor.GRAY + "This will open your shop to the public.");
             meta.setLore(lore);
             button.setItemMeta(meta);
-            net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
+            net.minecraft.server.v1_9_R2.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
             nmsButton.getTag().setString("status", "off");
             inventory.setItem(inventory.getSize() - 1, CraftItemStack.asBukkitCopy(nmsButton));
             hologram.clearLines();
@@ -184,7 +184,7 @@ public class Shop {
             lore.add(ChatColor.GRAY + "This will allow you to edit your stock.");
             meta.setLore(lore);
             button.setItemMeta(meta);
-            net.minecraft.server.v1_8_R3.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
+            net.minecraft.server.v1_9_R2.ItemStack nmsButton = CraftItemStack.asNMSCopy(button);
             nmsButton.getTag().setString("status", "on");
             inventory.setItem(inventory.getSize() - 1, CraftItemStack.asBukkitCopy(nmsButton));
             hologram.clearLines();
@@ -253,7 +253,7 @@ public class Shop {
             p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "*** SHOP UPGRADE TO LEVEL " + new_tier + " COMPLETE ***");
             p.sendMessage(ChatColor.GRAY + "You now have " + (new_tier * 9) + " shop slots available.");
             p.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + cost + ChatColor.BOLD + "G");
-            p.playSound(p.getLocation(), Sound.LEVEL_UP, 1F, 1.25F);
+            p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1.25F);
             Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.SHOP_UPGRADE_1);
         }, player -> player.sendMessage(ChatColor.RED + "Action cancelled."));
     }
@@ -271,7 +271,7 @@ public class Shop {
                 if (stack == null || stack.getType() == Material.AIR) {
                     continue;
                 }
-                net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
                 if (nms.hasTag()) {
                     if (nms.getTag().hasKey("status")) {
                         continue;

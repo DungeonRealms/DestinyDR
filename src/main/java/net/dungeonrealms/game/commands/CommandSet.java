@@ -125,7 +125,7 @@ public class CommandSet extends BasicCommand {
                     SpawningMechanics.getALLSPAWNERS().forEach(BaseMobSpawner::kill);
                     break;
                 case "pick":
-                    Mining.lvlUp(Mining.getPickTier(player.getItemInHand()), player);
+                    Mining.lvlUp(Mining.getPickTier(player.getEquipment().getItemInMainHand()), player);
                     player.updateInventory();
                     break;
                 case "shopoff":

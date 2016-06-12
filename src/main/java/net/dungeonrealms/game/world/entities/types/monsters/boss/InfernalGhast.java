@@ -1,7 +1,8 @@
 package net.dungeonrealms.game.world.entities.types.monsters.boss;
 
+import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -13,7 +14,7 @@ import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.minecraft.server.v1_8_R3.EntityGhast;
+import net.minecraft.server.v1_9_R2.EntityGhast;
 
 /**
  * Created by Chase on Oct 21, 2015
@@ -67,10 +68,10 @@ public class InfernalGhast extends EntityGhast implements Boss {
 	 */
 	public void setArmor(ItemStack[] armor, ItemStack weapon) {
 		// weapon.addEnchantment(Enchantment.DAMAGE_ALL, 1);
-		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-		this.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
-		this.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
-		this.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
+		this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
+		this.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor[0]));
+		this.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor[1]));
+		this.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor[2]));
 	}
 
 	@Override

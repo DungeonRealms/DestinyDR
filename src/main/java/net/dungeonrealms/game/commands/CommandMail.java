@@ -24,9 +24,9 @@ public class CommandMail extends BasicCommand {
         if (args.length == 2) {
             if (args[0].equals("send")) {
                 /*if (args[1].equalsIgnoreCase("a")) {
-                    Bukkit.getOnlinePlayers().stream().forEach(player1 -> MailHandler.getInstance().sendMail(player, player1.getName(), player.getItemInHand()));
+                    Bukkit.getOnlinePlayers().stream().forEach(player1 -> MailHandler.getInstance().sendMail(player, player1.getName(), player.getItemInMainHand()));
                 }*/
-                if (MailHandler.getInstance().sendMail(player, args[1], player.getItemInHand())) {
+                if (MailHandler.getInstance().sendMail(player, args[1], player.getEquipment().getItemInMainHand())) {
                     player.setItemInHand(null);
                 }
             }

@@ -91,8 +91,8 @@ public class Chat {
             Bukkit.getOnlinePlayers().stream().filter(player -> player.getName().equalsIgnoreCase(playerName)).limit(1).forEach(theTargetPlayer -> {
                 theTargetPlayer.sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "FROM: " + ChatColor.AQUA + event.getPlayer().getName() + ChatColor.GRAY + ": " + ChatColor.WHITE + tempFixedMessage);
                 event.getPlayer().sendMessage(ChatColor.GRAY.toString() + ChatColor.BOLD + "TO: " + ChatColor.AQUA + theTargetPlayer.getName() + ChatColor.GRAY + ": " + ChatColor.WHITE + tempFixedMessage);
-                theTargetPlayer.playSound(theTargetPlayer.getLocation(), Sound.NOTE_PLING, 1f, 63f);
-                event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.NOTE_PLING, 1f, 63f);
+                theTargetPlayer.playSound(theTargetPlayer.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
+                event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
             });
             event.setCancelled(true);
             return;
@@ -101,7 +101,7 @@ public class Chat {
         boolean gChat = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_GLOBAL_CHAT, uuid);
 
         if (gChat) {
-            if (fixedMessage.contains("@i@") && event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType() != Material.AIR) {
+            if (fixedMessage.contains("@i@") && event.getPlayer().getEquipment().getItemInMainHand() != null && event.getPlayer().getEquipment().getItemInMainHand().getType() != Material.AIR) {
                 final Player p = event.getPlayer();
                 String aprefix = GameChat.getPreMessage(p);
                 String[] split = fixedMessage.split("@i@");
@@ -114,7 +114,7 @@ public class Chat {
 
                 final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
                 normal.addText(before + "");
-                normal.addItem(p.getItemInHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
+                normal.addItem(p.getEquipment().getItemInMainHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
                 normal.addText(after);
                 Bukkit.getOnlinePlayers().stream().forEach(normal::sendToPlayer);
                 event.setCancelled(true);
@@ -124,7 +124,7 @@ public class Chat {
             final String finalFixedMessage = fixedMessage;
             Bukkit.getOnlinePlayers().stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer(), true, GameChat.getGlobalType(finalFixedMessage)) + finalFixedMessage));
         } else {
-                if (fixedMessage.contains("@i@") && event.getPlayer().getItemInHand() != null && event.getPlayer().getItemInHand().getType() != Material.AIR) {
+                if (fixedMessage.contains("@i@") && event.getPlayer().getEquipment().getItemInMainHand() != null && event.getPlayer().getEquipment().getItemInMainHand().getType() != Material.AIR) {
                     final Player p = event.getPlayer();
                     String aprefix = GameChat.getPreMessage(p);
                     String[] split = fixedMessage.split("@i@");
@@ -137,7 +137,7 @@ public class Chat {
 
                     final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
                     normal.addText(before + "");
-                    normal.addItem(event.getPlayer().getItemInHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
+                    normal.addItem(event.getPlayer().getEquipment().getItemInMainHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
                     normal.addText(after);
                     API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(normal::sendToPlayer);
                     event.setCancelled(true);

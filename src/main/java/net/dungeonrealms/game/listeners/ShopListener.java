@@ -10,13 +10,13 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -71,8 +71,8 @@ public class ShopListener implements Listener {
         if (block.getType() != Material.CHEST) return;
         Shop shop = ShopMechanics.getShop(block);
         if (shop == null) return;
-        if (event.getPlayer().getItemInHand() == null || event.getPlayer().getItemInHand().getType() != Material.WRITTEN_BOOK) return;
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getPlayer().getItemInHand());
+        if (event.getPlayer().getEquipment().getItemInMainHand() == null || event.getPlayer().getEquipment().getItemInMainHand().getType() != Material.WRITTEN_BOOK) return;
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getPlayer().getEquipment().getItemInMainHand());
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
         if (tag.hasKey("journal") && !(tag.getString("journal").equalsIgnoreCase("true"))) return;
@@ -131,13 +131,13 @@ public class ShopListener implements Listener {
             // Owner is Clicking
             if (event.getRawSlot() == (shop.getInvSize() - 1)) {
                 event.setCancelled(true);
-                clicker.playSound(event.getWhoClicked().getLocation(), Sound.LEVEL_UP, 1, 1);
+                clicker.playSound(event.getWhoClicked().getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, 1);
                 shop.updateStatus();
                 return;
             }
             ItemStack itemHeld = event.getCursor();
             ItemStack stackInSlot = event.getCurrentItem();
-            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemHeld);
+            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemHeld);
             if (shop.isopen) {
                 clicker.sendMessage(ChatColor.RED + "You must close the shop before you can edit");
                 event.setCancelled(true);
@@ -194,12 +194,12 @@ public class ShopListener implements Listener {
                                         + ChatColor.WHITE.toString() + number + "g" + ChatColor.GREEN + " each");
                                 meta.setLore(lore);
                                 stack.setItemMeta(meta);
-                                net.minecraft.server.v1_8_R3.ItemStack newNMS = CraftItemStack.asNMSCopy(stack);
+                                net.minecraft.server.v1_9_R2.ItemStack newNMS = CraftItemStack.asNMSCopy(stack);
                                 newNMS.getTag().setInt("Price", number);
                                 if (shop.inventory.firstEmpty() >= 0) {
                                     int slot = shop.inventory.firstEmpty();
                                     shop.inventory.setItem(slot, CraftItemStack.asBukkitCopy(newNMS));
-                                    clicker.playSound(clicker.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
+                                    clicker.playSound(clicker.getLocation(), Sound.ENTITY_ARROW_HIT, 1, 1);
 
                                     clicker.sendMessage(new String[]{
                                             ChatColor.YELLOW.toString() + "Price set. Right-Click item to edit.",
@@ -236,7 +236,7 @@ public class ShopListener implements Listener {
                     meta.setLore(lore);
                     stack.setItemMeta(meta);
                     event.setCancelled(true);
-                    net.minecraft.server.v1_8_R3.ItemStack nms2 = CraftItemStack.asNMSCopy(stack);
+                    net.minecraft.server.v1_9_R2.ItemStack nms2 = CraftItemStack.asNMSCopy(stack);
                     nms2.getTag().remove("Price");
                     clicker.getInventory().addItem(CraftItemStack.asBukkitCopy(nms2));
                     event.getInventory().setItem(event.getRawSlot(), new ItemStack(Material.AIR, 1));
@@ -288,10 +288,10 @@ public class ShopListener implements Listener {
                                     + ChatColor.WHITE.toString() + number + "g " + ChatColor.GREEN + "each");
                             meta.setLore(lore);
                             stack.setItemMeta(meta);
-                            net.minecraft.server.v1_8_R3.ItemStack nms1 = CraftItemStack.asNMSCopy(stack);
+                            net.minecraft.server.v1_9_R2.ItemStack nms1 = CraftItemStack.asNMSCopy(stack);
                             nms1.getTag().setInt("Price", number);
                             shop.inventory.setItem(event.getRawSlot(), CraftItemStack.asBukkitCopy(nms1));
-                            clicker.playSound(clicker.getLocation(), Sound.SUCCESSFUL_HIT, 1, 1);
+                            clicker.playSound(clicker.getLocation(), Sound.ENTITY_ARROW_HIT, 1, 1);
                         }
                     }, player -> player.sendMessage(ChatColor.RED + "Action cancelled."));
                 }
@@ -317,7 +317,7 @@ public class ShopListener implements Listener {
                 clicker.sendMessage(ChatColor.RED + "No space available in inventory. Clear some room before attempting to purchase.");
                 return;
             }
-            net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemClicked);
+            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemClicked);
             if (nms == null || !nms.hasTag() || !nms.getTag().hasKey("Price")) return;
             int itemPrice = nms.getTag().getInt("Price");
 
@@ -379,7 +379,7 @@ public class ShopListener implements Listener {
                         clicker.getInventory().addItem(toGive);
                         clicker.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + totalPrice + ChatColor.BOLD + "G");
                         clicker.sendMessage(ChatColor.GREEN + "Transaction successful.");
-                        clicker.playSound(clicker.getLocation(), Sound.ORB_PICKUP, 1F, 1F);
+                        clicker.playSound(clicker.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
                         clicker.updateInventory();
                         int remainingStock = itemClicked.getAmount() - quantity;
                         if (remainingStock > 0) {
@@ -462,7 +462,7 @@ public class ShopListener implements Listener {
                     clicker.getInventory().addItem(clickClone);
                     clicker.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "-" + ChatColor.RED + totalPrice + ChatColor.BOLD + "G");
                     clicker.sendMessage(ChatColor.GREEN + "Transaction successful.");
-                    clicker.playSound(clicker.getLocation(), Sound.ORB_PICKUP, 1F, 1F);
+                    clicker.playSound(clicker.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
                     int itemsLeft = 0;
                     for (ItemStack itemStack : event.getInventory().getContents()) {
                         if (itemStack != null && itemStack.getType() != Material.AIR) {

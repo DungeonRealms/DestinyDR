@@ -6,14 +6,14 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanics.ItemManager;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 /**
  * Created by Chase on Nov 16, 2015
@@ -47,7 +47,7 @@ public class Trade {
 		        DyeColor.BLACK.getDyeData());
 		ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY UP",
 		        null, DyeColor.GRAY.getDyeData());
-		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+		net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setString("status", "notready");
 		nms.setTag(nbt);
@@ -166,7 +166,7 @@ public class Trade {
 	public void changeReady(){
 		ItemStack item = ItemManager.createItemWithData(Material.INK_SACK, ChatColor.YELLOW.toString() + "READY UP",
 		        null, DyeColor.GRAY.getDyeData());
-		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+		net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
 		NBTTagCompound nbt = new NBTTagCompound();
 		nbt.setString("status", "notready");
 		nms.setTag(nbt);

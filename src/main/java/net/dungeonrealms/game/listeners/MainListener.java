@@ -25,6 +25,7 @@ import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.inventory.GUI;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
+import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
@@ -39,11 +40,11 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_8_R3.EntityArmorStand;
-import net.minecraft.server.v1_8_R3.EntityItem;
+import net.minecraft.server.v1_9_R2.EntityArmorStand;
+import net.minecraft.server.v1_9_R2.EntityItem;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.entity.Horse.Variant;
 import org.bukkit.event.EventHandler;
@@ -104,7 +105,12 @@ public class MainListener implements Listener {
                     gamePlayer.addExperience(expToGive, false);
                     TextComponent defaultRank = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ");
                     defaultRank.addExtra(bungeeMessage);
-                    Bukkit.spigot().broadcast(defaultRank);
+                    //Bukkit.spigot().broadcast(defaultRank);
+                    final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
+                    normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/server/298658");
+                    for (Player player1 : Bukkit.getOnlinePlayers()) {
+                        normal.sendToPlayer(player1);
+                    }
                     break;
                 case "sub":
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 20, true);
@@ -115,7 +121,12 @@ public class MainListener implements Listener {
                     gamePlayer.addExperience(expToGive, false);
                     TextComponent sub = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 20 ECASH & 5% EXP @ vote ");
                     sub.addExtra(bungeeMessage);
-                    Bukkit.spigot().broadcast(sub);
+                    //Bukkit.spigot().broadcast(sub);
+                    final JSONMessage normal2 = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 25 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
+                    normal2.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/server/298658");
+                    for (Player player1 : Bukkit.getOnlinePlayers()) {
+                        normal2.sendToPlayer(player1);
+                    }
                     break;
                 case "sub+":
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 25, true);
@@ -126,7 +137,12 @@ public class MainListener implements Listener {
                     gamePlayer.addExperience(expToGive, false);
                     TextComponent subplus = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 25 ECASH & 5% EXP @ vote ");
                     subplus.addExtra(bungeeMessage);
-                    Bukkit.spigot().broadcast(subplus);
+                    //Bukkit.spigot().broadcast(subplus);
+                    final JSONMessage normal3 = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 25 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
+                    normal3.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/server/298658");
+                    for (Player player1 : Bukkit.getOnlinePlayers()) {
+                        normal3.sendToPlayer(player1);
+                    }
                     break;
                 default:
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 15, true);
@@ -137,7 +153,12 @@ public class MainListener implements Listener {
                     gamePlayer.addExperience(expToGive, false);
                     TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ");
                     test.addExtra(bungeeMessage);
-                    Bukkit.spigot().broadcast(test);
+                    //Bukkit.spigot().broadcast(test);
+                    final JSONMessage normal4 = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
+                    normal4.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/server/298658");
+                    for (Player player1 : Bukkit.getOnlinePlayers()) {
+                        normal4.sendToPlayer(player1);
+                    }
                     break;
             }
         } else {
@@ -291,7 +312,7 @@ public class MainListener implements Listener {
             API.handleLogout(player.getUniqueId());
 
             if (EntityAPI.hasPetOut(player.getUniqueId())) {
-                net.minecraft.server.v1_8_R3.Entity playerPet = EntityAPI.getPlayerPet(player.getUniqueId());
+                net.minecraft.server.v1_9_R2.Entity playerPet = EntityAPI.getPlayerPet(player.getUniqueId());
                 if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(playerPet)) {
                     DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(playerPet);
                 }
@@ -303,13 +324,13 @@ public class MainListener implements Listener {
             }
 
             if (EntityAPI.hasMountOut(player.getUniqueId())) {
-                net.minecraft.server.v1_8_R3.Entity playerMount = EntityAPI.getPlayerMount(player.getUniqueId());
+                net.minecraft.server.v1_9_R2.Entity playerMount = EntityAPI.getPlayerMount(player.getUniqueId());
                 if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(playerMount)) {
                     DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(playerMount);
                 }
                 if (playerMount.isAlive()) { // Safety check
-                    if (playerMount.passenger != null) {
-                        playerMount.passenger = null;
+                    if (playerMount.passengers != null) {
+                        playerMount.passengers.stream().forEach(passenger -> passenger = null);
                     }
                     playerMount.dead = true;
                 }
@@ -535,14 +556,14 @@ public class MainListener implements Listener {
             }
         } else {
             Player p = event.getPlayer();
-            ItemStack stack = p.getItemInHand();
+            ItemStack stack = p.getEquipment().getItemInMainHand();
             if (stack != null && stack.getType() == Material.FISHING_ROD) {
                 RepairAPI.subtractCustomDurability(p, stack, 2);
                 if (event.getState() == State.CAUGHT_FISH) {
                     if (Fishing.isDRFishingPole(stack)) {
                         event.getCaught().remove();
                         event.setExpToDrop(0);
-                        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+                        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
                         int tier = nms.getTag().getInt("itemTier");
                         if (new Random().nextInt(100) <= Fishing.getChance(tier)) {
                             ItemStack fish = Fishing.getFishItem(stack);
@@ -633,7 +654,7 @@ public class MainListener implements Listener {
                 if (!(player.getInventory().contains(map))) {
                     player.getInventory().addItem(map);
                     player.updateInventory();
-                    player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1F, 0.8F);
+                    player.playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 1F, 0.8F);
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.CARTOGRAPHER);
                 }
             }
@@ -686,18 +707,18 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onMapDrop(PlayerDropItemEvent event) {
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
         if (!(event.isCancelled())) {
             Player pl = event.getPlayer();
             // The maps gonna drop! DESTROY IT!
             if (event.getItemDrop().getItemStack().getType() == Material.MAP) {
                 event.getItemDrop().remove();
-                if (pl.getItemInHand().getType() == Material.MAP) {
+                if (pl.getEquipment().getItemInMainHand().getType() == Material.MAP) {
                     pl.setItemInHand(new ItemStack(Material.AIR));
                 } else if (pl.getItemOnCursor().getType() == Material.MAP) {
                     pl.setItemOnCursor(new ItemStack(Material.AIR));
                 }
-                pl.playSound(pl.getLocation(), Sound.BAT_TAKEOFF, 1F, 2F);
+                pl.playSound(pl.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 1F, 2F);
                 pl.updateInventory();
                 return;
             }
@@ -714,7 +735,7 @@ public class MainListener implements Listener {
                     forEach(spawner -> spawner.setFirstSpawn(true));
             if (event.getChunk().getEntities().length > 0) {
                 for (Entity ent : event.getChunk().getEntities()) {
-                    net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity) ent).getHandle();
+                    net.minecraft.server.v1_9_R2.Entity nms = ((CraftEntity) ent).getHandle();
                     if ((!(nms instanceof EntityItem)) && !(ent instanceof Player)) {
                         if (!(ent instanceof ItemFrame) && !(ent instanceof Painting) && !(ent instanceof Hanging)) {
                             ent.remove();
@@ -732,7 +753,7 @@ public class MainListener implements Listener {
         if (event.getWorld() == Bukkit.getWorlds().get(0)) {
             if (event.getChunk().getEntities().length > 0) {
                 for (Entity ent : event.getChunk().getEntities()) {
-                    net.minecraft.server.v1_8_R3.Entity nms = ((CraftEntity) ent).getHandle();
+                    net.minecraft.server.v1_9_R2.Entity nms = ((CraftEntity) ent).getHandle();
                     if ((!(nms instanceof EntityItem)) && !(ent instanceof Player)) {
                         if (!(ent instanceof ItemFrame) && !(ent instanceof Painting) && !(ent instanceof Hanging)) {
                             ent.remove();
@@ -746,11 +767,11 @@ public class MainListener implements Listener {
     @EventHandler
     public void onItemPickup(PlayerPickupItemEvent event) {
         if (event.getItem().getItemStack().getType() == Material.EMERALD) {
-            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.SUCCESSFUL_HIT, 1f, 1f);
+            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ARROW_HIT, 1f, 1f);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getPlayer().getUniqueId()).toString())) {
                 event.getPlayer().sendMessage("                      " + ChatColor.GREEN + "+" + event.getItem().getItemStack().getAmount() + ChatColor.BOLD + "G");
             }
-            //net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem().getItemStack());
+            //net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem().getItemStack());
             /*if (nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                 int gems = event.getItem().getItemStack().getAmount();
 
@@ -760,7 +781,7 @@ public class MainListener implements Listener {
                         continue;
                     if (gemPouch.getType() != Material.INK_SACK)
                         continue;
-                    net.minecraft.server.v1_8_R3.ItemStack nmsPouch = CraftItemStack.asNMSCopy(gemPouch);
+                    net.minecraft.server.v1_9_R2.ItemStack nmsPouch = CraftItemStack.asNMSCopy(gemPouch);
                     int currentAmount = nmsPouch.getTag().getInt("worth");
                     int tier = nmsPouch.getTag().getInt("tier");
                     int max = BankMechanics.getInstance().getPouchMax(tier);
@@ -782,7 +803,7 @@ public class MainListener implements Listener {
             }
             */
         } else {
-            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.CHICKEN_EGG_POP, 1f, 1f);
+            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_CHICKEN_EGG, 1f, 1f);
         }
     }
 

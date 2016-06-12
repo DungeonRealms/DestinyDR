@@ -13,7 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -89,7 +89,7 @@ public class Fishing implements GenericMechanic {
 	 * @since 1.0
 	 */
 	public static boolean isDRFishingPole(ItemStack stack) {
-		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+		net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
 		return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("rod");
 	}
 
@@ -182,7 +182,7 @@ public class Fishing implements GenericMechanic {
 	 */
 	public static ItemStack getFishItem(ItemStack stack) {
 		ItemStack fish = new ItemStack(Material.RAW_FISH);
-		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+		net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
 		int rodTier = nms.getTag().getInt("itemTier");
 		ItemMeta meta = fish.getItemMeta();
 		int tier = getFishTier(rodTier);
@@ -284,7 +284,7 @@ public class Fishing implements GenericMechanic {
 	 * @param stack
 	 */
 	public static void gainExp(ItemStack stack, Player p, int exp) {
-		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+		net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
 		int tier = Fishing.getRodTier(stack);
 		int xp = nms.getTag().getInt("XP");
 		int maxXP = nms.getTag().getInt("maxXP");

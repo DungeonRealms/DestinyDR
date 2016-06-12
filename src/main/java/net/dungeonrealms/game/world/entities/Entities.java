@@ -19,11 +19,11 @@ import net.dungeonrealms.game.world.entities.types.mounts.EnderDragon;
 import net.dungeonrealms.game.world.entities.types.mounts.Horse;
 import net.dungeonrealms.game.world.entities.types.pets.*;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityTargetEvent;
 
@@ -64,8 +64,8 @@ public class Entities implements GenericMechanic {
         nmsUtils.registerEntity("Pirate", 54, EntityZombie.class, EntityPirate.class);
         nmsUtils.registerEntity("RangedPirate", 54, EntityZombie.class, EntityRangedPirate.class);
         nmsUtils.registerEntity("Fire Imp", 54, EntityZombie.class, EntityFireImp.class);
-        nmsUtils.registerEntity("Bandit", 51, EntitySkeleton.class, EntityBandit.class);
-        nmsUtils.registerEntity("Enchanted Golem", 99, net.minecraft.server.v1_8_R3.EntityGolem.class, EntityGolem.class);
+        nmsUtils.registerEntity("Bandit", 54, EntityZombie.class, EntityBandit.class);
+        nmsUtils.registerEntity("Enchanted Golem", 99, net.minecraft.server.v1_9_R2.EntityGolem.class, EntityGolem.class);
         nmsUtils.registerEntity("DRSpider", 59, EntitySpider.class, DRSpider.class);
         nmsUtils.registerEntity("BasicMelee", 54, EntityZombie.class, BasicMeleeMonster.class);
         nmsUtils.registerEntity("BasicMage", 54, EntityZombie.class, BasicMageMonster.class);

@@ -9,14 +9,14 @@ import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.pets.*;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R2.util.UnsafeList;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
@@ -183,7 +183,7 @@ public class PetUtils implements GenericMechanic{
         }
 
         private boolean o() {
-            return this.entity.V() || this.entity.ab();
+            return true;
         }
 
         @Override
@@ -225,7 +225,7 @@ public class PetUtils implements GenericMechanic{
                 petCaveSpider.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petCaveSpider, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petCaveSpider.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                player.playSound(player.getLocation(), Sound.SPIDER_IDLE, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.ENTITY_SPIDER_AMBIENT, 1F, 1F);
                 makePet(petCaveSpider, player.getUniqueId(), 1.3D, EnumPets.CAVE_SPIDER);
                 if (particleEffect != null) {
                     switch (particleEffect) {
@@ -249,7 +249,7 @@ public class PetUtils implements GenericMechanic{
                 petBabyZombie.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petBabyZombie, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petBabyZombie.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                player.playSound(player.getLocation(), Sound.ZOMBIE_IDLE, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_AMBIENT, 1F, 1F);
                 makePet(petBabyZombie, player.getUniqueId(), 1.0D, EnumPets.BABY_ZOMBIE);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petBabyZombie);
                 player.closeInventory();
@@ -262,7 +262,7 @@ public class PetUtils implements GenericMechanic{
                 petBabyZombiePig.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 petBabyZombiePig.setBaby(true);
                 petBabyZombiePig.angerLevel = 0;
-                player.playSound(player.getLocation(), Sound.ZOMBIE_PIG_IDLE, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.ENTITY_ZOMBIE_PIG_AMBIENT, 1F, 1F);
                 makePet(petBabyZombiePig, player.getUniqueId(), 1.0D, EnumPets.BABY_PIGZOMBIE);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petBabyZombiePig);
                 player.closeInventory();
@@ -277,7 +277,7 @@ public class PetUtils implements GenericMechanic{
                 petWolf.setTamed(true);
                 petWolf.ageLocked = true;
                 petWolf.setAge(0);
-                player.playSound(player.getLocation(), Sound.WOLF_BARK, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.ENTITY_WOLF_AMBIENT, 1F, 1F);
                 makePet(petWolf, player.getUniqueId(), 1.1D, EnumPets.WOLF);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petWolf);
                 player.closeInventory();
@@ -290,7 +290,7 @@ public class PetUtils implements GenericMechanic{
                 petChicken.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 petChicken.setAge(-1);
                 petChicken.ageLocked = true;
-                player.playSound(player.getLocation(), Sound.CHICKEN_EGG_POP, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.ENTITY_CHICKEN_AMBIENT, 1F, 1F);
                 makePet(petChicken, player.getUniqueId(), 1.3D, EnumPets.CHICKEN);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petChicken);
                 player.closeInventory();
@@ -304,7 +304,7 @@ public class PetUtils implements GenericMechanic{
                 petOcelot.setAge(0);
                 petOcelot.ageLocked = true;
                 petOcelot.setTamed(true);
-                player.playSound(player.getLocation(), Sound.CAT_MEOW, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.ENTITY_CAT_AMBIENT, 1F, 1F);
                 makePet(petOcelot, player.getUniqueId(), 1.1D, EnumPets.OCELOT);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petOcelot);
                 player.closeInventory();
@@ -317,7 +317,7 @@ public class PetUtils implements GenericMechanic{
                 petRabbit.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 petRabbit.setAge(-1);
                 petRabbit.ageLocked = true;
-                player.playSound(player.getLocation(), Sound.DIG_GRASS, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.ENTITY_RABBIT_AMBIENT, 1F, 1F);
                 makePet(petRabbit, player.getUniqueId(), 1.1D, EnumPets.RABBIT);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petRabbit);
                 player.closeInventory();
@@ -328,7 +328,7 @@ public class PetUtils implements GenericMechanic{
                 petSilverfish.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petSilverfish, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petSilverfish.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                player.playSound(player.getLocation(), Sound.SILVERFISH_IDLE, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.ENTITY_SILVERFISH_AMBIENT, 1F, 1F);
                 makePet(petSilverfish, player.getUniqueId(), 1.5D, EnumPets.SILVERFISH);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petSilverfish);
                 player.closeInventory();
@@ -339,7 +339,7 @@ public class PetUtils implements GenericMechanic{
                 petEndermite.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petEndermite, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petEndermite.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                player.playSound(player.getLocation(), Sound.ENDERMAN_IDLE, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.ENTITY_ENDERMITE_AMBIENT, 1F, 1F);
                 makePet(petEndermite, player.getUniqueId(), 1.5D, EnumPets.ENDERMITE);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petEndermite);
                 player.closeInventory();
@@ -350,7 +350,7 @@ public class PetUtils implements GenericMechanic{
                 petSnowman.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petSnowman, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petSnowman.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                player.playSound(player.getLocation(), Sound.STEP_SNOW, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.ENTITY_SNOWMAN_AMBIENT, 1F, 1F);
                 makePet(petSnowman, player.getUniqueId(), 1.8D, EnumPets.SNOWMAN);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petSnowman);
                 player.closeInventory();
@@ -361,7 +361,7 @@ public class PetUtils implements GenericMechanic{
                 petBat.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petBat, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petBat.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                player.playSound(player.getLocation(), Sound.BAT_TAKEOFF, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.ENTITY_BAT_TAKEOFF, 1F, 1F);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petBat);
                 player.closeInventory();
                 break;
@@ -371,7 +371,7 @@ public class PetUtils implements GenericMechanic{
                 petSlime.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petSlime, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petSlime.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                player.playSound(player.getLocation(), Sound.SLIME_WALK, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.ENTITY_SLIME_SQUISH, 1F, 1F);
                 makePet(petSlime, player.getUniqueId(), 1.25D, EnumPets.SLIME);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petSlime);
                 player.closeInventory();
@@ -382,7 +382,7 @@ public class PetUtils implements GenericMechanic{
                 petMagmaCube.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petMagmaCube, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petMagmaCube.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
-                player.playSound(player.getLocation(), Sound.MAGMACUBE_WALK, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.ENTITY_MAGMACUBE_SQUISH, 1F, 1F);
                 makePet(petMagmaCube, player.getUniqueId(), 1.25D, EnumPets.MAGMA_CUBE);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petMagmaCube);
                 player.closeInventory();

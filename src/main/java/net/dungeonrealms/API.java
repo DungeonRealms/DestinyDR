@@ -39,15 +39,13 @@ import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
@@ -113,7 +111,7 @@ public class API {
     public static ItemTier getItemTier(ItemStack stack) {
         if (stack.getType() == Material.AIR || stack == null)
             return null;
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         if (!nms.hasTag() || nms.hasTag() && nms.getTag().hasKey("itemTier")) return null;
 
         return ItemTier.getByTier(nms.getTag().getInt("itemTier"));
@@ -391,12 +389,12 @@ public class API {
         KarmaHandler.getInstance().handleLogoutEvents(player);
         ScoreboardHandler.getInstance().removePlayerScoreboard(player);
         if (EntityAPI.hasPetOut(uuid)) {
-            net.minecraft.server.v1_8_R3.Entity pet = Entities.PLAYER_PETS.get(uuid);
+            net.minecraft.server.v1_9_R2.Entity pet = Entities.PLAYER_PETS.get(uuid);
             pet.dead = true;
             EntityAPI.removePlayerPetList(uuid);
         }
         if (EntityAPI.hasMountOut(uuid)) {
-            net.minecraft.server.v1_8_R3.Entity mount = Entities.PLAYER_MOUNTS.get(uuid);
+            net.minecraft.server.v1_9_R2.Entity mount = Entities.PLAYER_MOUNTS.get(uuid);
             mount.dead = true;
             EntityAPI.removePlayerMountList(uuid);
         }
@@ -464,12 +462,12 @@ public class API {
         KarmaHandler.getInstance().handleLogoutEvents(player);
         ScoreboardHandler.getInstance().removePlayerScoreboard(player);
         if (EntityAPI.hasPetOut(uuid)) {
-            net.minecraft.server.v1_8_R3.Entity pet = Entities.PLAYER_PETS.get(uuid);
+            net.minecraft.server.v1_9_R2.Entity pet = Entities.PLAYER_PETS.get(uuid);
             pet.dead = true;
             EntityAPI.removePlayerPetList(uuid);
         }
         if (EntityAPI.hasMountOut(uuid)) {
-            net.minecraft.server.v1_8_R3.Entity mount = Entities.PLAYER_MOUNTS.get(uuid);
+            net.minecraft.server.v1_9_R2.Entity mount = Entities.PLAYER_MOUNTS.get(uuid);
             mount.dead = true;
             EntityAPI.removePlayerMountList(uuid);
         }
@@ -552,7 +550,7 @@ public class API {
 
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
-            ItemStack[] items = ItemSerialization.fromString(playerInv).getContents();
+            ItemStack[] items = ItemSerialization.fromString(playerInv, 36).getContents();
             player.getInventory().setContents(items);
         }
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
@@ -663,7 +661,7 @@ public class API {
         if (gp.getPlayer() != null) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 if (gp.getStats().freePoints > 0) {
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    /*Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                         TextComponent bungeeMessage = new TextComponent(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
                         bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats"));
                         bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Allocate Points").create()));
@@ -673,7 +671,7 @@ public class API {
                         test.addExtra(bungeeMessage);
                         test.addExtra(ChatColor.GREEN + "*");
                         gp.getPlayer().spigot().sendMessage(test);
-                    });
+                    });*/
                 }
             }, 100);
         }
@@ -681,6 +679,8 @@ public class API {
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, DungeonRealms.getInstance().bungeeName, true);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> AchievementManager.getInstance().handleLogin(player.getUniqueId()), 70L);
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
+        AttributeInstance instance = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
+        instance.setBaseValue(4.0D);
     }
     
     
@@ -980,8 +980,8 @@ public class API {
      * @param tier
      * @param lvlRange
      */
-    public void spawnMonsterAt(Location location, net.minecraft.server.v1_8_R3.Entity entity, int tier, String lvlRange) {
-        net.minecraft.server.v1_8_R3.World world = ((CraftWorld) location.getWorld()).getHandle();
+    public void spawnMonsterAt(Location location, net.minecraft.server.v1_9_R2.Entity entity, int tier, String lvlRange) {
+        net.minecraft.server.v1_9_R2.World world = ((CraftWorld) location.getWorld()).getHandle();
         int level = Utils.getRandomFromTier(tier, "low");
         MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
         EntityStats.setMonsterRandomStats(entity, level, tier);
@@ -1017,12 +1017,12 @@ public class API {
     }
 
     public static boolean isWeapon(ItemStack stack) {
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("weapon");
     }
 
     public static boolean isArmor(ItemStack stack) {
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         return nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("armor");
     }
 
@@ -1031,12 +1031,12 @@ public class API {
      * @return
      */
     public static boolean isOrb(ItemStack is) {
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(is);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(is);
         return is.getType() == Material.MAGMA_CREAM && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("orb");
     }
 
     public static boolean isItemTradeable(ItemStack itemStack) {
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
         if (nms != null && nms.getTag() != null) {
             if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")) {
                 return false;

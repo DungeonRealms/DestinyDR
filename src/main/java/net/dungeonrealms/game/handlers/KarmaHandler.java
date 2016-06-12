@@ -368,19 +368,19 @@ public class KarmaHandler implements GenericMechanic {
         }
         if (API.isInSafeRegion(player.getLocation()) && !PLAYER_LOCATIONS.get(player).equals(EnumPlayerAlignments.LAWFUL)) {
             player.sendMessage(ChatColor.GREEN + "                " + ChatColor.BOLD + "*** SAFE ZONE (DMG-OFF) ***");
-            player.playSound(player.getLocation(), Sound.WITHER_SHOOT, 0.25F, 0.30F);
+            player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 0.25F, 0.30F);
             PLAYER_LOCATIONS.put(player, EnumPlayerAlignments.LAWFUL);
             return;
         }
         if (!API.isInSafeRegion(player.getLocation()) && API.isNonPvPRegion(player.getLocation()) && !PLAYER_LOCATIONS.get(player).equals(EnumPlayerAlignments.NEUTRAL)) {
             player.sendMessage(ChatColor.YELLOW + "           " + ChatColor.BOLD + "*** WILDERNESS (MOBS-ON, PVP-OFF) ***");
-            player.playSound(player.getLocation(), Sound.WITHER_SHOOT, 0.25F, 0.30F);
+            player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 0.25F, 0.30F);
             PLAYER_LOCATIONS.put(player, EnumPlayerAlignments.NEUTRAL);
             return;
         }
         if (!API.isInSafeRegion(player.getLocation()) && !API.isNonPvPRegion(player.getLocation()) && !PLAYER_LOCATIONS.get(player).equals(EnumPlayerAlignments.CHAOTIC)) {
             player.sendMessage(ChatColor.RED + "                " + ChatColor.BOLD + "*** CHAOTIC ZONE (PVP-ON) ***");
-            player.playSound(player.getLocation(), Sound.WITHER_SHOOT, 0.25F, 0.30F);
+            player.playSound(player.getLocation(), Sound.ENTITY_WITHER_SHOOT, 0.25F, 0.30F);
             PLAYER_LOCATIONS.put(player, EnumPlayerAlignments.CHAOTIC);
         }
     }

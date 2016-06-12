@@ -1,10 +1,10 @@
 package net.dungeonrealms.game.mastery;
 
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.entity.Entity;
 
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.NBTTagInt;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagInt;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -18,8 +18,8 @@ public class NBTUtils {
      * @since 1.0
      */
     public static void nullifyAI(Entity e) {
-        net.minecraft.server.v1_8_R3.Entity nmsEntity = ((CraftEntity) e).getHandle();
-        NBTTagCompound tag = nmsEntity.getNBTTag() == null ? new NBTTagCompound() : nmsEntity.getNBTTag();
+        net.minecraft.server.v1_9_R2.Entity nmsEntity = ((CraftEntity) e).getHandle();
+        NBTTagCompound tag = new NBTTagCompound();
         nmsEntity.c(tag);
         tag.set("NoAI", new NBTTagInt(1));
         nmsEntity.f(tag);

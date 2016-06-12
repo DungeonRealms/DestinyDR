@@ -5,7 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.profession.Mining;
-import net.minecraft.server.v1_8_R3.EntityExperienceOrb;
+import net.minecraft.server.v1_9_R2.EntityExperienceOrb;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -104,7 +104,7 @@ public class EnergyListener implements Listener {
         if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player) <= 0) {
             event.setCancelled(true);
             event.setUseItemInHand(Event.Result.DENY);
-            player.playSound(player.getLocation(), Sound.WOLF_PANT, 12F, 1.5F);
+            player.playSound(player.getLocation(), Sound.ENTITY_WOLF_PANT, 12F, 1.5F);
             try {
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, player.getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
             } catch (Exception ex) {

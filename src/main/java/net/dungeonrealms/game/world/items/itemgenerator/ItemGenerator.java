@@ -10,13 +10,13 @@ import net.dungeonrealms.game.world.items.itemgenerator.engine.ModifierType;
 import net.dungeonrealms.game.world.items.itemgenerator.modifiers.ArmorModifiers;
 import net.dungeonrealms.game.world.items.itemgenerator.modifiers.WeaponModifiers;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.NBTTagInt;
-import net.minecraft.server.v1_8_R3.NBTTagList;
-import net.minecraft.server.v1_8_R3.NBTTagString;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagInt;
+import net.minecraft.server.v1_9_R2.NBTTagList;
+import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -376,7 +376,7 @@ public class ItemGenerator {
         RepairAPI.setCustomItemDurability(item, 1500);
 		
         // set NBT tags
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         // NMS stack for writing NBT tags
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         
@@ -431,7 +431,7 @@ public class ItemGenerator {
         origItem = item.clone();
         
         // NMS stack for reading NBT tags
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         
         ItemTier tier = ItemTier.getByTier(tag.getInt("itemTier"));
@@ -603,7 +603,7 @@ public class ItemGenerator {
         }
         
         // set NBT tags
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(is);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(is);
         // NMS stack for writing NBT tags
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         

@@ -20,14 +20,14 @@ import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.NBTTagInt;
-import net.minecraft.server.v1_8_R3.NBTTagList;
-import net.minecraft.server.v1_8_R3.NBTTagString;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagInt;
+import net.minecraft.server.v1_9_R2.NBTTagList;
+import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BookMeta;
@@ -61,7 +61,7 @@ public class ItemManager {
         meta.setDisplayName(name);
         meta.setLore(Arrays.asList(lore));
         rawStack.setItemMeta(meta);
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
         tag.set("type", new NBTTagString("important"));
@@ -72,7 +72,7 @@ public class ItemManager {
 
     public static ItemStack createOrbofAlteration() {
         ItemStack rawStack = createItem(Material.MAGMA_CREAM, ChatColor.LIGHT_PURPLE.toString() + "Orb of Alteration", new String[]{(ChatColor.GRAY.toString() + "Randomizes bonus stats of selected equipment")});
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
         nms.getTag().setString("type", "orb");
         return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
     }
@@ -80,7 +80,7 @@ public class ItemManager {
     public static ItemStack createWeaponEnchant(int tier) {
         String material = getWeaponMatString(tier);
         ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() + ChatColor.BOLD.toString() + "Scroll: " + API.getTierColor(tier) + "Enchant " + material + " Weapon", new String[]{ChatColor.RED + "+5% DMG", ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "Weapon will VANISH if enchant above +3 FAILS."});
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
         nms.getTag().setString("type", "weaponenchant");
         nms.getTag().setInt("tier", tier);
         return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
@@ -89,7 +89,7 @@ public class ItemManager {
     public static ItemStack createArmorEnchant(int tier) {
         String material = getArmorMatString(tier);
         ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() + ChatColor.BOLD.toString() + "Scroll: " + API.getTierColor(tier) + "Enchant " + material + " Armor", new String[]{ChatColor.RED + "+5% HP", ChatColor.RED + "+5% HP REGEN", ChatColor.GRAY.toString() + ChatColor.ITALIC + "    - OR -", ChatColor.RED + "+1% ENERGY REGEN", ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "Armor will VANISH if enchant above +3 FAILS."});
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
         nms.getTag().setString("type", "armorenchant");
         nms.getTag().setInt("tier", tier);
         return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
@@ -135,7 +135,7 @@ public class ItemManager {
         String material = getArmorMatString(tier);
         ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() + ChatColor.BOLD.toString() + "White Scroll: " + API.getTierColor(tier) + "Protect " + material + " Equipment", new String[]{
                 ChatColor.GRAY.toString() + "Apply to any T" + tier + " item to " + ChatColor.UNDERLINE + " prevent " + ChatColor.GRAY + " it from being", ChatColor.GRAY + "destroyed if the next enchantment scroll fails."});
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
         nms.getTag().setString("type", "protection");
         nms.getTag().setInt("tier", tier);
         return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
@@ -155,7 +155,7 @@ public class ItemManager {
         meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.BOLD + "Teleport: " + ChatColor.WHITE + teleportLocation);
         meta.setLore(Collections.singletonList(ChatColor.GRAY + "(Right-Click) Teleport to " + displayName));
         rawStack.setItemMeta(meta);
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("teleport"));
         tag.set("usage", new NBTTagString(teleportLocation));
@@ -176,7 +176,7 @@ public class ItemManager {
         meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.BOLD + "Teleport: " + ChatColor.WHITE + location);
         meta.setLore(Collections.singletonList(ChatColor.GRAY + "(Right-Click) Teleport to " + displayName));
         rawStack.setItemMeta(meta);
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("teleport"));
         tag.set("usage", new NBTTagString(location));
@@ -224,7 +224,7 @@ public class ItemManager {
             meta.setDisplayName(name + " Scrap");
             meta.setLore(Collections.singletonList(ChatColor.GRAY + "Repairs 3% durability on " + name + ChatColor.GRAY + " equipment."));
             rawStack.setItemMeta(meta);
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("type", new NBTTagString("scrap"));
             tag.setInt("itemTier", tier);
@@ -238,7 +238,7 @@ public class ItemManager {
         ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.LEASH), tier.getName(), new String[]{
                 ChatColor.RED + "Storage Size: " + tier.getSize() + " Items", ChatColor.RED + "An old worn mule."
         });
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
         tag.set("destroy", new NBTTagString("yes"));
@@ -349,7 +349,7 @@ public class ItemManager {
             potionMeta.setDisplayName(name);
             potionMeta.setLore(Collections.singletonList(ChatColor.GRAY + "An Elixir that heals for " + ChatColor.RED + ChatColor.BOLD + healAmount + ChatColor.GRAY + "HP."));
             rawStack.setItemMeta(potionMeta);
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("type", new NBTTagString("healthPotion"));
             tag.setInt("itemTier", tier);
@@ -365,7 +365,7 @@ public class ItemManager {
             potionMeta.setDisplayName(name);
             potionMeta.setLore(Collections.singletonList(ChatColor.GRAY + "An Elixir that heals for " + ChatColor.RED + ChatColor.BOLD + healAmount + ChatColor.GRAY + "HP in a " + ChatColor.RED + ChatColor.BOLD + "4x4" + ChatColor.GRAY + " Area."));
             rawStack.setItemMeta(potionMeta);
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("type", new NBTTagString("splashHealthPotion"));
             tag.setInt("itemTier", tier);
@@ -502,7 +502,7 @@ public class ItemManager {
             itemLore.add(rarity.getName());
             meta.setLore(itemLore);
             rawStack.setItemMeta(meta);
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("type", new NBTTagString("healingFood"));
             tag.setInt("itemTier", tier);
@@ -568,7 +568,7 @@ public class ItemManager {
             meta.setLore(lore);
             rawStack.setItemMeta(meta);
             RepairAPI.setCustomItemDurability(rawStack, 1500);
-            net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("type", new NBTTagString("pick"));
             tag.setInt("itemTier", tier);
@@ -584,7 +584,7 @@ public class ItemManager {
 
     public static ItemStack createItem(EnumItem enumItem) {
         ItemStack stack = null;
-        net.minecraft.server.v1_8_R3.ItemStack nms = null;
+        net.minecraft.server.v1_9_R2.ItemStack nms = null;
         switch (enumItem) {
             case StorageExpansion:
                 stack = createItem(Material.ENDER_CHEST, ChatColor.GREEN + "Storage Expansion", new String[]{ChatColor.GRAY + "Increase storage space by 1 row.", ChatColor.RED.toString() + ChatColor.BOLD + "Max of 6"});
@@ -650,7 +650,7 @@ public class ItemManager {
         meta.setLore(lore);
         rawStack.setItemMeta(meta);
         RepairAPI.setCustomItemDurability(rawStack, 1500);
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.setString("type", "rod");
         tag.setInt("itemTier", tier);
@@ -791,7 +791,7 @@ public class ItemManager {
 
         bm.setPages(pages);
         stack.setItemMeta(bm);
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         nms.getTag().setString("type", "important");
         nms.getTag().setString("journal", "true");
         return CraftItemStack.asBukkitCopy(nms);
@@ -814,7 +814,7 @@ public class ItemManager {
         meta.setDisplayName(displayName);
         meta.setLore(Arrays.asList(lore));
         skull.setItemMeta(meta);
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(skull);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(skull);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
         tag.set("usage", new NBTTagString("profile"));
@@ -831,7 +831,7 @@ public class ItemManager {
                 "",
                 ChatColor.YELLOW + "Speak to an Innkeeper to change location."
         });
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
         tag.set("usage", new NBTTagString("hearthstone"));
@@ -845,7 +845,7 @@ public class ItemManager {
         ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.SADDLE), ChatColor.GREEN + "Mount", new String[]{
                 ChatColor.DARK_GRAY + "Summons your active Mount.",
         });
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
         tag.set("usage", new NBTTagString("mount"));
@@ -858,7 +858,7 @@ public class ItemManager {
         ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.NAME_TAG), ChatColor.GREEN + "Pet", new String[]{
                 ChatColor.DARK_GRAY + "Summons your active Pet.",
         });
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
         tag.set("usage", new NBTTagString("pet"));
@@ -871,7 +871,7 @@ public class ItemManager {
         ItemStack stack = PlayerMenus.editItem(new ItemStack(Material.EYE_OF_ENDER), ChatColor.GREEN + "Trail", new String[]{
                 ChatColor.DARK_GRAY + "Equips your active Trail.",
         });
-        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(stack);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         tag.set("type", new NBTTagString("important"));
         tag.set("usage", new NBTTagString("trail"));
@@ -908,7 +908,7 @@ public class ItemManager {
      * @return
      */
     public static boolean isEnchantScroll(ItemStack stack) {
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         return stack.getType() == Material.EMPTY_MAP && nms.getTag() != null && nms.getTag().hasKey("type") && (nms.getTag().getString("type").equalsIgnoreCase("armorenchant") || nms.getTag().getString("type").equalsIgnoreCase("weaponenchant"));
     }
 
@@ -917,7 +917,7 @@ public class ItemManager {
      * @return
      */
     public static boolean isProtectScroll(ItemStack stack) {
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         return stack.getType() == Material.EMPTY_MAP && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("protection");
     }
 }

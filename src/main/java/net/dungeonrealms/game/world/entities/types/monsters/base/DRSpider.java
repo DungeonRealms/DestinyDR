@@ -1,6 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
-import net.minecraft.server.v1_8_R3.PathfinderGoalRandomStroll;
+import net.minecraft.server.v1_9_R2.PathfinderGoalRandomStroll;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -9,9 +9,9 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
-import net.minecraft.server.v1_8_R3.GenericAttributes;
-import net.minecraft.server.v1_8_R3.Item;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
+import net.minecraft.server.v1_9_R2.Item;
+import net.minecraft.server.v1_9_R2.World;
 
 /**
  * Created by Chase on Oct 2, 2015
@@ -43,10 +43,6 @@ public class DRSpider extends DRZombie implements DRMonster {
 		return null;
 	}
 
-	@Override
-	protected void getRareDrop() {
-
-	}
 
 	@Override
 	public EnumMonster getEnum() {
@@ -67,8 +63,6 @@ public class DRSpider extends DRZombie implements DRMonster {
 	public void onMonsterDeath(Player killer) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
 		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity(), killer);
-		if(this.random.nextInt(100) < 33)
-			this.getRareDrop();
 		});
 	}
 

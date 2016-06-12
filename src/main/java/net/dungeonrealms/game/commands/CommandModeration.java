@@ -57,7 +57,7 @@ public class CommandModeration extends BasicCommand {
                     	ItemStack stack = player.getInventory().getArmorContents()[i];
                         inv.addItem(stack);
                     }
-                    inv.setItem(8, player.getItemInHand());
+                    inv.setItem(8, player.getEquipment().getItemInMainHand());
                     sender.openInventory(inv);
                 }
                 break;

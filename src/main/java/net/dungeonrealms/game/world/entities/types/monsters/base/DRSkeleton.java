@@ -2,18 +2,17 @@ package net.dungeonrealms.game.world.entities.types.monsters.base;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -40,12 +39,10 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
         this.mobHead = monster.mobHead;
         this.entityType = entityType;
         setArmor(tier);
-        if (this.getEquipment(0) != null && this.getEquipment(0).hasTag()) {
-            if (this.getEquipment(0).getTag().hasKey("itemType") && this.getEquipment(0).getTag().getInt("itemType") == 3) {
+        if (this.getEquipment(EnumItemSlot.MAINHAND) != null && this.getEquipment(EnumItemSlot.MAINHAND).hasTag()) {
+            if (this.getEquipment(EnumItemSlot.MAINHAND).getTag().hasKey("itemType") && this.getEquipment(EnumItemSlot.MAINHAND).getTag().getInt("itemType") == 3) {
                 this.goalSelector.a(1, new PathfinderGoalFloat(this));
                 this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
-                this.goalSelector.a(7, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-                this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, false));
                 this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
             }
         }
@@ -55,11 +52,6 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
         setStats();
         this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
-    }
-
-    @Override
-    protected void getRareDrop(){
-    	this.world.getWorld().dropItemNaturally(this.getBukkitEntity().getLocation().add(0, 1, 0), new ItemStack(Material.ARROW, RandomHelper.getRandomNumberBetween(2, 5)));
     }
     
     protected DRSkeleton(World world) {
@@ -75,25 +67,30 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
         ItemStack[] armor = API.getTierArmor(tier);
         // weapon, boots, legs, chest, helmet/head
         ItemStack weapon = getTierWeapon(tier);
+        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         boolean armorMissing = false;
         if (random.nextInt(10) <= 5) {
             ItemStack armor0 = AntiCheat.getInstance().applyAntiDupe(armor[0]);
-            this.setEquipment(1, CraftItemStack.asNMSCopy(armor0));
+            livingEntity.getEquipment().setBoots(armor0);
+            this.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor0));
         } else {
             armorMissing = true;
         }
         if (random.nextInt(10) <= 5 || armorMissing) {
             ItemStack armor1 = AntiCheat.getInstance().applyAntiDupe(armor[1]);
-            this.setEquipment(2, CraftItemStack.asNMSCopy(armor1));
+            livingEntity.getEquipment().setLeggings(armor1);
+            this.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor1));
             armorMissing = false;
         } else {
             armorMissing = true;
         }
         if (random.nextInt(10) <= 5 || armorMissing) {
             ItemStack armor2 = AntiCheat.getInstance().applyAntiDupe(armor[2]);
-            this.setEquipment(3, CraftItemStack.asNMSCopy(armor2));
+            livingEntity.getEquipment().setChestplate(armor2);
+            this.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor2));
         }
-        this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
+        this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
+        livingEntity.getEquipment().setItemInMainHand(weapon);
     }
 
     protected String getCustomEntityName() {
@@ -121,8 +118,6 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
 	public void onMonsterDeath(Player killer) {
 		Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), ()->{
 		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity(), killer);
-		if(this.random.nextInt(100) < 33)
-			this.getRareDrop();
 		});
 	}
 }

@@ -2,18 +2,14 @@ package net.dungeonrealms.game.player.rank;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanics.SoundAPI;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
@@ -81,7 +77,7 @@ public class Subscription implements GenericMechanic {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.RANK, "DEFAULT", true);
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.RANK_EXISTENCE, 0, true);
             player.sendMessage(ChatColor.RED + "Your subscription has expired!");
-            SoundAPI.getInstance().playSound("random.anvil_break", player);
+            player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
         }
     }
 
@@ -106,7 +102,7 @@ public class Subscription implements GenericMechanic {
      * @since 1.0
      */
     // @todo: Change this to appear like current DR & do this on player join.
-    public void handleJoin(Player player) {
+   /* public void handleJoin(Player player) {
         if (!PLAYER_SUBSCRIPTION.contains(player.getUniqueId())) {
             PLAYER_SUBSCRIPTION.add(player.getUniqueId());
         }
@@ -133,6 +129,6 @@ public class Subscription implements GenericMechanic {
             test.addExtra(ChatColor.RED + " to learn more!");
             player.spigot().sendMessage(test);
         }
-    }
+    }*/
 
 }

@@ -6,7 +6,7 @@ import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.player.combat.CombatLog;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -170,7 +170,7 @@ public class Teleportation implements GenericMechanic {
                 particleEffect[1] = ParticleAPI.ParticleEffect.PORTAL;
                 player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 220, 2));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.CONFUSION, 220, 1));
-                player.playSound(player.getLocation(), Sound.AMBIENCE_CAVE, 1F, 1F);
+                player.playSound(player.getLocation(), Sound.AMBIENT_CAVE, 1F, 1F);
                 taskTimer[0] = 5;
                 break;
         }

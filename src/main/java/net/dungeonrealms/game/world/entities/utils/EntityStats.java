@@ -8,8 +8,9 @@ import net.dungeonrealms.game.world.entities.types.monsters.EnumNamedElite;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_8_R3.Entity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import net.minecraft.server.v1_9_R2.Entity;
+import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -153,11 +154,11 @@ public class EntityStats {
             }
             ItemStack[] armor = new ItemGenerator().setRarity(API.getItemRarity(true)).setTier(ItemTier.getByTier(tier)).getArmorSet();
             ItemStack weapon = new ItemGenerator().setType(weaponType).setRarity(API.getItemRarity(true)).setTier(ItemTier.getByTier(tier)).generateItem().getItem();
-            entity.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-            entity.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
-            entity.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
-            entity.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
-            entity.setEquipment(4, CraftItemStack.asNMSCopy(armor[3]));
+            entity.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
+            entity.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor[0]));
+            entity.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor[1]));
+            entity.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor[2]));
+            entity.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(armor[3]));
         }
         entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
         HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) entity.getBukkitEntity()));

@@ -8,7 +8,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -65,7 +65,7 @@ public class Mining implements GenericMechanic {
 	 */
 	public static boolean isDRPickaxe(ItemStack stack) {
 		if(stack.getType() == Material.WOOD_PICKAXE || stack.getType() == Material.STONE_PICKAXE || stack.getType() == Material.IRON_PICKAXE || stack.getType() == Material.GOLD_PICKAXE || stack.getType() == Material.DIAMOND_PICKAXE){
-		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+		net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
 		return !(nms == null || nms.getTag() == null) && nms.getTag().hasKey("type")
 		        && nms.getTag().getString("type").equalsIgnoreCase("pick");
 		}
@@ -136,7 +136,7 @@ public class Mining implements GenericMechanic {
 	 * @since 1.0
 	 */
 	public static void addExperience(ItemStack stackInHand, int experienceGain, Player p) {
-		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stackInHand);
+		net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stackInHand);
 		int currentXP = nms.getTag().getInt("XP");
 		int maxXP = nms.getTag().getInt("maxXP");
 		int tier = nms.getTag().getInt("itemTier");
@@ -219,8 +219,8 @@ public class Mining implements GenericMechanic {
 	 * @since 1.0
 	 */
 	public static void lvlUp(int tier, Player p) {
-		ItemStack pick = p.getItemInHand();
-		net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(pick);
+		ItemStack pick = p.getEquipment().getItemInMainHand();
+		net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(pick);
 		int lvl = nms.getTag().getInt("level") + 1;
 		if (lvl < 101){
 			switch(lvl){

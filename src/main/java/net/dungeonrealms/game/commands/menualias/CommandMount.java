@@ -9,7 +9,7 @@ import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
-import net.minecraft.server.v1_8_R3.Entity;
+import net.minecraft.server.v1_9_R2.Entity;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;

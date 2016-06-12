@@ -4,7 +4,7 @@ import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -13,7 +13,7 @@ import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.items.Item.WeaponAttributeType;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 /**
  * Created by Nick on 12/2/2015.
@@ -33,12 +33,12 @@ public class CommandCheck extends BasicCommand {
 
         if(!Rank.isDev(player)) return true;
 
-        if (player.getItemInHand() == null) {
+        if (player.getEquipment().getItemInMainHand() == null) {
             player.sendMessage(ChatColor.RED + "There is nothing in your hand.");
             return true;
         }
 
-        ItemStack inHand = player.getItemInHand();
+        ItemStack inHand = player.getEquipment().getItemInMainHand();
 
         NBTTagCompound tag = CraftItemStack.asNMSCopy(inHand).getTag();
         

@@ -6,15 +6,14 @@ import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
-import net.dungeonrealms.game.mechanics.SoundAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
@@ -43,22 +42,22 @@ public class DamageAPI {
     public static double calculateWeaponDamage(LivingEntity attacker, Entity receiver, NBTTagCompound tag) {
         EntityEquipment entityEquipment = attacker.getEquipment();
         if (API.isPlayer(attacker)) {
-            RepairAPI.subtractCustomDurability((Player) attacker, attacker.getEquipment().getItemInHand(), 1);
+            RepairAPI.subtractCustomDurability((Player) attacker, attacker.getEquipment().getItemInMainHand(), 1);
         }
         ItemStack[] attackerArmor = entityEquipment.getArmorContents();
         NBTTagCompound nmsTags[] = new NBTTagCompound[4];
         double damage;
-        if (attackerArmor[3].getType() != null && attackerArmor[3].getType() != Material.AIR) {
+        if (attackerArmor[3] != null && attackerArmor[3].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(attackerArmor[3]).getTag() != null) {
                 nmsTags[0] = CraftItemStack.asNMSCopy(attackerArmor[3]).getTag();
             }
         }
-        if (attackerArmor[2].getType() != null && attackerArmor[2].getType() != Material.AIR) {
+        if (attackerArmor[2] != null && attackerArmor[2].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(attackerArmor[2]).getTag() != null) {
                 nmsTags[1] = CraftItemStack.asNMSCopy(attackerArmor[2]).getTag();
             }
         }
-        if (attackerArmor[1].getType() != null && attackerArmor[1].getType() != Material.AIR) {
+        if (attackerArmor[1] != null && attackerArmor[1].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(attackerArmor[1]).getTag() != null) {
                 nmsTags[2] = CraftItemStack.asNMSCopy(attackerArmor[1]).getTag();
             }
@@ -112,19 +111,19 @@ public class DamageAPI {
         }
 
         if (tag.getInt("fireDamage") != 0) {
-            SoundAPI.getInstance().playSoundAtLocation("game.potion.smash", receiver.getLocation(), 8);
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
             receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8195);
             damage += tag.getInt("fireDamage");
         }
 
         if (tag.getInt("iceDamage") != 0) {
-            SoundAPI.getInstance().playSoundAtLocation("game.potion.smash", receiver.getLocation(), 8);
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
             receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8194);
             damage += tag.getInt("iceDamage");
         }
 
         if (tag.getInt("poisonDamage") != 0) {
-            SoundAPI.getInstance().playSoundAtLocation("game.potion.smash", receiver.getLocation(), 8);
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
             receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8196);
             damage += tag.getInt("poisonDamage");
         }
@@ -133,8 +132,8 @@ public class DamageAPI {
         if (tag.getInt("criticalHit") != 0) {
             critHit += tag.getInt("criticalHit");
         }
-        if (attacker.getEquipment().getItemInHand() != null) {
-            if (new Attribute(attacker.getEquipment().getItemInHand()).getItemType() == Item.ItemType.AXE) {
+        if (attacker.getEquipment().getItemInMainHand() != null) {
+            if (new Attribute(attacker.getEquipment().getItemInMainHand()).getItemType() == Item.ItemType.AXE) {
                 critHit += 3;
             }
         }
@@ -203,7 +202,7 @@ public class DamageAPI {
         } else {
             Player player = (Player) attacker;
             if (API.getGamePlayer(player) != null) {
-                switch (new Attribute(((Player) attacker).getItemInHand()).getItemType()) {
+                switch (new Attribute(((Player) attacker).getEquipment().getItemInMainHand()).getItemType()) {
                     case POLEARM:
                         damage += (damage * (API.getGamePlayer(player).getStats().getPolearmDMG()));
                         break;
@@ -229,7 +228,7 @@ public class DamageAPI {
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
                     attacker.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "                        *CRIT*");
                 }
-                ((Player) attacker).playSound(attacker.getLocation(), Sound.WOOD_CLICK, 1.5F, 0.5F);
+                ((Player) attacker).playSound(attacker.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1.5F, 0.5F);
             }
             damage *= 2;
         }
@@ -249,17 +248,17 @@ public class DamageAPI {
         ItemStack[] attackerArmor = entityEquipment.getArmorContents();
         NBTTagCompound nmsTags[] = new NBTTagCompound[4];
         double damage = 0;
-        if (attackerArmor[3].getType() != null && attackerArmor[3].getType() != Material.AIR) {
+        if (attackerArmor[3] != null && attackerArmor[3].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(attackerArmor[3]).getTag() != null) {
                 nmsTags[0] = CraftItemStack.asNMSCopy(attackerArmor[3]).getTag();
             }
         }
-        if (attackerArmor[2].getType() != null && attackerArmor[2].getType() != Material.AIR) {
+        if (attackerArmor[2] != null && attackerArmor[2].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(attackerArmor[2]).getTag() != null) {
                 nmsTags[1] = CraftItemStack.asNMSCopy(attackerArmor[2]).getTag();
             }
         }
-        if (attackerArmor[1].getType() != null && attackerArmor[1].getType() != Material.AIR) {
+        if (attackerArmor[1] != null && attackerArmor[1].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(attackerArmor[1]).getTag() != null) {
                 nmsTags[2] = CraftItemStack.asNMSCopy(attackerArmor[1]).getTag();
             }
@@ -293,19 +292,19 @@ public class DamageAPI {
         }
 
         if (projectile.getMetadata("fireDamage").get(0).asInt() != 0) {
-            SoundAPI.getInstance().playSoundAtLocation("game.potion.smash", receiver.getLocation(), 8);
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
             receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8195);
             damage += projectile.getMetadata("fireDamage").get(0).asInt();
         }
 
         if (projectile.getMetadata("iceDamage").get(0).asInt() != 0) {
-            SoundAPI.getInstance().playSoundAtLocation("game.potion.smash", receiver.getLocation(), 8);
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
             receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8194);
             damage += projectile.getMetadata("iceDamage").get(0).asInt();
         }
 
         if (projectile.getMetadata("poisonDamage").get(0).asInt() != 0) {
-            SoundAPI.getInstance().playSoundAtLocation("game.potion.smash", receiver.getLocation(), 8);
+            receiver.getWorld().playSound(receiver.getLocation(), Sound.ENTITY_SPLASH_POTION_BREAK, 1F, 1F);
             receiver.getWorld().playEffect(receiver.getLocation().add(0, 1.3, 0), Effect.POTION_BREAK, 8196);
             damage += projectile.getMetadata("poisonDamage").get(0).asInt();
         }
@@ -386,7 +385,7 @@ public class DamageAPI {
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
                     attacker.sendMessage(ChatColor.YELLOW + "" + ChatColor.BOLD + "                        *CRIT*");
                 }
-                ((Player) attacker).playSound(attacker.getLocation(), Sound.WOOD_CLICK, 1.5F, 0.5F);
+                ((Player) attacker).playSound(attacker.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1.5F, 0.5F);
             }
             damage = damage * 2;
         }
@@ -408,7 +407,7 @@ public class DamageAPI {
         double totalArmorReduction;
         NBTTagCompound nmsTags[] = new NBTTagCompound[4];
         LivingEntity leDefender = (LivingEntity) defender;
-        if (defenderArmor[3].getType() != null && defenderArmor[3].getType() != Material.AIR) {
+        if (defenderArmor[3] != null && defenderArmor[3].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(defenderArmor[3]).getTag() != null) {
                 nmsTags[0] = CraftItemStack.asNMSCopy(defenderArmor[3]).getTag();
                 if (API.isPlayer(leDefender)) {
@@ -416,7 +415,7 @@ public class DamageAPI {
                 }
             }
         }
-        if (defenderArmor[2].getType() != null && defenderArmor[2].getType() != Material.AIR) {
+        if (defenderArmor[2] != null && defenderArmor[2].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(defenderArmor[2]).getTag() != null) {
                 nmsTags[1] = CraftItemStack.asNMSCopy(defenderArmor[2]).getTag();
                 if (API.isPlayer(leDefender)) {
@@ -424,7 +423,7 @@ public class DamageAPI {
                 }
             }
         }
-        if (defenderArmor[1].getType() != null && defenderArmor[1].getType() != Material.AIR) {
+        if (defenderArmor[1] != null && defenderArmor[1].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(defenderArmor[1]).getTag() != null) {
                 nmsTags[2] = CraftItemStack.asNMSCopy(defenderArmor[1]).getTag();
                 if (API.isPlayer(leDefender)) {
@@ -460,7 +459,7 @@ public class DamageAPI {
                     }
                 }
                 if (attacker instanceof Player) {
-                    net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
+                    net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getEquipment().getItemInMainHand()));
                     if (nmsItem != null && nmsItem.getTag() != null) {
                         NBTTagCompound tag = nmsItem.getTag();
                         if (tag.getInt("accuracy") != 0) {
@@ -502,8 +501,8 @@ public class DamageAPI {
                     }
                 }
                 if (attacker instanceof Player) {
-                    if (((Player) attacker).getItemInHand() != null && ((Player) attacker).getItemInHand().getType() != Material.AIR) {
-                        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
+                    if (((Player) attacker).getEquipment().getItemInMainHand() != null && ((Player) attacker).getEquipment().getItemInMainHand().getType() != Material.AIR) {
+                        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getEquipment().getItemInMainHand()));
                         NBTTagCompound tag = nmsItem.getTag();
                         if (tag != null) {
                             if (tag.getInt("accuracy") != 0) {
@@ -539,8 +538,8 @@ public class DamageAPI {
                 if (nmsTag.getInt("thorns") != 0) {
                     if (attacker instanceof Player) {
                         if (((Player) attacker).getGameMode() == GameMode.SURVIVAL) {
-                            if (((Player) attacker).getItemInHand() != null && ((Player) attacker).getItemInHand().getType() != Material.AIR) {
-                                net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getItemInHand()));
+                            if (((Player) attacker).getEquipment().getItemInMainHand() != null && ((Player) attacker).getEquipment().getItemInMainHand().getType() != Material.AIR) {
+                                net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(((Player) attacker).getEquipment().getItemInMainHand()));
                                 NBTTagCompound tag = nmsItem.getTag();
                                 if (tag != null) {
                                     int damageFromThorns = (int) (attackingDamage * (nmsTag.getInt("thorns") / 2));
@@ -604,17 +603,17 @@ public class DamageAPI {
         NBTTagCompound nmsTags[] = new NBTTagCompound[4];
         EntityEquipment playerEquipment = player.getEquipment();
         ItemStack[] playerArmor = playerEquipment.getArmorContents();
-        if (playerArmor[3].getType() != null && playerArmor[3].getType() != Material.AIR) {
+        if (playerArmor[3] != null && playerArmor[3].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(playerArmor[3]).getTag() != null) {
                 nmsTags[0] = CraftItemStack.asNMSCopy(playerArmor[3]).getTag();
             }
         }
-        if (playerArmor[2].getType() != null && playerArmor[2].getType() != Material.AIR) {
+        if (playerArmor[2] != null && playerArmor[2].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(playerArmor[2]).getTag() != null) {
                 nmsTags[1] = CraftItemStack.asNMSCopy(playerArmor[2]).getTag();
             }
         }
-        if (playerArmor[1].getType() != null && playerArmor[1].getType() != Material.AIR) {
+        if (playerArmor[1] != null && playerArmor[1].getType() != Material.AIR) {
             if (CraftItemStack.asNMSCopy(playerArmor[1]).getTag() != null) {
                 nmsTags[2] = CraftItemStack.asNMSCopy(playerArmor[1]).getTag();
             }

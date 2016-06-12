@@ -6,17 +6,19 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.loot.types.LootType;
-import net.minecraft.server.v1_8_R3.BlockPosition;
-import net.minecraft.server.v1_8_R3.Packet;
-import net.minecraft.server.v1_8_R3.PacketPlayOutWorldEvent;
+import net.minecraft.server.v1_9_R2.BlockPosition;
+import net.minecraft.server.v1_9_R2.Packet;
+import net.minecraft.server.v1_9_R2.PacketPlayOutWorldEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.CraftServer;
-import org.bukkit.craftbukkit.v1_8_R3.CraftWorld;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.CraftServer;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
@@ -101,7 +103,7 @@ public class LootSpawner {
     /**
      * Checking if the inventory is empty, then break the chest.
      */
-    public void update() {
+    public void update(Player player) {
         if (inv.getContents().length > 0) {
             for (ItemStack stack : inv.getContents()) {
                 if (stack != null) {
@@ -111,9 +113,9 @@ public class LootSpawner {
                 }
             }
         }
-        Bukkit.getWorlds().get(0).playSound(block.getLocation(), Sound.CHEST_CLOSE, 1f, 1f);
+        Bukkit.getWorlds().get(0).playSound(block.getLocation(), Sound.BLOCK_CHEST_CLOSE, 1f, 1f);
         Packet particles = new PacketPlayOutWorldEvent(2001, new BlockPosition((int) Math.round(block.getLocation().getX()), (int) Math.round(block.getLocation().getY() + 2), (int) Math.round(block.getLocation().getZ())), 25, false);
-        ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(block.getLocation().getX(), block.getLocation().getY(), block.getLocation().getZ(), 36, ((CraftWorld) block.getWorld()).getHandle().dimension, particles);
+        ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(((CraftPlayer) player).getHandle(), block.getLocation().getX(), block.getLocation().getY(), block.getLocation().getZ(), 36, ((CraftWorld) block.getWorld()).getHandle().dimension, particles);
         block.getDrops().clear();
         block.setType(Material.AIR);
         broken = true;

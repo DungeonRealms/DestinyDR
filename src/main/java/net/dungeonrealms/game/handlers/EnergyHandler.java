@@ -9,12 +9,12 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.profession.Fishing;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
@@ -225,7 +225,7 @@ public class EnergyHandler implements GenericMechanic {
      * @since 1.0
      */
     public int getEnergyValueOfArmor(ItemStack itemStack) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
         int energyRegen = 0;
         if (nmsItem == null || nmsItem.getTag() == null) {
             return 0;
@@ -248,7 +248,7 @@ public class EnergyHandler implements GenericMechanic {
      * @since 1.0
      */
     /*public float getIntellectValueOfArmor(ItemStack itemStack, float regenTotal) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
         if (nmsItem == null || nmsItem.getTag() == null) {
             return regenTotal;
         }
@@ -262,7 +262,7 @@ public class EnergyHandler implements GenericMechanic {
     }*/
 
     public int getIntellectValueOfArmor(ItemStack itemStack) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
         int intMod = 0;
         if (nmsItem == null || nmsItem.getTag() == null) {
             return intMod;
@@ -290,24 +290,27 @@ public class EnergyHandler implements GenericMechanic {
         Player player = Bukkit.getPlayer(uuid);
         EntityEquipment playerEquipment = player.getEquipment();
         ItemStack[] playerArmor = playerEquipment.getArmorContents();
+        if (playerArmor == null) {
+            return regenAmount;
+        }
         NBTTagCompound nmsTags[] = new NBTTagCompound[4];
-        if (playerArmor[3].getType() != null && playerArmor[3].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(playerArmor[3]).getTag() != null) {
+        if (playerArmor[3] != null && playerArmor[3].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(playerArmor[3]).hasTag()) {
                 nmsTags[0] = CraftItemStack.asNMSCopy(playerArmor[3]).getTag();
             }
         }
-        if (playerArmor[2].getType() != null && playerArmor[2].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(playerArmor[2]).getTag() != null) {
+        if (playerArmor[2] != null && playerArmor[2].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(playerArmor[2]).hasTag()) {
                 nmsTags[1] = CraftItemStack.asNMSCopy(playerArmor[2]).getTag();
             }
         }
-        if (playerArmor[1].getType() != null && playerArmor[1].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(playerArmor[1]).getTag() != null) {
+        if (playerArmor[1] != null && playerArmor[1].getType() != Material.AIR) {
+            if (CraftItemStack.asNMSCopy(playerArmor[1]).hasTag()) {
                 nmsTags[2] = CraftItemStack.asNMSCopy(playerArmor[1]).getTag();
             }
         }
         if (playerArmor[0] != null && playerArmor[0].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(playerArmor[0]).getTag() != null) {
+            if (CraftItemStack.asNMSCopy(playerArmor[0]).hasTag()) {
                 nmsTags[3] = CraftItemStack.asNMSCopy(playerArmor[0]).getTag();
             }
         }

@@ -4,13 +4,13 @@ import java.lang.reflect.Field;
 import java.util.List;
 
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 /**
  * Created by Chase on Nov 19, 2015
@@ -38,7 +38,7 @@ public class EnchantmentAPI {
 		lore.remove(ChatColor.GOLD + "Protected");
 		meta.setLore(lore);
 		itemStack.setItemMeta(meta);
-		net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+		net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
 		NBTTagCompound tag = nmsStack.getTag();
 		tag.setString("protected", "false");
 		nmsStack.setTag(tag);
@@ -52,7 +52,7 @@ public class EnchantmentAPI {
 			lore.add(ChatColor.GOLD + "Protected");
 			meta.setLore(lore);
 			itemStack.setItemMeta(meta);
-			net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
+			net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
 			NBTTagCompound tag = nmsStack.getTag();
 			tag.setString("protected", "true");
 			nmsStack.setTag(tag);
@@ -63,7 +63,7 @@ public class EnchantmentAPI {
 	}
 
 	public static boolean isItemProtected(ItemStack itemStack) {
-		net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+		net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
 		NBTTagCompound tag = nmsItem.getTag();
 		return tag.getString("protected").equalsIgnoreCase("true");
 	}
@@ -91,7 +91,7 @@ public class EnchantmentAPI {
 	 * @return
 	 */
 	public static int getEnchantLvl(ItemStack itemStack) {
-		net.minecraft.server.v1_8_R3.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
+		net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(itemStack);
 		NBTTagCompound tag = nmsItem.getTag();
 		return tag.getInt("enchant");
 	}

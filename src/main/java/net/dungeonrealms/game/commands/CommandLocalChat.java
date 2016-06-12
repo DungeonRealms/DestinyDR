@@ -50,7 +50,7 @@ public class CommandLocalChat extends BasicCommand {
 
         prefix.append(GameChat.getPreMessage(player, true, "local"));
 
-        if (finalChat.contains("@i@") && player.getItemInHand() != null && player.getItemInHand().getType() != Material.AIR) {
+        if (finalChat.contains("@i@") && player.getEquipment().getItemInMainHand() != null && player.getEquipment().getItemInMainHand().getType() != Material.AIR) {
             String aprefix = prefix.toString();
             String[] split = finalChat.split("@i@");
             String after = "";
@@ -62,7 +62,7 @@ public class CommandLocalChat extends BasicCommand {
 
             final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
             normal.addText(before + "");
-            normal.addItem(player.getItemInHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
+            normal.addItem(player.getEquipment().getItemInMainHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
             normal.addText(after);
             Bukkit.getOnlinePlayers().stream().forEach(normal::sendToPlayer);
             return true;

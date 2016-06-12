@@ -4,11 +4,13 @@ import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRSkeleton;
 import net.dungeonrealms.game.world.items.DamageAPI;
-import net.minecraft.server.v1_8_R3.EntityLiving;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
-import net.minecraft.server.v1_8_R3.World;
-import org.bukkit.craftbukkit.v1_8_R3.entity.CraftLivingEntity;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import net.minecraft.server.v1_9_R2.EntityLiving;
+import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.World;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.entity.LivingEntity;
 
 /**
  * Created by Chase on Sep 19, 2015
@@ -20,7 +22,9 @@ public class EntityRangedPirate extends DRSkeleton {
         super(world, EnumMonster.RangedPirate, tier, entityType);
         this.entityType = entityType;
         this.tier = tier;
-        this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.PIRATE.getSkull()));
+        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+        this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.PIRATE.getSkull()));
+        livingEntity.getEquipment().setHelmet(SkullTextures.PIRATE.getSkull());
     }
 
     public EntityRangedPirate(World world) {
@@ -30,7 +34,7 @@ public class EntityRangedPirate extends DRSkeleton {
 
     @Override
     public void a(EntityLiving entityliving, float f) {
-        net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = this.getEquipment(EnumItemSlot.MAINHAND);
         NBTTagCompound tag = nmsItem.getTag();
         DamageAPI.fireArrowFromMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entityliving.getBukkitEntity());
     }
@@ -40,28 +44,9 @@ public class EntityRangedPirate extends DRSkeleton {
 
     }
 
-    @Override
-    protected void getRareDrop() {
-    }
-
 	@Override
 	public EnumMonster getEnum() {
 		return this.monsterType;
 	}
-	
-    @Override
-    protected String z() {
-        return "";
-    }
-
-    @Override
-    protected String bo() {
-        return "";
-    }
-
-    @Override
-    protected String bp() {
-        return "";
-    }
 
 }

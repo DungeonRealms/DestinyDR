@@ -11,13 +11,14 @@ import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_8_R3.EntitySkeleton;
-import net.minecraft.server.v1_8_R3.World;
+import net.minecraft.server.v1_9_R2.EntitySkeleton;
+import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -51,11 +52,11 @@ public class Pyromancer extends EntitySkeleton implements Boss{
 		ItemStack[] armor = API.getTierArmor(tier);
 		// weapon, boots, legs, chest, helmet/head
 		ItemStack weapon = getWeapon();
-		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-		this.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
-		this.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
-		this.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
-		this.setEquipment(4, CraftItemStack.asNMSCopy(armor[3]));
+		this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
+		this.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor[0]));
+		this.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor[1]));
+		this.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor[2]));
+		this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(armor[3]));
 	}
 
 	/**
@@ -71,7 +72,7 @@ public class Pyromancer extends EntitySkeleton implements Boss{
 	 */
 //	@Override
 //	public void a(EntityLiving entityliving, float f) {
-//		net.minecraft.server.v1_8_R3.ItemStack nmsItem = this.getEquipment(0);
+//		net.minecraft.server.v1_9_R2.ItemStack nmsItem = this.getEquipment(0);
 //		NBTTagCompound tag = nmsItem.getTag();
 //		DamageAPI.fireArrowFromMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entityliving.getBukkitEntity());
 //

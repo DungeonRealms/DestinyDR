@@ -80,74 +80,6 @@
   </repositories>
   <dependencies>
     <dependency>
-      <groupId>org.spigotmc</groupId>
-      <artifactId>spigot-api</artifactId>
-      <version>1.8.8-R0.1-SNAPSHOT</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>commons-lang</artifactId>
-          <groupId>commons-lang</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>json-simple</artifactId>
-          <groupId>com.googlecode.json-simple</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>guava</artifactId>
-          <groupId>com.google.guava</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>gson</artifactId>
-          <groupId>com.google.code.gson</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>ebean</artifactId>
-          <groupId>org.avaje</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>snakeyaml</artifactId>
-          <groupId>org.yaml</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>bungeecord-chat</artifactId>
-          <groupId>net.md-5</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
-      <groupId>org.bukkit</groupId>
-      <artifactId>bukkit</artifactId>
-      <version>1.8.8-R0.1-SNAPSHOT</version>
-      <scope>provided</scope>
-      <exclusions>
-        <exclusion>
-          <artifactId>commons-lang</artifactId>
-          <groupId>commons-lang</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>json-simple</artifactId>
-          <groupId>com.googlecode.json-simple</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>guava</artifactId>
-          <groupId>com.google.guava</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>gson</artifactId>
-          <groupId>com.google.code.gson</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>ebean</artifactId>
-          <groupId>org.avaje</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>snakeyaml</artifactId>
-          <groupId>org.yaml</groupId>
-        </exclusion>
-      </exclusions>
-    </dependency>
-    <dependency>
       <groupId>com.codingforcookies</groupId>
       <artifactId>ArmorEquipEvent</artifactId>
       <version>1.6.3</version>
@@ -156,7 +88,7 @@
     <dependency>
       <groupId>org.inventivetalent</groupId>
       <artifactId>bossbarapi</artifactId>
-      <version>2.4.0</version>
+      <version>2.4.1</version>
       <scope>compile</scope>
     </dependency>
     <dependency>
@@ -165,6 +97,10 @@
       <version>1.8-SNAPSHOT</version>
       <scope>provided</scope>
       <exclusions>
+        <exclusion>
+          <artifactId>bungeecord-chat</artifactId>
+          <groupId>net.md-5</groupId>
+        </exclusion>
         <exclusion>
           <artifactId>bungeecord-config</artifactId>
           <groupId>net.md-5</groupId>
@@ -176,14 +112,6 @@
         <exclusion>
           <artifactId>bungeecord-protocol</artifactId>
           <groupId>net.md-5</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>bungeecord-chat</artifactId>
-          <groupId>net.md-5</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>guava</artifactId>
-          <groupId>com.google.guava</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -195,6 +123,10 @@
       <scope>provided</scope>
       <exclusions>
         <exclusion>
+          <artifactId>bungeecord-chat</artifactId>
+          <groupId>net.md-5</groupId>
+        </exclusion>
+        <exclusion>
           <artifactId>bungeecord-config</artifactId>
           <groupId>net.md-5</groupId>
         </exclusion>
@@ -205,14 +137,6 @@
         <exclusion>
           <artifactId>bungeecord-protocol</artifactId>
           <groupId>net.md-5</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>bungeecord-chat</artifactId>
-          <groupId>net.md-5</groupId>
-        </exclusion>
-        <exclusion>
-          <artifactId>guava</artifactId>
-          <groupId>com.google.guava</groupId>
         </exclusion>
       </exclusions>
     </dependency>
@@ -310,7 +234,7 @@
     <dependency>
       <groupId>com</groupId>
       <artifactId>bountifulapi</artifactId>
-      <version>1.5.3</version>
+      <version>1.6.1</version>
       <scope>system</scope>
       <systemPath>${project.basedir}/lib/BountifulAPI.jar</systemPath>
     </dependency>
@@ -344,13 +268,6 @@
     </dependency>
     <dependency>
       <groupId>com</groupId>
-      <artifactId>spigot</artifactId>
-      <version>1.8.8-R0.1-SNAPSHOT</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/spigot-1.8.8-R0.1-SNAPSHOT-latest.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>com</groupId>
       <artifactId>voidgenerator</artifactId>
       <version>1.0</version>
       <scope>system</scope>
@@ -362,6 +279,13 @@
       <version>1.16.8</version>
       <scope>system</scope>
       <systemPath>${project.basedir}/lib/lombok.jar</systemPath>
+    </dependency>
+    <dependency>
+      <groupId>org.spigotmc</groupId>
+      <artifactId>spigot-api</artifactId>
+      <version>1.9.4-R.01</version>
+      <scope>system</scope>
+      <systemPath>${project.basedir}/lib/spigot-1.9.4-R0.1-SNAPSHOT-latest.jar</systemPath>
     </dependency>
   </dependencies>
 </project>

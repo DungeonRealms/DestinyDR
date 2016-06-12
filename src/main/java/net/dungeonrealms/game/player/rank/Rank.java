@@ -10,7 +10,6 @@ import net.dungeonrealms.game.mongo.Database;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.player.chat.GameChat;
 import org.bson.Document;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -129,7 +128,7 @@ public class Rank implements GenericMechanic {
         PermissionAttachment attachment = player.addAttachment(DungeonRealms.getInstance());
         RankBlob rank = RAW_RANKS.get(sRank.toUpperCase());
         player.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + newRank);
-        player.playSound(player.getLocation(), Sound.NOTE_PLING, 1f, 63f);
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
         for (String s : rank.getPermissions()) {
             attachment.setPermission(s, true);
         }

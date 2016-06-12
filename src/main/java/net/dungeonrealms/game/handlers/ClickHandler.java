@@ -28,14 +28,10 @@ import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
 import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_8_R3.Entity;
-import net.minecraft.server.v1_8_R3.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.Entity;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
@@ -74,7 +70,7 @@ public class ClickHandler {
                 event.setCancelled(true);
                 if (slot > 18) return;
                 if (event.getCurrentItem().getType() != Material.AIR) {
-                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                     if (nmsStack == null) return;
                     if (nmsStack.getTag() == null) return;
                     List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
@@ -147,7 +143,7 @@ public class ClickHandler {
                 event.setCancelled(true);
                 if (slot > 25) return;
                 if (event.getCurrentItem().getType() != Material.AIR) {
-                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                     if (nmsStack == null) return;
                     if (nmsStack.getTag() == null) return;
                     if (nmsStack.getTag().hasKey("playerTrailType")) {
@@ -208,7 +204,7 @@ public class ClickHandler {
                             }
                         }
                     }
-                    if (nmsStack.getTag().hasKey("donationStore")) {
+                    /*if (nmsStack.getTag().hasKey("donationStore")) {
                         player.closeInventory();
                         TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
                         bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://shop.dungeonrealms.net"));
@@ -217,7 +213,7 @@ public class ClickHandler {
                         test.addExtra(bungeeMessage);
                         player.spigot().sendMessage(test);
                         return;
-                    }
+                    }*/
                     if (nmsStack.getTag().hasKey("storageExpansion")) {
                         if (DonationEffects.getInstance().removeECashFromPlayer(player, nmsStack.getTag().getInt("ecashCost"))) {
                             player.getInventory().addItem(ItemManager.createItem(EnumItem.StorageExpansion));
@@ -277,7 +273,7 @@ public class ClickHandler {
                 event.setCancelled(true);
                 if (slot > 9) return;
                 if (event.getCurrentItem().getType() != Material.AIR) {
-                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                     if (nmsStack == null) return;
                     if (nmsStack.getTag() == null) return;
                     if (nmsStack.getTag().hasKey("hearthstoneLocation")) {
@@ -445,7 +441,7 @@ public class ClickHandler {
                         event.setCurrentItem(new ItemBuilder().setItem(Material.INK_SACK, (short) 10, ChatColor.GREEN + "Trade accepted.", new String[]{
                                 ""
                         }).setNBTString("acceptButton", "whynot").build());
-                        player.playSound(player.getLocation(), Sound.BLAZE_HIT, 1F, 2.F);
+                        player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_HURT, 1F, 2.F);
 
                         for (ItemStack itemStack : player.getInventory()) {
                             if (itemStack == null || itemStack.getType() == Material.AIR) {
@@ -498,7 +494,7 @@ public class ClickHandler {
                             }
                         }
 
-                        player.playSound(player.getLocation(), Sound.BLAZE_HIT, 1F, 1F);
+                        player.playSound(player.getLocation(), Sound.ENTITY_BLAZE_HURT, 1F, 1F);
                         tradeWindow.clear();
 
                         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -515,7 +511,7 @@ public class ClickHandler {
                 event.setCancelled(true);
                 if (slot > 9) return;
                 if (event.getCurrentItem().getType() != Material.AIR) {
-                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                     if (nmsStack == null) return;
                     if (nmsStack.getTag() == null) return;
                     if (nmsStack.getTag().hasKey("shardTier") && nmsStack.getTag().hasKey("shardCost")) {
@@ -627,7 +623,7 @@ public class ClickHandler {
                         }
                         EntityAPI.removePlayerPetList(player.getUniqueId());
                     }
-                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                     if (nmsStack.getTag() == null || nmsStack.getTag().getString("petType") == null) {
                         player.sendMessage("Uh oh... Something went wrong with your pet! Please inform a staff member! [NBTTag]");
                         player.closeInventory();
@@ -678,7 +674,7 @@ public class ClickHandler {
                         player.sendMessage(ChatColor.RED + "You cannot summon a mount while in Combat!");
                         return;
                     }
-                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                     if (nmsStack.getTag() == null || nmsStack.getTag().getString("mountType") == null) {
                         player.sendMessage("Uh oh... Something went wrong with your mount! Please inform a staff member! [NBTTag]");
                         player.closeInventory();
@@ -735,7 +731,7 @@ public class ClickHandler {
                     return;
                 }
                 if (event.getCurrentItem() != null && event.getCurrentItem().getType() != Material.AIR && event.getCurrentItem().getType() != Material.BARRIER && event.getCurrentItem().getType() != Material.ARMOR_STAND) {
-                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                     if (nmsStack.getTag() == null || nmsStack.getTag().getString("playerTrailType") == null) {
                         player.sendMessage("Uh oh... Something went wrong with your Player trail! Please inform a staff member! [NBTTag]");
                         player.closeInventory();
@@ -797,7 +793,7 @@ public class ClickHandler {
                             player.sendMessage(ChatColor.RED + "You cannot summon a storage mule while in Combat!");
                             return;
                         }
-                        net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                         if (nmsStack.getTag() == null || nmsStack.getTag().getString("mountType") == null) {
                             player.sendMessage("Uh oh... Something went wrong with your mount! Please inform a staff member! [NBTTag]");
                             player.closeInventory();
@@ -884,7 +880,7 @@ public class ClickHandler {
                 event.setCancelled(true);
                 ItemStack stack = event.getCurrentItem();
                 if (stack == null || stack.getType() == Material.AIR) return;
-                net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(stack);
+                net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
                 if (!nms.getTag().hasKey("worth")) {
                     event.setCancelled(true);
                     return;
@@ -945,7 +941,7 @@ public class ClickHandler {
                         }
                         EntityAPI.removePlayerMountList(player.getUniqueId());
                     }
-                    net.minecraft.server.v1_8_R3.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
                     if (nmsStack.getTag() == null || nmsStack.getTag().getString("skinType") == null) {
                         player.sendMessage("Uh oh... Something went wrong with your mount skin! Please inform a staff member! [NBTTag]");
                         player.closeInventory();

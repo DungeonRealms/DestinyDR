@@ -9,18 +9,17 @@ import net.dungeonrealms.game.world.entities.types.monsters.BasicEntitySkeleton;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
+import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-
-import java.lang.reflect.Field;
 
 /**
  * Created by Chase on Oct 19, 2015
@@ -32,24 +31,6 @@ public class Burick extends BasicEntitySkeleton implements Boss {
 	public Burick(World world, Location loc) {
 		super(world);
 		this.loc = loc;
-		try {
-			Field bField = PathfinderGoalSelector.class.getDeclaredField("b");
-			bField.setAccessible(true);
-			Field cField = PathfinderGoalSelector.class.getDeclaredField("c");
-			cField.setAccessible(true);
-			bField.set(goalSelector, new UnsafeList<PathfinderGoalSelector>());
-			bField.set(targetSelector, new UnsafeList<PathfinderGoalSelector>());
-			cField.set(goalSelector, new UnsafeList<PathfinderGoalSelector>());
-			cField.set(targetSelector, new UnsafeList<PathfinderGoalSelector>());
-		} catch (Exception exc) {
-			exc.printStackTrace();
-		}
-		this.goalSelector.a(5, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.0D, false));
-		this.goalSelector.a(6, new PathfinderGoalRandomStroll(this, 1.0D));
-		this.goalSelector.a(1, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
-		this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true));
-		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<>(this, EntityHuman.class, true));
         this.getAttributeInstance(GenericAttributes.c).setValue(1d);
 		this.setSkeletonType(1);
 		setArmor(getEnumBoss().tier);
@@ -72,11 +53,11 @@ public class Burick extends BasicEntitySkeleton implements Boss {
 		// weapon, boots, legs, chest, helmet/head
 		ItemStack weapon = getWeapon();
 		// weapon.addEnchantment(Enchantment.DAMAGE_ALL, 1);
-		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-		this.setEquipment(1, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("up_boots")));
-		this.setEquipment(2, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("up_leggings")));
-		this.setEquipment(3, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("up_chest")));
-		this.setEquipment(4, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("up_helmet")));
+		this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
+		this.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("up_boots")));
+		this.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("up_leggings")));
+		this.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("up_chest")));
+		this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("up_helmet")));
 	}
 
 	/**

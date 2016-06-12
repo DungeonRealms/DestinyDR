@@ -13,17 +13,16 @@ import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_8_R3.*;
+import net.minecraft.server.v1_9_R2.DamageSource;
+import net.minecraft.server.v1_9_R2.EntitySkeleton;
+import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import org.bukkit.ChatColor;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
-import org.bukkit.craftbukkit.v1_8_R3.util.UnsafeList;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-
-import java.lang.reflect.Field;
 
 /**
  * Created by Chase on Oct 21, 2015
@@ -36,24 +35,6 @@ public class InfernalLordsGuard extends EntitySkeleton implements Boss {
 	public InfernalLordsGuard(InfernalAbyss boss) {
 		super(boss.getWorld());
 		this.boss = boss;
-		try {
-			Field bField = PathfinderGoalSelector.class.getDeclaredField("b");
-			bField.setAccessible(true);
-			Field cField = PathfinderGoalSelector.class.getDeclaredField("c");
-			cField.setAccessible(true);
-			bField.set(goalSelector, new UnsafeList<PathfinderGoalSelector>());
-			bField.set(targetSelector, new UnsafeList<PathfinderGoalSelector>());
-			cField.set(goalSelector, new UnsafeList<PathfinderGoalSelector>());
-			cField.set(targetSelector, new UnsafeList<PathfinderGoalSelector>());
-		} catch (Exception exc) {
-			exc.printStackTrace();
-		}
-		this.goalSelector.a(5, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.0D, false));
-		this.goalSelector.a(6, new PathfinderGoalRandomStroll(this, 1.0D));
-		this.goalSelector.a(1, new PathfinderGoalMoveTowardsRestriction(this, 1.0D));
-		this.goalSelector.a(2, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-		this.targetSelector.a(1, new PathfinderGoalHurtByTarget(this, true));
-		this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget<>(this, EntityHuman.class, true));
 		this.setSkeletonType(1);
 		this.fireProof = true;
 		this.setOnFire(Integer.MAX_VALUE);
@@ -84,11 +65,11 @@ public class InfernalLordsGuard extends EntitySkeleton implements Boss {
 		// weapon, boots, legs, chest, helmet/head
 		ItemStack weapon = getWeapon();
 		// weapon.addEnchantment(Enchantment.DAMAGE_ALL, 1);
-		this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-		this.setEquipment(1, CraftItemStack.asNMSCopy(armor[0]));
-		this.setEquipment(2, CraftItemStack.asNMSCopy(armor[1]));
-		this.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
-		this.setEquipment(4, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
+		this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
+		this.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor[0]));
+		this.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor[1]));
+		this.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor[2]));
+		this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
 	}
 
 	private ItemStack[] getArmor() {

@@ -14,7 +14,7 @@ import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.block.Block;
-import org.bukkit.craftbukkit.v1_8_R3.inventory.CraftItemStack;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -52,7 +52,7 @@ public class ShopMechanics implements GenericMechanic {
     public static void setupShop(Block block, UUID uniqueId) {
         Player player = Bukkit.getPlayer(uniqueId);
         player.sendMessage(ChatColor.YELLOW + "Please enter a " + ChatColor.BOLD + "SHOP NAME." + ChatColor.YELLOW + " [max. 12 characters]");
-        player.playSound(player.getLocation(), Sound.WOOD_CLICK, 1F, 0.8F);
+        player.playSound(player.getLocation(), Sound.BLOCK_WOOD_BUTTON_CLICK_ON, 1F, 0.8F);
         Chat.listenForMessage(player, event -> {
             String shopName = event.getMessage();
             if (shopName.length() > 12) {
@@ -123,7 +123,7 @@ public class ShopMechanics implements GenericMechanic {
         lore.add(ChatColor.GREEN + "Price: " + ChatColor.WHITE + price + "g");
         String[] arr = lore.toArray(new String[lore.size()]);
         item = NPCMenus.editItem(item, item.getItemMeta().getDisplayName(), arr);
-        net.minecraft.server.v1_8_R3.ItemStack nms = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
         nms.getTag().setInt("worth", price);
         return CraftItemStack.asBukkitCopy(nms);
     }
