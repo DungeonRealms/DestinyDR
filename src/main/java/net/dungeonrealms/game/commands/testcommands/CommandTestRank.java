@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.commands.newcommands;
+package net.dungeonrealms.game.commands.testcommands;
 
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
@@ -7,9 +7,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import net.dungeonrealms.game.player.rank.Rank;
 
-public class TestingCommand extends BasicCommand {
+public class CommandTestRank extends BasicCommand {
 
-    public TestingCommand(String command, String usage, String description) {
+    public CommandTestRank(String command, String usage, String description) {
     	super(command, usage, description);
 	}
 	

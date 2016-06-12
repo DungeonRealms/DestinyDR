@@ -2,6 +2,7 @@ package net.dungeonrealms.game.commands.newcommands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.handlers.TutorialIslandHandler;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -17,7 +18,7 @@ public class StarterCommand extends BasicCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
     	Player p = (Player)sender;
-    	if (!p.isOp()) {
+    	if (!Rank.isGM(p)) {
     		return false;
     	}
     	if (args.length != 1) {

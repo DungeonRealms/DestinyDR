@@ -1,6 +1,8 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.player.chat.GameChat;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.party.Affair;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
@@ -16,8 +18,8 @@ import java.util.List;
  */
 public class CommandPChat extends BasicCommand {
 
-    public CommandPChat(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandPChat(String command, String usage, String description, List<String> aliases) {
+        super(command, usage, description, aliases);
     }
 
     @Override
@@ -44,9 +46,9 @@ public class CommandPChat extends BasicCommand {
                     everyone.addAll(party.getMembers());
                 }
 
-                everyone.stream().forEach(player1 -> player1.sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + player.getName() + ": " + ChatColor.WHITE + message.toString()));
+                everyone.stream().forEach(player1 -> player1.sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + GameChat.getName(player, Rank.getInstance().getRank(player.getUniqueId()).getName(), true) + ChatColor.GRAY + ": " + message.toString()));
             } else {
-                player.sendMessage(ChatColor.RED + "/pchat <message>");
+                player.sendMessage(ChatColor.RED + "Unfinished"); // @todo: toggle <P> chat!
             }
 
         } else {

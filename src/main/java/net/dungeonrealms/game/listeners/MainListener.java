@@ -118,6 +118,7 @@ public class MainListener implements Listener {
                     Bukkit.spigot().broadcast(sub);
                     break;
                 case "sub+":
+                case "sub++":
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$INC, EnumData.ECASH, 25, true);
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VOTE_AS_SUB_PLUS);
                     if (API.getGamePlayer(player) == null) {
