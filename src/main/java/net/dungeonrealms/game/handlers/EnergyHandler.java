@@ -8,6 +8,7 @@ import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
@@ -88,7 +89,7 @@ public class EnergyHandler implements GenericMechanic {
         }
         player.setFoodLevel(foodLevel);
         if (foodLevel <= 0) {
-            if (player.isOp() || player.getGameMode() == GameMode.CREATIVE) {
+            if (Rank.isGM(player) || player.getGameMode() == GameMode.CREATIVE) {
                 return;
             }
             if (!(player.hasMetadata("starving"))) {
@@ -379,7 +380,7 @@ public class EnergyHandler implements GenericMechanic {
      */
     public static void removeEnergyFromPlayerAndUpdate(UUID uuid, float amountToRemove) {
         Player player = Bukkit.getPlayer(uuid);
-        if (player.isOp()) return;
+        if (Rank.isGM(player)) return;
         if (player.getGameMode() == GameMode.CREATIVE) return;
         if (API.isInSafeRegion(player.getLocation())) return;
         if (player.hasMetadata("last_energy_remove")) {

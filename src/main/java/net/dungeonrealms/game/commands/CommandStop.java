@@ -5,6 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.Database;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -25,7 +26,7 @@ public class CommandStop extends BasicCommand {
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
         if (s instanceof Player) {
             Player player = (Player) s;
-            if (!player.isOp()) {
+            if (!Rank.isDev(player)) {
                 return false;
             }
         }
