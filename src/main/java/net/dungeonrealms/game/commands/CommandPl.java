@@ -52,12 +52,13 @@ public class CommandPl extends BasicCommand {
                             Affair.getInstance().invitePlayer(Bukkit.getPlayer(args[0]), player);
                             player.sendMessage(ChatColor.GREEN + "Invited " + ChatColor.AQUA + args[0] + " " + ChatColor.GREEN + " to your party!");
                         } else {
-                            player.sendMessage(ChatColor.RED + "You must specify a player that isn't [NULL]!");
+                            player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + args[0] + ChatColor.RED + " is OFFLINE!");
                         }
-                    } else if (!Affair.getInstance().isOwner(player)) {
-                        player.sendMessage(ChatColor.RED + "You are not the owner!");
                     } else {
-                        player.sendMessage(ChatColor.RED + "You are in a party, but don't have rank [Party Owner]!");
+                        player.sendMessage(new String[] {
+                                ChatColor.RED + "You are NOT the leader of your party.",
+                                ChatColor.GRAY + "Type " + ChatColor.BOLD + "/pquit" + ChatColor.GRAY + " to quit your current party."
+                        });
                     }
                 } else {
                 /*
@@ -69,18 +70,21 @@ public class CommandPl extends BasicCommand {
                             Affair.getInstance().createParty(player);
                             Affair.getInstance().invitePlayer(inviting, player);
                         } else {
-                            player.sendMessage(ChatColor.RED + "That player is already in a party!?");
+                            player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + args[0] + ChatColor.RED + " is already in your party.");
                         }
                     } else {
-                        player.sendMessage(ChatColor.RED + "You must specify a player that isn't [NULL]!");
+                        player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + args[0] + ChatColor.RED + " is OFFLINE!");
                     }
                 }
             } else {
-                player.sendMessage(ChatColor.RED + "You must specify a player that isn't [NULL]!");
+                player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + args[0] + ChatColor.RED + " is OFFLINE!");
             }
 
         } else {
-            player.sendMessage(ChatColor.RED + "/pinvite <playerName>");
+            player.sendMessage(new String[] {
+                    ChatColor.RED + ChatColor.BOLD.toString() + "Invalid Syntax." + ChatColor.RED + " /plinvite <player>",
+                    ChatColor.GRAY + "You can also " + ChatColor.UNDERLINE + "LEFT CLICK" + ChatColor.GRAY + " players with your " + ChatColor.ITALIC + "Character Journal" + ChatColor.GRAY + " to invite them."
+            });
         }
         return false;
     }

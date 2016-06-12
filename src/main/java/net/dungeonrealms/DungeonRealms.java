@@ -10,6 +10,8 @@ import net.dungeonrealms.game.commands.menualias.CommandProfile;
 import net.dungeonrealms.game.commands.menualias.CommandTrail;
 import net.dungeonrealms.game.commands.newcommands.*;
 import net.dungeonrealms.game.commands.support.CommandSupport;
+import net.dungeonrealms.game.commands.testcommands.CommandTestRank;
+import net.dungeonrealms.game.commands.testcommands.CommandTestingHall;
 import net.dungeonrealms.game.commands.toggles.*;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.handlers.*;
@@ -275,9 +277,9 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandModeration("moderation", "/<command> [args]", "Moderation command for Dungeon Realms staff."));
 
         cm.registerCommand(new CommandPAccept("paccept", "/<command> [args]", "Accept a party invitation."));
-        cm.registerCommand(new CommandPRemove("premove", "/<command> [args]", "Remove player from party."));
+        cm.registerCommand(new CommandPRemove("premove", "/<command> [args]", "Remove player from party.", Collections.singletonList("pkick")));
         cm.registerCommand(new CommandPLeave("pleave", "/<command> [args]", "Remove player from party."));
-        cm.registerCommand(new CommandPChat("pchat", "/<command> [args]", "Talk in party chat."));
+        cm.registerCommand(new CommandPChat("pchat", "/<command> [args]", "Talk in party chat.", Collections.singletonList("p")));
 
         cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "The Logout command."));
         cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "The roll command."));
@@ -337,7 +339,9 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandTrail("trail", "/<command> [args]", "The trails command.", Collections.singletonList("trails")));
             cm.registerCommand(new CommandProfile("profile", "/<command> [args]", "The profile command."));
 
-            cm.registerCommand(new TestingCommand("gotesting", "/<command> [args]", "This is a test command."));
+            cm.registerCommand(new CommandTestRank("testrank", "/<command> [args]", "This is a test command."));
+            cm.registerCommand(new CommandTestingHall("testhall", "/<command> [args]", "This is a test command.", Collections.singletonList("testinghall")));
+
             cm.registerCommand(new StarterCommand("givestarter", "/<command> [args]", "Gives a starter kit to someone"));
             cm.registerCommand(new RealmTestCommand("realmtest", "/<command> [args]", "Puts you in your realm"));
             cm.registerCommand(new KickAllCommand("kickall", "/<command> [args]", "Kicks all players from the server"));

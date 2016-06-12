@@ -89,11 +89,23 @@ public final class GameChat {
         return message.toString();
     }
 
+    public static String getName(Player player) {
+        return getName(player, Rank.getInstance().getRank(player.getUniqueId()).getName());
+    }
+
     public static String getName(Player player, String rank) {
+        return getName(player, rank, false);
+    }
+
+    public static String getName(Player player, boolean onlyName) {
+        return getName(player, Rank.getInstance().getRank(player.getUniqueId()).getName(), onlyName);
+    }
+
+    public static String getName(Player player, String rank, boolean onlyName) {
         switch (rank.toLowerCase()) {
             case "gm":
             case "dev":
-                return ChatColor.AQUA + player.getName() + ":" + ChatColor.WHITE + " ";
+                return ChatColor.AQUA + player.getName() + (onlyName ? "" : ":" + ChatColor.WHITE + " ");
 
             case "default":
             case "sub":
@@ -105,7 +117,7 @@ public final class GameChat {
             case "pmod":
             default:
                 String alignmentName = API.getGamePlayer(player).getPlayerAlignment().name();
-                return (alignmentName.equalsIgnoreCase("chaotic") ? ChatColor.RED : (alignmentName.equalsIgnoreCase("neutral") ? ChatColor.YELLOW : ChatColor.GRAY)) + player.getName() + ":" +    ChatColor.WHITE + " ";
+                return (alignmentName.equalsIgnoreCase("chaotic") ? ChatColor.RED : (alignmentName.equalsIgnoreCase("neutral") ? ChatColor.YELLOW : ChatColor.GRAY)) + player.getName() + (onlyName ? "" : ":" + ChatColor.WHITE + " ");
         }
     }
 

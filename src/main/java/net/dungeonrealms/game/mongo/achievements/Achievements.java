@@ -363,6 +363,10 @@ public class Achievements {
                 "Equip a Guild Banner."
         }, 250, "achievement.social_guild_represent"),
 
+        PARTY_MAKER("Party Maker", new String[]{
+                "Create your very own party."
+        }, 250, "achievement.social_party_create"),
+
         PARTY_UP("Party Up", new String[]{
                 "Join a party."
         }, 250, "achievement.social_party_join"),
@@ -401,7 +405,11 @@ public class Achievements {
 
         MOUNT_OWNER("Saddle Up!", new String[]{
                 "Own a mount."
-        }, 250, "achievement.character_mount_owner");
+        }, 250, "achievement.character_mount_owner"),
+
+        CAKE_IS_A_LIE("The Cake is a Lie", new String[]{
+                "Discovered the truth about the cake."
+        }, 250, "achievement.explorer_easteregg_portal_cakelie");
 
         private String name;
         private String[] message;

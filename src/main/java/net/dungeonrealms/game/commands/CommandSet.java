@@ -6,6 +6,7 @@ package net.dungeonrealms.game.commands;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -175,6 +176,19 @@ public class CommandSet extends BasicCommand {
 
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ECASH, ecash, true);
                     player.sendMessage(ChatColor.GREEN + "Successfully set your E-Cash value to: " + ecash + ".");
+                    break;
+                case "health":
+                    if (args.length < 2) {
+                        player.sendMessage(ChatColor.RED + "Invalid usage! /set health <#>");
+                        break;
+                    }
+                    int hp = Integer.parseInt(args[1]);
+                    if (hp > 0) {
+                        HealthHandler.getInstance().setPlayerHPLive(player, hp);
+                        player.sendMessage(ChatColor.GREEN + "Set health to " + hp + ".");
+                    } else {
+                        player.sendMessage(ChatColor.RED + "Unable to set health to " + hp + ", value is  too low.");
+                    }
                     break;
                 default:
                     player.sendMessage(ChatColor.RED + "Invalid usage! '" + args[0] + "' is not a valid variable.");

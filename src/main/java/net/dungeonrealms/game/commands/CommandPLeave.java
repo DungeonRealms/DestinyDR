@@ -24,9 +24,9 @@ public class CommandPLeave extends BasicCommand {
         Player player = (Player) s;
 
         if (Affair.getInstance().isInParty(player)) {
-            Affair.getInstance().removeMember(player);
+            Affair.getInstance().removeMember(player, false);
         } else {
-            player.sendMessage(ChatColor.RED + "You are not in a party!");
+            player.sendMessage(ChatColor.RED + "You are not in a party.");
         }
 
         return false;
