@@ -151,10 +151,10 @@ public class ItemListener implements Listener {
         if (p.getItemInHand() == null || p.getItemInHand().getType() != Material.BANNER) return;
         if (!p.getItemInHand().hasItemMeta()) return;
         if (p.getItemInHand().getItemMeta().getDisplayName() == null) return;
-        if (!p.getItemInHand().getItemMeta().getDisplayName().contains("guild banner")) return;
+        if (!p.getItemInHand().getItemMeta().getDisplayName().contains("Guild banner")) return;
 
 
-        String guildName = p.getItemInHand().getItemMeta().getDisplayName().substring(2).replace("'s guild banner", "");
+        String guildName = p.getItemInHand().getItemMeta().getDisplayName().substring(2).replace("'s Guild banner", "");
         System.out.print(guildName);
 
         final ItemStack currentHelmet = p.getInventory().getHelmet();
