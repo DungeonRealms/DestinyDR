@@ -92,8 +92,6 @@ public class EntityStats {
     }
 
     public static void setMonsterElite(Entity entity , EnumNamedElite namedElite, int tier, EnumMonster monster) {
-        entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
-        HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) entity.getBukkitEntity()));
         //TODO confirm working for elites of all types
         if (namedElite == EnumNamedElite.NONE) {
             ItemType weaponType;
@@ -161,7 +159,8 @@ public class EntityStats {
             entity.setEquipment(3, CraftItemStack.asNMSCopy(armor[2]));
             entity.setEquipment(4, CraftItemStack.asNMSCopy(armor[3]));
         }
-
+        entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
+        HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) entity.getBukkitEntity()));
     }
     
     public static void setMonsterRandomStats(Entity entity, int lvl, int tier) {

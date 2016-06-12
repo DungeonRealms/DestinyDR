@@ -413,7 +413,7 @@ public class Item {
         
         public static ArmorAttributeType getByName(String name) {
             for (ArmorAttributeType at : values()) {
-                if (at.getName().equals(name)) {
+                if (at.getName().equalsIgnoreCase(name)) {
                     return at;
                 }
             }
@@ -422,7 +422,7 @@ public class Item {
 
         public static ArmorAttributeType getByString(String name) {
             for (ArmorAttributeType at : values()) {
-                if (at.getNBTName().equals(name)) {
+                if (at.getNBTName().equalsIgnoreCase(name)) {
                     return at;
                 }
             }

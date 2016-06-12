@@ -192,8 +192,8 @@ public class EliteMobSpawner {
             }
             int level = Utils.getRandomFromTier(tier, levelRange);
             MetadataUtils.registerEntityMetadata(entity, type, tier, level);
-            EntityStats.setMonsterElite(entity, eliteType, tier, monsterType);
             giveCustomEquipment(eliteType, entity);
+            EntityStats.setMonsterElite(entity, eliteType, tier, monsterType);
             entity.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
             world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
             entity.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
