@@ -1,9 +1,9 @@
 package net.dungeonrealms.game.guild.banner.menus;
 
 import net.dungeonrealms.game.gui.GUIButtonClickEvent;
-import net.dungeonrealms.game.gui.VolatileGUI;
 import net.dungeonrealms.game.gui.item.GUIButton;
 import net.dungeonrealms.game.gui.item.GUIDisplayer;
+import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.guild.banner.AbstractMenu;
 import net.dungeonrealms.game.guild.banner.menus.selectors.ColorSelectorMenu;
 import net.dungeonrealms.game.guild.banner.menus.selectors.PatternSelectorMenu;
@@ -11,48 +11,38 @@ import org.bukkit.ChatColor;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
-import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 
-import java.util.Arrays;
 import java.util.Collections;
-import java.util.function.Consumer;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/11/2016
  */
 
 
-public class BannerCreatorMenu extends AbstractMenu implements VolatileGUI {
-    protected Consumer<ItemStack> onFinish;
+public class BannerCreatorMenu extends AbstractMenu {
 
-    public BannerCreatorMenu(Player player, Consumer<ItemStack> onFinish) {
+
+    public BannerCreatorMenu(Player player, GuildMechanics.GuildCreateInfo info) {
         super("Create a banner for your guild!", 45, player.getUniqueId());
-        this.onFinish = onFinish;
+        setDestroyOnExit(true);
 
-        GUIDisplayer banner = new GUIDisplayer(Material.BANNER);
+        final ItemStack currentBanner = info.getCurrentBanner();
+        BannerMeta bannerMeta = (BannerMeta) currentBanner.getItemMeta();
 
-        BannerMeta bannerMeta = (BannerMeta) banner.getItemStack().getItemMeta();
-        bannerMeta.setBaseColor(DyeColor.WHITE);
 
-        banner.setDisplayName(ChatColor.AQUA + "Preview");
-        banner.setLore(Arrays.asList(" ", "&7This is how your banner will appear."));
+        GUIDisplayer bannerPreview = new GUIDisplayer(currentBanner);
+        bannerPreview.getItemStack().setItemMeta(bannerMeta);
+        bannerPreview.setDisplayName(ChatColor.GOLD + "" + ChatColor.BOLD + "Preview");
+        bannerPreview.setLore(Collections.singletonList("&7This is how your banner will appear."));
 
-        set(4, banner);
+        set(4, bannerPreview);
 
         GUIButton setBaseColor = new GUIButton(Material.INK_SACK, (byte) 1) {
             @Override
             public void action(GUIButtonClickEvent event) throws Exception {
-
-                new ColorSelectorMenu(event.getWhoClicked(), color -> {
-                    bannerMeta.setBaseColor(color);
-                    banner.getItemStack().setItemMeta(bannerMeta);
-                    player.openInventory(inventory);
-
-                }).open(event.getWhoClicked());
-
+                new ColorSelectorMenu(event.getWhoClicked(), BannerCreatorMenu.this, null).open(event.getWhoClicked());
             }
         };
 
@@ -63,12 +53,7 @@ public class BannerCreatorMenu extends AbstractMenu implements VolatileGUI {
         GUIButton addPattern = new GUIButton(Material.WORKBENCH) {
             @Override
             public void action(GUIButtonClickEvent event) throws Exception {
-                new PatternSelectorMenu(event.getWhoClicked(), pattern -> {
-                    bannerMeta.addPattern(pattern);
-                    banner.getItemStack().setItemMeta(bannerMeta);
-                    player.openInventory(inventory);
-
-                }).open(event.getWhoClicked());
+                new PatternSelectorMenu(event.getWhoClicked()).open(event.getWhoClicked());
             }
         };
 
@@ -84,8 +69,8 @@ public class BannerCreatorMenu extends AbstractMenu implements VolatileGUI {
                     bannerMeta.removePattern(i);
 
                 bannerMeta.setBaseColor(DyeColor.WHITE);
-                banner.getItemStack().setItemMeta(bannerMeta);
-
+                currentBanner.setItemMeta(bannerMeta);
+                set(4, bannerPreview);
             }
         };
 
@@ -97,15 +82,12 @@ public class BannerCreatorMenu extends AbstractMenu implements VolatileGUI {
         GUIButton createBanner = new GUIButton(Material.INK_SACK, (byte) 10) {
             @Override
             public void action(GUIButtonClickEvent event) throws Exception {
-                final ItemStack finalBanner = banner.getItemStack();
-                event.getWhoClicked().closeInventory();
-
-
+                GuildMechanics.getInstance().createGuild(player, info);
             }
         };
 
         createBanner.setDisplayName(ChatColor.GREEN + "Create Banner");
-        createBanner.setLore(Arrays.asList("&7Click here to start over again."));
+        createBanner.setLore(Collections.singletonList("&7Click here to create your guild"));
         set(40, createBanner);
 
         fillEmptySpaces(getSpaceFillerItem());
@@ -115,11 +97,5 @@ public class BannerCreatorMenu extends AbstractMenu implements VolatileGUI {
     public void open(Player player) {
         player.openInventory(inventory);
     }
-
-    @Override
-    public void onDestroy(Event event) {
-        onFinish.accept(null);
-    }
-
 
 }
