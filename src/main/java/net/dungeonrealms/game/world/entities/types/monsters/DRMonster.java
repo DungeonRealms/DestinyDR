@@ -103,7 +103,7 @@ public interface DRMonster {
         //TODO: VERY DANGEROUS CODE. REMOVE BEFORE RELEASE
         if (ent.hasMetadata("elite")) {
             for (ItemStack stack : ((LivingEntity) ent).getEquipment().getArmorContents()) {
-                if (stack == null || stack.getType() == Material.AIR || stack.getType() == Material.SKULL) {
+                if (stack == null || stack.getType() == Material.AIR || stack.getType() == Material.SKULL || stack.getType() == Material.SKULL_ITEM) {
                     continue;
                 }
                 world.getWorld().dropItemNaturally(loc.add(0, 1, 0), stack);
@@ -115,7 +115,7 @@ public interface DRMonster {
         int armorRoll = random.nextInt(1000);
         int drops = 0;
         for (ItemStack stack : ((LivingEntity) ent).getEquipment().getArmorContents()) {
-            if (stack == null || stack.getType() == Material.AIR || stack.getType() == Material.SKULL) {
+            if (stack == null || stack.getType() == Material.AIR || stack.getType() == Material.SKULL || stack.getType() == Material.SKULL_ITEM) {
                 continue;
             }
             if (drops < 1) {

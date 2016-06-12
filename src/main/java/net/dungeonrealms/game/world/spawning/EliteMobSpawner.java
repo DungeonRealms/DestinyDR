@@ -17,6 +17,7 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.ArmorStand;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
@@ -278,28 +279,39 @@ public class EliteMobSpawner {
             default:
                 break;
         }
+        LivingEntity livingEntity = (LivingEntity) toGive.getBukkitEntity();
         if (eliteType != EnumNamedElite.NONE) {
             toGive.setEquipment(EnumItemSlot.MAINHAND, null);
             toGive.setEquipment(EnumItemSlot.FEET, null);
             toGive.setEquipment(EnumItemSlot.LEGS, null);
             toGive.setEquipment(EnumItemSlot.CHEST, null);
             toGive.setEquipment(EnumItemSlot.HEAD, null);
+            livingEntity.getEquipment().setHelmet(null);
+            livingEntity.getEquipment().setChestplate(null);
+            livingEntity.getEquipment().setLeggings(null);
+            livingEntity.getEquipment().setBoots(null);
+            livingEntity.getEquipment().setItemInMainHand(null);
             for (int i = 0; i <= 4; i++) {
                 if (armorWeapon[i] != null) {
                     switch (i) {
                         case 0:
+                            livingEntity.getEquipment().setItemInMainHand(armorWeapon[i]);
                             toGive.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(armorWeapon[i]));
                             break;
                         case 1:
+                            livingEntity.getEquipment().setBoots(armorWeapon[i]);
                             toGive.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armorWeapon[i]));
                             break;
                         case 2:
+                            livingEntity.getEquipment().setLeggings(armorWeapon[i]);
                             toGive.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armorWeapon[i]));
                             break;
                         case 3:
+                            livingEntity.getEquipment().setChestplate(armorWeapon[i]);
                             toGive.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armorWeapon[i]));
                             break;
                         case 4:
+                            livingEntity.getEquipment().setHelmet(armorWeapon[i]);
                             toGive.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(armorWeapon[i]));
                             break;
                     }

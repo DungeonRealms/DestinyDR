@@ -33,7 +33,7 @@ public class DRWitch extends EntityWitch implements DRMonster {
 
     public DRWitch(World world, EnumMonster mon, int tier) {
         super(world);
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(18d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(14d);
         setArmor(tier);
         tier = tier;
         monster = mon;
@@ -41,6 +41,7 @@ public class DRWitch extends EntityWitch implements DRMonster {
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
         this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
+        this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
     }
 
     public void setArmor(int tier) {

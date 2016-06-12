@@ -31,7 +31,7 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
      */
     protected DRSkeleton(World world, EnumMonster monster, int tier, EnumEntityType entityType) {
         super(world);
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(18d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(14d);
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
         this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
         monsterType = monster;
@@ -43,7 +43,6 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
             if (this.getEquipment(EnumItemSlot.MAINHAND).getTag().hasKey("itemType") && this.getEquipment(EnumItemSlot.MAINHAND).getTag().getInt("itemType") == 3) {
                 this.goalSelector.a(1, new PathfinderGoalFloat(this));
                 this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
-                this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
             }
         }
         this.getBukkitEntity().setCustomNameVisible(true);
@@ -52,6 +51,7 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
         setStats();
         this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
+        this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
     }
     
     protected DRSkeleton(World world) {

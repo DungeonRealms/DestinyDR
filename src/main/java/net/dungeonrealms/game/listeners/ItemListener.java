@@ -58,7 +58,10 @@ public class ItemListener implements Listener {
         if (!API.isItemTradeable(event.getItemDrop().getItemStack())) {
             net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
             NBTTagCompound tag = nmsItem.getTag();
+            assert tag != null;
             if (tag.hasKey("destroy")) {
+                event.getItemDrop().remove();
+            } else if (tag.hasKey("subtype") && tag.getString("subtype").equalsIgnoreCase("starter")) {
                 event.getItemDrop().remove();
             } else {
                 event.setCancelled(true);

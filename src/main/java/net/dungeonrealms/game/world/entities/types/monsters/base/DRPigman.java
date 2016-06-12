@@ -49,6 +49,7 @@ public class DRPigman extends EntityPigZombie implements DRMonster {
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
 		this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
+		this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
 	}
 
 	@Override

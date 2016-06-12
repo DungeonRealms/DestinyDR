@@ -8,10 +8,7 @@ import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_9_R2.EntitySilverfish;
-import net.minecraft.server.v1_9_R2.EnumItemSlot;
-import net.minecraft.server.v1_9_R2.GenericAttributes;
-import net.minecraft.server.v1_9_R2.World;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
@@ -28,8 +25,6 @@ public class DRSilverfish extends EntitySilverfish implements DRMonster {
 
 	public DRSilverfish(World world, EnumMonster type, int tier) {
 		super(world);
-//        this.targetSelector.a(2, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
-//        this.goalSelector.a(5, new PathfinderGoalMeleeAttack(this, EntityHuman.class, 1.0D, false));
 		this.enumMonster = type;
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(14d);
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
@@ -38,6 +33,7 @@ public class DRSilverfish extends EntitySilverfish implements DRMonster {
         String customName = enumMonster.getPrefix() + " " + enumMonster.name + " " + enumMonster.getSuffix() + " ";
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
+		this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
 
 	}
 

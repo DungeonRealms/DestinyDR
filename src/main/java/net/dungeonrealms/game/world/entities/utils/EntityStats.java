@@ -159,6 +159,12 @@ public class EntityStats {
             entity.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor[1]));
             entity.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor[2]));
             entity.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(armor[3]));
+            LivingEntity livingEntity = (LivingEntity) entity.getBukkitEntity();
+            livingEntity.getEquipment().setItemInMainHand(weapon);
+            livingEntity.getEquipment().setBoots(armor[0]);
+            livingEntity.getEquipment().setLeggings(armor[1]);
+            livingEntity.getEquipment().setChestplate(armor[2]);
+            livingEntity.getEquipment().setHelmet(armor[3]);
         }
         entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity())));
         HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), HealthHandler.getInstance().getMonsterMaxHPLive((LivingEntity) entity.getBukkitEntity()));

@@ -6,15 +6,14 @@ import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Skeleton;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -35,29 +34,24 @@ public class DRWitherSkeleton extends EntitySkeleton implements DRMonster {
     public DRWitherSkeleton(World world, EnumMonster mon, int tier) {
         super(world);
         enumMonster = mon;
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(18d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(14d);
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
         this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
-        this.setSkeletonType(1);
+        setSkeletonType(1);
+        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+        if (livingEntity instanceof Skeleton) {
+            ((Skeleton) livingEntity).setSkeletonType(Skeleton.SkeletonType.WITHER);
+        }
         setArmor(tier);
         String customName = enumMonster.getPrefix() + " " + enumMonster.name + " " + enumMonster.getSuffix() + " ";
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
         this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
-        if (isRanged) {
-            this.goalSelector.a(1, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
-        } else {
-            this.goalSelector.a(1, new PathfinderGoalMeleeAttack(this, 1.2D, false));
-        }
+        this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
     }
 
     @Override
     public void a(EntityLiving entityliving, float f) {
-        if (isRanged) {
-            net.minecraft.server.v1_9_R2.ItemStack nmsItem = this.getEquipment(EnumItemSlot.MAINHAND);
-            NBTTagCompound tag = nmsItem.getTag();
-            DamageAPI.fireArrowFromMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entityliving.getBukkitEntity());
-        }
     }
 
     @Override

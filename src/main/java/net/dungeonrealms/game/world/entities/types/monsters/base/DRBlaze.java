@@ -30,7 +30,7 @@ public abstract class DRBlaze extends EntityBlaze implements DRMonster {
 
 	public DRBlaze(World world, EnumMonster monster, int tier, EnumEntityType entityType, boolean setArmor) {
 		this(world);
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(16d);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(14d);
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
 		this.monsterType = monster;
 		this.name = monster.name;
@@ -45,6 +45,7 @@ public abstract class DRBlaze extends EntityBlaze implements DRMonster {
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
 		this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
+		this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
 	}
 
 	protected DRBlaze(World world) {
