@@ -8,6 +8,7 @@ import com.sk89q.worldguard.protection.ApplicableRegionSet;
 import com.sk89q.worldguard.protection.flags.DefaultFlag;
 import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.dungeonrealms.game.achievements.AchievementManager;
+import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
@@ -653,6 +654,38 @@ public class API {
         }
 
         player.sendMessage("");
+
+        // Player Achievements
+        // Don't use a switch because flowing through isn't possible due to different criteria.
+        if (Rank.isDev(player)) {
+            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.DEVELOPER);
+        }
+
+        if (Rank.isGM(player)) {
+            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.GAME_MASTER);
+        }
+
+        if (Rank.isSupport(player)) {
+            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SUPPORT_AGENT);
+        }
+
+        if (Rank.isPMOD(player)) {
+            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.PLAYER_MOD);
+        }
+        if (Rank.isSubscriber(player)) {
+            String rank = Rank.getInstance().getRank(player.getUniqueId()).getName().toLowerCase();
+            // We don't want to award PMODs with subscriber ranks because this is a rank that can be lost.
+            // If they lose it, we don't want to account them for paying for a rank they've not.
+            if (rank != "pmod") {
+                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SUBSCRIBER);
+                if (rank != "sub") {
+                    Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SUBSCRIBER_PLUS);
+                    if (rank != "sub+") {
+                        Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SUBSCRIBER_PLUS_PLUS);
+                    }
+                }
+            }
+        }
 
         // Guilds
         GuildMechanics.getInstance().doLogin(player);

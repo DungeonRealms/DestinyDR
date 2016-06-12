@@ -358,6 +358,8 @@ public class PlayerMenus {
         for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
             if (achievement.getMongoName().contains(".explorer_")) {
                 if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+                    if (achievement.getHide()) continue;
+
                     inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
                             "",
                             ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
@@ -391,6 +393,8 @@ public class PlayerMenus {
         for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
             if (achievement.getMongoName().contains(".social_")) {
                 if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+                    if (achievement.getHide()) continue;
+
                     inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
                             "",
                             ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
@@ -424,6 +428,8 @@ public class PlayerMenus {
         for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
             if (achievement.getMongoName().contains(".currency_")) {
                 if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+                    if (achievement.getHide()) continue;
+
                     inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
                             "",
                             ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
@@ -457,6 +463,8 @@ public class PlayerMenus {
         for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
             if (achievement.getMongoName().contains(".realm_")) {
                 if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+                    if (achievement.getHide()) continue;
+
                     inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
                             "",
                             ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
@@ -490,6 +498,8 @@ public class PlayerMenus {
         for (Achievements.EnumAchievements achievement : Achievements.EnumAchievements.values()) {
             if (achievement.getMongoName().contains(".character_")) {
                 if (noAchievements || !playerAchievements.contains(achievement.getMongoName())) {
+                    if (achievement.getHide()) continue;
+
                     inv.addItem(editItem(new ItemStack(Material.MAGMA_CREAM), ChatColor.RED + achievement.getName(), new String[]{
                             "",
                             ChatColor.GRAY.toString() + ChatColor.ITALIC + achievement.getMessage()[0],
