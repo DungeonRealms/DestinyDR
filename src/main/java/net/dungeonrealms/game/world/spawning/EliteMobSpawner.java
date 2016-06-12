@@ -272,6 +272,12 @@ public class EliteMobSpawner {
                 break;
             case ACERON:
                 break;
+            case LORD_TAYLOR:
+                armorWeapon[0] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "sword");
+                armorWeapon[1] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "boots");
+                armorWeapon[2] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "legs");
+                armorWeapon[3] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "plate");
+                armorWeapon[4] = ItemGenerator.getNamedItem(eliteType.getTemplateStarter() + "helms");
             default:
                 break;
         }

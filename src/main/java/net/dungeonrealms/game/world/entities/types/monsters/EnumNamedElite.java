@@ -15,6 +15,7 @@ public enum EnumNamedElite {
     ZION("zion", "skeleton king zion"),
     DURANOR("duranor", "duranor the cruel"),
     MOTHEROFDOOM("motherofdoom", "mother of doom"),
+    LORD_TAYLOR("lordtaylor", "lord taylor"),
     NONE("none", "none");
 
     public String getTemplateStarter() {
