@@ -717,9 +717,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void chunkUNload(ChunkUnloadEvent event) {
         if (event.getWorld() == Bukkit.getWorlds().get(0)) {
-            Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                SpawningMechanics.getInstance().getChunkMobBaseSpawners(event.getChunk()).stream().filter(spawner -> spawner.getSPAWNED_MONSTERS().size() > 1).forEach(spawner -> spawner.setFirstSpawn(true));
-            });
+            SpawningMechanics.getInstance().getChunkMobBaseSpawners(event.getChunk()).stream().filter(spawner -> spawner.getSPAWNED_MONSTERS().size() > 1).forEach(spawner -> spawner.setFirstSpawn(true));
             if (event.getChunk().getEntities().length > 0) {
                 for (Entity entity : event.getChunk().getEntities()) {
                     if (!(entity instanceof org.bukkit.entity.Item) && !(entity instanceof Player)) {

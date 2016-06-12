@@ -80,7 +80,7 @@ public class KarmaHandler implements GenericMechanic {
         CHAOTIC_RESPAWNS.add(new Location(Bukkit.getWorlds().get(0), -330, 65, 898));
         CHAOTIC_RESPAWNS.add(new Location(Bukkit.getWorlds().get(0), -419, 61, 830));
 
-        Bukkit.getScheduler().runTaskTimerAsynchronously(DungeonRealms.getInstance(), this::updateAllPlayerAlignments, 100L, 20L);
+        Bukkit.getScheduler().runTaskTimer(DungeonRealms.getInstance(), this::updateAllPlayerAlignments, 100L, 20L);
     }
 
     @Override
