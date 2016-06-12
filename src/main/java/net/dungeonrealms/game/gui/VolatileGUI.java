@@ -15,4 +15,5 @@ public interface VolatileGUI {
      * @param event Event that fired the destruction
      */
     void onDestroy(Event event);
+
 }
