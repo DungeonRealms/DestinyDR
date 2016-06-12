@@ -40,7 +40,7 @@ public interface GuildDatabaseAPI {
                         .append("name", guildName)
                         .append("displayName", displayName)
                         .append("tag", tag)
-                        .append("motd", "Default MOTD :(")
+                        .append("motd", "")
                         .append("officers", new ArrayList<String>())
                         .append("members", new ArrayList<String>())
                         .append("netLevel", 1)

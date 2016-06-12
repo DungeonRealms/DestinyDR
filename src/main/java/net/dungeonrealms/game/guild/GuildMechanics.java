@@ -106,7 +106,7 @@ public class GuildMechanics implements GenericMechanic {
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String motd = GuildDatabaseAPI.get().getMotdOf(guildName);
 
-        player.sendMessage(ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.BOLD + "MOTD: " + ChatColor.DARK_AQUA + motd);
+        player.sendMessage(ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.BOLD + "MOTD: " + ChatColor.DARK_AQUA + (motd.length() > 0 ? motd : "No message of the day set. Use /gmotd <motd> to create one."));
     }
 
     /**
