@@ -233,6 +233,7 @@ public class KarmaHandler implements GenericMechanic {
                     Instance.getInstance().getPlayerRealm(player).getRealmHologram().appendTextLine(ChatColor.WHITE + player.getName() + ChatColor.GOLD + " [" + ChatColor.WHITE + playerAlignment.toUpperCase() + ChatColor.GOLD + "]");
                 }*/
                 PLAYER_ALIGNMENTS.put(player, alignmentTo);
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, 0, false);
                 DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, EnumPlayerAlignments.LAWFUL.name, true);
                 break;
             case NEUTRAL:
