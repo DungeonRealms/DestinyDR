@@ -9,7 +9,7 @@ import net.dungeonrealms.game.commands.menualias.CommandPet;
 import net.dungeonrealms.game.commands.menualias.CommandProfile;
 import net.dungeonrealms.game.commands.menualias.CommandTrail;
 import net.dungeonrealms.game.commands.newcommands.*;
-import net.dungeonrealms.game.commands.support.*;
+import net.dungeonrealms.game.commands.support.CommandSupport;
 import net.dungeonrealms.game.commands.toggles.*;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.handlers.*;
@@ -308,6 +308,8 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandGQuit("gquit", "/<command>", "Guild quit command.", Arrays.asList("gleave", "gdisband")));
             cm.registerCommand(new CommandGAccept("gaccept", "/<command>", "Guild accept invitation command."));
             cm.registerCommand(new CommandGInvite("ginvite", "/<command> [args]", "Guild invitation command."));
+            cm.registerCommand(new CommandGPromote("gpromote", "/<command> [args]", "Guild promote command."));
+            cm.registerCommand(new CommandGDemote("gdemote", "/<command> [args]", "Guild demote command."));
             cm.registerCommand(new CommandGMotd("gmotd", "/<command> [args]", "Guild motd command."));
             cm.registerCommand(new CommandGDeny("gdecline", "/<command>", "Guild decline invitation command.", Collections.singletonList("gdeny")));
 

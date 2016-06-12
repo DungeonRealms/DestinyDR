@@ -14,7 +14,6 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
@@ -285,7 +284,7 @@ public class GuildMechanics implements GenericMechanic {
 
                     BannerMeta meta = (BannerMeta) info.getCurrentBanner().getItemMeta();
                     meta.setLore(new ArrayList<>());
-                    meta.setDisplayName(ChatColor.GREEN + info.getDisplayName());
+                    meta.setDisplayName(ChatColor.GREEN + info.getDisplayName() + "'s banner");
                     info.getCurrentBanner().setItemMeta(meta);
 
                     player.getInventory().addItem(info.getCurrentBanner());
