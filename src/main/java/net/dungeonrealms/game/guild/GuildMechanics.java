@@ -47,6 +47,7 @@ public class GuildMechanics implements GenericMechanic {
         private String guildName, displayName, tag;
 
         @Getter
+        @Setter
         private ItemStack currentBanner = new ItemStack(Material.BANNER, 1, (byte) 15);
     }
 
@@ -114,17 +115,38 @@ public class GuildMechanics implements GenericMechanic {
      * @param player    Player that will receive the information
      * @param guildName Guild
      */
-    public void showGuildInfo(Player player, String guildName) {
+    public void showGuildInfo(Player player, String guildName, boolean showMotd) {
         String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String motd = GuildDatabaseAPI.get().getMotdOf(guildName);
+        String owner = DatabaseAPI.getInstance().getOfflineName(UUID.fromString(GuildDatabaseAPI.get().getOwnerOf(guildName)));
+
+        StringBuilder members = getPlayers(GuildDatabaseAPI.get().getAllGuildMembers(guildName));
+        StringBuilder officers = getPlayers(GuildDatabaseAPI.get().getGuildOfficers(guildName));
 
         player.sendMessage(ChatColor.GRAY + "              *** " + ChatColor.DARK_AQUA + ChatColor.BOLD + "Guild Info" + ChatColor.GRAY + " ***");
         player.sendMessage(" ");
         player.sendMessage(ChatColor.GRAY + "Guild Name: " + ChatColor.WHITE + displayName);
         player.sendMessage(ChatColor.GRAY + "Guild Tag: " + ChatColor.DARK_AQUA + "[" + ChatColor.GRAY + tag + ChatColor.DARK_AQUA + "]");
+        player.sendMessage(ChatColor.GRAY + "Guild Owner: " + ChatColor.WHITE + owner);
         player.sendMessage(" ");
-        player.sendMessage(ChatColor.GRAY + "Message of the Day: \"" + ChatColor.WHITE + motd + ChatColor.GRAY + "\"");
+
+        player.sendMessage(ChatColor.GRAY + "Guild Officers: " + ChatColor.WHITE + (officers.length() == 0 ? "None" : officers));
+        player.sendMessage(ChatColor.GRAY + "Guild Members: " + ChatColor.WHITE + (members.length() == 0 ? "None" : members));
+
+        player.sendMessage(" ");
+
+        if (showMotd)
+            player.sendMessage(ChatColor.GRAY + "Message of the Day: \"" + ChatColor.WHITE + motd + ChatColor.GRAY + "\"");
+    }
+
+
+    private StringBuilder getPlayers(List<UUID> uuids) {
+        StringBuilder players = new StringBuilder();
+        for (int i = 0; i < uuids.size(); i++)
+            if (i == 0) players.append(DatabaseAPI.getInstance().getOfflineName(uuids.get(i)));
+            else players.append(", ").append(DatabaseAPI.getInstance().getOfflineName(uuids.get(i)));
+        return players;
     }
 
     /**
@@ -267,8 +289,13 @@ public class GuildMechanics implements GenericMechanic {
                     return;
                 }
 
+                BannerMeta meta = (BannerMeta) info.getCurrentBanner().getItemMeta();
+                meta.setLore(new ArrayList<>());
+                meta.setDisplayName(ChatColor.GREEN + info.getDisplayName() + "'s guild banner");
+                info.getCurrentBanner().setItemMeta(meta);
+
                 // Registers guild in database
-                GuildDatabaseAPI.get().createGuild(info.getGuildName(), info.getDisplayName(), info.getTag(), player.getUniqueId(), onComplete -> {
+                GuildDatabaseAPI.get().createGuild(info.getGuildName(), info.getDisplayName(), info.getTag(), player.getUniqueId(), info.getCurrentBanner().toString(), onComplete -> {
                     if (!onComplete) {
                         player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.RED + "We have an error. Failed to create guild in database. Please try again later");
                         return;
@@ -281,11 +308,6 @@ public class GuildMechanics implements GenericMechanic {
                     player.sendMessage(ChatColor.GRAY + "You can now chat in your guild chat with " + ChatColor.BOLD + "/g <msg>" + ChatColor.GRAY + ", invite players with " + ChatColor.BOLD + "/ginvite <player>" + ChatColor.GRAY + " and much more -- Check out your character journal for more information!");
                     BankMechanics.getInstance().takeGemsFromInventory(5000, player);
 
-
-                    BannerMeta meta = (BannerMeta) info.getCurrentBanner().getItemMeta();
-                    meta.setLore(new ArrayList<>());
-                    meta.setDisplayName(ChatColor.GREEN + info.getDisplayName() + "'s banner");
-                    info.getCurrentBanner().setItemMeta(meta);
 
                     player.getInventory().addItem(info.getCurrentBanner());
 
@@ -439,7 +461,7 @@ public class GuildMechanics implements GenericMechanic {
 
     private boolean checkForProfanity(String text) {
         for (String s : Chat.bannedWords)
-            if (text.equalsIgnoreCase(s) || s.toLowerCase().contains(text.toLowerCase()))
+            if (text.equalsIgnoreCase(s) || text.toLowerCase().contains(s.toLowerCase()))
                 return true;
         return false;
     }

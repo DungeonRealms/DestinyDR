@@ -359,6 +359,10 @@ public class Achievements {
                 "You've created a guild, best of luck."
         }, 250, "achievement.social_guild_creator"),
 
+        GUILD_REPESENT("Represent", new String[]{
+                "Equip a Guild Banner."
+        }, 250, "achievement.social_guild_represent"),
+
         PARTY_UP("Party Up", new String[]{
                 "Join a party."
         }, 250, "achievement.social_party_join"),
