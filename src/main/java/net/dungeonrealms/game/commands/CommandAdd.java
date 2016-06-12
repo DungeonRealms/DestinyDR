@@ -9,6 +9,7 @@ import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ItemRarity;
@@ -46,7 +47,7 @@ public class CommandAdd extends BasicCommand {
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
         if (s instanceof ConsoleCommandSender) return false;
         Player player = (Player) s;
-        if (!player.isOp()) {
+        if (!Rank.isGM(player)) {
             return false;
         }
         if (args.length > 0) {

@@ -2,6 +2,7 @@ package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.mechanics.DungeonManager;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.party.Affair;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -26,7 +27,7 @@ public class CommandInvoke extends BasicCommand {
         if (s instanceof ConsoleCommandSender) return false;
 
         Player player = (Player) s;
-        if (!player.isOp()) {
+        if (!Rank.isGM(player)) {
             return false;
         }
         if (args.length > 0) {

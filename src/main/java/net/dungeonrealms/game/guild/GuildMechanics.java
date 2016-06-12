@@ -291,7 +291,7 @@ public class GuildMechanics implements GenericMechanic {
 
                 BannerMeta meta = (BannerMeta) info.getCurrentBanner().getItemMeta();
                 meta.setLore(new ArrayList<>());
-                meta.setDisplayName(ChatColor.GREEN + info.getDisplayName() + "'s guild banner");
+                meta.setDisplayName(ChatColor.GREEN + info.getDisplayName() + "'s Guild banner");
                 info.getCurrentBanner().setItemMeta(meta);
 
                 // Registers guild in database
