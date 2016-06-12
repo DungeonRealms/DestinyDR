@@ -30,8 +30,8 @@ public class GuildDatabase implements GuildDatabaseAPI {
         return instance;
     }
 
-    public void createGuild(String guildName, String displayName, String tag, UUID owner, Consumer<Boolean> callback) {
-        Database.guilds.insertOne(GuildDatabaseAPI.getDocumentTemplate(owner.toString(), guildName, displayName, tag));
+    public void createGuild(String guildName, String displayName, String tag, UUID owner, String banner, Consumer<Boolean> callback) {
+        Database.guilds.insertOne(GuildDatabaseAPI.getDocumentTemplate(owner.toString(), guildName, displayName, tag, banner));
 
         Utils.log.warning("New guild created: " + guildName);
 
@@ -219,6 +219,11 @@ public class GuildDatabase implements GuildDatabaseAPI {
     @Override
     public String getDisplayNameOf(String guildName) {
         return (String) get(guildName, EnumGuildData.DISPLAY_NAME, String.class);
+    }
+
+    @Override
+    public String getBannerOf(String guildName) {
+        return (String) get(guildName, EnumGuildData.BANNER, String.class);
     }
 
 

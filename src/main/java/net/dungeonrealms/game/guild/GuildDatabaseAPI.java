@@ -34,13 +34,14 @@ public interface GuildDatabaseAPI {
      *
      * @return Returns default document template
      */
-    static Document getDocumentTemplate(String owner, String guildName, String displayName, String tag) {
+    static Document getDocumentTemplate(String owner, String guildName, String displayName, String tag, String banner) {
         return new Document("info",
                 new Document("owner", owner)
                         .append("name", guildName)
                         .append("displayName", displayName)
                         .append("tag", tag)
                         .append("motd", "")
+                        .append("banner", banner)
                         .append("officers", new ArrayList<String>())
                         .append("members", new ArrayList<String>())
                         .append("netLevel", 1)
@@ -55,7 +56,7 @@ public interface GuildDatabaseAPI {
      * @param callback  Call back method
      */
 
-    void createGuild(String guildName, String displayName, String tag, UUID owner, Consumer<Boolean> callback);
+    void createGuild(String guildName, String displayName, String tag, UUID owner, String banner, Consumer<Boolean> callback);
 
     /**
      * @param uuid Player
@@ -171,6 +172,11 @@ public interface GuildDatabaseAPI {
      */
     String getDisplayNameOf(String guildName);
 
+    /**
+     * @param guildName targeted guild.
+     * @return The banner of guild
+     */
+    String getBannerOf(String guildName);
 
     /**
      * @param guildName name wanting the players.
