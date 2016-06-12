@@ -8,7 +8,6 @@ import net.dungeonrealms.game.mastery.RealmManager;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
-import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ItemRarity;
@@ -34,8 +33,8 @@ import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.Random;
 import java.text.NumberFormat;
+import java.util.Random;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -250,16 +249,7 @@ public class CommandAdd extends BasicCommand {
                     bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to vote!").create()));
                     TextComponent test = new TextComponent(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ");
                     test.addExtra(bungeeMessage);
-                    final JSONMessage normal = new JSONMessage(ChatColor.AQUA + player.getName() + ChatColor.RESET + ChatColor.GRAY + " voted for 15 ECASH & 5% EXP @ vote ", ChatColor.WHITE);
-                    normal.addURL(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE", ChatColor.AQUA, "http://minecraftservers.org/server/298658");
-                    for (Player player1 : Bukkit.getOnlinePlayers()) {
-                        normal.sendToPlayer(player1);
-                    }
-                    //final JSONMessage normal1 = new JSONMessage(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
-                    //normal.addText(before + "");
-                    //normal.addItem(player.getEquipment().getItemInMainHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
-                    //normal.addText(after);
-                    //Bukkit.spigot.broadcast(test);
+                    Bukkit.spigot().broadcast(test);
                     break;
                 case "banknote":
                     int quantity = 1000;
@@ -277,6 +267,30 @@ public class CommandAdd extends BasicCommand {
                     }
                     player.getInventory().addItem(BankMechanics.createBankNote(quantity));
                     player.sendMessage(ChatColor.GREEN + "Successfully created a bank note worth " + NumberFormat.getIntegerInstance().format(quantity) + " gems.");
+                    break;
+                case "teleport":
+                case "teleports":
+                    String[] teleports = new String[] { "Cyrennica", "Harrison_Field", "Dark_Oak", "Trollsbane", "Tripoli", "Gloomy_Hollows", "Crestguard", "Deadpeaks" };
+                    if (args.length == 1) {
+                        for (String tp : teleports) {
+                            player.getInventory().addItem(ItemManager.createTeleportBook(tp));
+                        }
+                        player.sendMessage(ChatColor.GREEN + "Spawned all teleport books.");
+                    } else if (args.length >= 2) {
+                        if (args[1].equalsIgnoreCase("random")) {
+                            player.getInventory().addItem(ItemManager.createRandomTeleportBook());
+                            player.sendMessage(ChatColor.GREEN + "Spawned random teleport book.");
+                        } else {
+                            for (String tp : teleports) {
+                                if (tp.equalsIgnoreCase(args[1])) {
+                                    player.getInventory().addItem(ItemManager.createTeleportBook(tp));
+                                    player.sendMessage(ChatColor.GREEN + "Spawned " + tp + " teleport book.");
+                                    return true;
+                                }
+                            }
+                            player.sendMessage(ChatColor.RED + "The requested location (" + args[1] + ") is not a valid teleport location.");
+                        }
+                    }
                     break;
                 default:
                     player.sendMessage(ChatColor.RED + "Invalid usage! '" + args[0] + "' is not a valid variable.");

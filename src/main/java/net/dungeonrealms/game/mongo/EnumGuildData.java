@@ -9,6 +9,7 @@ public enum EnumGuildData {
     DISPLAY_NAME("info.displayName"),
     MOTD("info.motd"),
     TAG("info.tag"),
+    BANNER("info.banner"),
 
     OWNER("info.owner"),
 

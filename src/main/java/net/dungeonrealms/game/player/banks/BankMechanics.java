@@ -2,6 +2,7 @@ package net.dungeonrealms.game.player.banks;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
@@ -9,8 +10,11 @@ import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.mongo.achievements.Achievements;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -62,7 +66,7 @@ public class BankMechanics implements GenericMechanic {
                     continue;
                 if (gp.getStats().freePoints > 0) {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        /*TextComponent bungeeMessage = new TextComponent(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
+                        TextComponent bungeeMessage = new TextComponent(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
                         bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/stats"));
                         bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Allocate Points").create()));
                         TextComponent test = new TextComponent(ChatColor.GREEN + "*" + ChatColor.GRAY +
@@ -70,7 +74,7 @@ public class BankMechanics implements GenericMechanic {
                                 "To allocate click ");
                         test.addExtra(bungeeMessage);
                         test.addExtra(ChatColor.GREEN + "*");
-                        gp.getPlayer().spigot().sendMessage(test);*/
+                        gp.getPlayer().spigot().sendMessage(test);
                     });
                 }
             }
@@ -430,7 +434,7 @@ public class BankMechanics implements GenericMechanic {
     /**
      * Add gems to player database
      *
-     * @param uuid
+     * @param p
      * @param num
      */
     public void addGemsToPlayerInventory(Player p, int num) {

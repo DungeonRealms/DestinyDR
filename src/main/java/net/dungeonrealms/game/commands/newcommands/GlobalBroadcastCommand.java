@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.commands.newcommands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -14,7 +15,7 @@ public class GlobalBroadcastCommand extends BasicCommand {
     @Override
     public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
     	Player p = (Player)sender;
-    	if (!p.isOp()) {
+    	if (!Rank.isDev(p)) {
     		return false;
     	}
     	StringBuilder sb = new StringBuilder();

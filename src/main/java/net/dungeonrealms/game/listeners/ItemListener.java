@@ -2,7 +2,9 @@ package net.dungeonrealms.game.listeners;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.donate.DonationEffects;
+import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
@@ -137,6 +139,42 @@ public class ItemListener implements Listener {
         p.updateInventory();
     }
 
+
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onGuildBannerEquip(PlayerInteractEvent event) {
+        if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
+
+        Player p = event.getPlayer();
+        if (p.getItemInHand() == null || p.getItemInHand().getType() != Material.BANNER) return;
+        if (!p.getItemInHand().hasItemMeta()) return;
+        if (p.getItemInHand().getItemMeta().getDisplayName() == null) return;
+        if (!p.getItemInHand().getItemMeta().getDisplayName().contains("guild banner")) return;
+
+
+        String guildName = p.getItemInHand().getItemMeta().getDisplayName().substring(2).replace("'s guild banner", "");
+        System.out.print(guildName);
+
+        final ItemStack currentHelmet = p.getInventory().getHelmet();
+
+        if (currentHelmet != null && !currentHelmet.getType().equals(Material.AIR)) {
+            p.sendMessage(ChatColor.RED + "You must remove your helm to equip your guild banner!");
+            return;
+        }
+
+        p.getInventory().setHelmet(p.getItemInHand());
+        p.setItemInHand(null);
+        event.setCancelled(true);
+
+        GuildDatabaseAPI.get().doesGuildNameExist(guildName, exists -> {
+            if (exists && GuildDatabaseAPI.get().getGuildOf(p.getUniqueId()).equals(guildName)) {
+                Achievements.getInstance().giveAchievement(p.getUniqueId(), Achievements.EnumAchievements.GUILD_REPESENT);
+                String motd = GuildDatabaseAPI.get().getMotdOf(guildName);
+
+                if (!motd.isEmpty())
+                    p.sendMessage(ChatColor.GRAY + "\"" + ChatColor.AQUA + motd + ChatColor.GRAY + "\"");
+            }
+        });
+    }
 
     /**
      * Handles player right clicking a stat reset book
@@ -311,13 +349,13 @@ public class ItemListener implements Listener {
                         player.sendMessage(ChatColor.RED + "You cannot summon a mount while in Combat!");
                         return;
                     }
-                    String mountType = tag.getString("usage").equals("mule") ? "MULE": (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId());
+                    String mountType = tag.getString("usage").equals("mule") ? "MULE" : (String) DatabaseAPI.getInstance().getData(EnumData.ACTIVE_MOUNT, player.getUniqueId());
                     if (mountType == null || mountType.equals("")) {
                         player.sendMessage(ChatColor.RED + "You don't have an active mount, please enter the mounts section in your profile to set one.");
                         player.closeInventory();
                         return;
                     }
-                    if(tag.getString("usage").equals("mule")) {
+                    if (tag.getString("usage").equals("mule")) {
                         List<String> playerMounts = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNTS, player.getUniqueId());
                         if (!playerMounts.contains("MULE")) {
                             player.sendMessage(ChatColor.RED + "Purchase a storage mule from the Animal Tamer.");

@@ -134,7 +134,7 @@ public class ItemManager {
     public static ItemStack createProtectScroll(int tier) {
         String material = getArmorMatString(tier);
         ItemStack rawStack = createItem(Material.EMPTY_MAP, ChatColor.WHITE.toString() + ChatColor.BOLD.toString() + "White Scroll: " + API.getTierColor(tier) + "Protect " + material + " Equipment", new String[]{
-                ChatColor.GRAY.toString() + "Apply to any T" + tier + " item to " + ChatColor.UNDERLINE + " prevent " + ChatColor.GRAY + " it from being", ChatColor.GRAY + "destroyed if the next enchantment scroll fails."});
+                ChatColor.GRAY + ChatColor.ITALIC.toString() + "Apply to any T" + tier + " item to " + ChatColor.UNDERLINE + "prevent" + ChatColor.GRAY + ChatColor.ITALIC.toString() + " it", ChatColor.GRAY + ChatColor.ITALIC.toString() + "from being destroyed if the next", ChatColor.GRAY + ChatColor.ITALIC.toString() + "enchantment scroll (up to +8) fails."});
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
         nms.getTag().setString("type", "protection");
         nms.getTag().setInt("tier", tier);
@@ -152,7 +152,7 @@ public class ItemManager {
         ItemMeta meta = rawStack.getItemMeta();
         String teleportLocation = TeleportAPI.getRandomTeleportString();
         String displayName = TeleportAPI.getDisplayNameOfLocation(teleportLocation);
-        meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.BOLD + "Teleport: " + ChatColor.WHITE + teleportLocation);
+        meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.BOLD + "Teleport: " + ChatColor.WHITE + teleportLocation.replace("_", " "));
         meta.setLore(Collections.singletonList(ChatColor.GRAY + "(Right-Click) Teleport to " + displayName));
         rawStack.setItemMeta(meta);
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);
@@ -173,7 +173,7 @@ public class ItemManager {
         ItemStack rawStack = new ItemStack(Material.BOOK);
         ItemMeta meta = rawStack.getItemMeta();
         String displayName = TeleportAPI.getDisplayNameOfLocation(location);
-        meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.BOLD + "Teleport: " + ChatColor.WHITE + location);
+        meta.setDisplayName(ChatColor.WHITE.toString() + ChatColor.BOLD + "Teleport: " + ChatColor.WHITE + location.replace("_", " "));
         meta.setLore(Collections.singletonList(ChatColor.GRAY + "(Right-Click) Teleport to " + displayName));
         rawStack.setItemMeta(meta);
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(rawStack);

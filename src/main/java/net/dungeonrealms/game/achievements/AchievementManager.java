@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.mongo.achievements;
+package net.dungeonrealms.game.achievements;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
@@ -175,6 +175,9 @@ public class AchievementManager implements GenericMechanic, Listener {
                 break;
             case "tutorial_island":
                 Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.TUTORIAL_ISLAND);
+                break;
+            case "achievement_easteregg_portal_cakelie":
+                Achievements.getInstance().giveAchievement(pl.getUniqueId(), Achievements.EnumAchievements.CAKE_IS_A_LIE);
                 break;
         }
     }

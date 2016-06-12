@@ -5,7 +5,9 @@ package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -22,6 +24,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+
+import java.util.ArrayList;
 
 /**
  * Created by Chase on Sep 22, 2015
@@ -175,6 +179,54 @@ public class CommandSet extends BasicCommand {
 
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ECASH, ecash, true);
                     player.sendMessage(ChatColor.GREEN + "Successfully set your E-Cash value to: " + ecash + ".");
+                    break;
+                case "hp":
+                case "health":
+                    if (args.length < 2) {
+                        player.sendMessage(ChatColor.RED + "Invalid usage! /set health <#>");
+                        break;
+                    }
+                    int hp = Integer.parseInt(args[1]);
+                    if (hp > 0) {
+                        HealthHandler.getInstance().setPlayerHPLive(player, hp);
+                        player.sendMessage(ChatColor.GREEN + "Set health to " + hp + ".");
+                    } else {
+                        player.sendMessage(ChatColor.RED + "Unable to set health to " + hp + ", value is  too low.");
+                    }
+                    break;
+                case "achievement":
+                case "achievements":
+                    if (!Rank.isDev(player)) {
+                        player.sendMessage(ChatColor.RED + "You must be a " + ChatColor.BOLD + ChatColor.UNDERLINE + "DEVELOPER" + ChatColor.RED + " to modify this.");
+                        return false;
+                    }
+                    if (args.length < 3 || (!args[1].equalsIgnoreCase("unlock") && !args[1].equalsIgnoreCase("lock"))) {
+                        player.sendMessage(ChatColor.RED + "Invalid usage! /set achievement <lock|unlock> <id|*>");
+                        break;
+                    }
+                    if (args[2].equalsIgnoreCase("all") || args[2].equals("*")) {
+                        if (args[1].equalsIgnoreCase("unlock")) {
+                            for (Achievements.EnumAchievements playerAchievements : Achievements.EnumAchievements.values()) {
+                                Achievements.getInstance().giveAchievement(player.getUniqueId(), playerAchievements);
+                            }
+                        } else {
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACHIEVEMENTS, new ArrayList<String>(), true);
+                        }
+                        player.sendMessage(ChatColor.GREEN + "Finished " + args[1].toLowerCase() + "ing all achievements.");
+                    } else {
+                        for (Achievements.EnumAchievements playerAchievements : Achievements.EnumAchievements.values()) {
+                            if (playerAchievements.getMongoName().equalsIgnoreCase("achievement." + args[2])) {
+                                if (args[1].equalsIgnoreCase("unlock")) {
+                                    Achievements.getInstance().giveAchievement(player.getUniqueId(), playerAchievements);
+                                } else {
+                                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.ACHIEVEMENTS, playerAchievements.getMongoName(), true);
+                                }
+                                player.sendMessage(ChatColor.GREEN + "Successfully " + args[1].toLowerCase() + "ed the achievement: " + args[2].toLowerCase());
+                                return true;
+                            }
+                        }
+                        player.sendMessage(ChatColor.RED + "Failed to " + args[1].toLowerCase() + " achievements because " + args[2].toLowerCase() + " is invalid.");
+                    }
                     break;
                 default:
                     player.sendMessage(ChatColor.RED + "Invalid usage! '" + args[0] + "' is not a valid variable.");
