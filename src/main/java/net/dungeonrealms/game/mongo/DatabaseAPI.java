@@ -58,156 +58,167 @@ public class DatabaseAPI {
      * @since 1.0
      */
     public Object getData(EnumData data, UUID uuid) {
+
+        Document doc;
+
+        if (PLAYERS.containsKey(uuid)) {
+            // GRABBED CACHED DATA
+            doc = PLAYERS.get(uuid);
+
+        } else {
+            doc = Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first();
+        }
+
         switch (data) {
             /*
             Player Variables Main Document().
              */
             case USERNAME:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("username", String.class);
+                return ((Document) doc.get("info")).get("username", String.class);
             case HEALTH:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("health", Integer.class);
+                return ((Document) doc.get("info")).get("health", Integer.class);
             case FIRST_LOGIN:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("firstLogin", Long.class);
+                return ((Document) doc.get("info")).get("firstLogin", Long.class);
             case LAST_LOGIN:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("lastLogin", Long.class);
+                return ((Document) doc.get("info")).get("lastLogin", Long.class);
             case LAST_LOGOUT:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("lastLogout", Long.class);
+                return ((Document) doc.get("info")).get("lastLogout", Long.class);
             case IS_PLAYING:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("isPlaying", Boolean.class);
+                return ((Document) doc.get("info")).get("isPlaying", Boolean.class);
             case LEVEL:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("netLevel", Integer.class);
+                return ((Document) doc.get("info")).get("netLevel", Integer.class);
             case EXPERIENCE:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("experience", Integer.class);
+                return ((Document) doc.get("info")).get("experience", Integer.class);
             case GEMS:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("gems", Integer.class);
+                return ((Document) doc.get("info")).get("gems", Integer.class);
             case HEARTHSTONE:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("hearthstone", String.class);
+                return ((Document) doc.get("info")).get("hearthstone", String.class);
             case ECASH:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("ecash", Integer.class);
+                return ((Document) doc.get("info")).get("ecash", Integer.class);
             case FRIENDS:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("friends", ArrayList.class);
+                return ((Document) doc.get("info")).get("friends", ArrayList.class);
             case GUILD:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("guild", String.class);
+                return ((Document) doc.get("info")).get("guild", String.class);
             case GUILD_INVITATION:
-                return ((Document) PLAYERS.get(uuid).get("notices")).get("guildInvitation", Document.class);
+                return ((Document) doc.get("notices")).get("guildInvitation", Document.class);
             case FRIEND_REQUSTS:
-                return ((Document) PLAYERS.get(uuid).get("notices")).get("friendRequest", ArrayList.class);
+                return ((Document) doc.get("notices")).get("friendRequest", ArrayList.class);
             case MAILBOX:
-                return ((Document) PLAYERS.get(uuid).get("notices")).get("mailbox", ArrayList.class);
+                return ((Document) doc.get("notices")).get("mailbox", ArrayList.class);
             case ALIGNMENT:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("alignment", String.class);
+                return ((Document) doc.get("info")).get("alignment", String.class);
             case ALIGNMENT_TIME:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("alignmentTime", Integer.class);
+                return ((Document) doc.get("info")).get("alignmentTime", Integer.class);
             case CURRENT_LOCATION:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("currentLocation", String.class);
+                return ((Document) doc.get("info")).get("currentLocation", String.class);
             case CURRENT_FOOD:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("foodLevel", Integer.class);
+                return ((Document) doc.get("info")).get("foodLevel", Integer.class);
             case SHOPLEVEL:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("shopLevel", Integer.class);
+                return ((Document) doc.get("info")).get("shopLevel", Integer.class);
             case MULELEVEL:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("muleLevel", Integer.class);
+                return ((Document) doc.get("info")).get("muleLevel", Integer.class);
             case LOGGERDIED:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("loggerdied", Boolean.class);
+                return ((Document) doc.get("info")).get("loggerdied", Boolean.class);
             case CURRENTSERVER:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("current", String.class);
+                return ((Document) doc.get("info")).get("current", String.class);
             case ENTERINGREALM:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("enteringrealm", String.class);
+                return ((Document) doc.get("info")).get("enteringrealm", String.class);
             case ACTIVE_MOUNT:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("activemount", String.class);
+                return ((Document) doc.get("info")).get("activemount", String.class);
             case ACTIVE_PET:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("activepet", String.class);
+                return ((Document) doc.get("info")).get("activepet", String.class);
             case ACTIVE_TRAIL:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("activetrail", String.class);
+                return ((Document) doc.get("info")).get("activetrail", String.class);
             case ACTIVE_MOUNT_SKIN:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("activemountskin", String.class);
+                return ((Document) doc.get("info")).get("activemountskin", String.class);
             /*
             Rank Things. Different Sub-Document().
              */
             case RANK:
-                return ((Document) PLAYERS.get(uuid).get("rank")).get("rank", String.class);
+                return ((Document) doc.get("rank")).get("rank", String.class);
             case RANK_EXISTENCE:
-                return ((Document) PLAYERS.get(uuid).get("rank")).get("lastPurchase", Long.class);
+                return ((Document) doc.get("rank")).get("lastPurchase", Long.class);
             case PURCHASE_HISTORY:
-                return ((Document) PLAYERS.get(uuid).get("rank")).get("purchaseHistory", ArrayList.class);
+                return ((Document) doc.get("rank")).get("purchaseHistory", ArrayList.class);
             /*
             Player Attribute Variables
              */
             case STRENGTH:
-                return ((Document) PLAYERS.get(uuid).get("attributes")).get("strength", Integer.class);
+                return ((Document) doc.get("attributes")).get("strength", Integer.class);
             case DEXTERITY:
-                return ((Document) PLAYERS.get(uuid).get("attributes")).get("dexterity", Integer.class);
+                return ((Document) doc.get("attributes")).get("dexterity", Integer.class);
             case INTELLECT:
-                return ((Document) PLAYERS.get(uuid).get("attributes")).get("intellect", Integer.class);
+                return ((Document) doc.get("attributes")).get("intellect", Integer.class);
             case VITALITY:
-                return ((Document) PLAYERS.get(uuid).get("attributes")).get("vitality", Integer.class);
+                return ((Document) doc.get("attributes")).get("vitality", Integer.class);
             case BUFFER_POINTS:
-                return ((Document) PLAYERS.get(uuid).get("attributes")).get("bufferPoints", Integer.class);
+                return ((Document) doc.get("attributes")).get("bufferPoints", Integer.class);
             case RESETS:
-                return ((Document) PLAYERS.get(uuid).get("attributes")).get("resets", Integer.class);
+                return ((Document) doc.get("attributes")).get("resets", Integer.class);
             case FREERESETS:
-                return ((Document) PLAYERS.get(uuid).get("attributes")).get("freeresets", Integer.class);
+                return ((Document) doc.get("attributes")).get("freeresets", Integer.class);
             /*
             Player Storage
              */
             case INVENTORY_LEVEL:
-                return ((Document) PLAYERS.get(uuid).get("inventory")).get("level", Integer.class);
+                return ((Document) doc.get("inventory")).get("level", Integer.class);
             case INVENTORY_COLLECTION_BIN:
-                return ((Document) PLAYERS.get(uuid).get("inventory")).get("collection_bin", String.class);
+                return ((Document) doc.get("inventory")).get("collection_bin", String.class);
             case INVENTORY_MULE:
-                return ((Document) PLAYERS.get(uuid).get("inventory")).get("mule", String.class);
+                return ((Document) doc.get("inventory")).get("mule", String.class);
             case INVENTORY_STORAGE:
-                return ((Document) PLAYERS.get(uuid).get("inventory")).get("storage", String.class);
+                return ((Document) doc.get("inventory")).get("storage", String.class);
             case INVENTORY:
-                return ((Document) PLAYERS.get(uuid).get("inventory")).get("player", String.class);
+                return ((Document) doc.get("inventory")).get("player", String.class);
             case HASSHOP:
-                return ((Document) PLAYERS.get(uuid).get("info")).get("shopOpen", Boolean.class);
+                return ((Document) doc.get("info")).get("shopOpen", Boolean.class);
             case ARMOR:
-                return ((Document) PLAYERS.get(uuid).get("inventory")).get("armor", ArrayList.class);
+                return ((Document) doc.get("inventory")).get("armor", ArrayList.class);
             /*
             Toggles
              */
             case TOGGLE_DEBUG:
-                return ((Document) PLAYERS.get(uuid).get("toggles")).get("debug", Boolean.class);
+                return ((Document) doc.get("toggles")).get("debug", Boolean.class);
             case TOGGLE_TRADE:
-                return ((Document) PLAYERS.get(uuid).get("toggles")).get("trade", Boolean.class);
+                return ((Document) doc.get("toggles")).get("trade", Boolean.class);
             case TOGGLE_TRADE_CHAT:
-                return ((Document) PLAYERS.get(uuid).get("toggles")).get("tradeChat", Boolean.class);
+                return ((Document) doc.get("toggles")).get("tradeChat", Boolean.class);
             case TOGGLE_GLOBAL_CHAT:
-                return ((Document) PLAYERS.get(uuid).get("toggles")).get("globalChat", Boolean.class);
+                return ((Document) doc.get("toggles")).get("globalChat", Boolean.class);
             case TOGGLE_RECEIVE_MESSAGE:
-                return ((Document) PLAYERS.get(uuid).get("toggles")).get("receiveMessage", Boolean.class);
+                return ((Document) doc.get("toggles")).get("receiveMessage", Boolean.class);
             case TOGGLE_PVP:
-                return ((Document) PLAYERS.get(uuid).get("toggles")).get("pvp", Boolean.class);
+                return ((Document) doc.get("toggles")).get("pvp", Boolean.class);
             case TOGGLE_DUEL:
-                return ((Document) PLAYERS.get(uuid).get("toggles")).get("duel", Boolean.class);
+                return ((Document) doc.get("toggles")).get("duel", Boolean.class);
             case TOGGLE_CHAOTIC_PREVENTION:
-                return ((Document) PLAYERS.get(uuid).get("toggles")).get("chaoticPrevention", Boolean.class);
+                return ((Document) doc.get("toggles")).get("chaoticPrevention", Boolean.class);
             /*
             Portal Key Shards
              */
             case PORTAL_SHARDS_T1:
-                return ((Document) PLAYERS.get(uuid).get("portalKeyShards")).get("tier1", Integer.class);
+                return ((Document) doc.get("portalKeyShards")).get("tier1", Integer.class);
             case PORTAL_SHARDS_T2:
-                return ((Document) PLAYERS.get(uuid).get("portalKeyShards")).get("tier2", Integer.class);
+                return ((Document) doc.get("portalKeyShards")).get("tier2", Integer.class);
             case PORTAL_SHARDS_T3:
-                return ((Document) PLAYERS.get(uuid).get("portalKeyShards")).get("tier3", Integer.class);
+                return ((Document) doc.get("portalKeyShards")).get("tier3", Integer.class);
             case PORTAL_SHARDS_T4:
-                return ((Document) PLAYERS.get(uuid).get("portalKeyShards")).get("tier4", Integer.class);
+                return ((Document) doc.get("portalKeyShards")).get("tier4", Integer.class);
             case PORTAL_SHARDS_T5:
-                return ((Document) PLAYERS.get(uuid).get("portalKeyShards")).get("tier5", Integer.class);
+                return ((Document) doc.get("portalKeyShards")).get("tier5", Integer.class);
             /*
             Player Collectibles
              */
             case MOUNTS:
-                return ((Document) PLAYERS.get(uuid).get("collectibles")).get("mounts", ArrayList.class);
+                return ((Document) doc.get("collectibles")).get("mounts", ArrayList.class);
             case PETS:
-                return ((Document) PLAYERS.get(uuid).get("collectibles")).get("pets", ArrayList.class);
+                return ((Document) doc.get("collectibles")).get("pets", ArrayList.class);
             case PARTICLES:
-                return ((Document) PLAYERS.get(uuid).get("collectibles")).get("particles", ArrayList.class);
+                return ((Document) doc.get("collectibles")).get("particles", ArrayList.class);
             case ACHIEVEMENTS:
-                return ((Document) PLAYERS.get(uuid).get("collectibles")).get("achievements", ArrayList.class);
+                return ((Document) doc.get("collectibles")).get("achievements", ArrayList.class);
             case MOUNT_SKINS:
-                return ((Document) PLAYERS.get(uuid).get("collectibles")).get("mountskins", ArrayList.class);
+                return ((Document) doc.get("collectibles")).get("mountskins", ArrayList.class);
             default:
         }
         return null;
