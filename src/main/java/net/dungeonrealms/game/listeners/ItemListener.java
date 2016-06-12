@@ -156,7 +156,7 @@ public class ItemListener implements Listener {
 
         final ItemStack currentHelmet = p.getInventory().getHelmet();
 
-        if (currentHelmet != null && currentHelmet.getType().equals(Material.AIR)) {
+        if (currentHelmet != null && !currentHelmet.getType().equals(Material.AIR)) {
             p.sendMessage(ChatColor.RED + "You must remove your helm to equip your guild banner.");
             return;
         }
