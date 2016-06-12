@@ -659,6 +659,7 @@ public class API {
         // Don't use a switch because flowing through isn't possible due to different criteria.
         if (Rank.isDev(player)) {
             Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.DEVELOPER);
+            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.INFECTED);
         }
 
         if (Rank.isGM(player)) {

@@ -3,6 +3,8 @@ package net.dungeonrealms.game.handlers;
 import com.connorlinfoot.actionbarapi.ActionBarAPI;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.achievements.AchievementManager;
+import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.SoundAPI;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
@@ -526,6 +528,11 @@ public class HealthHandler implements GenericMechanic {
                         killerName = GameChat.getPreMessage((Player) leAttacker).replaceAll(":", "").trim();
                         if (ChatColor.stripColor(killerName).startsWith("<G>")) {
                             killerName = killerName.split(">")[1];
+                        }
+
+                        if (Achievements.getInstance().hasAchievement(player.getUniqueId(), Achievements.EnumAchievements.INFECTED)) {
+                            Player killer = (Player) leAttacker;
+                            Achievements.getInstance().giveAchievement(killer.getUniqueId(), Achievements.EnumAchievements.INFECTED);
                         }
                     } else {
                         if (leAttacker != null) {
