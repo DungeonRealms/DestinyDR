@@ -5,6 +5,7 @@ import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -33,7 +34,7 @@ public class CommandEss extends BasicCommand {
         
         if(commandSender instanceof Player){
         	Player player = (Player)commandSender;
-            if (!player.isOp()) {
+            if (!Rank.isGM(player)) {
                 return false;
             }
         }

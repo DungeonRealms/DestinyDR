@@ -712,6 +712,15 @@ public class API {
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
         AttributeInstance instance = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
         instance.setBaseValue(4.0D);
+
+        // Permissions
+        if (Rank.isGM(player)) {
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("essentials.*", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.*", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("worldedit.*", true);
+        } else if (Rank.isPMOD(player)) {
+
+        }
     }
     
     
