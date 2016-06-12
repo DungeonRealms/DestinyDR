@@ -5,10 +5,7 @@ import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.commands.*;
 import net.dungeonrealms.game.commands.generic.CommandManager;
 import net.dungeonrealms.game.commands.guild.*;
-import net.dungeonrealms.game.commands.menualias.CommandMount;
-import net.dungeonrealms.game.commands.menualias.CommandPet;
-import net.dungeonrealms.game.commands.menualias.CommandProfile;
-import net.dungeonrealms.game.commands.menualias.CommandTrail;
+import net.dungeonrealms.game.commands.menualias.*;
 import net.dungeonrealms.game.commands.newcommands.GlobalBroadcastCommand;
 import net.dungeonrealms.game.commands.newcommands.KickAllCommand;
 import net.dungeonrealms.game.commands.newcommands.RealmTestCommand;
@@ -273,7 +270,7 @@ public class DungeonRealms extends JavaPlugin {
         // Commands always registered regardless of server.
         cm.registerCommand(new CommandLag("lag", "/<command> [args]", "Checks for lag."));
         cm.registerCommand(new CommandSet("set", "/<command> [args]", "Development command for modifying account variables."));
-        cm.registerCommand(new CommandEss("dr", "/<command> [args]", "The essentials command."));
+        cm.registerCommand(new CommandEss("dr", "/<command> [args]", "Developer command with the core essentials."));
         cm.registerCommand(new CommandInterface("interface", "/<command> [args]", "Development command for accessing interfaces."));
         cm.registerCommand(new CommandTell("tell", "/<command> [args]", "Send a private message to a player."));
         cm.registerCommand(new CommandISay("isay", "/<command> [args]", "Prints message to players in dungeon world from command block."));
@@ -284,22 +281,24 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandPLeave("pleave", "/<command> [args]", "Remove player from party."));
         cm.registerCommand(new CommandPChat("pchat", "/<command> [args]", "Talk in party chat.", Collections.singletonList("p")));
 
-        cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "The Logout command."));
-        cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "The roll command."));
+        cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "Safely logout of Dungeon Realms."));
+        cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "Rolls a random number between 1 and the supplied argument."));
         cm.registerCommand(new CommandShard("shard", "/<command> [args]", "This command will allow the user to change shards."));
 
-        cm.registerCommand(new CommandToggle("toggles", "/<command> [args]", "The toggle command."));
-        cm.registerCommand(new CommandToggleDebug("toggledebug", "/<command> [args]", "The toggle command.", Collections.singletonList("debug")));
-        cm.registerCommand(new CommandToggleChaos("togglechaos", "/<command> [args]", "The toggle command."));
-        cm.registerCommand(new CommandToggleGlobalChat("toggleglobalchat", "/<command> [args]", "The toggle command."));
-        cm.registerCommand(new CommandTogglePvp("togglepvp", "/<command> [args]", "The toggle command."));
-        cm.registerCommand(new CommandToggleTells("toggletells", "/<command> [args]", "The toggle command."));
-        cm.registerCommand(new CommandToggleTrade("toggletrade", "/<command> [args]", "The toggle command."));
-        cm.registerCommand(new CommandToggleTradeChat("toggletradechat", "/<command> [args]", "The toggle command."));
+        cm.registerCommand(new CommandToggle("toggles", "/<command> [args]", "View and manage your profile toggles."));
+        cm.registerCommand(new CommandToggleDebug("toggledebug", "/<command> [args]", "Toggles displaying combat debug messages.", Collections.singletonList("debug")));
+        cm.registerCommand(new CommandToggleChaos("togglechaos", "/<command> [args]", "Toggles killing blows on lawful players (anti-chaotic)."));
+        cm.registerCommand(new CommandToggleGlobalChat("toggleglobalchat", "/<command> [args]", "Toggles talking only in global chat."));
+        cm.registerCommand(new CommandTogglePvp("togglepvp", "/<command> [args]", "Toggles all outgoing PvP damage (anti-neutral)."));
+        cm.registerCommand(new CommandToggleTells("toggletells", "/<command> [args]", "Toggles receiving NON-BUD /tell."));
+        cm.registerCommand(new CommandToggleTrade("toggletrade", "/<command> [args]", "Toggles trading requests."));
+        cm.registerCommand(new CommandToggleTradeChat("toggletradechat", "/<command> [args]", "Toggles receiving <T>rade chat."));
+        cm.registerCommand(new CommandToggleDuel("toggleduel", "/<command> [args]", "Toggles dueling requests."));
+        //Toggles dueling requests.
 
-        cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Check epoch time of item."));
-        cm.registerCommand(new CommandStats("stat", "/<command> [args]", "The stats command.", Collections.singletonList("stats")));
-        cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "The stop command.", Collections.singletonList("drstop")));
+        cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Checks the identity of a Dungeon Realms signed item."));
+        cm.registerCommand(new CommandStats("stat", "/<command> [args]", "Allows you to view and manage your stat points.", Collections.singletonList("stats")));
+        cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "This will stop Dungeon Realms safely following safe shutdown procedures.", Collections.singletonList("drstop")));
 
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {
@@ -318,37 +317,38 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandGMotd("gmotd", "/<command> [args]", "Guild motd command."));
             cm.registerCommand(new CommandGDeny("gdecline", "/<command>", "Guild decline invitation command.", Collections.singletonList("gdeny")));
 
-            cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "Spawns a mob? idk chase"));
-            cm.registerCommand(new CommandAdd("ad", "/<command> [args]", "Adds shit"));
-            cm.registerCommand(new CommandList("list", "/<command> [args]", "List online players."));
-            cm.registerCommand(new CommandSetRank("setrank", "/<command> [args]", "Manage a players rank!"));
-            cm.registerCommand(new CommandMail("mailbox", "/<command> [args]", "The mail command."));
-            cm.registerCommand(new CommandReboot("reboot", "/<command>", "Check reboot time."));
+            cm.registerCommand(new CommandSpawn("spawn", "/<command> [args]", "This will teleport a Game Master to their spawn point."));
+            cm.registerCommand(new CommandAdd("ad", "/<command> [args]", "This will spawn a Dungeon Realms item."));
+            cm.registerCommand(new CommandList("list", "/<command> [args]", "Displays a list of online players."));
+            cm.registerCommand(new CommandSetRank("setrank", "/<command> [args]", "Sets the rank of a player."));
+            cm.registerCommand(new CommandMail("mailbox", "/<command> [args]", "Manage your received mail and send your own mail."));
+            cm.registerCommand(new CommandReboot("reboot", "/<command>", "Displays the time until the shard will next reboot."));
             cm.registerCommand(new CommandInvoke("invoke", "/<command> [args]", "The invoke command."));
 
-            cm.registerCommand(new CommandGlobalChat("gl", "/<command> [args]", "Use global chat."));
-            cm.registerCommand(new CommandLocalChat("l", "/<command> [args]", "Use local chat."));
+            cm.registerCommand(new CommandGlobalChat("gl", "/<command> [args]", "Sends a message to global chat."));
+            cm.registerCommand(new CommandLocalChat("l", "/<command> [args]", "Sendsa message to local chat."));
 
-            cm.registerCommand(new CommandStuck("stuck", "/<command> [args]", "The stuck command."));
+            cm.registerCommand(new CommandStuck("stuck", "/<command> [args]", "Will help remove you if you're stuck in a block."));
 
-            cm.registerCommand(new CommandSkip("skip", "/<command> [args]", "Skip the tutorial island."));
-            cm.registerCommand(new CommandShopClose("closeshop", "/<command>", "Close Shop on all shards."));
-            cm.registerCommand(new CommandPurchase("purchase", "/<command> [args]", "Purchase broadcast command."));
+            cm.registerCommand(new CommandSkip("skip", "/<command> [args]", "Skips the tutorial island."));
+            cm.registerCommand(new CommandShopClose("closeshop", "/<command>", "Close shops on all shards."));
+            cm.registerCommand(new CommandPurchase("purchase", "/<command> [args]", "Will announce a purchase messages."));
 
-            cm.registerCommand(new CommandPl("pinvite", "/<command> [args]", "Will invite a player to a party and create one!"));
+            cm.registerCommand(new CommandPl("pinvite", "/<command> [args]", "Will invite a player to a party, creating one if it doesn't exist."));
 
-            cm.registerCommand(new CommandMount("mount", "/<command> [args]", "The mount command.", Collections.singletonList("mounts")));
-            cm.registerCommand(new CommandPet("pet", "/<command> [args]", "The pet command.", Collections.singletonList("pets")));
-            cm.registerCommand(new CommandTrail("trail", "/<command> [args]", "The trails command.", Collections.singletonList("trails")));
-            cm.registerCommand(new CommandProfile("profile", "/<command> [args]", "The profile command."));
+            cm.registerCommand(new CommandMount("mount", "/<command> [args]", "Opens the player mounts menu.", Collections.singletonList("mounts")));
+            cm.registerCommand(new CommandPet("pet", "/<command> [args]", "Opens the player pets menu.", Collections.singletonList("pets")));
+            cm.registerCommand(new CommandTrail("trail", "/<command> [args]", "Opens the player trails menu.", Collections.singletonList("trails")));
+            cm.registerCommand(new CommandAchievements("achievements", "/<command> [args]", "Opens the player achievements menu.", Collections.singletonList("achievement")));
+            cm.registerCommand(new CommandProfile("profile", "/<command> [args]", "Opens the player profile menu."));
 
             cm.registerCommand(new CommandTestRank("testrank", "/<command> [args]", "This is a test command."));
             cm.registerCommand(new CommandTestingHall("testhall", "/<command> [args]", "This is a test command.", Collections.singletonList("testinghall")));
 
-            cm.registerCommand(new StarterCommand("givestarter", "/<command> [args]", "Gives a starter kit to someone"));
-            cm.registerCommand(new RealmTestCommand("realmtest", "/<command> [args]", "Puts you in your realm"));
-            cm.registerCommand(new KickAllCommand("kickall", "/<command> [args]", "Kicks all players from the server"));
-            cm.registerCommand(new GlobalBroadcastCommand("glbroadcast", "/<command> [args]", "Broadcast Global message across all shards!"));
+            cm.registerCommand(new StarterCommand("givestarter", "/<command> [args]", "Provides a player with the starter kit."));
+            cm.registerCommand(new RealmTestCommand("realmtest", "/<command> [args]", "Puts you in your realm."));
+            cm.registerCommand(new KickAllCommand("kickall", "/<command> [args]", "Kicks all players from the server."));
+            cm.registerCommand(new GlobalBroadcastCommand("glbroadcast", "/<command> [args]", "Broadcasts a global message across all shards!"));
         }
 
         // Commands exclusive to support agents on their special server.

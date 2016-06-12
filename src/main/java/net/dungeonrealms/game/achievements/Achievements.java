@@ -417,7 +417,11 @@ public class Achievements {
 
         CAKE_IS_A_LIE("The Cake is a Lie", new String[]{
                 "Discovered the truth about the cake."
-        }, 250, "achievement.explorer_easteregg_portal_cakelie", false);
+        }, 250, "achievement.explorer_easteregg_portal_cakelie", false),
+
+        INFECTED("Infected!", new String[]{
+                "Killed someone who was infected."
+        }, 500, "achievement.combat_infected", false);
 
         private String name;
         private String[] message;

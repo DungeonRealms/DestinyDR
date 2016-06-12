@@ -962,6 +962,7 @@ public class ClickHandler {
                         PlayerMenus.openExplorationAchievementMenu(player);
                         break;
                     case 3:
+                        PlayerMenus.openCombatAchievementMenu(player);
                         break;
                     case 4:
                         PlayerMenus.openCharacterAchievementMenu(player);
