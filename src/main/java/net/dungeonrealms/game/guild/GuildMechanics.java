@@ -418,8 +418,8 @@ public class GuildMechanics implements GenericMechanic {
                                             String tag = guildTagRequest.getMessage().replace(" ", "").toUpperCase();
 
                                             // Name must be below 3 characters
-                                            if (tag.length() > 3) {
-                                                player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Your guild tag exceeds the maximum length of 3 characters.");
+                                            if (tag.length() > 4) {
+                                                player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Your guild tag exceeds the maximum length of 4 characters.");
                                                 return;
                                             }
 
