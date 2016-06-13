@@ -16,7 +16,6 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
-import org.bukkit.craftbukkit.v1_9_R2.util.UnsafeList;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 
@@ -94,16 +93,10 @@ public class PetUtils implements GenericMechanic{
             if (e instanceof EntityInsentient) {
                 if (petType != EnumPets.SLIME && petType != EnumPets.MAGMA_CUBE) {
                     PathfinderGoalSelector goal = (PathfinderGoalSelector) goalSelector.get(e);
-                    PathfinderGoalSelector target = (PathfinderGoalSelector) targetSelector.get(e);
-                    gsa.set(goal, new UnsafeList<>());
-                    gsa.set(target, new UnsafeList<>());
                     goal.a(0, new PathfinderGoalFloat((EntityInsentient) e));
                     goal.a(1, new PathfinderGoalWalkToTile((EntityInsentient) e, toFollow, speed));
                 } else {
                     PathfinderGoalSelector goal = (PathfinderGoalSelector) goalSelector.get(e);
-                    PathfinderGoalSelector target = (PathfinderGoalSelector) targetSelector.get(e);
-                    gsa.set(goal, new UnsafeList<>());
-                    gsa.set(target, new UnsafeList<>());
                     goal.a(0, new PathfinderGoalFloat((EntityInsentient) e));
                     goal.a(1, new PathfinderGoalSlimeFollowOwner((EntityInsentient) e, toFollow, speed));
                 }

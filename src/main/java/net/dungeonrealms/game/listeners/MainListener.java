@@ -41,9 +41,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
-import net.minecraft.server.v1_9_R2.EntityItem;
 import org.bukkit.*;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
 import org.bukkit.entity.Horse.Variant;
@@ -719,14 +717,12 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void chunkUNload(ChunkUnloadEvent event) {
         if (event.getWorld() == Bukkit.getWorlds().get(0)) {
-            SpawningMechanics.getInstance().getChunkMobBaseSpawners(event.getChunk()).stream().filter(spawner -> spawner.getSPAWNED_MONSTERS().size() > 1).
-                    forEach(spawner -> spawner.setFirstSpawn(true));
+            SpawningMechanics.getInstance().getChunkMobBaseSpawners(event.getChunk()).stream().filter(spawner -> spawner.getSPAWNED_MONSTERS().size() > 1).forEach(spawner -> spawner.setFirstSpawn(true));
             if (event.getChunk().getEntities().length > 0) {
-                for (Entity ent : event.getChunk().getEntities()) {
-                    net.minecraft.server.v1_9_R2.Entity nms = ((CraftEntity) ent).getHandle();
-                    if ((!(nms instanceof EntityItem)) && !(ent instanceof Player)) {
-                        if (!(ent instanceof ItemFrame) && !(ent instanceof Painting) && !(ent instanceof Hanging)) {
-                            ent.remove();
+                for (Entity entity : event.getChunk().getEntities()) {
+                    if (!(entity instanceof org.bukkit.entity.Item) && !(entity instanceof Player)) {
+                        if (!(entity instanceof ItemFrame) && !(entity instanceof Painting) && !(entity instanceof Hanging)) {
+                            entity.remove();
                         }
                     }
                 }
@@ -740,11 +736,10 @@ public class MainListener implements Listener {
     public void chunkLoad(ChunkLoadEvent event) {
         if (event.getWorld() == Bukkit.getWorlds().get(0)) {
             if (event.getChunk().getEntities().length > 0) {
-                for (Entity ent : event.getChunk().getEntities()) {
-                    net.minecraft.server.v1_9_R2.Entity nms = ((CraftEntity) ent).getHandle();
-                    if ((!(nms instanceof EntityItem)) && !(ent instanceof Player)) {
-                        if (!(ent instanceof ItemFrame) && !(ent instanceof Painting) && !(ent instanceof Hanging)) {
-                            ent.remove();
+                for (Entity entity : event.getChunk().getEntities()) {
+                    if (!(entity instanceof org.bukkit.entity.Item) && !(entity instanceof Player)) {
+                        if (!(entity instanceof ItemFrame) && !(entity instanceof Painting) && !(entity instanceof Hanging)) {
+                            entity.remove();
                         }
                     }
                 }
