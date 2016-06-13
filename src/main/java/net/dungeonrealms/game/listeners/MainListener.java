@@ -14,6 +14,7 @@ import net.dungeonrealms.game.handlers.TutorialIslandHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.miscellaneous.Cooldown;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -472,9 +473,16 @@ public class MainListener implements Listener {
             return;
         if (API.isPlayer(event.getRightClicked()))
             return;
+
         String npcNameStripped = ChatColor.stripColor(event.getRightClicked().getName());
         if (npcNameStripped.equals(""))
             return;
+
+        if (Cooldown.hasCooldown(event.getPlayer().getUniqueId())) return;
+
+        // AVOID DOUBLE CLICK //
+        Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000L);
+
         if (npcNameStripped.equalsIgnoreCase("Animal Tamer")) {
             NPCMenus.openMountPurchaseMenu(event.getPlayer());
             return;

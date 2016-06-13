@@ -1,11 +1,10 @@
-package net.dungeonrealms.game.guild.banner.menus.selectors;
+package net.dungeonrealms.game.menus.banner.selectors;
 
 import net.dungeonrealms.game.gui.GUIButtonClickEvent;
 import net.dungeonrealms.game.gui.item.GUIButton;
-import net.dungeonrealms.game.guild.banner.AbstractMenu;
+import net.dungeonrealms.game.menus.AbstractMenu;
 import net.md_5.bungee.api.ChatColor;
 import org.apache.commons.lang.WordUtils;
-import org.bukkit.Bukkit;
 import org.bukkit.DyeColor;
 import org.bukkit.Material;
 import org.bukkit.block.banner.Pattern;

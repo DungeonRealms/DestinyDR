@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.menus;
+package net.dungeonrealms.game.menus.player;
 
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;

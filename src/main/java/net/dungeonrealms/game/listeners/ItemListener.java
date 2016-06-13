@@ -79,7 +79,8 @@ public class ItemListener implements Listener {
     public void onPlayerUseTeleportItem(PlayerInteractEvent event) {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         Player player = event.getPlayer();
-        if (player.getEquipment().getItemInMainHand() == null || player.getEquipment().getItemInMainHand().getType() != Material.BOOK) return;
+        if (player.getEquipment().getItemInMainHand() == null || player.getEquipment().getItemInMainHand().getType() != Material.BOOK)
+            return;
         ItemStack itemStack = player.getEquipment().getItemInMainHand();
         if (!(CombatLog.isInCombat(event.getPlayer()))) {
             if (TeleportAPI.isPlayerCurrentlyTeleporting(player.getUniqueId())) {
@@ -114,7 +115,8 @@ public class ItemListener implements Listener {
     public void onPlayerUseMap(PlayerInteractEvent event) {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         Player p = event.getPlayer();
-        if (p.getEquipment().getItemInMainHand() == null || p.getEquipment().getItemInMainHand().getType() != Material.EMPTY_MAP) return;
+        if (p.getEquipment().getItemInMainHand() == null || p.getEquipment().getItemInMainHand().getType() != Material.EMPTY_MAP)
+            return;
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
@@ -131,7 +133,8 @@ public class ItemListener implements Listener {
     public void onPlayerUseCharacterJournal(PlayerInteractEvent event) {
         if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
         Player p = event.getPlayer();
-        if (p.getEquipment().getItemInMainHand() == null || p.getEquipment().getItemInMainHand().getType() != Material.WRITTEN_BOOK) return;
+        if (p.getEquipment().getItemInMainHand() == null || p.getEquipment().getItemInMainHand().getType() != Material.WRITTEN_BOOK)
+            return;
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
         NBTTagCompound tag = nmsStack.getTag();
         if (tag == null) return;
@@ -154,8 +157,7 @@ public class ItemListener implements Listener {
         if (!p.getItemInHand().getItemMeta().getDisplayName().contains("Guild banner")) return;
 
 
-        String guildName = p.getItemInHand().getItemMeta().getDisplayName().substring(2).replace("'s Guild banner", "");
-        System.out.print(guildName);
+        String guildName = p.getItemInHand().getItemMeta().getDisplayName().substring(2).replace("'s Guild banner", "").replaceAll("\\s", "").toLowerCase();
 
         final ItemStack currentHelmet = p.getInventory().getHelmet();
 
@@ -166,7 +168,6 @@ public class ItemListener implements Listener {
 
         p.getInventory().setHelmet(p.getItemInHand());
         p.setItemInHand(null);
-        event.setCancelled(true);
 
         GuildDatabaseAPI.get().doesGuildNameExist(guildName, exists -> {
             if (exists && GuildDatabaseAPI.get().getGuildOf(p.getUniqueId()).equals(guildName)) {
@@ -177,6 +178,8 @@ public class ItemListener implements Listener {
                     p.sendMessage(ChatColor.GRAY + "\"" + ChatColor.AQUA + motd + ChatColor.GRAY + "\"");
             }
         });
+
+        event.setCancelled(true);
     }
 
     /**

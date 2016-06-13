@@ -4,9 +4,8 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.guild.banner.menus.BannerCreatorMenu;
-import net.dungeonrealms.game.mechanics.generic.EnumPriority;
-import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.game.mastery.ItemSerialization;
+import net.dungeonrealms.game.menus.banner.BannerCreatorMenu;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.network.NetworkAPI;
@@ -27,7 +26,7 @@ import java.util.regex.Pattern;
  * Class written by APOLLOSOFTWARE.IO on 6/2/2016
  */
 
-public class GuildMechanics implements GenericMechanic {
+public class GuildMechanics {
     private static GuildMechanics instance = null;
 
     public static GuildMechanics getInstance() {
@@ -54,21 +53,6 @@ public class GuildMechanics implements GenericMechanic {
     @Getter
     private final Map<UUID, GuildCreateInfo> guildCreateInfo = new WeakHashMap<>();
 
-    @Override
-    public EnumPriority startPriority() {
-        return EnumPriority.BISHOPS;
-    }
-
-
-    @Override
-    public void startInitialization() {
-        //TODO
-    }
-
-    @Override
-    public void stopInvocation() {
-        //TODO
-    }
 
     public void doLogin(Player player) {
         if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) return;
@@ -89,10 +73,10 @@ public class GuildMechanics implements GenericMechanic {
      * @param message   Alert message
      */
     public void sendAlert(String guildName, String message) {
-        // String temp = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + " " + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
+        String tag = GuildDatabaseAPI.get().getTagOf(guildName);
+        String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
-
-        NetworkAPI.getInstance();
+        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Guilds", "alert", Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
     }
 
 
@@ -128,7 +112,7 @@ public class GuildMechanics implements GenericMechanic {
         player.sendMessage(" ");
         player.sendMessage(ChatColor.GRAY + "Guild Name: " + ChatColor.WHITE + displayName);
         player.sendMessage(ChatColor.GRAY + "Guild Tag: " + ChatColor.DARK_AQUA + "[" + ChatColor.GRAY + tag + ChatColor.DARK_AQUA + "]");
-        player.sendMessage(ChatColor.GRAY + "Guild Owner: " + ChatColor.WHITE + owner);
+        player.sendMessage(ChatColor.GRAY + "Guild Owner: " + ChatColor.WHITE + owner.toUpperCase());
         player.sendMessage(" ");
 
         player.sendMessage(ChatColor.GRAY + "Guild Officers: " + ChatColor.WHITE + (officers.length() == 0 ? "None" : officers));
@@ -294,8 +278,10 @@ public class GuildMechanics implements GenericMechanic {
                 meta.setDisplayName(ChatColor.GREEN + info.getDisplayName() + "'s Guild banner");
                 info.getCurrentBanner().setItemMeta(meta);
 
+                String itemString = ItemSerialization.itemStackToBase64(info.getCurrentBanner());
+
                 // Registers guild in database
-                GuildDatabaseAPI.get().createGuild(info.getGuildName(), info.getDisplayName(), info.getTag(), player.getUniqueId(), info.getCurrentBanner().toString(), onComplete -> {
+                GuildDatabaseAPI.get().createGuild(info.getGuildName(), info.getDisplayName(), info.getTag(), player.getUniqueId(), itemString, onComplete -> {
                     if (!onComplete) {
                         player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.RED + "We have an error. Failed to create guild in database. Please try again later");
                         return;
