@@ -89,7 +89,7 @@ public class EliteMobSpawner {
      */
     void init() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            boolean playersNearby = !API.getNearbyPlayers(location, 32).isEmpty();
+            boolean playersNearby = !API.getNearbyPlayers(location, 24).isEmpty();
             if (playersNearby) {
                 if (timerID == -1) {
                     timerID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
@@ -101,13 +101,11 @@ public class EliteMobSpawner {
                 }
             } else {
                 if (timerID != -1) {
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        Bukkit.getScheduler().cancelTask(timerID);
-                        timerID = -1;
-                    }, 20L);
+                    Bukkit.getScheduler().cancelTask(timerID);
+                    timerID = -1;
                 }
             }
-        }, 0L, 80L);
+        }, 0L, 100L);
     }
 
     private void spawnIn() {
@@ -203,10 +201,11 @@ public class EliteMobSpawner {
                 entity.getBukkitEntity().setMetadata("namedElite", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));
             } else {
                 entity.setCustomName(API.getTierColor(tier) + ChatColor.BOLD.toString() + monsterType.name.trim());
-                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() +  monsterType.name.trim()));
+                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + monsterType.name.trim()));
             }
         }
     }
+
     /**
      * @param entity
      */

@@ -329,7 +329,7 @@ public class BaseMobSpawner {
      */
     void init() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            boolean playersNearby = !API.getNearbyPlayers(loc, 32).isEmpty();
+            boolean playersNearby = !API.getNearbyPlayers(loc, 24).isEmpty();
             if (playersNearby) {
                 if (timerID == -1) {
                     timerID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
@@ -341,13 +341,11 @@ public class BaseMobSpawner {
                 }
             } else {
                 if (timerID != -1) {
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        Bukkit.getScheduler().cancelTask(timerID);
-                        timerID = -1;
-                    }, 20);
+                    Bukkit.getScheduler().cancelTask(timerID);
+                    timerID = -1;
                 }
             }
-        }, 0, 80);
+        }, 0, 100L);
     }
 
     /**
