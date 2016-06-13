@@ -717,12 +717,25 @@ public class API {
         instance.setBaseValue(4.0D);
 
         // Permissions
+        if (!player.isOp() && !Rank.isDev(player)) {
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.plugins", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.version", false);
+        }
+
         if (Rank.isGM(player)) {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("essentials.*", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.*", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("worldedit.*", true);
-        } else if (Rank.isPMOD(player)) {
 
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.gamemode", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.gamemode", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
+        }
+
+        if (Rank.isPMOD(player)) {
+            // @todo: Add any permissions PMODs+ may need here!
+            // @todo: eg. NCP
         }
     }
     

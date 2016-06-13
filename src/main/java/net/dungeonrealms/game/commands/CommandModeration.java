@@ -71,14 +71,14 @@ public class CommandModeration extends BasicCommand {
                         player1.showPlayer(sender);
                     }
                     sender.removePotionEffect(PotionEffectType.INVISIBILITY);
-                    sender.sendMessage(ChatColor.GREEN + " You have been unhidden");
+                    sender.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "You are now visible.");
                     sender.setCustomNameVisible(true);
                 } else {
                     API._hiddenPlayers.add(sender);
                     sender.setCustomNameVisible(false);
                     sender.hidePlayer(sender);
                     sender.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1));
-                    sender.sendMessage(ChatColor.GREEN + " You have been hidden");
+                    sender.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "You are now hidden.");
                 }
                 break;
             case "banksee":
