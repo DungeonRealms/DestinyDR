@@ -34,7 +34,6 @@ import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -717,7 +716,8 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void chunkUNload(ChunkUnloadEvent event) {
         if (event.getWorld() == Bukkit.getWorlds().get(0)) {
-            SpawningMechanics.getInstance().getChunkMobBaseSpawners(event.getChunk()).stream().filter(spawner -> spawner.getSPAWNED_MONSTERS().size() > 1).forEach(spawner -> spawner.setFirstSpawn(true));
+            //TODO: Check for better ways of doing this
+            //SpawningMechanics.getInstance().getChunkMobBaseSpawners(event.getChunk()).stream().filter(spawner -> spawner.getSPAWNED_MONSTERS().size() > 2).forEach(spawner -> spawner.setFirstSpawn(true));
             if (event.getChunk().getEntities().length > 0) {
                 for (Entity entity : event.getChunk().getEntities()) {
                     if (!(entity instanceof org.bukkit.entity.Item) && !(entity instanceof Player)) {
