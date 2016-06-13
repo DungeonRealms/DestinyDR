@@ -364,11 +364,11 @@ public class API {
         }
         Inventory inv = player.getInventory();
         ArrayList<String> armor = new ArrayList<>();
-        for (ItemStack itemStack : player.getInventory().getArmorContents()) {
-            if (itemStack == null || itemStack.getType() == Material.AIR) {
-                armor.add("null");
+        for (ItemStack stack : player.getEquipment().getArmorContents()) {
+            if (stack == null || stack.getType() == Material.AIR) {
+                armor.add("");
             } else {
-                armor.add(ItemSerialization.itemStackToBase64(itemStack));
+                armor.add(ItemSerialization.itemStackToBase64(stack));
             }
         }
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, false);
@@ -549,7 +549,10 @@ public class API {
                 armorContents[i] = ItemSerialization.itemStackFromBase64(armor);
             }
         }
-        player.getInventory().setArmorContents(armorContents);
+        player.getEquipment().setArmorContents(armorContents);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            player.getInventory().setArmorContents(armorContents);
+        }, 40L);
 
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
@@ -715,12 +718,25 @@ public class API {
         instance.setBaseValue(4.0D);
 
         // Permissions
+        if (!player.isOp() && !Rank.isDev(player)) {
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.plugins", false);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.version", false);
+        }
+
         if (Rank.isGM(player)) {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("essentials.*", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.*", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("worldedit.*", true);
-        } else if (Rank.isPMOD(player)) {
 
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.gamemode", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.gamemode", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.tp", true);
+        }
+
+        if (Rank.isPMOD(player)) {
+            // @todo: Add any permissions PMODs+ may need here!
+            // @todo: eg. NCP
         }
     }
     

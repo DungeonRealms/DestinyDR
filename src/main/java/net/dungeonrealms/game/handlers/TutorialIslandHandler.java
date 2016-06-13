@@ -7,6 +7,7 @@ import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
@@ -68,10 +69,12 @@ public class TutorialIslandHandler implements GenericMechanic, Listener {
     private void hideVanishedPlayers() {
         API._hiddenPlayers.stream().filter(player -> player != null).forEach(player -> {
             for (Player player1 : Bukkit.getOnlinePlayers()) {
-                if (player1.getUniqueId().toString().equals(player.getUniqueId().toString())) {
-                    continue;
+                // GMs can see hidden players whereas non-GMs cannot.
+                if (player1.getUniqueId().toString().equals(player.getUniqueId().toString()) || Rank.isGM(player1)) {
+                    player1.showPlayer(player);
+                } else {
+                    player1.hidePlayer(player);
                 }
-                player1.hidePlayer(player);
             }
         });
     }
