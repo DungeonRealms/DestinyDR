@@ -35,6 +35,10 @@ public class NetworkAPI implements PluginMessageListener {
         Utils.log.info("[NetworkAPI] Registering Outbound/Inbound BungeeCord channels...");
         Bukkit.getMessenger().registerOutgoingPluginChannel(DungeonRealms.getInstance(), "BungeeCord");
         Bukkit.getMessenger().registerIncomingPluginChannel(DungeonRealms.getInstance(), "BungeeCord", this);
+
+        Bukkit.getMessenger().registerOutgoingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms");
+        Bukkit.getMessenger().registerIncomingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms", this);
+
         Utils.log.info("[NetworkAPI] Finished Registering Outbound/Inbound BungeeCord channels ... OKAY!");
     }
 
@@ -89,11 +93,12 @@ public class NetworkAPI implements PluginMessageListener {
      * @since 1.0
      */
 
-    public void sendNetworkMessage(String channel, String subChannel, String message, String contents) {
+    public void sendNetworkMessage(String channel, String subChannel, String message, String... contents) {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(subChannel);
         out.writeUTF(message);
-        out.writeUTF(contents);
+        for (String s : contents)
+            out.writeUTF(s);
         Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
 
         if (player != null)

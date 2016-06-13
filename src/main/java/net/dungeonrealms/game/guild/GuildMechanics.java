@@ -5,8 +5,6 @@ import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.ItemSerialization;
-import net.dungeonrealms.game.mechanics.generic.EnumPriority;
-import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.menus.banner.BannerCreatorMenu;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -28,7 +26,7 @@ import java.util.regex.Pattern;
  * Class written by APOLLOSOFTWARE.IO on 6/2/2016
  */
 
-public class GuildMechanics implements GenericMechanic {
+public class GuildMechanics {
     private static GuildMechanics instance = null;
 
     public static GuildMechanics getInstance() {
@@ -55,21 +53,6 @@ public class GuildMechanics implements GenericMechanic {
     @Getter
     private final Map<UUID, GuildCreateInfo> guildCreateInfo = new WeakHashMap<>();
 
-    @Override
-    public EnumPriority startPriority() {
-        return EnumPriority.BISHOPS;
-    }
-
-
-    @Override
-    public void startInitialization() {
-        //TODO
-    }
-
-    @Override
-    public void stopInvocation() {
-        //TODO
-    }
 
     public void doLogin(Player player) {
         if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) return;
@@ -90,10 +73,10 @@ public class GuildMechanics implements GenericMechanic {
      * @param message   Alert message
      */
     public void sendAlert(String guildName, String message) {
-        // String temp = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + " " + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
+        String tag = GuildDatabaseAPI.get().getTagOf(guildName);
+        String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
-
-        NetworkAPI.getInstance();
+        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Guilds", "alert", Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
     }
 
 
