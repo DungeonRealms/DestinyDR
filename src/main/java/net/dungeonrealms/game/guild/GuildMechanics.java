@@ -4,9 +4,10 @@ import lombok.Getter;
 import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
-import net.dungeonrealms.game.guild.banner.menus.BannerCreatorMenu;
+import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
+import net.dungeonrealms.game.menus.banner.BannerCreatorMenu;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.network.NetworkAPI;
@@ -128,7 +129,7 @@ public class GuildMechanics implements GenericMechanic {
         player.sendMessage(" ");
         player.sendMessage(ChatColor.GRAY + "Guild Name: " + ChatColor.WHITE + displayName);
         player.sendMessage(ChatColor.GRAY + "Guild Tag: " + ChatColor.DARK_AQUA + "[" + ChatColor.GRAY + tag + ChatColor.DARK_AQUA + "]");
-        player.sendMessage(ChatColor.GRAY + "Guild Owner: " + ChatColor.WHITE + owner);
+        player.sendMessage(ChatColor.GRAY + "Guild Owner: " + ChatColor.WHITE + owner.toUpperCase());
         player.sendMessage(" ");
 
         player.sendMessage(ChatColor.GRAY + "Guild Officers: " + ChatColor.WHITE + (officers.length() == 0 ? "None" : officers));
@@ -294,8 +295,10 @@ public class GuildMechanics implements GenericMechanic {
                 meta.setDisplayName(ChatColor.GREEN + info.getDisplayName() + "'s Guild banner");
                 info.getCurrentBanner().setItemMeta(meta);
 
+                String itemString = ItemSerialization.itemStackToBase64(info.getCurrentBanner());
+
                 // Registers guild in database
-                GuildDatabaseAPI.get().createGuild(info.getGuildName(), info.getDisplayName(), info.getTag(), player.getUniqueId(), info.getCurrentBanner().toString(), onComplete -> {
+                GuildDatabaseAPI.get().createGuild(info.getGuildName(), info.getDisplayName(), info.getTag(), player.getUniqueId(), itemString, onComplete -> {
                     if (!onComplete) {
                         player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.RED + "We have an error. Failed to create guild in database. Please try again later");
                         return;

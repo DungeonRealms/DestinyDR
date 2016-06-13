@@ -71,6 +71,7 @@ import java.util.stream.Collectors;
 /**
  * Created by Nick on 9/17/2015.
  */
+@SuppressWarnings("unchecked")
 public class API {
 
     public static CopyOnWriteArrayList<GamePlayer> GAMEPLAYERS = new CopyOnWriteArrayList<>();

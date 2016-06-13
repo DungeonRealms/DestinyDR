@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.guild.banner;
+package net.dungeonrealms.game.menus;
 
 
 import net.dungeonrealms.DungeonRealms;
