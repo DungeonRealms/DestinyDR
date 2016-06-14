@@ -392,6 +392,7 @@ public class MainListener implements Listener {
 
         if (DuelingMechanics.isDueling(event.getPlayer().getUniqueId())) {
             DuelOffer offer = DuelingMechanics.getOffer(event.getPlayer().getUniqueId());
+            assert offer != null;
             if (!offer.canFight) return;
             if (event.getTo().distance(offer.centerPoint) >= 15) {
                 event.setCancelled(true);
@@ -403,7 +404,7 @@ public class MainListener implements Listener {
         if (!(DonationEffects.getInstance().PLAYER_GOLD_BLOCK_TRAILS.contains(event.getPlayer())))
             return;
         Player player = event.getPlayer();
-        if (!(player.getWorld().getName().equalsIgnoreCase(Bukkit.getWorlds().get(0).getName())))
+        if (!(player.getWorld().equals(Bukkit.getWorlds().get(0))))
             return;
         if (player.getLocation().getBlock().getType() != Material.AIR)
             return;
@@ -725,8 +726,8 @@ public class MainListener implements Listener {
     public void chunkUNload(ChunkUnloadEvent event) {
         if (event.getWorld() == Bukkit.getWorlds().get(0)) {
             //TODO: Check for better ways of doing this
-            //SpawningMechanics.getInstance().getChunkMobBaseSpawners(event.getChunk()).stream().filter(spawner -> spawner.getSPAWNED_MONSTERS().size() > 2).forEach(spawner -> spawner.setFirstSpawn(true));
             if (event.getChunk().getEntities().length > 0) {
+                //SpawningMechanics.getInstance().getChunkMobBaseSpawners(event.getChunk()).stream().filter(spawner -> spawner.getSPAWNED_MONSTERS().size() > 2).forEach(spawner -> spawner.setFirstSpawn(true));
                 for (Entity entity : event.getChunk().getEntities()) {
                     if (!(entity instanceof org.bukkit.entity.Item) && !(entity instanceof Player)) {
                         if (!(entity instanceof ItemFrame) && !(entity instanceof Painting) && !(entity instanceof Hanging)) {

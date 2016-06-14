@@ -2,7 +2,6 @@ package net.dungeonrealms.game.handlers;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
@@ -34,7 +33,6 @@ import org.inventivetalent.bossbar.BossBarAPI;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * Created by Kieran on 10/3/2015.
@@ -158,14 +156,6 @@ public class HealthHandler implements GenericMechanic {
      * @since 1.0
      */
     private void setPlayerOverheadHP(Player player, int hp) {
-        boolean safeRegion = API.isInSafeRegion(player.getLocation());
-        boolean nonPvPRegion = API.isNonPvPRegion(player.getLocation());
-        if (safeRegion) {
-            //Save a little bit while in safe zones?
-            if (new Random().nextInt(4) <= 2) {
-                return;
-            }
-        }
         GamePlayer gamePlayer = API.getGamePlayer(player);
         if (gamePlayer == null) {
             return;
@@ -181,9 +171,9 @@ public class HealthHandler implements GenericMechanic {
         String playerLevelInfo = ChatColor.AQUA.toString() + ChatColor.BOLD + "LVL " + ChatColor.AQUA + playerLevel;
         String separator = ChatColor.BLACK.toString() + ChatColor.BOLD + " - ";
         String playerHPInfo;
-        if (safeRegion) {
+        if (API.isInSafeRegion(player.getLocation())) {
             playerHPInfo = ChatColor.GREEN.toString() + ChatColor.BOLD + "HP " + ChatColor.GREEN + hp + ChatColor.BOLD + " / " + ChatColor.GREEN + (int) maxHP;
-        } else if (nonPvPRegion) {
+        } else if (API.isNonPvPRegion(player.getLocation())) {
             playerHPInfo = ChatColor.YELLOW.toString() + ChatColor.BOLD + "HP " + ChatColor.YELLOW + hp + ChatColor.BOLD + " / " + ChatColor.YELLOW + (int) maxHP;
         } else {
             playerHPInfo = ChatColor.RED.toString() + ChatColor.BOLD + "HP " + ChatColor.RED + hp + ChatColor.BOLD + " / " + ChatColor.RED + (int) maxHP;
