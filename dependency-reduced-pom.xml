@@ -226,13 +226,6 @@
     </dependency>
     <dependency>
       <groupId>com</groupId>
-      <artifactId>actionbarapi</artifactId>
-      <version>1.4.2</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/ActionBarAPI-1.4.2.jar</systemPath>
-    </dependency>
-    <dependency>
-      <groupId>com</groupId>
       <artifactId>bountifulapi</artifactId>
       <version>1.6.1</version>
       <scope>system</scope>

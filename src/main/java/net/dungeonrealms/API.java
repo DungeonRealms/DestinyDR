@@ -538,6 +538,12 @@ public class API {
         GamePlayer gp = new GamePlayer(player);
         API.GAMEPLAYERS.add(gp);
 
+        String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
+        if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
+            ItemStack[] items = ItemSerialization.fromString(playerInv, 36).getContents();
+            player.getInventory().setContents(items);
+        }
+
         List<String> playerArmor = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ARMOR, player.getUniqueId());
         int i = -1;
         ItemStack[] armorContents = new ItemStack[4];
@@ -549,16 +555,8 @@ public class API {
                 armorContents[i] = ItemSerialization.itemStackFromBase64(armor);
             }
         }
-        player.getEquipment().setArmorContents(armorContents);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            player.getInventory().setArmorContents(armorContents);
-        }, 40L);
 
-        String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
-        if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
-            ItemStack[] items = ItemSerialization.fromString(playerInv, 36).getContents();
-            player.getInventory().setContents(items);
-        }
+        player.getEquipment().setArmorContents(armorContents);
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
         if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
             Inventory inv = ItemSerialization.fromString(source);

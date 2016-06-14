@@ -170,13 +170,6 @@
         <!-- local dependencies (located in the /lib/ folder) -->
         <dependency>
             <groupId>com</groupId>
-            <artifactId>actionbarapi</artifactId>
-            <version>1.4.2</version>
-            <systemPath>${project.basedir}/lib/ActionBarAPI-1.4.2.jar</systemPath>
-            <scope>system</scope>
-        </dependency>
-        <dependency>
-            <groupId>com</groupId>
             <artifactId>bountifulapi</artifactId>
             <version>1.6.1</version>
             <systemPath>${project.basedir}/lib/BountifulAPI.jar</systemPath>
