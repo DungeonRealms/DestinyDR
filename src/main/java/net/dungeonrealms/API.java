@@ -724,6 +724,9 @@ public class API {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.*", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("worldedit.*", true);
 
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.checks", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.bypass.denylogin", true);
+
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.gamemode", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("minecraft.command.gamemode", true);
             player.addAttachment(DungeonRealms.getInstance()).setPermission("bukkit.command.teleport", true);
@@ -731,8 +734,10 @@ public class API {
         }
 
         if (Rank.isPMOD(player)) {
-            // @todo: Add any permissions PMODs+ may need here!
-            // @todo: eg. NCP
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.notify", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.notify", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.info", true);
+            player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.inspect", true);
         }
     }
     

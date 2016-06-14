@@ -156,18 +156,12 @@ public class ItemListener implements Listener {
         if (p.getItemInHand().getItemMeta().getDisplayName() == null) return;
         if (!p.getItemInHand().getItemMeta().getDisplayName().contains("Guild banner")) return;
 
-
         String guildName = p.getItemInHand().getItemMeta().getDisplayName().substring(2).replace("'s Guild banner", "").replaceAll("\\s", "").toLowerCase();
 
-        final ItemStack currentHelmet = p.getInventory().getHelmet();
+        final ItemStack banner = p.getItemInHand();
 
-        if (currentHelmet != null && !currentHelmet.getType().equals(Material.AIR)) {
-            p.sendMessage(ChatColor.RED + "You must remove your helm to equip your guild banner!");
-            return;
-        }
-
-        p.getInventory().setHelmet(p.getItemInHand());
-        p.setItemInHand(null);
+        p.setItemInHand(p.getInventory().getHelmet());
+        p.getInventory().setHelmet(banner);
 
         GuildDatabaseAPI.get().doesGuildNameExist(guildName, exists -> {
             if (exists && GuildDatabaseAPI.get().getGuildOf(p.getUniqueId()).equals(guildName)) {
