@@ -6,13 +6,15 @@ import net.dungeonrealms.game.mastery.NMSUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.game.world.entities.types.monsters.*;
-import net.dungeonrealms.game.world.entities.types.monsters.EntityGolem;
+import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedSkeleton;
+import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedWitherSkeleton;
+import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedZombie;
+import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.*;
+import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.BasicEntityBlaze;
+import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.StaffZombie;
 import net.dungeonrealms.game.world.entities.types.monsters.base.*;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.Burick;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.InfernalAbyss;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.InfernalGhast;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.Mayel;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.InfernalLordsGuard;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.Pyromancer;
 import net.dungeonrealms.game.world.entities.types.mounts.EnderDragon;
@@ -61,31 +63,45 @@ public class Entities implements GenericMechanic {
         NMSUtils nmsUtils = new NMSUtils();
 
         // Monsters
+        //BASE MONSTERS
+
+        //MELEE MONSTERS
         nmsUtils.registerEntity("Pirate", 54, EntityZombie.class, EntityPirate.class);
-        nmsUtils.registerEntity("RangedPirate", 54, EntityZombie.class, EntityRangedPirate.class);
-        nmsUtils.registerEntity("Fire Imp", 51, EntitySkeleton.class, EntityFireImp.class);
         nmsUtils.registerEntity("Bandit", 54, EntityZombie.class, EntityBandit.class);
-        nmsUtils.registerEntity("Enchanted Golem", 99, net.minecraft.server.v1_9_R2.EntityGolem.class, EntityGolem.class);
-        nmsUtils.registerEntity("DRSpider", 59, EntitySpider.class, DRSpider.class);
-        nmsUtils.registerEntity("BasicMelee", 54, EntityZombie.class, BasicMeleeMonster.class);
-        nmsUtils.registerEntity("BasicMage", 51, EntitySkeleton.class, BasicMageMonster.class);
+        nmsUtils.registerEntity("MeleeGolem", 99, EntityGolem.class, MeleeGolem.class);
+        nmsUtils.registerEntity("LargeSpider", 52, EntitySpider.class, LargeSpider.class);
+        nmsUtils.registerEntity("SmallSpider",59, EntityCaveSpider.class, SmallSpider.class);
+        nmsUtils.registerEntity("MeleeZombie", 54, EntityZombie.class, MeleeZombie.class);
+        nmsUtils.registerEntity("MeleeWitherSkeleton", 51, EntitySkeleton.class, MeleeWitherSkeleton.class);
+        //STAFF MONSTERS
+        nmsUtils.registerEntity("BasicBlaze", 61, EntityBlaze.class, BasicEntityBlaze.class);
+        nmsUtils.registerEntity("StaffZombie", 54, EntityZombie.class, StaffZombie.class);
+        //BOW MONSTERS
+        nmsUtils.registerEntity("RangedSkeleton", 51, EntitySkeleton.class, RangedSkeleton.class);
+        nmsUtils.registerEntity("RangedZombie", 54, EntityZombie.class, RangedZombie.class);
+        nmsUtils.registerEntity("RangedWitherSkeleton", 51, EntitySkeleton.class, RangedWitherSkeleton.class);
+
+
+
+
+        //nmsUtils.registerEntity("DRSpider", 59, EntitySpider.class, DRSpider.class);
+
         nmsUtils.registerEntity("DRWither", 51, EntitySkeleton.class, DRWitherSkeleton.class);
         nmsUtils.registerEntity("DRBlaze", 61, EntityBlaze.class, DRBlaze.class);
-        nmsUtils.registerEntity("DRSkeleton", 51, EntitySkeleton.class, BasicEntitySkeleton.class);
         nmsUtils.registerEntity("DRMagma", 62, EntityMagmaCube.class, DRMagma.class);
         nmsUtils.registerEntity("DRPigman", 57, EntityPigZombie.class, DRPigman.class);
         nmsUtils.registerEntity("DRSilverfish", 60, EntitySilverfish.class, DRSilverfish.class);
         nmsUtils.registerEntity("DRWolf", 95, EntityWolf.class, DRWolf.class);
         nmsUtils.registerEntity("DRWitch", 66, EntityWitch.class, DRWitch.class);
-        nmsUtils.registerEntity("BasicBlaze", 61, EntityBlaze.class, BasicEntityBlaze.class);
-        nmsUtils.registerEntity("DRZombie", 54, EntityZombie.class, DRZombie.class);
+
+        //nmsUtils.registerEntity("DRZombie", 54, EntityZombie.class, DRZombie.class);
 
         // Tier 1 Boss
-        nmsUtils.registerEntity("Mayel", 51, EntitySkeleton.class, Mayel.class);
+        //nmsUtils.registerEntity("Mayel", 51, EntitySkeleton.class, Mayel.class);
         nmsUtils.registerEntity("Pyromancer", 51, EntitySkeleton.class, Pyromancer.class);
 
         // Tier 3 Boss
-        nmsUtils.registerEntity("Burick", 51, EntitySkeleton.class, Burick.class);
+        //nmsUtils.registerEntity("Burick", 51, EntitySkeleton.class, Burick.class);
 
         // Tier 4 Boss
         nmsUtils.registerEntity("InfernalAbyss", 51, EntitySkeleton.class, InfernalAbyss.class);
@@ -93,7 +109,7 @@ public class Entities implements GenericMechanic {
         nmsUtils.registerEntity("LordsGuard", 51, EntitySkeleton.class, InfernalLordsGuard.class);
 
         // Pets
-        nmsUtils.registerEntity("PetCaveSpider", 59, EntityCaveSpider.class, CaveSpider.class);
+        nmsUtils.registerEntity("PetCaveSpider", 59, EntityCaveSpider.class, SmallSpider.class);
         nmsUtils.registerEntity("PetBabyZombie", 54, EntityZombie.class, BabyZombie.class);
         nmsUtils.registerEntity("PetBabyZombiePig", 57, EntityPigZombie.class, BabyZombiePig.class);
         nmsUtils.registerEntity("PetWolf", 95, EntityWolf.class, Wolf.class);

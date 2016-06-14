@@ -3,13 +3,11 @@ package net.dungeonrealms.game.world.entities.types.monsters.base;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
+import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.items.Item.ItemTier;
-import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.EntityZombie;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import net.minecraft.server.v1_9_R2.GenericAttributes;
@@ -37,23 +35,76 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
     protected EnumMonster monsterType;
     public int tier;
     
-    protected DRZombie(World world, EnumMonster monster, int tier, EnumEntityType entityType, boolean setArmor) {
+    protected DRZombie(World world, EnumMonster monster, int tier, EnumEntityType entityType) {
         this(world);
         this.tier  = tier;
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(16d);
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
-        //this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
         this.monsterType = monster;
         this.name = monster.name;
         this.mobHead = monster.mobHead;
         this.entityType = entityType;
-        if (setArmor) {
-            setArmor(tier);
-        }
+        setArmor(tier);
         setStats();
         String customName = monster.getPrefix().trim() + " " + name.trim() + " " + monster.getSuffix().trim();
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
+        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+        switch (monsterType) {
+            case Troll:
+            case Troll1:
+                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.TROLL.getSkull()));
+                livingEntity.getEquipment().setHelmet(SkullTextures.TROLL.getSkull());
+                break;
+            case Goblin:
+                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.GOBLIN.getSkull()));
+                livingEntity.getEquipment().setHelmet(SkullTextures.GOBLIN.getSkull());
+                break;
+            case Naga:
+                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.NAGA.getSkull()));
+                livingEntity.getEquipment().setHelmet(SkullTextures.NAGA.getSkull());
+                break;
+            case Lizardman:
+                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.LIZARD.getSkull()));
+                livingEntity.getEquipment().setHelmet(SkullTextures.LIZARD.getSkull());
+                break;
+            case Zombie:
+                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.ZOMBIE.getSkull()));
+                livingEntity.getEquipment().setHelmet(SkullTextures.ZOMBIE.getSkull());
+                break;
+            case Monk:
+                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.MONK.getSkull()));
+                livingEntity.getEquipment().setHelmet(SkullTextures.MONK.getSkull());
+                break;
+            case Tripoli:
+            case Tripoli1:
+                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.TRIPOLI_SOLDIER.getSkull()));
+                livingEntity.getEquipment().setHelmet(SkullTextures.TRIPOLI_SOLDIER.getSkull());
+                break;
+            case Undead:
+                if (random.nextBoolean()) {
+                    this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.ZOMBIE.getSkull()));
+                    livingEntity.getEquipment().setHelmet(SkullTextures.ZOMBIE.getSkull());
+                } else {
+                    this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.SKELETON.getSkull()));
+                    livingEntity.getEquipment().setHelmet(SkullTextures.SKELETON.getSkull());
+                }
+                break;
+            case Mage:
+                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.MAGE.getSkull()));
+                livingEntity.getEquipment().setHelmet(SkullTextures.MAGE.getSkull());
+                break;
+            case Daemon2:
+                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
+                livingEntity.getEquipment().setHelmet(SkullTextures.DEVIL.getSkull());
+                break;
+            case FireImp:
+                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
+                livingEntity.getEquipment().setHelmet(SkullTextures.DEVIL.getSkull());
+                break;
+            default:
+                break;
+        }
     }
 
     protected DRZombie(World world) {
@@ -70,7 +121,6 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
     public void setArmor(int tier) {
         ItemStack[] armor = API.getTierArmor(tier);
         // weapon, boots, legs, chest, helmet/head
-        ItemStack weapon = getTierWeapon(tier);
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         boolean armorMissing = false;
         if (random.nextInt(10) <= 5) {
@@ -93,27 +143,10 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
             livingEntity.getEquipment().setChestplate(armor2);
             this.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor2));
         }
-        this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
-        livingEntity.getEquipment().setItemInMainHand(weapon);
     }
 
-    private ItemStack getTierWeapon(int tier) {
-        Item.ItemType itemType = Item.ItemType.AXE;
-        switch (new Random().nextInt(2)) {
-            case 0:
-                itemType = Item.ItemType.SWORD;
-                break;
-            case 1:
-                itemType = Item.ItemType.POLEARM;
-                break;
-            case 2:
-                itemType = Item.ItemType.AXE;
-                break;
-        }
-        ItemStack item = new ItemGenerator().setType(itemType).setRarity(API.getItemRarity(false))
-                .setTier(ItemTier.getByTier(tier)).generateItem().getItem();
-        AntiCheat.getInstance().applyAntiDupe(item);
-        return item;
+    public void setWeapon(int tier) {
+
     }
     
 	@Override

@@ -755,8 +755,8 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onItemPickup(PlayerPickupItemEvent event) {
+        event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 1f);
         if (event.getItem().getItemStack().getType() == Material.EMERALD) {
-            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ARROW_HIT, 1f, 1f);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getPlayer().getUniqueId()).toString())) {
                 event.getPlayer().sendMessage("                      " + ChatColor.GREEN + "+" + event.getItem().getItemStack().getAmount() + ChatColor.BOLD + "G");
             }
@@ -791,8 +791,6 @@ public class MainListener implements Listener {
                 }
             }
             */
-        } else {
-            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_CHICKEN_EGG, 1f, 1f);
         }
     }
 
@@ -854,8 +852,10 @@ public class MainListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void entityTarget(EntityTargetEvent event) {
-        if (!(event.getTarget() instanceof Player)) {
-            event.setCancelled(true);
+        if (event.getTarget() != null) {
+            if (!(event.getTarget() instanceof Player)) {
+                event.setCancelled(true);
+            }
         }
     }
 }

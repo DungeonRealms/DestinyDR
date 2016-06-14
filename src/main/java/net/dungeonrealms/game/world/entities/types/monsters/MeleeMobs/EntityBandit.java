@@ -1,16 +1,24 @@
-package net.dungeonrealms.game.world.entities.types.monsters;
+package net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.base.DRZombie;
+import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.Random;
 
 /**
  * Created by Chase on Sep 21, 2015
@@ -26,7 +34,7 @@ public class EntityBandit extends DRZombie {
      * @param entityType
      */
     public EntityBandit(World world, int tier, EnumEntityType entityType, EnumMonster monster) {
-        super(world, EnumMonster.Bandit, tier, entityType, true);
+        super(world, EnumMonster.Bandit, tier, entityType);
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         if (monster == EnumMonster.Bandit) {
             this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.BANDIT.getSkull()));
@@ -36,6 +44,7 @@ public class EntityBandit extends DRZombie {
             livingEntity.getEquipment().setHelmet(SkullTextures.BANDIT_2.getSkull());
         }
         checkSpecial();
+        setWeapon(tier);
     }
 
     /**
@@ -58,6 +67,33 @@ public class EntityBandit extends DRZombie {
             }
         }
     }
+
+    @Override
+    public void setWeapon(int tier) {
+        ItemStack weapon = getTierWeapon(tier);
+        this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
+        ((LivingEntity) this.getBukkitEntity()).getEquipment().setItemInMainHand(weapon);
+    }
+
+    private ItemStack getTierWeapon(int tier) {
+        net.dungeonrealms.game.world.items.Item.ItemType itemType = net.dungeonrealms.game.world.items.Item.ItemType.AXE;
+        switch (new Random().nextInt(2)) {
+            case 0:
+                itemType = net.dungeonrealms.game.world.items.Item.ItemType.SWORD;
+                break;
+            case 1:
+                itemType = net.dungeonrealms.game.world.items.Item.ItemType.POLEARM;
+                break;
+            case 2:
+                itemType = net.dungeonrealms.game.world.items.Item.ItemType.AXE;
+                break;
+        }
+        ItemStack item = new ItemGenerator().setType(itemType).setRarity(API.getItemRarity(false))
+                .setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
+        AntiCheat.getInstance().applyAntiDupe(item);
+        return item;
+    }
+
 
     @Override
     public EnumMonster getEnum() {

@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.boss;
 
+import net.dungeonrealms.game.world.entities.EnumEntityType;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
@@ -16,10 +17,9 @@ public class Aceron extends DRWitherSkeleton implements Boss{
 	/**
 	 * @param world
 	 * @param mon
-	 * @param tier
 	 */
 	public Aceron(World world, EnumMonster mon) {
-		super(world, mon, 5);
+		super(world, mon, 5, EnumEntityType.HOSTILE_MOB);
 	}
 
 	@Override
@@ -36,4 +36,8 @@ public class Aceron extends DRWitherSkeleton implements Boss{
 		LivingEntity en = (LivingEntity) event.getEntity();		
 	}
 
+	@Override
+	protected void setStats() {
+
+	}
 }

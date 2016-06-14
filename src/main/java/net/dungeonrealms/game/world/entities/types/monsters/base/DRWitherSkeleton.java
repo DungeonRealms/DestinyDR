@@ -4,10 +4,9 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
+import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.items.Item.ItemTier;
-import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -17,21 +16,18 @@ import org.bukkit.entity.Skeleton;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
-import java.util.Random;
-
 /**
  * Created by Chase on Oct 3, 2015
  */
-public class DRWitherSkeleton extends EntitySkeleton implements DRMonster {
+public abstract class DRWitherSkeleton extends EntitySkeleton implements DRMonster {
 
     public EnumMonster enumMonster;
-    private boolean isRanged;
 
     public DRWitherSkeleton(World world) {
         super(world);
     }
 
-    public DRWitherSkeleton(World world, EnumMonster mon, int tier) {
+    public DRWitherSkeleton(World world, EnumMonster mon, int tier, EnumEntityType entityType) {
         super(world);
         enumMonster = mon;
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(14d);
@@ -43,16 +39,17 @@ public class DRWitherSkeleton extends EntitySkeleton implements DRMonster {
             ((Skeleton) livingEntity).setSkeletonType(Skeleton.SkeletonType.WITHER);
         }
         setArmor(tier);
+        setStats();
         String customName = enumMonster.getPrefix() + " " + enumMonster.name + " " + enumMonster.getSuffix() + " ";
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
         this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
         this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+        this.setSize(0.7F, 2.4F);
+        this.fireProof = true;
     }
 
-    @Override
-    public void a(EntityLiving entityliving, float f) {
-    }
+    protected abstract void setStats();
 
     @Override
     protected Item getLoot() {
@@ -62,7 +59,6 @@ public class DRWitherSkeleton extends EntitySkeleton implements DRMonster {
     public void setArmor(int tier) {
         ItemStack[] armor = API.getTierArmor(tier);
         // weapon, boots, legs, chest, helmet/head
-        ItemStack weapon = getTierWeapon(tier);
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         boolean armorMissing = false;
         if (random.nextInt(10) <= 5) {
@@ -85,8 +81,6 @@ public class DRWitherSkeleton extends EntitySkeleton implements DRMonster {
             livingEntity.getEquipment().setChestplate(armor2);
             this.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor2));
         }
-        this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
-        livingEntity.getEquipment().setItemInMainHand(weapon);
         if (enumMonster == EnumMonster.FrozenSkeleton) {
             livingEntity.getEquipment().setHelmet(SkullTextures.FROZEN_SKELETON.getSkull());
         } else {
@@ -94,32 +88,14 @@ public class DRWitherSkeleton extends EntitySkeleton implements DRMonster {
         }
     }
 
+    public void setWeapon(int tier) {
+
+    }
+
     protected String getCustomEntityName() {
         return this.enumMonster.name;
     }
 
-
-    private ItemStack getTierWeapon(int tier) {
-        net.dungeonrealms.game.world.items.Item.ItemType itemType = net.dungeonrealms.game.world.items.Item.ItemType.AXE;
-        switch (new Random().nextInt(3)) {
-            case 0:
-                itemType = net.dungeonrealms.game.world.items.Item.ItemType.SWORD;
-                break;
-            case 1:
-                itemType = net.dungeonrealms.game.world.items.Item.ItemType.POLEARM;
-                break;
-            case 2:
-                itemType = net.dungeonrealms.game.world.items.Item.ItemType.AXE;
-                break;
-            case 3:
-                itemType = net.dungeonrealms.game.world.items.Item.ItemType.BOW;
-                isRanged = true;
-                break;
-        }
-        ItemStack item = new ItemGenerator().setType(itemType).setRarity(API.getItemRarity(false)).setTier(ItemTier.getByTier(tier)).generateItem().getItem();
-        AntiCheat.getInstance().applyAntiDupe(item);
-        return item;
-    }
 
     @Override
     public void onMonsterAttack(Player p) {

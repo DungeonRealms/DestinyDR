@@ -3,6 +3,7 @@ package net.dungeonrealms;
 import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.commands.*;
+import net.dungeonrealms.game.commands.dungeonhelpers.DungeonSpawn;
 import net.dungeonrealms.game.commands.generic.CommandManager;
 import net.dungeonrealms.game.commands.guild.*;
 import net.dungeonrealms.game.commands.menualias.*;
@@ -299,6 +300,8 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Checks the identity of a Dungeon Realms signed item."));
         cm.registerCommand(new CommandStats("stat", "/<command> [args]", "Allows you to view and manage your stat points.", Collections.singletonList("stats")));
         cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "This will stop Dungeon Realms safely following safe shutdown procedures.", Collections.singletonList("drstop")));
+
+        cm.registerCommand(new DungeonSpawn("dspawn", "/<command> [args]", "Spawn dungeon monsters."));
 
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {

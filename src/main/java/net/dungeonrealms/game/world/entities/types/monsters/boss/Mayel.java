@@ -5,7 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.dungeonrealms.game.world.entities.types.monsters.BasicEntitySkeleton;
+import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedSkeleton;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.items.DamageAPI;
@@ -25,7 +25,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 /**
  * Created by Chase on Oct 18, 2015
  */
-public class Mayel extends BasicEntitySkeleton implements Boss {
+public class Mayel extends RangedSkeleton implements Boss {
 
 	/**
 	 * @param world

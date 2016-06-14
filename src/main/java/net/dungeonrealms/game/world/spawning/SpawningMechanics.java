@@ -5,8 +5,13 @@ import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.dungeonrealms.game.world.entities.types.monsters.*;
-import net.dungeonrealms.game.world.entities.types.monsters.EntityGolem;
+import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedSkeleton;
+import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedWitherSkeleton;
+import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedZombie;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.*;
+import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.BasicEntityBlaze;
+import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.StaffZombie;
 import net.dungeonrealms.game.world.entities.types.monsters.base.*;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
@@ -184,7 +189,7 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new EntityBandit(world, tier, type, monsEnum);
                 break;
             case RangedPirate:
-                entity = new EntityRangedPirate(world, type, tier);
+                entity = new RangedSkeleton(world, monsEnum, type, tier);
                 break;
             case Pirate:
                 entity = new EntityPirate(world, EnumMonster.Pirate, tier);
@@ -193,50 +198,74 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new EntityPirate(world, EnumMonster.MayelPirate, tier);
                 break;
             case FireImp:
-                entity = new EntityFireImp(world, tier, type);
+                entity = new StaffZombie(world, monsEnum, tier);
                 break;
             case Troll1:
             case Troll:
-                entity = new BasicMeleeMonster(world, EnumMonster.Troll, tier);
+                entity = new MeleeZombie(world, EnumMonster.Troll, tier);
                 break;
             case Goblin:
-                entity = new BasicMeleeMonster(world, EnumMonster.Goblin, tier);
+                entity = new MeleeZombie(world, EnumMonster.Goblin, tier);
                 break;
             case Mage:
-                entity = new BasicMageMonster(world, EnumMonster.Mage, tier);
+                entity = new StaffZombie(world, EnumMonster.Mage, tier);
                 break;
-            case Spider:
             case Spider1:
+                entity = new LargeSpider(world, tier, EnumMonster.Spider1);
+                break;
             case Spider2:
-                entity = new DRSpider(world, EnumMonster.Spider, tier);
+                entity = new SmallSpider(world, tier, EnumMonster.Spider2);
                 break;
             case Golem:
-                entity = new EntityGolem(world, tier, type);
+                entity = new MeleeGolem(world, tier, type);
                 break;
             case Naga:
-            	if (new Random().nextBoolean()) {
-                    entity = new BasicMageMonster(world, EnumMonster.Naga, tier);
-                } else {
-                    entity = new BasicMeleeMonster(world, EnumMonster.Naga, tier);
+                switch (new Random().nextInt(3)) {
+                    case 0:
+                        entity = new StaffZombie(world, EnumMonster.Naga, tier);
+                        break;
+                    case 1:
+                        entity = new MeleeZombie(world, EnumMonster.Naga, tier);
+                        break;
+                    case 2:
+                        entity = new RangedZombie(world, EnumMonster.Naga, tier);
+                        break;
+                    default:
+                        entity = new RangedZombie(world, EnumMonster.Naga, tier);
+                        break;
                 }
                 break;
             case Tripoli1:
             case Tripoli:
-                entity = new BasicMeleeMonster(world, EnumMonster.Tripoli, tier);
+                entity = new MeleeZombie(world, EnumMonster.Tripoli, tier);
                 break;
             case Blaze:
                 entity = new BasicEntityBlaze(world, EnumMonster.Blaze, tier);
                 break;
             case Skeleton2:
+            case FrozenSkeleton:
+                switch (new Random().nextInt(3)) {
+                    case 0:
+                        entity = new RangedWitherSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        break;
+                    case 1:
+                        entity = new MeleeWitherSkeleton(world, tier, monsEnum, EnumEntityType.HOSTILE_MOB);
+                        break;
+                    case 2:
+                        entity = null;
+                        //TODO: Staff Wither
+                        break;
+                    default:
+                        Utils.log.info("[SPAWNING] Tried to create " + monsEnum.idName + " but it has failed.");
+                        return null;
+                }
+                break;
             case Skeleton1:
             case Skeleton:
-                entity = new BasicEntitySkeleton(world, tier, monsEnum);
-                break;
-            case FrozenSkeleton:
-                entity = new DRWitherSkeleton(world, monsEnum, tier);
+                entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
                 break;
             case Wither:
-                entity = new DRWitherSkeleton(world, monsEnum, tier);
+                entity = new MeleeWitherSkeleton(world, tier, monsEnum, EnumEntityType.HOSTILE_MOB);
                 break;
             case MagmaCube:
                 entity = new DRMagma(world, EnumMonster.MagmaCube, tier);
@@ -245,7 +274,7 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new DRPigman(world, EnumMonster.Daemon, tier);
                 break;
             case Daemon2:
-                entity = new BasicMageMonster(world, EnumMonster.Daemon2, tier);
+                entity = new StaffZombie(world, EnumMonster.Daemon2, tier);
                 break;
             case Silverfish:
                 entity = new DRSilverfish(world, EnumMonster.Silverfish, tier);
@@ -257,19 +286,19 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new DRSilverfish(world, EnumMonster.GreaterAbyssalDemon, tier);
                 break;
             case Monk:
-            	entity = new BasicMeleeMonster(world, EnumMonster.Monk, tier);
+            	entity = new MeleeZombie(world, EnumMonster.Monk, tier);
             	break;
             case Lizardman:
-            	entity = new BasicMeleeMonster(world, EnumMonster.Lizardman, tier);
+            	entity = new MeleeZombie(world, EnumMonster.Lizardman, tier);
             	break;
             case Zombie:
-            	entity = new BasicMeleeMonster(world, EnumMonster.Zombie, tier);
+            	entity = new MeleeZombie(world, EnumMonster.Zombie, tier);
             	break;
             case Wolf:
                 entity = new DRWolf(world, EnumMonster.Wolf, tier);
                 break;
             case Undead:
-                entity = new BasicMeleeMonster(world, EnumMonster.Undead, tier);
+                entity = new MeleeZombie(world, EnumMonster.Undead, tier);
                 break;
             case Witch:
                 entity = new DRWitch(world, EnumMonster.Witch, tier);

@@ -136,7 +136,8 @@ public class EntityStats {
                 case Blaze:
                     weaponType = ItemType.STAFF;
                     break;
-                case Spider:
+                case Spider1:
+                case Spider2:
                     weaponType = ItemType.SWORD;
                     break;
                 case Mage:
@@ -174,28 +175,13 @@ public class EntityStats {
         int maxHp = HealthHandler.getInstance().getMonsterMaxHPOnSpawn((LivingEntity) entity.getBukkitEntity());
         switch (tier) {
             case 1:
-                if (maxHp >= 60) {
-                    maxHp = 35 + (random.nextInt(25) - 10);
+                if (maxHp >= 50) {
+                    maxHp = 15 + (random.nextInt(25) - 10);
                 }
                 break;
             case 2:
                 if (maxHp > 300) {
                     maxHp -= 100;
-                }
-                break;
-            case 3:
-                if (maxHp > 1000) {
-                    maxHp -= 200;
-                }
-                break;
-            case 4:
-                if (maxHp > 1600) {
-                    maxHp -= 350;
-                }
-                break;
-            case 5:
-                if (maxHp > 2500) {
-                    maxHp -= 500;
                 }
                 break;
             default:

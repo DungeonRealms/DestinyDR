@@ -695,7 +695,7 @@ public class DamageAPI {
         org.bukkit.util.Vector vector = target.getLocation().toVector().subtract(livingEntity.getLocation().toVector()).normalize();
         int weaponTier = tag.getInt("itemTier");
         Projectile projectile = livingEntity.launchProjectile(Arrow.class);
-        vector.multiply(1.5);
+        vector.multiply(1.4);
         projectile.setVelocity(vector);
         projectile.setShooter(livingEntity);
         MetadataUtils.registerProjectileMetadata(tag, projectile, weaponTier);
