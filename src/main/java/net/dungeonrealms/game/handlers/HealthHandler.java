@@ -169,18 +169,22 @@ public class HealthHandler implements GenericMechanic {
         float healthToDisplay = (float) (healthPercentage * 100.F);
         int playerLevel = gamePlayer.getLevel();
         String playerLevelInfo = ChatColor.AQUA.toString() + ChatColor.BOLD + "LVL " + ChatColor.AQUA + playerLevel;
-        String separator = ChatColor.BLACK.toString() + ChatColor.BOLD + " - ";
+        String separator = ChatColor.WHITE.toString() + " - ";
         String playerHPInfo;
+        BossBarAPI.Color color;
         if (API.isInSafeRegion(player.getLocation())) {
+            color = BossBarAPI.Color.GREEN;
             playerHPInfo = ChatColor.GREEN.toString() + ChatColor.BOLD + "HP " + ChatColor.GREEN + hp + ChatColor.BOLD + " / " + ChatColor.GREEN + (int) maxHP;
         } else if (API.isNonPvPRegion(player.getLocation())) {
+            color = BossBarAPI.Color.YELLOW;
             playerHPInfo = ChatColor.YELLOW.toString() + ChatColor.BOLD + "HP " + ChatColor.YELLOW + hp + ChatColor.BOLD + " / " + ChatColor.YELLOW + (int) maxHP;
         } else {
+            color = BossBarAPI.Color.RED;
             playerHPInfo = ChatColor.RED.toString() + ChatColor.BOLD + "HP " + ChatColor.RED + hp + ChatColor.BOLD + " / " + ChatColor.RED + (int) maxHP;
         }
-        String playerEXPInfo = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "EXP " + ChatColor.LIGHT_PURPLE + Math.round((gamePlayer.getExperience() / gamePlayer.getEXPNeeded(playerLevel)) * 100.0) + "%";
+        String playerEXPInfo = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "XP " + ChatColor.LIGHT_PURPLE + Math.round((gamePlayer.getExperience() / gamePlayer.getEXPNeeded(playerLevel)) * 100.0) + "%";
         BossBarAPI.removeAllBars(player);
-        BossBarAPI.addBar(player, new TextComponent(playerLevelInfo + separator + playerHPInfo + separator + playerEXPInfo), BossBarAPI.Color.GREEN, BossBarAPI.Style.NOTCHED_20, healthToDisplay);
+        BossBarAPI.addBar(player, new TextComponent("    " + playerLevelInfo + separator + playerHPInfo + separator + playerEXPInfo), color, BossBarAPI.Style.NOTCHED_20, healthToDisplay);
     }
 
     /**

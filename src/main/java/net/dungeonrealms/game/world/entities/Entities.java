@@ -63,12 +63,12 @@ public class Entities implements GenericMechanic {
         // Monsters
         nmsUtils.registerEntity("Pirate", 54, EntityZombie.class, EntityPirate.class);
         nmsUtils.registerEntity("RangedPirate", 54, EntityZombie.class, EntityRangedPirate.class);
-        nmsUtils.registerEntity("Fire Imp", 54, EntityZombie.class, EntityFireImp.class);
+        nmsUtils.registerEntity("Fire Imp", 51, EntitySkeleton.class, EntityFireImp.class);
         nmsUtils.registerEntity("Bandit", 54, EntityZombie.class, EntityBandit.class);
         nmsUtils.registerEntity("Enchanted Golem", 99, net.minecraft.server.v1_9_R2.EntityGolem.class, EntityGolem.class);
         nmsUtils.registerEntity("DRSpider", 59, EntitySpider.class, DRSpider.class);
         nmsUtils.registerEntity("BasicMelee", 54, EntityZombie.class, BasicMeleeMonster.class);
-        nmsUtils.registerEntity("BasicMage", 54, EntityZombie.class, BasicMageMonster.class);
+        nmsUtils.registerEntity("BasicMage", 51, EntitySkeleton.class, BasicMageMonster.class);
         nmsUtils.registerEntity("DRWither", 51, EntitySkeleton.class, DRWitherSkeleton.class);
         nmsUtils.registerEntity("DRBlaze", 61, EntityBlaze.class, DRBlaze.class);
         nmsUtils.registerEntity("DRSkeleton", 51, EntitySkeleton.class, BasicEntitySkeleton.class);
