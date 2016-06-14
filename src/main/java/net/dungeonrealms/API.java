@@ -555,7 +555,6 @@ public class API {
                 armorContents[i] = ItemSerialization.itemStackFromBase64(armor);
             }
         }
-
         player.getEquipment().setArmorContents(armorContents);
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
         if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
@@ -577,7 +576,6 @@ public class API {
             /**
              PLAYER IS NEW
              */
-
             player.teleport(new Location(Bukkit.getWorlds().get(0), 824, 49, -103, 132.9f, 2.2f));
             player.sendMessage(new String[]{
                     ChatColor.AQUA + "Welcome to DungeonRealms! Talk to the guides scattered around the island to get yourself acquainted, then meet the Ship Captain at the docks. Or type /skip"
@@ -678,11 +676,11 @@ public class API {
             String rank = Rank.getInstance().getRank(player.getUniqueId()).getName().toLowerCase();
             // We don't want to award PMODs with subscriber ranks because this is a rank that can be lost.
             // If they lose it, we don't want to account them for paying for a rank they've not.
-            if (rank != "pmod") {
+            if (!rank.equals("pmod")) {
                 Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SUBSCRIBER);
-                if (rank != "sub") {
+                if (!rank.equals("sub")) {
                     Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SUBSCRIBER_PLUS);
-                    if (rank != "sub+") {
+                    if (!rank.equals("sub+")) {
                         Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.SUBSCRIBER_PLUS_PLUS);
                     }
                 }
