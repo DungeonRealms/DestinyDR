@@ -102,7 +102,7 @@ public class InfernalAbyss extends EntitySkeleton implements Boss {
 	public void onBossHit(EntityDamageByEntityEvent event) {
 		if(!finalForm)
 		if (this.ghast.isAlive() || this.guard.isAlive()) {
-			say(this.getBukkitEntity(), "Hah! You must take out my ");
+			say(this.getBukkitEntity(), "Hah! You must take out my minions.");
 			event.setDamage(0);
 			event.setCancelled(true);
 		}

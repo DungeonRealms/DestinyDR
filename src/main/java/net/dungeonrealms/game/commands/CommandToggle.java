@@ -6,12 +6,14 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 /**
  * Created by Kieran on 30-Nov-15.
  */
 public class CommandToggle extends BasicCommand {
-    public CommandToggle(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandToggle(String command, String usage, String description, List<String> aliases) {
+        super(command, usage, description, aliases);
     }
 
     @Override

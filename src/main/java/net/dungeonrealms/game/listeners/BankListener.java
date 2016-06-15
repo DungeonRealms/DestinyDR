@@ -44,7 +44,7 @@ public class BankListener implements Listener {
             if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
                 e.setCancelled(true);
                 e.getPlayer().openInventory(getBank(e.getPlayer().getUniqueId()));
-                e.getPlayer().playSound(e.getPlayer().getLocation(), "random.chestopen", 1, 1);
+                e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLOCK_CHEST_OPEN, 1, 1);
             }
         }
     }

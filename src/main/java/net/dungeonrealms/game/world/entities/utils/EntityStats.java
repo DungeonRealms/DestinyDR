@@ -196,16 +196,16 @@ public class EntityStats {
 
     public static void createDungeonMob(Entity entity, int level, int tier) {
         LivingEntity livingEntity = (LivingEntity) entity.getBukkitEntity();
-        ItemStack[] armor = new ItemGenerator().setRarity(Item.ItemRarity.RARE).setTier(ItemTier.getByTier(tier)).getArmorSet();
+        ItemStack[] armor = new ItemGenerator().setRarity(Item.ItemRarity.UNIQUE).setTier(ItemTier.getByTier(tier)).getArmorSet();
         ItemStack weapon = livingEntity.getEquipment().getItemInMainHand();
         ItemType type = ItemType.getTypeFromMaterial(weapon.getType());
-        weapon = new ItemGenerator().setType(type).setRarity(Item.ItemRarity.RARE).setTier(ItemTier.getByTier(tier)).generateItem().getItem();
+        weapon = new ItemGenerator().setType(type).setRarity(Item.ItemRarity.UNIQUE).setTier(ItemTier.getByTier(tier)).generateItem().getItem();
         livingEntity.getEquipment().setItemInMainHand(weapon);
         livingEntity.getEquipment().setBoots(armor[0]);
         livingEntity.getEquipment().setLeggings(armor[1]);
         livingEntity.getEquipment().setChestplate(armor[2]);
-        livingEntity.getEquipment().setHelmet(armor[3]);
         int maxHp = HealthHandler.getInstance().getMonsterMaxHPOnSpawn(livingEntity);
+        maxHp *= 1.25;
         livingEntity.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHp));
         HealthHandler.getInstance().setMonsterHPLive(livingEntity, maxHp);
     }

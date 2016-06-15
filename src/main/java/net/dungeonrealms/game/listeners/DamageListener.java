@@ -118,7 +118,7 @@ public class DamageListener implements Listener {
         Player p1 = event.getAttacker();
         Player p2 = event.getDefender();
         if (DuelingMechanics.isDueling(p1.getUniqueId()) && DuelingMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
-        	DuelOffer offer = DuelingMechanics.getOffer(p1.getUniqueId());
+            DuelOffer offer = DuelingMechanics.getOffer(p1.getUniqueId());
             if (offer.canFight) {
                 event.setCancelled(true);
             }
@@ -225,7 +225,7 @@ public class DamageListener implements Listener {
                 return;
             }
             if (attacker.hasMetadata("last_Attack")) {
-                if (System.currentTimeMillis() - attacker.getMetadata("last_Attack").get(0).asLong() < 70){
+                if (System.currentTimeMillis() - attacker.getMetadata("last_Attack").get(0).asLong() < 70) {
                     event.setCancelled(true);
                     event.setDamage(0);
                     return;
@@ -294,7 +294,8 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOW, ignoreCancelled = false)
     public void onMonsterHitPlayer(EntityDamageByEntityEvent event) {
-    	if(API.isPlayer(event.getDamager()))return; // THIS METHOD WAS BREAKING EVERYTHING BECAUSE IT WASN'T MAKING SURE DAMAGER WAS A PLAYER FCKING NIGGERS I SPENT SO LONG ON THIS
+        if (API.isPlayer(event.getDamager()))
+            return; // THIS METHOD WAS BREAKING EVERYTHING BECAUSE IT WASN'T MAKING SURE DAMAGER WAS A PLAYER FCKING NIGGERS I SPENT SO LONG ON THIS
         if ((!(event.getDamager() instanceof LivingEntity)) && ((event.getDamager().getType() != EntityType.ARROW) && (event.getDamager().getType() != EntityType.SNOWBALL)))
             return;
         if (!(API.isPlayer(event.getEntity()))) return;
@@ -375,22 +376,22 @@ public class DamageListener implements Listener {
             return;
         Player p1 = (Player) event.getDamager();
         Player p2 = (Player) event.getEntity();
-        
+
         if (!API.isNonPvPRegion(p1.getLocation()) && !API.isNonPvPRegion(p2.getLocation())) return;
-        if(!DuelingMechanics.isDueling(p2.getUniqueId())) return;
+        if (!DuelingMechanics.isDueling(p2.getUniqueId())) return;
         if (!DuelingMechanics.isDuelPartner(p1.getUniqueId(), p2.getUniqueId())) {
-        	p1.sendMessage("That's not you're dueling partner!");
-        	event.setDamage(0);
-        	event.setCancelled(true);
-        	return;
+            p1.sendMessage("That's not you're dueling partner!");
+            event.setDamage(0);
+            event.setCancelled(true);
+            return;
         }
         DuelOffer offer = DuelingMechanics.getOffer(p1.getUniqueId());
-         if(!offer.canFight){
-        	event.setCancelled(true);
-        	event.setDamage(0);
-         }
+        if (!offer.canFight) {
+            event.setCancelled(true);
+            event.setDamage(0);
         }
-    
+    }
+
     /**
      * Reduces damage after it is set previously based on the defenders armor
      *
@@ -692,7 +693,6 @@ public class DamageListener implements Listener {
         }
 
     }*/
-
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerFireBow(EntityShootBowEvent event) {
         if (event.getEntity().getType() != EntityType.PLAYER) return;
@@ -730,13 +730,13 @@ public class DamageListener implements Listener {
             case "mount":
                 event.setCancelled(true);
                 event.setDamage(0);
-            	Player p = (Player) event.getDamager();
-        		Horse horse = (Horse) event.getEntity();
-        		if(!horse.getVariant().equals(Variant.MULE)) return;
-        		if(horse.getOwner().getUniqueId().toString().equalsIgnoreCase(p.getUniqueId().toString())){
+                Player p = (Player) event.getDamager();
+                Horse horse = (Horse) event.getEntity();
+                if (!horse.getVariant().equals(Variant.MULE)) return;
+                if (horse.getOwner().getUniqueId().toString().equalsIgnoreCase(p.getUniqueId().toString())) {
                     EntityAPI.removePlayerMountList(p.getUniqueId());
-        			horse.remove();
-        		}
+                    horse.remove();
+                }
                 break;
             default:
                 break;
@@ -786,20 +786,18 @@ public class DamageListener implements Listener {
             }
         }
         if (event.getCause() == DamageCause.FIRE || event.getCause() == DamageCause.FIRE_TICK) {
-            if (event.getEntity() instanceof Player) {
-                event.setDamage(0);
-                event.setCancelled(true);
-                event.getEntity().setFireTicks(0);
-            }
+            event.setDamage(0);
+            event.setCancelled(true);
+            event.getEntity().setFireTicks(0);
         }
         if (event.getEntity() instanceof Player && event.getCause() == DamageCause.VOID) {
             event.setCancelled(true);
             event.getEntity().teleport(event.getEntity().getWorld().getSpawnLocation());
         }
-        
-        if(!(event.getEntity() instanceof Player) && event.getCause() == DamageCause.FALL){
+
+        if (!(event.getEntity() instanceof Player) && event.getCause() == DamageCause.FALL) {
             event.setDamage(0);
-        	event.setCancelled(true);
+            event.setCancelled(true);
         }
     }
 
@@ -838,7 +836,7 @@ public class DamageListener implements Listener {
             EntityAPI.getPlayerMount(player.getUniqueId());
             player.sendMessage("For it's own safety, your mount has returned to the stable.");
         }
-        
+
 //        for(ItemStack stack : event.getEntity().getInventory()){
 //        	if(stack == null || stack.getType() == Material.AIR) continue;
 //        	if(Mining.isDRPickaxe(stack) || Fishing.isDRFishingPole(stack)){
@@ -848,10 +846,10 @@ public class DamageListener implements Listener {
 //                }
 //        	}
 //        }
-        
-        
+
+
         if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.LAWFUL.name())) {
-            if (player.getInventory().getItem(0)!= null && player.getInventory().getItem(0).getType() != Material.AIR) {
+            if (player.getInventory().getItem(0) != null && player.getInventory().getItem(0).getType() != Material.AIR) {
                 armorToSave[4] = player.getInventory().getItem(0);
             }
             armorToSave[0] = player.getEquipment().getBoots();
@@ -868,7 +866,7 @@ public class DamageListener implements Listener {
             }
         } else if (KarmaHandler.getInstance().getPlayerRawAlignment(player).equalsIgnoreCase(KarmaHandler.EnumPlayerAlignments.NEUTRAL.name())) {
             if (new Random().nextInt(99) <= 75) {
-                if (player.getInventory().getItem(0)!= null && player.getInventory().getItem(0).getType() != Material.AIR) {
+                if (player.getInventory().getItem(0) != null && player.getInventory().getItem(0).getType() != Material.AIR) {
                     armorToSave[4] = player.getInventory().getItem(0);
                 }
             }
@@ -945,7 +943,7 @@ public class DamageListener implements Listener {
             PlayerManager.checkInventory(player.getUniqueId());
             player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString("subtype", "starter").build());
             if (finalSavedArmorContents) {
-            	
+
 //            	for(ItemStack itemStack : savedItems){
 //            		 if (itemStack != null && itemStack.getType() != Material.AIR) {
 //                         if (RepairAPI.getCustomDurability(itemStack) - 400 > 0.1D) {
@@ -954,7 +952,7 @@ public class DamageListener implements Listener {
 //                         player.getInventory().addItem(itemStack);
 //                     }	
 //            	}
-            	
+
                 for (ItemStack itemStack : armorToSave) {
                     if (itemStack != null && itemStack.getType() != Material.AIR) {
                         if (RepairAPI.getCustomDurability(itemStack) - 400 > 0.1D) {
@@ -974,7 +972,7 @@ public class DamageListener implements Listener {
                                     .setType(ItemType.AXE).generateItem().getItem())
                             .setNBTString("subtype", "starter").build());
             //player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Item.ItemType.HELMET, Armor.ArmorTier.TIER_1, Armor.ItemRarity.COMMON)).setNBTString("subtype", "starter").build());
-           // player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Item.ItemType.CHESTPLATE, Armor.ArmorTier.TIER_1, Armor.ItemRarity.COMMON)).setNBTString("subtype", "starter").build());
+            // player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Item.ItemType.CHESTPLATE, Armor.ArmorTier.TIER_1, Armor.ItemRarity.COMMON)).setNBTString("subtype", "starter").build());
             //player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Item.ItemType.LEGGINGS, Armor.ArmorTier.TIER_1, Armor.ItemRarity.COMMON)).setNBTString("subtype", "starter").build());
             //player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Item.ItemType.BOOTS, Armor.ArmorTier.TIER_1, Armor.ItemRarity.COMMON)).setNBTString("subtype", "starter").build());
         }, 20L);
@@ -1022,15 +1020,15 @@ public class DamageListener implements Listener {
             if (System.currentTimeMillis() - event.getPlayer().getMetadata("last_Staff_Use").get(0).asLong() < 250)
                 return;
         }
-        
-    	int tier = CraftItemStack.asNMSCopy(event.getPlayer().getEquipment().getItemInMainHand()).getTag().getInt("itemTier");
-    	int playerLvl = API.getGamePlayer(event.getPlayer()).getLevel();
-    	switch(tier){
+
+        int tier = CraftItemStack.asNMSCopy(event.getPlayer().getEquipment().getItemInMainHand()).getTag().getInt("itemTier");
+        int playerLvl = API.getGamePlayer(event.getPlayer()).getLevel();
+        switch (tier) {
             case 5:
-                if(playerLvl < 10){
+                if (playerLvl < 10) {
                     event.setCancelled(true);
                     int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
-                    if(slot < 9)
+                    if (slot < 9)
                         event.getPlayer().getInventory().setHeldItemSlot(slot);
                     else
                         event.getPlayer().getInventory().setHeldItemSlot(0);
@@ -1038,7 +1036,7 @@ public class DamageListener implements Listener {
                 }
                 break;
         }
-        
+
         if (event.getPlayer().hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(event.getPlayer()) <= 0) {
             event.setCancelled(true);
             event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_WOLF_PANT, 12F, 1.5F);
@@ -1075,7 +1073,7 @@ public class DamageListener implements Listener {
         if (!(event.getEntity() instanceof CraftLivingEntity)) return;
         event.getDrops().clear();
     }
-    
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerDMGOnHorse(EntityDamageEvent event) {
         if (!(event.getEntity() instanceof Player)) return;
@@ -1089,12 +1087,12 @@ public class DamageListener implements Listener {
             event.getEntity().sendMessage(ChatColor.RED + "You have been dismounted as you have taken damage!");
         }
     }
-    
+
     @EventHandler(priority = EventPriority.MONITOR)
     public void handleCombatLoggerNPCDeath(EntityDeathEvent event) {
         if (event.getEntity() instanceof Player) return;
         if (!(event.getEntity() instanceof CraftLivingEntity)) return;
-        if(!event.getEntity().hasMetadata("uuid"))return;
+        if (!event.getEntity().hasMetadata("uuid")) return;
         UUID uuid = UUID.fromString(event.getEntity().getMetadata("uuid").get(0).asString());
         if (CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(uuid)) {
             CombatLogger combatLogger = CombatLog.getInstance().getCOMBAT_LOGGERS().get(uuid);
@@ -1229,8 +1227,7 @@ public class DamageListener implements Listener {
             }
         } else if (event.getEntity().hasMetadata("type") && event.getEntity().getMetadata("type").get(0).asString().equalsIgnoreCase("hostile")) {
             if (event.getCause() == EntityDamageEvent.DamageCause.SUFFOCATION || event.getCause() == EntityDamageEvent.DamageCause.DROWNING
-                    || event.getCause() == EntityDamageEvent.DamageCause.LAVA || event.getCause() == EntityDamageEvent.DamageCause.FALL
-                    || event.getCause() == DamageCause.FIRE_TICK || event.getCause() == DamageCause.FIRE) {
+                    || event.getCause() == EntityDamageEvent.DamageCause.LAVA) {
                 if (event.getEntity().hasMetadata("last_environment_damage")) {
                     if (System.currentTimeMillis() - event.getEntity().getMetadata("last_environment_damage").get(0).asLong() < 500) {
                         event.setCancelled(true);

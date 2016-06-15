@@ -290,7 +290,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "Rolls a random number between 1 and the supplied argument."));
         cm.registerCommand(new CommandShard("shard", "/<command> [args]", "This command will allow the user to change shards."));
 
-        cm.registerCommand(new CommandToggle("toggles", "/<command> [args]", "View and manage your profile toggles."));
+        cm.registerCommand(new CommandToggle("toggles", "/<command> [args]", "View and manage your profile toggles.", Collections.singletonList("toggle")));
         cm.registerCommand(new CommandToggleDebug("toggledebug", "/<command> [args]", "Toggles displaying combat debug messages.", Collections.singletonList("debug")));
         cm.registerCommand(new CommandToggleChaos("togglechaos", "/<command> [args]", "Toggles killing blows on lawful players (anti-chaotic)."));
         cm.registerCommand(new CommandToggleGlobalChat("toggleglobalchat", "/<command> [args]", "Toggles talking only in global chat."));
@@ -306,6 +306,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandStop("shutdown", "/<command> [args]", "This will stop Dungeon Realms safely following safe shutdown procedures.", Collections.singletonList("drstop")));
 
         cm.registerCommand(new DungeonSpawn("dspawn", "/<command> [args]", "Spawn dungeon monsters."));
+        cm.registerCommand(new CommandMonSpawn("monspawn", "/<command> [args]", "Spawn monsters"));
 
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {

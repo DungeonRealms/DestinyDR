@@ -162,18 +162,15 @@ public class SpawningMechanics implements GenericMechanic {
         switch (monsEnum) {
             case Bandit:
             case Bandit1:
-                switch (new Random().nextInt(3)) {
+                switch (new Random().nextInt(2)) {
                     case 0:
-                        entity = new StaffSkeleton(world, monsEnum, tier);
+                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
                         break;
                     case 1:
                         entity = new MeleeSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
                         break;
-                    case 2:
-                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
-                        break;
                     default:
-                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new MeleeSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
                         break;
                 }
                 break;
@@ -181,18 +178,15 @@ public class SpawningMechanics implements GenericMechanic {
                 entity = new RangedSkeleton(world, monsEnum, type, tier);
                 break;
             case Pirate:
-                switch (new Random().nextInt(3)) {
+                switch (new Random().nextInt(2)) {
                     case 0:
-                        entity = new StaffSkeleton(world, monsEnum, tier);
+                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
                         break;
                     case 1:
                         entity = new MeleeSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
                         break;
-                    case 2:
-                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
-                        break;
                     default:
-                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        entity = new MeleeSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
                         break;
                 }
                 break;

@@ -40,7 +40,7 @@ public class DungeonManager implements GenericMechanic {
         return instance;
     }
 
-    public CopyOnWriteArrayList<DungeonObject> Dungeons = new CopyOnWriteArrayList<>();
+    private CopyOnWriteArrayList<DungeonObject> Dungeons = new CopyOnWriteArrayList<>();
     public static volatile ConcurrentHashMap<String, HashMap<Location, String>> instance_mob_spawns = new ConcurrentHashMap<>();
 
     public DungeonObject getDungeon(World world) {
@@ -82,12 +82,10 @@ public class DungeonManager implements GenericMechanic {
             }
             int monstersAlive = dungeonObject.maxAlive - dungeonObject.killed;
             int maxAlive = dungeonObject.maxAlive;
-            int NinetyPercent = (int) (maxAlive - (maxAlive * 1.9));
             if (!dungeonObject.canSpawnBoss && maxAlive > 0 && monstersAlive > 0) {
-                if ((maxAlive - monstersAlive) <= (maxAlive - NinetyPercent)) {
+                if (monstersAlive <= (maxAlive * 0.1)) {
                     dungeonObject.canSpawnBoss = true;
-                    dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
-                            + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.YELLOW + "You really want to fight me?"));
+                    dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.YELLOW + "You really want to fight me?"));
                 }
             }
 
@@ -95,6 +93,7 @@ public class DungeonManager implements GenericMechanic {
                 removeInstance(dungeonObject);
                 return;
             }
+
             switch (time) {
                 // 46 minutes
                 case 2760:
@@ -138,7 +137,7 @@ public class DungeonManager implements GenericMechanic {
      * @param dungeonObject
      * @since 1.0
      */
-    public void updateDungeonBoard(DungeonObject dungeonObject) {
+    private void updateDungeonBoard(DungeonObject dungeonObject) {
         dungeonObject.getPlayerList().forEach(player -> BountifulAPI.sendActionBar(player, ChatColor.AQUA + "Time: " + ChatColor.WHITE + ChatColor.GOLD
                 + String.valueOf(dungeonObject.getTime() / 60) + "/45" + " " + ChatColor.AQUA + "Alive: " + ChatColor.WHITE + (dungeonObject.maxAlive - dungeonObject.killed) + ChatColor.GRAY
                 + "/" + ChatColor.RED + dungeonObject.maxAlive));
@@ -150,13 +149,18 @@ public class DungeonManager implements GenericMechanic {
      * @param dungeonObject The dungeon object.
      * @since 1.0
      */
-    public void removeInstance(DungeonObject dungeonObject) {
+    private void removeInstance(DungeonObject dungeonObject) {
         dungeonObject.getPlayerList().forEach(player -> {
             if (player != null) {
                 if (Bukkit.getPlayer(player.getUniqueId()) != null) {
                     if (API.getGamePlayer(player).isInDungeon()) {
-                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED + "This instance is will close!");
-                        player.teleport(Bukkit.getWorlds().get(0).getSpawnLocation());
+                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED + "You have failed, Adventurers.");
+                        if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId()).equals("")) {
+                            String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId())).split(",");
+                            player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]), Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
+                        } else {
+                            player.teleport(Teleportation.Cyrennica);
+                        }
                     }
                 }
             }
@@ -182,7 +186,7 @@ public class DungeonManager implements GenericMechanic {
      */
     public void createNewInstance(DungeonType type, List<Player> playerList, String instanceName) {
         if (!instance_mob_spawns.containsKey(instanceName)) {
-            loadDungeonMobSpawns1(instanceName);
+            loadDungeonMobSpawns(instanceName);
         }
         DungeonObject dungeonObject = new DungeonObject(type, 0, playerList, "DUNGEON_" + String.valueOf(System.currentTimeMillis() / 1000L), instanceName);
         Dungeons.add(dungeonObject);
@@ -199,7 +203,7 @@ public class DungeonManager implements GenericMechanic {
      * @param zipFile
      * @since 1.0
      */
-    public void unZip(ZipFile zipFile, DungeonObject dungeonObject) {
+    private void unZip(ZipFile zipFile, DungeonObject dungeonObject) {
         Utils.log.info("[DUNGEON] Unzipping instance for " + dungeonObject.getWorldName());
         new File(dungeonObject.getWorldName()).mkdir();
         try {
@@ -244,7 +248,7 @@ public class DungeonManager implements GenericMechanic {
         String instanceName;
         int spawningTaskID;
 
-        public DungeonObject(DungeonType type, Integer time, List<Player> playerList, String worldName, String instanceName) {
+        DungeonObject(DungeonType type, Integer time, List<Player> playerList, String worldName, String instanceName) {
             this.type = type;
             this.time = time;
             this.playerList = playerList;
@@ -285,7 +289,7 @@ public class DungeonManager implements GenericMechanic {
             time += second;
         }
 
-        public void load() {
+        void load() {
             try {
                 unZip(new ZipFile(DungeonRealms.getInstance().getDataFolder() + type.getLocation()), this);
             } catch (IOException e) {
@@ -369,7 +373,7 @@ public class DungeonManager implements GenericMechanic {
      * @param playerList List of players going to Dungeon.
      * @since 1.0
      */
-    public void loadInWorld(String worldName, List<Player> playerList, DungeonType type) {
+    private void loadInWorld(String worldName, List<Player> playerList, DungeonType type) {
         /*
          * Only creates a world if the contents of a world don't already exist.
 		 * This method loadInWorld() is called in the actual object load().
@@ -389,7 +393,7 @@ public class DungeonManager implements GenericMechanic {
         Bukkit.getWorlds().add(w);
 
         if (!instance_mob_spawns.containsKey(this.getDungeon(w).instanceName)) {
-            loadDungeonMobSpawns1(this.getDungeon(w).instanceName);
+            loadDungeonMobSpawns(this.getDungeon(w).instanceName);
         }
         DungeonObject object = this.getDungeon(w);
         object.spawningTaskID = Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
@@ -400,7 +404,7 @@ public class DungeonManager implements GenericMechanic {
                 for (Map.Entry<Entity, Location> entry : object.toSpawn.entrySet()) {
                     Location location = entry.getValue();
                     location.setWorld(w);
-                    if (!API.getNearbyPlayers(location, 40).isEmpty()) {
+                    if (!API.getNearbyPlayers(location, 50).isEmpty()) {
                         final Entity entity = entry.getKey();
                         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                         world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
@@ -428,7 +432,7 @@ public class DungeonManager implements GenericMechanic {
         }), 150L);
     }
 
-    public void loadDungeonMobSpawns1(String instanceName) {
+    private void loadDungeonMobSpawns(String instanceName) {
         for (File file : new File("plugins/DungeonRealms/dungeonSpawns/").listFiles()) {
             String fileName = file.getName().replaceAll(".dat", "");
             if (fileName.equalsIgnoreCase(instanceName)) {
