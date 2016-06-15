@@ -89,9 +89,8 @@ public class AchievementManager implements GenericMechanic, Listener {
             //TODO: Check if they are Officer when method is implemented.
         }
         //TODO: Realm level/tier checks when they are implemented.
-        //TODO: Rank (PMOD/GM/SUB/SUB+/SUB++) checks when they are implemented.
         for (Player player : Bukkit.getOnlinePlayers()) {
-            for (String dev : DungeonRealms.getInstance().getDEVS()) {
+            for (String dev : DungeonRealms.getInstance().getDevelopers()) {
                 if (player.getName().equalsIgnoreCase(dev)) {
                     Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.PLAY_WITH_DEV);
                     break;

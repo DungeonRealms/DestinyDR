@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.commands;
 
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;

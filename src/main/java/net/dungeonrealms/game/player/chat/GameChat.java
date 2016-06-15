@@ -47,7 +47,7 @@ public final class GameChat {
         globalType = (globalType == null ? "global" : globalType);
 
         StringBuilder message = new StringBuilder();
-        Rank.RankBlob r = Rank.getInstance().getRank(player.getUniqueId());
+        String r = Rank.getInstance().getRank(player.getUniqueId());
 
         String clanTag = "";
         if (!GuildDatabase.getAPI().isGuildNull(player.getUniqueId())) {
@@ -79,18 +79,18 @@ public final class GameChat {
         }
 
         // The user has a rank, append their rank.
-        if (r != null && !r.getName().toLowerCase().contains("default")) {
-            message.append(getRankPrefix(r.getName()));
+        if (r != null && !r.toLowerCase().contains("default")) {
+            message.append(getRankPrefix(r));
         }
 
         // Finally, we need to append their name.
-        message.append(getName(player, (r == null ? "default" : r.getName().toLowerCase())));
+        message.append(getName(player, (r == null ? "default" : r.toLowerCase())));
 
         return message.toString();
     }
 
     public static String getName(Player player) {
-        return getName(player, Rank.getInstance().getRank(player.getUniqueId()).getName());
+        return getName(player, Rank.getInstance().getRank(player.getUniqueId()));
     }
 
     public static String getName(Player player, String rank) {
@@ -98,7 +98,7 @@ public final class GameChat {
     }
 
     public static String getName(Player player, boolean onlyName) {
-        return getName(player, Rank.getInstance().getRank(player.getUniqueId()).getName(), onlyName);
+        return getName(player, Rank.getInstance().getRank(player.getUniqueId()), onlyName);
     }
 
     public static String getName(Player player, String rank, boolean onlyName) {

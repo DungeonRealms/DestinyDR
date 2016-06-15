@@ -102,7 +102,7 @@ public class DamageListener implements Listener {
                     HealthHandler.getInstance().healPlayerByAmount((Player) e, HealthHandler.getInstance().getPlayerMaxHPLive((Player) e) / 2);
                     ((Player) e).removePotionEffect(PotionEffectType.HEAL);
                 }
-                e.sendMessage(ChatColor.BLUE + "An Invocation of " + ChatColor.YELLOW.toString() + ChatColor.UNDERLINE + effectType.getName() + ChatColor.BLUE + " has begun!");
+                e.sendMessage(ChatColor.BLUE + "An Invocation of " + ChatColor.YELLOW.toString() + ChatColor.UNDERLINE + effectType.getName().replace("_", " ") + ChatColor.BLUE + " has begun!");
             }
             BuffManager.getInstance().CURRENT_BUFFS.stream().filter(enderCrystal -> enderCrystal.getBukkitEntity().getLocation().equals(event.getEntity().getLocation())).forEach(BuffManager.getInstance().CURRENT_BUFFS::remove);
         }

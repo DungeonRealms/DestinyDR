@@ -6,6 +6,7 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -73,12 +74,14 @@ public class CommandModeration extends BasicCommand {
                     sender.removePotionEffect(PotionEffectType.INVISIBILITY);
                     sender.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "You are now visible.");
                     sender.setCustomNameVisible(true);
+                    sender.setGameMode(GameMode.SURVIVAL);
                 } else {
                     API._hiddenPlayers.add(sender);
                     sender.setCustomNameVisible(false);
                     sender.hidePlayer(sender);
                     sender.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1));
                     sender.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "You are now hidden.");
+                    sender.setGameMode(GameMode.SPECTATOR);
                 }
                 break;
             case "banksee":

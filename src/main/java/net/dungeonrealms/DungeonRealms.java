@@ -106,7 +106,7 @@ public class DungeonRealms extends JavaPlugin {
 
     // End of Shard Config
 
-    public List<String> getDEVS() {
+    public List<String> getDevelopers() {
         return DEVS;
     }
 

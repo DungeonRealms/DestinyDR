@@ -8,6 +8,7 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -49,7 +50,7 @@ public class ShopListener implements Listener {
         if (block.getType() != Material.CHEST) return;
         Shop shop = ShopMechanics.getShop(block);
         if (shop == null) return;
-        if (shop.ownerName.equals(event.getPlayer().getName())) {
+        if (shop.ownerName.equals(event.getPlayer().getName()) || Rank.isGM(event.getPlayer())) {
             event.getPlayer().openInventory(shop.getInventory());
         } else {
             if (shop.isopen) {
@@ -127,7 +128,7 @@ public class ShopListener implements Listener {
             event.setCancelled(true);
             return;
         }
-        if (clicker.getUniqueId().toString().equalsIgnoreCase(shop.ownerUUID.toString())) {
+        if (clicker.getUniqueId().toString().equalsIgnoreCase(shop.ownerUUID.toString()) || Rank.isDev(clicker)) {
             // Owner is Clicking
             if (event.getRawSlot() == (shop.getInvSize() - 1)) {
                 event.setCancelled(true);
