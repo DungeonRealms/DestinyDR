@@ -149,7 +149,7 @@ public class DungeonManager implements GenericMechanic {
      * @param dungeonObject The dungeon object.
      * @since 1.0
      */
-    private void removeInstance(DungeonObject dungeonObject) {
+    public void removeInstance(DungeonObject dungeonObject) {
         dungeonObject.getPlayerList().forEach(player -> {
             if (player != null) {
                 if (Bukkit.getPlayer(player.getUniqueId()) != null) {
@@ -194,7 +194,8 @@ public class DungeonManager implements GenericMechanic {
     }
 
     public boolean canCreateInstance() {
-        return Dungeons.size() < 6;
+        //TODO: Remove
+        return Dungeons.size() < 2;
     }
 
     /**
@@ -247,6 +248,7 @@ public class DungeonManager implements GenericMechanic {
         private ConcurrentHashMap<Entity, Location> toSpawn = new ConcurrentHashMap<>();
         String instanceName;
         int spawningTaskID;
+        public boolean beingRemoved;
 
         DungeonObject(DungeonType type, Integer time, List<Player> playerList, String worldName, String instanceName) {
             this.type = type;
