@@ -117,6 +117,10 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
                     livingEntity.getEquipment().setHelmet(SkullTextures.BANDIT_2.getSkull());
                 }
                 break;
+            case Acolyte:
+                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.MONK.getSkull()));
+                livingEntity.getEquipment().setHelmet(SkullTextures.MONK.getSkull());
+                break;
             default:
                 break;
         }

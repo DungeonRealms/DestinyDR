@@ -212,6 +212,22 @@ public class SpawningMechanics implements GenericMechanic {
                         break;
                 }
                 break;
+            case Acolyte:
+                switch (new Random().nextInt(3)) {
+                    case 0:
+                        entity = new StaffSkeleton(world, monsEnum, tier);
+                        break;
+                    case 1:
+                        entity = new MeleeZombie(world, monsEnum, tier);
+                        break;
+                    case 2:
+                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        break;
+                    default:
+                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        break;
+                }
+                break;
             case FireImp:
                 entity = new StaffZombie(world, monsEnum, tier);
                 break;

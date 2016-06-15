@@ -207,6 +207,9 @@ public class BaseMobSpawner {
                         if (API.isInSafeRegion(firstSpawn)) {
                             return;
                         }
+                        if (newEntity == null) {
+                            return;
+                        }
                         if (!isFriendlyMob(monsterType)) {
                             int newLevel = Utils.getRandomFromTier(tier, lvlRange);
                             MetadataUtils.registerEntityMetadata(newEntity, type, tier, newLevel);

@@ -35,10 +35,25 @@ public class CommandInvoke extends BasicCommand {
                 	List<Player> list = Affair.getInstance().getParty(player).get().getMembers();
                 	list.add( Affair.getInstance().getParty(player).get().getOwner());
                     DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, list, "T1Dungeon");
-                }else{
+                } else {
                 	DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, Collections.singletonList(player), "T1Dungeon");
                 }
             } else if (args[0].equalsIgnoreCase("varenglade")) {
+                if (Affair.getInstance().isInParty(player)) {
+                    List<Player> list = Affair.getInstance().getParty(player).get().getMembers();
+                    list.add( Affair.getInstance().getParty(player).get().getOwner());
+                    DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, list, "DODungeon");
+                } else {
+                    DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, Collections.singletonList(player), "DODungeon");
+                }
+            } else if (args[0].equalsIgnoreCase("fireydungeon")) {
+                if (Affair.getInstance().isInParty(player)) {
+                    List<Player> list = Affair.getInstance().getParty(player).get().getMembers();
+                    list.add( Affair.getInstance().getParty(player).get().getOwner());
+                    DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.THE_INFERNAL_ABYSS, list, "fireydungeon");
+                } else {
+                    DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.THE_INFERNAL_ABYSS, Collections.singletonList(player), "fireydungeon");
+                }
             }
         }
 

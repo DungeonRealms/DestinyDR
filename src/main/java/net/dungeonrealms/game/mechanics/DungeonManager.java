@@ -77,7 +77,7 @@ public class DungeonManager implements GenericMechanic {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeonObject -> {
             int time = dungeonObject.getTime();
             dungeonObject.modifyTime(1);
-            if (time < 5) {
+            if (time < 10) {
                 return;
             }
             int monstersAlive = dungeonObject.maxAlive - dungeonObject.killed;
@@ -391,31 +391,29 @@ public class DungeonManager implements GenericMechanic {
         if (!instance_mob_spawns.containsKey(this.getDungeon(w).instanceName)) {
             loadDungeonMobSpawns1(this.getDungeon(w).instanceName);
         }
-        if (type == DungeonType.BANDIT_TROVE) {
-            DungeonObject object = this.getDungeon(w);
-            object.spawningTaskID = Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                net.minecraft.server.v1_9_R2.World world = ((CraftWorld) w).getHandle();
-                object.toSpawn = DungeonMobCreator.getEntitiesToSpawn(object.instanceName, w);
-                object.maxAlive = object.toSpawn.size();
-                Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-                    for (Map.Entry<Entity, Location> entry : object.toSpawn.entrySet()) {
-                        Location location = entry.getValue();
-                        location.setWorld(w);
-                        if (!API.getNearbyPlayers(location, 40).isEmpty()) {
-                            final Entity entity = entry.getKey();
-                            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                            world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                            entity.setCustomNameVisible(true);
-                            if (entity.isAlive()) {
-                                object.aliveMonsters.add(entity);
-                                object.toSpawn.remove(entity);
-                            }
+        DungeonObject object = this.getDungeon(w);
+        object.spawningTaskID = Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            net.minecraft.server.v1_9_R2.World world = ((CraftWorld) w).getHandle();
+            object.toSpawn = DungeonMobCreator.getEntitiesToSpawn(object.instanceName, w);
+            object.maxAlive = object.toSpawn.size();
+            Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+                for (Map.Entry<Entity, Location> entry : object.toSpawn.entrySet()) {
+                    Location location = entry.getValue();
+                    location.setWorld(w);
+                    if (!API.getNearbyPlayers(location, 40).isEmpty()) {
+                        final Entity entity = entry.getKey();
+                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                        world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                        entity.setCustomNameVisible(true);
+                        if (entity.isAlive()) {
+                            object.aliveMonsters.add(entity);
+                            object.toSpawn.remove(entity);
                         }
                     }
-                }, 0L, 10L);
-            }, 60L);
-        }
+                }
+            }, 0L, 10L);
+        }, 60L);
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> playerList.stream().forEach(player -> {
             String locationAsString = "-367,86,390,0,0"; // Cyrennica
@@ -427,7 +425,7 @@ public class DungeonManager implements GenericMechanic {
             player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + type.getBossName() + ChatColor.WHITE + "] "
                     + ChatColor.GREEN + "You have invoked a[n] Instance Dungeon. This Instance Dungeon is on "
                     + "a timer of 45 minutes!");
-        }), 60L);
+        }), 150L);
     }
 
     public void loadDungeonMobSpawns1(String instanceName) {
