@@ -1,9 +1,15 @@
 package net.dungeonrealms.game.guild.db;
 
+import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.Filters;
+import lombok.Getter;
+import lombok.Setter;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mongo.*;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.mongo.EnumGuildData;
+import net.dungeonrealms.game.mongo.EnumOperators;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -24,6 +30,10 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
     private static GuildDatabaseAPI instance = null;
 
+    @Setter
+    @Getter
+    private static MongoCollection<Document> guilds = null;
+
 
     public static GuildDatabaseAPI getAPI() {
         if (instance == null) instance = new GuildDatabase();
@@ -31,7 +41,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
     }
 
     public void createGuild(String guildName, String displayName, String tag, UUID owner, String banner, Consumer<Boolean> callback) {
-        Database.guilds.insertOne(GuildDatabaseAPI.getDocumentTemplate(owner.toString(), guildName, displayName, tag, banner));
+        guilds.insertOne(GuildDatabaseAPI.getDocumentTemplate(owner.toString(), guildName, displayName, tag, banner));
 
         Utils.log.warning("New guild created: " + guildName);
 
@@ -60,7 +70,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
     private Object get(EnumGuildData data, Object value) {
         Bson query = Filters.eq(data.getKey(), value);
-        return Database.guilds.find(query).first();
+        return guilds.find(query).first();
     }
 
     public EnumGuildData get(UUID uuid, String guildName) {
@@ -89,7 +99,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
     private void update(String guildName, EnumGuildData data, EnumOperators EO, Object value) {
 
         // INSTANTLY UPDATES THE MONGODB SERVER //
-        Database.guilds.updateOne(eq("info.name", guildName), new Document(EO.getUO(), new Document(data.getKey(), value)));
+        guilds.updateOne(eq("info.name", guildName), new Document(EO.getUO(), new Document(data.getKey(), value)));
     }
 
     public boolean doesTagExist(String tag, Consumer<Boolean> action) {
@@ -116,7 +126,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
 
     public void deleteGuild(String guildName) {
-        Database.guilds.deleteOne(eq("info.name", guildName));
+        guilds.deleteOne(eq("info.name", guildName));
 
         Utils.log.warning("Guild deleted: " + guildName);
     }

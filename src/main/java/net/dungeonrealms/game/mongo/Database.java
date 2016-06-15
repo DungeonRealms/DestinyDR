@@ -4,6 +4,7 @@ import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.AsyncUtils;
@@ -51,6 +52,8 @@ public class Database {
         collection = database.getCollection("player_data");
         guilds = database.getCollection("guilds");
         ranks = database.getCollection("ranks");
+
+        GuildDatabase.setGuilds(guilds);
         Utils.log.info("DungeonRealms [MONGODB] has connected successfully!");
     }
 

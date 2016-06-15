@@ -1,5 +1,5 @@
 name: DungeonRealmsProxy
-main: net.dungeonrealms.DungeonRealmsPorxy
+main: net.dungeonrealms.DungeonRealmsProxy
 version: 1.0
 authors: [xFinityPro, Proxying, Xwaffle, apollosoftware]
 website: http://www.dungeonrealms.net
