@@ -8,12 +8,14 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
+import java.util.List;
+
 /**
  * Created by Nick on 11/9/2015.
  */
 public class CommandPLeave extends BasicCommand {
-    public CommandPLeave(String command, String usage, String description) {
-        super(command, usage, description);
+    public CommandPLeave(String command, String usage, String description, List<String> aliases) {
+        super(command, usage, description, aliases);
     }
 
     @Override

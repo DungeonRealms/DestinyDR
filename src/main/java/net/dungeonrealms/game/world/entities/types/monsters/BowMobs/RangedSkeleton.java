@@ -9,10 +9,7 @@ import net.dungeonrealms.game.world.entities.types.monsters.base.DRSkeleton;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_9_R2.EntityLiving;
-import net.minecraft.server.v1_9_R2.EnumItemSlot;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import net.minecraft.server.v1_9_R2.World;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
@@ -21,7 +18,7 @@ import org.bukkit.inventory.ItemStack;
 /**
  * Created by Kieran Quigley (Proxying) on 14-Jun-16.
  */
-public class RangedSkeleton extends DRSkeleton {
+public class RangedSkeleton extends DRSkeleton implements IRangedEntity {
     private int tier;
 
     public RangedSkeleton(World world, EnumMonster monsterType ,EnumEntityType entityType, int tier) {
@@ -31,17 +28,7 @@ public class RangedSkeleton extends DRSkeleton {
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.SKELETON.getSkull()));
         livingEntity.getEquipment().setHelmet(SkullTextures.SKELETON.getSkull());
-        switch (monsterType) {
-            case Pirate:
-            case MayelPirate:
-                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.PIRATE.getSkull()));
-                livingEntity.getEquipment().setHelmet(SkullTextures.PIRATE.getSkull());
-                break;
-            case FrozenSkeleton:
-                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.FROZEN_SKELETON.getSkull()));
-                livingEntity.getEquipment().setHelmet(SkullTextures.FROZEN_SKELETON.getSkull());
-                break;
-        }
+        setWeapon(tier);
     }
 
     public RangedSkeleton(World world) {
@@ -61,7 +48,6 @@ public class RangedSkeleton extends DRSkeleton {
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;
     }
-
 
     @Override
     public void a(EntityLiving entityliving, float f) {

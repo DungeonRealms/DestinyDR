@@ -18,8 +18,10 @@ import net.dungeonrealms.game.commands.toggles.*;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.listeners.*;
+import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.RealmManager;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.mechanics.generic.MechanicManager;
 import net.dungeonrealms.game.menus.player.HearthStone;
 import net.dungeonrealms.game.menus.player.Profile;
@@ -163,6 +165,7 @@ public class DungeonRealms extends JavaPlugin {
         DatabaseAPI.getInstance().startInitialization();
         NetworkAPI.getInstance().startInitialization();
         AntiCheat.getInstance().startInitialization();
+        DungeonManager.getInstance().startInitialization();
         ItemGenerator.loadModifiers();
 
         //new Spar().startInitialization();
@@ -279,8 +282,9 @@ public class DungeonRealms extends JavaPlugin {
 
         cm.registerCommand(new CommandPAccept("paccept", "/<command> [args]", "Accept a party invitation."));
         cm.registerCommand(new CommandPRemove("premove", "/<command> [args]", "Remove player from party.", Collections.singletonList("pkick")));
-        cm.registerCommand(new CommandPLeave("pleave", "/<command> [args]", "Remove player from party."));
+        cm.registerCommand(new CommandPLeave("pleave", "/<command> [args]", "Remove player from party.", Collections.singletonList("pquit")));
         cm.registerCommand(new CommandPChat("pchat", "/<command> [args]", "Talk in party chat.", Collections.singletonList("p")));
+        cm.registerCommand(new CommandPl("pinvite", "/<command> [args]", "Will invite a player to a party, creating one if it doesn't exist."));
 
         cm.registerCommand(new CommandLogout("logout", "/<command> [args]", "Safely logout of Dungeon Realms."));
         cm.registerCommand(new CommandRoll("roll", "/<command> [args]", "Rolls a random number between 1 and the supplied argument."));
@@ -337,8 +341,6 @@ public class DungeonRealms extends JavaPlugin {
             cm.registerCommand(new CommandShopClose("closeshop", "/<command>", "Close shops on all shards."));
             cm.registerCommand(new CommandPurchase("purchase", "/<command> [args]", "Will announce a purchase messages."));
 
-            cm.registerCommand(new CommandPl("pinvite", "/<command> [args]", "Will invite a player to a party, creating one if it doesn't exist."));
-
             cm.registerCommand(new CommandMount("mount", "/<command> [args]", "Opens the player mounts menu.", Collections.singletonList("mounts")));
             cm.registerCommand(new CommandPet("pet", "/<command> [args]", "Opens the player pets menu.", Collections.singletonList("pets")));
             cm.registerCommand(new CommandTrail("trail", "/<command> [args]", "Opens the player trails menu.", Collections.singletonList("trails")));
@@ -371,6 +373,7 @@ public class DungeonRealms extends JavaPlugin {
                 DungeonRealms.getInstance().setFinishedSetup(false);
                 ShopMechanics.deleteAllShops(true);
                 API.logoutAllPlayers(true);
+                AsyncUtils.pool.shutdown();
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     DungeonRealms.getInstance().mm.stopInvocation();
                     Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
@@ -390,6 +393,7 @@ public class DungeonRealms extends JavaPlugin {
     public void onDisable() {
         API.logoutAllPlayers(false);
         ShopMechanics.deleteAllShops(true);
+        AsyncUtils.pool.shutdown();
         ps.onDisable();
         hs.onDisable();
         tcc.onDisable();

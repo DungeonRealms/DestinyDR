@@ -11,6 +11,7 @@ import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedWither
 import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedZombie;
 import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.*;
 import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.BasicEntityBlaze;
+import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.StaffSkeleton;
 import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.StaffZombie;
 import net.dungeonrealms.game.world.entities.types.monsters.base.*;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.InfernalAbyss;
@@ -66,8 +67,6 @@ public class Entities implements GenericMechanic {
         //BASE MONSTERS
 
         //MELEE MONSTERS
-        nmsUtils.registerEntity("Pirate", 54, EntityZombie.class, EntityPirate.class);
-        nmsUtils.registerEntity("Bandit", 54, EntityZombie.class, EntityBandit.class);
         nmsUtils.registerEntity("MeleeGolem", 99, EntityGolem.class, MeleeGolem.class);
         nmsUtils.registerEntity("LargeSpider", 52, EntitySpider.class, LargeSpider.class);
         nmsUtils.registerEntity("SmallSpider",59, EntityCaveSpider.class, SmallSpider.class);
@@ -76,6 +75,7 @@ public class Entities implements GenericMechanic {
         //STAFF MONSTERS
         nmsUtils.registerEntity("BasicBlaze", 61, EntityBlaze.class, BasicEntityBlaze.class);
         nmsUtils.registerEntity("StaffZombie", 54, EntityZombie.class, StaffZombie.class);
+        nmsUtils.registerEntity("StaffSkeleton", 51, EntitySkeleton.class, StaffSkeleton.class);
         //BOW MONSTERS
         nmsUtils.registerEntity("RangedSkeleton", 51, EntitySkeleton.class, RangedSkeleton.class);
         nmsUtils.registerEntity("RangedZombie", 54, EntityZombie.class, RangedZombie.class);

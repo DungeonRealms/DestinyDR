@@ -9,19 +9,19 @@ import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
-import net.dungeonrealms.game.world.spawning.SpawningMechanics;
+import net.dungeonrealms.game.world.spawning.dungeons.DungeonMobCreator;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.Entity;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 
 import java.io.*;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
@@ -41,6 +41,7 @@ public class DungeonManager implements GenericMechanic {
     }
 
     public CopyOnWriteArrayList<DungeonObject> Dungeons = new CopyOnWriteArrayList<>();
+    public static volatile ConcurrentHashMap<String, HashMap<Location, String>> instance_mob_spawns = new ConcurrentHashMap<>();
 
     public DungeonObject getDungeon(World world) {
         for (DungeonObject dungeon : Dungeons) {
@@ -68,13 +69,14 @@ public class DungeonManager implements GenericMechanic {
             if (mob != null) {
                 if (!mob.isAlive() || mob.dead) {
                     dungeon.aliveMonsters.remove(mob);
+                    dungeon.killed = dungeon.killed + 1;
                 }
             }
         })), 0, 10);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeonObject -> {
             int time = dungeonObject.getTime();
-            int monstersAlive = dungeonObject.aliveMonsters.size();
+            int monstersAlive = dungeonObject.maxAlive - dungeonObject.killed;
             int maxAlive = dungeonObject.maxAlive;
             int NinetyPercent = (int) (maxAlive - (maxAlive * 1.9));
             if (!dungeonObject.canSpawnBoss && maxAlive > 0 && monstersAlive > 0)
@@ -133,7 +135,7 @@ public class DungeonManager implements GenericMechanic {
      */
     public void updateDungeonBoard(DungeonObject dungeonObject) {
         dungeonObject.getPlayerList().forEach(player -> BountifulAPI.sendActionBar(player, ChatColor.AQUA + "Time: " + ChatColor.WHITE + ChatColor.GOLD
-                + String.valueOf(dungeonObject.getTime() / 60) + "/45" + " " + ChatColor.AQUA + "Alive: " + ChatColor.WHITE + dungeonObject.aliveMonsters.size() + ChatColor.GRAY
+                + String.valueOf(dungeonObject.getTime() / 60) + "/45" + " " + ChatColor.AQUA + "Alive: " + ChatColor.WHITE + (dungeonObject.maxAlive - dungeonObject.killed) + ChatColor.GRAY
                 + "/" + ChatColor.RED + dungeonObject.maxAlive));
     }
 
@@ -158,6 +160,7 @@ public class DungeonManager implements GenericMechanic {
         Utils.log.info("[DUNGEONS] Removing world: " + dungeonObject.getWorldName() + " from worldList().");
         Bukkit.unloadWorld(dungeonObject.getWorldName(), false);
         Utils.log.info("[DUNGEONS] Unloading world: " + dungeonObject.getWorldName() + " in preparation for deletion!");
+        Bukkit.getScheduler().cancelTask(dungeonObject.spawningTaskID);
         Dungeons.remove(dungeonObject);
         try {
             FileUtils.deleteDirectory(new File(dungeonObject.worldName));
@@ -172,8 +175,11 @@ public class DungeonManager implements GenericMechanic {
      * @param playerList List of players to enter!
      * @since 1.0
      */
-    public void createNewInstance(DungeonType type, List<Player> playerList) {
-        DungeonObject dungeonObject = new DungeonObject(type, 0, playerList, "DUNGEON_" + String.valueOf(System.currentTimeMillis() / 1000L));
+    public void createNewInstance(DungeonType type, List<Player> playerList, String instanceName) {
+        if (!instance_mob_spawns.containsKey(instanceName)) {
+            loadDungeonMobSpawns1(instanceName);
+        }
+        DungeonObject dungeonObject = new DungeonObject(type, 0, playerList, "DUNGEON_" + String.valueOf(System.currentTimeMillis() / 1000L), instanceName);
         Dungeons.add(dungeonObject);
         dungeonObject.load();
     }
@@ -228,12 +234,17 @@ public class DungeonManager implements GenericMechanic {
         public boolean canSpawnBoss = false;
         public int tier;
         public int maxAlive = 0;
+        private int killed = 0;
+        private ConcurrentHashMap<Entity, Location> toSpawn = new ConcurrentHashMap<>();
+        String instanceName;
+        int spawningTaskID;
 
-        public DungeonObject(DungeonType type, Integer time, List<Player> playerList, String worldName) {
+        public DungeonObject(DungeonType type, Integer time, List<Player> playerList, String worldName, String instanceName) {
             this.type = type;
             this.time = time;
             this.playerList = playerList;
             this.worldName = worldName;
+            this.instanceName = instanceName;
             switch (type) {
                 case BANDIT_TROVE:
                     tier = 1;
@@ -358,35 +369,87 @@ public class DungeonManager implements GenericMechanic {
          * Only creates a world if the contents of a world don't already exist.
 		 * This method loadInWorld() is called in the actual object load().
 		 */
+        if (new File(worldName + "/" + "uid.dat").exists()) {
+            // Delete that shit.
+            new File(worldName + "/" + "uid.dat").delete();
+        }
         World w = Bukkit.getServer().createWorld(new WorldCreator(worldName));
         w.setKeepSpawnInMemory(false);
         w.setAutoSave(false);
         w.setPVP(false);
         w.setStorm(false);
-        w.setMonsterSpawnLimit(300);
+        w.setMonsterSpawnLimit(600);
         w.setGameRuleValue("doFireTick", "false");
         w.setGameRuleValue("randomTickSpeed", "0");
         Bukkit.getWorlds().add(w);
 
-        playerList.stream().forEach(player -> {
+        if (!instance_mob_spawns.containsKey(this.getDungeon(w).instanceName)) {
+            loadDungeonMobSpawns1(this.getDungeon(w).instanceName);
+        }
+        if (type == DungeonType.BANDIT_TROVE) {
+            DungeonObject object = this.getDungeon(w);
+            object.spawningTaskID = Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                net.minecraft.server.v1_9_R2.World world = ((CraftWorld) w).getHandle();
+                object.toSpawn = DungeonMobCreator.getEntitiesToSpawn(object.instanceName, w);
+                object.maxAlive = object.toSpawn.size();
+                Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+                    for (Map.Entry<Entity, Location> entry : object.toSpawn.entrySet()) {
+                        Location location = entry.getValue();
+                        location.setWorld(w);
+                        if (!API.getNearbyPlayers(location, 40).isEmpty()) {
+                            final Entity entity = entry.getKey();
+                            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                            world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                            entity.setCustomNameVisible(true);
+                            if (entity.isAlive()) {
+                                object.aliveMonsters.add(entity);
+                                object.toSpawn.remove(entity);
+                            }
+                        }
+                    }
+                }, 0L, 10L);
+            }, 60L);
+        }
+
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> playerList.stream().forEach(player -> {
+            String locationAsString = "-367,86,390,0,0"; // Cyrennica
+            if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+                locationAsString = player.getLocation().getX() + "," + (player.getLocation().getY() + 0.5) + "," + player.getLocation().getZ() + "," + player.getLocation().getYaw() + "," + player.getLocation().getPitch();
+            }
+            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, true);
             player.teleport(w.getSpawnLocation());
             player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + type.getBossName() + ChatColor.WHITE + "] "
                     + ChatColor.GREEN + "You have invoked a[n] Instance Dungeon. This Instance Dungeon is on "
                     + "a timer of 45 minutes!");
-        });
-        if (type.equals(DungeonType.BANDIT_TROVE)) {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                DungeonObject object = this.getDungeon(w);
-                for (BaseMobSpawner spawner : SpawningMechanics.BanditTroveSpawns) {
-                    Location loc = spawner.getLoc();
-                    loc.setWorld(w);
-                    spawner.setLoc(loc);
-                    spawner.setDungeonSpawner(true);
-                    spawner.dungeonSpawn(object);
-                }
-                object.maxAlive = object.aliveMonsters.size();
+        }), 40L);
+    }
 
-            }, 40);
+    public void loadDungeonMobSpawns1(String instanceName) {
+        for (File file : new File("plugins/DungeonRealms/dungeonSpawns/").listFiles()) {
+            String fileName = file.getName().replaceAll(".dat", "");
+            if (fileName.equalsIgnoreCase(instanceName)) {
+                DungeonRealms.getInstance().getLogger().info("Found Dungeon Spawn Template for " + instanceName);
+                HashMap<Location, String> dungeonMobData = new HashMap<>();
+                try (BufferedReader br = new BufferedReader(new FileReader(file))) {
+                    for (String line; (line = br.readLine()) != null; ) {
+                        if (line == null || line.equalsIgnoreCase("null")) {
+                            continue;
+                        }
+                        if (line.contains("=")) {
+                            String[] coordinates = line.split("=")[0].split(",");
+                            Location location = new Location(Bukkit.getWorlds().get(0), Double.parseDouble(coordinates[0]), Double.parseDouble(coordinates[1]),
+                                    Double.parseDouble(coordinates[2]));
+                            String spawnData = line.split("=")[1];
+                            dungeonMobData.put(location, spawnData);
+                        }
+                    }
+                    br.close();
+                    instance_mob_spawns.put(instanceName, dungeonMobData);
+                } catch (Exception exception) {
+                    exception.printStackTrace();
+                }
+            }
         }
     }
 

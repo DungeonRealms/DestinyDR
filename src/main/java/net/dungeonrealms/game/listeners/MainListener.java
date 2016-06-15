@@ -35,6 +35,7 @@ import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
+import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -319,6 +320,9 @@ public class MainListener implements Listener {
                 }
                 EntityAPI.removePlayerMountList(player.getUniqueId());
             }
+        }
+        if (Affair.getInstance().isInParty(event.getPlayer())) {
+            Affair.getInstance().removeMember(event.getPlayer(), false);
         }
     }
 

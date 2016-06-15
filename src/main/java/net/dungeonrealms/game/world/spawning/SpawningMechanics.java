@@ -11,6 +11,7 @@ import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedZombie
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.*;
 import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.BasicEntityBlaze;
+import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.StaffSkeleton;
 import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.StaffZombie;
 import net.dungeonrealms.game.world.entities.types.monsters.base.*;
 import net.minecraft.server.v1_9_R2.*;
@@ -109,31 +110,6 @@ public class SpawningMechanics implements GenericMechanic {
                 ELITESPAWNERS.add(spawner);
             }
         }
-        //TODO: Dungeons.
-        /*ArrayList<String> BANDIT_CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig().getStringList("banditTrove");
-        Utils.log.info("LOADING DUNGEON SPAWNS...");
-        for(String line : BANDIT_CONFIG){
-            if (line == null || line.equalsIgnoreCase("null"))
-                continue;
-            String[] coords = line.split("=")[0].split(",");
-            double x, y, z;
-            x = Double.parseDouble(coords[0]);
-            y = Double.parseDouble(coords[1]);
-            z = Double.parseDouble(coords[2]);
-            String tierString = line.substring(line.indexOf(":"), line.indexOf(";"));
-            tierString = tierString.substring(1);
-            int tier = Integer.parseInt(tierString);
-            String stringAmount = line.split(";")[1].replace("-", "");
-            stringAmount = stringAmount.replace("+", "");
-            int spawnAmount = Integer.parseInt(stringAmount);
-            String monster = line.split("=")[1].split(":")[0];
-            int spawnDelay = 0;
-            BaseMobSpawner spawner;
-            spawner = new BaseMobSpawner(new Location(Bukkit.getWorlds().get(0), x, y, z), monster, tier, spawnAmount, BanditTroveSpawns.size(), "high", spawnDelay, 1, 2);
-            spawner.setDungeonSpawner(true);
-            BanditTroveSpawns.add(spawner);
-        }
-        Utils.log.info("FINISHED LOADING DUNGEON SPAWNS");*/
         SpawningMechanics.initAllSpawners();
         Bukkit.getWorlds().get(0).getEntities().forEach(entity -> {
             ((CraftEntity) entity).getHandle().damageEntity(DamageSource.GENERIC, 20f);
@@ -186,16 +162,55 @@ public class SpawningMechanics implements GenericMechanic {
         switch (monsEnum) {
             case Bandit:
             case Bandit1:
-                entity = new EntityBandit(world, tier, type, monsEnum);
+                switch (new Random().nextInt(3)) {
+                    case 0:
+                        entity = new StaffSkeleton(world, monsEnum, tier);
+                        break;
+                    case 1:
+                        entity = new MeleeZombie(world, monsEnum, tier);
+                        break;
+                    case 2:
+                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        break;
+                    default:
+                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        break;
+                }
                 break;
             case RangedPirate:
                 entity = new RangedSkeleton(world, monsEnum, type, tier);
                 break;
             case Pirate:
-                entity = new EntityPirate(world, EnumMonster.Pirate, tier);
+                switch (new Random().nextInt(3)) {
+                    case 0:
+                        entity = new StaffSkeleton(world, monsEnum, tier);
+                        break;
+                    case 1:
+                        entity = new MeleeZombie(world, monsEnum, tier);
+                        break;
+                    case 2:
+                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        break;
+                    default:
+                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        break;
+                }
                 break;
             case MayelPirate:
-                entity = new EntityPirate(world, EnumMonster.MayelPirate, tier);
+                switch (new Random().nextInt(3)) {
+                    case 0:
+                        entity = new StaffSkeleton(world, monsEnum, tier);
+                        break;
+                    case 1:
+                        entity = new MeleeZombie(world, monsEnum, tier);
+                        break;
+                    case 2:
+                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        break;
+                    default:
+                        entity = new RangedSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        break;
+                }
                 break;
             case FireImp:
                 entity = new StaffZombie(world, monsEnum, tier);

@@ -2,6 +2,7 @@ package net.dungeonrealms.game.world.entities.types.monsters.base;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
@@ -49,6 +50,28 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
         setStats();
         this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
         this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+        switch (monsterType) {
+            case Pirate:
+            case MayelPirate:
+                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.PIRATE.getSkull()));
+                livingEntity.getEquipment().setHelmet(SkullTextures.PIRATE.getSkull());
+                break;
+            case FrozenSkeleton:
+                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.FROZEN_SKELETON.getSkull()));
+                livingEntity.getEquipment().setHelmet(SkullTextures.FROZEN_SKELETON.getSkull());
+                break;
+            case Bandit:
+            case Bandit1:
+                if (random.nextBoolean()) {
+                    this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.BANDIT.getSkull()));
+                    livingEntity.getEquipment().setHelmet(SkullTextures.BANDIT.getSkull());
+                } else {
+                    this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.BANDIT_2.getSkull()));
+                    livingEntity.getEquipment().setHelmet(SkullTextures.BANDIT_2.getSkull());
+                }
+                break;
+        }
     }
     
     protected DRSkeleton(World world) {

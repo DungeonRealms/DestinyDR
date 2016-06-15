@@ -11,6 +11,7 @@ import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -22,6 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 11/9/2015.
@@ -69,8 +71,7 @@ public class Affair implements GenericMechanic {
                     objective.setDisplayName(ChatColor.RED.toString() + ChatColor.BOLD + "Party");
                 }
 
-                List<Player> allPlayers = new ArrayList<>();
-                {
+                List<Player> allPlayers = new ArrayList<>();{
                     allPlayers.add(party.getOwner());
                     allPlayers.addAll(party.getMembers());
                 }
@@ -111,7 +112,7 @@ public class Affair implements GenericMechanic {
 
         allPlayers.stream().forEach(player -> {
             player.setScoreboard(ScoreboardHandler.getInstance().mainScoreboard);
-            player.sendMessage(ChatColor.RED + "Your party has been disbanded!");
+            player.sendMessage(ChatColor.RED + "Your party has been disbanded.");
         });
 
 
@@ -121,6 +122,9 @@ public class Affair implements GenericMechanic {
     }
 
     public void removeMember(Player player, boolean kicked) {
+        if (!getParty(player).isPresent()) {
+            return;
+        }
 
         if (isOwner(player)) {
             removeParty(getParty(player).get());
@@ -130,14 +134,16 @@ public class Affair implements GenericMechanic {
         AffairO party = getParty(player).get();
 
         party.getMembers().remove(player);
+        Scoreboard board = party.getPartyScoreboard();
+        board.resetScores(player.getName());
 
         if (kicked)
             player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "You have been kicked out of the party.");
         else
             player.sendMessage(ChatColor.RED + "You have left the party.");
 
-        party.getOwner().sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + ">" + ChatColor.GRAY + player.getDisplayName() + " has " + ChatColor.LIGHT_PURPLE + ChatColor.UNDERLINE + "left" + ChatColor.GRAY + " the party!");
-        party.getMembers().stream().forEach(player1 -> player1.sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + ">" + ChatColor.GRAY + player.getDisplayName() + " has " + ChatColor.LIGHT_PURPLE + ChatColor.UNDERLINE + "left" + ChatColor.GRAY + " the party!"));
+        party.getOwner().sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + player.getDisplayName() + " has " + ChatColor.LIGHT_PURPLE + ChatColor.UNDERLINE + "left" + ChatColor.GRAY + " the party.");
+        party.getMembers().stream().forEach(player1 -> player1.sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + player.getDisplayName() + " has " + ChatColor.LIGHT_PURPLE + ChatColor.UNDERLINE + "left" + ChatColor.GRAY + " the party."));
 
         player.setScoreboard(ScoreboardHandler.getInstance().mainScoreboard);
 
@@ -187,6 +193,7 @@ public class Affair implements GenericMechanic {
     public class AffairO {
         private Player owner;
         private List<Player> members;
+        private boolean updateScoreboard;
 
         @Getter
         @Setter
@@ -196,6 +203,7 @@ public class Affair implements GenericMechanic {
             this.owner = owner;
             this.members = members;
             this.partyScoreboard = createScoreboard();
+            this.updateScoreboard = false;
         }
 
         public Scoreboard createScoreboard() {

@@ -9,9 +9,9 @@ import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedSkeleton;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.EntityBandit;
-import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.EntityPirate;
 import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.LargeSpider;
+import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.MeleeZombie;
+import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.StaffSkeleton;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.World;
@@ -56,13 +56,21 @@ public class DungeonSpawn extends BasicCommand {
             Entity entity = null;
             EnumMonster monster = null;
             switch (strings[1].toLowerCase()) {
-                case "pirate":
+                case "mayelpirate":
                     monster = EnumMonster.MayelPirate;
-                    entity = new EntityPirate(world, EnumMonster.MayelPirate, 1);
+                    entity = new MeleeZombie(world, EnumMonster.MayelPirate, 1);
+                    break;
+                case "pirate":
+                    monster = EnumMonster.Pirate;
+                    entity = new MeleeZombie(world, EnumMonster.Pirate, 1);
                     break;
                 case "rangedpirate":
                     monster = EnumMonster.Pirate;
                     entity = new RangedSkeleton(world, EnumMonster.Pirate, EnumEntityType.HOSTILE_MOB, 1);
+                    break;
+                case "staffpirate":
+                    monster = EnumMonster.Pirate;
+                    entity = new StaffSkeleton(world, EnumMonster.Pirate, 1);
                     break;
                 case "spider":
                     monster = EnumMonster.Spider1;
@@ -70,7 +78,15 @@ public class DungeonSpawn extends BasicCommand {
                     break;
                 case "bandit":
                     monster = EnumMonster.Bandit;
-                    entity = new EntityBandit(world, 1, EnumEntityType.HOSTILE_MOB, EnumMonster.MayelPirate);
+                    entity = new MeleeZombie(world, EnumMonster.Bandit, 1);
+                    break;
+                case "rangedbandit":
+                    monster = EnumMonster.Bandit;
+                    entity = new RangedSkeleton(world, EnumMonster.Bandit, EnumEntityType.HOSTILE_MOB, 1);
+                    break;
+                case "staffbandit":
+                    monster = EnumMonster.Bandit;
+                    entity = new StaffSkeleton(world, EnumMonster.Bandit, 1);
                     break;
             }
             if (entity != null) {
@@ -87,7 +103,7 @@ public class DungeonSpawn extends BasicCommand {
     }
 
     private void registerEntityStats(Entity entity, EnumMonster monsterType, int tier, String customName) {
-        int newLevel = Utils.getRandomFromTier(tier, "high");
+        int newLevel = Utils.getRandomFromTier(tier + 1, "high");
         MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, newLevel);
         EntityStats.setMonsterRandomStats(entity, newLevel, tier);
         String newLevelName = ChatColor.LIGHT_PURPLE.toString() + "[" + newLevel + "] ";

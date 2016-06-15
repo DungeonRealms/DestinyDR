@@ -4,7 +4,6 @@ import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.party.Affair;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -35,9 +34,9 @@ public class CommandInvoke extends BasicCommand {
                 if (Affair.getInstance().isInParty(player)) {
                 	List<Player> list = Affair.getInstance().getParty(player).get().getMembers();
                 	list.add( Affair.getInstance().getParty(player).get().getOwner());
-                    DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, list);
+                    DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, list, "T1Dungeon");
                 }else{
-                	DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, Collections.singletonList(player));
+                	DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, Collections.singletonList(player), "T1Dungeon");
                 }
             } else if (args[0].equalsIgnoreCase("varenglade")) {
             }

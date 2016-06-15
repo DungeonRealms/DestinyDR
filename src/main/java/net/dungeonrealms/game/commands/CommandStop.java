@@ -3,6 +3,7 @@ package net.dungeonrealms.game.commands;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.Database;
 import net.dungeonrealms.game.player.rank.Rank;
@@ -34,6 +35,7 @@ public class CommandStop extends BasicCommand {
         DungeonRealms.getInstance().saveConfig();
         API.logoutAllPlayers(true);
         ShopMechanics.deleteAllShops(true);
+        AsyncUtils.pool.shutdown();
 
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             DungeonRealms.getInstance().mm.stopInvocation();

@@ -102,6 +102,21 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
                 this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
                 livingEntity.getEquipment().setHelmet(SkullTextures.DEVIL.getSkull());
                 break;
+            case MayelPirate:
+            case Pirate:
+                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.PIRATE.getSkull()));
+                livingEntity.getEquipment().setHelmet(SkullTextures.PIRATE.getSkull());
+                break;
+            case Bandit:
+            case Bandit1:
+                if (random.nextBoolean()) {
+                    this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.BANDIT.getSkull()));
+                    livingEntity.getEquipment().setHelmet(SkullTextures.BANDIT.getSkull());
+                } else {
+                    this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.BANDIT_2.getSkull()));
+                    livingEntity.getEquipment().setHelmet(SkullTextures.BANDIT_2.getSkull());
+                }
+                break;
             default:
                 break;
         }
