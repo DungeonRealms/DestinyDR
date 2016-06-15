@@ -11,7 +11,6 @@ import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.entity.HumanEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scoreboard.DisplaySlot;
 import org.bukkit.scoreboard.Objective;
@@ -23,7 +22,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.stream.Collectors;
 
 /**
  * Created by Nick on 11/9/2015.
@@ -71,10 +69,9 @@ public class Affair implements GenericMechanic {
                     objective.setDisplayName(ChatColor.RED.toString() + ChatColor.BOLD + "Party");
                 }
 
-                List<Player> allPlayers = new ArrayList<>();{
-                    allPlayers.add(party.getOwner());
-                    allPlayers.addAll(party.getMembers());
-                }
+                List<Player> allPlayers = new ArrayList<>();
+                allPlayers.add(party.getOwner());
+                allPlayers.addAll(party.getMembers());
 
                 for (Player player : allPlayers) {
                     if (player != null) {
@@ -173,7 +170,7 @@ public class Affair implements GenericMechanic {
 
     public void createParty(Player player) {
         _parties.add(new AffairO(player, new ArrayList<>()));
-        player.sendMessage(new String[] {
+        player.sendMessage(new String[]{
                 ChatColor.GREEN + ChatColor.BOLD.toString() + "Your party has been created!",
                 ChatColor.GRAY + "To invite more people to join your party, " + ChatColor.UNDERLINE + "Left Click" + ChatColor.GRAY + " them with your character journal or use " + ChatColor.BOLD + "/pinvite" + ChatColor.GRAY + ". To kick, use " + ChatColor.BOLD + "/pkick" + ChatColor.GRAY + ". To chat with party, use " + ChatColor.BOLD + "/p" + ChatColor.GRAY + ". To change the loot profile, use " + ChatColor.BOLD + "/ploot"
         });
