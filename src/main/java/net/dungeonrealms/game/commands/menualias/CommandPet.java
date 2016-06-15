@@ -2,6 +2,7 @@ package net.dungeonrealms.game.commands.menualias;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.donate.DonationEffects;
+import net.dungeonrealms.game.menus.player.Profile;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
@@ -31,8 +32,8 @@ public class CommandPet extends BasicCommand {
             return false;
         }
 
+        Player player = (Player) sender;
         if (args.length == 0) {
-            Player player = (Player) sender;
             if (EntityAPI.hasPetOut(player.getUniqueId())) {
                 Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
                 if (entity.isAlive()) {
@@ -56,7 +57,10 @@ public class CommandPet extends BasicCommand {
             return true;
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("open") || args[0].equalsIgnoreCase("o") || args[0].equalsIgnoreCase("view") || args[0].equalsIgnoreCase("v")) {
-                PlayerMenus.openPlayerPetMenu((Player) sender);
+                PlayerMenus.openPlayerPetMenu(player);
+                return true;
+            } else if (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("a") || args[0].equalsIgnoreCase("g") || args[0].equalsIgnoreCase("get")) {
+                Profile.addPetItem(player);
                 return true;
             } else {
                 return true;
