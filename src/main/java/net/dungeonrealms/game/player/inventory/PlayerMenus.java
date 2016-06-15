@@ -704,7 +704,7 @@ public class PlayerMenus {
         try {
             UUID uuid = Bukkit.getPlayer(playerName) != null ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
             DatabaseAPI.getInstance().requestPlayer(uuid);
-            String playerRank = Rank.getInstance().getRank(uuid).getName();
+            String playerRank = Rank.getInstance().getRank(uuid);
             if (!Rank.isDev(player) && (playerRank.equalsIgnoreCase("gm") || playerRank.equalsIgnoreCase("dev"))) {
                 player.sendMessage(ChatColor.RED + "You " + ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "DO NOT" + ChatColor.RED + " have permission to manage this user.");
                 return;

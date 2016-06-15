@@ -46,7 +46,7 @@ public class CommandPChat extends BasicCommand {
                     everyone.addAll(party.getMembers());
                 }
 
-                everyone.stream().forEach(player1 -> player1.sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + GameChat.getName(player, Rank.getInstance().getRank(player.getUniqueId()).getName(), true) + ChatColor.GRAY + ": " + message.toString()));
+                everyone.stream().forEach(player1 -> player1.sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + GameChat.getName(player, Rank.getInstance().getRank(player.getUniqueId()), true) + ChatColor.GRAY + ": " + message.toString()));
             } else {
                 player.sendMessage(ChatColor.RED + "Unfinished"); // @todo: toggle <P> chat!
             }

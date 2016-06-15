@@ -81,7 +81,7 @@ public class MainListener implements Listener {
         if (Bukkit.getPlayer(event.getVote().getUsername()) != null) {
             Player player = Bukkit.getPlayer(event.getVote().getUsername());
 
-            String rank = Rank.getInstance().getRank(player.getUniqueId()).getName();
+            String rank = Rank.getInstance().getRank(player.getUniqueId());
 
             GamePlayer gamePlayer = API.getGamePlayer(player);
             int expToLevel = gamePlayer.getEXPNeeded(gamePlayer.getLevel());
@@ -184,7 +184,7 @@ public class MainListener implements Listener {
      */
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onAsyncJoin(AsyncPlayerPreLoginEvent event) {
-        if (!DungeonRealms.getInstance().hasFinishedSetup() && !DungeonRealms.getInstance().getDEVS().contains(event.getName())) {
+        if (!DungeonRealms.getInstance().hasFinishedSetup() && !DungeonRealms.getInstance().getDevelopers().contains(event.getName())) {
             event.disallow(Result.KICK_OTHER, ChatColor.GREEN + "The server is still setting up reconnect shortly!");
             return;
         }

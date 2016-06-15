@@ -83,7 +83,7 @@ public class Chat {
 
         if (fixedMessage.startsWith("@") && !fixedMessage.contains("@i@")) {
             String playerName = fixedMessage.replace("@", "").split(" ")[0];
-            if (DungeonRealms.getInstance().getDEVS().contains(playerName)) {
+            if (DungeonRealms.getInstance().getDevelopers().contains(playerName)) {
                 Achievements.getInstance().giveAchievement(uuid, Achievements.EnumAchievements.PM_DEV);
             }
             fixedMessage = fixedMessage.replace("@" + playerName, "");

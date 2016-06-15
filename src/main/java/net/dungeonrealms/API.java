@@ -530,11 +530,11 @@ public class API {
                 if (!DungeonRealms.getInstance().hasFinishedSetup() && !Rank.isDev(player)) {
                     player.kickPlayer(ChatColor.RED + "This shard has not finished it's startup process.");
                     return;
-                } else if (DungeonRealms.getInstance().isSubscriberShard && Rank.getInstance().getRank(player.getUniqueId()).getName().equalsIgnoreCase("default")) {
+                } else if (DungeonRealms.getInstance().isSubscriberShard && Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("default")) {
                     player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to a subscriber only shard.\n\n" +
                     ChatColor.GRAY + "Subscriber at http://www.dungeonrealms.net/shop to gain instant access!");
                     return;
-                } else if (DungeonRealms.getInstance().isYouTubeShard && !Rank.isYouTuber(player)) {
+                } else if ((DungeonRealms.getInstance().isYouTubeShard && !Rank.isYouTuber(player)) || (DungeonRealms.getInstance().isSupportShard && !Rank.isSupport(player))) {
                     player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to this shard.");
                     return;
                 }
@@ -679,7 +679,7 @@ public class API {
             Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.PLAYER_MOD);
         }
         if (Rank.isSubscriber(player)) {
-            String rank = Rank.getInstance().getRank(player.getUniqueId()).getName().toLowerCase();
+            String rank = Rank.getInstance().getRank(player.getUniqueId()).toLowerCase();
             // We don't want to award PMODs with subscriber ranks because this is a rank that can be lost.
             // If they lose it, we don't want to account them for paying for a rank they've not.
             if (!rank.equals("pmod")) {
