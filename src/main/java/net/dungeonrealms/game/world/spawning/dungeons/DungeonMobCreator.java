@@ -50,12 +50,13 @@ public class DungeonMobCreator {
             int minXZ = Integer.parseInt(locationRange[0]);
             int maxXZ = Integer.parseInt(locationRange[1]);
             if (data.contains("*")) {
+                data = data.replace("*", "");
                 isElite = true;
             }
             if (data.contains("(")) {
                 hasCustomName = true;
                 customName = data.substring(data.indexOf("(") + 1, data.indexOf(")"));
-                customName = customName.replaceAll("_", "");
+                customName = customName.replaceAll("_", " ");
                 monsterType = data.substring(0, data.indexOf("("));
             } else {
                 monsterType = data.split(":")[0];
@@ -73,7 +74,7 @@ public class DungeonMobCreator {
                 }
             }
             enumMonster = EnumMonster.getMonsterByString(monsterType);
-            for (int i = 0; i <= spawnAmount; i++) {
+            for (int i = 0; i < spawnAmount; i++) {
                 Location toSpawnLocation = getRandomLocation(world, location, ((location.getX() - minXZ) - maxXZ), ((location.getX() + minXZ) + maxXZ), ((location.getZ() - minXZ) - maxXZ), ((location.getZ() + minXZ) + maxXZ));
                 if (toSpawnLocation.getBlock().getType() != Material.AIR) {
                     if (toSpawnLocation.clone().add(0, 1, 0).getBlock().getType() == Material.AIR) {
@@ -95,7 +96,7 @@ public class DungeonMobCreator {
                 entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
                 if (!isElite) {
                     EntityStats.createDungeonMob(entity, level, tier);
-                    String levelName = ChatColor.LIGHT_PURPLE + "[" + level + "]";
+                    String levelName = ChatColor.LIGHT_PURPLE + "[" + level + "] ";
                     if (hasCustomName) {
                         entity.setCustomName(levelName + API.getTierColor(tier) + customName.trim());
                         entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + customName.trim()));

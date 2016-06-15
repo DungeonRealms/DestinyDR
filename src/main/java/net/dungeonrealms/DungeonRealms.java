@@ -18,6 +18,7 @@ import net.dungeonrealms.game.commands.toggles.*;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.listeners.*;
+import net.dungeonrealms.game.listeners.dungeonListeners.T1Dungeon;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.RealmManager;
 import net.dungeonrealms.game.mastery.Utils;
@@ -243,6 +244,7 @@ public class DungeonRealms extends JavaPlugin {
             ps.onEnable();
             tcc.onEnable();
             pm.registerEvents(new TabbedChatListener(), this);
+            pm.registerEvents(new T1Dungeon(), this);
         } else {
             pm.registerEvents(new MainListenerInstance(), this);
             pm.registerEvents(new DamageListener(), this);

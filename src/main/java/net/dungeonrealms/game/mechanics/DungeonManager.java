@@ -427,8 +427,7 @@ public class DungeonManager implements GenericMechanic {
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, true);
             player.teleport(w.getSpawnLocation());
             player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + type.getBossName() + ChatColor.WHITE + "] "
-                    + ChatColor.GREEN + "You have invoked a[n] Instance Dungeon. This Instance Dungeon is on "
-                    + "a timer of 45 minutes!");
+                    + ChatColor.GREEN + "How dare you enter my domain!");
         }), 150L);
     }
 

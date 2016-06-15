@@ -83,7 +83,7 @@ public class CommandMonSpawn extends BasicCommand {
             				EntityStats.setBossRandomStats(entity, 100, 3);
                             break;
                         case Pyromancer:
-                            entity = new Pyromancer(world, loc);
+                            entity = new Pyromancer(world);
             				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, 50);
             				EntityStats.setBossRandomStats(entity, 50, 1);
                             break;
@@ -205,7 +205,7 @@ public class CommandMonSpawn extends BasicCommand {
             				EntityStats.setBossRandomStats(entity, 100, 3);
                             break;
                         case Pyromancer:
-                            entity = new Pyromancer(world, player.getLocation());
+                            entity = new Pyromancer(world);
             				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, 50);
             				EntityStats.setBossRandomStats(entity, 50, 1);
                             break;

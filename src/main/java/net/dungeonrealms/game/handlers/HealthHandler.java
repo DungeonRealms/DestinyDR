@@ -514,7 +514,7 @@ public class HealthHandler implements GenericMechanic {
                 }
             }
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, leAttacker.getUniqueId()).toString())) {
-                leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
+                leAttacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + player.getName() + ChatColor.RED + " [" + (int) newHP + ChatColor.BOLD + "HP" + ChatColor.DARK_PURPLE + "]");
             }
             player.playEffect(EntityEffect.HURT);
             player.playSound(player.getLocation(), Sound.ENCHANT_THORNS_HIT, 1F, 1F);
@@ -642,7 +642,7 @@ public class HealthHandler implements GenericMechanic {
                 if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, attacker.getUniqueId()).toString())) {
                     if (!entity.hasMetadata("uuid")) {
                         String customNameAppended = (entity.getMetadata("customname").get(0).asString().trim());
-                        attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.DARK_PURPLE + API.getTierColor(entity.getMetadata("tier").get(0).asInt()) + customNameAppended + ChatColor.DARK_PURPLE + ChatColor.BOLD + " [" + (int) newHP + "HP]");
+                        attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + API.getTierColor(entity.getMetadata("tier").get(0).asInt()) + customNameAppended + ChatColor.RED + ChatColor.BOLD + " [" + (int) newHP + "HP]");
                     }
                 }
             }
@@ -653,7 +653,8 @@ public class HealthHandler implements GenericMechanic {
             setMonsterHPLive(entity, 0);
             net.minecraft.server.v1_9_R2.Entity entity1 = ((CraftEntity) entity).getHandle();
             entity.damage(entity.getHealth());
-            //entity1.damageEntity(DamageSource.GENERIC, 50F);
+            entity.setMaximumNoDamageTicks(2000);
+            entity.setNoDamageTicks(1000);
             Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
                 if (!entity.isDead()) {
                     entity.setMaximumNoDamageTicks(200);
@@ -663,10 +664,10 @@ public class HealthHandler implements GenericMechanic {
                     entity.setHealth(0);
                     entity.remove();
                 }
-            }, 1L);
-            if (!entity1.dead) {
-                entity1.dead = true;
-            }
+                if (!entity1.dead) {
+                    entity1.dead = true;
+                }
+            }, 5L);
             if (Entities.MONSTER_LAST_ATTACK.containsKey(entity)) {
                 Entities.MONSTER_LAST_ATTACK.remove(entity);
             }

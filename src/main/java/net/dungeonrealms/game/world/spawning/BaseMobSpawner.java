@@ -4,11 +4,8 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanics.DungeonManager.DungeonObject;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.Pyromancer;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.EntityArmorStand;
@@ -19,12 +16,10 @@ import org.bukkit.Location;
 import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.entity.ArmorStand;
-import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 /**
@@ -241,56 +236,6 @@ public class BaseMobSpawner {
                 entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                 SPAWNED_MONSTERS.add(entity);
             }
-        }
-    }
-
-    /**
-     * Custom Spawning for dungeons
-     *
-     * @param dungeon
-     */
-    public void dungeonSpawn(DungeonObject dungeon) {
-        int i = 0;
-        while (i < spawnAmount) {
-            Location location = loc.add(new Random().nextInt(3), 1, new Random().nextInt(3));
-            if (location.getBlock().getType() != Material.AIR
-                    || location.add(0, 1, 0).getBlock().getType() != Material.AIR)
-                return;
-            String mob = spawnType;
-            EnumMonster monsEnum = EnumMonster.getMonsterByString(mob);
-            if (monsEnum == null)
-                return;
-            Entity entity = SpawningMechanics.getMob(((CraftWorld) loc.getWorld()).getHandle(), tier, monsEnum);
-            if (hasCustomName)
-                if (monsterCustomName.contains("Pyromancer")) {
-                    entity = new Pyromancer(((CraftWorld) loc.getWorld()).getHandle(), location);
-                    Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        for (Player p : API.getNearbyPlayers(loc, 400)) {
-                            p.sendMessage(ChatColor.GREEN + EnumBoss.Pyromancer.name + ChatColor.RESET + ": " + EnumBoss.Pyromancer.greeting);
-                        }
-                    }, 20 * 60);
-                }
-            String customName = monsEnum.getPrefix() + " " + monsEnum.name + " " + monsEnum.getSuffix();
-            int level = Utils.getRandomFromTier(tier, lvlRange);
-            MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
-            EntityStats.setMonsterRandomStats(entity, level, tier);
-            String lvlName = ChatColor.LIGHT_PURPLE + "[" + level + "] ";
-            if (entity == null) {
-                return;
-            }
-            if (!hasCustomName) {
-                entity.setCustomName(lvlName + API.getTierColor(tier) + customName);
-                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + customName));
-            } else {
-                entity.setCustomName(API.getTierColor(tier) + monsterCustomName);
-                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + monsterCustomName));
-            }
-            location.getWorld().loadChunk(location.getChunk());
-            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-            ((CraftWorld) loc.getWorld()).getHandle().addEntity(entity, SpawnReason.CUSTOM);
-            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-            dungeon.aliveMonsters.add(entity);
-            i++;
         }
     }
 
