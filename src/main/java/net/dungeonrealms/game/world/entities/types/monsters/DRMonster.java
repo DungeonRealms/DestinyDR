@@ -34,6 +34,10 @@ public interface DRMonster {
     EnumMonster getEnum();
 
     default void checkItemDrop(int tier, EnumMonster monster, Entity ent, Player killer) {
+        if (ent.getWorld().getName().contains("DUNGEON")) {
+            //No normal drops in dungeons.
+            return;
+        }
         Random random = new Random();
         boolean toggleDebug = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId());
         int killerGemFind = DamageAPI.calculatePlayerStat(killer, Item.ArmorAttributeType.GEM_FIND);

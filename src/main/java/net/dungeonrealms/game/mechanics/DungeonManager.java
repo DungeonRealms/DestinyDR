@@ -76,15 +76,21 @@ public class DungeonManager implements GenericMechanic {
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeonObject -> {
             int time = dungeonObject.getTime();
+            dungeonObject.modifyTime(1);
+            if (time < 5) {
+                return;
+            }
             int monstersAlive = dungeonObject.maxAlive - dungeonObject.killed;
             int maxAlive = dungeonObject.maxAlive;
             int NinetyPercent = (int) (maxAlive - (maxAlive * 1.9));
-            if (!dungeonObject.canSpawnBoss && maxAlive > 0 && monstersAlive > 0)
+            if (!dungeonObject.canSpawnBoss && maxAlive > 0 && monstersAlive > 0) {
                 if ((maxAlive - monstersAlive) <= (maxAlive - NinetyPercent)) {
                     dungeonObject.canSpawnBoss = true;
                     dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
                             + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.YELLOW + "You really want to fight me?"));
                 }
+            }
+
             if (dungeonObject.getPlayerList().size() <= 0 || Bukkit.getWorld(dungeonObject.worldName).getPlayers().size() <= 0) {
                 removeInstance(dungeonObject);
                 return;
@@ -116,7 +122,6 @@ public class DungeonManager implements GenericMechanic {
                                     + "This instance has reached (15) minute marker!"));
                     break;
             }
-            dungeonObject.modifyTime(1);
             updateDungeonBoard(dungeonObject);
         }), 0, 20L);
         Utils.log.info("[DUNGEONS] Finished Loading Dungeon Mechanics ... OKAY");
@@ -374,7 +379,7 @@ public class DungeonManager implements GenericMechanic {
             new File(worldName + "/" + "uid.dat").delete();
         }
         World w = Bukkit.getServer().createWorld(new WorldCreator(worldName));
-        w.setKeepSpawnInMemory(false);
+        w.setKeepSpawnInMemory(true);
         w.setAutoSave(false);
         w.setPVP(false);
         w.setStorm(false);
@@ -422,7 +427,7 @@ public class DungeonManager implements GenericMechanic {
             player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + type.getBossName() + ChatColor.WHITE + "] "
                     + ChatColor.GREEN + "You have invoked a[n] Instance Dungeon. This Instance Dungeon is on "
                     + "a timer of 45 minutes!");
-        }), 40L);
+        }), 60L);
     }
 
     public void loadDungeonMobSpawns1(String instanceName) {

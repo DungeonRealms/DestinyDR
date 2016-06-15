@@ -105,7 +105,7 @@ public class DungeonSpawn extends BasicCommand {
     private void registerEntityStats(Entity entity, EnumMonster monsterType, int tier, String customName) {
         int newLevel = Utils.getRandomFromTier(tier + 1, "high");
         MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, newLevel);
-        EntityStats.setMonsterRandomStats(entity, newLevel, tier);
+        EntityStats.createDungeonMob(entity, newLevel, tier);
         String newLevelName = ChatColor.LIGHT_PURPLE.toString() + "[" + newLevel + "] ";
         if (customName.equals("")) {
             customName = monsterType.getPrefix() + " " + monsterType.name + " " + monsterType.getSuffix() + " ";

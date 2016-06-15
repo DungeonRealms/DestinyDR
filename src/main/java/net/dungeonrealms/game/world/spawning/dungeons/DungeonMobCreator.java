@@ -86,7 +86,7 @@ public class DungeonMobCreator {
                 int level = Utils.getRandomFromTier(tier + 1, spawnRange);
                 MetadataUtils.registerEntityMetadata(entity, enumEntityType, tier, level);
                 entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-                EntityStats.setMonsterRandomStats(entity, level, tier);
+                EntityStats.createDungeonMob(entity, level, tier);
                 String levelName = ChatColor.LIGHT_PURPLE + "[" + level + "]";
                 if (hasCustomName) {
                     entity.setCustomName(levelName + API.getTierColor(tier) + customName.trim());

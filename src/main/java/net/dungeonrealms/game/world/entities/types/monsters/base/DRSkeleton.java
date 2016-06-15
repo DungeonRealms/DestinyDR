@@ -37,19 +37,11 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
         this.mobHead = monster.mobHead;
         this.entityType = entityType;
         setArmor(tier);
-        if (this.getEquipment(EnumItemSlot.MAINHAND) != null && this.getEquipment(EnumItemSlot.MAINHAND).hasTag()) {
-            if (this.getEquipment(EnumItemSlot.MAINHAND).getTag().hasKey("itemType") && this.getEquipment(EnumItemSlot.MAINHAND).getTag().getInt("itemType") == 3) {
-                this.goalSelector.a(1, new PathfinderGoalFloat(this));
-                this.goalSelector.a(4, new PathfinderGoalArrowAttack(this, 1.0D, 20, 60, 15.0F));
-            }
-        }
         this.getBukkitEntity().setCustomNameVisible(true);
         String customName = monster.getPrefix() + " " + name + " " + monster.getSuffix() + " ";
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
         setStats();
-        this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
-        this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         switch (monsterType) {
             case Pirate:

@@ -5,6 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumNamedElite;
+import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
@@ -191,6 +192,22 @@ public class EntityStats {
         }
         entity.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHp));
         HealthHandler.getInstance().setMonsterHPLive((LivingEntity) entity.getBukkitEntity(), maxHp);
+    }
+
+    public static void createDungeonMob(Entity entity, int level, int tier) {
+        LivingEntity livingEntity = (LivingEntity) entity.getBukkitEntity();
+        ItemStack[] armor = new ItemGenerator().setRarity(Item.ItemRarity.RARE).setTier(ItemTier.getByTier(tier)).getArmorSet();
+        ItemStack weapon = livingEntity.getEquipment().getItemInMainHand();
+        ItemType type = ItemType.getTypeFromMaterial(weapon.getType());
+        weapon = new ItemGenerator().setType(type).setRarity(Item.ItemRarity.RARE).setTier(ItemTier.getByTier(tier)).generateItem().getItem();
+        livingEntity.getEquipment().setItemInMainHand(weapon);
+        livingEntity.getEquipment().setBoots(armor[0]);
+        livingEntity.getEquipment().setLeggings(armor[1]);
+        livingEntity.getEquipment().setChestplate(armor[2]);
+        livingEntity.getEquipment().setHelmet(armor[3]);
+        int maxHp = HealthHandler.getInstance().getMonsterMaxHPOnSpawn(livingEntity);
+        livingEntity.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHp));
+        HealthHandler.getInstance().setMonsterHPLive(livingEntity, maxHp);
     }
 
 	/**
