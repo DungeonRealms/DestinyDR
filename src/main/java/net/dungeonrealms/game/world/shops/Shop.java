@@ -87,6 +87,10 @@ public class Shop {
      * @since 1.0
      */
     public void deleteShop(boolean shutDown) {
+        if (BankMechanics.shopPricing.containsKey(Bukkit.getPlayer(ownerUUID).getName())) {
+            Bukkit.getPlayer(ownerUUID).getInventory().addItem(BankMechanics.shopPricing.get(Bukkit.getPlayer(ownerUUID).getName()));
+            BankMechanics.shopPricing.remove(Bukkit.getPlayer(ownerUUID).getName());
+        }
         DatabaseAPI.getInstance().update(ownerUUID, EnumOperators.$SET, EnumData.HASSHOP, false, false);
         hologram.delete();
         block1.setType(Material.AIR);

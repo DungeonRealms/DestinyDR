@@ -29,6 +29,7 @@ import org.bukkit.Material;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -229,21 +230,36 @@ public class ItemListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.NORMAL)
-    public void onPlayerConsumeItem(PlayerItemConsumeEvent event) {
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void playerDrinkPotion(PlayerInteractEvent event) {
+        if (!event.hasItem() && (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getAction() != Action.RIGHT_CLICK_AIR)) return;
         net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getItem()));
         if (nmsItem == null || nmsItem.getTag() == null) return;
         if (!nmsItem.getTag().hasKey("type")) return;
         if (nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
             event.setCancelled(true);
             if (HealthHandler.getInstance().getPlayerHPLive(event.getPlayer()) < HealthHandler.getInstance().getPlayerMaxHPLive(event.getPlayer())) {
-                event.setItem(new ItemStack(Material.AIR));
-                event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
+                event.setUseItemInHand(Event.Result.ALLOW);
+                event.setUseInteractedBlock(Event.Result.DENY);
+                if (event.getPlayer().getInventory().getItemInMainHand().isSimilar(event.getItem())) {
+                    event.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+                } else {
+                    event.getPlayer().getInventory().setItemInOffHand(new ItemStack(Material.AIR));
+                }
+                event.getPlayer().updateInventory();
                 HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
             } else {
                 event.getPlayer().sendMessage(ChatColor.RED + "You are already at full HP!");
             }
-        } else if (nmsItem.getTag().getString("type").equalsIgnoreCase("healingFood")) {
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPlayerConsumeItem(PlayerItemConsumeEvent event) {
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getItem()));
+        if (nmsItem == null || nmsItem.getTag() == null) return;
+        if (!nmsItem.getTag().hasKey("type")) return;
+        if (nmsItem.getTag().getString("type").equalsIgnoreCase("healingFood")) {
             if (event.getPlayer().getFoodLevel() >= 20) {
                 event.setCancelled(true);
                 return;
@@ -267,9 +283,18 @@ public class ItemListener implements Listener {
             ItemStack foodItem = event.getItem();
             if (foodItem.getAmount() > 1) {
                 foodItem.setAmount(foodItem.getAmount() - 1);
-                event.getPlayer().setItemInHand(foodItem);
+                if (event.getPlayer().getInventory().getItemInMainHand().isSimilar(event.getItem())) {
+                    event.getPlayer().getInventory().setItemInMainHand(foodItem);
+                } else {
+                    event.getPlayer().getInventory().setItemInOffHand(foodItem);
+                }
+                event.getPlayer().updateInventory();
             } else {
-                event.getPlayer().setItemInHand(new ItemStack(Material.AIR));
+                if (event.getPlayer().getInventory().getItemInMainHand().isSimilar(event.getItem())) {
+                    event.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
+                } else {
+                    event.getPlayer().getInventory().setItemInOffHand(new ItemStack(Material.AIR));
+                }
             }
             event.getPlayer().updateInventory();
             event.getPlayer().setFoodLevel(event.getPlayer().getFoodLevel() + 6);

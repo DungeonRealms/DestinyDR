@@ -165,13 +165,23 @@ public class ShopListener implements Listener {
                         event.setCancelled(true);
                         event.setCursor(null);
                         int playerSlot = clicker.getInventory().firstEmpty();
-                        clicker.getInventory().setItem(playerSlot, itemHeld);
+                        if (BankMechanics.shopPricing.containsKey(clicker.getName())) {
+                            clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+                        }
+                        BankMechanics.shopPricing.put(clicker.getName(), itemHeld);
                         clicker.sendMessage(ChatColor.GREEN + "Enter the " + ChatColor.BOLD + "GEM" + ChatColor.GREEN + " value of [" + ChatColor.BOLD + "1x" + ChatColor.GREEN + "] of this item.");
                         clicker.closeInventory();
                         Chat.listenForMessage(clicker, chat -> {
                             if (chat.getMessage().equalsIgnoreCase("Cancel") || chat.getMessage().equalsIgnoreCase("c")) {
                                 clicker.sendMessage(ChatColor.RED + "Pricing of item - " + ChatColor.BOLD + "CANCELLED");
-                                clicker.getInventory().addItem(itemHeld);
+                                clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+                                BankMechanics.shopPricing.remove(clicker.getName());
+                                return;
+                            }
+                            if (clicker.getLocation().distanceSquared(shop.block1.getLocation()) > 16) {
+                                clicker.sendMessage(ChatColor.RED + "You are too far away from the shop [>4 blocks], addition of item CANCELLED.");
+                                clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+                                BankMechanics.shopPricing.remove(clicker.getName());
                                 return;
                             }
                             int number = 0;
@@ -179,10 +189,15 @@ public class ShopListener implements Listener {
                                 number = Integer.parseInt(chat.getMessage());
                             } catch (Exception exc) {
                                 clicker.sendMessage(ChatColor.RED + "Please enter a valid number");
+                                clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+                                BankMechanics.shopPricing.remove(clicker.getName());
                                 return;
                             }
                             if (number <= 0) {
                                 clicker.sendMessage(ChatColor.RED + "You cannot request a NON-POSITIVE number.");
+                                clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+                                BankMechanics.shopPricing.remove(clicker.getName());
+                                return;
                             } else {
                                 ItemStack stack = itemHeld.clone();
                                 ItemMeta meta = itemHeld.getItemMeta();
@@ -205,8 +220,10 @@ public class ShopListener implements Listener {
                                             ChatColor.YELLOW.toString() + "Price set. Right-Click item to edit.",
                                             ChatColor.YELLOW + "Left Click the item to remove it from your shop."});
                                     clicker.getInventory().setItem(playerSlot, new ItemStack(Material.AIR));
+                                    BankMechanics.shopPricing.remove(clicker.getName());
                                 } else {
-                                    clicker.getInventory().addItem(itemHeld);
+                                    clicker.getInventory().addItem(BankMechanics.shopPricing.get(clicker.getName()));
+                                    BankMechanics.shopPricing.remove(clicker.getName());
                                     clicker.sendMessage("There is no room for this item in your Shop");
                                 }
                             }
@@ -253,12 +270,10 @@ public class ShopListener implements Listener {
                     Chat.listenForMessage(clicker, chat -> {
                         if (chat.getMessage().equalsIgnoreCase("Cancel") || chat.getMessage().equalsIgnoreCase("c")) {
                             clicker.sendMessage(ChatColor.RED + "Pricing of item - " + ChatColor.BOLD + "CANCELLED");
-                            clicker.getInventory().addItem(itemHeld);
                             return;
                         }
                         if (clicker.getLocation().distanceSquared(shop.block1.getLocation()) > 16) {
                             clicker.sendMessage(ChatColor.RED + "You are too far away from the shop [>4 blocks], addition of item CANCELLED.");
-                            clicker.getInventory().addItem(itemHeld);
                             return;
                         }
                         int number = 0;

@@ -1006,9 +1006,7 @@ public class InventoryListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         if (!RepairAPI.isItemArmorScrap(cursorItem)) return;
         if (!RepairAPI.canItemBeRepaired(slotItem)) return;
-        if (!(RepairAPI.isItemArmorOrWeapon(slotItem)) &&
-                !Mining.isDRPickaxe(slotItem) &&
-                !Fishing.isDRFishingPole(slotItem)) return;
+        if (!(RepairAPI.isItemArmorOrWeapon(slotItem)) && !Mining.isDRPickaxe(slotItem) && !Fishing.isDRFishingPole(slotItem)) return;
         int scrapTier = RepairAPI.getScrapTier(cursorItem);
         int slotTier = 0;
         if (Mining.isDRPickaxe(slotItem) || Fishing.isDRFishingPole(slotItem)) {
@@ -1113,10 +1111,11 @@ public class InventoryListener implements Listener {
             if (slotItem.getType() == Material.BOW) {
                 particleID = 5;
             }
+            int repairPercent = (int) ((newPercent / 1500) * 100);
             Packet particles = new PacketPlayOutWorldEvent(2001, new BlockPosition((int) Math.round(player.getLocation().getX()), (int) Math.round(player.getLocation().getY() + 2), (int) Math.round(player.getLocation().getZ())), particleID, false);
             ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(((CraftPlayer) player).getHandle(), player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 36, ((CraftWorld) player.getWorld()).getHandle().dimension, particles);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-                player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + (int) newPercent + "/1500");
+                player.sendMessage(ChatColor.GREEN + "You used an Item Scrap to repair 3% durability to " + (int) newPercent + "%");
             }
         }
     }

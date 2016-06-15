@@ -337,6 +337,10 @@ public class API {
      */
     public static void handleLogout(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
+        if (BankMechanics.shopPricing.containsKey(player.getName())) {
+            player.getInventory().addItem(BankMechanics.shopPricing.get(player.getName()));
+            BankMechanics.shopPricing.remove(player.getName());
+        }
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
             return;
         }
@@ -702,9 +706,7 @@ public class API {
                             "To allocate click ", ChatColor.WHITE);
                     normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats");
                     normal.addText(ChatColor.GREEN + "*");
-                    for (Player player1 : Bukkit.getOnlinePlayers()) {
-                        normal.sendToPlayer(player1);
-                    }
+                    normal.sendToPlayer(gp.getPlayer());
                 }
             }, 100);
         }

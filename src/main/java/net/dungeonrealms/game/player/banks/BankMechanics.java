@@ -31,6 +31,7 @@ public class BankMechanics implements GenericMechanic {
     public static ItemStack gem;
     public static ItemStack banknote;
     public static HashMap<UUID, Storage> storage = new HashMap<>();
+    public static HashMap<String, ItemStack> shopPricing = new HashMap<>();
 
     private static BankMechanics instance = null;
 
@@ -66,9 +67,7 @@ public class BankMechanics implements GenericMechanic {
                                 "To allocate click ", ChatColor.WHITE);
                         normal.addRunCommand(ChatColor.GREEN.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!", ChatColor.GREEN, "/stats");
                         normal.addText(ChatColor.GREEN + "*");
-                        for (Player player1 : Bukkit.getOnlinePlayers()) {
-                            normal.sendToPlayer(player1);
-                        }
+                        normal.sendToPlayer(gp.getPlayer());
                     });
                 }
             }

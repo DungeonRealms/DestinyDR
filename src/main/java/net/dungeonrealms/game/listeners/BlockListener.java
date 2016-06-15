@@ -307,7 +307,7 @@ public class BlockListener implements Listener {
 
             Location middle = block.getLocation().add(.5, 1.3, .5);
             //Set the item on the anvil
-            player.setItemInHand(null);
+            player.getEquipment().setItemInMainHand(null);
             player.updateInventory();
 
 
@@ -334,14 +334,22 @@ public class BlockListener implements Listener {
                         return;
                     }
                     //Reset durability.
-                    item.setDurability((short) 0);
+                    double itemDurability = RepairAPI.getCustomDurability(item);
+                    if (itemDurability + 45.0D >= 1500.0D) {
+                        RepairAPI.setCustomItemDurability(item, 1500);
+                        player.updateInventory();
+                    } else if (itemDurability + 45.0D < 1500.0D) {
+                        RepairAPI.setCustomItemDurability(item, (itemDurability + 45.0D));
+                        player.updateInventory();
+                    }
                     itemEntity.remove();
                     middle.getWorld().playEffect(middle, Effect.STEP_SOUND, Material.IRON_BLOCK);
                     middle.getWorld().playSound(middle, Sound.BLOCK_ANVIL_USE, 3, 1.4F);
                     if (player.getEquipment().getItemInMainHand() == null) {
-                        player.setItemInHand(item);
-                    } else
+                        player.getEquipment().setItemInMainHand(item);
+                    } else {
                         player.getInventory().addItem(item);
+                    }
                     player.updateInventory();
 
                     player.sendMessage(ChatColor.RED + "-" + newCost + ChatColor.BOLD.toString() + "G");

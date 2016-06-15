@@ -74,7 +74,7 @@ public class ItemManager {
         ItemStack rawStack = createItem(Material.MAGMA_CREAM, ChatColor.LIGHT_PURPLE.toString() + "Orb of Alteration", new String[]{(ChatColor.GRAY.toString() + "Randomizes bonus stats of selected equipment")});
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
         nms.getTag().setString("type", "orb");
-        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
+        return CraftItemStack.asBukkitCopy(nms);
     }
 
     public static ItemStack createWeaponEnchant(int tier) {
@@ -83,7 +83,7 @@ public class ItemManager {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
         nms.getTag().setString("type", "weaponenchant");
         nms.getTag().setInt("tier", tier);
-        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
+        return CraftItemStack.asBukkitCopy(nms);
     }
 
     public static ItemStack createArmorEnchant(int tier) {
@@ -92,7 +92,7 @@ public class ItemManager {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
         nms.getTag().setString("type", "armorenchant");
         nms.getTag().setInt("tier", tier);
-        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
+        return CraftItemStack.asBukkitCopy(nms);
     }
 
     /**
@@ -138,7 +138,7 @@ public class ItemManager {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(rawStack);
         nms.getTag().setString("type", "protection");
         nms.getTag().setInt("tier", tier);
-        return AntiCheat.getInstance().applyAntiDupe(CraftItemStack.asBukkitCopy(nms));
+        return CraftItemStack.asBukkitCopy(nms);
     }
 
     /**

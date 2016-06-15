@@ -1017,10 +1017,10 @@ public class DamageListener implements Listener {
         }
         if (event.getPlayer().hasMetadata("last_Staff_Use")) {
             event.setCancelled(true);
-            if (System.currentTimeMillis() - event.getPlayer().getMetadata("last_Staff_Use").get(0).asLong() < 250)
+            if (System.currentTimeMillis() - event.getPlayer().getMetadata("last_Staff_Use").get(0).asLong() < 350) {
                 return;
+            }
         }
-
         int tier = CraftItemStack.asNMSCopy(event.getPlayer().getEquipment().getItemInMainHand()).getTag().getInt("itemTier");
         int playerLvl = API.getGamePlayer(event.getPlayer()).getLevel();
         switch (tier) {
