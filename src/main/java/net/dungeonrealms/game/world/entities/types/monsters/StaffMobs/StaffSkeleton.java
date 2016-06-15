@@ -15,7 +15,7 @@ import org.bukkit.entity.LivingEntity;
 /**
  * Created by Kieran Quigley (Proxying) on 14-Jun-16.
  */
-public class StaffSkeleton extends DRSkeleton {
+public class StaffSkeleton extends DRSkeleton implements IRangedEntity {
 
     public StaffSkeleton(World world, EnumMonster mons, int tier) {
         super(world, mons, tier, EnumEntityType.HOSTILE_MOB);
