@@ -41,7 +41,7 @@ public class Bat extends EntityBat {
 
     @Override
     public void M() {
-        if (getBukkitEntity().getLocation().distanceSquared(target.getLocation()) < 3) {
+        if (getBukkitEntity().getLocation().distanceSquared(target.getLocation()) <= 4) {
             return;
         }
         repetitions++;

@@ -68,15 +68,15 @@ public class Profile implements Listener {
         PlayerMenus.openPlayerProfileMenu(player);
     }
 
-    private static void addMountItem(Player player) {
+    public static void addMountItem(Player player) {
         player.getInventory().addItem(ItemManager.getPlayerMountItem());
     }
 
-    private static void addPetItem(Player player) {
+    public static void addPetItem(Player player) {
         player.getInventory().addItem(ItemManager.getPlayerPetItem());
     }
 
-    private static void addMuleItem(Player player) {
+    public static void addMuleItem(Player player) {
         if(player.getInventory().contains(Material.LEASH))return;
 
         Object muleTier = DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
@@ -93,7 +93,7 @@ public class Profile implements Listener {
         player.getInventory().addItem(ItemManager.getPlayerMuleItem(tier));
     }
 
-    private static void addTrailItem(Player player) {
+    public static void addTrailItem(Player player) {
         player.getInventory().addItem(ItemManager.getPlayerTrailItem());
     }
 

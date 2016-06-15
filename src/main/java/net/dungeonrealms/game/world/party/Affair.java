@@ -2,11 +2,13 @@ package net.dungeonrealms.game.world.party;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import org.bukkit.Bukkit;
@@ -108,6 +110,13 @@ public class Affair implements GenericMechanic {
         allPlayers.addAll(party.getMembers());
 
         allPlayers.stream().forEach(player -> {
+            if (API.getGamePlayer(player).isInDungeon()) {
+                DungeonManager.DungeonObject dungeonObject = DungeonManager.getInstance().getDungeon(player.getWorld());
+                if (!dungeonObject.beingRemoved) {
+                    dungeonObject.beingRemoved = true;
+                    DungeonManager.getInstance().removeInstance(dungeonObject);
+                }
+            }
             player.setScoreboard(ScoreboardHandler.getInstance().mainScoreboard);
             player.sendMessage(ChatColor.RED + "Your party has been disbanded.");
         });

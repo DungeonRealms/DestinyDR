@@ -3,6 +3,7 @@ package net.dungeonrealms.game.commands.menualias;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.donate.DonationEffects;
+import net.dungeonrealms.game.menus.player.Profile;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -34,8 +35,8 @@ public class CommandMount extends BasicCommand {
         if (sender instanceof ConsoleCommandSender) {
             return false;
         }
+        Player player = (Player) sender;
         if (args.length == 0) {
-            Player player = (Player) sender;
             if (EntityAPI.hasMountOut(player.getUniqueId())) {
                 Entity entity = EntityAPI.getPlayerMount(player.getUniqueId());
                 if (entity.isAlive()) {
@@ -94,6 +95,9 @@ public class CommandMount extends BasicCommand {
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("open") || args[0].equalsIgnoreCase("o") || args[0].equalsIgnoreCase("view") || args[0].equalsIgnoreCase("v")) {
                 PlayerMenus.openPlayerMountMenu((Player) sender);
+                return true;
+            } else if (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("a") || args[0].equalsIgnoreCase("g") || args[0].equalsIgnoreCase("get")) {
+                Profile.addMountItem(player);
                 return true;
             } else {
                 return true;

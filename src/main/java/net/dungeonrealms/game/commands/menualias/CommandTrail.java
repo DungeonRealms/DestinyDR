@@ -3,6 +3,7 @@ package net.dungeonrealms.game.commands.menualias;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
+import net.dungeonrealms.game.menus.player.Profile;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
@@ -29,8 +30,8 @@ public class CommandTrail extends BasicCommand {
             return false;
         }
 
+        Player player = (Player) sender;
         if (args.length == 0) {
-            Player player = (Player) sender;
             if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(player)) {
                 DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.remove(player);
                 player.sendMessage(ChatColor.AQUA + "You have disabled your trail.");
@@ -48,6 +49,9 @@ public class CommandTrail extends BasicCommand {
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("open") || args[0].equalsIgnoreCase("o") || args[0].equalsIgnoreCase("view") || args[0].equalsIgnoreCase("v")) {
                 PlayerMenus.openPlayerParticleMenu((Player) sender);
+                return true;
+            } else if (args[0].equalsIgnoreCase("add") || args[0].equalsIgnoreCase("a") || args[0].equalsIgnoreCase("g") || args[0].equalsIgnoreCase("get")) {
+                Profile.addTrailItem(player);
                 return true;
             } else {
                 return true;
