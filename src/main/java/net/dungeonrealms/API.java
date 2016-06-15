@@ -379,13 +379,15 @@ public class API {
         }
 
 
-        String locationAsString = "-367,86,390,0,0"; // Cyrennica
         if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+            String locationAsString = "-367,86,390,0,0"; // Cyrennica
             locationAsString = player.getLocation().getX() + "," + (player.getLocation().getY() + 0.5) + ","
                     + player.getLocation().getZ() + "," + player.getLocation().getYaw() + ","
                     + player.getLocation().getPitch();
+            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, false);
+        } else {
+            //Dungeon or realm, should already have their last main world location saved.
         }
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, false);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, System.currentTimeMillis() / 1000L, false);
         EnergyHandler.getInstance().handleLogoutEvents(player);
         HealthHandler.getInstance().handleLogoutEvents(player);
