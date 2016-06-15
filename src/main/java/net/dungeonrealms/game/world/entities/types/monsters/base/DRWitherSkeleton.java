@@ -47,6 +47,8 @@ public abstract class DRWitherSkeleton extends EntitySkeleton implements DRMonst
         this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
         this.setSize(0.7F, 2.4F);
         this.fireProof = true;
+        this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(enumMonster.getSullItem(enumMonster)));
+        livingEntity.getEquipment().setHelmet(enumMonster.getSullItem(enumMonster));
     }
 
     protected abstract void setStats();

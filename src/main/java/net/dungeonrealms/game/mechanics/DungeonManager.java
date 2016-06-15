@@ -436,7 +436,7 @@ public class DungeonManager implements GenericMechanic {
                 HashMap<Location, String> dungeonMobData = new HashMap<>();
                 try (BufferedReader br = new BufferedReader(new FileReader(file))) {
                     for (String line; (line = br.readLine()) != null; ) {
-                        if (line == null || line.equalsIgnoreCase("null")) {
+                        if (line.equalsIgnoreCase("null")) {
                             continue;
                         }
                         if (line.contains("=")) {

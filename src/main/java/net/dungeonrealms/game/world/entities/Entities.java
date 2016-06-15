@@ -72,6 +72,7 @@ public class Entities implements GenericMechanic {
         nmsUtils.registerEntity("SmallSpider",59, EntityCaveSpider.class, SmallSpider.class);
         nmsUtils.registerEntity("MeleeZombie", 54, EntityZombie.class, MeleeZombie.class);
         nmsUtils.registerEntity("MeleeWitherSkeleton", 51, EntitySkeleton.class, MeleeWitherSkeleton.class);
+        nmsUtils.registerEntity("MeleeSkeleton", 51, EntitySkeleton.class, MeleeSkeleton.class);
         //STAFF MONSTERS
         nmsUtils.registerEntity("BasicBlaze", 61, EntityBlaze.class, BasicEntityBlaze.class);
         nmsUtils.registerEntity("StaffZombie", 54, EntityZombie.class, StaffZombie.class);

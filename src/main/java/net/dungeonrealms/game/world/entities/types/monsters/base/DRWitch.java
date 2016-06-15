@@ -42,6 +42,10 @@ public class DRWitch extends EntityWitch implements DRMonster {
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
         this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
         this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+        this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(monster.getSullItem(monster)));
+        livingEntity.getEquipment().setHelmet(monster.getSullItem(monster));
+
     }
 
     public void setArmor(int tier) {

@@ -1,8 +1,12 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
+import net.dungeonrealms.game.miscellaneous.SkullTextures;
+import org.bukkit.inventory.ItemStack;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
+import java.util.Random;
 
 /**
  * Created by Chase on Oct 7, 2015
@@ -28,7 +32,7 @@ public enum EnumMonster {
     Mage("mage", "Mage", "Mage", new String[]{""}, new String[]{""}),
     Skeleton("skeleton", "Skeleton", "Steve", new String[]{"Scary", "Spooky"}, new String[]{""}),
     Skeleton1("skeleton1", "Skeleton", "Steve", new String[]{"Scary", "Spooky"}, new String[]{""}),
-    Skeleton2("skeleton2", "Skeleton", "",  new String[]{"Scary", "Spooky"}, new String[]{""}),
+    Skeleton2("skeleton2", "Chaos Skeleton", "",  new String[]{""}, new String[]{""}),
     MagmaCube("magmacube", "Magma Cube", "Steve", new String[]{"Weak"}, new String[]{""}),
     Wither("skeleton2", "Chaos Skeleton", "Wither", new String[]{""}, new String[]{""}),
     Daemon("daemon", "Daemon", "", new String[]{""}, new String[]{""}),
@@ -98,5 +102,59 @@ public enum EnumMonster {
 		}
 		return null;
 	}
+
+    public ItemStack getSullItem(EnumMonster monster) {
+        switch (monster) {
+            case Pirate:
+            case MayelPirate:
+                return SkullTextures.PIRATE.getSkull();
+            case Bandit:
+            case Bandit1:
+                if (new Random().nextBoolean()) {
+                    return SkullTextures.BANDIT.getSkull();
+                } else {
+                    return SkullTextures.BANDIT_2.getSkull();
+                }
+            case Monk:
+                return SkullTextures.MONK.getSkull();
+            case FrozenSkeleton:
+                return SkullTextures.FROZEN_SKELETON.getSkull();
+            case Skeleton:
+            case Skeleton1:
+            case Skeleton2:
+                return SkullTextures.SKELETON.getSkull();
+            case FireImp:
+                return SkullTextures.IMP.getSkull();
+            case Goblin:
+                return SkullTextures.GOBLIN.getSkull();
+            case Troll:
+            case Troll1:
+                return SkullTextures.TROLL.getSkull();
+            case Daemon:
+            case Daemon2:
+                return SkullTextures.DEVIL.getSkull();
+            case Undead:
+                if (new Random().nextBoolean()) {
+                    return SkullTextures.ZOMBIE.getSkull();
+                } else {
+                    return SkullTextures.SKELETON.getSkull();
+                }
+            case Mage:
+                return SkullTextures.MAGE.getSkull();
+            case Tripoli:
+            case Tripoli1:
+                return SkullTextures.TRIPOLI_SOLDIER.getSkull();
+            case Naga:
+                return SkullTextures.NAGA.getSkull();
+            case Lizardman:
+                return SkullTextures.LIZARD.getSkull();
+            case Zombie:
+                return SkullTextures.ZOMBIE.getSkull();
+            case Acolyte:
+                return SkullTextures.MONK.getSkull();
+            default:
+                return SkullTextures.PUG.getSkull();
+        }
+    }
 
 }

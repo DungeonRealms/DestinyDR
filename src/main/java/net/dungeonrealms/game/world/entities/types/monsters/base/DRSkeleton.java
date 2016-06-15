@@ -2,7 +2,6 @@ package net.dungeonrealms.game.world.entities.types.monsters.base;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
@@ -43,31 +42,8 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
         setStats();
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
-        switch (monsterType) {
-            case Pirate:
-            case MayelPirate:
-                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.PIRATE.getSkull()));
-                livingEntity.getEquipment().setHelmet(SkullTextures.PIRATE.getSkull());
-                break;
-            case FrozenSkeleton:
-                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.FROZEN_SKELETON.getSkull()));
-                livingEntity.getEquipment().setHelmet(SkullTextures.FROZEN_SKELETON.getSkull());
-                break;
-            case Bandit:
-            case Bandit1:
-                if (random.nextBoolean()) {
-                    this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.BANDIT.getSkull()));
-                    livingEntity.getEquipment().setHelmet(SkullTextures.BANDIT.getSkull());
-                } else {
-                    this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.BANDIT_2.getSkull()));
-                    livingEntity.getEquipment().setHelmet(SkullTextures.BANDIT_2.getSkull());
-                }
-                break;
-            case Acolyte:
-                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.MONK.getSkull()));
-                livingEntity.getEquipment().setHelmet(SkullTextures.MONK.getSkull());
-                break;
-        }
+        this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(monster.getSullItem(monster)));
+        livingEntity.getEquipment().setHelmet(monster.getSullItem(monster));
     }
     
     protected DRSkeleton(World world) {

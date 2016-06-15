@@ -5,8 +5,8 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedSkeleton;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
+import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.MeleeWitherSkeleton;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
@@ -24,7 +24,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 /**
  * Created by Chase on Oct 19, 2015
  */
-public class Burick extends RangedSkeleton implements Boss {
+public class Burick extends MeleeWitherSkeleton implements Boss {
 
 	public Location loc;
 

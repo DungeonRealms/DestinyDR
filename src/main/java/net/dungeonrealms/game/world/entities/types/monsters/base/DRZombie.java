@@ -3,7 +3,6 @@ package net.dungeonrealms.game.world.entities.types.monsters.base;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
-import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
@@ -50,80 +49,8 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
-        switch (monsterType) {
-            case Troll:
-            case Troll1:
-                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.TROLL.getSkull()));
-                livingEntity.getEquipment().setHelmet(SkullTextures.TROLL.getSkull());
-                break;
-            case Goblin:
-                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.GOBLIN.getSkull()));
-                livingEntity.getEquipment().setHelmet(SkullTextures.GOBLIN.getSkull());
-                break;
-            case Naga:
-                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.NAGA.getSkull()));
-                livingEntity.getEquipment().setHelmet(SkullTextures.NAGA.getSkull());
-                break;
-            case Lizardman:
-                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.LIZARD.getSkull()));
-                livingEntity.getEquipment().setHelmet(SkullTextures.LIZARD.getSkull());
-                break;
-            case Zombie:
-                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.ZOMBIE.getSkull()));
-                livingEntity.getEquipment().setHelmet(SkullTextures.ZOMBIE.getSkull());
-                break;
-            case Monk:
-                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.MONK.getSkull()));
-                livingEntity.getEquipment().setHelmet(SkullTextures.MONK.getSkull());
-                break;
-            case Tripoli:
-            case Tripoli1:
-                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.TRIPOLI_SOLDIER.getSkull()));
-                livingEntity.getEquipment().setHelmet(SkullTextures.TRIPOLI_SOLDIER.getSkull());
-                break;
-            case Undead:
-                if (random.nextBoolean()) {
-                    this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.ZOMBIE.getSkull()));
-                    livingEntity.getEquipment().setHelmet(SkullTextures.ZOMBIE.getSkull());
-                } else {
-                    this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.SKELETON.getSkull()));
-                    livingEntity.getEquipment().setHelmet(SkullTextures.SKELETON.getSkull());
-                }
-                break;
-            case Mage:
-                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.MAGE.getSkull()));
-                livingEntity.getEquipment().setHelmet(SkullTextures.MAGE.getSkull());
-                break;
-            case Daemon2:
-                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
-                livingEntity.getEquipment().setHelmet(SkullTextures.DEVIL.getSkull());
-                break;
-            case FireImp:
-                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
-                livingEntity.getEquipment().setHelmet(SkullTextures.DEVIL.getSkull());
-                break;
-            case MayelPirate:
-            case Pirate:
-                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.PIRATE.getSkull()));
-                livingEntity.getEquipment().setHelmet(SkullTextures.PIRATE.getSkull());
-                break;
-            case Bandit:
-            case Bandit1:
-                if (random.nextBoolean()) {
-                    this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.BANDIT.getSkull()));
-                    livingEntity.getEquipment().setHelmet(SkullTextures.BANDIT.getSkull());
-                } else {
-                    this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.BANDIT_2.getSkull()));
-                    livingEntity.getEquipment().setHelmet(SkullTextures.BANDIT_2.getSkull());
-                }
-                break;
-            case Acolyte:
-                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.MONK.getSkull()));
-                livingEntity.getEquipment().setHelmet(SkullTextures.MONK.getSkull());
-                break;
-            default:
-                break;
-        }
+        this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(monster.getSullItem(monster)));
+        livingEntity.getEquipment().setHelmet(monster.getSullItem(monster));
     }
 
     protected DRZombie(World world) {

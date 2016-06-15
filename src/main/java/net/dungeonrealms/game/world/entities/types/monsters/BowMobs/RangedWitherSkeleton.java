@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.BowMobs;
 
 import net.dungeonrealms.API;
-import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
@@ -25,12 +24,6 @@ public class RangedWitherSkeleton extends DRWitherSkeleton implements IRangedEnt
         super(world, monsterType, tier, entityType);
         this.tier = tier;
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
-        switch (monsterType) {
-            case FrozenSkeleton:
-                this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.FROZEN_SKELETON.getSkull()));
-                livingEntity.getEquipment().setHelmet(SkullTextures.FROZEN_SKELETON.getSkull());
-                break;
-        }
         setWeapon(tier);
     }
 

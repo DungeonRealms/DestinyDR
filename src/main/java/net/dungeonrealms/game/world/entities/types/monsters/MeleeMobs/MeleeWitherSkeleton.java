@@ -1,7 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs;
 
 import net.dungeonrealms.API;
-import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
@@ -32,14 +31,6 @@ public class MeleeWitherSkeleton extends DRWitherSkeleton {
      */
     public MeleeWitherSkeleton(World world, int tier, EnumMonster monster, EnumEntityType entityType) {
         super(world, monster, tier, entityType);
-        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
-        if (monster == EnumMonster.Bandit) {
-            this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.BANDIT.getSkull()));
-            livingEntity.getEquipment().setHelmet(SkullTextures.BANDIT.getSkull());
-        } else {
-            this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.BANDIT_2.getSkull()));
-            livingEntity.getEquipment().setHelmet(SkullTextures.BANDIT_2.getSkull());
-        }
         setWeapon(tier);
     }
 
@@ -51,8 +42,8 @@ public class MeleeWitherSkeleton extends DRWitherSkeleton {
     }
 
     private ItemStack getTierWeapon(int tier) {
-        net.dungeonrealms.game.world.items.Item.ItemType itemType = net.dungeonrealms.game.world.items.Item.ItemType.AXE;
-        switch (new Random().nextInt(2)) {
+        net.dungeonrealms.game.world.items.Item.ItemType itemType;
+        switch (new Random().nextInt(3)) {
             case 0:
                 itemType = net.dungeonrealms.game.world.items.Item.ItemType.SWORD;
                 break;
@@ -61,6 +52,9 @@ public class MeleeWitherSkeleton extends DRWitherSkeleton {
                 break;
             case 2:
                 itemType = net.dungeonrealms.game.world.items.Item.ItemType.AXE;
+                break;
+            default:
+                itemType = net.dungeonrealms.game.world.items.Item.ItemType.SWORD;
                 break;
         }
         ItemStack item = new ItemGenerator().setType(itemType).setRarity(API.getItemRarity(false))

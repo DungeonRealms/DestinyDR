@@ -39,8 +39,8 @@ public class MeleeZombie extends DRZombie {
     }
 
     private ItemStack getTierWeapon(int tier) {
-        net.dungeonrealms.game.world.items.Item.ItemType itemType = net.dungeonrealms.game.world.items.Item.ItemType.AXE;
-        switch (new Random().nextInt(2)) {
+        net.dungeonrealms.game.world.items.Item.ItemType itemType;
+        switch (new Random().nextInt(3)) {
             case 0:
                 itemType = net.dungeonrealms.game.world.items.Item.ItemType.SWORD;
                 break;
@@ -49,6 +49,9 @@ public class MeleeZombie extends DRZombie {
                 break;
             case 2:
                 itemType = net.dungeonrealms.game.world.items.Item.ItemType.AXE;
+                break;
+            default:
+                itemType = net.dungeonrealms.game.world.items.Item.ItemType.SWORD;
                 break;
         }
         ItemStack item = new ItemGenerator().setType(itemType).setRarity(API.getItemRarity(false))
@@ -64,7 +67,6 @@ public class MeleeZombie extends DRZombie {
 
     @Override
     protected void setStats() {
-
     }
 
 }
