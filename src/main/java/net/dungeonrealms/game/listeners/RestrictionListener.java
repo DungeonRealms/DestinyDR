@@ -3,6 +3,7 @@ package net.dungeonrealms.game.listeners;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.EnergyHandler;
+import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import org.bukkit.Bukkit;
@@ -80,6 +81,11 @@ public class RestrictionListener implements Listener {
         }
         if (hadIllegalArmor) {
             p.updateInventory();
+            HealthHandler.getInstance().setPlayerMaxHPLive(p, API.getGamePlayer(p).getPlayerMaxHP());
+            HealthHandler.getInstance().setPlayerHPRegenLive(p, HealthHandler.getInstance().calculateHealthRegenFromItems(p));
+            if (HealthHandler.getInstance().getPlayerHPLive(p) > HealthHandler.getInstance().getPlayerMaxHPLive(p)) {
+                HealthHandler.getInstance().setPlayerHPLive(p, HealthHandler.getInstance().getPlayerMaxHPLive(p));
+            }
             p.sendMessage(ChatColor.RED + "You were found with armor that is not wearable at your level.");
         }
     }
