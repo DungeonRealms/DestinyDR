@@ -48,7 +48,6 @@ public class ProxyChannelListener implements Listener {
 
                 switch (command) {
                     case "alert": {
-                        System.out.print("Test");
                         String guildName = in.readUTF();
                         String message = in.readUTF();
 

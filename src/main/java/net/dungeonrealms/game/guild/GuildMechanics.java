@@ -277,7 +277,7 @@ public class GuildMechanics {
                 BannerMeta meta = (BannerMeta) info.getCurrentBanner().getItemMeta();
                 meta.setLore(new ArrayList<>());
                 meta.setDisplayName(ChatColor.GREEN + info.getDisplayName() + "'s Guild banner");
-                meta.setLore(Collections.singletonList(ChatColor.GRAY + "Right click to equip"));
+                meta.setLore(Collections.singletonList(ChatColor.RED + "Right click to equip"));
                 info.getCurrentBanner().setItemMeta(meta);
 
                 String itemString = ItemSerialization.itemStackToBase64(info.getCurrentBanner());

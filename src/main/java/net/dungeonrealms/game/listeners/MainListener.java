@@ -515,8 +515,7 @@ public class MainListener implements Listener {
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Item Vendor")) {
-            // TODO: Open Item Vendor
-            event.getPlayer().sendMessage(ChatColor.RED + "Sorry, I'm restocking my wares!");
+            NPCMenus.openItemVendorMenu(event.getPlayer());
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Guild Registrar")) {
