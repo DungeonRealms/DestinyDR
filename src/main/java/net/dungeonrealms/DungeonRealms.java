@@ -408,11 +408,11 @@ public class DungeonRealms extends JavaPlugin {
     }
 
     public void onDisable() {
-        API.logoutAllPlayers(false);
-        ShopMechanics.deleteAllShops(true);
         for (CombatLogger combatLogger : CombatLog.getInstance().getCOMBAT_LOGGERS().values()) {
             combatLogger.handleTimeOut();
         }
+        API.logoutAllPlayers(false);
+        ShopMechanics.deleteAllShops(true);
         AsyncUtils.pool.shutdown();
         ps.onDisable();
         hs.onDisable();
@@ -420,7 +420,7 @@ public class DungeonRealms extends JavaPlugin {
         saveConfig();
         mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Database.mongoClient::close, 20L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Database.mongoClient::close, 40L);
     }
 
 }

@@ -116,6 +116,9 @@ public interface DRMonster {
                 world.getWorld().dropItem(loc.add(0, 1, 0), stack);
             }
             ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInMainHand();
+            if (weapon == null || weapon.getType() == Material.AIR) {
+                return;
+            }
             world.getWorld().dropItem(loc.add(0, 1, 0), weapon);
             return;
         }

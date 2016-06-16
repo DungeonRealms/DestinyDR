@@ -4,6 +4,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
@@ -52,10 +53,10 @@ public class RestrictionListener implements Listener {
         for (ItemStack is : p.getInventory().getArmorContents()) {
             if (is == null || is.getType() == Material.AIR || is.getType() == Material.SKULL_ITEM)
                 continue;
-            if (API.getItemTier(is) == null) {
+            if (RepairAPI.getArmorOrWeaponTier(is) == 0) {
                 continue;
             }
-            if (!canPlayerUseTier(p, API.getItemTier(is).getTierId())) {
+            if (!canPlayerUseTier(p, RepairAPI.getArmorOrWeaponTier(is))) {
                 hadIllegalArmor = true;
                 if (p.getInventory().firstEmpty() == -1) {
                     // No space for the armor
@@ -98,10 +99,10 @@ public class RestrictionListener implements Listener {
         if (event.getDamager() instanceof Player) {
             Player player = (Player) event.getDamager();
             if (player.getEquipment().getItemInMainHand() != null) {
-                if (Item.ItemType.isWeapon(player.getEquipment().getItemInMainHand())) {
-                    if (!canPlayerUseTier(player, API.getItemTier(player.getEquipment().getItemInMainHand()).getTierId())) {
+                if (API.isWeapon(player.getEquipment().getItemInMainHand())) {
+                    if (!canPlayerUseTier(player, RepairAPI.getArmorOrWeaponTier(player.getEquipment().getItemInMainHand()))) {
                         player.sendMessage(ChatColor.RED + "You must to be " + ChatColor.UNDERLINE + "at least" + ChatColor.RED + " level "
-                                + getLevelToUseTier(API.getItemTier(player.getEquipment().getItemInMainHand()).getTierId()) + " to use this weapon.");
+                                + getLevelToUseTier(RepairAPI.getArmorOrWeaponTier(player.getEquipment().getItemInMainHand())) + " to use this weapon.");
                         event.setCancelled(true);
                         event.setDamage(0);
                         EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 1F);
@@ -138,6 +139,6 @@ public class RestrictionListener implements Listener {
             if (event.getPlayer() != null && event.getPlayer().isOnline()) {
                 checkPlayersArmorIsValid(event.getPlayer());
             }
-        }, 200L);
+        }, 150L);
     }
 }
