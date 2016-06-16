@@ -20,6 +20,9 @@ public class Aceron extends DRWitherSkeleton implements Boss{
 	 */
 	public Aceron(World world, EnumMonster mon) {
 		super(world, mon, 5, EnumEntityType.HOSTILE_MOB);
+		this.setSize(0.7F, 2.4F);
+		this.fireProof = true;
+		this.setSkeletonType(1);
 	}
 
 	@Override

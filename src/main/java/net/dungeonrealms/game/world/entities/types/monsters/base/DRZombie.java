@@ -49,8 +49,8 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
-        this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(monster.getSullItem(monster)));
-        livingEntity.getEquipment().setHelmet(monster.getSullItem(monster));
+        this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(monster.getSkullItem(monster)));
+        livingEntity.getEquipment().setHelmet(monster.getSkullItem(monster));
     }
 
     protected DRZombie(World world) {

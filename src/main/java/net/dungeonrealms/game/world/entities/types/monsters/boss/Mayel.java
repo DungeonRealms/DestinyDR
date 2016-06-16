@@ -56,7 +56,9 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
 		for (Player p : API.getNearbyPlayers(loc, 50)) {
 			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().greeting);
 		}
-
+		this.setSize(0.7F, 2.4F);
+		this.fireProof = true;
+		this.setSkeletonType(1);
 	}
 
 	@Override

@@ -42,8 +42,8 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
         setStats();
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
-        this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(monster.getSullItem(monster)));
-        livingEntity.getEquipment().setHelmet(monster.getSullItem(monster));
+        this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(monster.getSkullItem(monster)));
+        livingEntity.getEquipment().setHelmet(monster.getSkullItem(monster));
     }
     
     protected DRSkeleton(World world) {

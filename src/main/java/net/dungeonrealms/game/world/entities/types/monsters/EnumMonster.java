@@ -24,7 +24,7 @@ public enum EnumMonster {
     Naga("naga","Naga", "Das_Doktor", new String[]{"Weak"}, new String[]{"Shaman", "Mage"}),
     Tripoli("tripoli","Tripoli", "Xmattpt", new String[]{" "}, new String[]{"Soldier", "Commander"}),
     Tripoli1("tripoli1","Tripoli", "Xmattpt", new String[]{" "}, new String[]{"Soldier", "Commander"}),
-    Golem("golem","Golem", "Steve", new String[]{"Enchanted", "Ironclad", "Enchanted Ironclad", "Ice"}, new String[]{" "}),
+    Golem("golem","Golem", "Steve", new String[]{"Enchanted", "Ironclad", "Enchanted", "Ice"}, new String[]{""}),
     Spider1("spider1", "Spider", "Steve", new String[]{"Scary", "Spooky", "Hairy", "Giant"}, new String[]{""}),
     Spider2("spider2", "Spider", "Steve", new String[]{"Scary", "Spooky", "Hairy", "Giant"}, new String[]{""}),
     FireImp("imp", "Fire Imp", "Devil", new String[]{""}, new String[]{""}),
@@ -103,7 +103,7 @@ public enum EnumMonster {
 		return null;
 	}
 
-    public ItemStack getSullItem(EnumMonster monster) {
+    public ItemStack getSkullItem(EnumMonster monster) {
         switch (monster) {
             case Pirate:
             case MayelPirate:

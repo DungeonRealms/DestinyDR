@@ -25,6 +25,9 @@ public class RangedWitherSkeleton extends DRWitherSkeleton implements IRangedEnt
         this.tier = tier;
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         setWeapon(tier);
+        this.setSize(0.7F, 2.4F);
+        this.fireProof = true;
+        this.setSkeletonType(1);
     }
 
     public RangedWitherSkeleton(World world) {

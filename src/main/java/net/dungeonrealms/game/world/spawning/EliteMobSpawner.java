@@ -187,8 +187,10 @@ public class EliteMobSpawner {
             if (entity == null) {
                 return;
             }
-            if (customName.toLowerCase().contains("librarian")) {
-                entity = new RangedWitherSkeleton(world, EnumMonster.Skeleton2, EnumEntityType.HOSTILE_MOB, tier);
+            if (hasCustomName) {
+                if (customName.toLowerCase().contains("librarian")) {
+                    entity = new RangedWitherSkeleton(world, EnumMonster.Skeleton2, EnumEntityType.HOSTILE_MOB, tier);
+                }
             }
             int level = Utils.getRandomFromTier(tier, levelRange);
             MetadataUtils.registerEntityMetadata(entity, type, tier, level);

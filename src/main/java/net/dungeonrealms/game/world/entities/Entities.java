@@ -14,6 +14,7 @@ import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.BasicEntit
 import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.StaffSkeleton;
 import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.StaffZombie;
 import net.dungeonrealms.game.world.entities.types.monsters.base.*;
+import net.dungeonrealms.game.world.entities.types.monsters.boss.Burick;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.InfernalAbyss;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.InfernalGhast;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Mayel;
@@ -86,8 +87,7 @@ public class Entities implements GenericMechanic {
 
 
 
-        //nmsUtils.registerEntity("DRSpider", 59, EntitySpider.class, DRSpider.class);
-
+        nmsUtils.registerEntity("DRSpider", 59, EntitySpider.class, DRSpider.class);
         nmsUtils.registerEntity("DRWither", 51, EntitySkeleton.class, DRWitherSkeleton.class);
         nmsUtils.registerEntity("DRBlaze", 61, EntityBlaze.class, DRBlaze.class);
         nmsUtils.registerEntity("DRMagma", 62, EntityMagmaCube.class, DRMagma.class);
@@ -95,15 +95,15 @@ public class Entities implements GenericMechanic {
         nmsUtils.registerEntity("DRSilverfish", 60, EntitySilverfish.class, DRSilverfish.class);
         nmsUtils.registerEntity("DRWolf", 95, EntityWolf.class, DRWolf.class);
         nmsUtils.registerEntity("DRWitch", 66, EntityWitch.class, DRWitch.class);
-
-        //nmsUtils.registerEntity("DRZombie", 54, EntityZombie.class, DRZombie.class);
+        nmsUtils.registerEntity("DRZombie", 54, EntityZombie.class, DRZombie.class);
+        nmsUtils.registerEntity("DRGolem", 99, EntityGolem.class, DRGolem.class);
 
         // Tier 1 Boss
         nmsUtils.registerEntity("Mayel", 51, EntitySkeleton.class, Mayel.class);
         nmsUtils.registerEntity("Pyromancer", 51, EntitySkeleton.class, Pyromancer.class);
 
         // Tier 3 Boss
-        //nmsUtils.registerEntity("Burick", 51, EntitySkeleton.class, Burick.class);
+        nmsUtils.registerEntity("Burick", 51, EntitySkeleton.class, Burick.class);
 
         // Tier 4 Boss
         nmsUtils.registerEntity("InfernalAbyss", 51, EntitySkeleton.class, InfernalAbyss.class);

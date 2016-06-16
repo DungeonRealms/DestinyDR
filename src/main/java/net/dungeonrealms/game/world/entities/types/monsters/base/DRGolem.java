@@ -23,36 +23,31 @@ public abstract class DRGolem extends EntityGolem implements DRMonster {
     protected EnumMonster monsterType;
     public int tier;
 
-    public DRGolem(World world, EnumMonster monsterType, int tier, EnumEntityType type) {
+    protected DRGolem(World world, EnumMonster monsterType, int tier, EnumEntityType type) {
         this(world);
         this.monsterType = monsterType;
         this.name = monsterType.name;
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(14d);
         this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
         this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
-        String customName = monsterType.getPrefix() + " " + monsterType.name + " " + monsterType.getSuffix() + " ";
-        this.setCustomName(customName);
-        this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
         setArmor(tier);
         setStats();
+        String customName = monsterType.getPrefix().trim() + " " + monsterType.name.trim() + " " + monsterType.getSuffix().trim() + " ";
+        this.setCustomName(customName);
+        this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
+        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+        this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(monsterType.getSkullItem(monsterType)));
+        livingEntity.getEquipment().setHelmet(monsterType.getSkullItem(monsterType));
     }
 
-    public DRGolem(World world) {
+    protected DRGolem(World world) {
         super(world);
     }
 
     protected abstract void setStats();
 
     @Override
-    protected Item getLoot() {
-        return null;
-    }
-
-
-    @Override
-    public EnumMonster getEnum() {
-        return this.monsterType;
-    }
+    public  abstract EnumMonster getEnum();
 
     public void setArmor(int tier) {
         org.bukkit.inventory.ItemStack[] armor = API.getTierArmor(tier);

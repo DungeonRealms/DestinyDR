@@ -20,6 +20,7 @@ public class MeleeGolem extends DRGolem {
 
     public MeleeGolem(World world, int tier, EnumEntityType entityType) {
         super(world, EnumMonster.Golem, tier, entityType);
+        setWeapon(tier);
     }
 
     public MeleeGolem(World world) {

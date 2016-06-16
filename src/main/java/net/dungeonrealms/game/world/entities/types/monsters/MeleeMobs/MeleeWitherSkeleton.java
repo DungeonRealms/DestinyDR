@@ -32,6 +32,9 @@ public class MeleeWitherSkeleton extends DRWitherSkeleton {
     public MeleeWitherSkeleton(World world, int tier, EnumMonster monster, EnumEntityType entityType) {
         super(world, monster, tier, entityType);
         setWeapon(tier);
+        this.setSize(0.7F, 2.4F);
+        this.fireProof = true;
+        this.setSkeletonType(1);
     }
 
     @Override
