@@ -283,6 +283,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandTell("tell", "/<command> [args]", "Send a private message to a player."));
         cm.registerCommand(new CommandISay("isay", "/<command> [args]", "Prints message to players in dungeon world from command block."));
         cm.registerCommand(new CommandModeration("moderation", "/<command> [args]", "Moderation command for Dungeon Realms staff."));
+        cm.registerCommand(new CommandStaffChat("staffchat", "/<command> [args]", "Send a message to the staff chat.", Collections.singletonList("sc")));
 
         cm.registerCommand(new CommandPAccept("paccept", "/<command> [args]", "Accept a party invitation."));
         cm.registerCommand(new CommandPRemove("premove", "/<command> [args]", "Remove player from party.", Collections.singletonList("pkick")));

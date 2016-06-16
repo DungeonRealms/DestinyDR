@@ -36,7 +36,7 @@ public class SupportMenus {
 
     public static void openMainMenu(Player player, String playerName) {
         try {
-            UUID uuid = Bukkit.getPlayer(playerName) != null ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
+            UUID uuid = Bukkit.getPlayer(playerName) != null && Bukkit.getPlayer(playerName).getDisplayName().equalsIgnoreCase(playerName) ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
             DatabaseAPI.getInstance().requestPlayer(uuid);
             String playerRank = Rank.getInstance().getRank(uuid);
             if (!Rank.isDev(player) && (playerRank.equalsIgnoreCase("gm") || playerRank.equalsIgnoreCase("dev"))) {
