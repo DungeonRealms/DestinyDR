@@ -176,7 +176,7 @@ public class GuildMechanics {
         List<UUID> officers = GuildDatabaseAPI.get().getGuildOfficers(guildName);
 
         player.sendMessage(ChatColor.GRAY + "Are you sure you want to QUIT the guild '" + ChatColor.DARK_AQUA + displayName + ChatColor.GRAY + "' - This cannot be undone. " + "(" + ChatColor.GREEN.toString() + ChatColor.BOLD + "Y" + ChatColor.GRAY + " / " + ChatColor.RED.toString() + ChatColor.BOLD + "N" + ChatColor.GRAY + ")");
-        boolean isOwner = GuildDatabaseAPI.get().isOwner(player.getUniqueId(), guildName);
+        final boolean isOwner = GuildDatabaseAPI.get().isOwner(player.getUniqueId(), guildName);
 
         if (isOwner && officers.size() == 0)
             player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD.toString() + "WARNING: " + ChatColor.GRAY + "You are the " + ChatColor.UNDERLINE + "GUILD LEADER" + ChatColor.GRAY + " and there are not successors to watch after the guild, if you leave this guild it will be " + ChatColor.BOLD + "PERMANENTLY DELETED" + ChatColor.GRAY + ". All members will be kicked, and you will lose your 5,000g deposit.");
@@ -276,6 +276,7 @@ public class GuildMechanics {
                 BannerMeta meta = (BannerMeta) info.getCurrentBanner().getItemMeta();
                 meta.setLore(new ArrayList<>());
                 meta.setDisplayName(ChatColor.GREEN + info.getDisplayName() + "'s Guild banner");
+                meta.setLore(Collections.singletonList(ChatColor.GRAY + "Right click to equip"));
                 info.getCurrentBanner().setItemMeta(meta);
 
                 String itemString = ItemSerialization.itemStackToBase64(info.getCurrentBanner());
