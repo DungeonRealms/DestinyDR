@@ -18,6 +18,7 @@ import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.inventory.NPCMenus;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
+import net.dungeonrealms.game.player.inventory.SupportMenus;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.player.stats.StatsManager;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
@@ -1036,22 +1037,27 @@ public class ClickHandler {
                 switch (slot) {
                     case 4: break;
                     case 19:
-                        PlayerMenus.openSupportRankMenu(player, playerName, uuid);
+                        if (!playerName.equalsIgnoreCase(player.getDisplayName())) {
+                            SupportMenus.openRankMenu(player, playerName, uuid);
+                        } else {
+                            player.sendMessage(ChatColor.RED + "You " + ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "CANNOT" + ChatColor.RED + " change the rank of your own account.");
+                            player.closeInventory();
+                        }
                         break;
                     case 22:
-                        PlayerMenus.openSupportLevelMenu(player, playerName, uuid);
+                        SupportMenus.openLevelMenu(player, playerName, uuid);
                         break;
                     case 25:
-                        PlayerMenus.openSupportECashMenu(player, playerName, uuid);
+                        SupportMenus.openECashMenu(player, playerName, uuid);
                         break;
                     case 28:
-                        PlayerMenus.openSupportBankMenu(player, playerName, uuid);
+                        SupportMenus.openBankMenu(player, playerName, uuid);
                         break;
                     case 31:
-                        PlayerMenus.openSupportHearthstoneMenu(player, playerName, uuid);
+                        SupportMenus.openHearthstoneMenu(player, playerName, uuid);
                         break;
                     case 34:
-                        PlayerMenus.openSupportCoemeticssMenu(player, playerName, uuid);
+                        SupportMenus.openCosmeticsMenu(player, playerName, uuid);
                         break;
 
                     default:
@@ -1076,7 +1082,7 @@ public class ClickHandler {
 
                 switch (slot) {
                     case 4:
-                        PlayerMenus.openSupportMenu(player, playerName);
+                        SupportMenus.openMainMenu(player, playerName);
                         return;
                     case 20:
                         newRank = "DEFAULT";
@@ -1119,7 +1125,7 @@ public class ClickHandler {
                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, newRank, true);
 
                 player.sendMessage(ChatColor.GREEN + "Successfully set the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + " to " + ChatColor.BOLD + ChatColor.UNDERLINE + newRank + ChatColor.GREEN + ".");
-                PlayerMenus.openSupportMenu(player, playerName);
+                SupportMenus.openMainMenu(player, playerName);
                 break;
             case "Support Tools (Level)":
                 event.setCancelled(true);
@@ -1134,7 +1140,7 @@ public class ClickHandler {
 
                 switch (slot) {
                     case 4:
-                        PlayerMenus.openSupportMenu(player, playerName);
+                        SupportMenus.openMainMenu(player, playerName);
                         break;
                     default:
                         player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
@@ -1154,7 +1160,7 @@ public class ClickHandler {
 
                 switch (slot) {
                     case 4:
-                        PlayerMenus.openSupportMenu(player, playerName);
+                        SupportMenus.openMainMenu(player, playerName);
                         break;
                     default:
                         player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
@@ -1174,7 +1180,7 @@ public class ClickHandler {
 
                 switch (slot) {
                     case 4:
-                        PlayerMenus.openSupportMenu(player, playerName);
+                        SupportMenus.openMainMenu(player, playerName);
                         break;
                     default:
                         player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
@@ -1194,7 +1200,7 @@ public class ClickHandler {
 
                 switch (slot) {
                     case 4:
-                        PlayerMenus.openSupportMenu(player, playerName);
+                        SupportMenus.openMainMenu(player, playerName);
                         break;
                     default:
                         player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
@@ -1214,16 +1220,16 @@ public class ClickHandler {
 
                 switch (slot) {
                     case 4:
-                        PlayerMenus.openSupportMenu(player, playerName);
+                        SupportMenus.openMainMenu(player, playerName);
                         break;
                     case 19:
-                        PlayerMenus.openSupportTrailsMenu(player, playerName, uuid);
+                        SupportMenus.openTrailsMenu(player, playerName, uuid);
                         break;
                     case 22:
-                        PlayerMenus.openSupportMountsMenu(player, playerName, uuid);
+                        SupportMenus.openMountsMenu(player, playerName, uuid);
                         break;
                     case 25:
-                        PlayerMenus.openSupportPetsMenu(player, playerName, uuid);
+                        SupportMenus.openPetsMenu(player, playerName, uuid);
                         break;
                     default:
                         player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
@@ -1243,7 +1249,7 @@ public class ClickHandler {
 
                 switch (slot) {
                     case 4:
-                        PlayerMenus.openSupportMenu(player, playerName);
+                        SupportMenus.openMainMenu(player, playerName);
                         break;
                     default:
                         player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
@@ -1263,7 +1269,7 @@ public class ClickHandler {
 
                 switch (slot) {
                     case 4:
-                        PlayerMenus.openSupportMenu(player, playerName);
+                        SupportMenus.openMainMenu(player, playerName);
                         break;
                     default:
                         player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
@@ -1283,7 +1289,7 @@ public class ClickHandler {
 
                 switch (slot) {
                     case 4:
-                        PlayerMenus.openSupportMenu(player, playerName);
+                        SupportMenus.openMainMenu(player, playerName);
                         break;
                     default:
                         player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");

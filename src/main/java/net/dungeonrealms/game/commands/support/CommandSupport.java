@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.commands.support;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.player.inventory.PlayerMenus;
+import net.dungeonrealms.game.player.inventory.SupportMenus;
 import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -26,12 +26,9 @@ public class CommandSupport extends BasicCommand {
         if (args.length < 1) {
             player.sendMessage(ChatColor.RED + "Invalid usage: /support <name>");
             return false;
-        } else if (args[0].equalsIgnoreCase(player.getDisplayName())) {
-            player.sendMessage(ChatColor.RED + "You " + ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "CANNOT" + ChatColor.RED + " manage your own account.");
-            return false;
         }
 
-        PlayerMenus.openSupportMenu(player, args[0]);
+        SupportMenus.openMainMenu(player, args[0]);
         return true;
     }
 
