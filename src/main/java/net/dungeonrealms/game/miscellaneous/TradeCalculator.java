@@ -4,7 +4,6 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Material;
@@ -201,9 +200,11 @@ public class TradeCalculator {
                         merchant_offer.add(scrap);
                         payout -= 64;
                     }
-                    ItemStack scrap = ItemManager.createArmorScrap(5);
-                    scrap.setAmount(payout);
-                    merchant_offer.add(scrap);
+                    if (payout > 0) {
+                        ItemStack scrap = ItemManager.createArmorScrap(5);
+                        scrap.setAmount(payout);
+                        merchant_offer.add(scrap);
+                    }
                 }
             }
         }
@@ -300,9 +301,11 @@ public class TradeCalculator {
                 scrap.setAmount(64);
                 merchant_offer.add(scrap);
             }
-            ItemStack scrap = ItemManager.createArmorScrap(1);
-            scrap.setAmount(payout);
-            merchant_offer.add(scrap);
+            if (payout > 0) {
+                ItemStack scrap = ItemManager.createArmorScrap(1);
+                scrap.setAmount(payout);
+                merchant_offer.add(scrap);
+            }
         }
         if (t2_ore > 0) {
             while (t2_ore >= 150) {
@@ -324,9 +327,11 @@ public class TradeCalculator {
                 scrap.setAmount(64);
                 merchant_offer.add(scrap);
             }
-            ItemStack scrap = ItemManager.createArmorScrap(2);
-            scrap.setAmount(payout);
-            merchant_offer.add(scrap);
+            if (payout > 0) {
+                ItemStack scrap = ItemManager.createArmorScrap(2);
+                scrap.setAmount(payout);
+                merchant_offer.add(scrap);
+            }
         }
         if (t3_ore > 0) {
             while (t3_ore >= 200) {
@@ -352,9 +357,11 @@ public class TradeCalculator {
                 scrap.setAmount(64);
                 merchant_offer.add(scrap);
             }
-            ItemStack scrap = ItemManager.createArmorScrap(3);
-            scrap.setAmount(payout);
-            merchant_offer.add(scrap);
+            if (payout > 0) {
+                ItemStack scrap = ItemManager.createArmorScrap(3);
+                scrap.setAmount(payout);
+                merchant_offer.add(scrap);
+            }
         }
         if (t4_ore > 0) {
             while (t4_ore >= 140) {
@@ -380,9 +387,11 @@ public class TradeCalculator {
                 scrap.setAmount(64);
                 merchant_offer.add(scrap);
             }
-            ItemStack scrap = ItemManager.createArmorScrap(4);
-            scrap.setAmount(payout);
-            merchant_offer.add(scrap);
+            if (payout > 0) {
+                ItemStack scrap = ItemManager.createArmorScrap(4);
+                scrap.setAmount(payout);
+                merchant_offer.add(scrap);
+            }
         }
         if (t5_ore > 0) {
             while (t5_ore >= 80) {
@@ -413,15 +422,13 @@ public class TradeCalculator {
                 scrap.setAmount(64);
                 merchant_offer.add(scrap);
             }
-            ItemStack scrap = ItemManager.createArmorScrap(5);
-            scrap.setAmount(payout);
-            merchant_offer.add(scrap);
+            if (payout > 0) {
+                ItemStack scrap = ItemManager.createArmorScrap(5);
+                scrap.setAmount(payout);
+                merchant_offer.add(scrap);
+            }
         }
-        
-        
-        
-        
-        
+
         if (t1_ore > 0) {
             int payout = t1_ore * 2;
             while (payout > 64) {
@@ -430,9 +437,11 @@ public class TradeCalculator {
                 scrap.setAmount(64);
                 merchant_offer.add(scrap);
             }
-            ItemStack scrap = ItemManager.createArmorScrap(1);
-            scrap.setAmount(payout);
-            merchant_offer.add(scrap);
+            if (payout > 0) {
+                ItemStack scrap = ItemManager.createArmorScrap(1);
+                scrap.setAmount(payout);
+                merchant_offer.add(scrap);
+            }
         }
         if (t2_ore > 0) {
             int payout = t2_ore;
@@ -442,9 +451,11 @@ public class TradeCalculator {
                 scrap.setAmount(64);
                 merchant_offer.add(scrap);
             }
-            ItemStack scrap = ItemManager.createArmorScrap(2);
-            scrap.setAmount(payout);
-            merchant_offer.add(scrap);
+            if (payout > 0) {
+                ItemStack scrap = ItemManager.createArmorScrap(2);
+                scrap.setAmount(payout);
+                merchant_offer.add(scrap);
+            }
         }
         if (t3_ore > 0) {
             int payout = t3_ore / 2;
@@ -454,9 +465,11 @@ public class TradeCalculator {
                 scrap.setAmount(64);
                 merchant_offer.add(scrap);
             }
-            ItemStack scrap = ItemManager.createArmorScrap(3);
-            scrap.setAmount(payout);
-            merchant_offer.add(scrap);
+            if (payout > 0) {
+                ItemStack scrap = ItemManager.createArmorScrap(3);
+                scrap.setAmount(payout);
+                merchant_offer.add(scrap);
+            }
         }
         if (t4_ore > 0) {
             int payout = t4_ore / 2;
@@ -466,9 +479,11 @@ public class TradeCalculator {
                 scrap.setAmount(64);
                 merchant_offer.add(scrap);
             }
-            ItemStack scrap = ItemManager.createArmorScrap(4);
-            scrap.setAmount(payout);
-            merchant_offer.add(scrap);
+            if (payout > 0) {
+                ItemStack scrap = ItemManager.createArmorScrap(4);
+                scrap.setAmount(payout);
+                merchant_offer.add(scrap);
+            }
         }
         if (t5_ore > 0) {
             int payout = t5_ore / 2;
@@ -478,11 +493,12 @@ public class TradeCalculator {
                 scrap.setAmount(64);
                 merchant_offer.add(scrap);
             }
-            ItemStack scrap = ItemManager.createArmorScrap(5);
-            scrap.setAmount(payout);
-            merchant_offer.add(scrap);
+            if (payout > 0) {
+                ItemStack scrap = ItemManager.createArmorScrap(5);
+                scrap.setAmount(payout);
+                merchant_offer.add(scrap);
+            }
         }
-        
         
         if (t1_scraps > 0) {
             while (t1_scraps >= 80) {
@@ -502,9 +518,11 @@ public class TradeCalculator {
                 merchant_offer.add(scrap);
                 payout -= 64;
             }
-            ItemStack scrap = ItemManager.createArmorScrap(2);
-            scrap.setAmount(payout);
-            merchant_offer.add(scrap);
+            if (payout > 0) {
+                ItemStack scrap = ItemManager.createArmorScrap(2);
+                scrap.setAmount(payout);
+                merchant_offer.add(scrap);
+            }
         }
         if (t2_scraps > 0) {
         	
@@ -527,9 +545,11 @@ public class TradeCalculator {
                 merchant_offer.add(scrap);
                 payout -= 64;
             }
-            ItemStack scrap = ItemManager.createArmorScrap(1);
-            scrap.setAmount(payout);
-            merchant_offer.add(scrap);
+            if (payout > 0) {
+                ItemStack scrap = ItemManager.createArmorScrap(1);
+                scrap.setAmount(payout);
+                merchant_offer.add(scrap);
+            }
         }
         if (t3_scraps > 0) {
             while (t3_scraps >= 110) {
@@ -550,9 +570,11 @@ public class TradeCalculator {
                 merchant_offer.add(scrap);
                 payout -= 64;
             }
-            ItemStack scrap = ItemManager.createArmorScrap(2);
-            scrap.setAmount(payout);
-            merchant_offer.add(scrap);
+            if (payout > 0) {
+                ItemStack scrap = ItemManager.createArmorScrap(2);
+                scrap.setAmount(payout);
+                merchant_offer.add(scrap);
+            }
         }
         if (t4_scraps > 0) {
             while (t4_scraps >= 88) {
@@ -569,8 +591,7 @@ public class TradeCalculator {
 
             while (t4_scraps >= 60) {
                 t4_scraps -= 60;
-                ItemStack orb = ItemManager.createOrbofAlteration();
-                merchant_offer.add(AntiCheat.getInstance().applyAntiDupe(orb));
+                merchant_offer.add(ItemManager.createOrbofAlteration());
             }
             int payout = 2 * t4_scraps;
             while (payout > 64) {
@@ -579,27 +600,29 @@ public class TradeCalculator {
                 merchant_offer.add(scrap);
                 payout -= 64;
             }
-            ItemStack scrap = ItemManager.createArmorScrap(3);
-            scrap.setAmount(payout);
-            merchant_offer.add(scrap);
+            if (payout > 0) {
+                ItemStack scrap = ItemManager.createArmorScrap(3);
+                scrap.setAmount(payout);
+                merchant_offer.add(scrap);
+            }
         }
         if (t5_scraps > 0) {
             while (t5_scraps >= 33) {
                 t5_scraps -= 33;
                 ItemStack scroll = ItemManager.createWeaponEnchant(5);
-                merchant_offer.add(AntiCheat.getInstance().applyAntiDupe(scroll));
+                merchant_offer.add(scroll);
             }
 
             while (t5_scraps >= 30) {
                 t5_scraps -= 30;
                 ItemStack scroll = ItemManager.createArmorEnchant(5);
-                merchant_offer.add(AntiCheat.getInstance().applyAntiDupe(scroll));
+                merchant_offer.add(scroll);
             }
 
             while (t5_scraps >= 20) {
                 t5_scraps -= 20;
                 ItemStack orb = ItemManager.createOrbofAlteration();
-                merchant_offer.add(AntiCheat.getInstance().applyAntiDupe(orb));
+                merchant_offer.add(orb);
             }
             int payout = 3 * t5_scraps;
             while (payout > 64) {
@@ -608,9 +631,11 @@ public class TradeCalculator {
                 merchant_offer.add(scrap);
                 payout -= 64;
             }
-            ItemStack scrap = ItemManager.createArmorScrap(4);
-            scrap.setAmount(payout);
-            merchant_offer.add(scrap);
+            if (payout > 0) {
+                ItemStack scrap = ItemManager.createArmorScrap(4);
+                scrap.setAmount(payout);
+                merchant_offer.add(scrap);
+            }
         }
         
         if(orbs > 0){
