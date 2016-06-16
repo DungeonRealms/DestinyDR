@@ -97,8 +97,10 @@ public class NetworkAPI implements PluginMessageListener {
         ByteArrayDataOutput out = ByteStreams.newDataOutput();
         out.writeUTF(subChannel);
         out.writeUTF(message);
+
         for (String s : contents)
             out.writeUTF(s);
+
         Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
 
         if (player != null)

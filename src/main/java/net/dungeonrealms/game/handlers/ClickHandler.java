@@ -850,7 +850,7 @@ public class ClickHandler {
                 break;
             case "Toggles":
                 event.setCancelled(true);
-                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR) return;
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
 
                 PlayerManager.PlayerToggles playerToggle = PlayerManager.PlayerToggles.getByCommandName(event.getCurrentItem().getItemMeta().getDisplayName().substring(3));
                 if (playerToggle != null) {
@@ -861,6 +861,7 @@ public class ClickHandler {
                 }
 
                 break;
+            case "Item Vendor":
             case "Food Vendor":
                 if (event.isShiftClick()) {
                     event.setCancelled(true);
@@ -1025,7 +1026,8 @@ public class ClickHandler {
                 break;
             case "Support Tools":
                 event.setCancelled(true);
-                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player))
+                    break;
 
                 NBTTagCompound tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
                 String playerName = tag.getString("name");
@@ -1035,7 +1037,8 @@ public class ClickHandler {
                 if (playerName.isEmpty() || uuid.toString().isEmpty()) break;
 
                 switch (slot) {
-                    case 4: break;
+                    case 4:
+                        break;
                     case 19:
                         if (!playerName.equalsIgnoreCase(player.getDisplayName())) {
                             SupportMenus.openRankMenu(player, playerName, uuid);
@@ -1067,7 +1070,8 @@ public class ClickHandler {
                 break;
             case "Support Tools (Rank)":
                 event.setCancelled(true);
-                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player))
+                    break;
 
                 tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
                 playerName = tag.getString("name");
@@ -1129,7 +1133,8 @@ public class ClickHandler {
                 break;
             case "Support Tools (Level)":
                 event.setCancelled(true);
-                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player))
+                    break;
 
                 tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
                 playerName = tag.getString("name");
@@ -1149,7 +1154,8 @@ public class ClickHandler {
                 break;
             case "Support Tools (E-Cash)":
                 event.setCancelled(true);
-                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player))
+                    break;
 
                 tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
                 playerName = tag.getString("name");
@@ -1169,7 +1175,8 @@ public class ClickHandler {
                 break;
             case "Support Tools (Bank)":
                 event.setCancelled(true);
-                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player))
+                    break;
 
                 tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
                 playerName = tag.getString("name");
@@ -1189,7 +1196,8 @@ public class ClickHandler {
                 break;
             case "Support Tools (Hearthstone)":
                 event.setCancelled(true);
-                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player))
+                    break;
 
                 tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
                 playerName = tag.getString("name");
@@ -1209,7 +1217,8 @@ public class ClickHandler {
                 break;
             case "Support Tools (Cosmetics)":
                 event.setCancelled(true);
-                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player))
+                    break;
 
                 tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
                 playerName = tag.getString("name");
@@ -1238,7 +1247,8 @@ public class ClickHandler {
                 break;
             case "Support Tools (Trails)":
                 event.setCancelled(true);
-                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player))
+                    break;
 
                 tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
                 playerName = tag.getString("name");
@@ -1258,7 +1268,8 @@ public class ClickHandler {
                 break;
             case "Support Tools (Mounts)":
                 event.setCancelled(true);
-                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player))
+                    break;
 
                 tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
                 playerName = tag.getString("name");
@@ -1278,7 +1289,8 @@ public class ClickHandler {
                 break;
             case "Support Tools (Pets)":
                 event.setCancelled(true);
-                if (event.getCurrentItem() == null ||  event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player)) break;
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player))
+                    break;
 
                 tag = CraftItemStack.asNMSCopy(event.getCurrentItem()).getTag();
                 playerName = tag.getString("name");

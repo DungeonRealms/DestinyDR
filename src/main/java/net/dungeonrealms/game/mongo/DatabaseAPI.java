@@ -244,7 +244,6 @@ public class DatabaseAPI {
         if (doc == null) {
             addNewPlayer(uuid);
         } else {
-            Utils.log.info("Fetched information for uuid: " + uuid.toString());
             PLAYERS.put(uuid, doc);
         }
         /*Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first((document) -> {

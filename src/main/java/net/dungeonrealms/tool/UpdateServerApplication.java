@@ -7,12 +7,29 @@ import java.io.InputStreamReader;
  * Class written by APOLLOSOFTWARE.IO on 6/7/2016
  */
 
-public class UpdateDevServerApplication {
+public class UpdateServerApplication {
 
     static String TOOL_PATH = "\"C:\\Users\\XenoJava\\Desktop\\DR\\DungeonRealms\\tools\\pushBuildToServer\"";
 
     public static void main(String[] args) {
-        executeCommand("cd " + TOOL_PATH + " && push.bat");
+
+        if (args.length > 0) {
+            switch (args[0]) {
+                case "-updateBungee":
+                    executeCommand("cd " + TOOL_PATH + " && pushBungee.bat");
+                    break;
+                case "-updateDevServer":
+                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat");
+                    break;
+                case "-updateAll":
+                    executeCommand("cd " + TOOL_PATH + " && pushBungee.bat");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat");
+                    break;
+            }
+        } else {
+            System.out.println("Program arguments are invalid!");
+        }
+
     }
 
 

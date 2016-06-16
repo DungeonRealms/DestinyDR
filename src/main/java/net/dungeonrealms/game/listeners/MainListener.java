@@ -515,8 +515,7 @@ public class MainListener implements Listener {
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Item Vendor")) {
-            // TODO: Open Item Vendor
-            event.getPlayer().sendMessage(ChatColor.RED + "Sorry, I'm restocking my wares!");
+            NPCMenus.openItemVendorMenu(event.getPlayer());
             return;
         }
         if (npcNameStripped.equalsIgnoreCase("Guild Registrar")) {
@@ -759,6 +758,12 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onItemPickup(PlayerPickupItemEvent event) {
+        if (event.getItem().getItemStack().getAmount() <= 0) {
+            event.setCancelled(true);
+            event.getItem().remove();
+            return;
+            //Prevent weird MC glitch.
+        }
         event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 1f);
         if (event.getItem().getItemStack().getType() == Material.EMERALD) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getPlayer().getUniqueId()).toString())) {
@@ -859,6 +864,42 @@ public class MainListener implements Listener {
         if (event.getTarget() != null) {
             if (!(event.getTarget() instanceof Player)) {
                 event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void characterJournalPartyInvnite(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
+            if (((Player) event.getDamager()).getEquipment().getItemInMainHand() != null) {
+                ItemStack stack = ((Player) event.getDamager()).getEquipment().getItemInMainHand();
+                if (stack.getType() == Material.WRITTEN_BOOK) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    Player player = (Player) event.getDamager();
+                    Player invite = (Player) event.getEntity();
+                    if (Affair.getInstance().isInParty(invite)) {
+                        player.sendMessage(ChatColor.RED + "That player is already in a party!");
+                    } else {
+                        if (Affair.getInstance().isInParty(player)) {
+                            if (Affair.getInstance().isOwner(player)) {
+                                if (Affair.getInstance().getParty(player).get().getMembers().size() >= 7) {
+                                    player.sendMessage(ChatColor.RED + "Your party has reached the max player count!");
+                                    return;
+                                }
+                                Affair.getInstance().invitePlayer(invite, player);
+                            } else {
+                                player.sendMessage(new String[] {
+                                        ChatColor.RED + "You are NOT the leader of your party.",
+                                        ChatColor.GRAY + "Type " + ChatColor.BOLD + "/pquit" + ChatColor.GRAY + " to quit your current party."
+                                });
+                            }
+                        } else {
+                            Affair.getInstance().createParty(player);
+                            Affair.getInstance().invitePlayer(invite, player);
+                        }
+                    }
+                }
             }
         }
     }

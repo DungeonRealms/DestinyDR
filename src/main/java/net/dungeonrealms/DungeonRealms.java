@@ -4,6 +4,7 @@ import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.commands.*;
 import net.dungeonrealms.game.commands.dungeonhelpers.DungeonSpawn;
+import net.dungeonrealms.game.commands.dungeonhelpers.ReplaceNear;
 import net.dungeonrealms.game.commands.generic.CommandManager;
 import net.dungeonrealms.game.commands.guild.*;
 import net.dungeonrealms.game.commands.menualias.*;
@@ -235,7 +236,8 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new BlockListener(), this);
             pm.registerEvents(new BankListener(), this);
             pm.registerEvents(new EnergyListener(), this);
-            pm.registerEvents(new AntiCheatListener(), this);
+            //pm.registerEvents(new AntiCheatListener(), this);
+            //TODO: Fix.
             pm.registerEvents(new ShopListener(), this);
             pm.registerEvents(new AchievementManager(), this);
             hs = new HearthStone();
@@ -247,16 +249,20 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new TabbedChatListener(), this);
             pm.registerEvents(new T1Dungeon(), this);
             pm.registerEvents(new BossListener(), this);
+            pm.registerEvents(new RestrictionListener(), this);
         } else {
-            pm.registerEvents(new MainListenerInstance(), this);
             pm.registerEvents(new DamageListener(), this);
             pm.registerEvents(new ItemListener(), this);
             pm.registerEvents(new InventoryListener(), this);
             pm.registerEvents(new BlockListener(), this);
             pm.registerEvents(new EnergyListener(), this);
-            pm.registerEvents(new AntiCheatListener(), this);
+            //pm.registerEvents(new AntiCheatListener(), this);
+            //TODO: Fix.
             pm.registerEvents(new AchievementManager(), this);
             pm.registerEvents(new TabbedChatListener(), this);
+            pm.registerEvents(new RestrictionListener(), this);
+            pm.registerEvents(new T1Dungeon(), this);
+            pm.registerEvents(new BossListener(), this);
         }
 
         //pm.registerEvents(new MainListener(), this);
@@ -312,6 +318,7 @@ public class DungeonRealms extends JavaPlugin {
 
         cm.registerCommand(new DungeonSpawn("dspawn", "/<command> [args]", "Spawn dungeon monsters."));
         cm.registerCommand(new CommandMonSpawn("monspawn", "/<command> [args]", "Spawn monsters"));
+        cm.registerCommand(new ReplaceNear("drreplacenear", "/<command> [args]", "Replaces nearby blocks"));
 
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {
@@ -322,8 +329,10 @@ public class DungeonRealms extends JavaPlugin {
 
             //GUILD STUFF
             cm.registerCommand(new CommandGInfo("ginfo", "/<command>", "Guild info command."));
+            cm.registerCommand(new CommandG("g", "/<command> [msg]", "Guild chat command."));
             cm.registerCommand(new CommandGQuit("gquit", "/<command>", "Guild quit command.", Arrays.asList("gleave", "gdisband")));
             cm.registerCommand(new CommandGAccept("gaccept", "/<command>", "Guild accept invitation command."));
+            cm.registerCommand(new CommandGKick("gkick", "/<command> [args]", "Guild kick command."));
             cm.registerCommand(new CommandGInvite("ginvite", "/<command> [args]", "Guild invitation command."));
             cm.registerCommand(new CommandGPromote("gpromote", "/<command> [args]", "Guild promote command."));
             cm.registerCommand(new CommandGDemote("gdemote", "/<command> [args]", "Guild demote command."));
@@ -396,15 +405,15 @@ public class DungeonRealms extends JavaPlugin {
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000L) / START_TIME) + "/s");
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> this.hasFinishedSetup = true, 240L);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> DatabaseAPI.getInstance().PLAYER_TIME.entrySet().stream().forEach(e -> DatabaseAPI.getInstance().PLAYER_TIME.put(e.getKey(), (e.getValue() + 1))), 0L, 20L);
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> Database.getInstance().backupDatabase(), 18000L, 18000L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, API::backupDatabase, 18000L, 18000L);
     }
 
     public void onDisable() {
-        API.logoutAllPlayers(false);
-        ShopMechanics.deleteAllShops(true);
         for (CombatLogger combatLogger : CombatLog.getInstance().getCOMBAT_LOGGERS().values()) {
             combatLogger.handleTimeOut();
         }
+        API.logoutAllPlayers(false);
+        ShopMechanics.deleteAllShops(true);
         AsyncUtils.pool.shutdown();
         ps.onDisable();
         hs.onDisable();
@@ -412,7 +421,7 @@ public class DungeonRealms extends JavaPlugin {
         saveConfig();
         mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Database.mongoClient::close, 20L);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Database.mongoClient::close, 40L);
     }
 
 }
