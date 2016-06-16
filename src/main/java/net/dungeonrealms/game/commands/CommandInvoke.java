@@ -32,30 +32,41 @@ public class CommandInvoke extends BasicCommand {
         }
         if (args.length > 0) {
             if (DungeonManager.getInstance().canCreateInstance()) {
-                if (args[0].equalsIgnoreCase("bandittrove")) {
-                    if (Affair.getInstance().isInParty(player)) {
-                        List<Player> list = Affair.getInstance().getParty(player).get().getMembers();
-                        list.add(Affair.getInstance().getParty(player).get().getOwner());
-                        DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, list, "T1Dungeon");
-                    } else {
-                        DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, Collections.singletonList(player), "T1Dungeon");
-                    }
-                } else if (args[0].equalsIgnoreCase("varenglade")) {
-                    if (Affair.getInstance().isInParty(player)) {
-                        List<Player> list = Affair.getInstance().getParty(player).get().getMembers();
-                        list.add(Affair.getInstance().getParty(player).get().getOwner());
-                        DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, list, "DODungeon");
-                    } else {
-                        DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, Collections.singletonList(player), "DODungeon");
-                    }
-                } else if (args[0].equalsIgnoreCase("fireydungeon")) {
-                    if (Affair.getInstance().isInParty(player)) {
-                        List<Player> list = Affair.getInstance().getParty(player).get().getMembers();
-                        list.add(Affair.getInstance().getParty(player).get().getOwner());
-                        DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.THE_INFERNAL_ABYSS, list, "fireydungeon");
-                    } else {
-                        DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.THE_INFERNAL_ABYSS, Collections.singletonList(player), "fireydungeon");
-                    }
+                switch (args[0].toLowerCase()) {
+                    case "bandittrove":
+                    case "t1dungeon":
+                        if (Affair.getInstance().isInParty(player)) {
+                            List<Player> list = Affair.getInstance().getParty(player).get().getMembers();
+                            list.add(Affair.getInstance().getParty(player).get().getOwner());
+                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, list, "T1Dungeon");
+                        } else {
+                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, Collections.singletonList(player), "T1Dungeon");
+                        }
+                        break;
+                    case "varenglade":
+                    case "dodungeon":
+                        if (Affair.getInstance().isInParty(player)) {
+                            List<Player> list = Affair.getInstance().getParty(player).get().getMembers();
+                            list.add(Affair.getInstance().getParty(player).get().getOwner());
+                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, list, "DODungeon");
+                        } else {
+                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, Collections.singletonList(player), "DODungeon");
+                        }
+                        break;
+                    case "infernal_abyss":
+                    case "infernalabyss":
+                    case "fireydungeon":
+                        if (Affair.getInstance().isInParty(player)) {
+                            List<Player> list = Affair.getInstance().getParty(player).get().getMembers();
+                            list.add(Affair.getInstance().getParty(player).get().getOwner());
+                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.THE_INFERNAL_ABYSS, list, "fireydungeon");
+                        } else {
+                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.THE_INFERNAL_ABYSS, Collections.singletonList(player), "fireydungeon");
+                        }
+                        break;
+                    default:
+                        player.sendMessage(ChatColor.RED + "Unknown instance " + args[0] + "!");
+                        break;
                 }
             } else {
                 player.sendMessage(ChatColor.RED + "There are no dungeons available at this time.");

@@ -643,7 +643,7 @@ public class HealthHandler implements GenericMechanic {
                     if (!entity.hasMetadata("uuid")) {
                         String customNameAppended = (entity.getMetadata("customname").get(0).asString().trim());
                         ChatColor npcTierColor = API.getTierColor(entity.getMetadata("tier").get(0).asInt());
-                        attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.GRAY + npcTierColor + customNameAppended + npcTierColor + " [" + (int) newHP + "HP]");
+                        attacker.sendMessage(ChatColor.RED + "     " + (int) damage + ChatColor.BOLD + " DMG" + ChatColor.RED + " -> " + ChatColor.GRAY + npcTierColor + customNameAppended + npcTierColor + " [" + (int) (newHP < 0 ? 0 : newHP) + "HP]");
                     }
                 }
             }
