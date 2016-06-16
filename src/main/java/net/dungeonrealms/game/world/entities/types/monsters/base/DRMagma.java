@@ -34,25 +34,28 @@ public class DRMagma extends EntityMagmaCube implements DRMonster {
 	 */
 	public DRMagma(World name, EnumMonster enumMonster, int tier) {
 		super(name);
-        setArmor(tier);
-	}
-
-	/**
-	 * @param name
-	 */
-	public DRMagma(World world, int tier) {
-		super(world);
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(14d);
-        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
-        this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
-        monsterType = EnumMonster.MagmaCube;
-        setArmor(tier);
-        String customName = monsterType.getPrefix() + " " + monsterType.name + " " + monsterType.getSuffix() + " ";
-        this.setCustomName(customName);
-        this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
+		this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(14d);
+		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
+		this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
+		monsterType = EnumMonster.MagmaCube;
+		setArmor(tier);
+		String customName = monsterType.getPrefix() + " " + monsterType.name + " " + monsterType.getSuffix() + " ";
+		this.setCustomName(customName);
+		this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
 		setSize(4);
 		super.setSize(4);
+		this.setSize(0.51000005F * (float)4, 0.51000005F * (float)4);
+		this.setPosition(this.locX, this.locY, this.locZ);
+		this.getAttributeInstance(GenericAttributes.maxHealth).setValue((double)(4 * 4));
+		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue((double)(0.2F + 0.1F * (float)4));
+		this.setHealth(this.getMaxHealth());
+		this.b_ = 4;
 	}
+
+	public DRMagma(World world) {
+		super(world);
+	}
+
 	public void setArmor(int tier) {
 		ItemStack[] armor = API.getTierArmor(tier);
 		// weapon, boots, legs, chest, helmet/head
