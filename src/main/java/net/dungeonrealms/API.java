@@ -375,6 +375,12 @@ public class API {
                 armor.add(ItemSerialization.itemStackToBase64(stack));
             }
         }
+        ItemStack offHand = player.getEquipment().getItemInOffHand();
+        if (offHand == null || offHand.getType() == Material.AIR) {
+            armor.add("");
+        } else {
+            armor.add(ItemSerialization.itemStackToBase64(offHand));
+        }
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, false);
 
         if (MountUtils.inventories.containsKey(uuid)) {
@@ -553,15 +559,25 @@ public class API {
         List<String> playerArmor = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ARMOR, player.getUniqueId());
         int i = -1;
         ItemStack[] armorContents = new ItemStack[4];
+        ItemStack offHand = new ItemStack(Material.AIR);
         for (String armor : playerArmor) {
             i++;
-            if (armor.equals("null") || armor.equals("")) {
-                armorContents[i] = new ItemStack(Material.AIR);
+            if (i <= 3) { //Normal armor piece
+                if (armor.equals("null") || armor.equals("")) {
+                    armorContents[i] = new ItemStack(Material.AIR);
+                } else {
+                    armorContents[i] = ItemSerialization.itemStackFromBase64(armor);
+                }
             } else {
-                armorContents[i] = ItemSerialization.itemStackFromBase64(armor);
+                if (armor.equals("null") || armor.equals("")) {
+                    offHand = new ItemStack(Material.AIR);
+                } else {
+                    offHand = ItemSerialization.itemStackFromBase64(armor);
+                }
             }
         }
         player.getEquipment().setArmorContents(armorContents);
+        player.getEquipment().setItemInOffHand(offHand);
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
         if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
             Inventory inv = ItemSerialization.fromString(source);

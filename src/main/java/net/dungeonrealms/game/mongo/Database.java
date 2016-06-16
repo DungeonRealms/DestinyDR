@@ -87,6 +87,12 @@ public class Database {
                                 armor.add(ItemSerialization.itemStackToBase64(itemStack));
                             }
                         }
+                        ItemStack offHand = player.getEquipment().getItemInOffHand();
+                        if (offHand == null || offHand.getType() == Material.AIR) {
+                            armor.add("");
+                        } else {
+                            armor.add(ItemSerialization.itemStackToBase64(offHand));
+                        }
                         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, false);
                         if (MountUtils.inventories.containsKey(uuid)) {
                             DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_MULE, ItemSerialization.toString(MountUtils.inventories.get(uuid)), false);
