@@ -236,7 +236,8 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new BlockListener(), this);
             pm.registerEvents(new BankListener(), this);
             pm.registerEvents(new EnergyListener(), this);
-            pm.registerEvents(new AntiCheatListener(), this);
+            //pm.registerEvents(new AntiCheatListener(), this);
+            //TODO: Fix.
             pm.registerEvents(new ShopListener(), this);
             pm.registerEvents(new AchievementManager(), this);
             hs = new HearthStone();
@@ -248,15 +249,20 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new TabbedChatListener(), this);
             pm.registerEvents(new T1Dungeon(), this);
             pm.registerEvents(new BossListener(), this);
+            pm.registerEvents(new RestrictionListener(), this);
         } else {
             pm.registerEvents(new DamageListener(), this);
             pm.registerEvents(new ItemListener(), this);
             pm.registerEvents(new InventoryListener(), this);
             pm.registerEvents(new BlockListener(), this);
             pm.registerEvents(new EnergyListener(), this);
-            pm.registerEvents(new AntiCheatListener(), this);
+            //pm.registerEvents(new AntiCheatListener(), this);
+            //TODO: Fix.
             pm.registerEvents(new AchievementManager(), this);
             pm.registerEvents(new TabbedChatListener(), this);
+            pm.registerEvents(new RestrictionListener(), this);
+            pm.registerEvents(new T1Dungeon(), this);
+            pm.registerEvents(new BossListener(), this);
         }
 
         //pm.registerEvents(new MainListener(), this);

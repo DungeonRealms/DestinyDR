@@ -553,6 +553,10 @@ public class Item {
         return null;
     }
 
+    public static boolean isItemType(ItemType type, Material material) {
+        return type.t1 == material || type.t2 == material || type.t3 == material || type.t4 == material || type.t5 == material;
+    }
+
     /**
      * Gets the ItemTier from a material
      * @param m
