@@ -420,6 +420,7 @@ public class API {
                 gPlayer.getStats().updateDatabase(true);
                 GAMEPLAYERS.remove(gPlayer);
             });
+        Utils.log.info("Saved information for uuid: " + uuid.toString() + " on their logout.");
     }
     
     /**
@@ -654,6 +655,7 @@ public class API {
         }
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.USERNAME, player.getName().toLowerCase(), false);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENTSERVER, DungeonRealms.getInstance().bungeeName, true);
+        Utils.log.info("Fetched information for uuid: " + uuid.toString() + " on their login.");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> AchievementManager.getInstance().handleLogin(player.getUniqueId()), 70L);
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
         player.setCollidable(false);
@@ -747,6 +749,7 @@ public class API {
                         if (API.GAMEPLAYERS.size() > 0) {
                             API.GAMEPLAYERS.stream().filter(gPlayer -> gPlayer.getPlayer().getName().equalsIgnoreCase(player.getName())).forEach(gPlayer -> gPlayer.getStats().updateDatabase(false));
                         }
+                        Utils.log.info("Backed up information for uuid: " + uuid.toString());
                     }
                     DungeonRealms.getInstance().getLogger().info("Completed Mongo Database Backup");
                 }
