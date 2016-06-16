@@ -94,6 +94,12 @@ public abstract class DRWitherSkeleton extends EntitySkeleton implements DRMonst
 
     }
 
+    @Override
+    public boolean B(Entity entity) {
+        return super.B(entity);
+        //Should prevent wither effect being added on.
+    }
+
     protected String getCustomEntityName() {
         return this.enumMonster.name;
     }
