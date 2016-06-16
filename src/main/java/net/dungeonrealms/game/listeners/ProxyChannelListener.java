@@ -48,7 +48,7 @@ public class ProxyChannelListener implements Listener {
 
                 switch (command) {
                     case "alert": {
-
+                        System.out.print("Test");
                         String guildName = in.readUTF();
                         String message = in.readUTF();
 
@@ -56,8 +56,9 @@ public class ProxyChannelListener implements Listener {
                         for (UUID uuid : GuildDatabaseAPI.get().getAllOfGuild(guildName)) {
                             ProxiedPlayer player = plugin.getProxy().getPlayer(uuid);
 
-                            if (player != null)
+                            if (player != null) {
                                 player.sendMessage(message);
+                            }
                         }
                     }
                 }

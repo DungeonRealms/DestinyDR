@@ -65,6 +65,7 @@ public class GuildMechanics {
                 GuildDatabaseAPI.get().setGuild(player.getUniqueId(), "");
         });
 
+        sendAlert(guildName, player.getName() + " has logged into shard " + DungeonRealms.getInstance().shardid);
         showMotd(player, guildName);
     }
 
