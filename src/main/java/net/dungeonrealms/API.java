@@ -421,80 +421,6 @@ public class API {
                 GAMEPLAYERS.remove(gPlayer);
             });
     }
-
-    /**
-     * Safely logs out the player, updates their mongo inventories etc. in an INSTANCED server
-     *
-     * @param uuid
-     * @since 1.0
-     */
-    public static void handleInstanceLogout(UUID uuid) {
-        Player player = Bukkit.getPlayer(uuid);
-        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
-            return;
-        }
-        if(DungeonRealms.getInstance().realmnumber != -1) {
-        	if(Bukkit.getWorld(player.getUniqueId().toString()) != null) {
-                 RealmManager.getInstance().removePlayerRealm(player, true); // Only called if the server is a realm server & they have a realm open!       	
-        	}
-        }
-        /*if (CombatLog.isInCombat(player) && !DuelingMechanics.isDueling(uuid) && !API.isNonPvPRegion(player.getLocation())) {
-            CombatLog.handleCombatLogger(player);
-        }*/
-
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.IS_PLAYING, false, false);
-        if (BankMechanics.storage.containsKey(uuid)) {
-            Inventory inv = BankMechanics.getInstance().getStorage(uuid).inv;
-            if (inv != null) {
-                String serializedInv = ItemSerialization.toString(inv);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, false);
-            }
-            inv = BankMechanics.getInstance().getStorage(uuid).collection_bin;
-            if (inv != null) {
-                String serializedInv = ItemSerialization.toString(inv);
-                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, serializedInv, false);
-            }
-            BankMechanics.storage.remove(uuid);
-        }
-        Inventory inv = player.getInventory();
-        ArrayList<String> armor = new ArrayList<>();
-        for (ItemStack itemStack : player.getInventory().getArmorContents()) {
-            if (itemStack == null || itemStack.getType() == Material.AIR) {
-                armor.add("null");
-            } else {
-                armor.add(ItemSerialization.itemStackToBase64(itemStack));
-            }
-        }
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, false);
-
-        if (MountUtils.inventories.containsKey(uuid)) {
-            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_MULE, ItemSerialization.toString(MountUtils.inventories.get(uuid)), false);
-            MountUtils.inventories.remove(uuid);
-        }
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.LAST_LOGOUT, System.currentTimeMillis() / 1000L, false);
-        EnergyHandler.getInstance().handleLogoutEvents(player);
-        HealthHandler.getInstance().handleLogoutEvents(player);
-        KarmaHandler.getInstance().handleLogoutEvents(player);
-        ScoreboardHandler.getInstance().removePlayerScoreboard(player);
-        if (EntityAPI.hasPetOut(uuid)) {
-            net.minecraft.server.v1_9_R2.Entity pet = Entities.PLAYER_PETS.get(uuid);
-            pet.dead = true;
-            EntityAPI.removePlayerPetList(uuid);
-        }
-        if (EntityAPI.hasMountOut(uuid)) {
-            net.minecraft.server.v1_9_R2.Entity mount = Entities.PLAYER_MOUNTS.get(uuid);
-            mount.dead = true;
-            EntityAPI.removePlayerMountList(uuid);
-        }
-        String inventory = ItemSerialization.toString(inv);
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
-        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ENTERINGREALM, "", false);
-        if (GAMEPLAYERS.size() > 0)
-            GAMEPLAYERS.stream().filter(gPlayer -> gPlayer.getPlayer().getName().equalsIgnoreCase(player.getName())).forEach(gPlayer -> {
-                gPlayer.getStats().updateDatabase(true);
-                GAMEPLAYERS.remove(gPlayer);
-            });
-    }
     
     /**
      * Safely logs out all players when the server restarts
@@ -761,119 +687,71 @@ public class API {
             player.addAttachment(DungeonRealms.getInstance()).setPermission("nocheatplus.command.inspect", true);
         }
     }
-    
-    
-    /**
-     * Safely logs in the player, giving them their items, their storage and
-     * their cooldowns in an INSTANCE
-     *
-     * @since 1.0
-     */
-    @SuppressWarnings("deprecation")
-	public static void handleInstanceLogin(UUID uuid) {
-        if (Bukkit.getPlayer(uuid) == null) {
-            return;
-        }
-        Player player = Bukkit.getPlayer(uuid);
-        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
-            player.kickPlayer(ChatColor.RED + "Unable to grab your data, please reconnect!");
-        } else {
-            if (player != null) {
-                player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
-            }
-        }
 
-        GamePlayer gp = new GamePlayer(player);
-        API.GAMEPLAYERS.add(gp);
+    public static void backupDatabase() {
+        if (Bukkit.getOnlinePlayers().size() == 0) return;
+        AsyncUtils.pool.submit(() -> {
+                    DungeonRealms.getInstance().getLogger().info("Beginning Mongo Database Backup");
+                    for (Player player : Bukkit.getOnlinePlayers()) {
+                        if (!DatabaseAPI.getInstance().PLAYERS.containsKey(player.getUniqueId())) {
+                            return;
+                        }
+                        UUID uuid = player.getUniqueId();
+                        if (BankMechanics.storage.containsKey(uuid)) {
+                            Inventory inv = BankMechanics.getInstance().getStorage(uuid).inv;
+                            if (inv != null) {
+                                String serializedInv = ItemSerialization.toString(inv);
+                                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_STORAGE, serializedInv, false);
+                            }
+                            inv = BankMechanics.getInstance().getStorage(uuid).collection_bin;
+                            if (inv != null) {
+                                String serializedInv = ItemSerialization.toString(inv);
+                                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_COLLECTION_BIN, serializedInv, false);
+                            }
+                        }
+                        Inventory inv = player.getInventory();
+                        ArrayList<String> armor = new ArrayList<>();
+                        for (ItemStack itemStack : player.getInventory().getArmorContents()) {
+                            if (itemStack == null || itemStack.getType() == Material.AIR) {
+                                armor.add("null");
+                            } else {
+                                armor.add(ItemSerialization.itemStackToBase64(itemStack));
+                            }
+                        }
+                        ItemStack offHand = player.getEquipment().getItemInOffHand();
+                        if (offHand == null || offHand.getType() == Material.AIR) {
+                            armor.add("");
+                        } else {
+                            armor.add(ItemSerialization.itemStackToBase64(offHand));
+                        }
+                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.ARMOR, armor, false);
+                        if (MountUtils.inventories.containsKey(uuid)) {
+                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY_MULE, ItemSerialization.toString(MountUtils.inventories.get(uuid)), false);
+                        }
 
-        List<String> playerArmor = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.ARMOR, player.getUniqueId());
-        int i = -1;
-        ItemStack[] armorContents = new ItemStack[4];
-        for (String armor : playerArmor) {
-            i++;
-            if (armor.equals("null") || armor.equals("")) {
-                armorContents[i] = new ItemStack(Material.AIR);
-            } else {
-                armorContents[i] = ItemSerialization.itemStackFromBase64(armor);
-            }
-        }
-        player.getInventory().setArmorContents(armorContents);
-
-        String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
-        if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
-            ItemStack[] items = ItemSerialization.fromString(playerInv).getContents();
-            player.getInventory().setContents(items);
-        }
-        String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
-        if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
-            Inventory inv = ItemSerialization.fromString(source);
-            Storage storageTemp = new Storage(uuid, inv);
-            BankMechanics.storage.put(uuid, storageTemp);
-        } else {
-            Storage storageTemp = new Storage(uuid);
-            BankMechanics.storage.put(uuid, storageTemp);
-        }
-        TeleportAPI.addPlayerHearthstoneCD(uuid, 150);
-        /*
-        if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, uuid).equals("")) {
-            String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, uuid))
-                    .split(",");
-            player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]),
-                    Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]),
-                    Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
-        } else {
-            player.kickPlayer("Somehow you glitched onto an instance server.. Please use a main server first.");
-
-        } */
-        PlayerManager.checkInventory(uuid);
-        EnergyHandler.getInstance().handleLoginEvents(player);
-        HealthHandler.getInstance().handleLoginEvents(player);
-        KarmaHandler.getInstance().handleLoginEvents(player);
-        // Essentials
-        //Subscription.getInstance().handleJoin(player);
-        Rank.getInstance().doGet(uuid);
-        // Guilds
-        GuildMechanics.getInstance().doLogin(player);
-
-        // Notices
-        Notice.getInstance().doLogin(player);
-
-        // Scoreboard Safety
-        ScoreboardHandler.getInstance().matchMainScoreboard(player);
-        player.setGameMode(GameMode.SURVIVAL);
-        player.setMaximumNoDamageTicks(0);
-        player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
-        AchievementManager.getInstance().handleLogin(player.getUniqueId());
-		// DO REALM CHECKS and begin code now!
-        String cs = (String) DatabaseAPI.getInstance().getData(EnumData.CURRENTSERVER, uuid);
-		//NetworkAPI.getInstance().sendToServer(player.getName(), cs);
-        if(DungeonRealms.getInstance().realmnumber >= 0)
-        {
-            if(!RealmManager.getInstance().isRealmLoaded(uuid))
-            {
-                String enterrealm = (String) DatabaseAPI.getInstance().getData(EnumData.ENTERINGREALM, uuid);
-                if(enterrealm.equalsIgnoreCase(""))
-                {
-                	player.sendMessage(ChatColor.RED + "You entered a misconfigured realm!");
-                	API.handleLogout(uuid);
-                	NetworkAPI.getInstance().sendToServer(player.getName(), cs);
+                        if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+                            String locationAsString = "-367,86,390,0,0"; // Cyrennica
+                            locationAsString = player.getLocation().getX() + "," + (player.getLocation().getY() + 0.5) + ","
+                                    + player.getLocation().getZ() + "," + player.getLocation().getYaw() + ","
+                                    + player.getLocation().getPitch();
+                            DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, false);
+                        } else {
+                            //Dungeon or realm, should already have their last main world location saved.
+                        }
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_FOOD, player.getFoodLevel(), false);
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.HEALTH, HealthHandler.getInstance().getPlayerHPLive(player), false);
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT, KarmaHandler.getInstance().getPlayerRawAlignment(player), false);
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ALIGNMENT_TIME, KarmaHandler.getInstance().getAlignmentTime(player), false);
+                        String inventory = ItemSerialization.toString(inv);
+                        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
+                        if (API.GAMEPLAYERS.size() > 0) {
+                            API.GAMEPLAYERS.stream().filter(gPlayer -> gPlayer.getPlayer().getName().equalsIgnoreCase(player.getName())).forEach(gPlayer -> gPlayer.getStats().updateDatabase(false));
+                        }
+                    }
+                    DungeonRealms.getInstance().getLogger().info("Completed Mongo Database Backup");
                 }
-                if(enterrealm.equalsIgnoreCase(uuid.toString()))
-                {
-                	RealmManager.getInstance().tryToOpenRealmInstance(player);
-                } else {
-                	if(!RealmManager.getInstance().isRealmLoaded(UUID.fromString(enterrealm)))
-                	{
-                    	player.sendMessage(ChatColor.RED + "This player's realm has been unloaded!");
-                    	API.handleLogout(uuid);
-                    	NetworkAPI.getInstance().sendToServer(player.getName(), cs);
-                	} else {
-                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.teleport(Bukkit.getWorld(uuid).getSpawnLocation()), 40L);
-                	}
-                }
-            	//RealmManager.getInstance().tryToOpenRealmInstance(player);
-            }	
-        }
+
+        );
     }
 
     /**

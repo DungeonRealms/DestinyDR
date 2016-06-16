@@ -51,6 +51,7 @@ public class DRMagma extends EntityMagmaCube implements DRMonster {
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
 		setSize(4);
+		super.setSize(4);
 	}
 	public void setArmor(int tier) {
 		ItemStack[] armor = API.getTierArmor(tier);
