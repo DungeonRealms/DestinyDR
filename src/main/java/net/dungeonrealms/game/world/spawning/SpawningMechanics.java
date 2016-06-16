@@ -9,6 +9,7 @@ import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedSkelet
 import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedWitherSkeleton;
 import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedZombie;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumNamedElite;
 import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.*;
 import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.BasicEntityBlaze;
 import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.StaffSkeleton;
@@ -152,6 +153,43 @@ public class SpawningMechanics implements GenericMechanic {
         ALLSPAWNERS.remove(mobSpawner);
     }
 
+    public static Entity getEliteMob(World world, int tier, EnumNamedElite elite) {
+        EnumEntityType type = EnumEntityType.HOSTILE_MOB;
+        Entity entity;
+        switch (elite) {
+            case MITSUKI:
+            case COPJAK:
+            case GREEDKING:
+                entity = new MeleeZombie(world, EnumMonster.Bandit, tier);
+                break;
+            case MOTHEROFDOOM:
+                entity = new LargeSpider(world, tier, EnumMonster.Spider1);
+                break;
+            case LORD_TAYLOR:
+                entity = new MeleeWitherSkeleton(world, tier, EnumMonster.Undead, type);
+                break;
+            case IMPATHEIMPALER:
+                entity = new MeleeWitherSkeleton(world, tier, EnumMonster.Goblin, type);
+                break;
+            case KILATAN:
+                entity = new StaffSkeleton(world, EnumMonster.Daemon, tier);
+                break;
+            case DURANOR:
+            case ZION:
+                entity = new MeleeSkeleton(world, EnumMonster.Monk, type, tier);
+                break;
+            case BLAYSHAN:
+                entity = new MeleeZombie(world, EnumMonster.Naga, tier);
+                break;
+            case ACERON:
+                entity = new RangedWitherSkeleton(world, EnumMonster.Undead, type, tier);
+                break;
+            default:
+                entity = null;
+                break;
+        }
+        return entity;
+    }
     /**
      * @param monsEnum
      * @return

@@ -80,7 +80,10 @@ public interface DRMonster {
 
             ItemStack item = BankMechanics.gem.clone();
             item.setAmount((int) (gem_drop_amount * drop_multiplier));
-            world.getWorld().dropItemNaturally(loc.add(0, 1, 0), item);
+            if (item.getAmount() < 1) {
+                item.setAmount(1);
+            }
+            world.getWorld().dropItem(loc.add(0, 1, 0), item);
             if (!ent.hasMetadata("elite")) {
                 return;
             }
@@ -110,10 +113,10 @@ public interface DRMonster {
                 if (stack == null || stack.getType() == Material.AIR || stack.getType() == Material.SKULL || stack.getType() == Material.SKULL_ITEM) {
                     continue;
                 }
-                world.getWorld().dropItemNaturally(loc.add(0, 1, 0), stack);
+                world.getWorld().dropItem(loc.add(0, 1, 0), stack);
             }
             ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInMainHand();
-            world.getWorld().dropItemNaturally(loc.add(0, 1, 0), weapon);
+            world.getWorld().dropItem(loc.add(0, 1, 0), weapon);
             return;
         }
         int armorRoll = random.nextInt(1000);
@@ -130,7 +133,7 @@ public interface DRMonster {
                         }
                     }
                     RepairAPI.setCustomItemDurability(stack, RandomHelper.getRandomNumberBetween(200, 1000));
-                    world.getWorld().dropItemNaturally(loc.add(0, 1, 0), stack);
+                    world.getWorld().dropItem(loc.add(0, 1, 0), stack);
                     drops++;
                 }
             }
@@ -146,7 +149,7 @@ public interface DRMonster {
                         }
                     }
                     RepairAPI.setCustomItemDurability(helmet, RandomHelper.getRandomNumberBetween(200, 1000));
-                    world.getWorld().dropItemNaturally(loc.add(0, 1, 0), helmet);
+                    world.getWorld().dropItem(loc.add(0, 1, 0), helmet);
                     drops++;
                 }
             }
@@ -161,7 +164,7 @@ public interface DRMonster {
                         }
                     }
                     RepairAPI.setCustomItemDurability(weapon, RandomHelper.getRandomNumberBetween(200, 1000));
-                    world.getWorld().dropItemNaturally(loc.add(0, 1, 0), weapon);
+                    world.getWorld().dropItem(loc.add(0, 1, 0), weapon);
                 }
             }
         }
@@ -176,7 +179,7 @@ public interface DRMonster {
                 ItemStack item = new ItemStack(Material.ARROW);
                 int amount = (tier * 2);
                 item.setAmount(amount);
-                world.getWorld().dropItemNaturally(loc.add(0, 1, 0), item);
+                world.getWorld().dropItem(loc.add(0, 1, 0), item);
             }
         }
     }

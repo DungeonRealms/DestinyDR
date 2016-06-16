@@ -248,7 +248,6 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new T1Dungeon(), this);
             pm.registerEvents(new BossListener(), this);
         } else {
-            pm.registerEvents(new MainListenerInstance(), this);
             pm.registerEvents(new DamageListener(), this);
             pm.registerEvents(new ItemListener(), this);
             pm.registerEvents(new InventoryListener(), this);
@@ -395,7 +394,7 @@ public class DungeonRealms extends JavaPlugin {
         Utils.log.info("DungeonRealms STARTUP FINISHED in ... " + ((System.currentTimeMillis() / 1000L) / START_TIME) + "/s");
         Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> this.hasFinishedSetup = true, 240L);
         Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> DatabaseAPI.getInstance().PLAYER_TIME.entrySet().stream().forEach(e -> DatabaseAPI.getInstance().PLAYER_TIME.put(e.getKey(), (e.getValue() + 1))), 0L, 20L);
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, () -> Database.getInstance().backupDatabase(), 18000L, 18000L);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(this, API::backupDatabase, 18000L, 18000L);
     }
 
     public void onDisable() {

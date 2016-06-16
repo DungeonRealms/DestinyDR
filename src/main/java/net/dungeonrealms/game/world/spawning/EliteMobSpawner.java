@@ -182,7 +182,12 @@ public class EliteMobSpawner {
                     eliteType = EnumNamedElite.NONE;
                 }
             }
-            Entity entity = SpawningMechanics.getMob(world, tier, monsterType);
+            Entity entity;
+            if (eliteType == EnumNamedElite.NONE) {
+                entity = SpawningMechanics.getMob(world, tier, monsterType);
+            } else {
+                entity = SpawningMechanics.getEliteMob(world, tier, eliteType);
+            }
             if (entity == null) {
                 return;
             }

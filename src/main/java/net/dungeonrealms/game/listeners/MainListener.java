@@ -758,6 +758,12 @@ public class MainListener implements Listener {
 
     @EventHandler
     public void onItemPickup(PlayerPickupItemEvent event) {
+        if (event.getItem().getItemStack().getAmount() <= 0) {
+            event.setCancelled(true);
+            event.getItem().remove();
+            return;
+            //Prevent weird MC glitch.
+        }
         event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 1f);
         if (event.getItem().getItemStack().getType() == Material.EMERALD) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getPlayer().getUniqueId()).toString())) {
