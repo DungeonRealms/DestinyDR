@@ -58,6 +58,8 @@ public class GuildMechanics {
         if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) return;
 
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
+        String tag = GuildDatabaseAPI.get().getTagOf(guildName);
+        String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
         // Checks if guild still exists
         GuildDatabaseAPI.get().doesGuildNameExist(guildName, guildExists -> {
@@ -65,8 +67,25 @@ public class GuildMechanics {
                 GuildDatabaseAPI.get().setGuild(player.getUniqueId(), "");
         });
 
-        sendAlert(guildName, player.getName() + " has logged into shard " + DungeonRealms.getInstance().shardid);
+        GuildDatabaseAPI.get().getAllOfGuild(guildName)
+                .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null && uuid != player.getUniqueId()).forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(format.concat(" has joined your shard.")));
         showMotd(player, guildName);
+    }
+
+    public void sendUpdateProxyCachePacket() {
+        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Guilds", "updateCache");
+    }
+
+    /**
+     * @param guildName Name of guild
+     * @param player    Sender
+     * @param message   Chat message
+     */
+    public void sendChat(String guildName, Player player, String message) {
+        String tag = GuildDatabaseAPI.get().getTagOf(guildName);
+        String format = ChatColor.DARK_AQUA.toString() + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + ">" + ChatColor.GRAY + " " + player.getName() + ": " + ChatColor.GRAY;
+
+        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Guilds", "message", Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
     }
 
     /**
@@ -77,7 +96,7 @@ public class GuildMechanics {
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
-        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Guilds", "alert", Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
+        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Guilds", "message", Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
     }
 
 
@@ -104,7 +123,6 @@ public class GuildMechanics {
         String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String motd = GuildDatabaseAPI.get().getMotdOf(guildName);
-        String owner = DatabaseAPI.getInstance().getOfflineName(UUID.fromString(GuildDatabaseAPI.get().getOwnerOf(guildName)));
 
         StringBuilder members = getPlayers(GuildDatabaseAPI.get().getAllGuildMembers(guildName));
         StringBuilder officers = getPlayers(GuildDatabaseAPI.get().getGuildOfficers(guildName));
@@ -113,7 +131,7 @@ public class GuildMechanics {
         player.sendMessage(" ");
         player.sendMessage(ChatColor.GRAY + "Guild Name: " + ChatColor.WHITE + displayName);
         player.sendMessage(ChatColor.GRAY + "Guild Tag: " + ChatColor.DARK_AQUA + "[" + ChatColor.GRAY + tag + ChatColor.DARK_AQUA + "]");
-        player.sendMessage(ChatColor.GRAY + "Guild Owner: " + ChatColor.WHITE + owner.toUpperCase());
+        player.sendMessage(ChatColor.GRAY + "Guild Owner: " + getPlayerName(UUID.fromString(GuildDatabaseAPI.get().getOwnerOf(guildName))));
         player.sendMessage(" ");
 
         player.sendMessage(ChatColor.GRAY + "Guild Officers: " + ChatColor.WHITE + (officers.length() == 0 ? "None" : officers));
@@ -125,12 +143,16 @@ public class GuildMechanics {
             player.sendMessage(ChatColor.GRAY + "Message of the Day: \"" + ChatColor.WHITE + motd + ChatColor.GRAY + "\"");
     }
 
+    private String getPlayerName(UUID uuid) {
+        String name = DatabaseAPI.getInstance().getOfflineName(uuid);
+        return Bukkit.getPlayer(uuid) != null ? ChatColor.GREEN + name : ChatColor.GRAY + name;
+    }
 
     private StringBuilder getPlayers(List<UUID> uuids) {
         StringBuilder players = new StringBuilder();
         for (int i = 0; i < uuids.size(); i++)
-            if (i == 0) players.append(DatabaseAPI.getInstance().getOfflineName(uuids.get(i)));
-            else players.append(", ").append(DatabaseAPI.getInstance().getOfflineName(uuids.get(i)));
+            if (i == 0) players.append(getPlayerName(uuids.get(i)));
+            else players.append(", ").append(getPlayerName(uuids.get(i)));
         return players;
     }
 
@@ -151,6 +173,7 @@ public class GuildMechanics {
                 player.sendMessage(ChatColor.GRAY + "To chat with your new guild, use " + ChatColor.BOLD + "/g" + ChatColor.GRAY + " OR " + ChatColor.BOLD + " /g <message>");
                 Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.GUILD_MEMBER);
                 GuildDatabaseAPI.get().addPlayer(guildName, player.getUniqueId());
+                sendUpdateProxyCachePacket();
 
                 sendAlert(guildName, player.getName() + ChatColor.GRAY.toString() + " has " +
                         ChatColor.UNDERLINE + "joined" + ChatColor.GRAY + " your guild." + (referrer != null ? "[INVITE: " + ChatColor.ITALIC + referrer + ChatColor.GRAY + "]" : ""));
@@ -159,6 +182,20 @@ public class GuildMechanics {
 
             }
         });
+    }
+
+
+    /**
+     * Kick a member from their guild
+     *
+     * @param kicker    Player who executed kick
+     * @param player    Kicked
+     * @param guildName Guild name
+     */
+    public void kickFromGuild(Player kicker, UUID player, String guildName) {
+        sendAlert(guildName, kicker.getName() + " has kicked " + DatabaseAPI.getInstance().getOfflineName(player) + " from the guild.");
+        GuildDatabaseAPI.get().removeFromGuild(guildName, player);
+        sendUpdateProxyCachePacket();
     }
 
     /**
@@ -193,18 +230,21 @@ public class GuildMechanics {
             sendAlert(guildName, player.getName() + "has left the guild.");
 
 
-            if (isOwner) {
-                if (officers.size() > 0) {
-                    UUID sucessor = officers.get(0);
-                    GuildDatabaseAPI.get().setOwner(guildName, sucessor);
-                    sendAlert(guildName, DatabaseAPI.getInstance().getOfflineName(sucessor) + " has been selected a the new " + ChatColor.UNDERLINE + "GUILD LEADER");
-                } else {
-                    // player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "DISBANDED" + ChatColor.RED + " your guild.");
-                    sendAlert(guildName, player.getName() + " has disbanded the guild.");
-                    GuildDatabaseAPI.get().deleteGuild(guildName);
-                }
+            if (isOwner) if (officers.size() > 0) {
+                UUID sucessor = officers.get(0);
+                GuildDatabaseAPI.get().setOwner(guildName, sucessor);
+                sendAlert(guildName, DatabaseAPI.getInstance().getOfflineName(sucessor) + " has been selected a the new " + ChatColor.UNDERLINE + "GUILD LEADER");
+            } else {
+                // player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "DISBANDED" + ChatColor.RED + " your guild.");
+                sendAlert(guildName, player.getName() + " has disbanded the guild.");
+
+                for (UUID uuid : GuildDatabaseAPI.get().getAllOfGuild(guildName))
+                    GuildDatabaseAPI.get().removeFromGuild(guildName, uuid);
+
+                GuildDatabaseAPI.get().deleteGuild(guildName);
             }
 
+            sendUpdateProxyCachePacket();
         }, null);
     }
 
@@ -390,7 +430,7 @@ public class GuildMechanics {
 
                                 // Prompts the player for desired guild tag
                                 player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Ok, your guild will be formally known as        " + ChatColor.DARK_AQUA + guildDisplayName + ChatColor.WHITE + ", now please enter a " + ChatColor.UNDERLINE + "guild prefix tag.");
-                                player.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + "This 'prefix tag' can be between 2-3 letters and will appear before all chat messages sent by guild members.");
+                                player.sendMessage(ChatColor.GRAY.toString() + ChatColor.ITALIC + "This 'prefix tag' can be between 2-4 letters and will appear before all chat messages sent by guild members.");
 
                                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () ->
 
@@ -405,9 +445,15 @@ public class GuildMechanics {
                                             // Tag is converted to all caps
                                             String tag = guildTagRequest.getMessage().replace(" ", "").toUpperCase();
 
-                                            // Name must be below 3 characters
+                                            // Name must be below 4 characters
                                             if (tag.length() > 4) {
                                                 player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Your guild tag exceeds the maximum length of 4 characters.");
+                                                return;
+                                            }
+
+                                            // Name must be above 2 characters
+                                            if (tag.length() < 2) {
+                                                player.sendMessage(ChatColor.GRAY + "Guild Registrar: " + ChatColor.WHITE + "Your guild tag must be at least 2 characters.");
                                                 return;
                                             }
 

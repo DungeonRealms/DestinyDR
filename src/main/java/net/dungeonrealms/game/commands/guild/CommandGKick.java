@@ -16,9 +16,9 @@ import java.util.UUID;
  * Class written by APOLLOSOFTWARE.IO on 6/2/2016
  */
 
-public class CommandGDemote extends BasicCommand {
+public class CommandGKick extends BasicCommand {
 
-    public CommandGDemote(String command, String usage, String description) {
+    public CommandGKick(String command, String usage, String description) {
         super(command, usage, description);
     }
 
@@ -29,7 +29,7 @@ public class CommandGDemote extends BasicCommand {
         Player player = (Player) sender;
 
         if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
-            player.sendMessage(ChatColor.RED + "You must be in a " + ChatColor.BOLD + "GUILD" + ChatColor.RED + " to use " + ChatColor.BOLD + "/gdemote <player>.");
+            player.sendMessage(ChatColor.RED + "You must be in a " + ChatColor.BOLD + "GUILD" + ChatColor.RED + " to use " + ChatColor.BOLD + "/gkick.");
             return true;
         }
 
@@ -43,15 +43,15 @@ public class CommandGDemote extends BasicCommand {
         String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
         String displayName = GuildDatabaseAPI.get().getDisplayNameOf(guildName);
 
-        if (!GuildDatabaseAPI.get().isOwner(player.getUniqueId(), guildName)) {
-            player.sendMessage(ChatColor.RED + "You must be the " + ChatColor.BOLD + "GUILD OWNER" + ChatColor.RED + " to use " + ChatColor.BOLD + "/gdemote <player>.");
+        if (!GuildDatabaseAPI.get().isOwner(player.getUniqueId(), guildName) && !GuildDatabaseAPI.get().isOfficer(player.getUniqueId(), guildName)) {
+            player.sendMessage(ChatColor.RED + "You must be at least a guild " + ChatColor.BOLD + "OFFICER" + ChatColor.RED + " to use " + ChatColor.BOLD + "/gkick");
             return true;
         }
 
         String p_name = args[0];
 
         if (p_name.equalsIgnoreCase(player.getName())) {
-            player.sendMessage(ChatColor.RED + "You cannot demote yourself in your own guild.");
+            player.sendMessage(ChatColor.RED + "You cannot kick yourself to your own guild.");
             return true;
         }
 
@@ -67,25 +67,21 @@ public class CommandGDemote extends BasicCommand {
             player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + p_name + ChatColor.RED + " is not in your guild.");
             return true;
         }
-
-        if (GuildDatabaseAPI.get().isMember(p_uuid, guildName)) {
-            player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + p_name + ChatColor.RED + " is not yet a " + ChatColor.UNDERLINE + "guild officer");
-            player.sendMessage(ChatColor.GRAY + "Use " + ChatColor.RED + "/gpromote " + p_name + ChatColor.GRAY + " to make them a guild officer.");
-            return true;
-        }
-
         if (GuildDatabaseAPI.get().isOwner(p_uuid, guildName)) {
-            player.sendMessage(ChatColor.RED + "You can't demote the owner of a guild.");
+            player.sendMessage(ChatColor.RED + "You can't kick the owner of a guild.");
             return true;
         }
 
-        GuildDatabaseAPI.get().demotePlayer(guildName, p_uuid);
-        player.sendMessage(ChatColor.RED + "You have " + ChatColor.UNDERLINE + "demoted" + ChatColor.RED + " " + p_name + " to the rank of " + ChatColor.BOLD + "GUILD MEMBER.");
-        GuildMechanics.getInstance().sendAlert(guildName, ChatColor.RED + " " + p_name + " has been " + ChatColor.UNDERLINE + "demoted" + ChatColor.RED + " to the rank of " + ChatColor.BOLD + "GUILD MEMBER.");
+        if (GuildDatabaseAPI.get().isOfficer(p_uuid, guildName)) {
+            player.sendMessage(ChatColor.RED + "You can't kick an officers.");
+            return true;
+        }
+
+        GuildMechanics.getInstance().kickFromGuild(player, p_uuid, guildName);
 
         if (p != null) {
             p.sendMessage("");
-            p.sendMessage(ChatColor.RED + "You have been " + ChatColor.UNDERLINE + "demoted" + ChatColor.RED + " to the rank of " + ChatColor.BOLD + "GUILD MEMBER" + ChatColor.RED + " in " + displayName);
+            p.sendMessage(ChatColor.RED + "You have been " + ChatColor.UNDERLINE + "kicked" + ChatColor.RED + " from " + displayName);
             p.sendMessage("");
         }
 
