@@ -1,7 +1,9 @@
 package net.dungeonrealms.game.player.inventory;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.player.chat.Chat;
@@ -197,6 +199,24 @@ public class NPCMenus {
         itemStack.setItemMeta(meta);
         itemStack.setAmount(1);
         return itemStack;
+    }
+
+    public static void openItemVendorMenu(Player player) {
+        Inventory inv = Bukkit.createInventory(null, 18, "Item Vendor");
+
+        if (!GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
+            String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
+            ItemStack item = ItemSerialization.itemStackFromBase64(GuildDatabaseAPI.get().getBannerOf(guildName));
+            ItemStack guildBanner = ShopMechanics.addPrice(item, 1000);
+            inv.setItem(0, guildBanner);
+        }
+
+        if (inv.getContents().length == 0) {
+            player.sendMessage(ChatColor.RED + "Sorry, I'm restocking my wares!");
+            return;
+        }
+
+        player.openInventory(inv);
     }
 
     public static void openFoodVendorMenu(Player player) {

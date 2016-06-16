@@ -2,9 +2,7 @@ package net.dungeonrealms.game.listeners;
 
 
 import net.dungeonrealms.DungeonRealmsProxy;
-import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.md_5.bungee.BungeeCord;
-import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.event.PluginMessageEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.event.EventHandler;
@@ -13,7 +11,6 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
-import java.util.UUID;
 
 public class ProxyChannelListener implements Listener {
 
@@ -47,19 +44,15 @@ public class ProxyChannelListener implements Listener {
                 String command = in.readUTF();
 
                 switch (command) {
-                    case "alert": {
-                        System.out.print("Test");
+                    case "updateCache": {
+                        plugin.updateGuilds();
+                    }
+
+                    case "message": {
                         String guildName = in.readUTF();
                         String message = in.readUTF();
 
-
-                        for (UUID uuid : GuildDatabaseAPI.get().getAllOfGuild(guildName)) {
-                            ProxiedPlayer player = plugin.getProxy().getPlayer(uuid);
-
-                            if (player != null) {
-                                player.sendMessage(message);
-                            }
-                        }
+                        plugin.sendMessageToGuild(guildName, message);
                     }
                 }
             }

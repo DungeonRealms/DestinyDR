@@ -328,8 +328,10 @@ public class DungeonRealms extends JavaPlugin {
 
             //GUILD STUFF
             cm.registerCommand(new CommandGInfo("ginfo", "/<command>", "Guild info command."));
+            cm.registerCommand(new CommandG("g", "/<command> [msg]", "Guild chat command."));
             cm.registerCommand(new CommandGQuit("gquit", "/<command>", "Guild quit command.", Arrays.asList("gleave", "gdisband")));
             cm.registerCommand(new CommandGAccept("gaccept", "/<command>", "Guild accept invitation command."));
+            cm.registerCommand(new CommandGKick("gkick", "/<command> [args]", "Guild kick command."));
             cm.registerCommand(new CommandGInvite("ginvite", "/<command> [args]", "Guild invitation command."));
             cm.registerCommand(new CommandGPromote("gpromote", "/<command> [args]", "Guild promote command."));
             cm.registerCommand(new CommandGDemote("gdemote", "/<command> [args]", "Guild demote command."));

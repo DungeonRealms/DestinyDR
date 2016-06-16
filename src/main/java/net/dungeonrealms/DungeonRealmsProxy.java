@@ -2,10 +2,14 @@ package net.dungeonrealms;
 
 import com.mongodb.MongoClient;
 import com.mongodb.MongoClientURI;
+import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.listeners.ProxyChannelListener;
+import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import org.bson.Document;
+
+import java.util.UUID;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 5/31/2016
@@ -27,12 +31,26 @@ public class DungeonRealmsProxy extends Plugin {
         mongoClientURI = new MongoClientURI("mongodb://104.236.116.27:27017/dungeonrealms");
         mongoClient = new MongoClient(mongoClientURI);
         database = mongoClient.getDatabase("dungeonrealms");
-        guilds = database.getCollection("guilds");
 
-        GuildDatabase.setGuilds(guilds);
+        updateGuilds();
 
         getLogger().info("DungeonRealms [MONGODB] has connected successfully!");
         this.getProxy().getPluginManager().registerListener(this, ProxyChannelListener.getInstance());
+    }
+
+    public void sendMessageToGuild(String guildName, String message) {
+        for (UUID uuid : GuildDatabaseAPI.get().getAllOfGuild(guildName)) {
+            ProxiedPlayer player = getProxy().getPlayer(uuid);
+
+            if (player != null) player.sendMessage(message);
+        }
+    }
+
+
+    public void updateGuilds() {
+        getLogger().info("[GUILDS] Pull guilds from database...");
+        guilds = database.getCollection("guilds");
+        GuildDatabase.setGuilds(guilds);
     }
 
     public static DungeonRealmsProxy getInstance() {
