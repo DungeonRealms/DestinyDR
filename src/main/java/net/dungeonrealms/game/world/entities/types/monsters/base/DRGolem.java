@@ -16,7 +16,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 /**
  * Created by Kieran Quigley (Proxying) on 14-Jun-16.
  */
-public abstract class DRGolem extends EntityGolem implements DRMonster {
+public abstract class DRGolem extends EntityIronGolem implements DRMonster {
 
     protected String name;
     protected EnumEntityType entityType;
@@ -34,8 +34,9 @@ public abstract class DRGolem extends EntityGolem implements DRMonster {
         setStats();
         String customName = monsterType.getPrefix().trim() + " " + monsterType.name.trim() + " " + monsterType.getSuffix().trim() + " ";
         this.setCustomName(customName);
-        this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
-        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+        EntityInsentient entityInsentient = this;
+        entityInsentient.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
+        LivingEntity livingEntity = (LivingEntity) entityInsentient.getBukkitEntity();
         this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(monsterType.getSkullItem(monsterType)));
         livingEntity.getEquipment().setHelmet(monsterType.getSkullItem(monsterType));
     }
@@ -52,7 +53,8 @@ public abstract class DRGolem extends EntityGolem implements DRMonster {
     public void setArmor(int tier) {
         org.bukkit.inventory.ItemStack[] armor = API.getTierArmor(tier);
         // weapon, boots, legs, chest, helmet/head
-        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+        EntityInsentient entityInsentient = this;
+        LivingEntity livingEntity = (LivingEntity) entityInsentient.getBukkitEntity();
         boolean armorMissing = false;
         if (random.nextInt(10) <= 5) {
             org.bukkit.inventory.ItemStack armor0 = AntiCheat.getInstance().applyAntiDupe(armor[0]);
