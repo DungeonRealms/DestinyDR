@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
 
 import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by Kieran on 10/1/2015.
@@ -37,7 +38,7 @@ public class DonationEffects implements GenericMechanic {
 
     public HashMap<Player, ParticleAPI.ParticleEffect> PLAYER_PARTICLE_EFFECTS = new HashMap<>();
     public HashMap<Entity, ParticleAPI.ParticleEffect> ENTITY_PARTICLE_EFFECTS = new HashMap<>();
-    public HashMap<Location, Material> PLAYER_GOLD_BLOCK_TRAIL_INFO = new HashMap<>();
+    public ConcurrentHashMap<Location, Material> PLAYER_GOLD_BLOCK_TRAIL_INFO = new ConcurrentHashMap<>();
     public List<Player> PLAYER_GOLD_BLOCK_TRAILS = new ArrayList<>();
     private static Random random = new Random();
 

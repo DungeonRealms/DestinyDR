@@ -6,6 +6,8 @@ import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.Database;
+import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import org.bukkit.Bukkit;
@@ -34,6 +36,9 @@ public class CommandStop extends BasicCommand {
         DungeonRealms.getInstance().setFinishedSetup(false);
         DungeonRealms.getInstance().saveConfig();
         API.logoutAllPlayers(true);
+        for (CombatLogger combatLogger : CombatLog.getInstance().getCOMBAT_LOGGERS().values()) {
+            combatLogger.handleTimeOut();
+        }
         ShopMechanics.deleteAllShops(true);
         AsyncUtils.pool.shutdown();
 

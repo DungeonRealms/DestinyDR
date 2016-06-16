@@ -233,7 +233,8 @@ public class ItemListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerDrinkPotion(PlayerInteractEvent event) {
         if (!event.hasItem() && (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getAction() != Action.RIGHT_CLICK_AIR)) return;
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getItem()));
+        ItemStack stack = event.getItem();
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(stack));
         if (nmsItem == null || nmsItem.getTag() == null) return;
         if (!nmsItem.getTag().hasKey("type")) return;
         if (nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
@@ -241,11 +242,7 @@ public class ItemListener implements Listener {
             if (HealthHandler.getInstance().getPlayerHPLive(event.getPlayer()) < HealthHandler.getInstance().getPlayerMaxHPLive(event.getPlayer())) {
                 event.setUseItemInHand(Event.Result.ALLOW);
                 event.setUseInteractedBlock(Event.Result.DENY);
-                if (event.getPlayer().getInventory().getItemInMainHand().isSimilar(event.getItem())) {
-                    event.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-                } else {
-                    event.getPlayer().getInventory().setItemInOffHand(new ItemStack(Material.AIR));
-                }
+                event.getPlayer().getInventory().remove(stack);
                 event.getPlayer().updateInventory();
                 HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
             } else {
@@ -283,18 +280,11 @@ public class ItemListener implements Listener {
             ItemStack foodItem = event.getItem();
             if (foodItem.getAmount() > 1) {
                 foodItem.setAmount(foodItem.getAmount() - 1);
-                if (event.getPlayer().getInventory().getItemInMainHand().isSimilar(event.getItem())) {
-                    event.getPlayer().getInventory().setItemInMainHand(foodItem);
-                } else {
-                    event.getPlayer().getInventory().setItemInOffHand(foodItem);
-                }
+                event.getPlayer().getInventory().remove(foodItem);
+                event.getPlayer().getInventory().addItem(foodItem);
                 event.getPlayer().updateInventory();
             } else {
-                if (event.getPlayer().getInventory().getItemInMainHand().isSimilar(event.getItem())) {
-                    event.getPlayer().getInventory().setItemInMainHand(new ItemStack(Material.AIR));
-                } else {
-                    event.getPlayer().getInventory().setItemInOffHand(new ItemStack(Material.AIR));
-                }
+                event.getPlayer().getInventory().remove(foodItem);
             }
             event.getPlayer().updateInventory();
             event.getPlayer().setFoodLevel(event.getPlayer().getFoodLevel() + 6);

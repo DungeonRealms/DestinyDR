@@ -32,6 +32,7 @@ import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.TabbedChatListener;
 import net.dungeonrealms.game.player.combat.CombatLog;
+import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.profession.Mining;
@@ -245,6 +246,7 @@ public class DungeonRealms extends JavaPlugin {
             tcc.onEnable();
             pm.registerEvents(new TabbedChatListener(), this);
             pm.registerEvents(new T1Dungeon(), this);
+            pm.registerEvents(new BossListener(), this);
         } else {
             pm.registerEvents(new MainListenerInstance(), this);
             pm.registerEvents(new DamageListener(), this);
@@ -376,6 +378,9 @@ public class DungeonRealms extends JavaPlugin {
                 DungeonRealms.getInstance().setFinishedSetup(false);
                 ShopMechanics.deleteAllShops(true);
                 API.logoutAllPlayers(true);
+                for (CombatLogger combatLogger : CombatLog.getInstance().getCOMBAT_LOGGERS().values()) {
+                    combatLogger.handleTimeOut();
+                }
                 AsyncUtils.pool.shutdown();
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                     DungeonRealms.getInstance().mm.stopInvocation();
@@ -396,6 +401,9 @@ public class DungeonRealms extends JavaPlugin {
     public void onDisable() {
         API.logoutAllPlayers(false);
         ShopMechanics.deleteAllShops(true);
+        for (CombatLogger combatLogger : CombatLog.getInstance().getCOMBAT_LOGGERS().values()) {
+            combatLogger.handleTimeOut();
+        }
         AsyncUtils.pool.shutdown();
         ps.onDisable();
         hs.onDisable();

@@ -800,7 +800,7 @@ public class HealthHandler implements GenericMechanic {
         }
 
         if (entity.hasMetadata("boss")) {
-            totalHP *= 4;
+            totalHP *= 6;
         }
 
 

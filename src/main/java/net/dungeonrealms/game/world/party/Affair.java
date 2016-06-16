@@ -110,11 +110,13 @@ public class Affair implements GenericMechanic {
         allPlayers.addAll(party.getMembers());
 
         allPlayers.stream().forEach(player -> {
-            if (API.getGamePlayer(player).isInDungeon()) {
-                DungeonManager.DungeonObject dungeonObject = DungeonManager.getInstance().getDungeon(player.getWorld());
-                if (!dungeonObject.beingRemoved) {
-                    dungeonObject.beingRemoved = true;
-                    DungeonManager.getInstance().removeInstance(dungeonObject);
+            if (API.getGamePlayer(player) != null) {
+                if (API.getGamePlayer(player).isInDungeon()) {
+                    DungeonManager.DungeonObject dungeonObject = DungeonManager.getInstance().getDungeon(player.getWorld());
+                    if (!dungeonObject.beingRemoved) {
+                        dungeonObject.beingRemoved = true;
+                        DungeonManager.getInstance().removeInstance(dungeonObject);
+                    }
                 }
             }
             player.setScoreboard(ScoreboardHandler.getInstance().mainScoreboard);

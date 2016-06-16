@@ -334,14 +334,8 @@ public class BlockListener implements Listener {
                         return;
                     }
                     //Reset durability.
-                    double itemDurability = RepairAPI.getCustomDurability(item);
-                    if (itemDurability + 45.0D >= 1500.0D) {
-                        RepairAPI.setCustomItemDurability(item, 1500);
-                        player.updateInventory();
-                    } else if (itemDurability + 45.0D < 1500.0D) {
-                        RepairAPI.setCustomItemDurability(item, (itemDurability + 45.0D));
-                        player.updateInventory();
-                    }
+                    RepairAPI.setCustomItemDurability(item, 1500);
+                    player.updateInventory();
                     itemEntity.remove();
                     middle.getWorld().playEffect(middle, Effect.STEP_SOUND, Material.IRON_BLOCK);
                     middle.getWorld().playSound(middle, Sound.BLOCK_ANVIL_USE, 3, 1.4F);
@@ -356,8 +350,6 @@ public class BlockListener implements Listener {
                     player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "ITEM REPAIRED");
                     BankMechanics.getInstance().takeGemsFromInventory(newCost, player);
                     repairMap.remove(block.getLocation());
-//                    block.removeMetadata("repairing", DungeonRealms.getInstance());
-//                } else if (chat.getMessage().equalsIgnoreCase("no") || chat.getMessage().equalsIgnoreCase("n")) {
                 } else {
                     //Cancel
                     itemEntity.remove();

@@ -7,7 +7,6 @@ import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.NBTUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.DungeonManager;
-import net.dungeonrealms.game.mechanics.DungeonManager.DungeonObject;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
@@ -71,49 +70,50 @@ public class CommandMonSpawn extends BasicCommand {
                         World world = ((CraftWorld) block.getBlock().getWorld()).getHandle();
                         Location loc = new Location(block.getBlock().getWorld(), x, y, z, 1, 1);
                         EnumBoss boss = EnumBoss.getByID(bossName);
+                        if (DungeonManager.getInstance().getDungeon(loc.getWorld()) != null) {
+                            DungeonManager.DungeonObject d = DungeonManager.getInstance().getDungeon(loc.getWorld());
+                            if (!d.canSpawnBoss) {
+                                for (Player p : block.getBlock().getWorld().getPlayers()) {
+                                    int ninteyPercent = (int) (d.maxAlive * 0.9);
+                                    p.sendMessage(ChatColor.RED + "You need to kill " + ChatColor.UNDERLINE + ninteyPercent + ChatColor.RED + " monsters to spawn the boss.");
+                                }
+                                return false;
+                            }
+                        }
                         switch (boss) {
-                        case Mayel:
-                            entity = new Mayel(world, loc);
-            				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, 100);
-            				EntityStats.setBossRandomStats(entity, 100, 1);
-                            break;
-                        case Burick:
-                            entity = new Burick(world, loc);
-            				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 3, 100);
-            				EntityStats.setBossRandomStats(entity, 100, 3);
-                            break;
-                        case Pyromancer:
-                            entity = new Pyromancer(world);
-            				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, 50);
-            				EntityStats.setBossRandomStats(entity, 50, 1);
-                            break;
-                        case InfernalAbyss:
-                            entity = new InfernalAbyss(world, loc);
-            				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 4, 100);
-            				EntityStats.setBossRandomStats(entity, 100, 4);
-                            break;
+                            case Mayel:
+                                entity = new Mayel(world, loc);
+                                MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, 100);
+                                EntityStats.setBossRandomStats(entity, 100, 1);
+                                break;
+                            case Burick:
+                                entity = new Burick(world, loc);
+                                MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 3, 100);
+                                EntityStats.setBossRandomStats(entity, 100, 3);
+                                break;
+                            case Pyromancer:
+                                entity = new Pyromancer(world);
+                                MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, 50);
+                                EntityStats.setBossRandomStats(entity, 50, 1);
+                                break;
+                            case InfernalAbyss:
+                                entity = new InfernalAbyss(world, loc);
+                                MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 4, 100);
+                                EntityStats.setBossRandomStats(entity, 100, 4);
+                                break;
 //                		case LordsGuard:
 //                			entity = new InfernalLordsGuard(world, player.getLocation());
 //                			break;
-                        default:
-                            entity = null;
-                    }
-                    if (entity == null)
-                        return false;
-                    if(DungeonManager.getInstance().getDungeon(loc.getWorld()) != null){
-                    	DungeonObject d = DungeonManager.getInstance().getDungeon(loc.getWorld());
-                    	if(!d.canSpawnBoss){
-                    		for(Player p : block.getBlock().getWorld().getPlayers()){
-                    			int NinetyPercent = (int) (d.maxAlive - (d.maxAlive * 1.9));
-                    			p.sendMessage(ChatColor.RED + "You need to kill " + ChatColor.UNDERLINE + (d.aliveMonsters.size() - NinetyPercent) + ChatColor.RED + " monsters to spawn the boss.");
-                    		}
-                    		return false;
-                    	}
-                    }
+                            default:
+                                entity = null;
+                        }
+                        if (entity == null) {
+                            return false;
+                        }
                         entity.setLocation(loc.getX(), loc.getY(), loc.getZ(), 1, 1);
-                    world.addEntity(entity, SpawnReason.CUSTOM);
-                    entity.setLocation(loc.getX(), loc.getY(), loc.getZ(), 1, 1);
-                    ((BlockCommandSender) s).getBlock().setType(Material.AIR);
+                        world.addEntity(entity, SpawnReason.CUSTOM);
+                        entity.setLocation(loc.getX(), loc.getY(), loc.getZ(), 1, 1);
+                        ((BlockCommandSender) s).getBlock().setType(Material.AIR);
                 }
             return false;
         }
@@ -161,12 +161,12 @@ public class CommandMonSpawn extends BasicCommand {
                         if (elite) {
                             EntityStats.setMonsterElite(entity, EnumNamedElite.NONE, tier, monsEnum);
                         }
-                        
+
                         String lvl = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] " + ChatColor.RESET;
                         String customName = entity.getBukkitEntity().getMetadata("customname").get(0).asString();
-                        
+
                         entity.setCustomName(lvl + API.getTierColor(tier) + customName);
-                        
+
                         Location location = new Location(world.getWorld(), player.getLocation().getX() + new Random().nextInt(3), player.getLocation().getY(), player.getLocation().getZ() + new Random().nextInt(3));
                         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                         world.addEntity(entity, SpawnReason.CUSTOM);
@@ -196,23 +196,23 @@ public class CommandMonSpawn extends BasicCommand {
                     switch (boss) {
                         case Mayel:
                             entity = new Mayel(world, player.getLocation());
-            				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, 100);
-            				EntityStats.setBossRandomStats(entity, 100, 1);
+                            MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, 100);
+                            EntityStats.setBossRandomStats(entity, 100, 1);
                             break;
                         case Burick:
                             entity = new Burick(world, player.getLocation());
-            				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 3, 100);
-            				EntityStats.setBossRandomStats(entity, 100, 3);
+                            MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 3, 100);
+                            EntityStats.setBossRandomStats(entity, 100, 3);
                             break;
                         case Pyromancer:
                             entity = new Pyromancer(world);
-            				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, 50);
-            				EntityStats.setBossRandomStats(entity, 50, 1);
+                            MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, 50);
+                            EntityStats.setBossRandomStats(entity, 50, 1);
                             break;
                         case InfernalAbyss:
                             entity = new InfernalAbyss(world, player.getLocation());
-            				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 4, 100);
-            				EntityStats.setBossRandomStats(entity, 100, 4);
+                            MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 4, 100);
+                            EntityStats.setBossRandomStats(entity, 100, 4);
                             break;
 //                		case LordsGuard:
 //                			entity = new InfernalLordsGuard(world, player.getLocation());

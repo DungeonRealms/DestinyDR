@@ -22,12 +22,14 @@ public interface Boss {
 	
 	default void say(Entity ent, String msg){
 		for (Player p : API.getNearbyPlayers(ent.getLocation(), 50)) {
-			p.sendMessage(ent.getCustomName() + ChatColor.RESET.toString() + ": " + msg);
+			p.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + getEnumBoss().name() + ChatColor.WHITE + "] "
+					+ ChatColor.GREEN +  msg);
 		}
 	}
 	default void say(Entity ent, Location location, String msg){
 		for (Player p : API.getNearbyPlayers(location, 50)) {
-			p.sendMessage(ChatColor.GREEN + ent.getCustomName() + ChatColor.RESET.toString() + ": " + msg);
+			p.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD + getEnumBoss().name() + ChatColor.WHITE + "] "
+					+ ChatColor.GREEN +  msg);
 		}
 	}
 }

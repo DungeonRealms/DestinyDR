@@ -16,6 +16,7 @@ import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.StaffZombi
 import net.dungeonrealms.game.world.entities.types.monsters.base.*;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.InfernalAbyss;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.InfernalGhast;
+import net.dungeonrealms.game.world.entities.types.monsters.boss.Mayel;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.InfernalLordsGuard;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.Pyromancer;
 import net.dungeonrealms.game.world.entities.types.mounts.EnderDragon;
@@ -98,7 +99,7 @@ public class Entities implements GenericMechanic {
         //nmsUtils.registerEntity("DRZombie", 54, EntityZombie.class, DRZombie.class);
 
         // Tier 1 Boss
-        //nmsUtils.registerEntity("Mayel", 51, EntitySkeleton.class, Mayel.class);
+        nmsUtils.registerEntity("Mayel", 51, EntitySkeleton.class, Mayel.class);
         nmsUtils.registerEntity("Pyromancer", 51, EntitySkeleton.class, Pyromancer.class);
 
         // Tier 3 Boss

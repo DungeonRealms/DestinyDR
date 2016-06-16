@@ -110,7 +110,7 @@ public class BaseMobSpawner {
         if (SPAWNED_MONSTERS.size() < spawnAmount) {
             if (!firstSpawn) {
                 if (!canMobsSpawn()) {
-                    counter = counter + 5;
+                    counter = counter + 2;
                     //Mobs haven't passed their respawn timer yet.
                     return;
                 }
@@ -277,7 +277,7 @@ public class BaseMobSpawner {
      */
     void init() {
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            boolean playersNearby = !API.getNearbyPlayers(loc, 24).isEmpty();
+            boolean playersNearby = !API.getNearbyPlayers(loc, 32).isEmpty();
             if (playersNearby) {
                 if (timerID == -1) {
                     timerID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
@@ -285,7 +285,7 @@ public class BaseMobSpawner {
                             Bukkit.getScheduler().cancelTask(timerID);
                         } else
                             spawnIn();
-                    }, 0, 100L);
+                    }, 0, 40L);
                 }
             } else {
                 if (timerID != -1) {
@@ -293,7 +293,7 @@ public class BaseMobSpawner {
                     timerID = -1;
                 }
             }
-        }, 0, 100L);
+        }, 0, 50L);
     }
 
     /**

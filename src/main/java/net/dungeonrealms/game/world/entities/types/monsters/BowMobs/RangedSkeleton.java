@@ -24,7 +24,6 @@ public class RangedSkeleton extends DRSkeleton implements IRangedEntity {
         super(world, monsterType, tier, entityType);
         this.entityType = entityType;
         this.tier = tier;
-        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         setWeapon(tier);
     }
 

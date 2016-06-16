@@ -5,6 +5,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedWitherSkeleton;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumNamedElite;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
@@ -185,6 +186,9 @@ public class EliteMobSpawner {
             Entity entity = SpawningMechanics.getMob(world, tier, monsterType);
             if (entity == null) {
                 return;
+            }
+            if (customName.toLowerCase().contains("librarian")) {
+                entity = new RangedWitherSkeleton(world, EnumMonster.Skeleton2, EnumEntityType.HOSTILE_MOB, tier);
             }
             int level = Utils.getRandomFromTier(tier, levelRange);
             MetadataUtils.registerEntityMetadata(entity, type, tier, level);

@@ -3,29 +3,35 @@ package net.dungeonrealms.game.world.entities.types.monsters.boss;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedSkeleton;
+import net.dungeonrealms.game.world.entities.types.monsters.BowMobs.RangedWitherSkeleton;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.minecraft.server.v1_9_R2.EntityLiving;
-import net.minecraft.server.v1_9_R2.EnumItemSlot;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import net.minecraft.server.v1_9_R2.World;
+import net.dungeonrealms.game.world.spawning.SpawningMechanics;
+import net.minecraft.server.v1_9_R2.*;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.Random;
+
 /**
  * Created by Chase on Oct 18, 2015
  */
-public class Mayel extends RangedSkeleton implements Boss {
+public class Mayel extends RangedWitherSkeleton implements Boss {
 
 	/**
 	 * @param world
@@ -39,16 +45,13 @@ public class Mayel extends RangedSkeleton implements Boss {
 	public Mayel(World world, Location loc) {
 		super(world);
 		this.loc = loc;
-		this.setSkeletonType(1);
 		setArmor(getEnumBoss().tier);
 		this.getBukkitEntity().setCustomNameVisible(true);
 		int level = 100;
 		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
-		this.getBukkitEntity().setMetadata("boss",
-		        new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
+		this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
 		EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
-		this.getBukkitEntity()
-		        .setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
+		this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
 		this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().name));
 		for (Player p : API.getNearbyPlayers(loc, 50)) {
 			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().greeting);
@@ -59,12 +62,22 @@ public class Mayel extends RangedSkeleton implements Boss {
 	@Override
 	public void setArmor(int tier) {
 		// weapon, boots, legs, chest, helmet/head
-		//ItemStack weapon = getWeapon();
-		/*this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
-		this.setEquipment(1, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("mayelboot")));
-		this.setEquipment(2, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("mayelpants")));
-		this.setEquipment(3, CraftItemStack.asNMSCopy(ItemGenerator.getNamedItem("mayelchest")));
-		//this.setEquipment(4, getHead());*/
+		ItemStack weapon = getWeapon();
+		ItemStack boots = ItemGenerator.getNamedItem("mayelboot");
+		ItemStack legs = ItemGenerator.getNamedItem("mayelpants");
+		ItemStack chest = ItemGenerator.getNamedItem("mayelchest");
+		ItemStack head = ItemGenerator.getNamedItem("mayelhelmet");
+		LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+		this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
+		this.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(boots));
+		this.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(legs));
+		this.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(chest));
+		this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(head));
+		livingEntity.getEquipment().setItemInMainHand(weapon);
+		livingEntity.getEquipment().setBoots(boots);
+		livingEntity.getEquipment().setLeggings(legs);
+		livingEntity.getEquipment().setChestplate(chest);
+		livingEntity.getEquipment().setHelmet(head);
 	}
 
 	/**
@@ -88,55 +101,39 @@ public class Mayel extends RangedSkeleton implements Boss {
 	public void onBossDeath() {
 		say(this.getBukkitEntity(), getEnumBoss().death);
 		int droppedGems = 64 * this.getBukkitEntity().getWorld().getPlayers().size();
-		for(int i = 0; i < droppedGems; i++){
+		for (int i = 0; i < droppedGems; i++){
 			this.getBukkitEntity().getWorld().dropItemNaturally(this.getBukkitEntity().getLocation().add(0, 4, 0), BankMechanics.createGems(1));
 		}
-		
 	}
 
-	public boolean canSpawn = true;
+	private boolean canSpawn = true;
 
 	@Override
 	public void onBossHit(EntityDamageByEntityEvent event) {
-		/*LivingEntity en = (LivingEntity) event.getEntity();
 		if (canSpawn) {
+			canSpawn = false;
 			for (int i = 0; i < 5; i++) {
 				Entity entity = SpawningMechanics.getMob(world, 1, EnumMonster.MayelPirate);
-				int level = Utils.getRandomFromTier(1, "high");
+				int level = Utils.getRandomFromTier(2, "high");
+				String newLevelName = ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
 				MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, level);
-				EntityStats.setMonsterRandomStats(entity, level, 1);
-				
-				if (entity == null)
-					return;
-				entity.setCustomName("Mayel Pirate");
-					ArmorStand stand = entity.getBukkitEntity().getLocation().getWorld()
-				            .spawn(entity.getBukkitEntity().getLocation(), ArmorStand.class);
-					stand.setRemoveWhenFarAway(false);
-					stand.setVisible(false);
-					stand.setSmall(true);
-					stand.setBasePlate(false);
-					stand.setMetadata("type", new FixedMetadataValue(DungeonRealms.getInstance(), "nametag"));
-					stand.setGravity(false);
-					stand.setArms(false);
-					stand.setCustomNameVisible(true);
-					stand.setCustomName("Mayel Pirate");
-					stand.setRemoveWhenFarAway(false);
-					entity.getBukkitEntity().setPassenger(stand);
-					EntityStats.setMonsterElite(entity, level + 10, 1);
-					stand.setCustomName(entity.getCustomName());
-				Location location = new Location(world.getWorld(),
-				        this.getBukkitEntity().getLocation().getX() + new Random().nextInt(3),
-				        this.getBukkitEntity().getLocation().getY(),
-				        this.getBukkitEntity().getLocation().getZ() + new Random().nextInt(3));
+				EntityStats.createDungeonMob(entity, level, 1);
+				if (entity == null) {
+					return; //WTF?? UH OH BOYS WE GOT ISSUES
+				}
+				entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+				entity.setCustomName(newLevelName + API.getTierColor(1).toString() + ChatColor.BOLD + "Mayels Crew");
+				entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(1).toString() + ChatColor.BOLD + "Mayels Crew"));
+				Location location = new Location(world.getWorld(), getBukkitEntity().getLocation().getX() + new Random().nextInt(3), getBukkitEntity().getLocation().getY(), getBukkitEntity().getLocation().getZ() + new Random().nextInt(3));
 				entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-				world.addEntity(entity, SpawnReason.CUSTOM);
+				((EntityInsentient) entity).persistent = true;
+				((LivingEntity) entity.getBukkitEntity()).setRemoveWhenFarAway(false);
+				world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
 				entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-				canSpawn = false;
 			}
-			say(this.getBukkitEntity(), "Come to my call, brothers!");
-			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> canSpawn = true, 20 * 5);
+			say(bukkitEntity, "Come to my call, brothers!");
+			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> canSpawn = true, 160L);
 		}
-*/ //TODO: Re-write.
 	}
 
 	@Override

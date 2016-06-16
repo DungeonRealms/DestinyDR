@@ -277,12 +277,11 @@ public class SpawningMechanics implements GenericMechanic {
                         entity = new MeleeWitherSkeleton(world, tier, monsEnum, EnumEntityType.HOSTILE_MOB);
                         break;
                     case 2:
-                        entity = null;
-                        //TODO: Staff Wither
+                        entity = new RangedWitherSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
                         break;
                     default:
-                        Utils.log.info("[SPAWNING] Tried to create " + monsEnum.idName + " but it has failed.");
-                        return null;
+                        entity = new RangedWitherSkeleton(world, monsEnum, EnumEntityType.HOSTILE_MOB, tier);
+                        break;
                 }
                 break;
             case Skeleton1:
