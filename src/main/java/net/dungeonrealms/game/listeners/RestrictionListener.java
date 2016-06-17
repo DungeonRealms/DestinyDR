@@ -126,7 +126,7 @@ public class RestrictionListener implements Listener {
         }
         if (event.getAction() == Action.LEFT_CLICK_BLOCK) {
             if (event.getClickedBlock().getType() == Material.FIRE) {
-                event.setCancelled(true); // Block fire extinquish.
+                event.setCancelled(true);
                 event.getClickedBlock().setType(Material.FIRE);
                 return;
             }
@@ -149,14 +149,14 @@ public class RestrictionListener implements Listener {
     }
 
     @EventHandler
-    public void playerOpenEmptyMap(PlayerInteractEvent e) {
-        Player p = e.getPlayer();
-        if(e.hasItem() && e.getItem().getType() == Material.EMPTY_MAP) {
-            e.setCancelled(true);
-            e.setUseItemInHand(Event.Result.DENY);
-            e.setUseInteractedBlock(Event.Result.DENY);
-            p.sendMessage(ChatColor.RED + "To use a " + ChatColor.BOLD + "SCROLL" + ChatColor.RED + ", simply drag it on-top of the piece of equipment you wish to apply it to in your inventory.");
-            p.updateInventory();
+    public void playerOpenEmptyMap(PlayerInteractEvent event) {
+        if (event.hasItem() && event.getItem().getType() == Material.EMPTY_MAP) {
+            Player player = event.getPlayer();
+            event.setCancelled(true);
+            event.setUseItemInHand(Event.Result.DENY);
+            event.setUseInteractedBlock(Event.Result.DENY);
+            player.sendMessage(ChatColor.RED + "To use a " + ChatColor.BOLD + "SCROLL" + ChatColor.RED + ", simply drag it on-top of the piece of equipment you wish to apply it to in your inventory.");
+            player.updateInventory();
         }
     }
 }

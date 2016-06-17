@@ -5,9 +5,9 @@ package net.dungeonrealms.game.world.entities.types.monsters;
  */
 public enum EnumBoss {
 
-	Mayel("mayel", "Mayel The Cruel", 1, "How dare you challenge ME, the leader of the Cyrene Bandits! To me, my brethern, let us crush these incolents", "death"),
+	Mayel("mayel", "Mayel The Cruel", 1, "How dare you challenge ME, the leader of the Cyrene Bandits! To me, my brethren, let us crush these incolents", "No... how could it be?"),
 	Pyromancer("pyromancer", "Mad Bandit Pyromancer", 1, "WAHAHAHA! EXPLOSIONS! BOOM, BOOM, BOOM! I'm gonna blow you all up!", "Talk about going out with a...blast."),
-	Burick("burick", "Burick The Fanatic", 3, "Ahahaha! You dare try to kill ME?! I am Burick, disciple of Goragath! None of you will leave this place alive!", "death"),
+	Burick("burick", "Burick The Fanatic", 3, "Ahahaha! You dare try to kill ME?! I am Burick, disciple of Goragath! None of you will leave this place alive!", "I will have my revenge!"),
 	InfernalAbyss("infernalabyss", "Infernal Abyss", 4, "I have nothing to say to you foolish mortals, except for this: Burn.", "You have defeated me. ARGHGHHG!"),
 	InfernalGhast("infernalghast", "Infernal Abyss", 4, "I have nothing to say to you foolish mortals, except for this: Burn.", "You have defeated me. ARGHGHHG!"),
 	LordsGuard("lordsguard", "The Infernal Lords Guard", 4, "I shall protect you my lord", "I'm... Sorry..."),

@@ -3,6 +3,7 @@ package net.dungeonrealms;
 import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.commands.*;
+import net.dungeonrealms.game.commands.dungeonhelpers.BossTeleport;
 import net.dungeonrealms.game.commands.dungeonhelpers.DungeonSpawn;
 import net.dungeonrealms.game.commands.dungeonhelpers.ReplaceNear;
 import net.dungeonrealms.game.commands.generic.CommandManager;
@@ -319,6 +320,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new DungeonSpawn("dspawn", "/<command> [args]", "Spawn dungeon monsters."));
         cm.registerCommand(new CommandMonSpawn("monspawn", "/<command> [args]", "Spawn monsters"));
         cm.registerCommand(new ReplaceNear("drreplacenear", "/<command> [args]", "Replaces nearby blocks"));
+        cm.registerCommand(new BossTeleport("bosstp", "/<command> [args]", "Dungeon Boss Teleporation"));
 
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {
