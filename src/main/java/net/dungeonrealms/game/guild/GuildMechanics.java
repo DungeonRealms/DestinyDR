@@ -68,7 +68,7 @@ public class GuildMechanics {
         });
 
         GuildDatabaseAPI.get().getAllOfGuild(guildName)
-                .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null && uuid != player.getUniqueId()).forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(format.concat(" has joined your shard.")));
+                .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null && !uuid.equals(player.getUniqueId())).forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(format.concat(player.getName() + " has joined your shard.")));
         showMotd(player, guildName);
     }
 
@@ -176,7 +176,7 @@ public class GuildMechanics {
                 sendUpdateProxyCachePacket();
 
                 sendAlert(guildName, player.getName() + ChatColor.GRAY.toString() + " has " +
-                        ChatColor.UNDERLINE + "joined" + ChatColor.GRAY + " your guild." + (referrer != null ? "[INVITE: " + ChatColor.ITALIC + referrer + ChatColor.GRAY + "]" : ""));
+                        ChatColor.UNDERLINE + "joined" + ChatColor.GRAY + " your guild." + (referrer != null ? " [INVITE: " + ChatColor.ITALIC + referrer + ChatColor.GRAY + "]" : ""));
             } else {
                 player.sendMessage(ChatColor.RED + "This guild no longer exists.");
 
@@ -226,9 +226,7 @@ public class GuildMechanics {
             }
 
             player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "QUIT" + ChatColor.RED + " your guild.");
-            GuildDatabaseAPI.get().removeFromGuild(guildName, player.getUniqueId());
-            sendAlert(guildName, player.getName() + "has left the guild.");
-
+            sendAlert(guildName, player.getName() + " has left the guild.");
 
             if (isOwner) if (officers.size() > 0) {
                 UUID sucessor = officers.get(0);
@@ -243,6 +241,11 @@ public class GuildMechanics {
 
                 GuildDatabaseAPI.get().deleteGuild(guildName);
             }
+
+            GuildDatabaseAPI.get().doesGuildNameExist(guildName, exists -> {
+                        if (exists) GuildDatabaseAPI.get().removeFromGuild(guildName, player.getUniqueId());
+                    }
+            );
 
             sendUpdateProxyCachePacket();
         }, null);

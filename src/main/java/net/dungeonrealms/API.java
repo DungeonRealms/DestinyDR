@@ -29,6 +29,7 @@ import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.game.player.rank.Subscription;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
@@ -635,6 +636,9 @@ public class API {
                 }
             }
         }
+
+        // Subscription
+        Subscription.getInstance().handleLogin(player);
 
         // Guilds
         GuildMechanics.getInstance().doLogin(player);
