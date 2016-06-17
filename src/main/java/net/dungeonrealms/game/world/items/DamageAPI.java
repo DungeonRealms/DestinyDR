@@ -728,7 +728,7 @@ public class DamageAPI {
         int weaponTier = tag.getInt("itemTier");
         Projectile projectile = livingEntity.launchProjectile(Arrow.class);
         projectile.setBounce(false);
-        vector.multiply(1.2);
+        vector.multiply(1.25);
         projectile.setVelocity(vector);
         projectile.setShooter(livingEntity);
         EntityArrow eArrow = ((CraftArrow) projectile).getHandle();
