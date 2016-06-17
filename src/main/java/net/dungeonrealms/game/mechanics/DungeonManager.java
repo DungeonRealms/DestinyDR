@@ -3,6 +3,7 @@ package net.dungeonrealms.game.mechanics;
 import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
@@ -194,8 +195,8 @@ public class DungeonManager implements GenericMechanic {
     }
 
     public boolean canCreateInstance() {
-        //TODO: Remove
-        return Dungeons.size() < 2;
+        //TODO: Increase on non US-1 shards.
+        return Dungeons.size() < 3;
     }
 
     /**
@@ -305,8 +306,29 @@ public class DungeonManager implements GenericMechanic {
          *
          */
         public void teleportPlayersOut() {
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> getPlayerList().stream().filter(
-                    p -> p != null && p.isOnline()).forEach(p -> p.teleport(Teleportation.Cyrennica)), 20 * 15);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                getPlayerList().stream().filter(p -> p != null && p.isOnline()).forEach(player -> {
+                    switch (getType()) {
+                        case BANDIT_TROVE:
+                            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.BANDIT_TROVE);
+                            break;
+                        case VARENGLADE:
+                            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VARENGLADE);
+                            break;
+                        case THE_INFERNAL_ABYSS:
+                            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.INFERNAL_ABYSS);
+                            break;
+                        default:
+                            break;
+                    }
+                    if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId()).equals("")) {
+                        String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId())).split(",");
+                        player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]), Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
+                    } else {
+                        player.teleport(Teleportation.Cyrennica);
+                    }
+                });
+            }, 15 * 20L);
             getPlayerList().stream().filter(p -> p != null && p.isOnline()).forEach(p -> p.sendMessage(ChatColor.YELLOW + "You will be teleported out in 15 seconds..."));
         }
 
