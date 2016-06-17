@@ -136,7 +136,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
 			for (Player p : API.getNearbyPlayers(loc, 50)) {
 				p.sendMessage(ChatColor.RED.toString() + "Mayel The Cruel" + ChatColor.RESET.toString() + ": " + "Come to my call, brothers!");
 			}
-			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> canSpawn = true, 160L);
+			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> canSpawn = true, 140L);
 		}
 	}
 
