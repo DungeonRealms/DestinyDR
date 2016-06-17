@@ -136,8 +136,8 @@ public class DatabaseAPI {
              */
             case RANK:
                 return ((Document) doc.get("rank")).get("rank", String.class);
-            case RANK_EXISTENCE:
-                return ((Document) doc.get("rank")).get("lastPurchase", Long.class);
+            case RANK_SUB_EXPIRATION:
+                return ((Document) doc.get("rank")).get("expiration_date", Integer.class);
             case PURCHASE_HISTORY:
                 return ((Document) doc.get("rank")).get("purchaseHistory", ArrayList.class);
             /*
@@ -346,8 +346,7 @@ public class DatabaseAPI {
                                         .append("friendRequest", new ArrayList<String>())
                                         .append("mailbox", new ArrayList<String>()))
                         .append("rank",
-                                new Document("lastPurchase", 0L)
-                                        .append("purchaseHistory", new ArrayList<String>())
+                                new Document("expiration_date", 0L)
                                         .append("rank", "DEFAULT"))
                         .append("inventory",
                                 new Document("collection_bin", "")
