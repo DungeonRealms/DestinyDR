@@ -482,17 +482,17 @@ public class RepairAPI {
         double newItemDurability = (getCustomDurability(itemStack) - amountToSubtract);
         switch (tag.getString("type")) {
             case "weapon":
-                if (newItemDurability <= 100D && newItemDurability >= 90D) {
+                if (newItemDurability <= 150D && newItemDurability >= 140D) {
                     player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " **10% DURABILITY " + ChatColor.RED + "Left on " + itemStack.getItemMeta().getDisplayName() + "*");
                 }
-                if (newItemDurability <= 20D && newItemDurability >= 10D) {
+                if (newItemDurability <= 30D && newItemDurability >= 20D) {
                     player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " **2% DURABILITY " + ChatColor.RED + "Left on " + itemStack.getItemMeta().getDisplayName() + "*");
                 }
-                if (newItemDurability <= 0.1D) {
+                if (newItemDurability <= 1D) {
                     Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                        player.setItemInHand(new ItemStack(Material.AIR));
+                        player.getEquipment().setItemInMainHand(new ItemStack(Material.AIR));
                         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                         player.updateInventory();
                     }, 10L);
@@ -507,7 +507,7 @@ public class RepairAPI {
                     player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
                     player.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + " **2% DURABILITY " + ChatColor.RED + "Left on " + itemStack.getItemMeta().getDisplayName() + "*");
                 }
-                if (newItemDurability <= 0.1D) {
+                if (newItemDurability <= 1D) {
                     switch (new Attribute(itemStack).getItemType().getId()) {
                         case 5:
                             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {

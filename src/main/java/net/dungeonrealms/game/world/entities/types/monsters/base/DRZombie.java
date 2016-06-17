@@ -51,6 +51,8 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(monster.getSkullItem(monster)));
         livingEntity.getEquipment().setHelmet(monster.getSkullItem(monster));
+        this.noDamageTicks = 0;
+        this.maxNoDamageTicks = 0;
     }
 
     protected DRZombie(World world) {
