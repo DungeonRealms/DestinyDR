@@ -15,6 +15,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.BannerMeta;
 
@@ -53,6 +54,9 @@ public class GuildMechanics {
     @Getter
     private final Map<UUID, GuildCreateInfo> guildCreateInfo = new WeakHashMap<>();
 
+    @Getter
+    private final List<UUID> guildChat = new ArrayList<>();
+
 
     public void doLogin(Player player) {
         if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) return;
@@ -67,13 +71,63 @@ public class GuildMechanics {
                 GuildDatabaseAPI.get().setGuild(player.getUniqueId(), "");
         });
 
+        sendAlert(guildName, player, player.getName() + " has joined shard " + DungeonRealms.getInstance().shardid);
+
         GuildDatabaseAPI.get().getAllOfGuild(guildName)
                 .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null && !uuid.equals(player.getUniqueId())).forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(format.concat(player.getName() + " has joined your shard.")));
         showMotd(player, guildName);
     }
 
+
+    public void doChat(AsyncPlayerChatEvent event) {
+        if (event.isCancelled()) return;
+        if (GuildDatabaseAPI.get().isGuildNull(event.getPlayer().getUniqueId())) return;
+
+        Player player = event.getPlayer();
+        String message = event.getMessage();
+
+        if (guildChat.contains(player.getUniqueId())) {
+            String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
+            sendChat(guildName, player, message);
+            event.setCancelled(true);
+        }
+    }
+
+
+    public void doLogout(Player player) {
+        guildChat.remove(player.getUniqueId());
+        String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
+        String tag = GuildDatabaseAPI.get().getTagOf(guildName);
+        String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
+
+        GuildDatabaseAPI.get().getAllOfGuild(guildName)
+                .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null && !uuid.equals(player.getUniqueId())).forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(format.concat(player.getName() + " has left your shard.")));
+
+    }
+
     public void sendUpdateProxyCachePacket() {
         NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Guilds", "updateCache");
+    }
+
+
+    /**
+     * All local messages will be sent to
+     * guild chat once this is toggled.
+     *
+     * @param player Player player
+     */
+    public void toggleGuildChat(Player player) {
+        String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
+        String tag = GuildDatabaseAPI.get().getTagOf(guildName);
+
+        if (guildChat.contains(player.getUniqueId())) {
+            guildChat.remove(player.getUniqueId());
+            player.sendMessage(ChatColor.GRAY + "Messages will now be default sent to local chat.");
+        } else {
+            guildChat.add(player.getUniqueId());
+            player.sendMessage(ChatColor.DARK_AQUA + "Messages will now be default sent to <" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + ">. Type " + ChatColor.UNDERLINE + "/l <msg>" + ChatColor.DARK_AQUA + " to speak in local.");
+            player.sendMessage(ChatColor.GRAY + "To change back to default local, type " + ChatColor.BOLD + "/g" + ChatColor.GRAY + " again.");
+        }
     }
 
     /**
@@ -90,6 +144,19 @@ public class GuildMechanics {
 
     /**
      * @param guildName Name of guild
+     * @param player    Sender
+     * @param message   Alert message
+     */
+    public void sendAlert(String guildName, Player player, String message) {
+        String tag = GuildDatabaseAPI.get().getTagOf(guildName);
+        String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
+
+        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Guilds", "message:" + player.getName(), Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
+    }
+
+
+    /**
+     * @param guildName Name of guild
      * @param message   Alert message
      */
     public void sendAlert(String guildName, String message) {
@@ -98,7 +165,6 @@ public class GuildMechanics {
 
         NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Guilds", "message", Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
     }
-
 
     /**
      * Displays the guild Message of the day
