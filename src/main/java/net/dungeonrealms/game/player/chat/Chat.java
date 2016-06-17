@@ -39,7 +39,7 @@ public class Chat {
      * If <i>consumer</i> is null, the player is removed from memory (used in Quit event)
      *
      * @param consumer the Consumer that should listen for the event AND NOT BE NULL
-     * @param orElse the consumer that get called when another listener listens for a message (this one gets removed) or when the player quits
+     * @param orElse   the consumer that get called when another listener listens for a message (this one gets removed) or when the player quits
      */
     public static void listenForMessage(Player player, Consumer<? super AsyncPlayerChatEvent> consumer, Consumer<? super Player> orElse) {
         if (chatListeners.remove(player) != null) {
@@ -58,13 +58,10 @@ public class Chat {
             "dick", "clit", "homo", "fag", "queer", "nigger", "dike", "dyke", "retard", "motherfucker", "vagina", "boob", "pussy", "rape", "gay", "penis",
             "cunt", "titty", "anus", "faggot", "gay", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "titanrift", "fucked"));
 
-
-
-
     /**
      * Monitor the players primary language also check for bad words.
      *
-     * @param event
+     * @param event Chat event
      * @since 1.0
      */
     public void doChat(AsyncPlayerChatEvent event) {
@@ -80,6 +77,7 @@ public class Chat {
         UUID uuid = event.getPlayer().getUniqueId();
 
         String fixedMessage = checkForBannedWords(event.getMessage());
+        event.setMessage(fixedMessage);
 
         if (fixedMessage.startsWith("@") && !fixedMessage.contains("@i@")) {
             String playerName = fixedMessage.replace("@", "").split(" ")[0];
@@ -124,35 +122,46 @@ public class Chat {
             final String finalFixedMessage = fixedMessage;
             Bukkit.getOnlinePlayers().stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer(), true, GameChat.getGlobalType(finalFixedMessage)) + finalFixedMessage));
         } else {
-                if (fixedMessage.contains("@i@") && event.getPlayer().getEquipment().getItemInMainHand() != null && event.getPlayer().getEquipment().getItemInMainHand().getType() != Material.AIR) {
-                    final Player p = event.getPlayer();
-                    String aprefix = GameChat.getPreMessage(p);
-                    String[] split = fixedMessage.split("@i@");
-                    String after = "";
-                    String before = "";
-                    if (split.length > 0)
-                        before = split[0];
-                    if (split.length > 1)
-                        after = split[1];
+            if (fixedMessage.contains("@i@") && event.getPlayer().getEquipment().getItemInMainHand() != null && event.getPlayer().getEquipment().getItemInMainHand().getType() != Material.AIR) {
+                final Player p = event.getPlayer();
+                String aprefix = GameChat.getPreMessage(p);
+                String[] split = fixedMessage.split("@i@");
+                String after = "";
+                String before = "";
+                if (split.length > 0)
+                    before = split[0];
+                if (split.length > 1)
+                    after = split[1];
 
-                    final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
-                    normal.addText(before + "");
-                    normal.addItem(event.getPlayer().getEquipment().getItemInMainHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
-                    normal.addText(after);
-                    API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(normal::sendToPlayer);
-                    event.setCancelled(true);
-                    return;
-                }
+                final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
+                normal.addText(before + "");
+                normal.addItem(event.getPlayer().getEquipment().getItemInMainHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
+                normal.addText(after);
+                API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(normal::sendToPlayer);
                 event.setCancelled(true);
-                final String finalFixedMessage = fixedMessage;
-
-                if (API.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() >= 2) {
-                    API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
-                } else {
-                    event.getPlayer().sendMessage(GameChat.getPreMessage(event.getPlayer()) + fixedMessage);
-                    event.getPlayer().sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "No one heard you...");
-                }
+            }
         }
+    }
+
+    /**
+     * Handles local player chat
+     *
+     * @param event Chat event
+     */
+
+    public void doLocalChat(AsyncPlayerChatEvent event) {
+        if (event.isCancelled()) return;
+        final String finalFixedMessage = event.getMessage();
+
+
+        // HANDLE LOCAL CHAT
+        if (API.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() >= 2) {
+            API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
+        } else {
+            event.getPlayer().sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage);
+            event.getPlayer().sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "No one heard you...");
+        }
+        event.setCancelled(true);
     }
 
     public String checkForBannedWords(String message) {

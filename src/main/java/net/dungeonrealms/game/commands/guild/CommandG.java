@@ -32,7 +32,7 @@ public class CommandG extends BasicCommand {
         String guildName = GuildDatabaseAPI.get().getGuildOf(player.getUniqueId());
 
         if (args.length == 0) {
-            player.sendMessage(usage);
+            GuildMechanics.getInstance().toggleGuildChat(player);
             return true;
         }
 

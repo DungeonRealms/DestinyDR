@@ -37,11 +37,33 @@ public class ProxyChannelListener implements Listener {
 
         DataInputStream in = new DataInputStream(new ByteArrayInputStream(event.getData()));
 
+
         try {
             String subChannel = in.readUTF();
 
+            // if (subChannel.equals("Update")) {
+            //     String playerName = in.readUTF();
+            //    ProxiedPlayer player = plugin.getProxy().getPlayer(playerName);
+            //    if (player == null) return;
+
+
+            //    ByteArrayDataOutput out = ByteStreams.newDataOutput();
+            //    out.writeUTF(player.getName());
+
+            //     player.sendData("Update", out.toByteArray());
+            // }
+
             if (subChannel.equals("Guilds")) {
                 String command = in.readUTF();
+
+                if (command.contains("message:")) {
+                    String player = command.split(":")[1];
+                    String guildName = in.readUTF();
+                    String message = in.readUTF();
+
+                    plugin.sendMessageToGuild(guildName, message, player);
+                    return;
+                }
 
                 switch (command) {
                     case "updateCache": {
