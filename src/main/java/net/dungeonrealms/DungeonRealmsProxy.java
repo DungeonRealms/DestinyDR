@@ -43,12 +43,13 @@ public class DungeonRealmsProxy extends Plugin {
         for (UUID uuid : GuildDatabaseAPI.get().getAllOfGuild(guildName)) {
             ProxiedPlayer player = getProxy().getPlayer(uuid);
 
-            for (String s : filters) {
-                if (player.getName().equalsIgnoreCase(s))
-                    continue loop;
+            if (player != null) {
+                for (String s : filters) {
+                    if (player.getName().equalsIgnoreCase(s))
+                        continue loop;
+                }
+                player.sendMessage(message);
             }
-
-            if (player != null) player.sendMessage(message);
         }
     }
 

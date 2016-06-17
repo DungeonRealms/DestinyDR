@@ -35,11 +35,12 @@ public class NetworkAPI implements PluginMessageListener {
 
     public void startInitialization() {
         Utils.log.info("[NetworkAPI] Registering Outbound/Inbound BungeeCord channels...");
-        Bukkit.getMessenger().registerOutgoingPluginChannel(DungeonRealms.getInstance(), "BungeeCord");
-        Bukkit.getMessenger().registerIncomingPluginChannel(DungeonRealms.getInstance(), "BungeeCord", this);
+        //Bukkit.getMessenger().registerOutgoingPluginChannel(DungeonRealms.getInstance(), "BungeeCord");
+        //  Bukkit.getMessenger().registerIncomingPluginChannel(DungeonRealms.getInstance(), "BungeeCord", this);
 
         Bukkit.getMessenger().registerOutgoingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms");
         Bukkit.getMessenger().registerIncomingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms", this);
+
 
         Utils.log.info("[NetworkAPI] Finished Registering Outbound/Inbound BungeeCord channels ... OKAY!");
     }
@@ -48,16 +49,13 @@ public class NetworkAPI implements PluginMessageListener {
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
         if (!channel.equalsIgnoreCase("BungeeCord") && !channel.equalsIgnoreCase("DungeonRealms")) return;
-
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
         String subChannel = in.readUTF();
 
         if (channel.equalsIgnoreCase("DungeonRealms")) {
             if (subChannel.equals("Update")) {
                 UUID uuid = UUID.fromString(in.readUTF());
-
-                if (Bukkit.getPlayer(uuid) != null)
-                    DatabaseAPI.getInstance().requestPlayer(uuid);
+                DatabaseAPI.getInstance().requestPlayer(uuid);
             }
         }
 
