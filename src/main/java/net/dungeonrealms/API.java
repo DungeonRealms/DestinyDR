@@ -222,6 +222,18 @@ public class API {
         return null;
     }
 
+
+    /**
+     * Requests an update for cached data on target
+     * player's server
+     *
+     * @param player Target
+     */
+    public void updatePlayerData(UUID player) {
+        // SENDS PACKET ON MESSAGING CHANNEL //
+        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Update", player.toString());
+    }
+
     /**
      * Gets players UUID from Name. ASYNC.
      *
@@ -422,7 +434,7 @@ public class API {
             });
         Utils.log.info("Saved information for uuid: " + uuid.toString() + " on their logout.");
     }
-    
+
     /**
      * Safely logs out all players when the server restarts
      *
@@ -465,7 +477,7 @@ public class API {
                     return;
                 } else if (DungeonRealms.getInstance().isSubscriberShard && Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("default")) {
                     player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to a subscriber only shard.\n\n" +
-                    ChatColor.GRAY + "Subscriber at http://www.dungeonrealms.net/shop to gain instant access!");
+                            ChatColor.GRAY + "Subscriber at http://www.dungeonrealms.net/shop to gain instant access!");
                     return;
                 } else if ((DungeonRealms.getInstance().isYouTubeShard && !Rank.isYouTuber(player)) || (DungeonRealms.getInstance().isSupportShard && !Rank.isSupport(player))) {
                     player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to this shard.");

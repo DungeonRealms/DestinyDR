@@ -16,6 +16,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
+import java.util.UUID;
+
 /**
  * Created by Nick on 10/12/2015.
  */
@@ -45,9 +47,20 @@ public class NetworkAPI implements PluginMessageListener {
     //TODO: Make a network message to update guilds across entire network if an even should occur.
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        if (!channel.equalsIgnoreCase("BungeeCord")) return;
+        if (!channel.equalsIgnoreCase("BungeeCord") && !channel.equalsIgnoreCase("DungeonRealms")) return;
+
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
         String subChannel = in.readUTF();
+
+        if (channel.equalsIgnoreCase("DungeonRealms")) {
+            if (subChannel.equals("Update")) {
+                UUID uuid = UUID.fromString(in.readUTF());
+
+                if (Bukkit.getPlayer(uuid) != null)
+                    DatabaseAPI.getInstance().requestPlayer(uuid);
+            }
+        }
+
         switch (subChannel) {
             case "mail":
                 if (in.readUTF().equals("update")) {
