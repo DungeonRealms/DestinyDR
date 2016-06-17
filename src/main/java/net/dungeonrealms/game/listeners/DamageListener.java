@@ -1293,8 +1293,6 @@ public class DamageListener implements Listener {
             return;
         }
         ItemStack hand = player.getEquipment().getItemInMainHand();
-        player.getEquipment().setItemInMainHand(null);
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> player.getEquipment().setItemInMainHand(hand), 1L);
         if (player.hasMetadata("last_Bow_Use")) {
             event.setCancelled(true);
             if (System.currentTimeMillis() - player.getMetadata("last_Bow_Use").get(0).asLong() < 450) {
