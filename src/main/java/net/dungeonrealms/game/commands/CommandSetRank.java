@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.commands;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -41,7 +42,7 @@ public class CommandSetRank extends BasicCommand{
                 if (Bukkit.getPlayer(args[0]) != null) {
                     Rank.getInstance().setRank(uuid, rank);
                 } else {
-                    // @todo: Send a server packet with the new rank just in-case they're logged in elsewhere.
+                    API.updatePlayerData(uuid);
                 }
 
                 // Always update the database with the new rank.

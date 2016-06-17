@@ -1122,7 +1122,7 @@ public class ClickHandler {
                 if (Bukkit.getPlayer(playerName) != null) {
                     Rank.getInstance().setRank(uuid, newRank);
                 } else {
-                    // @todo: Send a server packet with the new rank just in-case they're logged in elsewhere.
+                    API.updatePlayerData(uuid);
                 }
 
                 // Always update the database with the new rank.

@@ -216,7 +216,7 @@ public class CommandEss extends BasicCommand {
                                 }
                                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rankName, true);
                                 DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK_SUB_EXPIRATION, subscriptionLength, true);
-                                // @todo: send rank update packet
+                                API.updatePlayerData(uuid);
                                 commandSender.sendMessage(ChatColor.GREEN + "Successfully updated the subscription of " + playerName + ".");
                             } else {
                                 commandSender.sendMessage(ChatColor.RED + "Invalid rank, please use: SUB | SUB+");

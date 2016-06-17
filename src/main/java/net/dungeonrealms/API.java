@@ -228,11 +228,11 @@ public class API {
      * Requests an update for cached data on target
      * player's server
      *
-     * @param player Target
+     * @param uuid Target
      */
-    public void updatePlayerData(UUID player) {
+    public static void updatePlayerData(UUID uuid) {
         // SENDS PACKET ON MESSAGING CHANNEL //
-        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Update", player.toString());
+        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Update", uuid.toString());
     }
 
     /**
