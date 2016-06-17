@@ -35,10 +35,10 @@ public class CommandStop extends BasicCommand {
         }
         DungeonRealms.getInstance().setFinishedSetup(false);
         DungeonRealms.getInstance().saveConfig();
-        API.logoutAllPlayers(true);
         for (CombatLogger combatLogger : CombatLog.getInstance().getCOMBAT_LOGGERS().values()) {
             combatLogger.handleTimeOut();
         }
+        API.logoutAllPlayers(true);
         ShopMechanics.deleteAllShops(true);
         AsyncUtils.pool.shutdown();
 

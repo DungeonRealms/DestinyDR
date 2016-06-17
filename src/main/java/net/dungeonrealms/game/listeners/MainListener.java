@@ -867,4 +867,40 @@ public class MainListener implements Listener {
             }
         }
     }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void characterJournalPartyInvnite(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
+            if (((Player) event.getDamager()).getEquipment().getItemInMainHand() != null) {
+                ItemStack stack = ((Player) event.getDamager()).getEquipment().getItemInMainHand();
+                if (stack.getType() == Material.WRITTEN_BOOK) {
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    Player player = (Player) event.getDamager();
+                    Player invite = (Player) event.getEntity();
+                    if (Affair.getInstance().isInParty(invite)) {
+                        player.sendMessage(ChatColor.RED + "That player is already in a party!");
+                    } else {
+                        if (Affair.getInstance().isInParty(player)) {
+                            if (Affair.getInstance().isOwner(player)) {
+                                if (Affair.getInstance().getParty(player).get().getMembers().size() >= 7) {
+                                    player.sendMessage(ChatColor.RED + "Your party has reached the max player count!");
+                                    return;
+                                }
+                                Affair.getInstance().invitePlayer(invite, player);
+                            } else {
+                                player.sendMessage(new String[] {
+                                        ChatColor.RED + "You are NOT the leader of your party.",
+                                        ChatColor.GRAY + "Type " + ChatColor.BOLD + "/pquit" + ChatColor.GRAY + " to quit your current party."
+                                });
+                            }
+                        } else {
+                            Affair.getInstance().createParty(player);
+                            Affair.getInstance().invitePlayer(invite, player);
+                        }
+                    }
+                }
+            }
+        }
+    }
 }
