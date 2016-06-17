@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.player.combat;
 
+import com.connorlinfoot.bountifulapi.BountifulAPI;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
@@ -64,7 +65,7 @@ public class CombatLog implements GenericMechanic {
         if (!isInCombat(player)) {
             COMBAT.put(player, 10);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-                player.sendMessage(ChatColor.RED + "Entering Combat");
+                BountifulAPI.sendActionBar(player, ChatColor.RED + "Entering Combat...", 2);
             }
 
             /*
@@ -81,7 +82,7 @@ public class CombatLog implements GenericMechanic {
         if (isInCombat(player)) {
             COMBAT.remove(player);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-                player.sendMessage(ChatColor.RED + "Leaving Combat");
+                BountifulAPI.sendActionBar(player, ChatColor.GREEN + "Leaving Combat...", 2);
             }
         }
     }

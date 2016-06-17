@@ -1,10 +1,10 @@
 @echo off
-set buildPath=C:\Users\XenoJava\Desktop\DR\DungeonRealms\target\DungeonRealms.jar
-set privateKey=C:\Users\XenoJava\Desktop\DR\keys\private.ppk
-set server=%1
+set buildPath=C:\Users\Alan\IdeaProjects\DR\target\DungeonRealms.jar
+set privateKey=C:\Users\Alan\.ssh\github.ppk
+
 
 winscp.com /command ^
-	"open sftp://dungeonrealms:apollo@158.69.122.139 -privatekey=%privateKey% -passphrase=apollo" ^
-	"cd ""/home/dungeonrealms/%server%/plugins""" ^
+	"open sftp://dungeonrealms@158.69.122.139 -privatekey=%privateKey%" ^
+	"cd ""/home/dungeonrealms/d1/plugins""" ^
     "put ""%buildPath%""" ^
     "exit"
