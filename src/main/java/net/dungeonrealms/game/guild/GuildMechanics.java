@@ -68,7 +68,7 @@ public class GuildMechanics {
         });
 
         GuildDatabaseAPI.get().getAllOfGuild(guildName)
-                .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null && uuid != player.getUniqueId()).forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(format.concat(" has joined your shard.")));
+                .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null && !uuid.equals(player.getUniqueId())).forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(format.concat(player.getName() + " has joined your shard.")));
         showMotd(player, guildName);
     }
 
