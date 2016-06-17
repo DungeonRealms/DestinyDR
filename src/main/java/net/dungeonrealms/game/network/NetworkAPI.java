@@ -35,8 +35,8 @@ public class NetworkAPI implements PluginMessageListener {
 
     public void startInitialization() {
         Utils.log.info("[NetworkAPI] Registering Outbound/Inbound BungeeCord channels...");
-        //Bukkit.getMessenger().registerOutgoingPluginChannel(DungeonRealms.getInstance(), "BungeeCord");
-        //  Bukkit.getMessenger().registerIncomingPluginChannel(DungeonRealms.getInstance(), "BungeeCord", this);
+        Bukkit.getMessenger().registerOutgoingPluginChannel(DungeonRealms.getInstance(), "BungeeCord");
+        Bukkit.getMessenger().registerIncomingPluginChannel(DungeonRealms.getInstance(), "BungeeCord", this);
 
         Bukkit.getMessenger().registerOutgoingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms");
         Bukkit.getMessenger().registerIncomingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms", this);
@@ -94,7 +94,7 @@ public class NetworkAPI implements PluginMessageListener {
         Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
 
         if (player != null)
-            player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", out.toByteArray());
+            player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
     }
 
     /**
@@ -133,6 +133,6 @@ public class NetworkAPI implements PluginMessageListener {
         out.writeUTF(message);
         Player player = Iterables.getFirst(Bukkit.getOnlinePlayers(), null);
         if (player != null)
-            player.sendPluginMessage(DungeonRealms.getInstance(), "DungeonRealms", out.toByteArray());
+            player.sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", out.toByteArray());
     }
 }

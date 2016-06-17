@@ -182,8 +182,8 @@ public class HealthHandler implements GenericMechanic {
             color = BossBarAPI.Color.RED;
             playerHPInfo = ChatColor.RED.toString() + ChatColor.BOLD + "HP " + ChatColor.RED + hp + ChatColor.BOLD + " / " + ChatColor.RED + (int) maxHP;
         }
-        double exp = (gamePlayer.getExperience() * 10) / gamePlayer.getEXPNeeded(playerLevel);
-        exp *= 10;
+        double exp = ((double) gamePlayer.getExperience()) / ((double) gamePlayer.getEXPNeeded(playerLevel));
+        exp *= 100;
         String playerEXPInfo = ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "XP " + ChatColor.LIGHT_PURPLE + (int) exp + "%";
         if (playerLevel == 100) {
             playerEXPInfo = ChatColor.LIGHT_PURPLE + ChatColor.BOLD.toString() + "MAX";
