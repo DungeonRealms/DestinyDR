@@ -46,6 +46,8 @@ public abstract class DRBlaze extends EntityBlaze implements DRMonster {
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
 		this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
 		this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
+		this.noDamageTicks = 0;
+		this.maxNoDamageTicks = 0;
 	}
 
 	protected DRBlaze(World world) {

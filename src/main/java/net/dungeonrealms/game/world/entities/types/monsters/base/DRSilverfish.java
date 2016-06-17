@@ -34,7 +34,8 @@ public class DRSilverfish extends EntitySilverfish implements DRMonster {
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
 		this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
-
+		this.noDamageTicks = 0;
+		this.maxNoDamageTicks = 0;
 	}
 
 	public void setArmor(int tier) {

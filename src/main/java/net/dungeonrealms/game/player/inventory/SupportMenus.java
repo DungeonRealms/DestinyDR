@@ -54,7 +54,7 @@ public class SupportMenus {
                     ChatColor.WHITE + "Experience: " + DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, uuid),
                     ChatColor.WHITE + "E-Cash: " + DatabaseAPI.getInstance().getData(EnumData.ECASH, uuid),
                     ChatColor.WHITE + "Bank Balance: " + DatabaseAPI.getInstance().getData(EnumData.GEMS, uuid),
-                    ChatColor.WHITE + "Hearthstone Location: " + DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid),
+                    ChatColor.WHITE + "Hearthstone Location: " + Utils.ucfirst((String) DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid)),
                     ChatColor.WHITE + "Alignment: " + Utils.ucfirst(DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid).toString())
             });
             inv.setItem(4, applySupportItemTags(item, playerName, uuid));
@@ -97,7 +97,7 @@ public class SupportMenus {
             // Hearthstone Manager
             item = editItem(new ItemStack(Material.QUARTZ_ORE), ChatColor.GOLD + "Hearthstone Manager", new String[]{
                     ChatColor.WHITE + "Manage the Hearthstone Location of " + playerName + ".",
-                    ChatColor.WHITE + "Current location: " + DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid)
+                    ChatColor.WHITE + "Current location: " + Utils.ucfirst((String) DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid))
             });
             inv.setItem(31, applySupportItemTags(item, playerName, uuid));
 

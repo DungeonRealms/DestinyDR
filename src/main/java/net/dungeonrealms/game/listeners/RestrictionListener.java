@@ -147,4 +147,16 @@ public class RestrictionListener implements Listener {
             }
         }, 150L);
     }
+
+    @EventHandler
+    public void playerOpenEmptyMap(PlayerInteractEvent e) {
+        Player p = e.getPlayer();
+        if(e.hasItem() && e.getItem().getType() == Material.EMPTY_MAP) {
+            e.setCancelled(true);
+            e.setUseItemInHand(Event.Result.DENY);
+            e.setUseInteractedBlock(Event.Result.DENY);
+            p.sendMessage(ChatColor.RED + "To use a " + ChatColor.BOLD + "SCROLL" + ChatColor.RED + ", simply drag it on-top of the piece of equipment you wish to apply it to in your inventory.");
+            p.updateInventory();
+        }
+    }
 }

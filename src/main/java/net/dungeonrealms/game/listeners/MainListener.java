@@ -767,6 +767,11 @@ public class MainListener implements Listener {
             return;
             //Prevent weird MC glitch.
         }
+        if (event.getItem().getItemStack().getType() == Material.ARROW) {
+            event.setCancelled(true);
+            event.getItem().remove();
+            return;
+        }
         event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 1f);
         if (event.getItem().getItemStack().getType() == Material.EMERALD) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getPlayer().getUniqueId()).toString())) {

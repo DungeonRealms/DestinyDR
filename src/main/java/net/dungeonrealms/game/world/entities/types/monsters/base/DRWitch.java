@@ -6,12 +6,10 @@ import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
-import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -25,7 +23,7 @@ public class DRWitch extends EntityWitch implements DRMonster {
 
     EnumMonster monster;
     int tier;
-    net.minecraft.server.v1_9_R2.ItemStack nmsItem;
+    ItemStack weapon = getTierWeapon(tier);
 
     public DRWitch(World world) {
         super(world);
@@ -35,23 +33,22 @@ public class DRWitch extends EntityWitch implements DRMonster {
         super(world);
         this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(14d);
         setArmor(tier);
-        tier = tier;
         monster = mon;
         String customName = mon.getPrefix() + " " + mon.name + " " + mon.getSuffix() + " ";
         this.setCustomName(customName);
         this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), customName));
         this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
-        this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(monster.getSkullItem(monster)));
         livingEntity.getEquipment().setHelmet(monster.getSkullItem(monster));
+        this.noDamageTicks = 0;
+        this.maxNoDamageTicks = 0;
 
     }
 
     public void setArmor(int tier) {
         ItemStack[] armor = API.getTierArmor(tier);
         // weapon, boots, legs, chest, helmet/head
-        ItemStack weapon = getTierWeapon(tier);
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         boolean armorMissing = false;
         if (random.nextInt(10) <= 5) {
@@ -76,7 +73,6 @@ public class DRWitch extends EntityWitch implements DRMonster {
         }
         this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
         livingEntity.getEquipment().setItemInMainHand(weapon);
-        nmsItem = CraftItemStack.asNMSCopy(weapon);
         //this.setEquipment(0, CraftItemStack.asNMSCopy(weapon));
         this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
         livingEntity.getEquipment().setHelmet(SkullTextures.DEVIL.getSkull());
@@ -107,7 +103,5 @@ public class DRWitch extends EntityWitch implements DRMonster {
 
     @Override
     public void a(EntityLiving entity, float f) {
-        NBTTagCompound tag = nmsItem.getTag();
-        DamageAPI.fireStaffProjectileMob((CraftLivingEntity) this.getBukkitEntity(), tag, (CraftLivingEntity) entity.getBukkitEntity());
     }
 }

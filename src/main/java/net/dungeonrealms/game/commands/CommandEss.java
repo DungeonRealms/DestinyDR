@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Created by Kieran on 10/9/2015.
@@ -184,13 +185,62 @@ public class CommandEss extends BasicCommand {
                         return false;
                     }
                     break;
+                case "sub":
+                case "subscription":
+                    if (args.length == 5) {
+                        try {
+                            String playerName = args[1];
+                            UUID uuid = Bukkit.getPlayer(playerName) != null && Bukkit.getPlayer(playerName).getDisplayName().equalsIgnoreCase(playerName) ? Bukkit.getPlayer(playerName).getUniqueId() : UUID.fromString(DatabaseAPI.getInstance().getUUIDFromName(playerName));
+                            String rankName = args[2].toUpperCase();
+                            String modifyType = args[3].toLowerCase();
+                            String currentRank = Rank.getInstance().getRank(uuid);
+                            int days = Integer.parseInt(args[4]) * 86400;
+                            int subscriptionLength = Integer.parseInt(DatabaseAPI.getInstance().getData(EnumData.RANK_SUB_EXPIRATION, uuid).toString());
+
+                            if (rankName.equalsIgnoreCase("sub") || rankName.equalsIgnoreCase("sub+")) {
+                                if (!currentRank.equalsIgnoreCase("default") && !currentRank.equalsIgnoreCase(rankName) && (rankName.equalsIgnoreCase("sub") || (rankName.equalsIgnoreCase("sub+") && !currentRank.equalsIgnoreCase("sub")))) {
+                                    commandSender.sendMessage(ChatColor.RED + "Cannot change the rank of " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.RED + ", they're currently " + ChatColor.BOLD + ChatColor.UNDERLINE + currentRank.toUpperCase() + ChatColor.RED + "!");
+                                    return false;
+                                }
+
+                                if (modifyType.equalsIgnoreCase("add") && subscriptionLength > 0) {
+                                    subscriptionLength = subscriptionLength + days;
+                                } else if (modifyType.equalsIgnoreCase("set") || (modifyType.equalsIgnoreCase("add") && subscriptionLength <= 0)) {
+                                    subscriptionLength = (int) (System.currentTimeMillis() / 1000) + days;
+                                } else if (modifyType.equalsIgnoreCase("remove")) {
+                                    subscriptionLength = subscriptionLength - days;
+                                    if (subscriptionLength < 0) subscriptionLength = 0;
+                                } else {
+                                    commandSender.sendMessage(ChatColor.RED + "Invalid modification type, please use: ADD | SET | REMOVE");
+                                    return false;
+                                }
+                                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, rankName, true);
+                                DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK_SUB_EXPIRATION, subscriptionLength, true);
+                                // @todo: send rank update packet
+                                commandSender.sendMessage(ChatColor.GREEN + "Successfully updated the subscription of " + playerName + ".");
+                            } else {
+                                commandSender.sendMessage(ChatColor.RED + "Invalid rank, please use: SUB | SUB+");
+                                return false;
+                            }
+                        } catch (IllegalArgumentException ex) {
+                            commandSender.sendMessage(ChatColor.RED + "I couldn't find the  user " + args[1] + ", maybe they've not played Dungeon Realms before?");
+                            return false;
+                        }
+                    } else {
+                        commandSender.sendMessage(ChatColor.RED + "Invalid ussage! /essentials subscription <name> <rank> <add|set|remove> <days>");
+                        return false;
+                    }
+                    break;
                 case "resetmule":
                     DatabaseAPI.getInstance().update(((Player)commandSender).getUniqueId(), EnumOperators.$SET, EnumData.MULELEVEL, 1, false);
                     commandSender.sendMessage(ChatColor.RED + "Mule level reset.");
                     break;
                 default:
+                    commandSender.sendMessage(ChatColor.RED + "Invalid command " + args[0] + ".");
                     break;
             }
+        } else {
+            commandSender.sendMessage(ChatColor.RED + "Invalid usage! /dr <command> [args]");
         }
         return true;
     }

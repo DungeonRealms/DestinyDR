@@ -50,6 +50,8 @@ public class DRMagma extends EntityMagmaCube implements DRMonster {
 		this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue((double)(0.2F + 0.1F * (float)4));
 		this.setHealth(this.getMaxHealth());
 		this.b_ = 4;
+		this.noDamageTicks = 0;
+		this.maxNoDamageTicks = 0;
 	}
 
 	public DRMagma(World world) {

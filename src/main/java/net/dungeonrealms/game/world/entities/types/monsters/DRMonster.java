@@ -171,7 +171,7 @@ public interface DRMonster {
                 }
             }
         }
-        if (weapon.getType() == Material.BOW) {
+        /*if (weapon.getType() == Material.BOW) {
             int arrowRoll = random.nextInt(99);
             if (arrowRoll <= (25 + (25 * killerItemFind / 100))) {
                 if (arrowRoll > 25) {
@@ -184,6 +184,6 @@ public interface DRMonster {
                 item.setAmount(amount);
                 world.getWorld().dropItem(loc.add(0, 1, 0), item);
             }
-        }
+        }*/ //TODO: Decide if we want infinite arrows.
     }
 }
