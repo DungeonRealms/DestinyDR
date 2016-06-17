@@ -3,6 +3,7 @@ package net.dungeonrealms.game.listeners;
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
@@ -203,6 +204,13 @@ public class DamageListener implements Listener {
                     event.setDamage(0);
                     return;
                 }
+
+                if (GuildDatabaseAPI.get().getGuildOf(event.getDamager().getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(event.getEntity().getUniqueId()))){
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
+                }
+
             }
             Player attacker = (Player) event.getDamager();
             if (attacker.getEquipment().getItemInMainHand() == null) return;
