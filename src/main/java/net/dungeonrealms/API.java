@@ -563,7 +563,7 @@ public class API {
             player.sendMessage(new String[]{
                     "",
                     ChatColor.DARK_AQUA + "This is the Dungeon Realms " + ChatColor.UNDERLINE + "MASTER" + ChatColor.DARK_AQUA + " shard.",
-                    ChatColor.GRAY + "Changes made on this shard will be deplyed to all other shards as a " + ChatColor.UNDERLINE + "content patch" + ChatColor.GRAY + "."
+                    ChatColor.GRAY + "Changes made on this shard will be deployed to all other shards as a " + ChatColor.UNDERLINE + "content patch" + ChatColor.GRAY + "."
             });
         }
         if (DungeonRealms.getInstance().isSupportShard && Rank.isSupport(player)) {
