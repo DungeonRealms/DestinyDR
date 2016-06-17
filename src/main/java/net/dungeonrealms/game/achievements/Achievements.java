@@ -421,7 +421,23 @@ public class Achievements {
 
         INFECTED("Infected!", new String[]{
                 "Killed someone who was infected."
-        }, 500, "achievement.combat_infected", false);
+        }, 500, "achievement.combat_infected", false),
+
+        BANDIT_TROVE("Mayel The Cruel", new String[]{
+                "Defeated Mayel The Cruel."
+        }, 1000, "achievement.combat_bandit_trove", false),
+
+        VARENGLADE("Burick The Fanatic", new String[]{
+                "Defeated Burick The Fanatic."
+        }, 1500, "achievement.combat_varenglade", false),
+
+        INFERNAL_ABYSS("The Infernal Abyss", new String[]{
+                "Defeated The Infernal Abyss."
+        }, 2000, "achievement.combat_infernal_abyss", false),
+
+        DEPTHS_OF_ACERON("Depths of Aceron", new String[]{
+                "Defeated Aceron."
+        }, 2000, "achievement.combat_depths_of_aceron", false);
 
         private String name;
         private String[] message;
