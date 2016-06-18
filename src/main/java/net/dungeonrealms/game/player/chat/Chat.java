@@ -12,6 +12,8 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -110,11 +112,20 @@ public class Chat {
                 if (split.length > 1)
                     after = split[1];
 
+
+                ItemStack stack = event.getPlayer().getItemInHand();
+
+                List<String> hoveredChat = new ArrayList<>();
+                ItemMeta meta = stack.getItemMeta();
+                hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : stack.getType().name()));
+                if (meta.hasLore())
+                    hoveredChat.addAll(meta.getLore());
                 final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
                 normal.addText(before + "");
-                normal.addItem(p.getEquipment().getItemInMainHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
+                normal.addHoverText(hoveredChat, "SHOW");
                 normal.addText(after);
-                Bukkit.getOnlinePlayers().stream().forEach(normal::sendToPlayer);
+
+                Bukkit.getOnlinePlayers().stream().forEach(player -> normal.sendToPlayer(player));
                 event.setCancelled(true);
                 return;
             }
@@ -133,10 +144,18 @@ public class Chat {
                 if (split.length > 1)
                     after = split[1];
 
+                ItemStack stack = event.getPlayer().getItemInHand();
+
+                List<String> hoveredChat = new ArrayList<>();
+                ItemMeta meta = stack.getItemMeta();
+                hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : stack.getType().name()));
+                if (meta.hasLore())
+                    hoveredChat.addAll(meta.getLore());
                 final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
                 normal.addText(before + "");
-                normal.addItem(event.getPlayer().getEquipment().getItemInMainHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
+                normal.addHoverText(hoveredChat, "SHOW");
                 normal.addText(after);
+
                 API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(normal::sendToPlayer);
                 event.setCancelled(true);
             }

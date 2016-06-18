@@ -26,7 +26,7 @@ import static com.mongodb.client.model.Filters.eq;
  */
 
 @SuppressWarnings("unchecked")
-public class GuildDatabase implements GuildDatabaseAPI {
+public class  GuildDatabase implements GuildDatabaseAPI {
 
     private static GuildDatabaseAPI instance = null;
 
