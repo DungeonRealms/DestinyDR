@@ -313,18 +313,20 @@ public class GuildMechanics {
             player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "QUIT" + ChatColor.RED + " your guild.");
             sendAlert(guildName, player.getName() + " has left the guild.");
 
-            if (isOwner) if (officers.size() > 0) {
-                UUID sucessor = officers.get(0);
-                GuildDatabaseAPI.get().setOwner(guildName, sucessor);
-                sendAlert(guildName, DatabaseAPI.getInstance().getOfflineName(sucessor) + " has been selected a the new " + ChatColor.UNDERLINE + "GUILD LEADER");
-            } else {
-                // player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "DISBANDED" + ChatColor.RED + " your guild.");
-                sendAlert(guildName, player.getName() + " has disbanded the guild.");
+            if (isOwner) {
+                if (officers.size() > 0) {
+                    UUID sucessor = officers.get(0);
+                    GuildDatabaseAPI.get().setOwner(guildName, sucessor);
+                    sendAlert(guildName, DatabaseAPI.getInstance().getOfflineName(sucessor) + " has been selected a the new " + ChatColor.UNDERLINE + "GUILD LEADER");
+                } else {
+                    // player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "DISBANDED" + ChatColor.RED + " your guild.");
+                    sendAlert(guildName, player.getName() + " has disbanded the guild.");
 
-                for (UUID uuid : GuildDatabaseAPI.get().getAllOfGuild(guildName))
-                    GuildDatabaseAPI.get().removeFromGuild(guildName, uuid);
+                    for (UUID uuid : GuildDatabaseAPI.get().getAllOfGuild(guildName))
+                        GuildDatabaseAPI.get().removeFromGuild(guildName, uuid);
 
-                GuildDatabaseAPI.get().deleteGuild(guildName);
+                    GuildDatabaseAPI.get().deleteGuild(guildName);
+                }
             }
 
             GuildDatabaseAPI.get().doesGuildNameExist(guildName, exists -> {
