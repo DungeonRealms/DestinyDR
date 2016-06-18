@@ -4,39 +4,23 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.dungeonrealms.game.mastery.NBTUtils;
 import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.mechanics.DungeonManager;
-import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumNamedElite;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.Burick;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.InfernalAbyss;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.Mayel;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.Pyromancer;
-import net.dungeonrealms.game.world.entities.utils.BuffUtils;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
-import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.World;
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
-import org.bukkit.Material;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
-import org.bukkit.entity.EntityType;
-import org.bukkit.entity.Player;
-import org.bukkit.entity.Wolf;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
-
-import java.util.Random;
+import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.metadata.FixedMetadataValue;
 
 /**
  * Created by Nick on 9/17/2015.
@@ -52,73 +36,85 @@ public class CommandMonSpawn extends BasicCommand {
         if (s instanceof ConsoleCommandSender) {
             return false;
         }
-
         if (s instanceof BlockCommandSender) {
-            if (args.length > 0)
-                switch (args[0]) {
-                    case "boss":
-                        if (args.length < 5) {
-                            s.sendMessage("/monspawn boss (monster name) (x) (y) (z)");
-                            return false;
-                        }
-                        String bossName = args[1];
-                        int x = Integer.parseInt(args[2]);
-                        int y = Integer.parseInt(args[3]);
-                        int z = Integer.parseInt(args[4]);
-                        Entity entity = null;
-                        BlockCommandSender block = (BlockCommandSender) s;
-                        World world = ((CraftWorld) block.getBlock().getWorld()).getHandle();
-                        Location loc = new Location(block.getBlock().getWorld(), x, y, z, 1, 1);
-                        EnumBoss boss = EnumBoss.getByID(bossName);
-                        if (DungeonManager.getInstance().getDungeon(loc.getWorld()) != null) {
-                            DungeonManager.DungeonObject d = DungeonManager.getInstance().getDungeon(loc.getWorld());
-                            if (!d.canSpawnBoss) {
-                                for (Player p : block.getBlock().getWorld().getPlayers()) {
-                                    int ninteyPercent = (int) (d.maxAlive * 0.9);
-                                    p.sendMessage(ChatColor.RED + "You need to kill " + ChatColor.UNDERLINE + ninteyPercent + ChatColor.RED + " monsters to spawn the boss.");
-                                }
-                                return false;
-                            }
-                        }
-                        switch (boss) {
-                            case Mayel:
-                                entity = new Mayel(world, loc);
-                                MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, 100);
-                                EntityStats.setBossRandomStats(entity, 100, 1);
-                                break;
-                            case Burick:
-                                entity = new Burick(world, loc);
-                                MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 3, 100);
-                                EntityStats.setBossRandomStats(entity, 100, 3);
-                                break;
-                            case Pyromancer:
-                                entity = new Pyromancer(world);
-                                MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, 50);
-                                EntityStats.setBossRandomStats(entity, 50, 1);
-                                break;
-                            case InfernalAbyss:
-                                entity = new InfernalAbyss(world, loc);
-                                MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 4, 100);
-                                EntityStats.setBossRandomStats(entity, 100, 4);
-                                break;
-//                		case LordsGuard:
-//                			entity = new InfernalLordsGuard(world, player.getLocation());
-//                			break;
-                            default:
-                                entity = null;
-                        }
-                        if (entity == null) {
-                            return false;
-                        }
-                        entity.setLocation(loc.getX(), loc.getY(), loc.getZ(), 1, 1);
-                        world.addEntity(entity, SpawnReason.CUSTOM);
-                        entity.setLocation(loc.getX(), loc.getY(), loc.getZ(), 1, 1);
-                        ((BlockCommandSender) s).getBlock().setType(Material.AIR);
-                }
-            return false;
+            BlockCommandSender bcs = (BlockCommandSender) s;
+            Location location = bcs.getBlock().getLocation().add(0, 2, 0);
+            World nmsWorld = ((CraftWorld) bcs.getBlock().getWorld()).getHandle();
+            if (args.length != 5) return true;
+            String monsterType = args[0];
+            int tier = Integer.parseInt(args[1]);
+            boolean elite = false;
+            if (args[2].equalsIgnoreCase("true")) {
+                elite = true;
+            }
+            String meta = args[3];
+            if (meta.equals("null")) {
+                meta = "";
+            }
+            String customName = args[4];
+            if (customName.equalsIgnoreCase("null")) {
+                customName = "";
+            } else {
+                customName = ChatColor.translateAlternateColorCodes('&', customName);
+                customName = customName.replaceAll("_", " ");
+                customName = customName.replaceAll("&0", ChatColor.BLACK.toString());
+                customName = customName.replaceAll("&1", ChatColor.DARK_BLUE.toString());
+                customName = customName.replaceAll("&2", ChatColor.DARK_GREEN.toString());
+                customName = customName.replaceAll("&3", ChatColor.DARK_AQUA.toString());
+                customName = customName.replaceAll("&4", ChatColor.DARK_RED.toString());
+                customName = customName.replaceAll("&5", ChatColor.DARK_PURPLE.toString());
+                customName = customName.replaceAll("&6", ChatColor.GOLD.toString());
+                customName = customName.replaceAll("&7", ChatColor.GRAY.toString());
+                customName = customName.replaceAll("&8", ChatColor.DARK_GRAY.toString());
+                customName = customName.replaceAll("&9", ChatColor.BLUE.toString());
+                customName = customName.replaceAll("&a", ChatColor.GREEN.toString());
+                customName = customName.replaceAll("&b", ChatColor.AQUA.toString());
+                customName = customName.replaceAll("&c", ChatColor.RED.toString());
+                customName = customName.replaceAll("&d", ChatColor.LIGHT_PURPLE.toString());
+                customName = customName.replaceAll("&e", ChatColor.YELLOW.toString());
+                customName = customName.replaceAll("&f", ChatColor.WHITE.toString());
+
+                customName = customName.replaceAll("&u", ChatColor.UNDERLINE.toString());
+                customName = customName.replaceAll("&s", ChatColor.BOLD.toString());
+                customName = customName.replaceAll("&i", ChatColor.ITALIC.toString());
+                customName = customName.replaceAll("&m", ChatColor.MAGIC.toString());
+                //This is autistic. Whoever placed the command blocks with these incorrect color codes should be banned.
+            }
+            EnumMonster enumMonster = EnumMonster.getMonsterByString(monsterType);
+            if (enumMonster == null) {
+                enumMonster = EnumMonster.Undead;
+            }
+            Entity entity = SpawningMechanics.getMob(nmsWorld, tier, enumMonster);
+            if (entity == null) {
+                return true;
+            }
+            int level = Utils.getRandomFromTier(tier, "high");
+            MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
+            if (elite) {
+                entity.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
+                EntityStats.setMonsterElite(entity, EnumNamedElite.NONE, tier, enumMonster, bcs.getBlock().getWorld().getName().contains("DUNGEON"));
+            } else if (bcs.getBlock().getWorld().getName().contains("DUNGEON")) {
+                entity.getBukkitEntity().setMetadata("dungeon", new FixedMetadataValue(DungeonRealms.getInstance(), true));
+                EntityStats.createDungeonMob(entity, level, tier);
+            } else {
+                EntityStats.setMonsterRandomStats(entity, level, tier);
+            }
+            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+            nmsWorld.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
+            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+            if (!customName.equals("")) {
+                entity.setCustomName(API.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim());
+                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + customName.trim()));
+            } else {
+                entity.setCustomName(API.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim());
+                entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier) + ChatColor.BOLD.toString() + enumMonster.name.trim()));
+            }
+            return true;
         }
 
-        Player player = (Player) s;
+        //TODO: Player spawning.
+
+        /*Player player = (Player) s;
         if (!Rank.isGM(player)) {
             return false;
         }
@@ -204,21 +200,14 @@ public class CommandMonSpawn extends BasicCommand {
                             MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 3, 100);
                             EntityStats.setBossRandomStats(entity, 100, 3);
                             break;
-                        case Pyromancer:
-                            entity = new Pyromancer(world);
-                            MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 1, 50);
-                            EntityStats.setBossRandomStats(entity, 50, 1);
-                            break;
                         case InfernalAbyss:
                             entity = new InfernalAbyss(world, player.getLocation());
                             MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 4, 100);
                             EntityStats.setBossRandomStats(entity, 100, 4);
                             break;
-//                		case LordsGuard:
-//                			entity = new InfernalLordsGuard(world, player.getLocation());
-//                			break;
                         default:
                             entity = null;
+                            break;
                     }
                     if (entity == null)
                         return false;
@@ -229,7 +218,7 @@ public class CommandMonSpawn extends BasicCommand {
                     entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                     break;
             }
-        }
+        }*/
         return true;
     }
 }

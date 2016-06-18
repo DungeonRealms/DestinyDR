@@ -19,6 +19,7 @@ import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
+import org.bukkit.inventory.ItemStack;
 
 import java.io.*;
 import java.util.*;
@@ -161,6 +162,13 @@ public class DungeonManager implements GenericMechanic {
                             player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]), Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
                         } else {
                             player.teleport(Teleportation.Cyrennica);
+                        }
+                        for (ItemStack stack : player.getInventory().getContents()) {
+                            if (stack != null && stack.getType() != Material.AIR) {
+                                if (isDungeonItem(stack)) {
+                                    player.getInventory().remove(stack);
+                                }
+                            }
                         }
                     }
                 }
@@ -327,6 +335,13 @@ public class DungeonManager implements GenericMechanic {
                     } else {
                         player.teleport(Teleportation.Cyrennica);
                     }
+                    for (ItemStack stack : player.getInventory().getContents()) {
+                        if (stack != null && stack.getType() != Material.AIR) {
+                            if (isDungeonItem(stack)) {
+                                player.getInventory().remove(stack);
+                            }
+                        }
+                    }
                 });
             }, 15 * 20L);
             getPlayerList().stream().filter(p -> p != null && p.isOnline()).forEach(p -> p.sendMessage(ChatColor.YELLOW + "You will be teleported out in 15 seconds..."));
@@ -481,6 +496,18 @@ public class DungeonManager implements GenericMechanic {
                 }
             }
         }
+    }
+
+    public boolean isDungeonItem(ItemStack stack) {
+        if (stack != null && stack.getType() != Material.AIR && stack.hasItemMeta() && stack.getItemMeta().hasLore()) {
+            List<String> itemLore = stack.getItemMeta().getLore();
+            for (String string : itemLore) {
+                if (string.toLowerCase().contains("dungeon item")) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

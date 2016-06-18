@@ -1,5 +1,7 @@
-package net.dungeonrealms.game.world.entities.types.monsters.boss;
+package net.dungeonrealms.game.world.entities.types.monsters.boss.subboss;
 
+import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
+import net.dungeonrealms.game.world.entities.types.monsters.boss.InfernalAbyss;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -32,11 +34,9 @@ public class InfernalGhast extends EntityGhast implements Boss {
 		this.getBukkitEntity().setCustomNameVisible(true);
 		int level = 100;
 		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
-		this.getBukkitEntity().setMetadata("boss",
-		        new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
+		this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
 		EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
-		this.getBukkitEntity()
-		        .setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
+		this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
 		this.boss = infernalAbyss;
 		int health = boss.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
 		int maxHealth = boss.getBukkitEntity().getMetadata("maxHP").get(0).asInt();
@@ -72,6 +72,13 @@ public class InfernalGhast extends EntityGhast implements Boss {
 		this.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor[0]));
 		this.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor[1]));
 		this.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor[2]));
+		this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(armor[3]));
+		LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+		livingEntity.getEquipment().setItemInMainHand(weapon);
+		livingEntity.getEquipment().setBoots(armor[0]);
+		livingEntity.getEquipment().setLeggings(armor[1]);
+		livingEntity.getEquipment().setChestplate(armor[2]);
+		livingEntity.getEquipment().setHelmet(armor[3]);
 	}
 
 	@Override

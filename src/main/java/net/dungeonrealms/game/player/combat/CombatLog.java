@@ -18,7 +18,6 @@ import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Horse;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Zombie;
-import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
@@ -42,8 +41,6 @@ public class CombatLog implements GenericMechanic {
     }
 
     public static ConcurrentHashMap<Player, Integer> COMBAT = new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<UUID, Zombie> LOGGER = new ConcurrentHashMap<>();
-    public static ConcurrentHashMap<UUID, Inventory> LOGGER_INVENTORY = new ConcurrentHashMap<>();
 
     public ConcurrentMap<UUID, CombatLogger> getCOMBAT_LOGGERS() {
         return COMBAT_LOGGERS;
@@ -142,7 +139,8 @@ public class CombatLog implements GenericMechanic {
         Zombie combatNPC = (Zombie) world.spawnEntity(loc, EntityType.ZOMBIE);
         NBTUtils.nullifyAI(combatNPC);
         combatNPC.getEquipment().setArmorContents(player.getEquipment().getArmorContents());
-        combatNPC.getEquipment().setItemInHand(player.getEquipment().getItemInMainHand());
+        combatNPC.getEquipment().setItemInMainHand(player.getEquipment().getItemInMainHand());
+        combatNPC.getEquipment().setItemInOffHand(player.getEquipment().getItemInOffHand());
         combatNPC.setCustomName(ChatColor.LIGHT_PURPLE + "[" + lvl + "]" + ChatColor.RED + " " + player.getName());
         combatNPC.setCustomNameVisible(true);
         MetadataUtils.registerEntityMetadata(((CraftEntity) combatNPC).getHandle(), EnumEntityType.HOSTILE_MOB, 4, lvl);
@@ -159,7 +157,7 @@ public class CombatLog implements GenericMechanic {
         CombatLog.getInstance().getCOMBAT_LOGGERS().put(player.getUniqueId(), combatLogger);
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             if (CombatLog.getInstance().getCOMBAT_LOGGERS().containsKey(player.getUniqueId())) {
-                if (player != null && player.isOnline()) {
+                if (player.isOnline()) {
                     CombatLog.getInstance().getCOMBAT_LOGGERS().get(player.getUniqueId()).handleTimeOut();
                 }
             }

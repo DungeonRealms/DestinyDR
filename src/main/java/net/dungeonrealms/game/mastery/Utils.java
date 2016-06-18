@@ -98,14 +98,13 @@ public class Utils {
 
     public static void sendCenteredMessage(Player player, String message){
         if(message == null || message.equals("")) player.sendMessage("");
-        message = ChatColor.translateAlternateColorCodes('&', message);
 
         int messagePxSize = 0;
         boolean previousCode = false;
         boolean isBold = false;
 
         for(char c : message.toCharArray()){
-            if(c == '§'){
+            if(c == '&'){
                 previousCode = true;
                 continue;
             }else if(previousCode == true){
@@ -130,7 +129,7 @@ public class Utils {
             sb.append(" ");
             compensated += spaceLength;
         }
-        player.sendMessage(sb.toString() + message);
+        player.sendMessage(ChatColor.translateAlternateColorCodes('&', sb.toString() + message));
     }
 
     public static String ucfirst(String string) {

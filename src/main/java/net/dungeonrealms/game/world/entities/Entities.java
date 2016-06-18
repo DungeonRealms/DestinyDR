@@ -16,10 +16,9 @@ import net.dungeonrealms.game.world.entities.types.monsters.StaffMobs.StaffZombi
 import net.dungeonrealms.game.world.entities.types.monsters.base.*;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Burick;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.InfernalAbyss;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.InfernalGhast;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Mayel;
+import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.InfernalGhast;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.InfernalLordsGuard;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.Pyromancer;
 import net.dungeonrealms.game.world.entities.types.mounts.EnderDragon;
 import net.dungeonrealms.game.world.entities.types.mounts.Horse;
 import net.dungeonrealms.game.world.entities.types.pets.*;
@@ -66,8 +65,6 @@ public class Entities implements GenericMechanic {
         NMSUtils nmsUtils = new NMSUtils();
 
         // Monsters
-        //BASE MONSTERS
-
         //MELEE MONSTERS
         nmsUtils.registerEntity("MeleeGolem", 99, EntityGolem.class, MeleeGolem.class);
         nmsUtils.registerEntity("LargeSpider", 52, EntitySpider.class, LargeSpider.class);
@@ -83,10 +80,7 @@ public class Entities implements GenericMechanic {
         nmsUtils.registerEntity("RangedSkeleton", 51, EntitySkeleton.class, RangedSkeleton.class);
         nmsUtils.registerEntity("RangedZombie", 54, EntityZombie.class, RangedZombie.class);
         nmsUtils.registerEntity("RangedWitherSkeleton", 51, EntitySkeleton.class, RangedWitherSkeleton.class);
-
-
-
-
+        //BASE MONSTERS
         nmsUtils.registerEntity("DRSpider", 59, EntitySpider.class, DRSpider.class);
         nmsUtils.registerEntity("DRWither", 51, EntitySkeleton.class, DRWitherSkeleton.class);
         nmsUtils.registerEntity("DRBlaze", 61, EntityBlaze.class, DRBlaze.class);
@@ -100,13 +94,14 @@ public class Entities implements GenericMechanic {
 
         // Tier 1 Boss
         nmsUtils.registerEntity("Mayel", 51, EntitySkeleton.class, Mayel.class);
-        nmsUtils.registerEntity("Pyromancer", 51, EntitySkeleton.class, Pyromancer.class);
 
         // Tier 3 Boss
         nmsUtils.registerEntity("Burick", 51, EntitySkeleton.class, Burick.class);
 
         // Tier 4 Boss
         nmsUtils.registerEntity("InfernalAbyss", 51, EntitySkeleton.class, InfernalAbyss.class);
+
+        // Tier 4 Sub-bosses
         nmsUtils.registerEntity("DRGhast", 56, EntityGhast.class, InfernalGhast.class);
         nmsUtils.registerEntity("LordsGuard", 51, EntitySkeleton.class, InfernalLordsGuard.class);
 

@@ -101,7 +101,9 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
 
 	@Override
 	public void onBossDeath() {
-		say(this.getBukkitEntity(), getEnumBoss().death);
+		for (Player p : API.getNearbyPlayers(loc, 50)) {
+			p.sendMessage(ChatColor.RED.toString() + "Mayel The Cruel" + ChatColor.RESET.toString() + ": " + "No... how could it be?");
+		}
 		int droppedGems = 64 * this.getBukkitEntity().getWorld().getPlayers().size();
 		for (int i = 0; i < droppedGems; i++){
 			this.getBukkitEntity().getWorld().dropItemNaturally(this.getBukkitEntity().getLocation().add(0, 4, 0), BankMechanics.createGems(1));

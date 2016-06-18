@@ -61,7 +61,7 @@ public class Instance implements GenericMechanic, Listener {
     public CopyOnWriteArrayList<RealmObject> CURRENT_REALMS = new CopyOnWriteArrayList<>();
     public List<Player> PENDING_REALMS = new ArrayList<>();
 
-    String host = "167.114.65.102", user = "dr.23", password = "devpass123";
+    String host = "167.114.65.102", user = "dr.53", password = "devpass123";
     int port = 21;
 
     File pluginFolder = null;
