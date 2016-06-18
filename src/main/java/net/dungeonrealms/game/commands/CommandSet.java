@@ -20,6 +20,7 @@ import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -38,7 +39,7 @@ public class CommandSet extends BasicCommand {
 
     @Override
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
-        if (s instanceof ConsoleCommandSender)
+        if (!(s instanceof Player))
             return false;
         Player player = (Player) s;
         if (!Rank.isGM(player)) {
@@ -59,9 +60,11 @@ public class CommandSet extends BasicCommand {
                             player.sendMessage(ChatColor.RED + "Invalid player level (1 - 100).");
                             break;
                         }
-                        API.getGamePlayer(p).getStats().setPlayerLevel(lvl);
+                        API.getGamePlayer(p).updateLevel(lvl, false, true);
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, lvl, true);
-                        s.sendMessage(p.getName() + " lvl set to " + lvl);
+                        s.sendMessage("                " + ChatColor.YELLOW + "Level of " + ChatColor.GREEN + p.getName() + ChatColor.YELLOW + " set to : " + lvl);
+                        if (player != null)
+                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
                     }
                     break;
                 case "gems":
