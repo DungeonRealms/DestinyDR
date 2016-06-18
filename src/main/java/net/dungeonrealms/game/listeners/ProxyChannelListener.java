@@ -13,6 +13,7 @@ import java.io.ByteArrayInputStream;
 import java.io.DataInputStream;
 import java.io.EOFException;
 import java.io.IOException;
+import java.util.Arrays;
 
 public class ProxyChannelListener implements Listener {
 
@@ -50,11 +51,13 @@ public class ProxyChannelListener implements Listener {
                 String command = in.readUTF();
 
                 if (command.contains("message:")) {
-                    String player = command.split(":")[1];
+                    String[] commandArray = command.split(":");
+                    String[] filter = Arrays.copyOfRange(commandArray, 1, commandArray.length);
+
                     String guildName = in.readUTF();
                     String message = in.readUTF();
 
-                    plugin.sendMessageToGuild(guildName, message, player);
+                    plugin.sendMessageToGuild(guildName, message, filter);
                     return;
                 }
 
