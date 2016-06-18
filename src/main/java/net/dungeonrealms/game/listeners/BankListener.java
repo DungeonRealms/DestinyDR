@@ -17,6 +17,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPickupItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -46,6 +47,47 @@ public class BankListener implements Listener {
                 e.getPlayer().openInventory(getBank(e.getPlayer().getUniqueId()));
                 e.getPlayer().playSound(e.getPlayer().getLocation(), Sound.BLOCK_CHEST_OPEN, 1, 1);
             }
+        }
+    }
+
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerPickUp(PlayerPickupItemEvent event) {
+        if (event.getItem().getItemStack().getType() == Material.EMERALD) {
+            if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getPlayer().getUniqueId()).toString())) {
+                event.getPlayer().sendMessage("                      " + ChatColor.GREEN + "+" + event.getItem().getItemStack().getAmount() + ChatColor.BOLD + "G");
+            }
+            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem().getItemStack());
+            if (nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
+                int gems = event.getItem().getItemStack().getAmount();
+
+                for (int i = 0; i < event.getPlayer().getInventory().getSize(); i++) {
+                    ItemStack gemPouch = event.getPlayer().getInventory().getItem(i);
+                    if (gemPouch == null || gemPouch.getType() == Material.AIR)
+                        continue;
+                    if (gemPouch.getType() != Material.INK_SACK)
+                        continue;
+                    net.minecraft.server.v1_9_R2.ItemStack nmsPouch = CraftItemStack.asNMSCopy(gemPouch);
+                    int currentAmount = nmsPouch.getTag().getInt("worth");
+                    int tier = nmsPouch.getTag().getInt("tier");
+                    int max = BankMechanics.getInstance().getPouchMax(tier);
+                    event.getItem().remove();
+                    event.setCancelled(true);
+                    if (currentAmount < max) {
+                        while (currentAmount < max && gems > 0) {
+                            currentAmount += 1;
+                            gems -= 1;
+                        }
+                        event.getPlayer().getInventory().setItem(i, BankMechanics.getInstance().createGemPouch(tier, currentAmount));
+                    }
+                }
+                if (gems > 0) {
+                    event.getItem().remove();
+                    event.setCancelled(true);
+                    event.getPlayer().getInventory().addItem(BankMechanics.createGems(gems));
+                }
+            }
+
         }
     }
 
@@ -152,8 +194,7 @@ public class BankListener implements Listener {
                         if (nms == null)
                             return;
                         e.setCancelled(true);
-                        if (nms.hasTag() && e.getCursor().getType() == Material.EMERALD
-                                || nms.hasTag() && e.getCursor().getType() == Material.PAPER || nms.hasTag() && e.getCursor().getType() == Material.INK_SACK) {
+                        if (BankMechanics.getInstance().isBankNote(e.getCursor()) || BankMechanics.getInstance().isGemPouch(e.getCursor()) || BankMechanics.getInstance().isGem(e.getCursor())) {
                             if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                                 int size = 0;
                                 if (e.isLeftClick()) {
@@ -201,7 +242,40 @@ public class BankListener implements Listener {
                                 net.minecraft.server.v1_9_R2.ItemStack nmsBank = CraftItemStack.asNMSCopy(bankItem);
                                 nmsBank.getTag().setString("type", "bank");
                                 e.getInventory().setItem(8, CraftItemStack.asBukkitCopy(nmsBank));
-                                player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT, 1, 1);
+                                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
+                            }
+                        } else {
+                            Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
+                            if (e.isLeftClick()) {
+                                if (storage.hasSpace()) {
+                                    storage.inv.addItem(e.getCursor());
+                                    e.setCursor(null);
+//                                    e.setCurrentItem(null);
+                                    player.sendMessage(ChatColor.GREEN + "Item added to storage!");
+
+                                } else {
+                                    player.sendMessage(ChatColor.RED + "You do not have space to add this item.");
+                                }
+                            } else if (e.getClick() == ClickType.RIGHT) {
+                                if (storage.hasSpace()) {
+                                    ItemStack stack = e.getCurrentItem();
+                                    if (stack.getAmount() > 1) {
+                                        ItemStack stackToAdd = e.getCursor().clone();
+                                        stackToAdd.setAmount(1);
+                                        storage.inv.addItem(stackToAdd);
+                                        ItemStack newStack = stack.clone();
+                                        newStack.setAmount(stack.getAmount() - 1);
+                                        e.setCursor(newStack);
+                                    } else {
+                                        storage.inv.addItem(stack);
+                                        e.setCursor(null);
+                                        e.setCurrentItem(null);
+                                    }
+                                    player.sendMessage(ChatColor.GREEN + "Item added to storage!");
+
+                                } else {
+                                    player.sendMessage(ChatColor.RED + "You do not have space to add this item.");
+                                }
                             }
                         }
                     } else if (e.getRawSlot() == 0) {
@@ -246,7 +320,16 @@ public class BankListener implements Listener {
                     }
                 } else {
                     if (e.isShiftClick()) {
-                        if (e.getCurrentItem().getType() != Material.EMERALD && e.getCurrentItem().getType() != Material.PAPER && e.getCurrentItem().getType() != Material.INK_SACK) {
+                        if (!BankMechanics.getInstance().isBankNote(e.getCurrentItem()) && !BankMechanics.getInstance().isGem(e.getCurrentItem()) && !BankMechanics.getInstance().isGemPouch(e.getCurrentItem())) {
+                            Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
+                            if (storage.hasSpace()) {
+                                storage.inv.addItem(e.getCurrentItem());
+                                e.setCurrentItem(null);
+                                player.sendMessage(ChatColor.GREEN + "Item added to storage!");
+
+                            } else {
+                                player.sendMessage(ChatColor.RED + "You do not have space to add this item.");
+                            }
                             e.setCancelled(true);
                             return;
                         }
@@ -284,7 +367,7 @@ public class BankListener implements Listener {
                             net.minecraft.server.v1_9_R2.ItemStack nmsBank = CraftItemStack.asNMSCopy(bankItem);
                             nmsBank.getTag().setString("type", "bank");
                             e.getInventory().setItem(8, CraftItemStack.asBukkitCopy(nmsBank));
-                            player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT, 1, 1);
+                            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
                         }
                     }
                 }
@@ -448,6 +531,23 @@ public class BankListener implements Listener {
                     e.setCurrentItem(new ItemStack(Material.AIR));
                     e.getWhoClicked().getInventory().addItem(stack);
                 }
+            }
+        } else if (e.getInventory().getTitle().equalsIgnoreCase("container.crafting")) {
+            if (e.getClick() != ClickType.RIGHT)
+                return;
+            if (e.getCurrentItem() != null && BankMechanics.getInstance().isGemPouch(e.getCurrentItem()) && e.getCursor() == null || e.getCursor().getType() == Material.AIR) {
+                e.setCancelled(true);
+                int pouchGems = BankMechanics.getInstance().getPouchAmount(e.getCurrentItem());
+                if (pouchGems <= 64) {
+                    e.setCursor(BankMechanics.createGems(pouchGems));
+                    e.setCurrentItem(BankMechanics.getInstance().makeNewPouch(e.getCurrentItem(), 0));
+
+                    return;
+                } else {
+                    e.setCursor(BankMechanics.createGems(64));
+                    e.setCurrentItem(BankMechanics.getInstance().makeNewPouch(e.getCurrentItem(), pouchGems - 64));
+                }
+                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
             }
         }
     }
