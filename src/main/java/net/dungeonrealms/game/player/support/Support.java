@@ -85,7 +85,7 @@ public class Support {
     public static void modifyGems(Player player, String playerName, UUID uuid, int amount, String type) {
         DatabaseAPI.getInstance().update(uuid, (type != "set" ? EnumOperators.$INC : EnumOperators.$SET), EnumData.GEMS, (type != "remove" ? amount : (amount*-1)), true);
         API.updatePlayerData(uuid);
-        player.sendMessage(ChatColor.GREEN + "Successfully " + type + (type == "add" ? "ed" : (type == "remove" ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " gens to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
+        player.sendMessage(ChatColor.GREEN + "Successfully " + type + (type == "add" ? "ed" : (type == "remove" ? "d" : "")) + " " + ChatColor.BOLD + ChatColor.UNDERLINE + amount + ChatColor.GREEN + " gems to " + ChatColor.BOLD + ChatColor.UNDERLINE + playerName + ChatColor.GREEN + ".");
         SupportMenus.openMainMenu(player, playerName);
     }
 
