@@ -26,7 +26,7 @@ import static com.mongodb.client.model.Filters.eq;
  */
 
 @SuppressWarnings("unchecked")
-public class GuildDatabase implements GuildDatabaseAPI {
+public class  GuildDatabase implements GuildDatabaseAPI {
 
     private static GuildDatabaseAPI instance = null;
 
@@ -69,6 +69,7 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
 
     private Object get(EnumGuildData data, Object value) {
+
         Bson query = Filters.eq(data.getKey(), value);
         return guilds.find(query).first();
     }
@@ -255,9 +256,9 @@ public class GuildDatabase implements GuildDatabaseAPI {
 
     @Override
     public List<UUID> getAllOfGuild(String guildName) {
-        String owner = (String) get(guildName, EnumGuildData.OWNER, String.class);
+        String owner = getOwnerOf(guildName);
 
-        List<UUID> all = owner != null ? new ArrayList<>(Collections.singletonList(UUID.fromString(owner))) : new ArrayList<>();
+        List<UUID> all = owner != null && !owner.equals("") ? new ArrayList<>(Collections.singletonList(UUID.fromString(owner))) : new ArrayList<>();
         all.addAll(getAllGuildMembers(guildName));
         all.addAll(getGuildOfficers(guildName));
 

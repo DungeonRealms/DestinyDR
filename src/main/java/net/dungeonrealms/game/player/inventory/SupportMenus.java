@@ -67,7 +67,7 @@ public class SupportMenus {
                 });
             } else {
                 item = editItem(new ItemStack(Material.BARRIER), ChatColor.RED + "Rank Manager", new String[]{
-                   ChatColor.RED + "You cannot change the rank of your own profile."
+                   ChatColor.RED + "You cannot change the rank of your own account."
                 });
             }
             inv.setItem(19, applySupportItemTags(item, playerName, uuid));
@@ -206,12 +206,36 @@ public class SupportMenus {
         });
         inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
-        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLACK.getData()), ChatColor.GOLD + "PLACEHOLDER", new String[]{
-                ChatColor.WHITE + "This is a placeholder, it does nothing.",
-                "",
-                ChatColor.WHITE + "One day, a tool for support will go here."
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), ChatColor.GOLD + "Add Experience", new String[]{
+                ChatColor.WHITE + "This will add experience to: " + playerName
+        });
+        inv.setItem(21, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLUE.getData()), ChatColor.GOLD + "Set Experience", new String[]{
+                ChatColor.WHITE + "This will set the experience of: " + playerName
         });
         inv.setItem(22, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()), ChatColor.GOLD + "Remove Experience", new String[]{
+                ChatColor.WHITE + "This will remove experience from: " + playerName
+        });
+        inv.setItem(23, applySupportItemTags(item, playerName, uuid));
+
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), ChatColor.GOLD + "Add Level(s)", new String[]{
+                ChatColor.WHITE + "This will add level(s) to: " + playerName
+        });
+        inv.setItem(30, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLUE.getData()), ChatColor.GOLD + "Set Level", new String[]{
+                ChatColor.WHITE + "This will set the level of: " + playerName
+        });
+        inv.setItem(31, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()), ChatColor.GOLD + "Remove Level(s)", new String[]{
+                ChatColor.WHITE + "This will remove level(s) from: " + playerName
+        });
+        inv.setItem(32, applySupportItemTags(item, playerName, uuid));
 
         player.openInventory(inv);
     }
@@ -272,12 +296,20 @@ public class SupportMenus {
         });
         inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
-        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLACK.getData()), ChatColor.GOLD + "PLACEHOLDER", new String[]{
-                ChatColor.WHITE + "This is a placeholder, it does nothing.",
-                "",
-                ChatColor.WHITE + "One day, a tool for support will go here."
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), ChatColor.GOLD + "Add Gems", new String[]{
+                ChatColor.WHITE + "This will add gems to: " + playerName
+        });
+        inv.setItem(21, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLUE.getData()), ChatColor.GOLD + "Set Gems", new String[]{
+                ChatColor.WHITE + "This will set the gems of: " + playerName
         });
         inv.setItem(22, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()), ChatColor.GOLD + "Remove Gems", new String[]{
+                ChatColor.WHITE + "This will remove gems from: " + playerName
+        });
+        inv.setItem(23, applySupportItemTags(item, playerName, uuid));
 
         player.openInventory(inv);
     }

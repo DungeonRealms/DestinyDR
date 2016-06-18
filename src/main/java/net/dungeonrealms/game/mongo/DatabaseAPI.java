@@ -2,6 +2,7 @@ package net.dungeonrealms.game.mongo;
 
 import com.mongodb.client.model.Filters;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.mastery.Utils;
 import org.bson.Document;
 
@@ -193,6 +194,8 @@ public class DatabaseAPI {
                 return ((Document) doc.get("toggles")).get("duel", Boolean.class);
             case TOGGLE_CHAOTIC_PREVENTION:
                 return ((Document) doc.get("toggles")).get("chaoticPrevention", Boolean.class);
+            case TOGGLE_TIPS:
+                return ((Document) doc.get("toggles")).get("tips", Boolean.class);
             /*
             Portal Key Shards
              */
@@ -246,6 +249,8 @@ public class DatabaseAPI {
         } else {
             PLAYERS.put(uuid, doc);
         }
+
+        GuildMechanics.getInstance().checkPlayerGuild(uuid);
         /*Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first((document) -> {
             if (document != null) {
                 Utils.log.info("Fetched information for uuid: " + uuid.toString());
@@ -334,7 +339,8 @@ public class DatabaseAPI {
                                         .append("receiveMessage", true)
                                         .append("pvp", false)
                                         .append("duel", true)
-                                        .append("chaoticPrevention", true))
+                                        .append("chaoticPrevention", true)
+                                        .append("tips", true))
                         .append("portalKeyShards",
                                 new Document("tier1", 0)
                                         .append("tier2", 0)
@@ -346,7 +352,7 @@ public class DatabaseAPI {
                                         .append("friendRequest", new ArrayList<String>())
                                         .append("mailbox", new ArrayList<String>()))
                         .append("rank",
-                                new Document("expiration_date", 0L)
+                                new Document("expiration_date", 0)
                                         .append("rank", "DEFAULT"))
                         .append("inventory",
                                 new Document("collection_bin", "")

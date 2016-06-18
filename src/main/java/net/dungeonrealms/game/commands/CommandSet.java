@@ -9,6 +9,8 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
+import net.dungeonrealms.game.handlers.ScoreboardHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;

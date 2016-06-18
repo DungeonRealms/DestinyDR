@@ -170,6 +170,7 @@ public class DungeonRealms extends JavaPlugin {
         NetworkAPI.getInstance().startInitialization();
         AntiCheat.getInstance().startInitialization();
         DungeonManager.getInstance().startInitialization();
+        TipHandler.getInstance().startInitialization();
         ItemGenerator.loadModifiers();
 
         //new Spar().startInitialization();
@@ -311,6 +312,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandToggleTrade("toggletrade", "/<command> [args]", "Toggles trading requests."));
         cm.registerCommand(new CommandToggleTradeChat("toggletradechat", "/<command> [args]", "Toggles receiving <T>rade chat."));
         cm.registerCommand(new CommandToggleDuel("toggleduel", "/<command> [args]", "Toggles dueling requests."));
+        cm.registerCommand(new CommandToggleTips("toggletips", "/<command> [args]", "Toggles tip messages."));
         //Toggles dueling requests.
 
         cm.registerCommand(new CommandCheck("check", "/<command> [args]", "Checks the identity of a Dungeon Realms signed item."));
@@ -321,6 +323,7 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new CommandMonSpawn("monspawn", "/<command> [args]", "Spawn monsters"));
         cm.registerCommand(new ReplaceNear("drreplacenear", "/<command> [args]", "Replaces nearby blocks"));
         cm.registerCommand(new BossTeleport("bosstp", "/<command> [args]", "Dungeon Boss Teleporation"));
+        cm.registerCommand(new CommandTips("tips", "/<command>", "Tips command"));
 
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {

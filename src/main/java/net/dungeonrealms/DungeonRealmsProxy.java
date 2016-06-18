@@ -5,6 +5,8 @@ import com.mongodb.MongoClientURI;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.listeners.ProxyChannelListener;
+import net.md_5.bungee.api.ProxyServer;
+import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
 import net.md_5.bungee.api.plugin.Plugin;
 import org.bson.Document;
@@ -32,7 +34,9 @@ public class DungeonRealmsProxy extends Plugin {
         mongoClient = new MongoClient(mongoClientURI);
         database = mongoClient.getDatabase("dungeonrealms");
 
-        updateGuilds();
+        getLogger().info("[GUILDS] Pull guilds from database...");
+        guilds = database.getCollection("guilds");
+        GuildDatabase.setGuilds(guilds);
 
         getLogger().info("DungeonRealms [MONGODB] has connected successfully!");
         this.getProxy().getPluginManager().registerListener(this, ProxyChannelListener.getInstance());
@@ -53,11 +57,9 @@ public class DungeonRealmsProxy extends Plugin {
         }
     }
 
-
-    public void updateGuilds() {
-        getLogger().info("[GUILDS] Pull guilds from database...");
-        guilds = database.getCollection("guilds");
-        GuildDatabase.setGuilds(guilds);
+    public void relayPacket(String channel, byte[] data) {
+        for (ServerInfo server : ProxyServer.getInstance().getServers().values())
+            server.sendData(channel, data);
     }
 
     public static DungeonRealmsProxy getInstance() {

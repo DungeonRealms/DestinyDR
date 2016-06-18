@@ -135,6 +135,7 @@ public class CommandAdd extends BasicCommand {
                 case "customitem":
                     String name = args[1];
                     player.getInventory().addItem(ItemGenerator.getNamedItem(name));
+                    break;
                 case "particle":
                     if (args[1] != null)
                         ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.getById(Integer.valueOf(args[1])), player.getLocation(), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 250);

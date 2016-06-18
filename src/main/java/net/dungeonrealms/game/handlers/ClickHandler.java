@@ -1027,6 +1027,9 @@ public class ClickHandler {
                     return;
                 }
                 break;
+
+
+            // CUSTOMER SUPPORT @todo: Move to own class to clean up & take advantage of own methods for reusing vars.
             case "Support Tools":
                 event.setCancelled(true);
                 if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR || !Rank.isSupport(player))
@@ -1146,16 +1149,59 @@ public class ClickHandler {
                 // Only continue if the playerName & uuid aren't empty.
                 if (playerName.isEmpty() || uuid.toString().isEmpty()) return;
 
+                String levelType = "add";
+                String variableName = "experience";
                 switch (slot) {
                     case 4:
                         SupportMenus.openMainMenu(player, playerName);
                         return;
-                    case 0: // @todo: change me
+                    case 21:
+                        levelType = "add";
+                        variableName = "experience";
+                        break;
+                    case 22:
+                        levelType = "set";
+                        variableName = "experience";
+                        break;
+                    case 23:
+                        levelType = "remove";
+                        variableName = "experience";
+                        break;
+                    case 30:
+                        levelType = "add";
+                        variableName = "level";
+                        break;
+                    case 31:
+                        levelType = "set";
+                        variableName = "level";
+                        break;
+                    case 32:
+                        levelType = "remove";
+                        variableName = "level";
                         break;
                     default:
                         player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
                         return;
                 }
+
+                player.sendMessage(ChatColor.YELLOW + "Please enter the amount you would to " + levelType + ":");
+                player.closeInventory();
+                final String customLevelType = levelType;
+                final String finalVariableName = variableName;
+                Chat.listenForMessage(player, customAmount -> {
+                    if (!customAmount.getMessage().equalsIgnoreCase("cancel") && !customAmount.getMessage().equalsIgnoreCase("exit")) {
+                        try {
+                            if (finalVariableName == "level") {
+                                Support.modifyLevel(player, playerName, uuid, Integer.parseInt(customAmount.getMessage()), customLevelType);
+                            } else {
+                                Support.modifyExp(player, playerName, uuid, Integer.parseInt(customAmount.getMessage()), customLevelType);
+                            }
+                        } catch (NumberFormatException e) {
+                            player.sendMessage(ChatColor.RED + customAmount.getMessage() + " is not a valid number.");
+                        }
+                    }
+                }, null);
+
                 break;
             case "Support Tools (E-Cash)":
                 event.setCancelled(true);
@@ -1231,16 +1277,38 @@ public class ClickHandler {
                 // Only continue if the playerName & uuid aren't empty.
                 if (playerName.isEmpty() || uuid.toString().isEmpty()) return;
 
+                String bankType = "add";
                 switch (slot) {
                     case 4:
                         SupportMenus.openMainMenu(player, playerName);
                         return;
-                    case 0: // @todo: change me
+                    case 21:
+                        bankType = "add";
+                        break;
+                    case 22:
+                        bankType = "set";
+                        break;
+                    case 23:
+                        bankType = "remove";
                         break;
                     default:
                         player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "Uh oh!" + ChatColor.BLUE + " This feature is coming soon....");
                         return;
                 }
+
+                player.sendMessage(ChatColor.YELLOW + "Please enter the amount you would to " + bankType + ":");
+                player.closeInventory();
+                final String customBankType = bankType;
+                Chat.listenForMessage(player, customAmount -> {
+                    if (!customAmount.getMessage().equalsIgnoreCase("cancel") && !customAmount.getMessage().equalsIgnoreCase("exit")) {
+                        try {
+                            Support.modifyGems(player, playerName, uuid, Integer.parseInt(customAmount.getMessage()), customBankType);
+                        } catch (NumberFormatException e) {
+                            player.sendMessage(ChatColor.RED + customAmount.getMessage() + " is not a valid number.");
+                        }
+                    }
+                }, null);
+
                 break;
             case "Support Tools (Hearthstone)":
                 event.setCancelled(true);

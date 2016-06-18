@@ -12,12 +12,16 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChatTabCompleteEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class TabbedChatListener implements Listener {
-	
-	@EventHandler
+
+    @EventHandler
     public void onPlayerChatTabCompleteEvent(PlayerChatTabCompleteEvent e) {
         final Player player = e.getPlayer();
 
@@ -31,7 +35,7 @@ public class TabbedChatListener implements Listener {
 
         prefix.append(GameChat.getPreMessage(player, true, GameChat.getGlobalType(finalChat)));
 
-       	if (finalChat.contains("@i@") && player.getEquipment().getItemInMainHand() != null && player.getEquipment().getItemInMainHand().getType() != Material.AIR) {
+        if (finalChat.contains("@i@") && player.getEquipment().getItemInMainHand() != null && player.getEquipment().getItemInMainHand().getType() != Material.AIR) {
             String aprefix = prefix.toString();
             String[] split = finalChat.split("@i@");
             String after = "";
@@ -41,10 +45,18 @@ public class TabbedChatListener implements Listener {
             if (split.length > 1)
                 after = split[1];
 
+            ItemStack stack = player.getItemInHand();
+
+            List<String> hoveredChat = new ArrayList<>();
+            ItemMeta meta = stack.getItemMeta();
+            hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : stack.getType().name()));
+            if (meta.hasLore())
+                hoveredChat.addAll(meta.getLore());
             final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
             normal.addText(before + "");
-            normal.addItem(player.getEquipment().getItemInMainHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
+            normal.addHoverText(hoveredChat, "SHOW");
             normal.addText(after);
+
             Bukkit.getOnlinePlayers().stream().forEach(normal::sendToPlayer);
             return;
         }
