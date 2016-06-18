@@ -93,7 +93,7 @@ public class EntityStats {
         return new Stats(def, hp, atk, spd);
     }
 
-    public static void setMonsterElite(Entity entity , EnumNamedElite namedElite, int tier, EnumMonster monster) {
+    public static void setMonsterElite(Entity entity , EnumNamedElite namedElite, int tier, EnumMonster monster, boolean isDungeon) {
         //TODO confirm working for elites of all types
         if (namedElite == EnumNamedElite.NONE) {
             ItemType weaponType;
@@ -154,7 +154,11 @@ public class EntityStats {
                     weaponType = ItemType.getRandomWeapon();
                     break;
             }
-            ItemStack[] armor = new ItemGenerator().setRarity(API.getItemRarity(true)).setTier(ItemTier.getByTier(tier)).getArmorSet();
+            Item.ItemRarity rarity = API.getItemRarity(true);
+            if (isDungeon) {
+                rarity = Item.ItemRarity.UNIQUE;
+            }
+            ItemStack[] armor = new ItemGenerator().setRarity(rarity).setTier(ItemTier.getByTier(tier)).getArmorSet();
             ItemStack weapon = new ItemGenerator().setType(weaponType).setRarity(API.getItemRarity(true)).setTier(ItemTier.getByTier(tier)).generateItem().getItem();
             entity.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
             entity.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor[0]));

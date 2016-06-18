@@ -106,7 +106,7 @@ public class DungeonMobCreator {
                     }
                 } else {
                     entity.getBukkitEntity().setMetadata("elite", new FixedMetadataValue(DungeonRealms.getInstance(), true));
-                    EntityStats.setMonsterElite(entity, EnumNamedElite.NONE, tier, enumMonster);
+                    EntityStats.setMonsterElite(entity, EnumNamedElite.NONE, tier, enumMonster, true);
                     if (hasCustomName) {
                         entity.setCustomName(API.getTierColor(tier).toString() + ChatColor.BOLD + customName.trim());
                         entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), API.getTierColor(tier).toString() + ChatColor.BOLD + customName.trim()));

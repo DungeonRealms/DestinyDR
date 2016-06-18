@@ -21,6 +21,7 @@ import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.listeners.*;
 import net.dungeonrealms.game.listeners.dungeonListeners.T1Dungeon;
+import net.dungeonrealms.game.listeners.dungeonListeners.T3Dungeon;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.RealmManager;
 import net.dungeonrealms.game.mastery.Utils;
@@ -250,6 +251,7 @@ public class DungeonRealms extends JavaPlugin {
             tcc.onEnable();
             pm.registerEvents(new TabbedChatListener(), this);
             pm.registerEvents(new T1Dungeon(), this);
+            pm.registerEvents(new T3Dungeon(), this);
             pm.registerEvents(new BossListener(), this);
             pm.registerEvents(new RestrictionListener(), this);
         } else {
@@ -264,6 +266,7 @@ public class DungeonRealms extends JavaPlugin {
             pm.registerEvents(new TabbedChatListener(), this);
             pm.registerEvents(new RestrictionListener(), this);
             pm.registerEvents(new T1Dungeon(), this);
+            pm.registerEvents(new T3Dungeon(), this);
             pm.registerEvents(new BossListener(), this);
         }
 

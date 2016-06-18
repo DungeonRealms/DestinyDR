@@ -756,6 +756,12 @@ public class MainListener implements Listener {
                     }
                 }
             }
+        } else if (event.getWorld().getName().contains("DUNGEON")) {
+            if (event.getChunk().getEntities().length > 0) {
+                for (Entity entity : event.getChunk().getEntities()) {
+                    entity.remove();
+                }
+            }
         }
     }
 

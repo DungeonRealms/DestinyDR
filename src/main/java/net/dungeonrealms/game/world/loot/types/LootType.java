@@ -77,7 +77,6 @@ public enum LootType {
      */
     private void loadItems() {
     	File file = new File(API.getRemoteDataFolder() + "//loot//" + fileName);
-        Utils.log.info(file.getAbsolutePath() + " LOADING...");
         if (!file.exists()){
         	Utils.log.info(file.getAbsolutePath() + " DOES NOT EXIST");
             return;

@@ -15,6 +15,7 @@ import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.*;
+import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
@@ -350,6 +351,15 @@ public class API {
      */
     public static void handleLogout(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
+        if (player.getWorld().getName().contains("DUNGEON")) {
+            for (ItemStack stack : player.getInventory().getContents()) {
+                if (stack != null && stack.getType() != Material.AIR) {
+                    if (DungeonManager.getInstance().isDungeonItem(stack)) {
+                        player.getInventory().remove(stack);
+                    }
+                }
+            }
+        }
         if (BankMechanics.shopPricing.containsKey(player.getName())) {
             player.getInventory().addItem(BankMechanics.shopPricing.get(player.getName()));
             BankMechanics.shopPricing.remove(player.getName());

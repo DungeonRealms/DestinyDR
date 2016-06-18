@@ -3,9 +3,9 @@ package net.dungeonrealms.game.world.entities.types.monsters.boss.subboss;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
+import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.MeleeWitherSkeleton;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.InfernalAbyss;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
@@ -14,7 +14,6 @@ import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.DamageSource;
-import net.minecraft.server.v1_9_R2.EntitySkeleton;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
@@ -27,7 +26,7 @@ import org.bukkit.metadata.FixedMetadataValue;
 /**
  * Created by Chase on Oct 21, 2015
  */
-public class InfernalLordsGuard extends EntitySkeleton implements Boss {
+public class InfernalLordsGuard extends MeleeWitherSkeleton implements Boss {
 	
 	public boolean died = false;
 	public InfernalAbyss boss;
@@ -42,39 +41,43 @@ public class InfernalLordsGuard extends EntitySkeleton implements Boss {
 		this.getBukkitEntity().setCustomNameVisible(true);
 		int level = 40;
 		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
-		this.getBukkitEntity().setMetadata("boss",
-		        new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
+		this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
 		EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
-		this.getBukkitEntity()
-		        .setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
+		this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
 		for (Player p : API.getNearbyPlayers(boss.getBukkitEntity().getLocation(), 50)) {
-			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().greeting);
+			p.sendMessage(ChatColor.RED.toString() + "The Infernal Lords Guard" + ChatColor.RESET.toString() + ": " + "I shall protect you my lord.");
 		}
+		this.setSize(0.7F, 2.4F);
+		this.fireProof = true;
+		this.setSkeletonType(1);
 	}
 
 	/**
 	 * @return
 	 */
 	private ItemStack getWeapon() {
-        return new ItemGenerator().setType(ItemType.SWORD).setTier(ItemTier.TIER_4).setRarity(API.getItemRarity(false))
-                .generateItem().getItem();
+        return new ItemGenerator().setType(ItemType.SWORD).setTier(ItemTier.TIER_4).setRarity(API.getItemRarity(false)).generateItem().getItem();
 	}
 
-	protected void setArmor(int tier) {
+	public void setArmor(int tier) {
 		ItemStack[] armor = getArmor();
 		// weapon, boots, legs, chest, helmet/head
 		ItemStack weapon = getWeapon();
-		// weapon.addEnchantment(Enchantment.DAMAGE_ALL, 1);
 		this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
 		this.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor[0]));
 		this.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor[1]));
 		this.setEquipment(EnumItemSlot.CHEST, CraftItemStack.asNMSCopy(armor[2]));
-		this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(SkullTextures.DEVIL.getSkull()));
+		this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(armor[3]));
+		LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+		livingEntity.getEquipment().setItemInMainHand(weapon);
+		livingEntity.getEquipment().setBoots(armor[0]);
+		livingEntity.getEquipment().setLeggings(armor[1]);
+		livingEntity.getEquipment().setChestplate(armor[2]);
+		livingEntity.getEquipment().setHelmet(armor[3]);
 	}
 
 	private ItemStack[] getArmor() {
-        return new ItemGenerator().setTier(ItemTier.getByTier(getEnumBoss().tier)).setRarity(ItemRarity.UNIQUE)
-                .getArmorSet();
+        return new ItemGenerator().setTier(ItemTier.getByTier(getEnumBoss().tier)).setRarity(ItemRarity.UNIQUE).getArmorSet();
 	}
 
 	@Override
@@ -84,10 +87,12 @@ public class InfernalLordsGuard extends EntitySkeleton implements Boss {
 
 	@Override
 	public void onBossDeath() {
-		for (Player p : API.getNearbyPlayers(this.getBukkitEntity().getLocation(), 50)) {
-			p.sendMessage(this.getCustomName() + ChatColor.RESET.toString() + ": " + getEnumBoss().death);
+		for (Player p : API.getNearbyPlayers(boss.getBukkitEntity().getLocation(), 50)) {
+			p.sendMessage(ChatColor.RED.toString() + "The Infernal Lords Guard" + ChatColor.RESET.toString() + ": " + "I have failed you...");
 		}
-		boss.say(boss.getBukkitEntity(), this.getBukkitEntity().getLocation(), "I'll handle it on my own then!");
+		for (Player p : API.getNearbyPlayers(boss.getBukkitEntity().getLocation(), 50)) {
+			p.sendMessage(ChatColor.RED.toString() + "The Infernal Abyss" + ChatColor.RESET.toString() + ": " + "I'll handle this on my own then!");
+		}
 		boss.setLocation(locX, locY, locZ, 1, 1);
 		int maxHP = boss.getBukkitEntity().getMetadata("maxHP").get(0).asInt() / 2;
 		boss.getBukkitEntity().setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHP));
@@ -97,8 +102,7 @@ public class InfernalLordsGuard extends EntitySkeleton implements Boss {
 
 	@Override
 	public void onBossHit(EntityDamageByEntityEvent event) {
-		LivingEntity en = (LivingEntity) event.getEntity();	
-
+		//LivingEntity en = (LivingEntity) event.getEntity();
 	}
 
 }
