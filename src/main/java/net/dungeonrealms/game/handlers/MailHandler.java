@@ -111,11 +111,11 @@ public class MailHandler {
 
         if (API.isOnline(toUUID)) {
             DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification, true);
-            sendMailMessage(Bukkit.getPlayer(toUUID), getMailMessage(player.getName() + " has sent you Mail."));
+            sendMailMessage(Bukkit.getPlayer(toUUID), getMailMessage(ChatColor.GOLD + player.getName() + ChatColor.GREEN + " has sent you Mail."));
         } else {
             DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification, false);
             API.updatePlayerData(toUUID);
-            NetworkAPI.getInstance().sendPlayerMessage(to, getMailMessage(player.getName() + " has sent you Mail."));
+            NetworkAPI.getInstance().sendPlayerMessage(to, getMailMessage(ChatColor.GOLD + player.getName() + ChatColor.GREEN + " has sent you Mail."));
         }
         sendMailMessage(player, ChatColor.GREEN + "You have sent " + ChatColor.GOLD + to + ChatColor.GREEN + " Mail.");
         return true;
