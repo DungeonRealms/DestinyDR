@@ -458,11 +458,13 @@ public class API {
             }
             if (customStop) {
                 API.handleLogout(player.getUniqueId()); // ?? Might prevent rollbacks from too quick shard hopping.
-                try {
-                    NetworkAPI.getInstance().sendToServer(player.getName(), "Lobby");
-                } catch (Exception exc) {
-                    exc.printStackTrace();
-                }
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    try {
+                        NetworkAPI.getInstance().sendToServer(player.getName(), "Lobby");
+                    } catch (Exception exc) {
+                        exc.printStackTrace();
+                    }
+                }, 5L);
             }
         }
     }
