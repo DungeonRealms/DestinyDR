@@ -255,7 +255,7 @@ public class  GuildDatabase implements GuildDatabaseAPI {
 
     @Override
     public List<UUID> getAllOfGuild(String guildName) {
-        String owner = (String) get(guildName, EnumGuildData.OWNER, String.class);
+        String owner = getOwnerOf(guildName);
 
         List<UUID> all = owner != null ? new ArrayList<>(Collections.singletonList(UUID.fromString(owner))) : new ArrayList<>();
         all.addAll(getAllGuildMembers(guildName));

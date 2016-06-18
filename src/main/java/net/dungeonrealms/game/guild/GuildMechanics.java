@@ -2,8 +2,11 @@ package net.dungeonrealms.game.guild;
 
 import lombok.Getter;
 import lombok.Setter;
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.handlers.ScoreboardHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.menus.banner.BannerCreatorMenu;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
@@ -71,10 +74,15 @@ public class GuildMechanics {
                 GuildDatabaseAPI.get().setGuild(player.getUniqueId(), "");
         });
 
-        sendAlert(guildName, player, player.getName() + " has joined shard " + DungeonRealms.getInstance().shardid);
+        List<String> filter = new ArrayList<>(Collections.singletonList(player.getName()));
 
         GuildDatabaseAPI.get().getAllOfGuild(guildName)
-                .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null && !uuid.equals(player.getUniqueId())).forEach(uuid -> Bukkit.getPlayer(uuid).sendMessage(format.concat(player.getName() + " has joined your shard.")));
+                .stream().filter(uuid -> Bukkit.getPlayer(uuid) != null && !uuid.equals(player.getUniqueId())).forEach(uuid -> {
+            Bukkit.getPlayer(uuid).sendMessage(format.concat(player.getName() + " has joined your shard."));
+            filter.add(Bukkit.getPlayer(uuid).getName());
+        });
+
+        sendAlert(guildName, player.getName() + " has joined shard " + DungeonRealms.getInstance().shardid, filter.toArray(new String[filter.size()]));
         showMotd(player, guildName);
     }
 
@@ -93,7 +101,6 @@ public class GuildMechanics {
         }
     }
 
-
     public void doLogout(Player player) {
         guildChat.remove(player.getUniqueId());
         String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId());
@@ -108,7 +115,6 @@ public class GuildMechanics {
     public void sendUpdateProxyCachePacket() {
         NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Guilds", "updateCache");
     }
-
 
     /**
      * All local messages will be sent to
@@ -144,14 +150,22 @@ public class GuildMechanics {
 
     /**
      * @param guildName Name of guild
-     * @param player    Sender
      * @param message   Alert message
+     * @param filters   Filters
      */
-    public void sendAlert(String guildName, Player player, String message) {
+    public void sendAlert(String guildName, String message, String... filters) {
         String tag = GuildDatabaseAPI.get().getTagOf(guildName);
         String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
-        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Guilds", "message:" + player.getName(), Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
+        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Guilds", "message:" + getFilters(filters).toString(), Arrays.asList(guildName, format.concat(message)).toArray(new String[2]));
+    }
+
+    private StringBuilder getFilters(String[] filters) {
+        StringBuilder players = new StringBuilder();
+        for (int i = 0; i < filters.length; i++)
+            if (i == 0) players.append(filters[i]);
+            else players.append(":").append(filters[i]);
+        return players;
     }
 
 
@@ -214,6 +228,7 @@ public class GuildMechanics {
         return Bukkit.getPlayer(uuid) != null ? ChatColor.GREEN + name : ChatColor.GRAY + name;
     }
 
+
     private StringBuilder getPlayers(List<UUID> uuids) {
         StringBuilder players = new StringBuilder();
         for (int i = 0; i < uuids.size(); i++)
@@ -240,6 +255,10 @@ public class GuildMechanics {
                 Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.GUILD_MEMBER);
                 GuildDatabaseAPI.get().addPlayer(guildName, player.getUniqueId());
                 sendUpdateProxyCachePacket();
+
+                GamePlayer gp = API.getGamePlayer(player);
+                if (gp != null)
+                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
 
                 sendAlert(guildName, player.getName() + ChatColor.GRAY.toString() + " has " +
                         ChatColor.UNDERLINE + "joined" + ChatColor.GRAY + " your guild." + (referrer != null ? " [INVITE: " + ChatColor.ITALIC + referrer + ChatColor.GRAY + "]" : ""));
@@ -312,6 +331,10 @@ public class GuildMechanics {
                         if (exists) GuildDatabaseAPI.get().removeFromGuild(guildName, player.getUniqueId());
                     }
             );
+
+            GamePlayer gp = API.getGamePlayer(player);
+            if (gp != null)
+                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
 
             sendUpdateProxyCachePacket();
         }, null);
@@ -405,6 +428,9 @@ public class GuildMechanics {
                     player.sendMessage(ChatColor.GRAY + "You can now chat in your guild chat with " + ChatColor.BOLD + "/g <msg>" + ChatColor.GRAY + ", invite players with " + ChatColor.BOLD + "/ginvite <player>" + ChatColor.GRAY + " and much more -- Check out your character journal for more information!");
                     BankMechanics.getInstance().takeGemsFromInventory(5000, player);
 
+                    GamePlayer gp = API.getGamePlayer(player);
+                    if (gp != null)
+                        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
 
                     player.getInventory().addItem(info.getCurrentBanner());
 
