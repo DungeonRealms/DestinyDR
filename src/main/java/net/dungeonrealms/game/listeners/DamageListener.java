@@ -208,19 +208,21 @@ public class DamageListener implements Listener {
                     }
                 }
             }
-            if (event.getEntity() instanceof Player) {
-                if (Affair.getInstance().areInSameParty((Player) event.getDamager(), (Player) event.getEntity())) {
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
 
-                if (GuildDatabaseAPI.get().getGuildOf(event.getDamager().getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(event.getEntity().getUniqueId()))){
-                    event.setCancelled(true);
-                    event.setDamage(0);
-                    return;
-                }
+            if (API.isPlayer(event.getEntity())) {
+                if (event.getEntity() instanceof Player) {
+                    if (Affair.getInstance().areInSameParty((Player) event.getDamager(), (Player) event.getEntity())) {
+                        event.setCancelled(true);
+                        event.setDamage(0);
+                        return;
+                    }
 
+                    if (GuildDatabaseAPI.get().getGuildOf(event.getDamager().getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(event.getEntity().getUniqueId()))) {
+                        event.setCancelled(true);
+                        event.setDamage(0);
+                        return;
+                    }
+                }
             }
             Player attacker = (Player) event.getDamager();
             if (attacker.getEquipment().getItemInMainHand() == null) return;
@@ -1331,7 +1333,7 @@ public class DamageListener implements Listener {
         }
         event.setCancelled(true);
         event.setUseItemInHand(Event.Result.DENY);
-        DataWatcher watcher = new DataWatcher(((CraftPlayer)player).getHandle());
+        DataWatcher watcher = new DataWatcher(((CraftPlayer) player).getHandle());
         watcher.register(new DataWatcherObject<>(5, DataWatcherRegistry.a), (byte) 1);
         for (Player player1 : Bukkit.getOnlinePlayers()) {
             //TODO: Not sure if we wanna send the packet.
@@ -1365,7 +1367,7 @@ public class DamageListener implements Listener {
                 if (new Random().nextInt(10) == 0) {
                     // 10% chance of adds on explosion.
                     Location hit_loc = event.getEntity().getLocation();
-                    World world = ((CraftWorld)event.getEntity().getWorld()).getHandle();
+                    World world = ((CraftWorld) event.getEntity().getWorld()).getHandle();
                     for (int i = 0; i <= 3; i++) {
                         net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 2, EnumMonster.MagmaCube);
                         int level = Utils.getRandomFromTier(2, "low");
