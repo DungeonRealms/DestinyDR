@@ -1,17 +1,29 @@
 package net.dungeonrealms.game.player.chat;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonObject;
+import com.sk89q.worldguard.util.jsonsimple.JSONObject;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.json.JSONMessage;
+import net.md_5.bungee.BungeeCord;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.minecraft.server.v1_9_R2.IChatBaseComponent;
+import net.minecraft.server.v1_9_R2.PacketPlayOutChat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
@@ -39,7 +51,7 @@ public class Chat {
      * If <i>consumer</i> is null, the player is removed from memory (used in Quit event)
      *
      * @param consumer the Consumer that should listen for the event AND NOT BE NULL
-     * @param orElse the consumer that get called when another listener listens for a message (this one gets removed) or when the player quits
+     * @param orElse   the consumer that get called when another listener listens for a message (this one gets removed) or when the player quits
      */
     public static void listenForMessage(Player player, Consumer<? super AsyncPlayerChatEvent> consumer, Consumer<? super Player> orElse) {
         if (chatListeners.remove(player) != null) {
@@ -57,8 +69,6 @@ public class Chat {
     public static List<String> bannedWords = new ArrayList<>(Arrays.asList("shit", "fuck", "cunt", "bitch", "whore", "slut", "wank", "asshole", "cock",
             "dick", "clit", "homo", "fag", "queer", "nigger", "dike", "dyke", "retard", "motherfucker", "vagina", "boob", "pussy", "rape", "gay", "penis",
             "cunt", "titty", "anus", "faggot", "gay", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "titanrift", "fucked"));
-
-
 
 
     /**
@@ -112,11 +122,21 @@ public class Chat {
                 if (split.length > 1)
                     after = split[1];
 
+                JsonObject object;
+
+                ItemStack stack = event.getPlayer().getItemInHand();
+
+                List<String> hoveredChat = new ArrayList<>();
+                ItemMeta meta = stack.getItemMeta();
+                hoveredChat.add(meta.hasDisplayName() ? meta.getDisplayName() : stack.getType().name());
+                if (meta.hasLore())
+                    hoveredChat.addAll(meta.getLore());
                 final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
                 normal.addText(before + "");
-                normal.addItem(p.getEquipment().getItemInMainHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
+                normal.addHoverText(hoveredChat, "SHOW");
                 normal.addText(after);
-                Bukkit.getOnlinePlayers().stream().forEach(normal::sendToPlayer);
+
+                Bukkit.getOnlinePlayers().stream().forEach(player -> normal.sendToPlayer(player));
                 event.setCancelled(true);
                 return;
             }
@@ -124,34 +144,34 @@ public class Chat {
             final String finalFixedMessage = fixedMessage;
             Bukkit.getOnlinePlayers().stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer(), true, GameChat.getGlobalType(finalFixedMessage)) + finalFixedMessage));
         } else {
-                if (fixedMessage.contains("@i@") && event.getPlayer().getEquipment().getItemInMainHand() != null && event.getPlayer().getEquipment().getItemInMainHand().getType() != Material.AIR) {
-                    final Player p = event.getPlayer();
-                    String aprefix = GameChat.getPreMessage(p);
-                    String[] split = fixedMessage.split("@i@");
-                    String after = "";
-                    String before = "";
-                    if (split.length > 0)
-                        before = split[0];
-                    if (split.length > 1)
-                        after = split[1];
+            if (fixedMessage.contains("@i@") && event.getPlayer().getEquipment().getItemInMainHand() != null && event.getPlayer().getEquipment().getItemInMainHand().getType() != Material.AIR) {
+                final Player p = event.getPlayer();
+                String aprefix = GameChat.getPreMessage(p);
+                String[] split = fixedMessage.split("@i@");
+                String after = "";
+                String before = "";
+                if (split.length > 0)
+                    before = split[0];
+                if (split.length > 1)
+                    after = split[1];
 
-                    final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
-                    normal.addText(before + "");
-                    normal.addItem(event.getPlayer().getEquipment().getItemInMainHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
-                    normal.addText(after);
-                    API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(normal::sendToPlayer);
-                    event.setCancelled(true);
-                    return;
-                }
+                final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
+                normal.addText(before + "");
+                normal.addItem(event.getPlayer().getEquipment().getItemInMainHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
+                normal.addText(after);
+                API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(normal::sendToPlayer);
                 event.setCancelled(true);
-                final String finalFixedMessage = fixedMessage;
+                return;
+            }
+            event.setCancelled(true);
+            final String finalFixedMessage = fixedMessage;
 
-                if (API.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() >= 2) {
-                    API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
-                } else {
-                    event.getPlayer().sendMessage(GameChat.getPreMessage(event.getPlayer()) + fixedMessage);
-                    event.getPlayer().sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "No one heard you...");
-                }
+            if (API.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() >= 2) {
+                API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
+            } else {
+                event.getPlayer().sendMessage(GameChat.getPreMessage(event.getPlayer()) + fixedMessage);
+                event.getPlayer().sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "No one heard you...");
+            }
         }
     }
 
@@ -183,6 +203,53 @@ public class Chat {
         }
 
         return returnMessage;
+    }
+
+
+    public class HoverBuilder {
+
+        public String mainWord;
+        private JsonObject json;
+
+        public HoverBuilder(String word, List<String> hoveredChat) {
+            mainWord = word;
+            json = new JsonObject();
+            for (String text : hoveredChat) {
+                JsonObject data = new JsonObject();
+                data.addProperty("text", text);
+                getExtra().add(data);
+            }
+
+        }
+
+        public HoverBuilder addLine(String text, ChatColor color) {
+            JsonObject data = new JsonObject();
+            data.addProperty("text", text);
+            data.addProperty("color", color.name().toLowerCase());
+            getExtra().add(data);
+            return this;
+        }
+
+        private JsonArray getExtra() {
+            if (!json.has("extra")) json.add("extra", new JsonArray());
+            return (JsonArray) json.get("extra");
+        }
+
+        public HoverBuilder(String hoverableWord) {
+            this.mainWord = hoverableWord;
+            json = new JsonObject();
+            json.add("extra", new JsonArray());
+        }
+
+        public JsonObject build() {
+            return json;
+        }
+
+//        public void sendToPlayer(Player p) {
+//            ((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a(json.toString())));
+//        }
+
+
     }
 
 
