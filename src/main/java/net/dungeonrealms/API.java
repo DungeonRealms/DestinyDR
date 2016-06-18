@@ -457,6 +457,7 @@ public class API {
                 CombatLog.removeFromCombat(player);
             }
             if (customStop) {
+                API.handleLogout(player.getUniqueId()); // ?? Might prevent rollbacks from too quick shard hopping.
                 try {
                     NetworkAPI.getInstance().sendToServer(player.getName(), "Lobby");
                 } catch (Exception exc) {
