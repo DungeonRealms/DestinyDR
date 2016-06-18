@@ -541,8 +541,6 @@ public class BankListener implements Listener {
                 if (pouchGems <= 64) {
                     e.setCursor(BankMechanics.createGems(pouchGems));
                     e.setCurrentItem(BankMechanics.getInstance().makeNewPouch(e.getCurrentItem(), 0));
-
-                    return;
                 } else {
                     e.setCursor(BankMechanics.createGems(64));
                     e.setCurrentItem(BankMechanics.getInstance().makeNewPouch(e.getCurrentItem(), pouchGems - 64));
