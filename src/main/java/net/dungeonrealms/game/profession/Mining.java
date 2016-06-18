@@ -24,7 +24,7 @@ public class Mining implements GenericMechanic {
 
 	public static int getOreEXP(ItemStack stackInHand, Material m) {
 		//TODO incorporate Modifiers? Enchants? etc.
-		
+
         if (m == Material.COAL_ORE) {
             return 90 + new Random().nextInt(35);
         }
@@ -42,7 +42,7 @@ public class Mining implements GenericMechanic {
         }
         return 1;
     }
-	
+
     public static int getEXPNeeded(int level) {
             if (level == 1) {
                 return 176; // formula doens't work on level 1.
@@ -53,8 +53,8 @@ public class Mining implements GenericMechanic {
             int previous_level = level - 1;
             return (int) (Math.pow((previous_level), 2) + ((previous_level) * 20) + 150 + ((previous_level) * 4) + getEXPNeeded((previous_level)));
     }
-	
-	
+
+
 
 	/**
 	 * Checks if itemstack is our pickaxe
@@ -168,7 +168,7 @@ public class Mining implements GenericMechanic {
         lore.add(" ");
         lore.add(newexpBar);
         lore.add(" ");
-        
+
         switch (tier) {
         case 1:
             lore.add(ChatColor.GRAY.toString() + ChatColor.ITALIC + "A pickaxe made out of sturdy wood.");
@@ -193,7 +193,7 @@ public class Mining implements GenericMechanic {
 		p.setItemInHand(stackInHand);
 	}
 
-	
+
 	 public static int getBreakChance(ItemStack is) {
 	        int i_level = CraftItemStack.asNMSCopy(is).getTag().getInt("level");
 	          Material m = is.getType();
@@ -205,12 +205,12 @@ public class Mining implements GenericMechanic {
 	          }else if(m == Material.IRON_PICKAXE) {
 	        	   win += ((i_level - 40) * 2); // +2% per
 	          }else if(m == Material.DIAMOND_PICKAXE) {
-	        	   win += ((i_level - 60) * 2); // +2% per level. 
+	        	   win += ((i_level - 60) * 2); // +2% per level.
 	          }else if(m == Material.GOLD_PICKAXE) {
 	        	   win += ((i_level - 80) * 2);  }// +2% per level.
 	        return win;
 	    }
-	 
+
 	/**
 	 * Sets players item in hand to upgraded Tier
 	 *
@@ -343,7 +343,7 @@ public class Mining implements GenericMechanic {
 	}
 
 	private static Mining instance;
-	
+
 	public static Mining getInstance() {
 		if (instance == null)
 			instance = new Mining();
@@ -383,7 +383,7 @@ public class Mining implements GenericMechanic {
 		switch(tier){
 		case 1:
 			return 1;
-		case 2: 
+		case 2:
 			return 20;
 		case 3:
 			return 40;
