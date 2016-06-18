@@ -352,7 +352,7 @@ public class DatabaseAPI {
                                         .append("friendRequest", new ArrayList<String>())
                                         .append("mailbox", new ArrayList<String>()))
                         .append("rank",
-                                new Document("expiration_date", 0L)
+                                new Document("expiration_date", 0)
                                         .append("rank", "DEFAULT"))
                         .append("inventory",
                                 new Document("collection_bin", "")
