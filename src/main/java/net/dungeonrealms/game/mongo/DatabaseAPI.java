@@ -194,6 +194,8 @@ public class DatabaseAPI {
                 return ((Document) doc.get("toggles")).get("duel", Boolean.class);
             case TOGGLE_CHAOTIC_PREVENTION:
                 return ((Document) doc.get("toggles")).get("chaoticPrevention", Boolean.class);
+            case TOGGLE_TIPS:
+                return ((Document) doc.get("toggles")).get("tips", Boolean.class);
             /*
             Portal Key Shards
              */
@@ -337,7 +339,8 @@ public class DatabaseAPI {
                                         .append("receiveMessage", true)
                                         .append("pvp", false)
                                         .append("duel", true)
-                                        .append("chaoticPrevention", true))
+                                        .append("chaoticPrevention", true)
+                                        .append("tips", true))
                         .append("portalKeyShards",
                                 new Document("tier1", 0)
                                         .append("tier2", 0)

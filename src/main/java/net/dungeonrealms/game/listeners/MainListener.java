@@ -777,8 +777,8 @@ public class MainListener implements Listener {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getPlayer().getUniqueId()).toString())) {
                 event.getPlayer().sendMessage("                      " + ChatColor.GREEN + "+" + event.getItem().getItemStack().getAmount() + ChatColor.BOLD + "G");
             }
-            //net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem().getItemStack());
-            /*if (nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
+            net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem().getItemStack());
+            if (nms.hasTag() && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("money")) {
                 int gems = event.getItem().getItemStack().getAmount();
 
                 for (int i = 0; i < event.getPlayer().getInventory().getSize(); i++) {
@@ -807,7 +807,7 @@ public class MainListener implements Listener {
                     event.getPlayer().getInventory().addItem(BankMechanics.createGems(gems));
                 }
             }
-            */
+
         }
     }
 

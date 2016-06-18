@@ -63,6 +63,7 @@ public enum EnumData {
     TOGGLE_PVP("toggles.pvp"),
     TOGGLE_DUEL("toggles.duel"),
     TOGGLE_CHAOTIC_PREVENTION("toggles.chaoticPrevention"),
+    TOGGLE_TIPS("toggles.tips"),
 
     PORTAL_SHARDS_T1("portalKeyShards.tier1"),
     PORTAL_SHARDS_T2("portalKeyShards.tier2"),
