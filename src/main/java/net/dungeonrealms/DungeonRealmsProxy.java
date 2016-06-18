@@ -31,6 +31,8 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
     private final String[] DR_SHARDS = new String[]{"dr1", "dr2"};
 
+    private List<String> trackedShards = new ArrayList<>();
+
     @Override
     public void onEnable() {
         instance = this;
@@ -54,6 +56,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
         for (String shardName : DR_SHARDS) server.add(getProxy().getServerInfo(shardName));
         Collections.sort(server, (o1, o2) -> o1.getPlayers().size() - o2.getPlayers().size());
+        Collections.reverse(server);
 
         return server;
     }

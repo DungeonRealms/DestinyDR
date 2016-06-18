@@ -24,7 +24,7 @@ public class CommandG extends BasicCommand {
         Player player = (Player) sender;
 
         if (GuildDatabaseAPI.get().isGuildNull(player.getUniqueId())) {
-            player.sendMessage(ChatColor.RED + "You must be in a " + ChatColor.BOLD + "GUILD" + ChatColor.RED + " to view " + ChatColor.BOLD + "GUILD CHAT.");
+            player.sendMessage(ChatColor.RED + "You must be in a " + ChatColor.BOLD + "GUILD" + ChatColor.RED + " to use " + ChatColor.BOLD + "GUILD CHAT.");
             player.sendMessage(ChatColor.GRAY + "Use /gl (or tab) to speak in global.");
             return true;
         }

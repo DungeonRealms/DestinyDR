@@ -54,7 +54,7 @@ public class TabbedChatListener implements Listener {
                 hoveredChat.addAll(meta.getLore());
             final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
             normal.addText(before + "");
-            normal.addHoverText(hoveredChat, "SHOW");
+            normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
             normal.addText(after);
 
             Bukkit.getOnlinePlayers().stream().forEach(normal::sendToPlayer);
