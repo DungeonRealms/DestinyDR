@@ -11,6 +11,7 @@ import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -22,6 +23,7 @@ import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -40,7 +42,7 @@ public class CommandSet extends BasicCommand {
 
     @Override
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
-        if (s instanceof ConsoleCommandSender)
+        if (!(s instanceof Player))
             return false;
         Player player = (Player) s;
         if (!Rank.isGM(player)) {
@@ -61,11 +63,10 @@ public class CommandSet extends BasicCommand {
                             player.sendMessage(ChatColor.RED + "Invalid player level (1 - 100).");
                             break;
                         }
-                        GamePlayer gp = API.getGamePlayer(p);
-                        gp.getStats().setPlayerLevel(lvl);
+                        API.getGamePlayer(p).updateLevel(lvl, false, true);
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, lvl, true);
-                        s.sendMessage(p.getName() + " lvl set to " + lvl);
-                        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(p, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
+                        Utils.sendCenteredMessage(player, ChatColor.YELLOW + "Level of " + ChatColor.GREEN + p.getName() + ChatColor.YELLOW + " set to : " + lvl);
+                        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
                     }
                     break;
                 case "gems":

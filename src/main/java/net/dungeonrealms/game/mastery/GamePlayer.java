@@ -218,33 +218,68 @@ public class GamePlayer {
         int futureExperience = experience + experienceToAdd + subBonus + subPlusBonus;
         int xpNeeded = getEXPNeeded(level);
         if (futureExperience >= xpNeeded) {
-            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, 0, false);
-            DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.LEVEL, 1, true);
-            getStats().lvlUp();
-            T.playSound(T.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1F);
-            T.sendMessage(ChatColor.GREEN + "You have reached level " + ChatColor.AQUA + (level + 1) + ChatColor.GREEN + " and have gained " + ChatColor.AQUA + Integer.toString(PlayerStats.POINTS_PER_LEVEL) + ChatColor.GREEN + " Attribute Points!");
-            ScoreboardHandler.getInstance().setPlayerHeadScoreboard(T, getPlayerAlignment().getAlignmentColor(), (level + 1));
-            switch (level + 1) {
-                case 10:
-                    Achievements.getInstance().giveAchievement(T.getUniqueId(), Achievements.EnumAchievements.LEVEL_10);
-                    break;
-                case 25:
-                    Achievements.getInstance().giveAchievement(T.getUniqueId(), Achievements.EnumAchievements.LEVEL_25);
-                    break;
-                case 50:
-                    Achievements.getInstance().giveAchievement(T.getUniqueId(), Achievements.EnumAchievements.LEVEL_50);
-                    break;
-                case 100:
-                    Achievements.getInstance().giveAchievement(T.getUniqueId(), Achievements.EnumAchievements.LEVEL_100);
-                    break;
-                default:
-                    break;
-            }
+            updateLevel(level + 1, true, false);
         } else {
             DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.EXPERIENCE, experienceToAdd + subBonus + subPlusBonus, true);
             if ((boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, T.getUniqueId())) {
                     T.sendMessage(expPrefix + ChatColor.YELLOW + Math.round(experienceToAdd) + ChatColor.BOLD + " EXP " + ChatColor.GRAY + "[" + Math.round(futureExperience) + ChatColor.BOLD + "/" + ChatColor.GRAY + Math.round(getEXPNeeded(level)) + " EXP]");
             }
+        }
+    }
+
+    /**
+     * Updates a player's level. Can be called for a natural level up or for
+     * an artificial change of a player's level via /set level or other means.
+     * @param newLevel - the new level
+     * @param levelUp - if the level change is natural
+     * @param levelSet - if the level change is set artificially
+     */
+    public void updateLevel(int newLevel, boolean levelUp, boolean levelSet) {
+        DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.EXPERIENCE, 0, false);
+        DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$INC, EnumData.LEVEL, 1, true);
+
+        if (levelUp) { // natural level up
+            getStats().lvlUp();
+
+            if (newLevel != getLevel()) return; // not a natural level up
+
+            T.getWorld().playSound(T.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1, .4F);
+            T.playSound(T.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1F);
+
+            T.sendMessage("");
+            Utils.sendCenteredMessage(T, ChatColor.GRAY.toString() + ChatColor.BOLD + "******************************");
+            Utils.sendCenteredMessage(T, ChatColor.GREEN.toString() + ChatColor.BOLD + "LEVEL UP");
+            T.sendMessage("");
+            Utils.sendCenteredMessage(T, ChatColor.GRAY + "You are now level: " + ChatColor.GREEN + ChatColor.BOLD + newLevel);
+            Utils.sendCenteredMessage(T, ChatColor.GRAY + "EXP to next level: " + ChatColor.GREEN + ChatColor.BOLD + getEXPNeeded(newLevel + 1));
+            Utils.sendCenteredMessage(T, ChatColor.GRAY + "Free stat points: " + ChatColor.GREEN + this.getStats().freePoints);
+            Utils.sendCenteredMessage(T, ChatColor.GRAY.toString() + ChatColor.BOLD + "******************************");
+            T.sendMessage("");
+        }
+        else if (levelSet) { // level was set
+            getStats().setPlayerLevel(newLevel);
+
+            Utils.sendCenteredMessage(T, ChatColor.YELLOW + "Your level has been set to: " + newLevel);
+            T.playSound(T.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
+        }
+
+        // update scoreboard
+        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(T, getPlayerAlignment().getAlignmentColor(), newLevel);
+        switch (newLevel) {
+            case 10:
+                Achievements.getInstance().giveAchievement(T.getUniqueId(), Achievements.EnumAchievements.LEVEL_10);
+                break;
+            case 25:
+                Achievements.getInstance().giveAchievement(T.getUniqueId(), Achievements.EnumAchievements.LEVEL_25);
+                break;
+            case 50:
+                Achievements.getInstance().giveAchievement(T.getUniqueId(), Achievements.EnumAchievements.LEVEL_50);
+                break;
+            case 100:
+                Achievements.getInstance().giveAchievement(T.getUniqueId(), Achievements.EnumAchievements.LEVEL_100);
+                break;
+            default:
+                break;
         }
     }
 

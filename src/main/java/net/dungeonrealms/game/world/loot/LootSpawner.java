@@ -113,7 +113,7 @@ public class LootSpawner {
                 }
             }
         }
-        Bukkit.getWorlds().get(0).playSound(block.getLocation(), Sound.BLOCK_CHEST_CLOSE, 1f, 1f);
+        Bukkit.getWorlds().get(0).playSound(block.getLocation(), Sound.ENTITY_ZOMBIE_BREAK_DOOR_WOOD, 0.5f, 1.2f);
         Packet particles = new PacketPlayOutWorldEvent(2001, new BlockPosition((int) Math.round(block.getLocation().getX()), (int) Math.round(block.getLocation().getY() + 2), (int) Math.round(block.getLocation().getZ())), 25, false);
         ((CraftServer) DungeonRealms.getInstance().getServer()).getServer().getPlayerList().sendPacketNearby(((CraftPlayer) player).getHandle(), block.getLocation().getX(), block.getLocation().getY(), block.getLocation().getZ(), 36, ((CraftWorld) block.getWorld()).getHandle().dimension, particles);
         block.getDrops().clear();
