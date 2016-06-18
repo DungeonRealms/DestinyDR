@@ -41,6 +41,8 @@ public abstract class DRSpider extends EntitySpider implements DRMonster {
 		this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
 		setArmor(tier);
 		setStats();
+		this.noDamageTicks = 0;
+		this.maxNoDamageTicks = 0;
 	}
 
 	public DRSpider(World world) {

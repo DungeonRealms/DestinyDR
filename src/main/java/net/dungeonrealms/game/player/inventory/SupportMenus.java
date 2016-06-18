@@ -54,7 +54,7 @@ public class SupportMenus {
                     ChatColor.WHITE + "Experience: " + DatabaseAPI.getInstance().getData(EnumData.EXPERIENCE, uuid),
                     ChatColor.WHITE + "E-Cash: " + DatabaseAPI.getInstance().getData(EnumData.ECASH, uuid),
                     ChatColor.WHITE + "Bank Balance: " + DatabaseAPI.getInstance().getData(EnumData.GEMS, uuid),
-                    ChatColor.WHITE + "Hearthstone Location: " + DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid),
+                    ChatColor.WHITE + "Hearthstone Location: " + Utils.ucfirst((String) DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid)).replace("_", " "),
                     ChatColor.WHITE + "Alignment: " + Utils.ucfirst(DatabaseAPI.getInstance().getData(EnumData.ALIGNMENT, uuid).toString())
             });
             inv.setItem(4, applySupportItemTags(item, playerName, uuid));
@@ -67,7 +67,7 @@ public class SupportMenus {
                 });
             } else {
                 item = editItem(new ItemStack(Material.BARRIER), ChatColor.RED + "Rank Manager", new String[]{
-                   ChatColor.RED + "You cannot change the rank of your own profile."
+                   ChatColor.RED + "You cannot change the rank of your own account."
                 });
             }
             inv.setItem(19, applySupportItemTags(item, playerName, uuid));
@@ -97,7 +97,7 @@ public class SupportMenus {
             // Hearthstone Manager
             item = editItem(new ItemStack(Material.QUARTZ_ORE), ChatColor.GOLD + "Hearthstone Manager", new String[]{
                     ChatColor.WHITE + "Manage the Hearthstone Location of " + playerName + ".",
-                    ChatColor.WHITE + "Current location: " + DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid)
+                    ChatColor.WHITE + "Current location: " + Utils.ucfirst((String) DatabaseAPI.getInstance().getData(EnumData.HEARTHSTONE, uuid)).replace("_", " ")
             });
             inv.setItem(31, applySupportItemTags(item, playerName, uuid));
 
@@ -206,12 +206,36 @@ public class SupportMenus {
         });
         inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
-        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLACK.getData()), ChatColor.GOLD + "PLACEHOLDER", new String[]{
-                ChatColor.WHITE + "This is a placeholder, it does nothing.",
-                "",
-                ChatColor.WHITE + "One day, a tool for support will go here."
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), ChatColor.GOLD + "Add Experience", new String[]{
+                ChatColor.WHITE + "This will add experience to: " + playerName
+        });
+        inv.setItem(21, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLUE.getData()), ChatColor.GOLD + "Set Experience", new String[]{
+                ChatColor.WHITE + "This will set the experience of: " + playerName
         });
         inv.setItem(22, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()), ChatColor.GOLD + "Remove Experience", new String[]{
+                ChatColor.WHITE + "This will remove experience from: " + playerName
+        });
+        inv.setItem(23, applySupportItemTags(item, playerName, uuid));
+
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), ChatColor.GOLD + "Add Level(s)", new String[]{
+                ChatColor.WHITE + "This will add level(s) to: " + playerName
+        });
+        inv.setItem(30, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLUE.getData()), ChatColor.GOLD + "Set Level", new String[]{
+                ChatColor.WHITE + "This will set the level of: " + playerName
+        });
+        inv.setItem(31, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()), ChatColor.GOLD + "Remove Level(s)", new String[]{
+                ChatColor.WHITE + "This will remove level(s) from: " + playerName
+        });
+        inv.setItem(32, applySupportItemTags(item, playerName, uuid));
 
         player.openInventory(inv);
     }
@@ -225,12 +249,40 @@ public class SupportMenus {
         });
         inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
-        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLACK.getData()), ChatColor.GOLD + "PLACEHOLDER", new String[]{
-                ChatColor.WHITE + "This is a placeholder, it does nothing.",
-                "",
-                ChatColor.WHITE + "One day, a tool for support will go here."
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), ChatColor.GOLD + "Add Amount", new String[]{
+                ChatColor.WHITE + "This will add the specified balance to: " + playerName
+        });
+        inv.setItem(21, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLUE.getData()), ChatColor.GOLD + "Set Amount", new String[]{
+                ChatColor.WHITE + "This will set the specified balance to: " + playerName
         });
         inv.setItem(22, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()), ChatColor.GOLD + "Remove Amount", new String[]{
+                ChatColor.WHITE + "This will remove the specified balance to: " + playerName
+        });
+        inv.setItem(23, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.ORANGE.getData()), ChatColor.GOLD + "Package: 500 E-Cash", new String[]{
+                ChatColor.WHITE + "This will add 500 E-Cash to " + playerName + " as part of the shop package."
+        });
+        inv.setItem(29, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.ORANGE.getData()), ChatColor.GOLD + "Package: 2500 E-Cash", new String[]{
+                ChatColor.WHITE + "This will add 2500 E-Cash to " + playerName + " as part of the shop package."
+        });
+        inv.setItem(30, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.ORANGE.getData()), ChatColor.GOLD + "Package: 5000 E-Cash", new String[]{
+                ChatColor.WHITE + "This will add 5000 E-Cash to " + playerName + " as part of the shop package."
+        });
+        inv.setItem(32, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.ORANGE.getData()), ChatColor.GOLD + "Package: 9999 E-Cash", new String[]{
+                ChatColor.WHITE + "This will add 9999 E-Cash to " + playerName + " as part of the shop package."
+        });
+        inv.setItem(33, applySupportItemTags(item, playerName, uuid));
 
         player.openInventory(inv);
     }
@@ -244,12 +296,20 @@ public class SupportMenus {
         });
         inv.setItem(4, applySupportItemTags(item, playerName, uuid));
 
-        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLACK.getData()), ChatColor.GOLD + "PLACEHOLDER", new String[]{
-                ChatColor.WHITE + "This is a placeholder, it does nothing.",
-                "",
-                ChatColor.WHITE + "One day, a tool for support will go here."
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData()), ChatColor.GOLD + "Add Gems", new String[]{
+                ChatColor.WHITE + "This will add gems to: " + playerName
+        });
+        inv.setItem(21, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.BLUE.getData()), ChatColor.GOLD + "Set Gems", new String[]{
+                ChatColor.WHITE + "This will set the gems of: " + playerName
         });
         inv.setItem(22, applySupportItemTags(item, playerName, uuid));
+
+        item = editItem(new ItemStack(Material.WOOL, 1, DyeColor.RED.getData()), ChatColor.GOLD + "Remove Gems", new String[]{
+                ChatColor.WHITE + "This will remove gems from: " + playerName
+        });
+        inv.setItem(23, applySupportItemTags(item, playerName, uuid));
 
         player.openInventory(inv);
     }

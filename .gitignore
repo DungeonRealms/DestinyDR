@@ -11,3 +11,4 @@ resources/META_INF/MANIFEST.MF
 .project
 /target
 .settings
+/tools/pushBuildToServer/pushDev.bat

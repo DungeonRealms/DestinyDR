@@ -5,6 +5,7 @@ import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.network.NetworkAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
@@ -51,7 +52,7 @@ public class MailHandler {
 
             DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.MAILBOX, from + "," + String.valueOf(unix) + "," + rawItem, true);
             player.getInventory().addItem(actualItem);
-            sendMailMessage(player, ChatColor.GREEN + "You opened mail from " + ChatColor.AQUA + from + ChatColor.GREEN + "!");
+            sendMailMessage(player, ChatColor.GREEN + "You opened mail from " + ChatColor.AQUA + from + ChatColor.GREEN + ".");
             player.playSound(player.getLocation(), Sound.ENTITY_ENDERDRAGON_FLAP, 1f, 63f);
         }
     }
@@ -64,7 +65,7 @@ public class MailHandler {
      * @since 1.0
      */
     private boolean isMailItem(ItemStack item) {
-        return !(item == null || item.getType() == null || item.getType().equals(Material.AIR)) && CraftItemStack.asNMSCopy(item).hasTag() && CraftItemStack.asNMSCopy(item).getTag().hasKey("item");
+        return !(item == null || item.getType() == null || item.getType().equals(Material.AIR)) && CraftItemStack.asNMSCopy(item).hasTag() && CraftItemStack.asNMSCopy(item).getTag() != null && CraftItemStack.asNMSCopy(item).getTag().hasKey("item");
     }
 
     /**
@@ -110,13 +111,13 @@ public class MailHandler {
 
         if (API.isOnline(toUUID)) {
             DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification, true);
-            sendMailMessage(Bukkit.getPlayer(toUUID), ChatColor.GREEN + "You have received a present from " + ChatColor.GOLD + player.getName());
+            sendMailMessage(Bukkit.getPlayer(toUUID), getMailMessage(ChatColor.GOLD + player.getName() + ChatColor.GREEN + " has sent you Mail."));
         } else {
             DatabaseAPI.getInstance().update(toUUID, EnumOperators.$PUSH, EnumData.MAILBOX, mailIdentification, false);
+            API.updatePlayerData(toUUID);
+            NetworkAPI.getInstance().sendPlayerMessage(to, getMailMessage(ChatColor.GOLD + player.getName() + ChatColor.GREEN + " has sent you Mail."));
         }
-
-        sendMailMessage(player, ChatColor.GREEN + "You have sent " + ChatColor.GOLD + to + ChatColor.GREEN + " Mail!");
-
+        sendMailMessage(player, ChatColor.GREEN + "You have sent " + ChatColor.GOLD + to + ChatColor.GREEN + " Mail.");
         return true;
     }
 
@@ -126,7 +127,11 @@ public class MailHandler {
      * @since 1.0N
      */
     public void sendMailMessage(Player player, String message) {
-        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "Mail" + ChatColor.WHITE + "]" + " " + message);
+        player.sendMessage(getMailMessage(message));
+    }
+
+    private String getMailMessage(String message) {
+        return ChatColor.WHITE + "[" + ChatColor.GREEN.toString() + ChatColor.BOLD + "Mail" + ChatColor.WHITE + "]" + " " + message;
     }
 
 }

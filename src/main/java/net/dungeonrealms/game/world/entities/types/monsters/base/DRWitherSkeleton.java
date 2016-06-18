@@ -49,6 +49,8 @@ public abstract class DRWitherSkeleton extends EntitySkeleton implements DRMonst
         this.fireProof = true;
         this.setEquipment(EnumItemSlot.HEAD, CraftItemStack.asNMSCopy(enumMonster.getSkullItem(enumMonster)));
         livingEntity.getEquipment().setHelmet(enumMonster.getSkullItem(enumMonster));
+        this.noDamageTicks = 0;
+        this.maxNoDamageTicks = 0;
     }
 
     protected abstract void setStats();

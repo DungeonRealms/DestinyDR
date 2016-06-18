@@ -29,6 +29,7 @@ import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.notice.Notice;
 import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.game.player.rank.Subscription;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
@@ -220,6 +221,18 @@ public class API {
             e.printStackTrace();
         }
         return null;
+    }
+
+
+    /**
+     * Requests an update for cached data on target
+     * player's server
+     *
+     * @param uuid Target
+     */
+    public static void updatePlayerData(UUID uuid) {
+        // SENDS PACKET ON MESSAGING CHANNEL //
+        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Update", uuid.toString());
     }
 
     /**
@@ -422,7 +435,7 @@ public class API {
             });
         Utils.log.info("Saved information for uuid: " + uuid.toString() + " on their logout.");
     }
-    
+
     /**
      * Safely logs out all players when the server restarts
      *
@@ -465,7 +478,7 @@ public class API {
                     return;
                 } else if (DungeonRealms.getInstance().isSubscriberShard && Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("default")) {
                     player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to a subscriber only shard.\n\n" +
-                    ChatColor.GRAY + "Subscriber at http://www.dungeonrealms.net/shop to gain instant access!");
+                            ChatColor.GRAY + "Subscriber at http://www.dungeonrealms.net/shop to gain instant access!");
                     return;
                 } else if ((DungeonRealms.getInstance().isYouTubeShard && !Rank.isYouTuber(player)) || (DungeonRealms.getInstance().isSupportShard && !Rank.isSupport(player))) {
                     player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to this shard.");
@@ -562,7 +575,7 @@ public class API {
             player.sendMessage(new String[]{
                     "",
                     ChatColor.DARK_AQUA + "This is the Dungeon Realms " + ChatColor.UNDERLINE + "MASTER" + ChatColor.DARK_AQUA + " shard.",
-                    ChatColor.GRAY + "Changes made on this shard will be deplyed to all other shards as a " + ChatColor.UNDERLINE + "content patch" + ChatColor.GRAY + "."
+                    ChatColor.GRAY + "Changes made on this shard will be deployed to all other shards as a " + ChatColor.UNDERLINE + "content patch" + ChatColor.GRAY + "."
             });
         }
         if (DungeonRealms.getInstance().isSupportShard && Rank.isSupport(player)) {
@@ -636,6 +649,9 @@ public class API {
             }
         }
 
+        // Subscription
+        Subscription.getInstance().handleLogin(player);
+
         // Guilds
         GuildMechanics.getInstance().doLogin(player);
 
@@ -658,7 +674,6 @@ public class API {
         Utils.log.info("Fetched information for uuid: " + uuid.toString() + " on their login.");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> AchievementManager.getInstance().handleLogin(player.getUniqueId()), 70L);
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
-        player.setCollidable(false);
         AttributeInstance instance = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
         instance.setBaseValue(4.0D);
 

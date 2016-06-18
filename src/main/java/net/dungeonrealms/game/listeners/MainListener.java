@@ -174,6 +174,8 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onChat(AsyncPlayerChatEvent event) {
         Chat.getInstance().doChat(event);
+        GuildMechanics.getInstance().doChat(event);
+        Chat.getInstance().doLocalChat(event);
     }
 
     /**
@@ -285,6 +287,7 @@ public class MainListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         Chat.listenForMessage(event.getPlayer(), null, null);
         event.setQuitMessage(null);
+        GuildMechanics.getInstance().doLogout(event.getPlayer());
         //Ensures the player has played at least 5 seconds before saving to the database.
         if (DatabaseAPI.getInstance().PLAYER_TIME.containsKey(event.getPlayer().getUniqueId()) && DatabaseAPI.getInstance().PLAYER_TIME.get(event.getPlayer().getUniqueId()) > 5) {
             DatabaseAPI.getInstance().PLAYER_TIME.remove(event.getPlayer().getUniqueId());
@@ -764,6 +767,11 @@ public class MainListener implements Listener {
             return;
             //Prevent weird MC glitch.
         }
+        if (event.getItem().getItemStack().getType() == Material.ARROW) {
+            event.setCancelled(true);
+            event.getItem().remove();
+            return;
+        }
         event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 1f);
         if (event.getItem().getItemStack().getType() == Material.EMERALD) {
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getPlayer().getUniqueId()).toString())) {
@@ -889,7 +897,7 @@ public class MainListener implements Listener {
                                 }
                                 Affair.getInstance().invitePlayer(invite, player);
                             } else {
-                                player.sendMessage(new String[] {
+                                player.sendMessage(new String[]{
                                         ChatColor.RED + "You are NOT the leader of your party.",
                                         ChatColor.GRAY + "Type " + ChatColor.BOLD + "/pquit" + ChatColor.GRAY + " to quit your current party."
                                 });

@@ -3,11 +3,13 @@ package net.dungeonrealms.game.listeners;
 import com.sk89q.worldguard.protection.events.DisallowedPVPEvent;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.PlayerManager;
@@ -20,8 +22,11 @@ import net.dungeonrealms.game.player.combat.CombatLogger;
 import net.dungeonrealms.game.player.duel.DuelOffer;
 import net.dungeonrealms.game.player.duel.DuelingMechanics;
 import net.dungeonrealms.game.world.entities.Entities;
+import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
+import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
@@ -36,13 +41,19 @@ import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.ChatColor;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.*;
+import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.*;
+import org.bukkit.Material;
+import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Horse.Variant;
+import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -203,6 +214,13 @@ public class DamageListener implements Listener {
                     event.setDamage(0);
                     return;
                 }
+
+                if (GuildDatabaseAPI.get().getGuildOf(event.getDamager().getUniqueId()).equals(GuildDatabaseAPI.get().getGuildOf(event.getEntity().getUniqueId()))){
+                    event.setCancelled(true);
+                    event.setDamage(0);
+                    return;
+                }
+
             }
             Player attacker = (Player) event.getDamager();
             if (attacker.getEquipment().getItemInMainHand() == null) return;
@@ -693,7 +711,7 @@ public class DamageListener implements Listener {
         }
 
     }*/
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    /*@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
     public void onPlayerFireBow(EntityShootBowEvent event) {
         if (event.getEntity().getType() != EntityType.PLAYER) return;
         Player player = (Player) event.getEntity();
@@ -707,7 +725,7 @@ public class DamageListener implements Listener {
         int weaponTier = nmsItem.getTag().getInt("itemTier");
         EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), energyCost);
         MetadataUtils.registerProjectileMetadata(nmsItem.getTag(), (Projectile) event.getProjectile(), weaponTier);
-    }
+    }*/
 
     /**
      * Listen for Pets Damage.
@@ -992,7 +1010,7 @@ public class DamageListener implements Listener {
      * @param event
      * @since 1.0
      */
-    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onPlayerUseStaff(PlayerInteractEvent event) {
         if (!event.hasItem()) {
             return;
@@ -1007,49 +1025,49 @@ public class DamageListener implements Listener {
         if (itemType != Item.ItemType.STAFF) {
             return;
         }
-        if (event.getPlayer().isInsideVehicle()) {
+        Player player = event.getPlayer();
+        if (player.isInsideVehicle()) {
             event.setCancelled(true);
+            event.setUseItemInHand(Event.Result.DENY);
             return;
         }
-        if (API.isInSafeRegion(event.getPlayer().getLocation())) {
+        if (API.isInSafeRegion(player.getLocation())) {
+            //TODO: Duel checks.
             event.setCancelled(true);
+            event.setUseItemInHand(Event.Result.DENY);
             return;
         }
-        if (event.getPlayer().hasMetadata("last_Staff_Use")) {
+        if (player.hasMetadata("last_Staff_Use")) {
             event.setCancelled(true);
-            if (System.currentTimeMillis() - event.getPlayer().getMetadata("last_Staff_Use").get(0).asLong() < 350) {
+            if (System.currentTimeMillis() - player.getMetadata("last_Staff_Use").get(0).asLong() < 450) {
+                event.setUseItemInHand(Event.Result.DENY);
                 return;
             }
         }
-        int tier = CraftItemStack.asNMSCopy(event.getPlayer().getEquipment().getItemInMainHand()).getTag().getInt("itemTier");
-        int playerLvl = API.getGamePlayer(event.getPlayer()).getLevel();
-        switch (tier) {
-            case 5:
-                if (playerLvl < 10) {
-                    event.setCancelled(true);
-                    int slot = event.getPlayer().getInventory().getHeldItemSlot() + 1;
-                    if (slot < 9)
-                        event.getPlayer().getInventory().setHeldItemSlot(slot);
-                    else
-                        event.getPlayer().getInventory().setHeldItemSlot(0);
-                    event.getPlayer().sendMessage(ChatColor.RED + "You cannot equip this item! You must be level: 10");
-                }
-                break;
+        if (!RestrictionListener.canPlayerUseTier(player, RepairAPI.getArmorOrWeaponTier(player.getEquipment().getItemInMainHand()))) {
+            player.sendMessage(org.bukkit.ChatColor.RED + "You must to be " + org.bukkit.ChatColor.UNDERLINE + "at least" + org.bukkit.ChatColor.RED + " level "
+                    + RestrictionListener.getLevelToUseTier(RepairAPI.getArmorOrWeaponTier(player.getEquipment().getItemInMainHand())) + " to use this weapon.");
+            event.setCancelled(true);
+            event.setUseItemInHand(Event.Result.DENY);
+            EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 1F);
+            return;
         }
 
-        if (event.getPlayer().hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(event.getPlayer()) <= 0) {
+        if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player) <= 0) {
             event.setCancelled(true);
-            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_WOLF_PANT, 12F, 1.5F);
+            event.getPlayer().playSound(player.getLocation(), Sound.ENTITY_WOLF_PANT, 12F, 1.5F);
             try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, event.getPlayer().getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, player.getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
+            event.setUseItemInHand(Event.Result.DENY);
             return;
         }
         event.setCancelled(true);
-        event.getPlayer().setMetadata("last_Staff_Use", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
-        DamageAPI.fireStaffProjectile(event.getPlayer(), event.getPlayer().getEquipment().getItemInMainHand(), nmsItem.getTag());
+        player.setMetadata("last_Staff_Use", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+        DamageAPI.fireStaffProjectile(player, player.getEquipment().getItemInMainHand(), nmsItem.getTag());
+        player.playSound(player.getLocation(), Sound.BLOCK_DISPENSER_LAUNCH, 1f, 1f);
     }
 
     @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
@@ -1253,5 +1271,144 @@ public class DamageListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void entityCombust(EntityCombustEvent event) {
         event.setCancelled(true);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
+    public void onPlayerUseBow(PlayerInteractEvent event) {
+        if (!event.hasItem()) {
+            return;
+        }
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) {
+            return;
+        }
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(event.getPlayer().getEquipment().getItemInMainHand()));
+        if (nmsItem == null || nmsItem.getTag() == null || !nmsItem.getTag().hasKey("itemType")) return;
+
+        Player player = event.getPlayer();
+        Item.ItemType itemType = new Attribute(player.getEquipment().getItemInMainHand()).getItemType();
+        if (itemType != ItemType.BOW) {
+            return;
+        }
+        if (player.isInsideVehicle()) {
+            event.setCancelled(true);
+            event.setUseItemInHand(Event.Result.DENY);
+            return;
+        }
+        if (API.isInSafeRegion(player.getLocation())) {
+            //TODO: Duel checks.
+            event.setCancelled(true);
+            event.setUseItemInHand(Event.Result.DENY);
+            return;
+        }
+        ItemStack hand = player.getEquipment().getItemInMainHand();
+        if (player.hasMetadata("last_Bow_Use")) {
+            event.setCancelled(true);
+            if (System.currentTimeMillis() - player.getMetadata("last_Bow_Use").get(0).asLong() < 450) {
+                event.setUseItemInHand(Event.Result.DENY);
+                return;
+            }
+        }
+
+        if (!RestrictionListener.canPlayerUseTier(player, RepairAPI.getArmorOrWeaponTier(hand))) {
+            player.sendMessage(org.bukkit.ChatColor.RED + "You must to be " + org.bukkit.ChatColor.UNDERLINE + "at least" + org.bukkit.ChatColor.RED + " level "
+                    + RestrictionListener.getLevelToUseTier(RepairAPI.getArmorOrWeaponTier(hand)) + " to use this weapon.");
+            event.setCancelled(true);
+            event.setUseItemInHand(Event.Result.DENY);
+            EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), 1F);
+            return;
+        }
+
+        if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player) <= 0) {
+            event.setCancelled(true);
+            player.playSound(player.getLocation(), Sound.ENTITY_WOLF_PANT, 12F, 1.5F);
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, player.getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            event.setUseItemInHand(Event.Result.DENY);
+            return;
+        }
+        event.setCancelled(true);
+        event.setUseItemInHand(Event.Result.DENY);
+        DataWatcher watcher = new DataWatcher(((CraftPlayer)player).getHandle());
+        watcher.register(new DataWatcherObject<>(5, DataWatcherRegistry.a), (byte) 1);
+        for (Player player1 : Bukkit.getOnlinePlayers()) {
+            //TODO: Not sure if we wanna send the packet.
+            if (player != player1) {
+                ((CraftPlayer) player1).getHandle().playerConnection.sendPacket(new PacketPlayOutEntityMetadata(((CraftPlayer) player).getHandle().getId(), watcher, true));
+            }
+        }
+        player.setMetadata("last_Bow_Use", new FixedMetadataValue(DungeonRealms.getInstance(), System.currentTimeMillis()));
+        DamageAPI.fireBowProjectile(player, hand, nmsItem.getTag());
+        player.playSound(player.getLocation(), Sound.ENTITY_ARROW_SHOOT, 1f, 1f);
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void playerShootBow(EntityShootBowEvent event) {
+        if (event.getEntity() instanceof Player) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void onFireballHit(ProjectileHitEvent event) {
+        if (event.getEntity() instanceof LargeFireball) {
+            LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
+            if (shooter instanceof Ghast) {
+                /*for (Entity ent : event.getEntity().getNearbyEntities(4, 4, 4)) {
+                    if (ent instanceof Player) {
+                        //TODO: Damage.
+                    }
+                }*/
+
+                if (new Random().nextInt(10) == 0) {
+                    // 10% chance of adds on explosion.
+                    Location hit_loc = event.getEntity().getLocation();
+                    World world = ((CraftWorld)event.getEntity().getWorld()).getHandle();
+                    for (int i = 0; i <= 3; i++) {
+                        net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 2, EnumMonster.MagmaCube);
+                        int level = Utils.getRandomFromTier(2, "low");
+                        String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+                        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 2, level);
+                        EntityStats.setMonsterRandomStats(entity, level, 2);
+                        if (entity == null) {
+                            return; //WTF?? UH OH BOYS WE GOT ISSUES
+                        }
+                        entity.setCustomName(newLevelName + API.getTierColor(2).toString() + "Lesser Spawn of Inferno");
+                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(2).toString() + "Lesser Spawn of Inferno"));
+                        Location location = new Location(world.getWorld(), hit_loc.getX() + new Random().nextInt(3), hit_loc.getY(), hit_loc.getZ() + new Random().nextInt(3));
+                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                        world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                    }
+                }
+            }
+        } else if (event.getEntity() instanceof SmallFireball) {
+            LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
+            if (shooter instanceof Blaze) {
+                if (new Random().nextInt(5) == 0) {
+                    if (event.getEntity().hasMetadata("tier")) {
+                        Location toSpawn = event.getEntity().getLocation();
+                        int tier = event.getEntity().getMetadata("tier").get(0).asInt();
+                        World world = ((CraftWorld) event.getEntity().getWorld()).getHandle();
+                        net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, tier, EnumMonster.MagmaCube);
+                        int level = Utils.getRandomFromTier(tier, "low");
+                        String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+                        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, tier, level);
+                        EntityStats.setMonsterRandomStats(entity, level, tier);
+                        if (entity == null) {
+                            return; //WTF?? UH OH BOYS WE GOT ISSUES
+                        }
+                        entity.setCustomName(newLevelName + API.getTierColor(tier).toString() + EnumMonster.MagmaCube.name);
+                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(tier).toString() + EnumMonster.MagmaCube.name));
+                        Location location = new Location(world.getWorld(), toSpawn.getX(), toSpawn.getY(), toSpawn.getZ());
+                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                        world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                    }
+                }
+            }
+        }
     }
 }

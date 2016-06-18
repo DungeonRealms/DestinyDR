@@ -35,7 +35,7 @@ public enum EnumData {
     ACHIEVEMENTS("collectibles.achievements"),
 
     RANK("rank.rank"),
-    RANK_EXISTENCE("rank.lastPurchase"),
+    RANK_SUB_EXPIRATION("rank.expiration_date"),
     PURCHASE_HISTORY("rank.purchaseHistory"),
 
     INVENTORY_COLLECTION_BIN("inventory.collection_bin"),

@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.player.json;
 
 
+import net.dungeonrealms.DungeonRealms;
 import org.bukkit.ChatColor;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
@@ -112,8 +113,6 @@ public class JSONMessage {
         }
 
         String is = i.toString();
-        is = is.replace("\"", "");
-
         if (is.contains("%LORE%")) {
             String lore = JSONArray.toJSONString(item.getItemMeta().getLore());
             lore = lore.replace(":", "|");
@@ -130,20 +129,13 @@ public class JSONMessage {
         JsonObject o = new JsonObject();
         o.addProperty("text", hoveredText);
         o.addProperty("color", "white");
-
+        o.addProperty("bold", true);
         JsonObject u = new JsonObject();
         u.addProperty("action", "show_text");
 
-
-        String is = "";
-
-        if (is.contains("%LORE%")) {
-            String lore = JSONArray.toJSONString(lines);
-            lore = lore.replace(":", "|");
-            lore = lore.replace("\\", "");
-            is = lore;
-        }
-        u.addProperty("value", is);
+        String lore = JSONArray.toJSONString(lines);
+        lore = lore.replace(":", "|").replace("\\", "").replace(",", "\n").replace("[", "").replace("]", "").replace("\"", "").replace("_", " ");
+        u.addProperty("value", lore);
         o.add("hoverEvent", u);
         getExtra().add(o);
 

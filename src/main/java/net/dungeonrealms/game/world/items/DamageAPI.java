@@ -10,8 +10,10 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
+import net.minecraft.server.v1_9_R2.EntityArrow;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftArrow;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
@@ -640,26 +642,49 @@ public class DamageAPI {
     public static void fireStaffProjectile(Player player, ItemStack itemStack, NBTTagCompound tag) {
         RepairAPI.subtractCustomDurability(player, itemStack, 1);
         int weaponTier = tag.getInt("itemTier");
-        Projectile projectile = player.launchProjectile(Snowball.class);
+        Projectile projectile = null;
         switch (weaponTier) {
             case 1:
-                projectile.setVelocity(projectile.getVelocity().multiply(1.05));
+                projectile = player.launchProjectile(Snowball.class);
+                projectile.setVelocity(projectile.getVelocity().multiply(1.15));
                 break;
             case 2:
-                projectile.setVelocity(projectile.getVelocity().multiply(1.25));
+                projectile = player.launchProjectile(SmallFireball.class);
+                projectile.setVelocity(projectile.getVelocity().multiply(1.5));
                 break;
             case 3:
-                projectile.setVelocity(projectile.getVelocity().multiply(1.50));
+                projectile = player.launchProjectile(EnderPearl.class);
+                projectile.setVelocity(projectile.getVelocity().multiply(1.75));
                 break;
             case 4:
-                projectile.setVelocity(projectile.getVelocity().multiply(2.0));
+                projectile = player.launchProjectile(LargeFireball.class);
+                projectile.setVelocity(projectile.getVelocity().multiply(2));
                 break;
             case 5:
+                projectile = player.launchProjectile(WitherSkull.class);
                 projectile.setVelocity(projectile.getVelocity().multiply(2.5));
                 break;
         }
+        if (projectile == null) return;
+        projectile.setBounce(false);
         EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(itemStack));
         projectile.setShooter(player);
+        MetadataUtils.registerProjectileMetadata(tag, projectile, weaponTier);
+    }
+
+    public static void fireBowProjectile(Player player, ItemStack itemStack, NBTTagCompound tag) {
+        RepairAPI.subtractCustomDurability(player, itemStack, 1);
+        int weaponTier = tag.getInt("itemTier");
+        Projectile projectile = player.launchProjectile(Arrow.class);
+        //TODO: Tipped arrows for Fire/Ice/Poison dmg.
+        //Projectile projectile1 = player.launchProjectile(TippedArrow.class);
+        //((TippedArrow) projectile).addCustomEffect(new PotionEffect(PotionEffectType.JUMP, 1, 1), true);
+        projectile.setBounce(false);
+        projectile.setVelocity(projectile.getVelocity().multiply(1.1));
+        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), EnergyHandler.getWeaponSwingEnergyCost(itemStack));
+        projectile.setShooter(player);
+        EntityArrow eArrow = ((CraftArrow) projectile).getHandle();
+        eArrow.fromPlayer = EntityArrow.PickupStatus.DISALLOWED;
         MetadataUtils.registerProjectileMetadata(tag, projectile, weaponTier);
     }
 
@@ -667,24 +692,31 @@ public class DamageAPI {
         if (!(target instanceof Player)) return;
         org.bukkit.util.Vector vector = target.getLocation().toVector().subtract(livingEntity.getLocation().toVector()).normalize();
         int weaponTier = tag.getInt("itemTier");
-        Projectile projectile = livingEntity.launchProjectile(Snowball.class);
+        Projectile projectile = null;
         switch (weaponTier) {
             case 1:
-                vector.multiply(1.05);
+                projectile = livingEntity.launchProjectile(Snowball.class);
+                vector.multiply(1.15);
                 break;
             case 2:
-                vector.multiply(1.25);
-                break;
-            case 3:
+                projectile = livingEntity.launchProjectile(SmallFireball.class);
                 vector.multiply(1.5);
                 break;
+            case 3:
+                projectile = livingEntity.launchProjectile(EnderPearl.class);
+                vector.multiply(1.75);
+                break;
             case 4:
+                projectile = livingEntity.launchProjectile(LargeFireball.class);
                 vector.multiply(2);
                 break;
             case 5:
+                projectile = livingEntity.launchProjectile(WitherSkull.class);
                 vector.multiply(2.5);
                 break;
         }
+        if (projectile == null) return;
+        projectile.setBounce(false);
         projectile.setVelocity(vector);
         projectile.setShooter(livingEntity);
         MetadataUtils.registerProjectileMetadata(tag, projectile, weaponTier);
@@ -695,9 +727,12 @@ public class DamageAPI {
         org.bukkit.util.Vector vector = target.getLocation().toVector().subtract(livingEntity.getLocation().toVector()).normalize();
         int weaponTier = tag.getInt("itemTier");
         Projectile projectile = livingEntity.launchProjectile(Arrow.class);
-        vector.multiply(1.4);
+        projectile.setBounce(false);
+        vector.multiply(1.25);
         projectile.setVelocity(vector);
         projectile.setShooter(livingEntity);
+        EntityArrow eArrow = ((CraftArrow) projectile).getHandle();
+        eArrow.fromPlayer = EntityArrow.PickupStatus.DISALLOWED;
         MetadataUtils.registerProjectileMetadata(tag, projectile, weaponTier);
     }
 }

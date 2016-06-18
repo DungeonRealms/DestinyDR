@@ -33,6 +33,7 @@ public class CommandStop extends BasicCommand {
                 return false;
             }
         }
+        DungeonRealms.getInstance().getLogger().info("DRStop called.");
         DungeonRealms.getInstance().setFinishedSetup(false);
         DungeonRealms.getInstance().saveConfig();
         for (CombatLogger combatLogger : CombatLog.getInstance().getCOMBAT_LOGGERS().values()) {

@@ -19,11 +19,16 @@ public class UpdateServerApplication {
                     executeCommand("cd " + TOOL_PATH + " && pushBungee.bat");
                     break;
                 case "-updateDevServer":
-                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat " + args[1].substring(1));
+                    break;
+                case "-updateAllDev":
+                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat d1");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat d2");
                     break;
                 case "-updateAll":
                     executeCommand("cd " + TOOL_PATH + " && pushBungee.bat");
-                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat d1");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat d2");
                     break;
             }
         } else {

@@ -4,8 +4,11 @@ import com.google.common.collect.Iterables;
 import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.MailHandler;
+import net.dungeonrealms.game.handlers.ScoreboardHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -15,6 +18,8 @@ import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
+
+import java.util.UUID;
 
 /**
  * Created by Nick on 10/12/2015.
@@ -39,39 +44,53 @@ public class NetworkAPI implements PluginMessageListener {
         Bukkit.getMessenger().registerOutgoingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms");
         Bukkit.getMessenger().registerIncomingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms", this);
 
+
         Utils.log.info("[NetworkAPI] Finished Registering Outbound/Inbound BungeeCord channels ... OKAY!");
     }
 
     //TODO: Make a network message to update guilds across entire network if an even should occur.
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-        if (!channel.equalsIgnoreCase("BungeeCord")) return;
+        if (!channel.equalsIgnoreCase("BungeeCord") && !channel.equalsIgnoreCase("DungeonRealms")) return;
         ByteArrayDataInput in = ByteStreams.newDataInput(message);
         String subChannel = in.readUTF();
-        switch (subChannel) {
-            case "mail":
-                if (in.readUTF().equals("update")) {
-                    Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> {
-                        DatabaseAPI.getInstance().requestPlayer(p.getUniqueId());
-                        MailHandler.getInstance().sendMailMessage(p, ChatColor.GREEN + "You got mail!");
-                    });
+
+        if (channel.equalsIgnoreCase("DungeonRealms")) {
+            if (subChannel.equals("Update")) {
+                UUID uuid = UUID.fromString(in.readUTF());
+                if (Bukkit.getPlayer(uuid) != null) {
+                    DatabaseAPI.getInstance().requestPlayer(uuid);
+                    Player player1 = Bukkit.getPlayer(uuid);
+                    GamePlayer gp = API.getGamePlayer(player1);
+                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player1, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
                 }
-                break;
-            case "player":
-                if (in.readUTF().equals("update")) {
-                    Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> DatabaseAPI.getInstance().requestPlayer(p.getUniqueId()));
-                }
-                break;
-            case "shop":
-                if (in.readUTF().equalsIgnoreCase("close")) {
-                    Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> {
-                        if (ShopMechanics.getShop(p.getName()) != null) {
-                            ShopMechanics.getShop(p.getName()).deleteShop(false);
-                        }
-                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
-                    });
-                }
-            default:
+            }
+        } else {
+            switch (subChannel) {
+                case "mail":
+                    if (in.readUTF().equals("update")) {
+                        Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> {
+                            DatabaseAPI.getInstance().requestPlayer(p.getUniqueId());
+                            MailHandler.getInstance().sendMailMessage(p, ChatColor.GREEN + "You got mail!");
+                        });
+                    }
+                    break;
+                case "player":
+                    if (in.readUTF().equals("update")) {
+                        Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> DatabaseAPI.getInstance().requestPlayer(p.getUniqueId()));
+                    }
+                    break;
+                case "shop":
+                    if (in.readUTF().equalsIgnoreCase("close")) {
+                        Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> {
+                            if (ShopMechanics.getShop(p.getName()) != null) {
+                                ShopMechanics.getShop(p.getName()).deleteShop(false);
+                            }
+                            DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
+                        });
+                    }
+                default:
+            }
         }
     }
 

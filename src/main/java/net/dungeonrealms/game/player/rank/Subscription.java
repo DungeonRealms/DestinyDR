@@ -30,8 +30,6 @@ public class Subscription implements GenericMechanic {
         return instance;
     }
 
-    public static ArrayList<UUID> PLAYER_SUBSCRIPTION = new ArrayList<>();
-
     @Override
     public EnumPriority startPriority() {
         return EnumPriority.PRIESTS;
@@ -41,25 +39,12 @@ public class Subscription implements GenericMechanic {
     public void startInitialization() {
         Utils.log.info("[DUNGEON_REALMS] Starting up Subscription() ... STARTING");
         TimeZone.setDefault(TimeZone.getTimeZone("American/New_York"));
-        //startTimer();
         Utils.log.info("[DUNGEON_REALMS] Finished starting up Subscription() ... FINISHED");
     }
 
     @Override
     public void stopInvocation() {
 
-    }
-
-    void startTimer() {
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            for (UUID uuid : PLAYER_SUBSCRIPTION) {
-                if (Bukkit.getPlayer(uuid) == null) {
-                    PLAYER_SUBSCRIPTION.remove(uuid);
-                    return;
-                }
-                checkSubscription(Bukkit.getPlayer(uuid));
-            }
-        }, 20 * 3, 20 * 15L);
     }
 
     /**
@@ -69,29 +54,14 @@ public class Subscription implements GenericMechanic {
      * @param player
      * @since 1.0
      */
-    public void checkSubscription(Player player) {
-        long currentTime = System.currentTimeMillis() / 1000L;
-        long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId())));
-        long time = (endTime - currentTime) / 1000L;
-        if (time == 0 && PLAYER_SUBSCRIPTION.contains(player.getUniqueId())) {
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.RANK, "DEFAULT", true);
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.RANK_EXISTENCE, 0, true);
-            player.sendMessage(ChatColor.RED + "Your subscription has expired!");
-            player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_BREAK, 1F, 1F);
+    public int checkSubscription(Player player) {
+        if (Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("sub") || Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("sub+")) {
+            int currentTime = (int) (System.currentTimeMillis() / 1000);
+            int endTime = (int) DatabaseAPI.getInstance().getData(EnumData.RANK_SUB_EXPIRATION, player.getUniqueId());
+            int timeRemaining = (currentTime == 0 || endTime == 0 ? 0 : (endTime - currentTime));
+            return (int) (timeRemaining <= 0 ? 0 : Math.ceil(timeRemaining / 86400.0));
         }
-    }
-
-    /**
-     * Returns the players remaining subscription time!
-     *
-     * @param player
-     * @return
-     * @since 1.0
-     */
-    public int getHoursLeft(Player player) {
-        long currentTime = System.currentTimeMillis() / 1000L;
-        long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId())));
-        return (int) ((endTime - currentTime) / 1000L);
+        return -1;
     }
 
     /**
@@ -101,34 +71,25 @@ public class Subscription implements GenericMechanic {
      * @param player
      * @since 1.0
      */
-    // @todo: Change this to appear like current DR & do this on player join.
-   /* public void handleJoin(Player player) {
-        if (!PLAYER_SUBSCRIPTION.contains(player.getUniqueId())) {
-            PLAYER_SUBSCRIPTION.add(player.getUniqueId());
-        }
-        long currentTime = System.currentTimeMillis() / 1000L;
-        long endTime = Long.valueOf(String.valueOf(DatabaseAPI.getInstance().getData(EnumData.RANK_EXISTENCE, player.getUniqueId())));
-        int hoursLeft = (int) ((endTime - currentTime) / 1000L);
+   public void handleLogin(Player player) {
+       int subLength = checkSubscription(player);
+       if (subLength > 0) {
+           showSubscriptionExpiry(player, subLength);
+       } else if (subLength == 0) {
+           expireSubscription(player);
+       } else if (subLength == -1 && Rank.getInstance().getRank(player.getUniqueId()).equalsIgnoreCase("sub++")) {
+           showSubscriptionExpiry(player, -1);
+       }
+    }
 
-        if (hoursLeft > 10) {
-            TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE");
-            bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.SUGGEST_COMMAND, "profile"));
-            bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Click to view Profile!").create()));
-            TextComponent test = new TextComponent(ChatColor.WHITE + "[" + ChatColor.YELLOW + ChatColor.BOLD + "SUB" + ChatColor.RESET + ChatColor.WHITE + "] " + ChatColor.RED + "Your subscription is active! Click ");
-            test.addExtra(bungeeMessage);
-            test.addExtra(ChatColor.RED + " for more information!");
-            player.spigot().sendMessage(test);
-        } else if (hoursLeft <= 9 && hoursLeft >= 3) {
-            player.sendMessage(ChatColor.WHITE + "[" + ChatColor.YELLOW.toString() + ChatColor.BOLD + "SUB" + ChatColor.WHITE + "] " + ChatColor.RED + "Your subscription will end in " + ChatColor.AQUA + hoursLeft + ChatColor.RED + " hours.");
-        } else if (hoursLeft <= 0) {
-            TextComponent bungeeMessage = new TextComponent(ChatColor.AQUA.toString() + ChatColor.BOLD + ChatColor.UNDERLINE + "HERE!");
-            bungeeMessage.setClickEvent(new ClickEvent(ClickEvent.Action.OPEN_URL, "http://shop.dungeonrealms.net"));
-            bungeeMessage.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, new ComponentBuilder("Dungeon Realms Store!").create()));
-            TextComponent test = new TextComponent(ChatColor.WHITE + "[" + ChatColor.YELLOW + ChatColor.BOLD + "SUB" + ChatColor.RESET + ChatColor.WHITE + "] " + ChatColor.RED + "Your subscription has ended! Click ");
-            test.addExtra(bungeeMessage);
-            test.addExtra(ChatColor.RED + " to learn more!");
-            player.spigot().sendMessage(test);
-        }
-    }*/
+    public void expireSubscription(Player player) {
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.RANK, "DEFAULT", true);
+        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.RANK_SUB_EXPIRATION, 0, true);
+        player.sendMessage(ChatColor.RED + "Your subscription has expired!");
+    }
+
+    public void showSubscriptionExpiry(Player player, int daysRemaining) {
+        player.sendMessage(ChatColor.GOLD + "You have " + ChatColor.UNDERLINE + (daysRemaining == -1 ? "UNLIMITED" : daysRemaining) + " day" + (daysRemaining != 1 ? "s" : "") + ChatColor.GOLD + " left until your subscription expires.");
+    }
 
 }

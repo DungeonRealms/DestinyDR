@@ -1,25 +1,15 @@
 package net.dungeonrealms.game.player.chat;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
-import com.sk89q.worldguard.util.jsonsimple.JSONObject;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.json.JSONMessage;
-import net.md_5.bungee.BungeeCord;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
-import net.minecraft.server.v1_9_R2.IChatBaseComponent;
-import net.minecraft.server.v1_9_R2.PacketPlayOutChat;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.craftbukkit.v1_9_R2.entity.CraftPlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
 import org.bukkit.inventory.ItemStack;
@@ -70,11 +60,10 @@ public class Chat {
             "dick", "clit", "homo", "fag", "queer", "nigger", "dike", "dyke", "retard", "motherfucker", "vagina", "boob", "pussy", "rape", "gay", "penis",
             "cunt", "titty", "anus", "faggot", "gay", "f@g", "d1ck", "titanrift", "wynncraft", "titan rift", "titanrift", "fucked"));
 
-
     /**
      * Monitor the players primary language also check for bad words.
      *
-     * @param event
+     * @param event Chat event
      * @since 1.0
      */
     public void doChat(AsyncPlayerChatEvent event) {
@@ -90,6 +79,7 @@ public class Chat {
         UUID uuid = event.getPlayer().getUniqueId();
 
         String fixedMessage = checkForBannedWords(event.getMessage());
+        event.setMessage(fixedMessage);
 
         if (fixedMessage.startsWith("@") && !fixedMessage.contains("@i@")) {
             String playerName = fixedMessage.replace("@", "").split(" ")[0];
@@ -122,13 +112,12 @@ public class Chat {
                 if (split.length > 1)
                     after = split[1];
 
-                JsonObject object;
 
                 ItemStack stack = event.getPlayer().getItemInHand();
 
                 List<String> hoveredChat = new ArrayList<>();
                 ItemMeta meta = stack.getItemMeta();
-                hoveredChat.add(meta.hasDisplayName() ? meta.getDisplayName() : stack.getType().name());
+                hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : stack.getType().name()));
                 if (meta.hasLore())
                     hoveredChat.addAll(meta.getLore());
                 final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
@@ -155,24 +144,43 @@ public class Chat {
                 if (split.length > 1)
                     after = split[1];
 
+                ItemStack stack = event.getPlayer().getItemInHand();
+
+                List<String> hoveredChat = new ArrayList<>();
+                ItemMeta meta = stack.getItemMeta();
+                hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : stack.getType().name()));
+                if (meta.hasLore())
+                    hoveredChat.addAll(meta.getLore());
                 final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
                 normal.addText(before + "");
-                normal.addItem(event.getPlayer().getEquipment().getItemInMainHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
+                normal.addHoverText(hoveredChat, "SHOW");
                 normal.addText(after);
+
                 API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(normal::sendToPlayer);
                 event.setCancelled(true);
-                return;
-            }
-            event.setCancelled(true);
-            final String finalFixedMessage = fixedMessage;
-
-            if (API.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() >= 2) {
-                API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
-            } else {
-                event.getPlayer().sendMessage(GameChat.getPreMessage(event.getPlayer()) + fixedMessage);
-                event.getPlayer().sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "No one heard you...");
             }
         }
+    }
+
+    /**
+     * Handles local player chat
+     *
+     * @param event Chat event
+     */
+
+    public void doLocalChat(AsyncPlayerChatEvent event) {
+        if (event.isCancelled()) return;
+        final String finalFixedMessage = event.getMessage();
+
+
+        // HANDLE LOCAL CHAT
+        if (API.getNearbyPlayers(event.getPlayer().getLocation(), 75).size() >= 2) {
+            API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(player -> player.sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage));
+        } else {
+            event.getPlayer().sendMessage(GameChat.getPreMessage(event.getPlayer()) + finalFixedMessage);
+            event.getPlayer().sendMessage(ChatColor.GRAY + ChatColor.ITALIC.toString() + "No one heard you...");
+        }
+        event.setCancelled(true);
     }
 
     public String checkForBannedWords(String message) {
@@ -203,53 +211,6 @@ public class Chat {
         }
 
         return returnMessage;
-    }
-
-
-    public class HoverBuilder {
-
-        public String mainWord;
-        private JsonObject json;
-
-        public HoverBuilder(String word, List<String> hoveredChat) {
-            mainWord = word;
-            json = new JsonObject();
-            for (String text : hoveredChat) {
-                JsonObject data = new JsonObject();
-                data.addProperty("text", text);
-                getExtra().add(data);
-            }
-
-        }
-
-        public HoverBuilder addLine(String text, ChatColor color) {
-            JsonObject data = new JsonObject();
-            data.addProperty("text", text);
-            data.addProperty("color", color.name().toLowerCase());
-            getExtra().add(data);
-            return this;
-        }
-
-        private JsonArray getExtra() {
-            if (!json.has("extra")) json.add("extra", new JsonArray());
-            return (JsonArray) json.get("extra");
-        }
-
-        public HoverBuilder(String hoverableWord) {
-            this.mainWord = hoverableWord;
-            json = new JsonObject();
-            json.add("extra", new JsonArray());
-        }
-
-        public JsonObject build() {
-            return json;
-        }
-
-//        public void sendToPlayer(Player p) {
-//            ((CraftPlayer) p).getHandle().playerConnection.sendPacket(new PacketPlayOutChat(IChatBaseComponent.ChatSerializer.a(json.toString())));
-//        }
-
-
     }
 
 
