@@ -9,6 +9,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
 import net.md_5.bungee.api.connection.ProxiedPlayer;
+import net.md_5.bungee.api.connection.Server;
 import net.md_5.bungee.api.event.ServerConnectEvent;
 import net.md_5.bungee.api.plugin.Listener;
 import net.md_5.bungee.api.plugin.Plugin;
@@ -31,7 +32,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
     private final String[] DR_SHARDS = new String[]{"dr1", "dr2"};
 
-    private List<String> trackedShards = new ArrayList<>();
+    //private Map<String, Long> restartingServers = new HashMap<>();
 
     @Override
     public void onEnable() {
@@ -68,7 +69,8 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
 
             event.getPlayer().sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Finding an available shard for you...");
 
-            optimalShardFinder.forEachRemaining(target -> {
+            while (optimalShardFinder.hasNext()) {
+                ServerInfo target = optimalShardFinder.next();
                 if (target.canAccess(event.getPlayer()) && !(event.getPlayer().getServer() != null && event.getPlayer().getServer().getInfo().equals(target))) {
                     try {
                         event.setTarget(target);
@@ -77,7 +79,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
                             event.getPlayer().disconnect(ChatColor.RED + "Could not find an optimal shard for you.. Please try again later.");
                     }
                 }
-            });
+            }
         }
     }
 
@@ -87,10 +89,9 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
             ProxiedPlayer player = getProxy().getPlayer(uuid);
 
             if (player != null) {
-                for (String s : filters) {
+                for (String s : filters)
                     if (player.getName().equalsIgnoreCase(s))
                         continue loop;
-                }
                 player.sendMessage(message);
             }
         }
