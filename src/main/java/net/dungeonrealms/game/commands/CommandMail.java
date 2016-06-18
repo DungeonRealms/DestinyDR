@@ -1,8 +1,12 @@
 package net.dungeonrealms.game.commands;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.handlers.MailHandler;
+import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
@@ -16,6 +20,7 @@ public class CommandMail extends BasicCommand {
     public CommandMail(String command, String usage, String description) {
         super(command, usage, description);
     }
+
     @Override
     public boolean onCommand(CommandSender s, Command cmd, String string, String[] args) {
         if (s instanceof ConsoleCommandSender) return false;
@@ -26,8 +31,22 @@ public class CommandMail extends BasicCommand {
                 /*if (args[1].equalsIgnoreCase("a")) {
                     Bukkit.getOnlinePlayers().stream().forEach(player1 -> MailHandler.getInstance().sendMail(player, player1.getName(), player.getItemInMainHand()));
                 }*/
-                if (MailHandler.getInstance().sendMail(player, args[1], player.getEquipment().getItemInMainHand())) {
-                    player.setItemInHand(null);
+                if (player.getEquipment().getItemInMainHand() != null && player.getEquipment().getItemInMainHand().getType() != Material.AIR) {
+                    if (BankMechanics.getInstance().getTotalGemsInInventory(player) >= 5) {
+                        if (API.isItemTradeable(player.getEquipment().getItemInMainHand())) {
+                            if (MailHandler.getInstance().sendMail(player, args[1], player.getEquipment().getItemInMainHand())) {
+                                player.getEquipment().setItemInMainHand(null);
+                                BankMechanics.getInstance().takeGemsFromInventory(5, player);
+                            }
+                        } else {
+                            player.sendMessage(ChatColor.RED + "This item cannot be sent via mail.");
+                        }
+                    } else {
+                        player.sendMessage(ChatColor.RED + "There is a " + ChatColor.UNDERLINE + "5 GEM" + ChatColor.RESET + ChatColor.RED + " fee to send mail.");
+                        return true;
+                    }
+                } else {
+                    return true;
                 }
             }
             return true;

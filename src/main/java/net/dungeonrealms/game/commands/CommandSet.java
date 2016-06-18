@@ -9,6 +9,8 @@ import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
+import net.dungeonrealms.game.handlers.ScoreboardHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -59,9 +61,11 @@ public class CommandSet extends BasicCommand {
                             player.sendMessage(ChatColor.RED + "Invalid player level (1 - 100).");
                             break;
                         }
-                        API.getGamePlayer(p).getStats().setPlayerLevel(lvl);
+                        GamePlayer gp = API.getGamePlayer(p);
+                        gp.getStats().setPlayerLevel(lvl);
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, lvl, true);
                         s.sendMessage(p.getName() + " lvl set to " + lvl);
+                        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(p, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
                     }
                     break;
                 case "gems":
