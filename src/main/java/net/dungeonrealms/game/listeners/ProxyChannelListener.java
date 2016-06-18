@@ -44,8 +44,8 @@ public class ProxyChannelListener implements Listener {
             String subChannel = in.readUTF();
 
             // RELAY PACKET //
-            if (subChannel.equals("Update")) for (ServerInfo server : ProxyServer.getInstance().getServers().values())
-                server.sendData("DungeonRealms", event.getData());
+            if (subChannel.equals("Update"))
+                plugin.relayPacket("DungeonRealms", event.getData());
 
             if (subChannel.equals("Guilds")) {
                 String command = in.readUTF();
@@ -62,15 +62,12 @@ public class ProxyChannelListener implements Listener {
                 }
 
                 switch (command) {
-                    case "updateCache": {
-                        plugin.updateGuilds();
-                    }
-
                     case "message": {
                         String guildName = in.readUTF();
                         String message = in.readUTF();
 
                         plugin.sendMessageToGuild(guildName, message);
+                        break;
                     }
                 }
             }

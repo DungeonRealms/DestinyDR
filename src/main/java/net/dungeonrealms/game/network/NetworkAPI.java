@@ -6,6 +6,8 @@ import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.guild.GuildMechanics;
+import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.handlers.MailHandler;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
@@ -58,12 +60,7 @@ public class NetworkAPI implements PluginMessageListener {
         if (channel.equalsIgnoreCase("DungeonRealms")) {
             if (subChannel.equals("Update")) {
                 UUID uuid = UUID.fromString(in.readUTF());
-                if (Bukkit.getPlayer(uuid) != null) {
-                    DatabaseAPI.getInstance().requestPlayer(uuid);
-                    Player player1 = Bukkit.getPlayer(uuid);
-                    GamePlayer gp = API.getGamePlayer(player1);
-                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player1, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
-                }
+                if (Bukkit.getPlayer(uuid) != null) DatabaseAPI.getInstance().requestPlayer(uuid);
             }
         } else {
             switch (subChannel) {

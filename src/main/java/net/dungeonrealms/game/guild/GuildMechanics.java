@@ -5,10 +5,13 @@ import lombok.Setter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.menus.banner.BannerCreatorMenu;
+import net.dungeonrealms.game.mongo.Database;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.network.NetworkAPI;
@@ -69,10 +72,7 @@ public class GuildMechanics {
         String format = ChatColor.DARK_AQUA + "<" + ChatColor.BOLD + tag + ChatColor.DARK_AQUA + "> " + ChatColor.DARK_AQUA;
 
         // Checks if guild still exists
-        GuildDatabaseAPI.get().doesGuildNameExist(guildName, guildExists -> {
-            if (!guildExists)
-                GuildDatabaseAPI.get().setGuild(player.getUniqueId(), "");
-        });
+        checkPlayerGuild(player.getUniqueId());
 
         List<String> filter = new ArrayList<>(Collections.singletonList(player.getName()));
 
@@ -85,7 +85,6 @@ public class GuildMechanics {
         sendAlert(guildName, player.getName() + " has joined shard " + DungeonRealms.getInstance().shardid, filter.toArray(new String[filter.size()]));
         showMotd(player, guildName);
     }
-
 
     public void doChat(AsyncPlayerChatEvent event) {
         if (event.isCancelled()) return;
@@ -112,9 +111,34 @@ public class GuildMechanics {
 
     }
 
-    public void sendUpdateProxyCachePacket() {
-        NetworkAPI.getInstance().sendNetworkMessage("DungeonRealms", "Guilds", "updateCache");
+    /**
+     * Checks if guild still exists
+     * if not player guild will be set to blank.
+     *
+     * @param uuid Target
+     */
+    public void checkPlayerGuild(UUID uuid) {
+        Player player = Bukkit.getPlayer(uuid);
+
+        if (!GuildDatabaseAPI.get().isGuildNull(uuid)) {
+            String guildName = (String) DatabaseAPI.getInstance().getData(EnumData.GUILD, uuid);
+
+            // Checks if guild still exists
+            GuildDatabaseAPI.get().doesGuildNameExist(guildName, guildExists -> {
+                if (!guildExists)
+                    GuildDatabaseAPI.get().setGuild(uuid, "");
+            });
+        }
+
+
+        // UPDATE THEIR BOARD
+        if (player != null) {
+            GamePlayer gp = API.getGamePlayer(player);
+            if (gp != null)
+                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
+        }
     }
+
 
     /**
      * All local messages will be sent to
@@ -254,11 +278,12 @@ public class GuildMechanics {
                 player.sendMessage(ChatColor.GRAY + "To chat with your new guild, use " + ChatColor.BOLD + "/g" + ChatColor.GRAY + " OR " + ChatColor.BOLD + " /g <message>");
                 Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.GUILD_MEMBER);
                 GuildDatabaseAPI.get().addPlayer(guildName, player.getUniqueId());
-                sendUpdateProxyCachePacket();
+                API.updatePlayerData(player.getUniqueId());
 
                 GamePlayer gp = API.getGamePlayer(player);
                 if (gp != null)
                     ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
+
 
                 sendAlert(guildName, player.getName() + ChatColor.GRAY.toString() + " has " +
                         ChatColor.UNDERLINE + "joined" + ChatColor.GRAY + " your guild." + (referrer != null ? " [INVITE: " + ChatColor.ITALIC + referrer + ChatColor.GRAY + "]" : ""));
@@ -280,7 +305,8 @@ public class GuildMechanics {
     public void kickFromGuild(Player kicker, UUID player, String guildName) {
         sendAlert(guildName, kicker.getName() + " has kicked " + DatabaseAPI.getInstance().getOfflineName(player) + " from the guild.");
         GuildDatabaseAPI.get().removeFromGuild(guildName, player);
-        sendUpdateProxyCachePacket();
+
+        API.updatePlayerData(player);
     }
 
     /**
@@ -322,8 +348,10 @@ public class GuildMechanics {
                     // player.sendMessage(ChatColor.RED + "You have " + ChatColor.BOLD + "DISBANDED" + ChatColor.RED + " your guild.");
                     sendAlert(guildName, player.getName() + " has disbanded the guild.");
 
-                    for (UUID uuid : GuildDatabaseAPI.get().getAllOfGuild(guildName))
+                    for (UUID uuid : GuildDatabaseAPI.get().getAllOfGuild(guildName)) {
+                        API.updatePlayerData(uuid);
                         GuildDatabaseAPI.get().removeFromGuild(guildName, uuid);
+                    }
 
                     GuildDatabaseAPI.get().deleteGuild(guildName);
                 }
@@ -338,7 +366,7 @@ public class GuildMechanics {
             if (gp != null)
                 ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
 
-            sendUpdateProxyCachePacket();
+            API.updatePlayerData(player.getUniqueId());
         }, null);
     }
 
@@ -435,6 +463,7 @@ public class GuildMechanics {
                         ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
 
                     player.getInventory().addItem(info.getCurrentBanner());
+                    API.updatePlayerData(player.getUniqueId());
 
                 });
 

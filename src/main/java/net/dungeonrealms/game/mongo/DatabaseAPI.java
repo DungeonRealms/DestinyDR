@@ -2,6 +2,7 @@ package net.dungeonrealms.game.mongo;
 
 import com.mongodb.client.model.Filters;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.mastery.Utils;
 import org.bson.Document;
 
@@ -246,6 +247,8 @@ public class DatabaseAPI {
         } else {
             PLAYERS.put(uuid, doc);
         }
+
+        GuildMechanics.getInstance().checkPlayerGuild(uuid);
         /*Database.collection.find(Filters.eq("info.uuid", uuid.toString())).first((document) -> {
             if (document != null) {
                 Utils.log.info("Fetched information for uuid: " + uuid.toString());

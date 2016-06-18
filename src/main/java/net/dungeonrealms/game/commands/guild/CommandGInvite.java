@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.commands.guild;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
@@ -90,6 +91,8 @@ public class CommandGInvite extends BasicCommand {
             p.sendMessage("");
             p.sendMessage(ChatColor.DARK_AQUA.toString() + ChatColor.BOLD + player.getName() + ChatColor.GRAY + " has invited you to join their guild, " + ChatColor.DARK_AQUA + displayName + ChatColor.GRAY + ". To accept, type " + ChatColor.DARK_AQUA.toString() + "/gaccept" + ChatColor.GRAY + " to decline, type " + ChatColor.DARK_AQUA.toString() + "/gdecline");
             p.sendMessage("");
+        } else {
+            API.updatePlayerData(p_uuid);
         }
 
         return false;

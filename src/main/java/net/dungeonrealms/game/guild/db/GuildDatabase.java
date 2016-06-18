@@ -69,6 +69,7 @@ public class  GuildDatabase implements GuildDatabaseAPI {
 
 
     private Object get(EnumGuildData data, Object value) {
+
         Bson query = Filters.eq(data.getKey(), value);
         return guilds.find(query).first();
     }
