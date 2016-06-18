@@ -247,19 +247,19 @@ public class GamePlayer {
             T.playSound(T.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1F);
 
             T.sendMessage("");
-            T.sendMessage(ChatColor.BOLD + "      ******************************");
-            T.sendMessage(ChatColor.GREEN.toString() + ChatColor.BOLD + "           LEVEL UP");
+            Utils.sendCenteredMessage(T, ChatColor.GRAY.toString() + ChatColor.BOLD + "******************************");
+            Utils.sendCenteredMessage(T, ChatColor.GREEN.toString() + ChatColor.BOLD + "LEVEL UP");
             T.sendMessage("");
-            T.sendMessage(ChatColor.DARK_GRAY + "         You are now level: " + ChatColor.GREEN + ChatColor.BOLD + newLevel);
-            T.sendMessage(ChatColor.DARK_GRAY + "          EXP to next level: " + ChatColor.GREEN + ChatColor.BOLD + getEXPNeeded(newLevel + 1));
-            T.sendMessage(ChatColor.DARK_GRAY + "           Free stat points: " + ChatColor.GREEN + this.getStats().freePoints);
-            T.sendMessage(ChatColor.BOLD + "      ******************************");
+            Utils.sendCenteredMessage(T, ChatColor.GRAY + "You are now level: " + ChatColor.GREEN + ChatColor.BOLD + newLevel);
+            Utils.sendCenteredMessage(T, ChatColor.GRAY + "EXP to next level: " + ChatColor.GREEN + ChatColor.BOLD + getEXPNeeded(newLevel + 1));
+            Utils.sendCenteredMessage(T, ChatColor.GRAY + "Free stat points: " + ChatColor.GREEN + this.getStats().freePoints);
+            Utils.sendCenteredMessage(T, ChatColor.GRAY.toString() + ChatColor.BOLD + "******************************");
             T.sendMessage("");
         }
         else if (levelSet) { // level was set
             getStats().setPlayerLevel(newLevel);
 
-            T.sendMessage("               " + ChatColor.YELLOW + "Your level has been set to: " + newLevel);
+            Utils.sendCenteredMessage(T, ChatColor.YELLOW + "Your level has been set to: " + newLevel);
             T.playSound(T.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
         }
 
