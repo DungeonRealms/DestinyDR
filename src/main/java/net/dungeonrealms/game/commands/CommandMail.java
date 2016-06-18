@@ -28,22 +28,23 @@ public class CommandMail extends BasicCommand {
         Player player = (Player) s;
         if (args.length == 2) {
             if (args[0].equals("send")) {
-                /*if (args[1].equalsIgnoreCase("a")) {
-                    Bukkit.getOnlinePlayers().stream().forEach(player1 -> MailHandler.getInstance().sendMail(player, player1.getName(), player.getItemInMainHand()));
-                }*/
                 if (player.getEquipment().getItemInMainHand() != null && player.getEquipment().getItemInMainHand().getType() != Material.AIR) {
-                    if (BankMechanics.getInstance().getTotalGemsInInventory(player) >= 5) {
-                        if (API.isItemTradeable(player.getEquipment().getItemInMainHand())) {
-                            if (MailHandler.getInstance().sendMail(player, args[1], player.getEquipment().getItemInMainHand())) {
-                                player.getEquipment().setItemInMainHand(null);
-                                BankMechanics.getInstance().takeGemsFromInventory(5, player);
+                    if (!player.getName().equals(args[1])) {
+                        if (BankMechanics.getInstance().getTotalGemsInInventory(player) >= 5) {
+                            if (API.isItemTradeable(player.getEquipment().getItemInMainHand())) {
+                                if (MailHandler.getInstance().sendMail(player, args[1], player.getEquipment().getItemInMainHand())) {
+                                    player.getEquipment().setItemInMainHand(null);
+                                    BankMechanics.getInstance().takeGemsFromInventory(5, player);
+                                }
+                            } else {
+                                player.sendMessage(ChatColor.RED + "This item cannot be sent via mail.");
                             }
                         } else {
-                            player.sendMessage(ChatColor.RED + "This item cannot be sent via mail.");
+                            player.sendMessage(ChatColor.RED + "There is a " + ChatColor.UNDERLINE + "5 GEM" + ChatColor.RESET + ChatColor.RED + " fee to send mail.");
+                            return true;
                         }
                     } else {
-                        player.sendMessage(ChatColor.RED + "There is a " + ChatColor.UNDERLINE + "5 GEM" + ChatColor.RESET + ChatColor.RED + " fee to send mail.");
-                        return true;
+                        player.sendMessage(ChatColor.RED + "You cannot send mail to yourself.");
                     }
                 } else {
                     return true;
