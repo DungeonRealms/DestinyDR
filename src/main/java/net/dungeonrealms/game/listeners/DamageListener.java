@@ -673,63 +673,6 @@ public class DamageListener implements Listener {
     }
 
     /**
-     * Listen for Players [NOT DISPENSERS/MOBS] firing projectiles
-     * Used to apply metadata from the nbt data of the bow in the entities hand
-     *
-     * @param event
-     * @since 1.0
-     */
-    /*@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
-    public void onLivingEntityFireProjectile(ProjectileLaunchEvent event) {
-        if ((!(event.getEntity().getShooter() instanceof Player)) && ((event.getEntityType() != EntityType.ARROW) && (event.getEntityType() != EntityType.SNOWBALL)))
-            return;
-        LivingEntity shooter = (LivingEntity) event.getEntity().getShooter();
-        EntityEquipment entityEquipment = shooter.getEquipment();
-        if (entityEquipment.getEquipment().getItemInMainHand() == null) return;
-        //Check if the item has NBT, all our custom weapons will have NBT.
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(entityEquipment.getItemInMainHand()));
-        if (nmsItem == null || nmsItem.getTag() == null) return;
-        //Get the NBT of the item the player is holding.
-        if (!(shooter instanceof Player)) return;
-        if (API.isInSafeRegion(shooter.getLocation()) && event.getEntity().getType() != EntityType.SPLASH_POTION && event.getEntity().getType() != EntityType.FISHING_HOOK) {
-            event.setCancelled(true);
-            event.getEntity().remove();
-            return;
-        }
-        int weaponTier = nmsItem.getTag().getInt("itemTier");
-        Player player = (Player) shooter;
-        if (Fishing.isDRFishingPole(player.getItemInMainHand())) return;
-        player.updateInventory();
-        if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player.getUniqueId()) <= 0) {
-            event.setCancelled(true);
-            event.getEntity().remove();
-            player.playSound(shooter.getLocation(), Sound.WOLF_PANT, 12F, 1.5F);
-            try {
-                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.CRIT, event.getEntity().getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 0.75F, 40);
-            } catch (Exception ex) {
-                ex.printStackTrace();
-            }
-            return;
-        }
-
-    }*/
-    /*@EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = false)
-    public void onPlayerFireBow(EntityShootBowEvent event) {
-        if (event.getEntity().getType() != EntityType.PLAYER) return;
-        Player player = (Player) event.getEntity();
-        if (player.getExp() <= 0 || EnergyHandler.getPlayerCurrentEnergy(player) <= 0) {
-            event.setCancelled(true);
-            return;
-        }
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(player.getEquipment().getItemInMainHand()));
-        if (nmsItem == null || nmsItem.getTag() == null) return;
-        float energyCost = EnergyHandler.getWeaponSwingEnergyCost(player.getEquipment().getItemInMainHand());
-        int weaponTier = nmsItem.getTag().getInt("itemTier");
-        EnergyHandler.removeEnergyFromPlayerAndUpdate(player.getUniqueId(), energyCost);
-        MetadataUtils.registerProjectileMetadata(nmsItem.getTag(), (Projectile) event.getProjectile(), weaponTier);
-    }*/
-
-    /**
      * Listen for Pets Damage.
      * <p>
      * E.g. I can't attack Xwaffle's Wolf it's a pet!
