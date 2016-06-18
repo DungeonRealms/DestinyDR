@@ -242,7 +242,7 @@ public class BankListener implements Listener {
                                 net.minecraft.server.v1_9_R2.ItemStack nmsBank = CraftItemStack.asNMSCopy(bankItem);
                                 nmsBank.getTag().setString("type", "bank");
                                 e.getInventory().setItem(8, CraftItemStack.asBukkitCopy(nmsBank));
-                                player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT, 1, 1);
+                                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
                             }
                         } else {
                             Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
@@ -320,11 +320,10 @@ public class BankListener implements Listener {
                     }
                 } else {
                     if (e.isShiftClick()) {
-                        if (!BankMechanics.getInstance().isBankNote(e.getCurrentItem()) && !BankMechanics.getInstance().isGem(e.getCurrentItem()) && !BankMechanics.getInstance().isGem(e.getCurrentItem())) {
+                        if (!BankMechanics.getInstance().isBankNote(e.getCurrentItem()) && !BankMechanics.getInstance().isGem(e.getCurrentItem()) && !BankMechanics.getInstance().isGemPouch(e.getCurrentItem())) {
                             Storage storage = BankMechanics.getInstance().getStorage(e.getWhoClicked().getUniqueId());
                             if (storage.hasSpace()) {
-                                storage.inv.addItem(e.getCursor());
-                                e.setCursor(null);
+                                storage.inv.addItem(e.getCurrentItem());
                                 e.setCurrentItem(null);
                                 player.sendMessage(ChatColor.GREEN + "Item added to storage!");
 
@@ -368,7 +367,7 @@ public class BankListener implements Listener {
                             net.minecraft.server.v1_9_R2.ItemStack nmsBank = CraftItemStack.asNMSCopy(bankItem);
                             nmsBank.getTag().setString("type", "bank");
                             e.getInventory().setItem(8, CraftItemStack.asBukkitCopy(nmsBank));
-                            player.playSound(player.getLocation(), Sound.ENTITY_ARROW_HIT, 1, 1);
+                            player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1, 1);
                         }
                     }
                 }
@@ -532,6 +531,23 @@ public class BankListener implements Listener {
                     e.setCurrentItem(new ItemStack(Material.AIR));
                     e.getWhoClicked().getInventory().addItem(stack);
                 }
+            }
+        } else if (e.getInventory().getTitle().equalsIgnoreCase("container.crafting")) {
+            if (e.getClick() != ClickType.RIGHT)
+                return;
+            if (e.getCurrentItem() != null && BankMechanics.getInstance().isGemPouch(e.getCurrentItem()) && e.getCursor() == null || e.getCursor().getType() == Material.AIR) {
+                e.setCancelled(true);
+                int pouchGems = BankMechanics.getInstance().getPouchAmount(e.getCurrentItem());
+                if (pouchGems <= 64) {
+                    e.setCursor(BankMechanics.createGems(pouchGems));
+                    e.setCurrentItem(BankMechanics.getInstance().makeNewPouch(e.getCurrentItem(), 0));
+
+                    return;
+                } else {
+                    e.setCursor(BankMechanics.createGems(64));
+                    e.setCurrentItem(BankMechanics.getInstance().makeNewPouch(e.getCurrentItem(), pouchGems - 64));
+                }
+                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
             }
         }
     }

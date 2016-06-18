@@ -391,16 +391,27 @@ public class BankMechanics implements GenericMechanic {
 
     public boolean isGem(ItemStack cursor) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(cursor);
-        return cursor.getType() == Material.EMERALD  &&
+        return cursor.getType() == Material.EMERALD &&
                 nms.getTag() != null && nms.getTag().hasKey("type") &&
                 nms.getTag().getString("type").equalsIgnoreCase("money");
     }
 
     public boolean isGemPouch(ItemStack cursor) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(cursor);
-        return cursor.getType() == Material.INK_SACK  &&
+        return cursor.getType() == Material.INK_SACK &&
                 nms.getTag() != null && nms.getTag().hasKey("type") &&
                 nms.getTag().getString("type").equalsIgnoreCase("money");
+
+    }
+
+    public int getPouchAmount(ItemStack currentItem) {
+        return CraftItemStack.asNMSCopy(currentItem).getTag().getInt("worth");
+
+    }
+
+    public ItemStack makeNewPouch(ItemStack currentItem, int number) {
+        int tier = CraftItemStack.asNMSCopy(currentItem).getTag().getInt("tier");
+        return createGemPouch(tier, number);
 
     }
 }
