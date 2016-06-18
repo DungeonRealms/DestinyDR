@@ -12,7 +12,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -60,10 +64,18 @@ public class CommandLocalChat extends BasicCommand {
             if (split.length > 1)
                 after = split[1];
 
+            ItemStack stack = player.getItemInHand();
+
+            List<String> hoveredChat = new ArrayList<>();
+            ItemMeta meta = stack.getItemMeta();
+            hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : stack.getType().name()));
+            if (meta.hasLore())
+                hoveredChat.addAll(meta.getLore());
             final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
             normal.addText(before + "");
-            normal.addItem(player.getEquipment().getItemInMainHand(), ChatColor.WHITE + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + "SHOW" + ChatColor.WHITE);
+            normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
             normal.addText(after);
+
             Bukkit.getOnlinePlayers().stream().forEach(normal::sendToPlayer);
             return true;
         }

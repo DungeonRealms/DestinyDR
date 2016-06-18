@@ -122,7 +122,7 @@ public class Chat {
                     hoveredChat.addAll(meta.getLore());
                 final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
                 normal.addText(before + "");
-                normal.addHoverText(hoveredChat, "SHOW");
+                normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
                 normal.addText(after);
 
                 Bukkit.getOnlinePlayers().stream().forEach(player -> normal.sendToPlayer(player));
@@ -153,7 +153,7 @@ public class Chat {
                     hoveredChat.addAll(meta.getLore());
                 final JSONMessage normal = new JSONMessage(ChatColor.WHITE + aprefix, ChatColor.WHITE);
                 normal.addText(before + "");
-                normal.addHoverText(hoveredChat, "SHOW");
+                normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
                 normal.addText(after);
 
                 API.getNearbyPlayers(event.getPlayer().getLocation(), 75).stream().forEach(normal::sendToPlayer);
