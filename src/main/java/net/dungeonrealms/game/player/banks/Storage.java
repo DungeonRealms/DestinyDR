@@ -76,4 +76,12 @@ public class Storage {
         inventory.setContents(inv.getContents());
         this.inv = inventory;
     }
+
+    public boolean hasSpace() {
+        for (ItemStack stack : inv.getContents()) {
+            if (stack == null || stack.getType() == Material.AIR)
+                return true;
+        }
+        return false;
+    }
 }
