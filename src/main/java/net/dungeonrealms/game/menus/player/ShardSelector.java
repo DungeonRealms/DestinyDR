@@ -5,6 +5,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.gui.GUIButtonClickEvent;
 import net.dungeonrealms.game.gui.item.GUIButton;
+import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.menus.AbstractMenu;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -62,6 +63,7 @@ public class ShardSelector extends AbstractMenu {
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true);
                     API.handleLogout(player.getUniqueId());
                     DungeonRealms.getInstance().getLoggingOut().add(player.getName());
+                    DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
                             () -> {

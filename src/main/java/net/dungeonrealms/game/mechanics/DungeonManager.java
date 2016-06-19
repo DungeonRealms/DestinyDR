@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.mechanics;
 
 import com.connorlinfoot.bountifulapi.BountifulAPI;
+import lombok.Getter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
@@ -45,6 +46,8 @@ public class DungeonManager implements GenericMechanic {
 
     private CopyOnWriteArrayList<DungeonObject> Dungeons = new CopyOnWriteArrayList<>();
     public static volatile ConcurrentHashMap<String, HashMap<Location, String>> instance_mob_spawns = new ConcurrentHashMap<>();
+    @Getter
+    private Map<String, Integer> players_Entering_Dungeon = new HashMap<>();
 
     public DungeonObject getDungeon(World world) {
         for (DungeonObject dungeon : Dungeons) {
@@ -67,6 +70,15 @@ public class DungeonManager implements GenericMechanic {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            for (Map.Entry<String, Integer> entry : players_Entering_Dungeon.entrySet()) {
+                if (entry.getValue() > 1) {
+                    players_Entering_Dungeon.put(entry.getKey(), (entry.getValue() - 1));
+                } else {
+                    players_Entering_Dungeon.remove(entry.getKey());
+                }
+            }
+        }, 100L ,20L);
 
         Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeon -> dungeon.aliveMonsters.stream().forEach(mob -> {
             if (mob != null) {
