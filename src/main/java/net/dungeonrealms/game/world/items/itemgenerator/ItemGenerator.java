@@ -410,7 +410,7 @@ public class ItemGenerator {
         
         tag.set("itemType", new NBTTagInt(type.getId()));
         tag.set("itemRarity", new NBTTagInt(rarity.getId()));
-        tag.set("bound", new NBTTagInt(isSoulbound ? 1 : 0));
+        tag.set("soulbound", new NBTTagInt(isSoulbound ? 1 : 0));
         tag.set("untradeable", new NBTTagInt(isUntradeable ? 1 : 0));
         tag.set("puntradeable", new NBTTagInt(isPermanentlyUntradeable ? 1 : 0));
         tag.set("itemTier", new NBTTagInt(tier.getTierId()));
@@ -665,7 +665,7 @@ public class ItemGenerator {
         
         tag.set("itemType", new NBTTagInt(ItemType.getTypeFromMaterial(is.getType()).getId()));
         tag.set("itemRarity", new NBTTagInt(rarity.getId()));
-        tag.set("bound", new NBTTagInt(isSoulbound ? 1 : 0));
+        tag.set("soulbound", new NBTTagInt(isSoulbound ? 1 : 0));
         tag.set("untradeable", new NBTTagInt(isUntradeable ? 1 : 0));
         tag.set("puntradeable", new NBTTagInt(isPermanentlyUntradeable ? 1 : 0));
 

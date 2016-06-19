@@ -1,19 +1,11 @@
 package net.dungeonrealms.game.mechanics;
 
 import net.dungeonrealms.API;
-import net.dungeonrealms.game.mastery.Utils;
-import net.dungeonrealms.game.miscellaneous.ItemBuilder;
-import net.dungeonrealms.game.player.inventory.PlayerMenus;
-import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
-import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
-import net.dungeonrealms.game.world.items.EnumItem;
-import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
-import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
@@ -26,6 +18,7 @@ import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
@@ -950,13 +943,13 @@ public class ItemManager {
         if (im.hasLore()) {
             lore = im.getLore();
         }
-        lore.add(ChatColor.DARK_RED.toString() + ChatColor.ITALIC.toString() + "Soulbound");
+        lore.add(ChatColor.DARK_RED.toString() + ChatColor.ITALIC + "Soulbound");
         im.setLore(lore);
         is.setItemMeta(im);
         net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(is);
         if (nmsItem == null || nmsItem.getTag() == null) return is;
         NBTTagCompound nbtTagCompound = nmsItem.getTag();
-        nbtTagCompound.setBoolean("soulbound", true);
+        nbtTagCompound.setInt("soulbound", 1);
         nmsItem.setTag(nbtTagCompound);
 
         return CraftItemStack.asBukkitCopy(nmsItem);
