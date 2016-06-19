@@ -76,7 +76,7 @@ public class CommandLocalChat extends BasicCommand {
             normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
             normal.addText(after);
 
-            Bukkit.getOnlinePlayers().stream().forEach(normal::sendToPlayer);
+            API.getNearbyPlayers(player.getLocation(), 75).stream().forEach(normal::sendToPlayer);
             return true;
         }
 

@@ -416,4 +416,8 @@ public class BankMechanics implements GenericMechanic {
         return createGemPouch(tier, number);
 
     }
+
+    public void upgradeStorage(UUID uniqueId) {
+        storage.get(uniqueId).upgrade();
+    }
 }

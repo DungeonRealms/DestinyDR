@@ -41,7 +41,46 @@ public class BankListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEnderChestRightClick(PlayerInteractEvent e) {
-        if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
+        if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getPlayer().isSneaking()) {
+
+            Player p = e.getPlayer();
+
+            int storage_lvl = (Integer) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, p.getUniqueId());
+
+            int upgrade_cost = BankMechanics.getPrice(storage_lvl + 1);
+
+            p.sendMessage("");
+            p.sendMessage(ChatColor.DARK_GRAY + "           *** " + ChatColor.GREEN + ChatColor.BOLD + "Bank Upgrade Confirmation" + ChatColor.DARK_GRAY + " ***");
+            p.sendMessage(ChatColor.DARK_GRAY + "           CURRENT Slots: " + ChatColor.GREEN + storage_lvl * 9 + ChatColor.DARK_GRAY + "          NEW Slots: " + ChatColor.GREEN + (storage_lvl + 1) * 9);
+            p.sendMessage(ChatColor.DARK_GRAY + "                  Upgrade Cost: " + ChatColor.GREEN + "" + upgrade_cost + " Gem(s)");
+            p.sendMessage("");
+            p.sendMessage(ChatColor.GREEN + "Enter '" + ChatColor.BOLD + "confirm" + ChatColor.GREEN + "' to confirm your upgrade.");
+            p.sendMessage("");
+            p.sendMessage("" + ChatColor.RED + ChatColor.BOLD + "WARNING:" + ChatColor.RED + " Bank upgrades are " + ChatColor.BOLD + ChatColor.RED + "NOT" + ChatColor.RED + " reversible or refundable. Type 'cancel' to void this upgrade request.");
+            p.sendMessage("");
+
+            Chat.listenForMessage(p, event -> {
+                if (event.getMessage().equalsIgnoreCase("confirm")) {
+                    boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(upgrade_cost, p);
+                    if (tookGems) {
+                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, (storage_lvl + 1), true);
+                        p.sendMessage("");
+                        p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "*** BANK UPGRADE TO LEVEL " + (storage_lvl + 1) + " COMPLETE ***");
+                        p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1.25F);
+                        p.closeInventory();
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> BankMechanics.getInstance().getStorage(p.getUniqueId()).update(), 20L);
+                    } else {
+                        p.closeInventory();
+                        p.sendMessage(ChatColor.RED + "You do not have enough gems to purchase this upgrade. Upgrade cancelled.");
+                        p.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: " + ChatColor.RED + upgrade_cost);
+                    }
+                } else {
+                    p.sendMessage(ChatColor.RED + "Bank Upgrade Cancelled");
+                }
+            }, null);
+
+
+        } else if (e.getAction() == Action.RIGHT_CLICK_BLOCK) {
             if (e.getClickedBlock().getType() == Material.ENDER_CHEST) {
                 e.setCancelled(true);
                 e.getPlayer().openInventory(getBank(e.getPlayer().getUniqueId()));
@@ -284,26 +323,44 @@ public class BankListener implements Listener {
                         if (e.isLeftClick()) {
                             // Open Storage
                             player.openInventory(storage.inv);
-                        } else if (e.isRightClick()) {
-                            Inventory inv = Bukkit.createInventory(null, 9, "Upgrade your storage?");
-                            int invLvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
-                            int num = BankMechanics.getPrice(invLvl);
-                            ItemStack accept = new ItemStack(Material.WOOL, 1, DyeColor.LIME.getData());
-                            ItemMeta acceptMeta = accept.getItemMeta();
-                            acceptMeta.setDisplayName(ChatColor.GREEN.toString() + ChatColor.BOLD + "ACCEPT");
-                            acceptMeta.setLore(Collections.singletonList(ChatColor.GRAY + "Upgrade storage: " + ChatColor.GREEN.toString() + num + "g"));
-                            accept.setItemMeta(acceptMeta);
+                        } else if (e.getClick() == ClickType.MIDDLE) {
+                            Player p = (Player) e.getWhoClicked();
 
+                            int storage_lvl = (Integer) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, p.getUniqueId());
 
-                            ItemStack deny = new ItemStack(Material.WOOL, 1, DyeColor.RED.getData());
-                            ItemMeta denyMeta = deny.getItemMeta();
-                            denyMeta.setDisplayName(ChatColor.RED.toString() + ChatColor.BOLD + "DENY");
-                            denyMeta.setLore(Collections.singletonList(ChatColor.GRAY + "Cancel upgrade"));
-                            deny.setItemMeta(denyMeta);
+                            int upgrade_cost = BankMechanics.getPrice(storage_lvl + 1);
 
-                            inv.setItem(3, accept);
-                            inv.setItem(5, deny);
-                            player.openInventory(inv);
+                            p.sendMessage("");
+                            p.sendMessage(ChatColor.DARK_GRAY + "           *** " + ChatColor.GREEN + ChatColor.BOLD + "Bank Upgrade Confirmation" + ChatColor.DARK_GRAY + " ***");
+                            p.sendMessage(ChatColor.DARK_GRAY + "           CURRENT Slots: " + ChatColor.GREEN + storage_lvl * 9 + ChatColor.DARK_GRAY + "          NEW Slots: " + ChatColor.GREEN + (storage_lvl + 1) * 9);
+                            p.sendMessage(ChatColor.DARK_GRAY + "                  Upgrade Cost: " + ChatColor.GREEN + "" + upgrade_cost + " Gem(s)");
+                            p.sendMessage("");
+                            p.sendMessage(ChatColor.GREEN + "Enter '" + ChatColor.BOLD + "confirm" + ChatColor.GREEN + "' to confirm your upgrade.");
+                            p.sendMessage("");
+                            p.sendMessage("" + ChatColor.RED + ChatColor.BOLD + "WARNING:" + ChatColor.RED + " Bank upgrades are " + ChatColor.BOLD + ChatColor.RED + "NOT" + ChatColor.RED + " reversible or refundable. Type 'cancel' to void this upgrade request.");
+                            p.sendMessage("");
+
+                            Chat.listenForMessage(p, event -> {
+                                if (event.getMessage().equalsIgnoreCase("confirm")) {
+                                    boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(upgrade_cost, p);
+                                    if (tookGems) {
+                                        DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, (storage_lvl + 1), true);
+                                        p.sendMessage("");
+                                        p.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "*** BANK UPGRADE TO LEVEL " + (storage_lvl + 1) + " COMPLETE ***");
+                                        p.playSound(p.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1.25F);
+                                        p.closeInventory();
+                                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> BankMechanics.getInstance().getStorage(p.getUniqueId()).update(), 20L);
+                                    } else {
+                                        p.closeInventory();
+                                        p.sendMessage(ChatColor.RED + "You do not have enough gems to purchase this upgrade. Upgrade cancelled.");
+                                        p.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: " + ChatColor.RED + upgrade_cost);
+                                    }
+                                } else {
+                                    p.sendMessage(ChatColor.RED + "Bank Upgrade Cancelled");
+                                }
+                            }, null);
+
+                            p.closeInventory();
 
                             // Upgrade Storage
                         }
@@ -492,31 +549,6 @@ public class BankListener implements Listener {
                     }
                 }
             }
-        } else if (e.getInventory().getTitle().contains("Upgrade your storage?")) {
-            e.setCancelled(true);
-            int invLvl = (int) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_LEVEL, player.getUniqueId());
-            if (invLvl > 6) {
-                player.closeInventory();
-                player.sendMessage(ChatColor.RED + "Cannot increase storage size!");
-                return;
-            }
-            int num = BankMechanics.getPrice(invLvl);
-            int slot = e.getRawSlot();
-            if (slot == 3) {
-                boolean tookGems = BankMechanics.getInstance().takeGemsFromInventory(num, player);
-                if (tookGems) {
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.INVENTORY_LEVEL, invLvl + 1, true);
-                    player.sendMessage("");
-                    player.sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "*** BANK UPGRADE TO LEVEL " + invLvl + " COMPLETE ***");
-                    player.playSound(player.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 1F, 1.25F);
-                    player.closeInventory();
-                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> BankMechanics.getInstance().getStorage(player.getUniqueId()).update(), 20L);
-                } else {
-                    player.closeInventory();
-                    player.sendMessage(ChatColor.RED + "You do not have enough gems to purchase this upgrade. Upgrade cancelled.");
-                    player.sendMessage(ChatColor.RED + "" + ChatColor.BOLD + "COST: " + ChatColor.RED + num + ChatColor.BOLD + "G");
-                }
-            }
         } else if (e.getInventory().getTitle().equalsIgnoreCase("Collection Bin")) {
             if (e.isShiftClick()) {
                 e.setCancelled(true);
@@ -533,19 +565,78 @@ public class BankListener implements Listener {
                 }
             }
         } else if (e.getInventory().getTitle().equalsIgnoreCase("container.crafting")) {
-            if (e.getClick() != ClickType.RIGHT)
-                return;
-            if (e.getCurrentItem() != null && BankMechanics.getInstance().isGemPouch(e.getCurrentItem()) && e.getCursor() == null || e.getCursor().getType() == Material.AIR) {
-                e.setCancelled(true);
-                int pouchGems = BankMechanics.getInstance().getPouchAmount(e.getCurrentItem());
-                if (pouchGems <= 64) {
-                    e.setCursor(BankMechanics.createGems(pouchGems));
-                    e.setCurrentItem(BankMechanics.getInstance().makeNewPouch(e.getCurrentItem(), 0));
-                } else {
-                    e.setCursor(BankMechanics.createGems(64));
-                    e.setCurrentItem(BankMechanics.getInstance().makeNewPouch(e.getCurrentItem(), pouchGems - 64));
+
+            if (e.getCurrentItem() != null && e.getCurrentItem().getType() != Material.AIR && e.getCursor() != null && e.getCursor().getType() != Material.AIR) {
+                if (BankMechanics.getInstance().isBankNote(e.getCurrentItem()) && BankMechanics.getInstance().isBankNote(e.getCursor())) {
+                    int note1Worth = BankMechanics.getInstance().getNoteValue(e.getCurrentItem());
+                    int note2Worth = BankMechanics.getInstance().getNoteValue(e.getCursor());
+                    int worth = note1Worth + note2Worth;
+                    e.setCursor(null);
+                    e.setCurrentItem(BankMechanics.createBankNote(worth));
+                    player.sendMessage(ChatColor.GRAY + "You have combined bank notes " + ChatColor.ITALIC + note1Worth + "G + " + note2Worth + "G " + ChatColor.GRAY + "with the value of " + ChatColor.BOLD + worth + "G");
                 }
-                player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+            }
+
+
+            if (!e.isRightClick())
+                return;
+            if (e.getCurrentItem() != null && BankMechanics.getInstance().isGemPouch(e.getCurrentItem()))
+
+                if ((e.getCursor() == null || e.getCursor().getType() == Material.AIR)) {
+                    e.setCancelled(true);
+                    int pouchGems = BankMechanics.getInstance().getPouchAmount(e.getCurrentItem());
+                    if (pouchGems <= 64) {
+                        e.setCursor(BankMechanics.createGems(pouchGems));
+                        e.setCurrentItem(BankMechanics.getInstance().makeNewPouch(e.getCurrentItem(), 0));
+                    } else {
+                        e.setCursor(BankMechanics.createGems(64));
+                        e.setCurrentItem(BankMechanics.getInstance().makeNewPouch(e.getCurrentItem(), pouchGems - 64));
+                    }
+                    player.playSound(player.getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1F, 1F);
+                }
+        }
+    }
+
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void splitBankNote(PlayerInteractEvent interactEvent) {
+        Player player = interactEvent.getPlayer();
+        if (interactEvent.getAction() == Action.LEFT_CLICK_BLOCK || interactEvent.getAction() == Action.LEFT_CLICK_AIR) {
+            if (interactEvent.getPlayer().getItemInHand() != null && BankMechanics.getInstance().isBankNote(interactEvent.getPlayer().getItemInHand())) {
+                int noteWorth = BankMechanics.getInstance().getNoteValue(player.getItemInHand());
+                player.sendMessage(ChatColor.GRAY + "This bank note is worth " + ChatColor.GREEN + noteWorth + " Gems." + ChatColor.GRAY + " Please enter the amount");
+                player.sendMessage(ChatColor.GRAY + "you'd like to sign an additional bank note for. Alternatively,");
+                player.sendMessage(ChatColor.GRAY + "type" + ChatColor.RED + " 'cancel' " + ChatColor.GRAY + "to stop this operation.");
+
+                Chat.listenForMessage(player, event -> {
+                    if (event.getMessage().equalsIgnoreCase("cancel") || event.getMessage().equalsIgnoreCase("c")) {
+                        player.sendMessage(ChatColor.RED + "Bank Note Split - " + ChatColor.BOLD + "CANCELLED");
+                        return;
+                    }
+                    int number = 0;
+                    try {
+                        number = Integer.parseInt(event.getMessage());
+                    } catch (Exception exc) {
+                        player.sendMessage(ChatColor.RED + "Please enter a valid number");
+                        return;
+                    }
+                    if (number <= 0) {
+                        player.sendMessage(ChatColor.RED + "You must enter a POSITIVE amount.");
+                    } else if (number > noteWorth) {
+                        player.sendMessage(ChatColor.GRAY + "You cannot split a note more than what it's worth.");
+                    } else {
+                        if (hasSpaceInInventory(player.getUniqueId(), number)) {
+
+                            if (number == noteWorth)
+                                return;
+
+                            int newValue = noteWorth - number;
+                            player.setItemInHand(BankMechanics.createBankNote(newValue));
+                            player.getInventory().addItem(BankMechanics.createBankNote(number));
+                        }
+                    }
+                }, p -> p.sendMessage(ChatColor.RED + "Bank Note Split - " + ChatColor.BOLD + "CANCELLED"));
+
             }
         }
     }
@@ -623,7 +714,7 @@ public class BankListener implements Listener {
         storagetMeta.setDisplayName(ChatColor.AQUA.toString() + ChatColor.BOLD + "STORAGE");
         ArrayList<String> storelore = new ArrayList<>();
         storelore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to open " + ChatColor.GREEN.toString() + ChatColor.BOLD + "STORAGE");
-        storelore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to " + ChatColor.GREEN.toString() + ChatColor.BOLD + "UPGRADE BANK");
+        storelore.add(ChatColor.GREEN + "Middle Click " + ChatColor.GRAY + "to " + ChatColor.GREEN.toString() + ChatColor.BOLD + "UPGRADE BANK");
         storagetMeta.setLore(storelore);
         storage.setItemMeta(storagetMeta);
         net.minecraft.server.v1_9_R2.ItemStack storagenms = CraftItemStack.asNMSCopy(storage);
@@ -631,10 +722,12 @@ public class BankListener implements Listener {
         inv.setItem(0, CraftItemStack.asBukkitCopy(storagenms));
 
         ItemMeta meta = bankItem.getItemMeta();
-        meta.setDisplayName(getPlayerGems(uuid) + ChatColor.BOLD.toString() + ChatColor.GREEN + " GEM(s)");
+        meta.setDisplayName(ChatColor.GREEN + String.valueOf(getPlayerGems(uuid)) + ChatColor.GREEN + ChatColor.BOLD.toString() + " GEM(s)");
         ArrayList<String> lore = new ArrayList<>();
         lore.add(ChatColor.GREEN + "Left Click " + ChatColor.GRAY + "to withdraw " + ChatColor.GREEN.toString() + ChatColor.BOLD + "RAW GEMS");
         lore.add(ChatColor.GREEN + "Right Click " + ChatColor.GRAY + "to create " + ChatColor.GREEN.toString() + ChatColor.BOLD + "A GEM NOTE");
+        lore.add(ChatColor.GREEN + "Middle Click " + ChatColor.GRAY + "to upgrade your bank size.");
+
         meta.setLore(lore);
         bankItem.setItemMeta(meta);
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(bankItem);
