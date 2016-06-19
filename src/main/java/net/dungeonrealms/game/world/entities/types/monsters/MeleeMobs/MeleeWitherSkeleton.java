@@ -10,9 +10,7 @@ import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.util.Random;
@@ -64,11 +62,6 @@ public class MeleeWitherSkeleton extends DRWitherSkeleton {
                 .setTier(Item.ItemTier.getByTier(tier)).generateItem().getItem();
         AntiCheat.getInstance().applyAntiDupe(item);
         return item;
-    }
-
-    @Override
-    public void checkItemDrop(int tier, EnumMonster monster, Entity ent, Player killer) {
-
     }
 
     @Override

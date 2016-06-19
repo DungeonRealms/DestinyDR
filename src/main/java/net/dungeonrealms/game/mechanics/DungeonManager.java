@@ -97,23 +97,37 @@ public class DungeonManager implements GenericMechanic {
             }
 
             switch (time) {
-                // 46 minutes
-                case 2760:
+                // 2h 10 minutes
+                case 7500:
                     removeInstance(dungeonObject);
                     break;
-                // 45 minutes
-                case 2700:
+                // 2h
+                case 7200:
                     dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE
                             + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " "
                             + ChatColor.RED
-                            + "This instance has reached it's max threshold, it will now terminate in (1) minute."));
+                            + "This instance has reached it's max threshold, it will now terminate in (10) minutes."));
                     break;
-                // 35 minutes
-                case 2100:
+                // 1h30 minutes
+                case 5400:
                     dungeonObject.getPlayerList().stream()
                             .forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
                                     + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
-                                    + "This instance has reached (35) minute marker!"));
+                                    + "This instance has reached (90) minute marker!"));
+                    break;
+                // 1h
+                case 3600:
+                    dungeonObject.getPlayerList().stream()
+                            .forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
+                                    + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
+                                    + "This instance has reached (60) minute marker!"));
+                    break;
+                // 30 minutes
+                case 1800:
+                    dungeonObject.getPlayerList().stream()
+                            .forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
+                                    + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
+                                    + "This instance has reached (30) minute marker!"));
                     break;
                 // 15 minutes
                 case 900:

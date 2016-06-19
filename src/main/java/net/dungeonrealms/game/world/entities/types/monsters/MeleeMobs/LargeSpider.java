@@ -6,9 +6,7 @@ import net.dungeonrealms.game.world.entities.types.monsters.base.DRSpider;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
-import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.entity.Player;
 
 /**
  * Created by Kieran Quigley (Proxying) on 14-Jun-16.
@@ -34,10 +32,6 @@ public class LargeSpider extends DRSpider {
         }
     }
 
-    @Override
-    public void checkItemDrop(int tier, EnumMonster monster, Entity ent, Player killer) {
-
-    }
 
     @Override
     public EnumMonster getEnum() {
