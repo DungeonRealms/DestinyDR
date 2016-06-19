@@ -1,26 +1,18 @@
 package net.dungeonrealms.game.network;
 
 import com.google.common.collect.Iterables;
-import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.guild.GuildMechanics;
-import net.dungeonrealms.game.guild.db.GuildDatabase;
-import net.dungeonrealms.game.handlers.MailHandler;
-import net.dungeonrealms.game.handlers.ScoreboardHandler;
-import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.mongo.EnumOperators;
-import net.dungeonrealms.game.world.shops.ShopMechanics;
+import net.dungeonrealms.game.network.bungeecord.BungeeServerInfo;
+import net.dungeonrealms.game.network.bungeecord.BungeeServerTracker;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.messaging.PluginMessageListener;
 
+import java.io.*;
 import java.util.UUID;
 
 /**
@@ -46,49 +38,65 @@ public class NetworkAPI implements PluginMessageListener {
         Bukkit.getMessenger().registerOutgoingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms");
         Bukkit.getMessenger().registerIncomingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms", this);
 
-
+        BungeeServerTracker.startTask(3);
         Utils.log.info("[NetworkAPI] Finished Registering Outbound/Inbound BungeeCord channels ... OKAY!");
     }
 
-    //TODO: Make a network message to update guilds across entire network if an even should occur.
     @Override
     public void onPluginMessageReceived(String channel, Player player, byte[] message) {
         if (!channel.equalsIgnoreCase("BungeeCord") && !channel.equalsIgnoreCase("DungeonRealms")) return;
-        ByteArrayDataInput in = ByteStreams.newDataInput(message);
-        String subChannel = in.readUTF();
 
-        if (channel.equalsIgnoreCase("DungeonRealms")) {
-            if (subChannel.equals("Update")) {
-                UUID uuid = UUID.fromString(in.readUTF());
-                if (Bukkit.getPlayer(uuid) != null) DatabaseAPI.getInstance().requestPlayer(uuid);
+        DataInputStream in = new DataInputStream(new ByteArrayInputStream(message));
+        try {
+            String subChannel = in.readUTF();
+
+            if (channel.equalsIgnoreCase("DungeonRealms")) {
+                if (subChannel.equals("Update")) {
+                    UUID uuid = UUID.fromString(in.readUTF());
+                    if (Bukkit.getPlayer(uuid) != null) DatabaseAPI.getInstance().requestPlayer(uuid);
+                }
+            } else {
+                try {
+                    if (subChannel.equals("PlayerCount")) {
+                        String server = in.readUTF();
+
+                        if (in.available() > 0) {
+                            int online = in.readInt();
+
+                            BungeeServerInfo serverInfo = BungeeServerTracker.getOrCreateServerInfo(server);
+                            serverInfo.setOnlinePlayers(online);
+                        }
+                    }
+
+                } catch (EOFException e) {
+                    // Do nothing.
+                } catch (IOException e) {
+                    // This should never happen.
+                    e.printStackTrace();
+                }
             }
-        } else {
-            switch (subChannel) {
-                case "mail":
-                    if (in.readUTF().equals("update")) {
-                        Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> {
-                            DatabaseAPI.getInstance().requestPlayer(p.getUniqueId());
-                            MailHandler.getInstance().sendMailMessage(p, ChatColor.GREEN + "You got mail!");
-                        });
-                    }
-                    break;
-                case "player":
-                    if (in.readUTF().equals("update")) {
-                        Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> DatabaseAPI.getInstance().requestPlayer(p.getUniqueId()));
-                    }
-                    break;
-                case "shop":
-                    if (in.readUTF().equalsIgnoreCase("close")) {
-                        Bukkit.getOnlinePlayers().stream().filter(p -> p.getName().equals(in.readUTF())).forEach(p -> {
-                            if (ShopMechanics.getShop(p.getName()) != null) {
-                                ShopMechanics.getShop(p.getName()).deleteShop(false);
-                            }
-                            DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.HASSHOP, false, true);
-                        });
-                    }
-                default:
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+    }
+
+    public void askPlayerCount(String server) {
+        ByteArrayOutputStream b = new ByteArrayOutputStream();
+        DataOutputStream out = new DataOutputStream(b);
+
+        try {
+            out.writeUTF("PlayerCount");
+            out.writeUTF(server);
+        } catch (IOException e) {
+            // It should not happen.
+            e.printStackTrace();
+            System.out.println("I/O Exception while asking for player count on server '" + server + "'.");
+        }
+
+        // OR, if you don't need to send it to a specific player
+
+        if (Bukkit.getOnlinePlayers().size() > 0)
+            ((Player) Bukkit.getOnlinePlayers().toArray()[0]).sendPluginMessage(DungeonRealms.getInstance(), "BungeeCord", b.toByteArray());
     }
 
     public void sendToServer(String playerName, String serverName) {
