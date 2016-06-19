@@ -329,12 +329,12 @@ public class WeaponModifiers {
         @Override
         public String getPrefix(ItemMeta meta){
             if (chosenStat == null || chosenStat.equals("")) chooseStat();
-            return r + chosenStat + " RESISTANCE: ";
+            return r + chosenStat + " DMG: ";
         }
         
         @Override
         public String getNBTName() {
-            return chosenStat.toLowerCase() + "Resistance";
+            return chosenStat.toLowerCase() + "Damage";
         }
 	}
 
@@ -357,12 +357,12 @@ public class WeaponModifiers {
         @Override
         public String getPrefix(ItemMeta meta){
             if (chosenStat == null || chosenStat.equals("")) chooseStat();
-            return r + chosenStat + " RESISTANCE: ";
+            return r + chosenStat + " DMG: ";
         }
         
         @Override
         public String getNBTName() {
-            return chosenStat.toLowerCase() + "Resistance";
+            return chosenStat.toLowerCase() + "Damage";
         }
 	}
 	
