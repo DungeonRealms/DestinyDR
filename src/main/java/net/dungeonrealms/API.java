@@ -457,11 +457,14 @@ public class API {
                 CombatLog.removeFromCombat(player);
             }
             if (customStop) {
-                try {
-                    NetworkAPI.getInstance().sendToServer(player.getName(), "Lobby");
-                } catch (Exception exc) {
-                    exc.printStackTrace();
-                }
+                API.handleLogout(player.getUniqueId()); // ?? Might prevent rollbacks from too quick shard hopping.
+                Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                    try {
+                        NetworkAPI.getInstance().sendToServer(player.getName(), "Lobby");
+                    } catch (Exception exc) {
+                        exc.printStackTrace();
+                    }
+                }, 5L);
             }
         }
     }
