@@ -40,6 +40,7 @@ import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -1044,7 +1045,30 @@ public class API {
             if (nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter")) {
                 return false;
             }
+            if (nms.getTag().hasKey("untradeable") && nms.getTag().getInt("untradeable") == 1) {
+                return false;
+            }
         }
         return true;
+    }
+
+    public static boolean isItemUntradeable(ItemStack item) {
+        return !isItemTradeable(item);
+    }
+
+    public static boolean isItemSoulbound(ItemStack item) {
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
+        if (nms == null || nms.getTag() == null) return false;
+        NBTTagCompound tag = nms.getTag();
+        if (!tag.hasKey("soulbound")) return false;
+        return tag.getInt("soulbound") == 1 ? true : false;
+    }
+
+    public static boolean isItemPermanentlyUntradeable(ItemStack item) {
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
+        if (nms == null || nms.getTag() == null) return false;
+        NBTTagCompound tag = nms.getTag();
+        if (!tag.hasKey("untradeable")) return false;
+        return tag.getInt("untradeable") == 1 ? true : false;
     }
 }

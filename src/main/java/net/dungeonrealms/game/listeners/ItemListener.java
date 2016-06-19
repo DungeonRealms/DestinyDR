@@ -50,24 +50,35 @@ import java.util.List;
  */
 public class ItemListener implements Listener {
     /**
-     * Used to stop player from dropping items that are
-     * valuable e.g. hearthstone or profile head.
+     * Used to handle dropping a soulbound, untradeable, or
+     * permanently untradeable item.
      *
      * @param event
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onItemDrop(PlayerDropItemEvent event) {
-        if (!API.isItemTradeable(event.getItemDrop().getItemStack())) {
-            net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
+        Player p = event.getPlayer();
+        ItemStack item = event.getItemDrop().getItemStack();
+        if (!API.isItemTradeable(item)) {
+            net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
             NBTTagCompound tag = nmsItem.getTag();
             assert tag != null;
-            if (tag.hasKey("destroy")) {
-                event.getItemDrop().remove();
-            } else if (tag.hasKey("subtype") && tag.getString("subtype").equalsIgnoreCase("starter")) {
-                event.getItemDrop().remove();
-            } else {
+            p.sendMessage(ChatColor.GRAY + "This item was " + ChatColor.ITALIC + "untradeable" + ChatColor.GRAY + ", " +
+                    "so it has " + ChatColor.UNDERLINE + "vanished.");
+        }
+        else if (API.isItemSoulbound(item)) {
+            p.sendMessage(ChatColor.RED + "Are you sure you want to " + ChatColor.UNDERLINE + "destroy" + ChatColor
+                    .RED + " this soulbound item? Type " + ChatColor.GREEN + ChatColor.BOLD + "Y" + ChatColor.RED + "" +
+                    " or " + ChatColor.DARK_RED + ChatColor.BOLD + "N");
+            Chat.getInstance().listenForMessage(p, chat -> {
+                if (chat.getMessage().contains("y")) {
+                    p.sendMessage(ChatColor.RED + "Item " + item.getItemMeta().getDisplayName() + ChatColor.RED + " has been " + ChatColor.UNDERLINE + "destroyed.");
+                    event.getItemDrop().remove();
+                }
+            }, player -> {
+                player.sendMessage(ChatColor.RED + "Item destroying " + ChatColor.UNDERLINE + "cancelled.");
                 event.setCancelled(true);
-            }
+            });
         }
     }
 
