@@ -38,7 +38,8 @@ public class ShardSelector extends AbstractMenu {
             String shardID = DungeonRealms.getInstance().DR_SHARDS_NAMES.get(bungeeName);
             BungeeServerInfo info = e.getValue();
 
-            if (!info.isOnline() || shardID.equals(DungeonRealms.getInstance().shardid)) continue;
+            if (!info.isOnline() || shardID.equals(DungeonRealms.getInstance().shardid) || info.getOnlinePlayers() >= info.getMaxPlayers())
+                continue;
 
             GUIButton button = new GUIButton(Material.END_CRYSTAL) {
                 @Override
