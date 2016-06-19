@@ -483,7 +483,7 @@ public class ItemGenerator {
 	 * @return
 	 */
 	public static ItemStack getNamedItem(String template_name) {
-        File template = new File("plugins/DungeonRealms/custom_items/" + template_name + ".item");
+        File template = new File("plugins/DungeonRealms/new_custom_items/" + template_name + ".item");
         if (!(template.exists())) {
             Utils.log.warning("[ItemGenerator] Custom item " + template_name + " not found!");
             return null; // No such custom template!
