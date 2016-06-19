@@ -23,10 +23,7 @@ import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -63,8 +60,13 @@ public class ItemListener implements Listener {
             net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
             NBTTagCompound tag = nmsItem.getTag();
             assert tag != null;
-            p.sendMessage(ChatColor.GRAY + "This item was " + ChatColor.ITALIC + "untradeable" + ChatColor.GRAY + ", " +
-                    "so it has " + ChatColor.UNDERLINE + "vanished.");
+            // send the untradeable message if not profile or hearthstone since they will be dropped
+            // every time the inventory is closed
+            if (!item.getItemMeta().getDisplayName().contains("Character Profile") && !item.getItemMeta().getDisplayName().contains("Hearthstone"))
+                p.sendMessage(ChatColor.GRAY + "This item was " + ChatColor.ITALIC + "untradeable" + ChatColor.GRAY + ", " +
+                        "so it has " + ChatColor.UNDERLINE + "vanished.");
+            p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
+            event.getItemDrop().remove();
         }
         else if (API.isItemSoulbound(item)) {
             p.sendMessage(ChatColor.RED + "Are you sure you want to " + ChatColor.UNDERLINE + "destroy" + ChatColor
@@ -73,6 +75,7 @@ public class ItemListener implements Listener {
             Chat.getInstance().listenForMessage(p, chat -> {
                 if (chat.getMessage().contains("y")) {
                     p.sendMessage(ChatColor.RED + "Item " + item.getItemMeta().getDisplayName() + ChatColor.RED + " has been " + ChatColor.UNDERLINE + "destroyed.");
+                    p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
                     event.getItemDrop().remove();
                 }
             }, player -> {
