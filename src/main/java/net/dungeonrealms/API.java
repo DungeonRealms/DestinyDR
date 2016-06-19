@@ -443,7 +443,6 @@ public class API {
                 gPlayer.getStats().updateDatabase(true);
                 GAMEPLAYERS.remove(gPlayer);
             });
-        DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
         Utils.log.info("Saved information for uuid: " + uuid.toString() + " on their logout.");
     }
 
@@ -688,6 +687,7 @@ public class API {
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
         AttributeInstance instance = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
         instance.setBaseValue(4.0D);
+        DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
 
         // Permissions
         if (!player.isOp() && !Rank.isDev(player)) {
