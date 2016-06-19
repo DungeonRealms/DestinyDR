@@ -100,7 +100,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
 		int hp = HealthHandler.getInstance().getMonsterHPLive(en);
 		float tenPercentHP = (float) (health * .10);
 		if (hp <= tenPercentHP) {
-			if (!first || !second || !third) {
+			if (!first && !second && !third) {
 				for (Player p : API.getNearbyPlayers(loc, 50)) {
 					p.sendMessage(ChatColor.RED.toString() + "Burick The Fanatic" + ChatColor.RESET.toString() + ": " + "Goragath give me strength!");
 				}
