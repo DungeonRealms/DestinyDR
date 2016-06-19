@@ -210,7 +210,7 @@ public class MainListener implements Listener {
         player.setGameMode(GameMode.ADVENTURE);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 4));
         player.teleport(new Location(Bukkit.getWorlds().get(0), 0, 255, 0, 0f, 0f));
-        BountifulAPI.sendTitle(player, 1, 20 * 3, 1, ChatColor.GREEN.toString() + ChatColor.BOLD + "Logging in '" + player.getName() + "' ...", ChatColor.GRAY.toString() + "Do not disconnect");
+        BountifulAPI.sendTitle(player, 1, 20 * 3, 1, ChatColor.GREEN.toString() + "Loading character for '" + player.getName() + "' ...", ChatColor.GRAY.toString() + "Do not disconnect");
         ItemStack[] armor = player.getInventory().getArmorContents();
         for (int i = 0; i < armor.length; i++) {
             armor[i] = new ItemStack(Material.AIR);

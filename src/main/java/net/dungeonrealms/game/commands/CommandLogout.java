@@ -32,13 +32,13 @@ public class CommandLogout extends BasicCommand {
                     player.sendMessage(ChatColor.RED + "You can not use /logout while in combat.");
                     return true;
                 }
-                
+
                 Location startingLocation = player.getLocation();
                 if (API.isInSafeRegion(startingLocation)) {
-                    NetworkAPI.getInstance().sendToServer(player.getName(), "hub");
+                    NetworkAPI.getInstance().sendNetworkMessage("BungeeCord", "KickPlayer", player.getName(), org.bukkit.ChatColor.RED + "You were logged out");
                     return true;
                 }
-                
+
                 player.sendMessage(ChatColor.RED + "You will be " + ChatColor.BOLD + "LOGGED OUT" + ChatColor.RED + " of the game world shortly.");
                 final int[] taskTimer = {5};
                 int taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
@@ -52,7 +52,7 @@ public class CommandLogout extends BasicCommand {
                     player.sendMessage(ChatColor.RED + "Logging out in ... " + ChatColor.BOLD + taskTimer[0] + "s");
                     taskTimer[0]--;
                     if (taskTimer[0] == 0) {
-                        NetworkAPI.getInstance().sendToServer(player.getName(), "hub");
+                        NetworkAPI.getInstance().sendNetworkMessage("BungeeCord", "KickPlayer", player.getName(), org.bukkit.ChatColor.RED + "You were logged out");
                     }
                 }, 0, 20L);
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.getScheduler().cancelTask(taskID), 6 * 20L);
