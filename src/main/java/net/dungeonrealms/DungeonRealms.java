@@ -32,6 +32,7 @@ import net.dungeonrealms.game.menus.player.Profile;
 import net.dungeonrealms.game.mongo.Database;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.network.NetworkAPI;
+import net.dungeonrealms.game.network.bungeecord.serverpinger.ServerAddress;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.TabbedChatListener;
 import net.dungeonrealms.game.player.combat.CombatLog;
@@ -62,9 +63,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class DungeonRealms extends JavaPlugin {
 
@@ -115,7 +114,11 @@ public class DungeonRealms extends JavaPlugin {
         return DEVS;
     }
 
-    private List<String> DEVS = Arrays.asList("Proxying", "Atlas__", "iFamasssxD", "APOLLO_IO", "Bradez1571", "EtheralTemplar");
+    // BUNGEE STUFF
+    public final Map<String, String> DR_SHARDS_NAMES = new HashMap<>();
+    public final Map<String, ServerAddress> DR_SHARDS_IPS = new HashMap<>();
+
+    private final List<String> DEVS = Arrays.asList("Proxying", "Atlas__", "iFamasssxD", "APOLLO_IO", "Bradez1571", "EtheralTemplar");
 
     public boolean hasFinishedSetup() {
         return hasFinishedSetup;
@@ -135,6 +138,12 @@ public class DungeonRealms extends JavaPlugin {
         long START_TIME = System.currentTimeMillis() / 1000L;
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
         saveDefaultConfig();
+
+        DR_SHARDS_NAMES.put("dr1", "DR-1");
+        DR_SHARDS_NAMES.put("dr2", "DR-2");
+
+        DR_SHARDS_IPS.put("dr1", new ServerAddress("158.69.122.139", 40007));
+        DR_SHARDS_IPS.put("dr2", new ServerAddress("158.69.122.139", 40008));
 
         Utils.log.info("Reading shard config...");
         Ini ini = new Ini();
