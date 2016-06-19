@@ -62,9 +62,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
@@ -74,8 +73,12 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unchecked")
 public class API {
 
-    public static CopyOnWriteArrayList<GamePlayer> GAMEPLAYERS = new CopyOnWriteArrayList<>();
-    public static CopyOnWriteArrayList<Player> _hiddenPlayers = new CopyOnWriteArrayList<>();
+    /**
+     * Thread-safe ConcurrentHashMap. Constant time searches instead of linear for
+     * CopyOnWriteArrayList
+     */
+    public static Map<String, GamePlayer> GAMEPLAYERS = new ConcurrentHashMap<>();
+    public static Set<Player> _hiddenPlayers = new HashSet<>();
 
     /**
      * To get the players region.
@@ -436,11 +439,10 @@ public class API {
         }
         String inventory = ItemSerialization.toString(inv);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
-        if (GAMEPLAYERS.size() > 0)
-            GAMEPLAYERS.stream().filter(gPlayer -> gPlayer.getPlayer().getName().equalsIgnoreCase(player.getName())).forEach(gPlayer -> {
-                gPlayer.getStats().updateDatabase(true);
-                GAMEPLAYERS.remove(gPlayer);
-            });
+        if (GAMEPLAYERS.size() > 0) {
+            API.getGamePlayer(player).getStats().updateDatabase(true);
+            GAMEPLAYERS.remove(player.getName());
+        }
         DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
         Utils.log.info("Saved information for uuid: " + uuid.toString() + " on their logout.");
     }
@@ -499,7 +501,7 @@ public class API {
         }
 
         GamePlayer gp = new GamePlayer(player);
-        API.GAMEPLAYERS.add(gp);
+        API.GAMEPLAYERS.put(player.getName(), gp);
 
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
@@ -784,7 +786,7 @@ public class API {
                         String inventory = ItemSerialization.toString(inv);
                         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
                         if (API.GAMEPLAYERS.size() > 0) {
-                            API.GAMEPLAYERS.stream().filter(gPlayer -> gPlayer.getPlayer().getName().equalsIgnoreCase(player.getName())).forEach(gPlayer -> gPlayer.getStats().updateDatabase(false));
+                            API.GAMEPLAYERS.get(player.getName()).getStats().updateDatabase(false);
                         }
                         DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
                         Utils.log.info("Backed up information for uuid: " + uuid.toString());
@@ -884,12 +886,7 @@ public class API {
      */
 
     public static GamePlayer getGamePlayer(Player p) {
-        for (GamePlayer gPlayer : GAMEPLAYERS) {
-            if (gPlayer.getPlayer().getName().equals(p.getName())) {
-                return gPlayer;
-            }
-        }
-        return null;
+        return GAMEPLAYERS.get(p.getName());
     }
 
     /**
