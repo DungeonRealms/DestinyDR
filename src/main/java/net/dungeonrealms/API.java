@@ -10,10 +10,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.guild.GuildMechanics;
-import net.dungeonrealms.game.handlers.EnergyHandler;
-import net.dungeonrealms.game.handlers.HealthHandler;
-import net.dungeonrealms.game.handlers.KarmaHandler;
-import net.dungeonrealms.game.handlers.ScoreboardHandler;
+import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.mastery.*;
 import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
@@ -558,9 +555,16 @@ public class API {
 
         }
         PlayerManager.checkInventory(uuid);
+
+        // Fatigue
         EnergyHandler.getInstance().handleLoginEvents(player);
+
+        // Health
         HealthHandler.getInstance().handleLoginEvents(player);
+
+        // Alignment
         KarmaHandler.getInstance().handleLoginEvents(player);
+
         // Essentials
         //Subscription.getInstance().handleJoin(player);
         Rank.getInstance().doGet(uuid);
@@ -671,6 +675,9 @@ public class API {
         // Notices
         Notice.getInstance().doLogin(player);
 
+        // Newbie Protection
+        ProtectionHandler.getInstance().handleLogin(player);
+
         if (gp.getPlayer() != null) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 if (gp.getStats().freePoints > 0) {
@@ -719,7 +726,7 @@ public class API {
         }
     }
 
-    public static void backupDatabase() {
+    static void backupDatabase() {
         if (Bukkit.getOnlinePlayers().size() == 0) return;
         AsyncUtils.pool.submit(() -> {
                     DungeonRealms.getInstance().getLogger().info("Beginning Mongo Database Backup");

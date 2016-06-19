@@ -57,7 +57,7 @@ public class RestrictionListener implements Listener {
             if (RepairAPI.getArmorOrWeaponTier(is) == 0) {
                 continue;
             }
-            if (p == null || !p.isOnline()) return;
+            if (!p.isOnline()) return;
             if (!canPlayerUseTier(p, RepairAPI.getArmorOrWeaponTier(is))) {
                 hadIllegalArmor = true;
                 if (p.getInventory().firstEmpty() == -1) {
@@ -185,5 +185,5 @@ public class RestrictionListener implements Listener {
         }
     }
 
-    //TODO: Prevent players entering dungeons/realms
+    //TODO: Prevent players entering realms
 }

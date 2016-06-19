@@ -4,6 +4,7 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
+import net.dungeonrealms.game.handlers.ProtectionHandler;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -326,6 +327,10 @@ public class GamePlayer {
 
     public int getPlayerItemFind() {
         return DamageAPI.calculatePlayerStat(T, Item.ArmorAttributeType.ITEM_FIND);
+    }
+
+    public boolean hasNewbieProtection() {
+        return ProtectionHandler.getInstance().getProtected_Players().contains(T.getName());
     }
 
 }
