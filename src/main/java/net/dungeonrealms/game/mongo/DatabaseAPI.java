@@ -332,9 +332,9 @@ public class DatabaseAPI {
                                         .append("particles", new ArrayList<String>())
                                         .append("mountskins", new ArrayList<String>()))
                         .append("toggles",
-                                new Document("debug", false)
+                                new Document("debug", true)
                                         .append("trade", false)
-                                        .append("tradeChat", false)
+                                        .append("tradeChat", true)
                                         .append("globalChat", false)
                                         .append("receiveMessage", true)
                                         .append("pvp", false)
