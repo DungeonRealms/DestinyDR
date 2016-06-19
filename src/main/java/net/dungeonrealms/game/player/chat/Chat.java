@@ -113,7 +113,7 @@ public class Chat {
                     after = split[1];
 
 
-                ItemStack stack = event.getPlayer().getItemInHand();
+                ItemStack stack = event.getPlayer().getInventory().getItemInMainHand();
 
                 List<String> hoveredChat = new ArrayList<>();
                 ItemMeta meta = stack.getItemMeta();
@@ -144,7 +144,7 @@ public class Chat {
                 if (split.length > 1)
                     after = split[1];
 
-                ItemStack stack = event.getPlayer().getItemInHand();
+                ItemStack stack = event.getPlayer().getInventory().getItemInMainHand();
 
                 List<String> hoveredChat = new ArrayList<>();
                 ItemMeta meta = stack.getItemMeta();

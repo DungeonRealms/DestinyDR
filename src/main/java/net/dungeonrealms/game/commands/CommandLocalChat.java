@@ -64,7 +64,7 @@ public class CommandLocalChat extends BasicCommand {
             if (split.length > 1)
                 after = split[1];
 
-            ItemStack stack = player.getItemInHand();
+            ItemStack stack = player.getInventory().getItemInMainHand();
 
             List<String> hoveredChat = new ArrayList<>();
             ItemMeta meta = stack.getItemMeta();

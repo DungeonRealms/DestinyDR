@@ -605,8 +605,8 @@ public class BankListener implements Listener {
     public void splitBankNote(PlayerInteractEvent interactEvent) {
         Player player = interactEvent.getPlayer();
         if (interactEvent.getAction() == Action.LEFT_CLICK_BLOCK || interactEvent.getAction() == Action.LEFT_CLICK_AIR) {
-            if (interactEvent.getPlayer().getItemInHand() != null && BankMechanics.getInstance().isBankNote(interactEvent.getPlayer().getItemInHand())) {
-                int noteWorth = BankMechanics.getInstance().getNoteValue(player.getItemInHand());
+            if (interactEvent.getPlayer().getInventory().getItemInMainHand() != null && BankMechanics.getInstance().isBankNote(interactEvent.getPlayer().getInventory().getItemInMainHand())) {
+                int noteWorth = BankMechanics.getInstance().getNoteValue(player.getInventory().getItemInMainHand());
                 player.sendMessage(ChatColor.GRAY + "This bank note is worth " + ChatColor.GREEN + noteWorth + " Gems." + ChatColor.GRAY + " Please enter the amount");
                 player.sendMessage(ChatColor.GRAY + "you'd like to sign an additional bank note for. Alternatively,");
                 player.sendMessage(ChatColor.GRAY + "type" + ChatColor.RED + " 'cancel' " + ChatColor.GRAY + "to stop this operation.");
