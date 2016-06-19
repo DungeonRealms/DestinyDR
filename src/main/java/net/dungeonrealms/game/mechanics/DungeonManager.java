@@ -273,6 +273,7 @@ public class DungeonManager implements GenericMechanic {
         int spawningTaskID;
         public boolean beingRemoved;
         public boolean hasBossSpawned;
+        public int keysDropped;
 
         DungeonObject(DungeonType type, Integer time, List<Player> playerList, String worldName, String instanceName) {
             this.type = type;
