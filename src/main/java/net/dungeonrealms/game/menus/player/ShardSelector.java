@@ -12,6 +12,7 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.game.network.bungeecord.BungeeServerTracker;
+import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -60,8 +61,8 @@ public class ShardSelector extends AbstractMenu {
                 }
             };
 
-            button.setDisplayName(ChatColor.GREEN + shardID);
-            button.setLore(Arrays.asList(ChatColor.GREEN + "This shard is online!", " ", ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers()));
+            button.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID);
+            button.setLore(Arrays.asList(ChatColor.GREEN + "This shard is online!", ChatColor.WHITE + "Click here to load your", ChatColor.WHITE + "character onto this shard.", " ", ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers()));
 
             set(getSize(), button);
         }
@@ -76,8 +77,8 @@ public class ShardSelector extends AbstractMenu {
 
         long lastShardTransfer = (long) DatabaseAPI.getInstance().getData(EnumData.LAST_SHARD_TRANSFER, player.getUniqueId());
 
-        if (lastShardTransfer != 0 && (System.currentTimeMillis() - lastShardTransfer) < 300000) {
-            player.sendMessage(ChatColor.RED + "You have recently transferred your shard. You must wait 5 minutes");
+        if (lastShardTransfer != 0 && (System.currentTimeMillis() - lastShardTransfer) < 300000 && !Rank.isGM(player)) {
+            player.sendMessage(ChatColor.RED + "You must wait 5 minutes when transfer between shards.");
             return;
         }
 
