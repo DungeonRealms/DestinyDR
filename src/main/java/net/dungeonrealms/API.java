@@ -443,6 +443,7 @@ public class API {
                 gPlayer.getStats().updateDatabase(true);
                 GAMEPLAYERS.remove(gPlayer);
             });
+        DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
         Utils.log.info("Saved information for uuid: " + uuid.toString() + " on their logout.");
     }
 
@@ -457,14 +458,12 @@ public class API {
                 CombatLog.removeFromCombat(player);
             }
             if (customStop) {
-                API.handleLogout(player.getUniqueId()); // ?? Might prevent rollbacks from too quick shard hopping.
+                API.handleLogout(player.getUniqueId());
+                DungeonRealms.getInstance().getLoggingOut().add(player.getName());
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    try {
-                        NetworkAPI.getInstance().sendToServer(player.getName(), "Lobby");
-                    } catch (Exception exc) {
-                        exc.printStackTrace();
-                    }
-                }, 5L);
+                    NetworkAPI.getInstance().sendToServer(player.getName(), "Lobby");
+                    DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
+                }, 10);
             }
         }
     }
@@ -777,6 +776,7 @@ public class API {
                         if (API.GAMEPLAYERS.size() > 0) {
                             API.GAMEPLAYERS.stream().filter(gPlayer -> gPlayer.getPlayer().getName().equalsIgnoreCase(player.getName())).forEach(gPlayer -> gPlayer.getStats().updateDatabase(false));
                         }
+                        DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
                         Utils.log.info("Backed up information for uuid: " + uuid.toString());
                     }
                     DungeonRealms.getInstance().getLogger().info("Completed Mongo Database Backup");

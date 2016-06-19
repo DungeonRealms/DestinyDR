@@ -19,8 +19,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -148,7 +147,7 @@ public class RestrictionListener implements Listener {
         }, 150L);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void playerOpenEmptyMap(PlayerInteractEvent event) {
         if (event.hasItem() && event.getItem().getType() == Material.EMPTY_MAP) {
             Player player = event.getPlayer();
@@ -159,4 +158,30 @@ public class RestrictionListener implements Listener {
             player.updateInventory();
         }
     }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void loggingOutOpenInventory(InventoryOpenEvent event) {
+        if (DungeonRealms.getInstance().getLoggingOut().contains(event.getPlayer().getName())) {
+            event.setCancelled(true);
+            event.getPlayer().closeInventory();
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void loggingOutDropItem(PlayerDropItemEvent event) {
+        if (DungeonRealms.getInstance().getLoggingOut().contains(event.getPlayer().getName())) {
+            event.setCancelled(true);
+            event.getPlayer().closeInventory();
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void loggingOutPickupItem(PlayerPickupItemEvent event) {
+        if (DungeonRealms.getInstance().getLoggingOut().contains(event.getPlayer().getName())) {
+            event.setCancelled(true);
+            event.getPlayer().closeInventory();
+        }
+    }
+
+    //TODO: Prevent players entering dungeons/realms
 }

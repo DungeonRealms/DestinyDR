@@ -1,6 +1,7 @@
 package net.dungeonrealms;
 
 import com.connorlinfoot.bountifulapi.BountifulAPI;
+import lombok.Getter;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.commands.*;
 import net.dungeonrealms.game.commands.dungeonhelpers.BossTeleport;
@@ -119,6 +120,9 @@ public class DungeonRealms extends JavaPlugin {
     public final Map<String, ServerAddress> DR_SHARDS_IPS = new HashMap<>();
 
     private final List<String> DEVS = Arrays.asList("Proxying", "Atlas__", "iFamasssxD", "APOLLO_IO", "Bradez1571", "EtheralTemplar");
+
+    @Getter
+    private List<String> loggingOut = new ArrayList<>();
 
     public boolean hasFinishedSetup() {
         return hasFinishedSetup;

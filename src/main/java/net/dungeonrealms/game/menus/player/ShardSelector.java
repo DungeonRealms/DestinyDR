@@ -61,11 +61,13 @@ public class ShardSelector extends AbstractMenu {
 
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.LAST_SHARD_TRANSFER, System.currentTimeMillis(), true);
                     API.handleLogout(player.getUniqueId());
+                    DungeonRealms.getInstance().getLoggingOut().add(player.getName());
 
                     Bukkit.getScheduler().scheduleSyncDelayedTask(plugin,
                             () -> {
                                 NetworkAPI.getInstance().sendToServer(player.getName(), bungeeName);
-                            }, 60);
+                                DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
+                            }, 10);
                 }
             };
 
