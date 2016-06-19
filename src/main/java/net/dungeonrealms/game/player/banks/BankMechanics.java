@@ -200,6 +200,7 @@ public class BankMechanics implements GenericMechanic {
         ItemStack stack = null;
         net.minecraft.server.v1_9_R2.ItemStack nms = null;
         switch (type) {
+            case 0:
             case 1:
                 stack = ItemManager.createItem(Material.INK_SACK, "Small Gem Pouch" + ChatColor.GREEN + " " + amount + "g", new String[]{ChatColor.GRAY + "A small linen pouch that holds 100g"});
                 break;
@@ -214,6 +215,7 @@ public class BankMechanics implements GenericMechanic {
                 break;
         }
         nms = CraftItemStack.asNMSCopy(stack);
+
         NBTTagCompound tag = nms.getTag();
         tag.setString("type", "money");
         tag.setInt("worth", amount);
@@ -413,5 +415,9 @@ public class BankMechanics implements GenericMechanic {
         int tier = CraftItemStack.asNMSCopy(currentItem).getTag().getInt("tier");
         return createGemPouch(tier, number);
 
+    }
+
+    public void upgradeStorage(UUID uniqueId) {
+        storage.get(uniqueId).upgrade();
     }
 }

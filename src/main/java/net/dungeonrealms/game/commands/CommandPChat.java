@@ -1,14 +1,20 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
+import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.chat.GameChat;
+import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.party.Affair;
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -45,6 +51,36 @@ public class CommandPChat extends BasicCommand {
                     everyone.add(party.getOwner());
                     everyone.addAll(party.getMembers());
                 }
+                String finalChat = Chat.getInstance().checkForBannedWords(message.toString());
+
+
+                if (finalChat.contains("@i@") && player.getEquipment().getItemInMainHand() != null && player.getEquipment().getItemInMainHand().getType() != Material.AIR) {
+                    String[] split = finalChat.split("@i@");
+                    String after = "";
+                    String before = "";
+                    if (split.length > 0)
+                        before = split[0];
+                    if (split.length > 1)
+                        after = split[1];
+
+
+                    ItemStack stack = player.getItemInHand();
+
+                    List<String> hoveredChat = new ArrayList<>();
+                    ItemMeta meta = stack.getItemMeta();
+                    hoveredChat.add((meta.hasDisplayName() ? meta.getDisplayName() : stack.getType().name()));
+                    if (meta.hasLore())
+                        hoveredChat.addAll(meta.getLore());
+                    String prefix = ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + GameChat.getName(player, Rank.getInstance().getRank(player.getUniqueId()), true) + ChatColor.GRAY + ": ";
+                    final JSONMessage normal = new JSONMessage(prefix, org.bukkit.ChatColor.WHITE);
+                    normal.addText(before + "");
+                    normal.addHoverText(hoveredChat, org.bukkit.ChatColor.BOLD + org.bukkit.ChatColor.UNDERLINE.toString() + "SHOW");
+                    normal.addText(after);
+                    everyone.stream().forEach(normal::sendToPlayer);
+                    return true;
+                }
+
+
 
                 everyone.stream().forEach(player1 -> player1.sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + GameChat.getName(player, Rank.getInstance().getRank(player.getUniqueId()), true) + ChatColor.GRAY + ": " + message.toString()));
             } else {

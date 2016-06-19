@@ -429,7 +429,7 @@ public class DungeonRealms extends JavaPlugin {
         for (CombatLogger combatLogger : CombatLog.getInstance().getCOMBAT_LOGGERS().values()) {
             combatLogger.handleTimeOut();
         }
-        API.logoutAllPlayers(false);
+        API.logoutAllPlayers(true);
         ShopMechanics.deleteAllShops(true);
         AsyncUtils.pool.shutdown();
         ps.onDisable();

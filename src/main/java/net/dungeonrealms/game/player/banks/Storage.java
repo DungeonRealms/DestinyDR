@@ -84,4 +84,7 @@ public class Storage {
         }
         return false;
     }
+
+    public void upgrade() {
+    }
 }
