@@ -1,24 +1,23 @@
 package net.dungeonrealms.game.mechanics;
 
-import com.google.common.collect.Lists;
 import net.dungeonrealms.API;
-import net.dungeonrealms.game.miscellaneous.ItemBuilder;
-import net.dungeonrealms.game.player.inventory.PlayerMenus;
-import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
+import net.dungeonrealms.game.mastery.GamePlayer;
+import net.dungeonrealms.game.miscellaneous.ItemBuilder;
+import net.dungeonrealms.game.miscellaneous.RandomHelper;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.player.inventory.PlayerMenus;
+import net.dungeonrealms.game.player.stats.PlayerStats;
+import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.profession.Mining;
+import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
 import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.miscellaneous.RandomHelper;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
-import net.dungeonrealms.game.profession.Fishing;
-import net.dungeonrealms.game.profession.Mining;
-import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagInt;
@@ -919,5 +918,23 @@ public class ItemManager {
     public static boolean isProtectScroll(ItemStack stack) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         return stack.getType() == Material.EMPTY_MAP && nms.getTag() != null && nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("protection");
+    }
+
+    public static ItemStack makeSoulBound(ItemStack is) {
+        ItemMeta im = is.getItemMeta();
+        List<String> lore = new ArrayList<>();
+        if (im.hasLore()) {
+            lore = im.getLore();
+        }
+        lore.add(ChatColor.DARK_RED.toString() + ChatColor.ITALIC.toString() + "Soulbound");
+        im.setLore(lore);
+        is.setItemMeta(im);
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(is);
+        if (nmsItem == null || nmsItem.getTag() == null) return is;
+        NBTTagCompound nbtTagCompound = nmsItem.getTag();
+        nbtTagCompound.setBoolean("soulbound", true);
+        nmsItem.setTag(nbtTagCompound);
+
+        return CraftItemStack.asBukkitCopy(nmsItem);
     }
 }

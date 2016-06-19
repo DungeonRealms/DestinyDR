@@ -38,6 +38,10 @@ public interface DRMonster {
             //No normal drops in dungeons.
             return;
         }
+        if (ent.hasMetadata("boss")) {
+            //Boss will handle this.
+            return;
+        }
         Random random = new Random();
         boolean toggleDebug = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId());
         int killerGemFind = DamageAPI.calculatePlayerStat(killer, Item.ArmorAttributeType.GEM_FIND);

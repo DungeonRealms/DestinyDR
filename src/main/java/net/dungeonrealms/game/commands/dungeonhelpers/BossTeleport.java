@@ -35,7 +35,7 @@ public class BossTeleport extends BasicCommand {
         DungeonManager.DungeonObject dungeonObject = DungeonManager.getInstance().getDungeon(bcs.getBlock().getWorld());
         if (!dungeonObject.canSpawnBoss) {
             for (Player p : bcs.getBlock().getWorld().getPlayers()) {
-                int percentToKill = (int) (dungeonObject.maxAlive * 0.85);
+                int percentToKill = (int) (dungeonObject.maxAlive * 0.80);
                 int killed = dungeonObject.killed;
                 p.sendMessage(ChatColor.RED + "You need to kill " + ChatColor.UNDERLINE + (percentToKill - killed) + ChatColor.RED + " monsters to spawn the boss.");
             }

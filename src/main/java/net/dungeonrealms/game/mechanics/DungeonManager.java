@@ -85,7 +85,7 @@ public class DungeonManager implements GenericMechanic {
             int monstersAlive = dungeonObject.maxAlive - dungeonObject.killed;
             int maxAlive = dungeonObject.maxAlive;
             if (!dungeonObject.canSpawnBoss && maxAlive > 0 && monstersAlive > 0) {
-                if (monstersAlive <= (maxAlive * 0.15)) {
+                if (monstersAlive <= (maxAlive * 0.2)) {
                     dungeonObject.canSpawnBoss = true;
                     dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.RED.toString() + dungeonObject.type.getBossName() + ChatColor.RESET + ": Do you really wish to fight me?"));
                 }
@@ -155,7 +155,7 @@ public class DungeonManager implements GenericMechanic {
      */
     private void updateDungeonBoard(DungeonObject dungeonObject) {
         dungeonObject.getPlayerList().forEach(player -> BountifulAPI.sendActionBar(player, ChatColor.AQUA + "Time: " + ChatColor.WHITE + ChatColor.GOLD
-                + String.valueOf(dungeonObject.getTime() / 60) + "/45" + " " + ChatColor.AQUA + "Alive: " + ChatColor.WHITE + (dungeonObject.maxAlive - dungeonObject.killed) + ChatColor.GRAY
+                + String.valueOf(dungeonObject.getTime() / 60) + "/120" + " " + ChatColor.AQUA + "Alive: " + ChatColor.WHITE + (dungeonObject.maxAlive - dungeonObject.killed) + ChatColor.GRAY
                 + "/" + ChatColor.RED + dungeonObject.maxAlive));
     }
 

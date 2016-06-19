@@ -21,6 +21,7 @@ public class T1Dungeon implements Listener {
     public void onNamedMobDeath(EntityDeathEvent event) {
         if (!event.getEntity().getWorld().getName().contains("DUNGEON")) return;
         if (event.getEntity() instanceof Player) return;
+        if (DungeonManager.getInstance().getDungeon(event.getEntity().getWorld()) == null) return;
         if (DungeonManager.getInstance().getDungeon(event.getEntity().getWorld()).getType() != DungeonManager.DungeonType.BANDIT_TROVE) return;
         if (event.getEntity().hasMetadata("elite")) {
             if (event.getEntity().hasMetadata("customname")) {

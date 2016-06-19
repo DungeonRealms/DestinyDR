@@ -847,6 +847,17 @@ public class MainListener implements Listener {
         }
     }
 
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void explosionDungeon(EntityExplodeEvent event) {
+        if (event.getEntity().getWorld().getName().contains("DUNGEON")) {
+            event.blockList().stream().forEach(block -> block.setType(Material.AIR));
+            event.setYield(0);
+            event.blockList().clear();
+            event.getEntity().remove();
+            event.setCancelled(true);
+        }
+    }
+
     @EventHandler(priority = EventPriority.LOWEST)
     public void characterJournalPartyInvnite(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
