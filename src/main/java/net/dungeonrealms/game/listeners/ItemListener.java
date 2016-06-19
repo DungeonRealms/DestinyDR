@@ -73,7 +73,7 @@ public class ItemListener implements Listener {
                     .RED + " this soulbound item? Type " + ChatColor.GREEN + ChatColor.BOLD + "Y" + ChatColor.RED + "" +
                     " or " + ChatColor.DARK_RED + ChatColor.BOLD + "N");
             Chat.getInstance().listenForMessage(p, chat -> {
-                if (chat.getMessage().contains("y")) {
+                if (chat.getMessage().equalsIgnoreCase("y")) {
                     p.sendMessage(ChatColor.RED + "Item " + item.getItemMeta().getDisplayName() + ChatColor.RED + " has been " + ChatColor.UNDERLINE + "destroyed.");
                     p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
                     event.getItemDrop().remove();
