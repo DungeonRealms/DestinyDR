@@ -12,6 +12,7 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.network.bungeecord.BungeeServerInfo;
 import net.dungeonrealms.game.network.bungeecord.BungeeServerTracker;
+import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -43,6 +44,11 @@ public class ShardSelector extends AbstractMenu {
                 public void action(GUIButtonClickEvent event) throws Exception {
                     Player player = event.getWhoClicked();
                     player.closeInventory();
+
+                    if (CombatLog.isInCombat(player)) {
+                        player.sendMessage(ChatColor.RED + "You cannot transfer shards while in combat.");
+                        return;
+                    }
 
                     BountifulAPI.sendTitle(player, 1, 60, 1, ChatColor.YELLOW + "Loading Shard - " + ChatColor.BOLD + shardID + ChatColor.YELLOW + " ...", ChatColor.GRAY.toString() + "Do not disconnect");
 
@@ -81,6 +87,12 @@ public class ShardSelector extends AbstractMenu {
             player.sendMessage(ChatColor.RED + "You must wait 5 minutes when transfer between shards.");
             return;
         }
+
+        if (CombatLog.isInCombat(player)) {
+            player.sendMessage(ChatColor.RED + "You cannot transfer shards while in combat.");
+            return;
+        }
+
 
         player.openInventory(inventory);
     }
