@@ -47,7 +47,7 @@ public class DungeonManager implements GenericMechanic {
     private CopyOnWriteArrayList<DungeonObject> Dungeons = new CopyOnWriteArrayList<>();
     public static volatile ConcurrentHashMap<String, HashMap<Location, String>> instance_mob_spawns = new ConcurrentHashMap<>();
     @Getter
-    private Map<String, Integer> players_Entering_Dungeon = new HashMap<>();
+    private ConcurrentHashMap<String, Integer> players_Entering_Dungeon = new ConcurrentHashMap<>();
 
     public DungeonObject getDungeon(World world) {
         for (DungeonObject dungeon : Dungeons) {
