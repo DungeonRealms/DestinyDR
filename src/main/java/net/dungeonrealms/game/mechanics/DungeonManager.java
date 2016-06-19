@@ -194,6 +194,7 @@ public class DungeonManager implements GenericMechanic {
         Utils.log.info("[DUNGEONS] Unloading world: " + dungeonObject.getWorldName() + " in preparation for deletion!");
         Bukkit.getScheduler().cancelTask(dungeonObject.spawningTaskID);
         if (Dungeons.contains(dungeonObject)) {
+            dungeonObject.cleanup();
             Dungeons.remove(dungeonObject);
         }
         try {
@@ -327,6 +328,12 @@ public class DungeonManager implements GenericMechanic {
             loadInWorld(getWorldName(), getPlayerList(), getType());
         }
 
+        void cleanup() {
+            playerList.clear();
+            aliveMonsters.clear();
+            toSpawn.clear();
+        }
+
         /**
          *
          */
@@ -421,7 +428,8 @@ public class DungeonManager implements GenericMechanic {
             }
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 if (Dungeons.contains(DungeonManager.getInstance().getDungeon(Bukkit.getWorld(worldName)))) {
-                Dungeons.remove(DungeonManager.getInstance().getDungeon(Bukkit.getWorld(worldName)));
+                    DungeonManager.getInstance().getDungeon(Bukkit.getWorld(worldName)).cleanup();
+                    Dungeons.remove(DungeonManager.getInstance().getDungeon(Bukkit.getWorld(worldName)));
                 }
             }, 200L);
         }
