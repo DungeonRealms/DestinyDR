@@ -1,9 +1,18 @@
 package net.dungeonrealms.game.mechanics;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.game.mastery.Utils;
+import net.dungeonrealms.game.miscellaneous.ItemBuilder;
+import net.dungeonrealms.game.player.inventory.PlayerMenus;
+import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
+import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
+import net.dungeonrealms.game.world.items.EnumItem;
+import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
+import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
@@ -512,6 +521,21 @@ public class ItemManager {
             return CraftItemStack.asBukkitCopy(nmsStack);
         }
         return null;
+    }
+
+    public static void giveStarter(Player player) {
+        player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
+        player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
+        player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
+
+
+        player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString("subtype", "starter").build());
+
+        if (Utils.randInt(0, 1) == 1) {
+            player.getInventory().addItem(new ItemBuilder().setItem(new ItemGenerator().setType(Item.ItemType.SWORD).setTier(Item.ItemTier.TIER_1).setRarity(Item.ItemRarity.RARE).generateItem().getItem()).setNBTString("subtype", "starter").build());
+        } else {
+            player.getInventory().addItem(new ItemBuilder().setItem(new ItemGenerator().setType(Item.ItemType.AXE).setTier(Item.ItemTier.TIER_1).setRarity(Item.ItemRarity.RARE).generateItem().getItem()).setNBTString("subtype", "starter").build());
+        }
     }
 
     /**

@@ -3,6 +3,7 @@ package net.dungeonrealms.game.commands;
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.handlers.TutorialIslandHandler;
+import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.items.Item;
@@ -42,9 +43,7 @@ public class CommandSkip extends BasicCommand {
             Chat.getInstance().listenForMessage(player, chat -> {
                 if (chat.getMessage().equalsIgnoreCase("y")) {
                     player.teleport(new Location(Bukkit.getWorlds().get(0), -378, 85, 362));
-                    // only add a weapon, no armor
-                    player.getInventory().addItem(new ItemBuilder().setItem(new ItemGenerator().setType(Item.ItemType.AXE).setTier(Item.ItemTier.TIER_1).setRarity(Item.ItemRarity.COMMON).generateItem().getItem())
-                            .setNBTString("subtype", "starter").build());
+                    ItemManager.giveStarter(player);
                 }
             }, p -> p.sendMessage(ChatColor.RED + "Tutorial Skip - " + ChatColor.BOLD + "CANCELLED"));
         } else {

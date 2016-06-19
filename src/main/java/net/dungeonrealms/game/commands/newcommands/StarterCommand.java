@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.commands.newcommands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.handlers.TutorialIslandHandler;
+import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
@@ -26,7 +26,7 @@ public class StarterCommand extends BasicCommand {
     		return true;
     	}
     	if (Bukkit.getPlayer(args[0]) != null) {
-    		TutorialIslandHandler.getInstance().giveStarterKit(Bukkit.getPlayer(args[0]));
+			ItemManager.giveStarter(Bukkit.getPlayer(args[0]));
     	} else {
     		p.sendMessage(ChatColor.RED + "Player is offline or something.. Use: /givestarter <name>");
     	}

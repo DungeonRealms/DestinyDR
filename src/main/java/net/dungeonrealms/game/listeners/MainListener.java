@@ -531,9 +531,9 @@ public class MainListener implements Listener {
         }
         if (npcNameStripped.equalsIgnoreCase("Ship Captain")) {
             event.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -378, 85, 362));
-            TutorialIslandHandler.getInstance().giveStarterKit(event.getPlayer());
+            ItemManager.giveStarter(event.getPlayer());
+            return;
         }
-
     }
 
     /**
