@@ -20,14 +20,15 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
+import java.util.UUID;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/18/2016
  */
 public class ShardSelector extends AbstractMenu {
 
-    public ShardSelector() {
-        super("DungeonRealms Shards", 18);
+    public ShardSelector(UUID uuid) {
+        super("DungeonRealms Shards", 9, uuid);
 
         setDestroyOnExit(true);
         // DISPLAY AVAILABLE SHARDS //
