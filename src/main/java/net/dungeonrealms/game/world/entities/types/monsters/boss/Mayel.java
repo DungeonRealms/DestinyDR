@@ -53,7 +53,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
 		EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
 		this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + "Mayel The Cruel");
 		this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().name));
-		for (Player p : API.getNearbyPlayers(loc, 50)) {
+		for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
 			p.sendMessage(ChatColor.RED.toString() + "Mayel The Cruel" + ChatColor.RESET.toString() + ": " + getEnumBoss().greeting);
 		}
 		this.setSize(0.7F, 2.4F);
@@ -101,7 +101,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
 
 	@Override
 	public void onBossDeath() {
-		for (Player p : API.getNearbyPlayers(loc, 50)) {
+		for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
 			p.sendMessage(ChatColor.RED.toString() + "Mayel The Cruel" + ChatColor.RESET.toString() + ": " + "No... how could it be?");
 		}
 		int droppedGems = 64 * this.getBukkitEntity().getWorld().getPlayers().size();
@@ -135,10 +135,10 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
 				world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
 				entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
 			}
-			for (Player p : API.getNearbyPlayers(loc, 50)) {
+			for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
 				p.sendMessage(ChatColor.RED.toString() + "Mayel The Cruel" + ChatColor.RESET.toString() + ": " + "Come to my call, brothers!");
 			}
-			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> canSpawn = true, 140L);
+			Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> canSpawn = true, 100L);
 		}
 	}
 

@@ -44,7 +44,7 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton implements Boss {
 		this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
 		EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
 		this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
-		for (Player p : API.getNearbyPlayers(boss.getBukkitEntity().getLocation(), 50)) {
+		for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
 			p.sendMessage(ChatColor.RED.toString() + "The Infernal Lords Guard" + ChatColor.RESET.toString() + ": " + "I shall protect you my lord.");
 		}
 		this.setSize(0.7F, 2.4F);
@@ -87,10 +87,10 @@ public class InfernalLordsGuard extends MeleeWitherSkeleton implements Boss {
 
 	@Override
 	public void onBossDeath() {
-		for (Player p : API.getNearbyPlayers(boss.getBukkitEntity().getLocation(), 50)) {
+		for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
 			p.sendMessage(ChatColor.RED.toString() + "The Infernal Lords Guard" + ChatColor.RESET.toString() + ": " + "I have failed you...");
 		}
-		for (Player p : API.getNearbyPlayers(boss.getBukkitEntity().getLocation(), 50)) {
+		for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
 			p.sendMessage(ChatColor.RED.toString() + "The Infernal Abyss" + ChatColor.RESET.toString() + ": " + "I'll handle this on my own then!");
 		}
 		boss.setLocation(locX, locY, locZ, 1, 1);

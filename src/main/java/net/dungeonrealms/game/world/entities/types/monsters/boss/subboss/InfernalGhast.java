@@ -83,7 +83,7 @@ public class InfernalGhast extends EntityGhast implements Boss {
 
 	@Override
 	public void onBossHit(EntityDamageByEntityEvent event) {
-		LivingEntity en = (LivingEntity) event.getEntity();	
+		//LivingEntity en = (LivingEntity) event.getEntity();
 	}
 
 }
