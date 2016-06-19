@@ -11,7 +11,6 @@ import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.MeleeWithe
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
-import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -29,18 +28,21 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
 
 	public Location loc;
 
+	public Burick(World world) {
+		super(world);
+	}
+
 	public Burick(World world, Location loc) {
 		super(world);
 		this.loc = loc;
-        this.getAttributeInstance(GenericAttributes.c).setValue(1d);
-		this.setSkeletonType(1);
 		setArmor(getEnumBoss().tier);
 		this.getBukkitEntity().setCustomNameVisible(true);
 		int level = 100;
 		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
 		this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
 		EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
-		this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
+		this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + "Burick The Fanatic");
+		this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().name));
 		for (Player p : API.getNearbyPlayers(loc, 50)) {
 			p.sendMessage(ChatColor.RED.toString() + "Burick The Fanatic" + ChatColor.RESET.toString() + ": " + "Ahahaha! You dare try to kill ME?! I am Burick, disciple of Goragath! None of you will leave this place alive!");
 		}
