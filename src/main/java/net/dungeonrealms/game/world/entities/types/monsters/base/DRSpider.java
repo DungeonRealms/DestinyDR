@@ -124,4 +124,9 @@ public abstract class DRSpider extends EntitySpider implements DRMonster {
 		});
 	}
 
+	@Override
+	public void enderTeleportTo(double d0, double d1, double d2) {
+		//Test for EnderPearl TP Cancel.
+	}
+
 }
