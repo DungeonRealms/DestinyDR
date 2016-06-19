@@ -390,8 +390,11 @@ public class ItemGenerator {
             lore.add(ChatColor.DARK_RED.toString() + ChatColor.ITALIC + "Soulbound");
         }
         else if (isUntradeable) {
+            lore.add(ChatColor.GRAY + "Untradeable");
         }
         else if (isPermanentlyUntradeable) {
+            lore.add(ChatColor.GRAY + "Permanently Untradeable");
+        }
 
 		// set the lore!
         meta.setLore(lore);
