@@ -44,6 +44,7 @@ public class RestrictionListener implements Listener {
     }
 
     public static boolean canPlayerUseTier(Player p, int tier) {
+        if (API.getGamePlayer(p) == null) return true;
         int level = API.getGamePlayer(p).getLevel();
         return tier == 1 || tier == 2 && level >= 10 || tier == 3 && level >= 20 || tier == 4 && level >= 30 || tier == 5 && level >= 40;
     }
@@ -56,6 +57,7 @@ public class RestrictionListener implements Listener {
             if (RepairAPI.getArmorOrWeaponTier(is) == 0) {
                 continue;
             }
+            if (p == null || !p.isOnline()) return;
             if (!canPlayerUseTier(p, RepairAPI.getArmorOrWeaponTier(is))) {
                 hadIllegalArmor = true;
                 if (p.getInventory().firstEmpty() == -1) {

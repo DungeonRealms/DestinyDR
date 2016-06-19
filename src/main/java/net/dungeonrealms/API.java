@@ -443,6 +443,7 @@ public class API {
                 gPlayer.getStats().updateDatabase(true);
                 GAMEPLAYERS.remove(gPlayer);
             });
+        DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
         Utils.log.info("Saved information for uuid: " + uuid.toString() + " on their logout.");
     }
 

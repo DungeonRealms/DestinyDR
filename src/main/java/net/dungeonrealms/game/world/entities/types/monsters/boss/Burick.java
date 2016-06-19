@@ -311,7 +311,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
             if (meta.hasLore()) {
                 hoveredChat.addAll(meta.getLore());
             }
-            final JSONMessage normal = new JSONMessage(ChatColor.WHITE + "The boss has dropped:", ChatColor.DARK_PURPLE);
+            final JSONMessage normal = new JSONMessage(ChatColor.DARK_PURPLE + "The boss has dropped: ", ChatColor.DARK_PURPLE);
             normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
             livingEntity.getWorld().getPlayers().stream().forEach(normal::sendToPlayer);
         }

@@ -121,7 +121,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
         }
     }
 
-    private boolean canSpawn = true;
+    private boolean canSpawn = false;
 
     @Override
     public void onBossHit(EntityDamageByEntityEvent event) {
@@ -199,7 +199,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
         if (meta.hasLore()) {
             hoveredChat.addAll(meta.getLore());
         }
-        final JSONMessage normal = new JSONMessage(ChatColor.WHITE + "The boss has dropped:", ChatColor.DARK_PURPLE);
+        final JSONMessage normal = new JSONMessage(ChatColor.DARK_PURPLE + "The boss has dropped: ", ChatColor.DARK_PURPLE);
         normal.addHoverText(hoveredChat, ChatColor.BOLD + ChatColor.UNDERLINE.toString() + "SHOW");
         livingEntity.getWorld().getPlayers().stream().forEach(normal::sendToPlayer);
 
@@ -229,37 +229,37 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
     private boolean canSpawnMobs(LivingEntity livingEntity) {
         int maxHP = HealthHandler.getInstance().getMonsterMaxHPLive(livingEntity);
         int currentHP = HealthHandler.getInstance().getMonsterHPLive(livingEntity);
-        if (currentHP < (maxHP * 0.9)) {
+        if (currentHP <= (maxHP * 0.9)) {
             if (!canSpawn) {
                 canSpawn = true;
                 return true;
             }
-        } else if (currentHP < (maxHP * 0.8)) {
+        } else if (currentHP <= (maxHP * 0.8)) {
             if (!canSpawn) {
                 canSpawn = true;
                 return true;
             }
-        } else if (currentHP < (maxHP * 0.8)) {
+        } else if (currentHP <= (maxHP * 0.8)) {
             if (!canSpawn) {
                 canSpawn = true;
                 return true;
             }
-        } else if (currentHP < (maxHP * 0.7)) {
+        } else if (currentHP <= (maxHP * 0.7)) {
             if (!canSpawn) {
                 canSpawn = true;
                 return true;
             }
-        } else if (currentHP < (maxHP * 0.6)) {
+        } else if (currentHP <= (maxHP * 0.6)) {
             if (!canSpawn) {
                 canSpawn = true;
                 return true;
             }
-        } else if (currentHP < (maxHP * 0.5)) {
+        } else if (currentHP <= (maxHP * 0.5)) {
             if (!canSpawn) {
                 canSpawn = true;
                 return true;
             }
-        } else if (currentHP < (maxHP * 0.4)) {
+        } else if (currentHP <= (maxHP * 0.4)) {
             if (!canSpawn) {
                 canSpawn = true;
                 return true;
@@ -269,12 +269,12 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
                 canSpawn = true;
                 return true;
             }
-        } else if (currentHP < (maxHP * 0.2)) {
+        } else if (currentHP <= (maxHP * 0.2)) {
             if (!canSpawn) {
                 canSpawn = true;
                 return true;
             }
-        } else if (currentHP < (maxHP * 0.1)) {
+        } else if (currentHP <= (maxHP * 0.1)) {
             if (!canSpawn) {
                 canSpawn = true;
                 return true;
