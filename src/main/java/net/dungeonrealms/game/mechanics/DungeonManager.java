@@ -113,6 +113,11 @@ public class DungeonManager implements GenericMechanic {
                 return;
             }
 
+            if (dungeonObject.triedTeleportingOut) {
+                dungeonObject.teleportPlayersOut(true);
+                return;
+            }
+
             switch (time) {
                 // 2h 10 minutes
                 case 7500:
@@ -294,6 +299,7 @@ public class DungeonManager implements GenericMechanic {
         public boolean beingRemoved;
         public boolean hasBossSpawned;
         public int keysDropped;
+        public boolean triedTeleportingOut;
 
         DungeonObject(DungeonType type, Integer time, List<Player> playerList, String worldName, String instanceName) {
             this.type = type;
@@ -381,6 +387,7 @@ public class DungeonManager implements GenericMechanic {
                         } else {
                             player.teleport(Teleportation.Cyrennica);
                         }
+                        triedTeleportingOut = true;
                         for (ItemStack stack : player.getInventory().getContents()) {
                             if (stack != null && stack.getType() != Material.AIR) {
                                 if (isDungeonItem(stack)) {

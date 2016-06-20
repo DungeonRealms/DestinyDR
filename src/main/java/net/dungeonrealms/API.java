@@ -64,7 +64,6 @@ import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.stream.Collectors;
 
 /**
@@ -482,6 +481,7 @@ public class API {
         Player player = Bukkit.getPlayer(uuid);
         if (!DatabaseAPI.getInstance().PLAYERS.containsKey(uuid)) {
             player.kickPlayer(ChatColor.RED + "Unable to grab your data, please reconnect!");
+            return;
         } else {
             if (player != null) {
                 player.sendMessage(ChatColor.GREEN + "Successfully received your data, loading...");
@@ -497,11 +497,16 @@ public class API {
                     player.kickPlayer(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "not" + ChatColor.RED + " authorized to connect to this shard.");
                     return;
                 }
+            } else {
+                return;
             }
         }
 
         GamePlayer gp = new GamePlayer(player);
         API.GAMEPLAYERS.put(player.getName(), gp);
+
+        DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 60);
+        //Prevent players entering a dungeon as they spawn.
 
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
@@ -557,6 +562,7 @@ public class API {
             });
 
         }
+
         PlayerManager.checkInventory(uuid);
 
         // Fatigue
