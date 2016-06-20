@@ -82,6 +82,10 @@ public class ParticleAPI {
             return selectionItem;
         }
 
+        public String getRawName() {
+            return rawName;
+        }
+
         public String getDisplayName() {
             return displayName;
         }

@@ -5,11 +5,17 @@ import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.RealmManager;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
+import net.dungeonrealms.game.mongo.DatabaseAPI;
+import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.json.JSONMessage;
 import net.dungeonrealms.game.player.rank.Rank;
+import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
+import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ItemRarity;
@@ -32,6 +38,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import java.text.NumberFormat;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -298,6 +306,63 @@ public class CommandAdd extends BasicCommand {
                             player.sendMessage(ChatColor.RED + "The requested location (" + args[1] + ") is not a valid teleport location.");
                         }
                     }
+                    break;
+                case "everything":
+                    // This is a special command for giving YouTubers "everything" & for testing.
+                    // Therefore, we want to ensure that the player is an authorized developer.
+                    if (!Rank.isDev(player)) {
+                        player.sendMessage(ChatColor.RED + "This command can only be executed by a a developer.");
+                        return false;
+                    }
+
+                    // If we don't specify a 2nd argument, we assume we're doing it to ourselves.
+                    Player currentProfile = player;
+                    if (args.length >= 2) {
+                        if (Bukkit.getPlayer(args[1]) != null && Bukkit.getPlayer(args[1]).getDisplayName().equalsIgnoreCase(args[1])) {
+                            currentProfile = Bukkit.getPlayer(args[1]);
+                        } else {
+                            player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + args[1] + ChatColor.RED + " is offline.");
+                            return false;
+                        }
+                    }
+
+                    // Add all pets to the player.
+                    List<String> playerPets = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PETS, currentProfile.getUniqueId());
+                    for (EnumPets pets : EnumPets.values()) {
+                        if (!playerPets.isEmpty()) {
+                            if (playerPets.contains(pets.getRawName().toUpperCase())) {
+                                continue;
+                            }
+                        }
+                        DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, pets.getRawName(), true);
+                        player.sendMessage(ChatColor.GREEN + "Added the " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(pets.getRawName()) + ChatColor.GREEN + " pet to " + ChatColor.BOLD + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + ".");
+                    }
+
+                    // Add all trails to the player.
+                    List<String> playerTrails = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.PARTICLES, currentProfile.getUniqueId());
+                    for (ParticleAPI.ParticleEffect trails : ParticleAPI.ParticleEffect.values()) {
+                        if (!playerTrails.isEmpty()) {
+                            if (playerTrails.contains(trails.getRawName().toUpperCase())) {
+                                continue;
+                            }
+                        }
+                        DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$PUSH, EnumData.PARTICLES, trails.getRawName(), true);
+                        player.sendMessage(ChatColor.GREEN + "Added the " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(trails.getRawName()) + ChatColor.GREEN + " trail to " + ChatColor.BOLD + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + ".");
+                    }
+
+                    // Add all mount skins to the player.
+                    List<String> playerMountSkins = (ArrayList<String>) DatabaseAPI.getInstance().getData(EnumData.MOUNT_SKINS, currentProfile.getUniqueId());
+                    for (EnumMountSkins mountSkins : EnumMountSkins.values()) {
+                        if (!playerMountSkins.isEmpty()) {
+                            if (playerMountSkins.contains(mountSkins.getRawName().toUpperCase())) {
+                                continue;
+                            }
+                        }
+                        DatabaseAPI.getInstance().update(currentProfile.getUniqueId(), EnumOperators.$PUSH, EnumData.MOUNT_SKINS, mountSkins.getRawName(), true);
+                        player.sendMessage(ChatColor.GREEN + "Added the " + ChatColor.BOLD + ChatColor.UNDERLINE + Utils.ucfirst(mountSkins.getRawName()) + ChatColor.GREEN + " mount skin to " + ChatColor.BOLD + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + ".");
+                    }
+
+                    player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + ChatColor.UNDERLINE + currentProfile.getDisplayName() + ChatColor.GREEN + " has received everything.");
                     break;
                 default:
                     player.sendMessage(ChatColor.RED + "Invalid usage! '" + args[0] + "' is not a valid variable.");

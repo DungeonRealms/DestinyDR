@@ -160,19 +160,6 @@ public class Rank implements GenericMechanic {
     }
 
     /**
-     * Adds a <String>Permission</String> to a Rank's ArrayList</>
-     *
-     * @param rank
-     * @param permission
-     * @since 1.0
-     */
-    public void addPermission(String rank, String permission) {
-        Database.ranks.updateOne(Filters.eq("rank.name", rank.toUpperCase()), new Document(EnumOperators.$PUSH.getUO(), new Document("rank.permissions", permission)));
-        Utils.log.info("[ASYNC] DatabaseAPI update() called .. addPermission()... METHOD");
-        startInitialization();
-    }
-
-    /**
      * Sets a players rank.
      *
      * @param uuid
@@ -187,7 +174,6 @@ public class Rank implements GenericMechanic {
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, sRank, true);
         Player player = Bukkit.getPlayer(uuid);
 
-        PermissionAttachment attachment = player.addAttachment(DungeonRealms.getInstance());
         player.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + newRank);
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
     }

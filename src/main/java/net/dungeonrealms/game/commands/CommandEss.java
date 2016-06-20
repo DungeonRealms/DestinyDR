@@ -35,7 +35,7 @@ public class CommandEss extends BasicCommand {
         
         if(commandSender instanceof Player){
         	Player player = (Player)commandSender;
-            if (!Rank.isGM(player)) {
+            if (!Rank.isDev(player)) {
                 return false;
             }
         }
