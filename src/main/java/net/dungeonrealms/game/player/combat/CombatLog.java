@@ -62,7 +62,7 @@ public class CombatLog implements GenericMechanic {
         if (!isInCombat(player)) {
             COMBAT.put(player, 10);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-                BountifulAPI.sendActionBar(player, ChatColor.RED + "Entering Combat...", 2 * 20);
+                BountifulAPI.sendActionBar(player, ChatColor.RED + "Entering Combat", 3 * 20);
             }
 
             /*
@@ -79,7 +79,7 @@ public class CombatLog implements GenericMechanic {
         if (isInCombat(player)) {
             COMBAT.remove(player);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, player.getUniqueId()).toString())) {
-                BountifulAPI.sendActionBar(player, ChatColor.GREEN + "Leaving Combat...", 2 * 20);
+                BountifulAPI.sendActionBar(player, ChatColor.GREEN + "Leaving Combat", 3 * 20);
             }
         }
     }
