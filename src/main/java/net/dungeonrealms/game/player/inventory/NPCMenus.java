@@ -6,6 +6,7 @@ import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
+import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
@@ -80,23 +81,53 @@ public class NPCMenus {
 
     public static void openWizardMenu(Player player) {
         GamePlayer gp = API.getGamePlayer(player);
-        if (gp.getLevel() >= 10) {
-            if (gp.getStats().resetAmounts > 0) {
-                player.sendMessage(ChatColor.GREEN + "You have a free stat reset available! Type 'yes' or 'y' to use it");
-                player.closeInventory();
-                Chat.listenForMessage(player, chat -> {
-                    if (chat.getMessage().equalsIgnoreCase("yes") || chat.getMessage().equalsIgnoreCase("y")) {
-                        gp.getStats().freeResets -= 1;
-                        player.sendMessage(ChatColor.GREEN + "Stats reset");
-                    }
-                }, p -> p.sendMessage(ChatColor.RED + "Action cancelled."));
+
+        Player p = gp.getPlayer();
+        int totalResets = gp.getStats().resetAmounts + 1; //Ours start at 0, old DR started at 1.
+
+        int resetCost = (int) ((1000. * Math.pow(1.8, (totalResets + 1))) - ((1000. * Math.pow(1.8, (totalResets + 1))) % 1000));
+        resetCost = (resetCost > 60000 ? 60000 : (int) ((1000. * Math.pow(1.8, (totalResets + 1))) - ((1000. * Math.pow(1.8, (totalResets + 1))) % 1000)));
+        p.sendMessage("");
+        p.sendMessage(ChatColor.DARK_GRAY + "           *** " + ChatColor.GREEN + ChatColor.BOLD + "Stat Reset Confirmation" + ChatColor.DARK_GRAY + " ***");
+        p.sendMessage(ChatColor.DARK_GRAY + "           TOTAL Points: " + ChatColor.GREEN + gp.getStats().getLevel() * gp.getStats().POINTS_PER_LEVEL + ChatColor.DARK_GRAY + "          SPENT Points: " + ChatColor.GREEN + (gp.getLevel() * gp.getStats().POINTS_PER_LEVEL - gp.getStats().freePoints));
+        p.sendMessage(ChatColor.DARK_GRAY + "           Reset Cost: " + ChatColor.GREEN + "" + resetCost + " Gem(s)" + ChatColor.DARK_GRAY + "  TOTAL Resets: " + ChatColor.GREEN + totalResets);
+        p.sendMessage(ChatColor.DARK_GRAY + "           E-Cash Cost: " + ChatColor.GREEN + "500 ECASH");
+        p.sendMessage("");
+        p.sendMessage(ChatColor.GREEN + "Enter the code '" + ChatColor.BOLD + "confirm" + ChatColor.GREEN + "' to confirm your gem purchase of a reset." + ChatColor.GREEN + " Or enter the code '" + ChatColor.BOLD + "ecash" + ChatColor.GREEN + "' to purchase using E-CASH.");
+        p.sendMessage("");
+        p.sendMessage("" + ChatColor.RED + ChatColor.BOLD + "WARNING:" + ChatColor.RED + " Stat resets are " + ChatColor.BOLD + ChatColor.RED + "NOT" + ChatColor.RED + " reversible or refundable. Each time you reset your stats the price will increase for the next reset. Type 'cancel' to void this request.");
+        p.sendMessage("");
+
+        int finalResetCost = resetCost;
+        Chat.listenForMessage(p, event -> {
+            if (event.getMessage().equalsIgnoreCase("confirm")) {
+                if (BankMechanics.getInstance().takeGemsFromInventory(finalResetCost, p)) {
+                    gp.getStats().addReset();
+                    gp.getStats().unallocateAllPoints();
+                    event.getPlayer().sendMessage(ChatColor.YELLOW + "All Stat Points have been unallocated!");
+                    event.getPlayer().sendMessage(ChatColor.RED.toString() + finalResetCost + "G taken from your account.");
+                } else {
+                    p.sendMessage(ChatColor.RED + "Stat Reset - Cancelled");
+                    p.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: " + finalResetCost + "G " + ChatColor.RED + "insufficient funds.");
+                }
+            } else if (event.getMessage().equalsIgnoreCase("ecash")) {
+                if (gp.getEcashBalance() >= 500) {
+                    int ecash = gp.getEcashBalance() - 500;
+                    gp.setECash(ecash);
+                    gp.getStats().addReset();
+                    gp.getStats().unallocateAllPoints();
+                    event.getPlayer().sendMessage(ChatColor.YELLOW + "All Stat Points have been unallocated!");
+                    event.getPlayer().sendMessage(ChatColor.RED.toString() + ecash + "E-CASH taken from your account.");
+                } else {
+                    p.sendMessage(ChatColor.RED + "Stat Reset - Cancelled");
+                    p.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "COST: 500 ECASH" + ChatColor.RED + " insufficient funds.");
+                }
             } else {
-                player.sendMessage(ChatColor.RED + "You have already used your free stat reset for your character.");
-                player.sendMessage(ChatColor.YELLOW + "You may purchase more resets from the E-Cash vendor!");
+                p.sendMessage(ChatColor.RED + "Stat Reset - Cancelled");
             }
-        } else {
-            player.sendMessage(ChatColor.RED + "You need to be level 10 to use your ONE reset.");
-        }
+        }, null);
+
+
     }
 
     public static void openECashPurchaseMenu(Player player) {
