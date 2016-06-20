@@ -7,7 +7,10 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.banks.Storage;
 import net.dungeonrealms.game.player.chat.Chat;
-import org.bukkit.*;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
+import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,7 +26,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.UUID;
 
 /**
@@ -93,6 +95,7 @@ public class BankListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPickUp(PlayerPickupItemEvent event) {
         if (event.getItem().getItemStack().getType() == Material.EMERALD) {
+            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 1f);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getPlayer().getUniqueId()).toString())) {
                 event.getPlayer().sendMessage("                      " + ChatColor.GREEN + "+" + event.getItem().getItemStack().getAmount() + ChatColor.BOLD + "G");
             }
@@ -602,8 +605,8 @@ public class BankListener implements Listener {
     public void splitBankNote(PlayerInteractEvent interactEvent) {
         Player player = interactEvent.getPlayer();
         if (interactEvent.getAction() == Action.LEFT_CLICK_BLOCK || interactEvent.getAction() == Action.LEFT_CLICK_AIR) {
-            if (interactEvent.getPlayer().getItemInHand() != null && BankMechanics.getInstance().isBankNote(interactEvent.getPlayer().getItemInHand())) {
-                int noteWorth = BankMechanics.getInstance().getNoteValue(player.getItemInHand());
+            if (interactEvent.getPlayer().getInventory().getItemInMainHand() != null && BankMechanics.getInstance().isBankNote(interactEvent.getPlayer().getInventory().getItemInMainHand())) {
+                int noteWorth = BankMechanics.getInstance().getNoteValue(player.getInventory().getItemInMainHand());
                 player.sendMessage(ChatColor.GRAY + "This bank note is worth " + ChatColor.GREEN + noteWorth + " Gems." + ChatColor.GRAY + " Please enter the amount");
                 player.sendMessage(ChatColor.GRAY + "you'd like to sign an additional bank note for. Alternatively,");
                 player.sendMessage(ChatColor.GRAY + "type" + ChatColor.RED + " 'cancel' " + ChatColor.GRAY + "to stop this operation.");

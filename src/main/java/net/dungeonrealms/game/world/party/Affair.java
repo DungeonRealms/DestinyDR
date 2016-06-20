@@ -153,7 +153,7 @@ public class Affair implements GenericMechanic {
             player.sendMessage(ChatColor.RED + "You have left the party.");
 
         party.getOwner().sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + player.getDisplayName() + " has " + ChatColor.LIGHT_PURPLE + ChatColor.UNDERLINE + "left" + ChatColor.GRAY + " the party.");
-        party.getMembers().stream().forEach(player1 -> player1.sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + player.getDisplayName() + " has " + ChatColor.LIGHT_PURPLE + ChatColor.UNDERLINE + "left" + ChatColor.GRAY + " the party."));
+        party.getMembers().stream().filter(player1 -> !player1.getName().equals(party.getOwner().getName())).forEach(player1 -> player1.sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + "> " + ChatColor.GRAY + player.getDisplayName() + " has " + ChatColor.LIGHT_PURPLE + ChatColor.UNDERLINE + "left" + ChatColor.GRAY + " the party."));
 
         player.setScoreboard(ScoreboardHandler.getInstance().mainScoreboard);
 
@@ -185,8 +185,13 @@ public class Affair implements GenericMechanic {
 
     public boolean isInParty(Player player) {
         for (AffairO party : _parties) {
-            if (party.getOwner().equals(player) || party.getMembers().contains(player)) {
+            if (party.getOwner().getName().equals(player.getName())) {
                 return true;
+            }
+            for (Player player1 : party.getMembers()) {
+                if (player.getName().equals(player1.getName())) {
+                    return true;
+                }
             }
         }
         return false;

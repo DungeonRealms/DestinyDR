@@ -927,18 +927,7 @@ public class DamageListener implements Listener {
                     }
                 }
             }
-            player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
-            player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
-            player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
-            player.getInventory()
-                    .addItem(new ItemBuilder()
-                            .setItem(new ItemGenerator().setTier(ItemTier.TIER_1).setRarity(ItemRarity.COMMON)
-                                    .setType(ItemType.AXE).generateItem().getItem())
-                            .setNBTString("subtype", "starter").build());
-            //player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Item.ItemType.HELMET, Armor.ArmorTier.TIER_1, Armor.ItemRarity.COMMON)).setNBTString("subtype", "starter").build());
-            // player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Item.ItemType.CHESTPLATE, Armor.ArmorTier.TIER_1, Armor.ItemRarity.COMMON)).setNBTString("subtype", "starter").build());
-            //player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Item.ItemType.LEGGINGS, Armor.ArmorTier.TIER_1, Armor.ItemRarity.COMMON)).setNBTString("subtype", "starter").build());
-            //player.getInventory().addItem(new ItemBuilder().setItem(new ArmorGenerator().getDefinedStack(Item.ItemType.BOOTS, Armor.ArmorTier.TIER_1, Armor.ItemRarity.COMMON)).setNBTString("subtype", "starter").build());
+            ItemManager.giveStarter(player);
         }, 20L);
     }
 

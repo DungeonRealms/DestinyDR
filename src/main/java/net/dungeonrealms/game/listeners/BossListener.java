@@ -26,7 +26,7 @@ public class BossListener implements Listener {
 				if (b.getEnumBoss() != EnumBoss.Pyromancer && b.getEnumBoss() != EnumBoss.InfernalGhast && b.getEnumBoss()!= EnumBoss.LordsGuard)
 				if (DungeonManager.getInstance().getDungeon(event.getEntity().getWorld()) != null) {
 					DungeonObject dungeon = DungeonManager.getInstance().getDungeon(event.getEntity().getWorld());
-					dungeon.teleportPlayersOut();
+					dungeon.teleportPlayersOut(false);
 					dungeon.giveShards();
 				}
 				b.onBossDeath();

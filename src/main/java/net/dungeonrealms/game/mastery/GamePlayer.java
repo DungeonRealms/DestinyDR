@@ -1,9 +1,11 @@
 package net.dungeonrealms.game.mastery;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.handlers.KarmaHandler;
+import net.dungeonrealms.game.handlers.ProtectionHandler;
 import net.dungeonrealms.game.handlers.ScoreboardHandler;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -11,12 +13,15 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.items.Item.AttributeType;
 import net.dungeonrealms.game.world.party.Affair;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.Map;
 
 /**
  * Created by Nick on 10/19/2015.
@@ -26,9 +31,15 @@ public class GamePlayer {
     private Player T;
     private PlayerStats stats;
 
+    /**
+     * Attribute values and their values
+     */
+    private Map<AttributeType, Integer[]> attributes;
+
     public GamePlayer(Player player) {
         T = player;
         stats = new PlayerStats(player.getUniqueId());
+        attributes = API.calculateAllAttributes(player);
     }
 
     /**
@@ -185,23 +196,24 @@ public class GamePlayer {
 
 
     public int getEXPNeeded(int level) {
-        if (level < 4) {
-            return (int) ((100 * Math.pow(level, 2)) * 1.3) + 1000;
-        }
         if (level >= 101) {
             return 0;
         }
         double difficulty = 1;
-        if (level >= 3 && level < 40) {
+        if (level >= 1 && level < 40) {
             difficulty = 1.3;
-        } else if (level >= 40 && level < 60) {
+        }
+        else if (level >= 40 && level < 60) {
             difficulty = 1.6;
-        } else if (level >= 60 && level < 80) {
+        }
+        else if (level >= 60 && level < 80) {
             difficulty = 2.2;
-        } else if (level >= 80) {
+        }
+        else if (level >= 80) {
             difficulty = 2.6;
         }
-        return (int) ((100 * Math.pow(level, 2)) * difficulty);
+//        return (int) (100 * Math.pow(level, 2.24)); old level exp formula
+        return (int) ((100 * Math.pow(level, 2)) * difficulty + 500); // patch 1.9 exp formula
     }
 
 
@@ -257,8 +269,8 @@ public class GamePlayer {
             Utils.sendCenteredMessage(T, ChatColor.GRAY.toString() + ChatColor.BOLD + "******************************");
             Utils.sendCenteredMessage(T, ChatColor.GREEN.toString() + ChatColor.BOLD + "LEVEL UP");
             T.sendMessage("");
-            Utils.sendCenteredMessage(T, ChatColor.GRAY + "You are now level: " + ChatColor.GREEN + ChatColor.BOLD + newLevel);
-            Utils.sendCenteredMessage(T, ChatColor.GRAY + "EXP to next level: " + ChatColor.GREEN + ChatColor.BOLD + getEXPNeeded(newLevel + 1));
+            Utils.sendCenteredMessage(T, ChatColor.GRAY + "You are now level: " + ChatColor.GREEN + newLevel);
+            Utils.sendCenteredMessage(T, ChatColor.GRAY + "EXP to next level: " + ChatColor.GREEN + getEXPNeeded(newLevel + 1));
             Utils.sendCenteredMessage(T, ChatColor.GRAY + "Free stat points: " + ChatColor.GREEN + this.getStats().freePoints);
             Utils.sendCenteredMessage(T, ChatColor.GRAY.toString() + ChatColor.BOLD + "******************************");
             T.sendMessage("");
@@ -266,7 +278,7 @@ public class GamePlayer {
         else if (levelSet) { // level was set
             getStats().setPlayerLevel(newLevel);
 
-            Utils.sendCenteredMessage(T, ChatColor.YELLOW + "Your level has been set to: " + newLevel);
+            Utils.sendCenteredMessage(T, ChatColor.YELLOW + "Your level has been set to: " + ChatColor.LIGHT_PURPLE + newLevel);
             T.playSound(T.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
         }
 
@@ -333,6 +345,17 @@ public class GamePlayer {
 
     public int getPlayerItemFind() {
         return DamageAPI.calculatePlayerStat(T, Item.ArmorAttributeType.ITEM_FIND);
+    }
+
+    public boolean hasNewbieProtection() {
+        return ProtectionHandler.getInstance().getProtected_Players().contains(T.getName());
+    }
+
+    /**
+     * @return the attributes
+     */
+    public Map<AttributeType, Integer[]> getAttributes() {
+        return attributes;
     }
 
 }

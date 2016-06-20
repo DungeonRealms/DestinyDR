@@ -210,7 +210,7 @@ public class MainListener implements Listener {
         player.setGameMode(GameMode.ADVENTURE);
         player.addPotionEffect(new PotionEffect(PotionEffectType.BLINDNESS, 60, 4));
         player.teleport(new Location(Bukkit.getWorlds().get(0), 0, 255, 0, 0f, 0f));
-        BountifulAPI.sendTitle(player, 1, 20 * 3, 1, ChatColor.GREEN.toString() + ChatColor.BOLD + "Logging in '" + player.getName() + "' ...", ChatColor.GRAY.toString() + "Do not disconnect");
+        BountifulAPI.sendTitle(player, 1, 20 * 3, 1, ChatColor.GREEN.toString() + "Loading character for '" + player.getName() + "' ...", ChatColor.GRAY.toString() + "Do not disconnect");
         ItemStack[] armor = player.getInventory().getArmorContents();
         for (int i = 0; i < armor.length; i++) {
             armor[i] = new ItemStack(Material.AIR);
@@ -531,9 +531,9 @@ public class MainListener implements Listener {
         }
         if (npcNameStripped.equalsIgnoreCase("Ship Captain")) {
             event.getPlayer().teleport(new Location(Bukkit.getWorlds().get(0), -378, 85, 362));
-            TutorialIslandHandler.getInstance().giveStarterKit(event.getPlayer());
+            ItemManager.giveStarter(event.getPlayer());
+            return;
         }
-
     }
 
     /**
@@ -844,6 +844,17 @@ public class MainListener implements Listener {
             if (!(event.getTarget() instanceof Player)) {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void explosionDungeon(EntityExplodeEvent event) {
+        if (event.getEntity().getWorld().getName().contains("DUNGEON")) {
+            event.blockList().stream().forEach(block -> block.setType(Material.AIR));
+            event.setYield(0);
+            event.blockList().clear();
+            event.getEntity().remove();
+            event.setCancelled(true);
         }
     }
 

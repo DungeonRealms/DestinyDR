@@ -58,7 +58,7 @@ public class BankMechanics implements GenericMechanic {
          */
 
         Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            for (GamePlayer gp : API.GAMEPLAYERS) {
+            for (GamePlayer gp : API.GAMEPLAYERS.values()) {
                 if (gp == null || gp.getPlayer() == null)
                     continue;
                 if (gp.getStats().freePoints > 0) {

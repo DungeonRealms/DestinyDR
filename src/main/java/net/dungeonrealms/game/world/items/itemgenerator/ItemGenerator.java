@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.items.itemgenerator;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.items.Item;
@@ -42,7 +43,11 @@ public class ItemGenerator {
 	
 	private ItemStack item;
 	private ItemStack origItem; // for rerolling
-	
+
+    private boolean isSoulbound;
+    private boolean isUntradeable;
+    private boolean isPermanentlyUntradeable;
+
 	public ItemGenerator setType(ItemType type){
 		this.type = type;
 		return this;
@@ -81,6 +86,18 @@ public class ItemGenerator {
     public ItemGenerator setItem(ItemStack item) {
         this.item = item;
         return this;
+    }
+
+    public void setSoulbound(boolean soulbound) {
+        isSoulbound = soulbound;
+    }
+
+    public void setUntradeable(boolean untradeable) {
+        isUntradeable = untradeable;
+    }
+
+    public void setPermanentlyUntradeable(boolean permanentlyUntradeable) {
+        isPermanentlyUntradeable = permanentlyUntradeable;
     }
     
     /**
@@ -367,10 +384,21 @@ public class ItemGenerator {
 		// add the rarity tag
 		List<String> lore = meta.getLore();
 		lore.add(rarity.getName());
-		meta.setLore(lore);
-		    
+
+        // add soulbound, untradeable, puntradeable
+        if (isSoulbound) {
+            lore.add(ChatColor.DARK_RED.toString() + ChatColor.ITALIC + "Soulbound");
+        }
+        else if (isUntradeable) {
+            lore.add(ChatColor.GRAY + "Untradeable");
+        }
+        else if (isPermanentlyUntradeable) {
+            lore.add(ChatColor.GRAY + "Permanently Untradeable");
+        }
+
 		// set the lore!
-		meta.setDisplayName(name);
+        meta.setLore(lore);
+        meta.setDisplayName(name);
 		item.setItemMeta(meta);
 
         RepairAPI.setCustomItemDurability(item, 1500);
@@ -382,7 +410,9 @@ public class ItemGenerator {
         
         tag.set("itemType", new NBTTagInt(type.getId()));
         tag.set("itemRarity", new NBTTagInt(rarity.getId()));
-        tag.set("bound", new NBTTagString("false"));
+        tag.set("soulbound", new NBTTagInt(isSoulbound ? 1 : 0));
+        tag.set("untradeable", new NBTTagInt(isUntradeable ? 1 : 0));
+        tag.set("puntradeable", new NBTTagInt(isPermanentlyUntradeable ? 1 : 0));
         tag.set("itemTier", new NBTTagInt(tier.getTierId()));
         
         if (type.getId() <= 4) {
@@ -431,7 +461,7 @@ public class ItemGenerator {
         origItem = item.clone();
         
         // NMS stack for reading NBT tags
-        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(origItem);
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         
         ItemTier tier = ItemTier.getByTier(tag.getInt("itemTier"));
@@ -453,7 +483,7 @@ public class ItemGenerator {
 	 * @return
 	 */
 	public static ItemStack getNamedItem(String template_name) {
-        File template = new File("plugins/DungeonRealms/custom_items/" + template_name + ".item");
+        File template = new File("plugins/DungeonRealms/new_custom_items/" + template_name + ".item");
         if (!(template.exists())) {
             Utils.log.warning("[ItemGenerator] Custom item " + template_name + " not found!");
             return null; // No such custom template!
@@ -593,23 +623,53 @@ public class ItemGenerator {
         im.setLore(item_lore);
         is.setItemMeta(im);
 
-        String rarity = ItemRarity.UNIQUE.getName();
-        if (rarity != null) {
+        // check rarity
+        ItemRarity rarity = null;
+        for (String line : item_lore) {
+            for (ItemRarity itemRarity : ItemRarity.values()) {
+                if (line.contains(itemRarity.getName())) {
+                    rarity = itemRarity;
+                    break;
+                }
+            }
+            if (rarity != null) break;
+        }
+        if (rarity == null) {
             // Add rarity if needed.
-            item_lore.add(rarity);
+            rarity = ItemRarity.UNIQUE; // default to unique
+            item_lore.add(rarity.getName());
             im.setLore(item_lore);
             is.setItemMeta(im);
             RepairAPI.setCustomItemDurability(is, 1500);
         }
-        
+
+        // check soulbound, untradeable, or permanently untradeable
+        boolean isSoulbound = false, isUntradeable = false, isPermanentlyUntradeable = false;
+        for (String line : item_lore) {
+            if (line.contains("Soulbound")) {
+                isSoulbound = true;
+                break; // an item can only be one of the three
+            }
+            else if (line.contains("Permanently Untradeable")) {
+                isPermanentlyUntradeable = true;
+                break;
+            }
+            else if (line.contains("Untradeable")) {
+                isUntradeable = true;
+                break;
+            }
+        }
+
         // set NBT tags
         net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(is);
         // NMS stack for writing NBT tags
         NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
         
         tag.set("itemType", new NBTTagInt(ItemType.getTypeFromMaterial(is.getType()).getId()));
-        tag.set("itemRarity", new NBTTagInt(ItemRarity.UNIQUE.getId()));
-        tag.set("bound", new NBTTagString("false"));
+        tag.set("itemRarity", new NBTTagInt(rarity.getId()));
+        tag.set("soulbound", new NBTTagInt(isSoulbound ? 1 : 0));
+        tag.set("untradeable", new NBTTagInt(isUntradeable ? 1 : 0));
+        tag.set("puntradeable", new NBTTagInt(isPermanentlyUntradeable ? 1 : 0));
 
         /*
         The line below removes the weapons attributes.
@@ -653,10 +713,10 @@ public class ItemGenerator {
 	 * @return - An ItemStack array of the armor set.
 	 */
 	public ItemStack[] getArmorSet() {
-        return new ItemStack[] { this.setType(ItemType.BOOTS).generateItem().getItem(),
-                this.setType(ItemType.LEGGINGS).generateItem().getItem(),
-                this.setType(ItemType.CHESTPLATE).generateItem().getItem(),
-                this.setType(ItemType.HELMET).generateItem().getItem() };
+        return new ItemStack[] { this.setType(ItemType.BOOTS).setRarity(API.getItemRarity(false)).generateItem().getItem(),
+                this.setType(ItemType.LEGGINGS).setRarity(API.getItemRarity(false)).generateItem().getItem(),
+                this.setType(ItemType.CHESTPLATE).setRarity(API.getItemRarity(false)).generateItem().getItem(),
+                this.setType(ItemType.HELMET).setRarity(API.getItemRarity(false)).generateItem().getItem() };
 	}
 	
 	public static void loadModifiers(){

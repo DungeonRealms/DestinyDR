@@ -10,6 +10,7 @@ public enum EnumData {
     FIRST_LOGIN("info.firstLogin"),
     LAST_LOGIN("info.lastLogin"),
     LAST_LOGOUT("info.lastLogout"),
+    LAST_SHARD_TRANSFER("info.lastShardTransfer"),
     LEVEL("info.netLevel"),
     IS_PLAYING("info.isPlaying"),
     EXPERIENCE("info.experience"),
@@ -88,19 +89,20 @@ public enum EnumData {
     VITALITY("attributes.vitality"),
 
     RESETS("attributes.resets"),
-    
+
     FREERESETS("attributes.freeresets"),
-    
+
     BUFFER_POINTS("attributes.bufferPoints");
 
-	
-	private String key;
-	EnumData(String key){
-		this.key = key;
-	}
-	
-	public String getKey(){
-		return key;
-	}
+
+    private String key;
+
+    EnumData(String key) {
+        this.key = key;
+    }
+
+    public String getKey() {
+        return key;
+    }
 
 }

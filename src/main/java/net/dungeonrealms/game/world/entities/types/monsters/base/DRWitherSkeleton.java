@@ -114,6 +114,11 @@ public abstract class DRWitherSkeleton extends EntitySkeleton implements DRMonst
     }
 
     @Override
+    public void enderTeleportTo(double d0, double d1, double d2) {
+        //Test for EnderPearl TP Cancel.
+    }
+
+    @Override
     public void onMonsterDeath(Player killer) {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
             this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), enumMonster, this.getBukkitEntity(), killer);

@@ -19,8 +19,7 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.inventory.InventoryOpenEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 
 /**
@@ -45,6 +44,7 @@ public class RestrictionListener implements Listener {
     }
 
     public static boolean canPlayerUseTier(Player p, int tier) {
+        if (API.getGamePlayer(p) == null) return true;
         int level = API.getGamePlayer(p).getLevel();
         return tier == 1 || tier == 2 && level >= 10 || tier == 3 && level >= 20 || tier == 4 && level >= 30 || tier == 5 && level >= 40;
     }
@@ -57,6 +57,7 @@ public class RestrictionListener implements Listener {
             if (RepairAPI.getArmorOrWeaponTier(is) == 0) {
                 continue;
             }
+            if (!p.isOnline()) return;
             if (!canPlayerUseTier(p, RepairAPI.getArmorOrWeaponTier(is))) {
                 hadIllegalArmor = true;
                 if (p.getInventory().firstEmpty() == -1) {
@@ -148,7 +149,7 @@ public class RestrictionListener implements Listener {
         }, 150L);
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void playerOpenEmptyMap(PlayerInteractEvent event) {
         if (event.hasItem() && event.getItem().getType() == Material.EMPTY_MAP) {
             Player player = event.getPlayer();
@@ -159,4 +160,30 @@ public class RestrictionListener implements Listener {
             player.updateInventory();
         }
     }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void loggingOutOpenInventory(InventoryOpenEvent event) {
+        if (DungeonRealms.getInstance().getLoggingOut().contains(event.getPlayer().getName())) {
+            event.setCancelled(true);
+            event.getPlayer().closeInventory();
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void loggingOutDropItem(PlayerDropItemEvent event) {
+        if (DungeonRealms.getInstance().getLoggingOut().contains(event.getPlayer().getName())) {
+            event.setCancelled(true);
+            event.getPlayer().closeInventory();
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void loggingOutPickupItem(PlayerPickupItemEvent event) {
+        if (DungeonRealms.getInstance().getLoggingOut().contains(event.getPlayer().getName())) {
+            event.setCancelled(true);
+            event.getPlayer().closeInventory();
+        }
+    }
+
+    //TODO: Prevent players entering realms
 }

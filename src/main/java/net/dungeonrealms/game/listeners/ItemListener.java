@@ -15,6 +15,7 @@ import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
@@ -22,10 +23,7 @@ import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -49,24 +47,41 @@ import java.util.List;
  */
 public class ItemListener implements Listener {
     /**
-     * Used to stop player from dropping items that are
-     * valuable e.g. hearthstone or profile head.
+     * Used to handle dropping a soulbound, untradeable, or
+     * permanently untradeable item.
      *
      * @param event
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void onItemDrop(PlayerDropItemEvent event) {
-        if (!API.isItemTradeable(event.getItemDrop().getItemStack())) {
-            net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(event.getItemDrop().getItemStack());
+        Player p = event.getPlayer();
+        ItemStack item = event.getItemDrop().getItemStack();
+        if (!API.isItemTradeable(item)) {
+            net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
             NBTTagCompound tag = nmsItem.getTag();
             assert tag != null;
-            if (tag.hasKey("destroy")) {
-                event.getItemDrop().remove();
-            } else if (tag.hasKey("subtype") && tag.getString("subtype").equalsIgnoreCase("starter")) {
-                event.getItemDrop().remove();
-            } else {
+            // send the untradeable message if not profile or hearthstone since they will be dropped
+            // every time the inventory is closed
+            if (!item.getItemMeta().getDisplayName().contains("Character Profile") && !item.getItemMeta().getDisplayName().contains("Hearthstone"))
+                p.sendMessage(ChatColor.GRAY + "This item was " + ChatColor.ITALIC + "untradeable" + ChatColor.GRAY + ", " +
+                        "so it has " + ChatColor.UNDERLINE + "vanished.");
+            p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
+            event.getItemDrop().remove();
+        }
+        else if (API.isItemSoulbound(item)) {
+            p.sendMessage(ChatColor.RED + "Are you sure you want to " + ChatColor.UNDERLINE + "destroy" + ChatColor
+                    .RED + " this soulbound item? Type " + ChatColor.GREEN + ChatColor.BOLD + "Y" + ChatColor.RED + "" +
+                    " or " + ChatColor.DARK_RED + ChatColor.BOLD + "N");
+            Chat.getInstance().listenForMessage(p, chat -> {
+                if (chat.getMessage().equalsIgnoreCase("y")) {
+                    p.sendMessage(ChatColor.RED + "Item " + item.getItemMeta().getDisplayName() + ChatColor.RED + " has been " + ChatColor.UNDERLINE + "destroyed.");
+                    p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
+                    event.getItemDrop().remove();
+                }
+            }, player -> {
+                player.sendMessage(ChatColor.RED + "Item destroying " + ChatColor.UNDERLINE + "cancelled.");
                 event.setCancelled(true);
-            }
+            });
         }
     }
 
@@ -231,22 +246,89 @@ public class ItemListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.HIGHEST)
-    public void playerDrinkPotion(PlayerInteractEvent event) {
-        if (!event.hasItem() && (event.getAction() != Action.RIGHT_CLICK_BLOCK || event.getAction() != Action.RIGHT_CLICK_AIR)) return;
-        ItemStack stack = event.getItem();
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(stack));
-        if (nmsItem == null || nmsItem.getTag() == null) return;
-        if (!nmsItem.getTag().hasKey("type")) return;
-        if (nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
-            event.setCancelled(true);
-            if (HealthHandler.getInstance().getPlayerHPLive(event.getPlayer()) < HealthHandler.getInstance().getPlayerMaxHPLive(event.getPlayer())) {
-                event.setUseItemInHand(Event.Result.ALLOW);
+    public void playerDrinkPotionMainHand(PlayerInteractEvent event) {
+        if (event.getAction() != Action.RIGHT_CLICK_AIR && event.getAction() != Action.RIGHT_CLICK_BLOCK) return;
+        Player player = event.getPlayer();
+        ItemStack potion;
+        net.minecraft.server.v1_9_R2.ItemStack nmsItem;
+        if (player.getInventory().getItemInMainHand() == null || player.getInventory().getItemInMainHand().getType() == Material.AIR) {
+            //Drinking from Offhand.
+            potion = player.getInventory().getItemInOffHand();
+            nmsItem = CraftItemStack.asNMSCopy(potion);
+            if (nmsItem == null || nmsItem.getTag() == null) return;
+            if (!nmsItem.getTag().hasKey("type")) return;
+            if (nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                event.setCancelled(true);
+                event.setUseItemInHand(Event.Result.DENY);
                 event.setUseInteractedBlock(Event.Result.DENY);
-                event.getPlayer().getInventory().remove(stack);
-                event.getPlayer().updateInventory();
-                HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
+                if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
+                    player.getInventory().setItemInOffHand(null);
+                    player.updateInventory();
+                    HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
+                } else {
+                    player.sendMessage(ChatColor.RED + "You are already at full HP!");
+                }
+            }
+        } else if (player.getInventory().getItemInOffHand() == null || player.getInventory().getItemInOffHand().getType() == Material.AIR) {
+            //Drinking from Mainhand.
+            potion = player.getInventory().getItemInMainHand();
+            nmsItem = CraftItemStack.asNMSCopy(potion);
+            if (nmsItem == null || nmsItem.getTag() == null) return;
+            if (!nmsItem.getTag().hasKey("type")) return;
+            if (nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                event.setCancelled(true);
+                event.setUseItemInHand(Event.Result.DENY);
+                event.setUseInteractedBlock(Event.Result.DENY);
+                if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
+                    player.getInventory().setItemInMainHand(null);
+                    player.updateInventory();
+                    HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
+                } else {
+                    player.sendMessage(ChatColor.RED + "You are already at full HP!");
+                }
+            }
+        } else {
+            //Have a potion in both hands...
+            ItemStack itemUsed = event.getItem();
+            if (event.getItem() == null || event.getItem().getType() ==  Material.AIR) return;
+            potion = player.getInventory().getItemInMainHand();
+            nmsItem = CraftItemStack.asNMSCopy(potion);
+            ItemStack potionOffhand = player.getInventory().getItemInOffHand();
+            net.minecraft.server.v1_9_R2.ItemStack nmsOffhand = CraftItemStack.asNMSCopy(potionOffhand);
+            if (AntiCheat.getInstance().getUniqueEpochIdentifier(itemUsed) == null) return;
+            if (AntiCheat.getInstance().getUniqueEpochIdentifier(potion) == null && AntiCheat.getInstance().getUniqueEpochIdentifier(potionOffhand) == null) return;
+            if (AntiCheat.getInstance().getUniqueEpochIdentifier(itemUsed).equalsIgnoreCase(AntiCheat.getInstance().getUniqueEpochIdentifier(potion))) {
+                //Drinking their Mainhand potion
+                if (nmsItem == null || nmsItem.getTag() == null) return;
+                if (!nmsItem.getTag().hasKey("type")) return;
+                if (nmsItem.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                    event.setCancelled(true);
+                    event.setUseItemInHand(Event.Result.DENY);
+                    event.setUseInteractedBlock(Event.Result.DENY);
+                    if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
+                        player.getInventory().setItemInMainHand(null);
+                        player.updateInventory();
+                        HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsItem.getTag().getInt("healAmount"));
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You are already at full HP!");
+                    }
+                }
             } else {
-                event.getPlayer().sendMessage(ChatColor.RED + "You are already at full HP!");
+                //Drinking their Offhand potion
+                if (nmsOffhand == null || nmsOffhand.getTag() == null) return;
+                if (!nmsOffhand.getTag().hasKey("type")) return;
+                if (nmsOffhand.getTag().getString("type").equalsIgnoreCase("healthPotion")) {
+                    event.setCancelled(true);
+                    event.setUseItemInHand(Event.Result.DENY);
+                    event.setUseInteractedBlock(Event.Result.DENY);
+                    if (HealthHandler.getInstance().getPlayerHPLive(player) < HealthHandler.getInstance().getPlayerMaxHPLive(player)) {
+                        player.getInventory().setItemInOffHand(null);
+                        player.updateInventory();
+                        HealthHandler.getInstance().healPlayerByAmount(event.getPlayer(), nmsOffhand.getTag().getInt("healAmount"));
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You are already at full HP!");
+                    }
+                }
             }
         }
     }

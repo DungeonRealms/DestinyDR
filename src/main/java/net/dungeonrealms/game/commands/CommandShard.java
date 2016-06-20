@@ -1,7 +1,7 @@
 package net.dungeonrealms.game.commands;
 
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import org.bukkit.ChatColor;
+import net.dungeonrealms.game.menus.player.ShardSelector;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -21,8 +21,7 @@ public class CommandShard extends BasicCommand {
         if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;
 
-        player.sendMessage(ChatColor.YELLOW + ChatColor.BOLD.toString() + "This feature is coming soon!");
-
+        new ShardSelector(player.getUniqueId()).open(player);
         return true;
     }
 

@@ -10,10 +10,7 @@ import com.sk89q.worldguard.protection.regions.ProtectedRegion;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.guild.GuildMechanics;
-import net.dungeonrealms.game.handlers.EnergyHandler;
-import net.dungeonrealms.game.handlers.HealthHandler;
-import net.dungeonrealms.game.handlers.KarmaHandler;
-import net.dungeonrealms.game.handlers.ScoreboardHandler;
+import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.mastery.*;
 import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
@@ -39,10 +36,11 @@ import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
-import net.dungeonrealms.game.world.items.Item.ItemRarity;
-import net.dungeonrealms.game.world.items.Item.ItemTier;
+import net.dungeonrealms.game.world.items.Item.*;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.minecraft.server.v1_9_R2.NBTTagList;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
@@ -64,10 +62,8 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.rmi.activation.UnknownObjectException;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.UUID;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
 /**
@@ -76,8 +72,12 @@ import java.util.stream.Collectors;
 @SuppressWarnings("unchecked")
 public class API {
 
-    public static CopyOnWriteArrayList<GamePlayer> GAMEPLAYERS = new CopyOnWriteArrayList<>();
-    public static CopyOnWriteArrayList<Player> _hiddenPlayers = new CopyOnWriteArrayList<>();
+    /**
+     * Thread-safe ConcurrentHashMap. Constant time searches instead of linear for
+     * CopyOnWriteArrayList
+     */
+    public static Map<String, GamePlayer> GAMEPLAYERS = new ConcurrentHashMap<>();
+    public static Set<Player> _hiddenPlayers = new HashSet<>();
 
     /**
      * To get the players region.
@@ -438,11 +438,11 @@ public class API {
         }
         String inventory = ItemSerialization.toString(inv);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
-        if (GAMEPLAYERS.size() > 0)
-            GAMEPLAYERS.stream().filter(gPlayer -> gPlayer.getPlayer().getName().equalsIgnoreCase(player.getName())).forEach(gPlayer -> {
-                gPlayer.getStats().updateDatabase(true);
-                GAMEPLAYERS.remove(gPlayer);
-            });
+        if (GAMEPLAYERS.size() > 0) {
+            API.getGamePlayer(player).getStats().updateDatabase(true);
+            GAMEPLAYERS.remove(player.getName());
+        }
+        DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
         Utils.log.info("Saved information for uuid: " + uuid.toString() + " on their logout.");
     }
 
@@ -457,14 +457,13 @@ public class API {
                 CombatLog.removeFromCombat(player);
             }
             if (customStop) {
-                API.handleLogout(player.getUniqueId()); // ?? Might prevent rollbacks from too quick shard hopping.
+                API.handleLogout(player.getUniqueId());
+                DungeonRealms.getInstance().getLoggingOut().add(player.getName());
+                DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 5); //Prevents dungeon entry for 5 seconds.
                 Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                    try {
-                        NetworkAPI.getInstance().sendToServer(player.getName(), "Lobby");
-                    } catch (Exception exc) {
-                        exc.printStackTrace();
-                    }
-                }, 5L);
+                    NetworkAPI.getInstance().sendToServer(player.getName(), "Lobby");
+                    DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
+                }, 10);
             }
         }
     }
@@ -501,7 +500,7 @@ public class API {
         }
 
         GamePlayer gp = new GamePlayer(player);
-        API.GAMEPLAYERS.add(gp);
+        API.GAMEPLAYERS.put(player.getName(), gp);
 
         String playerInv = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY, uuid);
         if (playerInv != null && playerInv.length() > 0 && !playerInv.equalsIgnoreCase("null")) {
@@ -558,9 +557,16 @@ public class API {
 
         }
         PlayerManager.checkInventory(uuid);
+
+        // Fatigue
         EnergyHandler.getInstance().handleLoginEvents(player);
+
+        // Health
         HealthHandler.getInstance().handleLoginEvents(player);
+
+        // Alignment
         KarmaHandler.getInstance().handleLoginEvents(player);
+
         // Essentials
         //Subscription.getInstance().handleJoin(player);
         Rank.getInstance().doGet(uuid);
@@ -671,6 +677,9 @@ public class API {
         // Notices
         Notice.getInstance().doLogin(player);
 
+        // Newbie Protection
+        ProtectionHandler.getInstance().handleLogin(player);
+
         if (gp.getPlayer() != null) {
             Bukkit.getScheduler().scheduleAsyncDelayedTask(DungeonRealms.getInstance(), () -> {
                 if (gp.getStats().freePoints > 0) {
@@ -689,6 +698,7 @@ public class API {
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
         AttributeInstance instance = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
         instance.setBaseValue(4.0D);
+        DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
 
         // Permissions
         if (!player.isOp() && !Rank.isDev(player)) {
@@ -718,7 +728,7 @@ public class API {
         }
     }
 
-    public static void backupDatabase() {
+    static void backupDatabase() {
         if (Bukkit.getOnlinePlayers().size() == 0) return;
         AsyncUtils.pool.submit(() -> {
                     DungeonRealms.getInstance().getLogger().info("Beginning Mongo Database Backup");
@@ -775,8 +785,9 @@ public class API {
                         String inventory = ItemSerialization.toString(inv);
                         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
                         if (API.GAMEPLAYERS.size() > 0) {
-                            API.GAMEPLAYERS.stream().filter(gPlayer -> gPlayer.getPlayer().getName().equalsIgnoreCase(player.getName())).forEach(gPlayer -> gPlayer.getStats().updateDatabase(false));
+                            API.GAMEPLAYERS.get(player.getName()).getStats().updateDatabase(false);
                         }
+                        DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
                         Utils.log.info("Backed up information for uuid: " + uuid.toString());
                     }
                     DungeonRealms.getInstance().getLogger().info("Completed Mongo Database Backup");
@@ -874,12 +885,7 @@ public class API {
      */
 
     public static GamePlayer getGamePlayer(Player p) {
-        for (GamePlayer gPlayer : GAMEPLAYERS) {
-            if (gPlayer.getPlayer().getName().equals(p.getName())) {
-                return gPlayer;
-            }
-        }
-        return null;
+        return GAMEPLAYERS.get(p.getName());
     }
 
     /**
@@ -1004,6 +1010,208 @@ public class API {
         return file;
     }
 
+    /**
+     * Calculates the differences between two armor pieces' modifiers and updates the player's
+     * stats accordingly. Also sends the difference message to the player. Called on armor
+     * equip.
+     *
+     * @param oldArmor
+     * @param newArmor
+     * @param p
+     */
+    public static void handleArmorDifferences(ItemStack oldArmor, ItemStack newArmor, Player p) {
+        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()).toString())) {
+            p.sendMessage(ChatColor.WHITE + "" + oldArmor.getItemMeta().getDisplayName() + "" + ChatColor.WHITE +
+                    ChatColor.BOLD + " -> " + ChatColor.WHITE + "" + newArmor.getItemMeta().getDisplayName() + "");
+            if (newArmor == null || newArmor.getType() == Material.AIR) {
+                List<String> oldModifiers = API.getModifiers(oldArmor);
+                net.minecraft.server.v1_9_R2.NBTTagCompound oldTag = CraftItemStack.asNMSCopy(oldArmor).getTag();
+                // iterate through to get decreases from stats not in the new armor
+                oldModifiers.parallelStream().forEach(modifier -> {
+                    GamePlayer gp = API.getGamePlayer(p);
+                    // get the tag name (in case the stat is a range, in which case compare max values)
+                    String tagName = oldTag.hasKey(modifier) ? modifier : modifier + "Max";
+                    int oldArmorVal = oldTag.hasKey(tagName) ? oldTag.getInt(tagName) : 0;
+                    ArmorAttributeType type = ArmorAttributeType.getByNBTName(modifier);
+                    // calculate new values
+                    Integer[] newTotalVal = type.isRange()
+                            ? new Integer[] { API.getAttributeVal(type, gp)[0] - oldTag.getInt(modifier + "Min"),
+                            API.getAttributeVal(type, gp)[0] - oldTag.getInt(modifier + "Max") }
+                            : new Integer[] { 0, API.getAttributeVal(type, gp)[1] - oldTag.getInt(modifier) };
+                    API.setAttributeVal(type, newTotalVal, gp);
+                    if (oldArmorVal != 0) { // note the decrease to the p
+                        p.sendMessage(ChatColor.RED + "-" + oldArmorVal
+                                + (type.isPercentage() ? "%" : "") + " " + type.getName() + " ["
+                                + newTotalVal[1] + (type.isPercentage() ? "%" : "") + "]");
+                    }
+                });
+            } else {
+                List<String> newModifiers = API.getModifiers(newArmor);
+                List<String> oldModifiers = API.getModifiers(oldArmor);
+                net.minecraft.server.v1_9_R2.NBTTagCompound newTag = CraftItemStack.asNMSCopy(newArmor).getTag();
+                net.minecraft.server.v1_9_R2.NBTTagCompound oldTag = CraftItemStack.asNMSCopy(oldArmor).getTag();
+
+                // get differences
+                newModifiers.parallelStream().forEach(modifier -> {
+                    GamePlayer gp = API.getGamePlayer(p);
+                    // get the tag name (in case the stat is a range, in which case compare max values)
+                    String tagName = newTag.hasKey(modifier) ? modifier : modifier + "Max";
+                    // get the attribute type to determine if we need a percentage or not and to get the
+                    // correct display name
+                    ArmorAttributeType type = ArmorAttributeType.getByNBTName(modifier);
+                    // calculate new values
+                    Integer[] newTotalVal = type.isRange()
+                            ? new Integer[] { API.getAttributeVal(type, gp)[0] - oldTag.getInt(modifier + "Min"),
+                            API.getAttributeVal(type, gp)[0] - oldTag.getInt(modifier + "Max") }
+                            : new Integer[] { 0, API.getAttributeVal(type, gp)[1] - oldTag.getInt(modifier) };
+                    API.setAttributeVal(type, newTotalVal, gp);
+                    if (oldArmor != null && oldArmor.getType() != Material.AIR) {
+                        // get the tag values (if the armor piece doesn't have the modifier, set equal to 0)
+                        int newArmorVal = newTag.hasKey(tagName) ? newTag.getInt(tagName) : 0;
+                        int oldArmorVal = oldTag.hasKey(tagName) ? oldTag.getInt(tagName) : 0;
+                        if (newArmorVal >= oldArmorVal) { // increase in the stat
+                            p.sendMessage(ChatColor.GREEN + "+" + (newArmorVal - oldArmorVal)
+                                    + (type.isPercentage() ? "%" : "") + " " + type.getName() + " ["
+                                    + newTotalVal[1] + (type.isPercentage() ? "%" : "") + "]");
+                        }
+                        else { // decrease in the stat
+                            p.sendMessage(ChatColor.RED + "-" + (oldArmorVal - newArmorVal)
+                                    + (type.isPercentage() ? "%" : "") + " " + type.getName() + " ["
+                                    + newTotalVal[1] + (type.isPercentage() ? "%" : "") + "]");
+                        }
+                    }
+                    else { // equipping armor into empty slot
+
+                    }
+                });
+                if (oldArmor != null && oldArmor.getType() != Material.AIR) {
+                    // iterate through to get decreases from stats not in the new armor
+                    oldModifiers.parallelStream().forEach(modifier -> {
+                        // get the tag name (in case the stat is a range, in which case compare max values)
+                        String tagName = newTag.hasKey(modifier) ? modifier : modifier + "Max";
+                        int oldArmorVal = oldTag.hasKey(tagName) ? oldTag.getInt(tagName) : 0;
+                        ArmorAttributeType type = ArmorAttributeType.getByNBTName(modifier);
+                        int[] newTotalVal = API.calculateAttribute(type, p);
+                        if (oldArmorVal != 0) { // note the decrease to the p
+                            p.sendMessage(ChatColor.RED + "-" + oldArmorVal
+                                    + (type.isPercentage() ? "%" : "") + " " + type.getName() + " ["
+                                    + newTotalVal[1] + (type.isPercentage() ? "%" : "") + "]");                                }
+                    });
+                }
+            }
+        }
+    }
+
+    public static void setAttributeVal(AttributeType type, Integer[] val, Player p) {
+        setAttributeVal(type, val, API.getGamePlayer(p));
+    }
+
+    public static void setAttributeVal(AttributeType type, Integer[] val, GamePlayer gp) {
+        gp.getAttributes().put(type, val);
+    }
+
+    public static Integer[] getAttributeVal(AttributeType type, Player p) {
+        return getAttributeVal(type, API.getGamePlayer(p));
+    }
+
+    public static Integer[] getAttributeVal(AttributeType type, GamePlayer gp) {
+        if (gp == null || type == null) return new Integer[] { 0, 0 };
+        return gp.getAttributes().get(type);
+    }
+
+    /**
+     * Given an attribute, gets the total value of the attribute from the player's
+     * armor and weapon if applicable. Even if the AttributeType passed is an Armor
+     * or Weapon Attribute Type, the method will still try to calculate the total
+     * from the player's armor or weapon if applicable. For the attributes damage
+     * and health, takes into account benefits given from stats (str, dex, vit, int).
+     *
+     * @param type - an attribute, can be either an armor or weapon attribute
+     * @param p - the player to calculate the total value for
+     * @return - the total value of the attribute from the player's equipment. If the
+     * attribute has ranged values, the first index is the min and second the max.
+     * Otherwise, the first index is the value.
+     * @since 2.0
+     */
+    public static int[] calculateAttribute(AttributeType type, Player p) {
+        if (type instanceof ArmorAttributeType) { // armor type
+            ArmorAttributeType armorType = (ArmorAttributeType) type;
+            ItemStack[] armorSet = p.getInventory().getArmorContents();
+            net.minecraft.server.v1_9_R2.ItemStack nmsStack = null;
+            NBTTagCompound tag = null;
+
+            for (ItemStack armor : armorSet) {
+                if (!API.isArmor(armor)) {
+                    continue;
+                }
+                nmsStack = CraftItemStack.asNMSCopy(armor);
+                tag = nmsStack.getTag();
+
+                if (tag.hasKey(type.getNBTName()) || tag.hasKey(type.getNBTName() + "Max")) {
+
+                }
+            }
+
+            // check if a weapon can also have this attribute
+            if (WeaponAttributeType.getByName(armorType.getName()) != null) {
+
+            }
+        }
+        else  if (type instanceof WeaponAttributeType) {
+            WeaponAttributeType weaponType = (WeaponAttributeType) type;
+
+            // check if armor can also have this attribute
+            if (ArmorAttributeType.getByName(weaponType.getName()) != null) {
+
+            }
+        }
+
+        return new int[] { 0, 0 };
+    }
+
+    /**
+     * Calculates the value for all attributes and loads it into memory. Calculates
+     * both armor and weapon attributes. Called on player login.
+     *
+     * @param p - Player that needs attribute calculation
+     * @return - the HashMap in the player attributes object containing each attribute
+     * as a key along with respective total attribute value as the value.
+     * @since 2.0
+     */
+    public static Map<AttributeType, Integer[]> calculateAllAttributes(Player p) {
+        Map<AttributeType, Integer[]> attributes = new HashMap<>();
+        // populate the map with empty values
+        for (WeaponAttributeType type : WeaponAttributeType.values()) {
+            attributes.put(type, new Integer[] { 0, 0 });
+        }
+        for (ArmorAttributeType type : ArmorAttributeType.values()) {
+            attributes.put(type, new Integer[] { 0, 0 });
+        }
+
+        return attributes;
+    }
+
+    /**
+     * Gets all the modifier names of an item.
+     * @param item
+     * @return - null if the item does not contain any modifiers
+     */
+    public static List<String> getModifiers(ItemStack item) {
+        if (item == null) return null;
+        List<String> modifiersList = new ArrayList<String>();
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
+        if (!nmsStack.hasTag()) return null;
+        NBTTagCompound tag = nmsStack.getTag();
+        if (tag.hasKey("modifiers")) {
+            NBTTagList list = tag.getList("modifiers", 8);
+            for (int i = 0; i < list.size(); i++) {
+                modifiersList.add(list.getString(i));
+            }
+            return modifiersList;
+        }
+        return null;
+    }
+
     public static boolean isWeapon(ItemStack stack) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         if (nms == null || nms.getTag() == null) return false;
@@ -1035,7 +1243,30 @@ public class API {
             if (nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter")) {
                 return false;
             }
+            if (nms.getTag().hasKey("untradeable") && nms.getTag().getInt("untradeable") == 1) {
+                return false;
+            }
         }
         return true;
+    }
+
+    public static boolean isItemUntradeable(ItemStack item) {
+        return !isItemTradeable(item);
+    }
+
+    public static boolean isItemSoulbound(ItemStack item) {
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
+        if (nms == null || nms.getTag() == null) return false;
+        NBTTagCompound tag = nms.getTag();
+        if (!tag.hasKey("soulbound")) return false;
+        return tag.getInt("soulbound") == 1 ? true : false;
+    }
+
+    public static boolean isItemPermanentlyUntradeable(ItemStack item) {
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
+        if (nms == null || nms.getTag() == null) return false;
+        NBTTagCompound tag = nms.getTag();
+        if (!tag.hasKey("untradeable")) return false;
+        return tag.getInt("untradeable") == 1 ? true : false;
     }
 }

@@ -1,10 +1,6 @@
 package net.dungeonrealms.game.player.chat;
 
-import net.dungeonrealms.game.guild.db.GuildDatabase;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.json.JSONMessage;
-import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -17,7 +13,6 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.UUID;
 
 public class TabbedChatListener implements Listener {
 
@@ -28,8 +23,6 @@ public class TabbedChatListener implements Listener {
         player.closeInventory(); // Closes the chat after it grabs it!
 
         String finalChat = Chat.getInstance().checkForBannedWords(e.getChatMessage());
-
-        UUID uuid = player.getUniqueId();
 
         StringBuilder prefix = new StringBuilder();
 
@@ -45,7 +38,7 @@ public class TabbedChatListener implements Listener {
             if (split.length > 1)
                 after = split[1];
 
-            ItemStack stack = player.getItemInHand();
+            ItemStack stack = player.getEquipment().getItemInMainHand();
 
             List<String> hoveredChat = new ArrayList<>();
             ItemMeta meta = stack.getItemMeta();

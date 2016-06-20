@@ -568,10 +568,10 @@ public class PlayerMenus {
         }));
         inv.setItem(4, editItem(Utils.getPlayerHead(player), ChatColor.GREEN + "Player Profile", new String[]{
         }));
-        inv.setItem(6, editItem(new ItemStack(Material.EYE_OF_ENDER), ChatColor.GOLD + "Trails", new String[]{
+        inv.setItem(6, editItem(new ItemStack(Material.EYE_OF_ENDER), ChatColor.GOLD + "Effects", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Stand out amongst the rest",
-                ChatColor.GRAY.toString() + ChatColor.ITALIC + "with a powerful trail.",
+                ChatColor.GRAY.toString() + ChatColor.ITALIC + "with powerful effects.",
                 "",
                 ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View obtained trails.",
                 ChatColor.WHITE + "Middle-Click:" + ChatColor.GREEN + " Receive trail item."

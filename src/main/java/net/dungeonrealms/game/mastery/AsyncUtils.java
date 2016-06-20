@@ -12,6 +12,6 @@ public class AsyncUtils {
     We'll use this instead of new Thread().start(); everytime we want
     something to be on a different thread..
      */
-    public static ExecutorService pool = Executors.newFixedThreadPool(12);
+    public static ExecutorService pool = Executors.newFixedThreadPool(14);
 
 }

@@ -359,6 +359,7 @@ public class RepairAPI {
         }
         NBTTagCompound tag = nmsItem.getTag();
         if (tag == null) return 0;
+        if (!tag.hasKey("itemTier")) return 0;
         if (tag.getInt("itemTier") == 0) return 0;
         return tag.getInt("itemTier");
     }

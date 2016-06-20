@@ -182,4 +182,9 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
 		this.checkItemDrop(this.getBukkitEntity().getMetadata("tier").get(0).asInt(), monsterType, this.getBukkitEntity(), killer);
 		});
 	}
+
+    @Override
+    public void enderTeleportTo(double d0, double d1, double d2) {
+        //Test for EnderPearl TP Cancel.
+    }
 }

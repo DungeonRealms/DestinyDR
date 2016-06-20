@@ -1,9 +1,11 @@
 package net.dungeonrealms.game.mechanics;
 
 import com.connorlinfoot.bountifulapi.BountifulAPI;
+import lombok.Getter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
@@ -44,6 +46,8 @@ public class DungeonManager implements GenericMechanic {
 
     private CopyOnWriteArrayList<DungeonObject> Dungeons = new CopyOnWriteArrayList<>();
     public static volatile ConcurrentHashMap<String, HashMap<Location, String>> instance_mob_spawns = new ConcurrentHashMap<>();
+    @Getter
+    private ConcurrentHashMap<String, Integer> players_Entering_Dungeon = new ConcurrentHashMap<>();
 
     public DungeonObject getDungeon(World world) {
         for (DungeonObject dungeon : Dungeons) {
@@ -66,6 +70,15 @@ public class DungeonManager implements GenericMechanic {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            for (Map.Entry<String, Integer> entry : players_Entering_Dungeon.entrySet()) {
+                if (entry.getValue() > 1) {
+                    players_Entering_Dungeon.put(entry.getKey(), (entry.getValue() - 1));
+                } else {
+                    players_Entering_Dungeon.remove(entry.getKey());
+                }
+            }
+        }, 100L, 20L);
 
         Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeon -> dungeon.aliveMonsters.stream().forEach(mob -> {
             if (mob != null) {
@@ -82,10 +95,14 @@ public class DungeonManager implements GenericMechanic {
             if (time < 10) {
                 return;
             }
+            if (Bukkit.getWorld(dungeonObject.getWorldName()) == null) {
+                Dungeons.remove(dungeonObject);
+                return;
+            }
             int monstersAlive = dungeonObject.maxAlive - dungeonObject.killed;
             int maxAlive = dungeonObject.maxAlive;
             if (!dungeonObject.canSpawnBoss && maxAlive > 0 && monstersAlive > 0) {
-                if (monstersAlive <= (maxAlive * 0.15)) {
+                if (monstersAlive <= (maxAlive * 0.2)) {
                     dungeonObject.canSpawnBoss = true;
                     dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.RED.toString() + dungeonObject.type.getBossName() + ChatColor.RESET + ": Do you really wish to fight me?"));
                 }
@@ -155,7 +172,7 @@ public class DungeonManager implements GenericMechanic {
      */
     private void updateDungeonBoard(DungeonObject dungeonObject) {
         dungeonObject.getPlayerList().forEach(player -> BountifulAPI.sendActionBar(player, ChatColor.AQUA + "Time: " + ChatColor.WHITE + ChatColor.GOLD
-                + String.valueOf(dungeonObject.getTime() / 60) + "/45" + " " + ChatColor.AQUA + "Alive: " + ChatColor.WHITE + (dungeonObject.maxAlive - dungeonObject.killed) + ChatColor.GRAY
+                + String.valueOf(dungeonObject.getTime() / 60) + "/120" + " " + ChatColor.AQUA + "Alive: " + ChatColor.WHITE + (dungeonObject.maxAlive - dungeonObject.killed) + ChatColor.GRAY
                 + "/" + ChatColor.RED + dungeonObject.maxAlive));
     }
 
@@ -193,13 +210,16 @@ public class DungeonManager implements GenericMechanic {
         Bukkit.unloadWorld(dungeonObject.getWorldName(), false);
         Utils.log.info("[DUNGEONS] Unloading world: " + dungeonObject.getWorldName() + " in preparation for deletion!");
         Bukkit.getScheduler().cancelTask(dungeonObject.spawningTaskID);
-        Dungeons.remove(dungeonObject);
-        try {
-            FileUtils.deleteDirectory(new File(dungeonObject.worldName));
+        AsyncUtils.pool.submit(() -> {
+            deleteFolder(new File(dungeonObject.worldName));
             Utils.log.info("[DUNGEONS] Deleted world: " + dungeonObject.getWorldName() + " final stage.");
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+            deleteFolder(new File("plugins/WorldGuard/worlds/" + dungeonObject.worldName));
+            Utils.log.info("[DUNGEONS] Removing WorldGuard: " + dungeonObject.getWorldName() + " final stage.");
+            if (Dungeons.contains(dungeonObject)) {
+                dungeonObject.cleanup();
+                Dungeons.remove(dungeonObject);
+            }
+        });
     }
 
     /**
@@ -273,6 +293,7 @@ public class DungeonManager implements GenericMechanic {
         int spawningTaskID;
         public boolean beingRemoved;
         public boolean hasBossSpawned;
+        public int keysDropped;
 
         DungeonObject(DungeonType type, Integer time, List<Player> playerList, String worldName, String instanceName) {
             this.type = type;
@@ -316,49 +337,62 @@ public class DungeonManager implements GenericMechanic {
         }
 
         void load() {
-            try {
-                unZip(new ZipFile(DungeonRealms.getInstance().getDataFolder() + type.getLocation()), this);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            loadInWorld(getWorldName(), getPlayerList(), getType());
+            AsyncUtils.pool.submit(() -> {
+                try {
+                    unZip(new ZipFile(DungeonRealms.getInstance().getDataFolder() + type.getLocation()), this);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                loadInWorld(getWorldName(), getPlayerList(), getType());
+            }, 20L);
+        }
+
+        void cleanup() {
+            playerList.clear();
+            aliveMonsters.clear();
+            toSpawn.clear();
         }
 
         /**
          *
          */
-        public void teleportPlayersOut() {
+        public void teleportPlayersOut(boolean secondTry) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                getPlayerList().stream().filter(p -> p != null && p.isOnline()).forEach(player -> {
-                    switch (getType()) {
-                        case BANDIT_TROVE:
-                            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.BANDIT_TROVE);
-                            break;
-                        case VARENGLADE:
-                            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VARENGLADE);
-                            break;
-                        case THE_INFERNAL_ABYSS:
-                            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.INFERNAL_ABYSS);
-                            break;
-                        default:
-                            break;
-                    }
-                    if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId()).equals("")) {
-                        String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId())).split(",");
-                        player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]), Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
-                    } else {
-                        player.teleport(Teleportation.Cyrennica);
-                    }
-                    for (ItemStack stack : player.getInventory().getContents()) {
-                        if (stack != null && stack.getType() != Material.AIR) {
-                            if (isDungeonItem(stack)) {
-                                player.getInventory().remove(stack);
+                Bukkit.getWorld(worldName).getPlayers().stream().filter(p -> p != null && p.isOnline()).forEach(player -> {
+                    if (API.getGamePlayer(player) != null && API.getGamePlayer(player).isInDungeon()) {
+                        switch (getType()) {
+                            case BANDIT_TROVE:
+                                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.BANDIT_TROVE);
+                                break;
+                            case VARENGLADE:
+                                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VARENGLADE);
+                                break;
+                            case THE_INFERNAL_ABYSS:
+                                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.INFERNAL_ABYSS);
+                                break;
+                            default:
+                                break;
+                        }
+                        if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId()).equals("")) {
+                            String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId())).split(",");
+                            player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]), Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
+                        } else {
+                            player.teleport(Teleportation.Cyrennica);
+                        }
+                        for (ItemStack stack : player.getInventory().getContents()) {
+                            if (stack != null && stack.getType() != Material.AIR) {
+                                if (isDungeonItem(stack)) {
+                                    player.getInventory().remove(stack);
+                                }
                             }
                         }
                     }
                 });
             }, 15 * 20L);
-            getPlayerList().stream().filter(p -> p != null && p.isOnline()).forEach(p -> p.sendMessage(ChatColor.YELLOW + "You will be teleported out in 15 seconds..."));
+            if (!secondTry)
+                Bukkit.getWorld(worldName).getPlayers().stream().filter(p -> p != null && p.isOnline()).forEach(p -> p.sendMessage(ChatColor.YELLOW + "You will be teleported out in 15 seconds..."));
         }
 
         /**
@@ -416,6 +450,13 @@ public class DungeonManager implements GenericMechanic {
 
                 }
             }
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                teleportPlayersOut(true);
+                if (Dungeons.contains(DungeonManager.getInstance().getDungeon(Bukkit.getWorld(worldName)))) {
+                    DungeonManager.getInstance().getDungeon(Bukkit.getWorld(worldName)).cleanup();
+                    Dungeons.remove(DungeonManager.getInstance().getDungeon(Bukkit.getWorld(worldName)));
+                }
+            }, 600L);
         }
     }
 
@@ -432,56 +473,68 @@ public class DungeonManager implements GenericMechanic {
          * Only creates a world if the contents of a world don't already exist.
 		 * This method loadInWorld() is called in the actual object load().
 		 */
-        if (new File(worldName + "/" + "uid.dat").exists()) {
-            // Delete that shit.
-            new File(worldName + "/" + "uid.dat").delete();
-        }
-        World w = Bukkit.getServer().createWorld(new WorldCreator(worldName));
-        w.setKeepSpawnInMemory(true);
-        w.setAutoSave(false);
-        w.setPVP(false);
-        w.setStorm(false);
-        w.setMonsterSpawnLimit(600);
-        w.setGameRuleValue("doFireTick", "false");
-        w.setGameRuleValue("randomTickSpeed", "0");
-        Bukkit.getWorlds().add(w);
+        AsyncUtils.pool.submit(() -> {
+            if (new File(worldName + "/" + "uid.dat").exists()) {
+                // Delete that shit.
+                new File(worldName + "/" + "uid.dat").delete();
+            }
+            deleteFolder(new File(worldName + "/players"));
+            try {
+                FileUtils.copyDirectory(new File("plugins/WorldGuard/worlds/" + type.getWorldGuardName()), new File("plugins/WorldGuard/worlds/" + worldName));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            Utils.log.info("Completed setup of Dungeon: " + worldName);
+        });
 
-        if (!instance_mob_spawns.containsKey(this.getDungeon(w).instanceName)) {
-            loadDungeonMobSpawns(this.getDungeon(w).instanceName);
-        }
-        DungeonObject object = this.getDungeon(w);
-        object.spawningTaskID = Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-            net.minecraft.server.v1_9_R2.World world = ((CraftWorld) w).getHandle();
-            object.toSpawn = DungeonMobCreator.getEntitiesToSpawn(object.instanceName, w);
-            object.maxAlive = object.toSpawn.size();
-            Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-                for (Map.Entry<Entity, Location> entry : object.toSpawn.entrySet()) {
-                    Location location = entry.getValue();
-                    location.setWorld(w);
-                    if (!API.getNearbyPlayers(location, 50).isEmpty()) {
-                        final Entity entity = entry.getKey();
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                        world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                        entity.setCustomNameVisible(true);
-                        if (entity.isAlive()) {
-                            object.aliveMonsters.add(entity);
-                            object.toSpawn.remove(entity);
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            World w = Bukkit.getServer().createWorld(new WorldCreator(worldName));
+            w.setKeepSpawnInMemory(true);
+            w.setAutoSave(false);
+            w.setPVP(false);
+            w.setStorm(false);
+            w.setMonsterSpawnLimit(600);
+            w.setGameRuleValue("doFireTick", "false");
+            w.setGameRuleValue("randomTickSpeed", "0");
+            Bukkit.getWorlds().add(w);
+
+            if (!instance_mob_spawns.containsKey(this.getDungeon(w).instanceName)) {
+                loadDungeonMobSpawns(this.getDungeon(w).instanceName);
+            }
+            DungeonObject object = this.getDungeon(w);
+            object.spawningTaskID = Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                net.minecraft.server.v1_9_R2.World world = ((CraftWorld) w).getHandle();
+                object.toSpawn = DungeonMobCreator.getEntitiesToSpawn(object.instanceName, w);
+                object.maxAlive = object.toSpawn.size();
+                Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+                    for (Map.Entry<Entity, Location> entry : object.toSpawn.entrySet()) {
+                        Location location = entry.getValue();
+                        location.setWorld(w);
+                        if (!API.getNearbyPlayers(location, 50).isEmpty()) {
+                            final Entity entity = entry.getKey();
+                            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                            world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                            entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                            entity.setCustomNameVisible(true);
+                            if (entity.isAlive()) {
+                                object.aliveMonsters.add(entity);
+                                object.toSpawn.remove(entity);
+                            }
                         }
                     }
-                }
-            }, 0L, 10L);
-        }, 60L);
+                }, 0L, 10L);
+            }, 60L);
 
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> playerList.stream().forEach(player -> {
-            String locationAsString = "-367,86,390,0,0"; // Cyrennica
-            if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
-                locationAsString = player.getLocation().getX() + "," + (player.getLocation().getY() + 0.5) + "," + player.getLocation().getZ() + "," + player.getLocation().getYaw() + "," + player.getLocation().getPitch();
-            }
-            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, true);
-            player.teleport(w.getSpawnLocation());
-            player.sendMessage(ChatColor.RED.toString() + object.type.getBossName() + ChatColor.RESET + ": How dare you enter my domain!");
-        }), 150L);
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> playerList.stream().forEach(player -> {
+                String locationAsString = "-367,86,390,0,0"; // Cyrennica
+                if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+                    locationAsString = player.getLocation().getX() + "," + (player.getLocation().getY() + 0.5) + "," + player.getLocation().getZ() + "," + player.getLocation().getYaw() + "," + player.getLocation().getPitch();
+                }
+                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, true);
+                player.teleport(w.getSpawnLocation());
+                player.sendMessage(ChatColor.RED.toString() + object.type.getBossName() + ChatColor.RESET + ": How dare you enter my domain!");
+            }), 150L);
+        }, 20L);
     }
 
     private void loadDungeonMobSpawns(String instanceName) {
@@ -512,6 +565,20 @@ public class DungeonManager implements GenericMechanic {
         }
     }
 
+    private void deleteFolder(File folder) {
+        File[] files = folder.listFiles();
+        if (files != null) { // some JVMs return null for empty dirs
+            for (File f : files) {
+                if (f.isDirectory()) {
+                    deleteFolder(f);
+                } else {
+                    f.delete();
+                }
+            }
+        }
+        folder.delete();
+    }
+
     public boolean isDungeonItem(ItemStack stack) {
         if (stack != null && stack.getType() != Material.AIR && stack.hasItemMeta() && stack.getItemMeta().hasLore()) {
             List<String> itemLore = stack.getItemMeta().getLore();
@@ -530,9 +597,9 @@ public class DungeonManager implements GenericMechanic {
      * @since 1.0
      */
     public enum DungeonType {
-        BANDIT_TROVE("Mayel the Cruel", "/dungeons/banditTrove.zip"),
-        VARENGLADE("Burick The Fanatic", "/dungeons/varenglade.zip"),
-        THE_INFERNAL_ABYSS("The Infernal Abyss", "/dungeons/theInfernalAbyss.zip");
+        BANDIT_TROVE("Mayel the Cruel", "/dungeons/banditTrove.zip", "banditTrove"),
+        VARENGLADE("Burick The Fanatic", "/dungeons/varenglade.zip", "varenglade"),
+        THE_INFERNAL_ABYSS("The Infernal Abyss", "/dungeons/theInfernalAbyss.zip", "infernalAbyss");
 
         /**
          * WIP Dungeons, including The Depths of Aceron and The Crimson
@@ -541,10 +608,12 @@ public class DungeonManager implements GenericMechanic {
 
         private String bossName;
         private String location;
+        private String worldGuardName;
 
-        DungeonType(String bossName, String location) {
+        DungeonType(String bossName, String location, String worldGuardName) {
             this.bossName = bossName;
             this.location = location;
+            this.worldGuardName = worldGuardName;
         }
 
         public String getBossName() {
@@ -553,6 +622,10 @@ public class DungeonManager implements GenericMechanic {
 
         public String getLocation() {
             return location;
+        }
+
+        public String getWorldGuardName() {
+            return worldGuardName;
         }
     }
 

@@ -97,4 +97,9 @@ public class DRSilverfish extends EntitySilverfish implements DRMonster {
 	public EnumMonster getEnum() {
 		return enumMonster;
 	}
+
+	@Override
+	public void enderTeleportTo(double d0, double d1, double d2) {
+		//Test for EnderPearl TP Cancel.
+	}
 }

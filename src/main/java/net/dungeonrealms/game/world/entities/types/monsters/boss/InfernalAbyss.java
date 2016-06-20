@@ -1,6 +1,5 @@
 package net.dungeonrealms.game.world.entities.types.monsters.boss;
 
-import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -56,7 +55,7 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
         this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
         EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
         this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
-        for (Player p : API.getNearbyPlayers(loc, 50)) {
+        for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
             p.sendMessage(ChatColor.RED.toString() + "The Infernal Abyss" + ChatColor.RESET.toString() + ": " + "I have nothing to say to you foolish mortals, except for this: Burn.");
         }
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
@@ -110,7 +109,7 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
     public void onBossDeath() {
         // Giant Explosion that deals massive damage
         if (hasFiredGhast) {
-            for (Player p : API.getNearbyPlayers(this.getBukkitEntity().getLocation(), 50)) {
+            for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
                 p.sendMessage(ChatColor.RED.toString() + "The Infernal Abyss" + ChatColor.RESET.toString() + ": " + "You have defeated me. ARGHGHHG!");
             }
         }
@@ -124,18 +123,19 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
     public void onBossHit(EntityDamageByEntityEvent event) {
         if (!finalForm)
             if (this.ghast.isAlive() || this.guard.isAlive()) {
-                for (Player p : API.getNearbyPlayers(event.getEntity().getLocation(), 50)) {
+                for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
                     p.sendMessage(ChatColor.RED.toString() + "The Infernal Abyss" + ChatColor.RESET.toString() + ": " + "Hah! You must take out my minions.");
                 }
                 event.setDamage(0);
                 event.setCancelled(true);
+                return;
             }
 
         LivingEntity en = (LivingEntity) event.getEntity();
         double seventyFivePercent = HealthHandler.getInstance().getMonsterMaxHPLive(en) * 0.75;
 
         if (HealthHandler.getInstance().getMonsterHPLive(en) <= seventyFivePercent && !hasFiredGhast) {
-            for (Player p : API.getNearbyPlayers(event.getEntity().getLocation(), 50)) {
+            for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
                 p.sendMessage(ChatColor.RED.toString() + "The Infernal Abyss" + ChatColor.RESET.toString() + ": " + "Taste FIRE!");
             }
             ghast.setLocation(this.locX, this.locY + 4, this.locZ, 1, 1);

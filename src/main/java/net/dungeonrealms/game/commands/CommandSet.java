@@ -65,7 +65,7 @@ public class CommandSet extends BasicCommand {
                         }
                         API.getGamePlayer(p).updateLevel(lvl, false, true);
                         DatabaseAPI.getInstance().update(p.getUniqueId(), EnumOperators.$SET, EnumData.LEVEL, lvl, true);
-                        Utils.sendCenteredMessage(player, ChatColor.YELLOW + "Level of " + ChatColor.GREEN + p.getName() + ChatColor.YELLOW + " set to : " + lvl);
+                        Utils.sendCenteredMessage(player, ChatColor.YELLOW + "Level of " + ChatColor.GREEN + p.getName() + ChatColor.YELLOW + " set to: " + ChatColor.LIGHT_PURPLE +  lvl);
                         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
                     }
                     break;
