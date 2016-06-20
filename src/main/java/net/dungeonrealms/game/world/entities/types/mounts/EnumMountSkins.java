@@ -8,7 +8,7 @@ import org.bukkit.inventory.ItemStack;
  */
 public enum EnumMountSkins {
     SKELETON_HORSE(0, "SKELETONHORSE", new ItemStack(Material.SKULL_ITEM, 1), 0, "Skeleton Horse"),
-    ZOMBIE_HORSE(1, "ZOMBIEHORSE", new ItemStack(Material.SKULL_ITEM, 1), 2, "Skeleton Horse");
+    ZOMBIE_HORSE(1, "ZOMBIEHORSE", new ItemStack(Material.SKULL_ITEM, 1), 2, "Zombie Horse");
 
     private int id;
     private String name;
