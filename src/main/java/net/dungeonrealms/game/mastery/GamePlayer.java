@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.mastery;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handlers.HealthHandler;
@@ -12,12 +13,15 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.stats.PlayerStats;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
+import net.dungeonrealms.game.world.items.Item.AttributeType;
 import net.dungeonrealms.game.world.party.Affair;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.metadata.FixedMetadataValue;
+
+import java.util.Map;
 
 /**
  * Created by Nick on 10/19/2015.
@@ -27,9 +31,15 @@ public class GamePlayer {
     private Player T;
     private PlayerStats stats;
 
+    /**
+     * Attribute values and their values
+     */
+    private Map<AttributeType, Integer[]> attributes;
+
     public GamePlayer(Player player) {
         T = player;
         stats = new PlayerStats(player.getUniqueId());
+        attributes = API.calculateAllAttributes(player);
     }
 
     /**
@@ -332,6 +342,13 @@ public class GamePlayer {
 
     public boolean hasNewbieProtection() {
         return ProtectionHandler.getInstance().getProtected_Players().contains(T.getName());
+    }
+
+    /**
+     * @return the attributes
+     */
+    public Map<AttributeType, Integer[]> getAttributes() {
+        return attributes;
     }
 
 }
