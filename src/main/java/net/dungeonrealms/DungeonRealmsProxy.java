@@ -32,7 +32,7 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     public static com.mongodb.client.MongoDatabase database = null;
     public static com.mongodb.client.MongoCollection<Document> guilds = null;
     private static DungeonRealmsProxy instance;
-    private final String[] DR_SHARDS = new String[]{"dr1", "dr2"};
+    private final String[] DR_SHARDS = new String[]{"us1", "us2", "us3", "us4", "sub1", "yt1"};
 
     //private Map<String, Long> restartingServers = new HashMap<>();
 
