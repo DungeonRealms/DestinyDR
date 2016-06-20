@@ -21,7 +21,9 @@ import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -29,8 +31,8 @@ import java.util.UUID;
  */
 public class ShardSelector extends AbstractMenu {
 
-    public ShardSelector(UUID uuid) {
-        super("DungeonRealms Shards", 9, uuid);
+    public ShardSelector(Player player) {
+        super("DungeonRealms Shards", 9, player.getUniqueId());
 
         setDestroyOnExit(true);
         // DISPLAY AVAILABLE SHARDS //
@@ -41,6 +43,9 @@ public class ShardSelector extends AbstractMenu {
             BungeeServerInfo info = e.getValue();
 
             if (!info.isOnline() || shardID.equals(DungeonRealms.getInstance().shardid) || info.getOnlinePlayers() >= info.getMaxPlayers() || info.getMotd1().equals("offline"))
+                continue;
+
+            if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("SUB") && !Rank.isSubscriber(player)))
                 continue;
 
             GUIButton button = new GUIButton(Material.END_CRYSTAL) {
@@ -74,11 +79,28 @@ public class ShardSelector extends AbstractMenu {
                 }
             };
 
-            button.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID);
-            button.setLore(Arrays.asList(ChatColor.GREEN + "This shard is online!", ChatColor.WHITE + "Click here to load your", ChatColor.WHITE + "character onto this shard.", " ", ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers()));
+            List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.YELLOW + "Beta Shard");
 
+            if (!getServerType(shardID).equals(""))
+                lore.add(ChatColor.RED.toString() + ChatColor.ITALIC + getServerType(shardID));
+
+            lore.add(ChatColor.GREEN + "This shard is online!");
+            lore.add(ChatColor.WHITE + "Click here to load your");
+            lore.add(ChatColor.WHITE + "character onto this shard.");
+            lore.add(" ");
+            lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
+
+            button.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID);
+            button.setLore(lore);
             set(getSize(), button);
         }
+    }
+
+    public String getServerType(String shardID) {
+        if (shardID.contains("SUB")) return "Subscribers Only";
+        if (shardID.contains("YT")) return "Youtubers Only";
+        return "";
     }
 
     @Override

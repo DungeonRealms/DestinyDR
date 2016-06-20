@@ -21,14 +21,40 @@ public class UpdateServerApplication {
                 case "-updateDevServer":
                     executeCommand("cd " + TOOL_PATH + " && pushDev.bat " + args[1].substring(1));
                     break;
-                case "-updateAllDev":
+                case "-updateDevServer2":
+                    executeCommand("cd " + TOOL_PATH + " && pushDev2.bat " + args[1].substring(1));
+                    break;
+                case "-updateDevServer3":
+                    executeCommand("cd " + TOOL_PATH + " && pushDev3.bat " + args[1].substring(1));
+                    break;
+                case "-updateAllDev3":
+                    executeCommand("cd " + TOOL_PATH + " && pushDev3.bat yt1");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev3.bat sub1");
+                    break;
+                case "-updateAllDev2":
+                    executeCommand("cd " + TOOL_PATH + " && pushDev2.bat us3");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev2.bat us4");
+                    break;
+                case "-updateAllDev1":
                     executeCommand("cd " + TOOL_PATH + " && pushDev.bat d1");
                     executeCommand("cd " + TOOL_PATH + " && pushDev.bat d2");
                     break;
+                case "-updateAllDev":
+                    executeCommand("cd " + TOOL_PATH + " && pushDev3.bat yt1");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev3.bat sub1");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us1");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us2");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev2.bat us3");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev2.bat us4");
+                    break;
                 case "-updateAll":
                     executeCommand("cd " + TOOL_PATH + " && pushBungee.bat");
-                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat d1");
-                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat d2");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us1");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev.bat us2");
+                    //executeCommand("cd " + TOOL_PATH + " && pushDev2.bat us3");
+                    //executeCommand("cd " + TOOL_PATH + " && pushDev2.bat us4");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev3.bat yt1");
+                    executeCommand("cd " + TOOL_PATH + " && pushDev3.bat sub1");
                     break;
             }
         } else {

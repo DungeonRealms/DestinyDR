@@ -13,6 +13,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -62,6 +63,7 @@ public class BungeeServerTracker {
     }
 
     public static Map<String, BungeeServerInfo> getTrackedServers() {
+
         return trackedServers;
     }
 
@@ -107,7 +109,7 @@ public class BungeeServerTracker {
                     }
                 }
             }
-        }.runTaskAsynchronously(DungeonRealms.getInstance()), 1, refreshSeconds);
+        }.runTaskAsynchronously(DungeonRealms.getInstance()), 1, refreshSeconds * 20);
     }
 
 

@@ -21,7 +21,7 @@ public class CommandShard extends BasicCommand {
         if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;
 
-        new ShardSelector(player.getUniqueId()).open(player);
+        new ShardSelector(player).open(player);
         return true;
     }
 

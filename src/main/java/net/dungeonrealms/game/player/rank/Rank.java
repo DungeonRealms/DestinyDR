@@ -28,86 +28,13 @@ import java.util.UUID;
 public class Rank implements GenericMechanic {
 
     static Rank instance = null;
+    volatile static HashMap<UUID, String> PLAYER_RANKS = new HashMap<>();
 
     public static Rank getInstance() {
         if (instance == null) {
             instance = new Rank();
         }
         return instance;
-    }
-
-    volatile static HashMap<UUID, String> PLAYER_RANKS = new HashMap<>();
-
-
-    @Override
-    public EnumPriority startPriority() {
-        return EnumPriority.ARCHBISHOPS;
-    }
-
-    @Override
-    public void startInitialization() {
-        Utils.log.warning("[RANK] Init finished!");
-    }
-
-    @Override
-    public void stopInvocation() {
-
-    }
-
-    /**
-     * Gets the players rank.
-     *
-     * @param uuid
-     * @return
-     * @since 1.0
-     */
-    public String getRank(UUID uuid) {
-        String rank = (String) DatabaseAPI.getInstance().getData(EnumData.RANK, uuid);
-        return (rank == null || rank == "" ? "default" : rank).toUpperCase();
-    }
-
-    /**
-     * Adds a <String>Permission</String> to a Rank's ArrayList</>
-     *
-     * @param rank
-     * @param permission
-     * @since 1.0
-     */
-    public void addPermission(String rank, String permission) {
-        Database.ranks.updateOne(Filters.eq("rank.name", rank.toUpperCase()), new Document(EnumOperators.$PUSH.getUO(), new Document("rank.permissions", permission)));
-        Utils.log.info("[ASYNC] DatabaseAPI update() called .. addPermission()... METHOD");
-        startInitialization();
-    }
-
-    /**
-     * Sets a players rank.
-     *
-     * @param uuid
-     * @param sRank
-     * @since 1.0
-     */
-    public void setRank(UUID uuid, String sRank) {
-        String newRank = Rank.rankFromPrefix(sRank);
-
-        if (newRank == null) return; // @todo: Remove RAW_RANKS, replace with the fixed list.
-
-        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, sRank, true);
-        Player player = Bukkit.getPlayer(uuid);
-
-        PermissionAttachment attachment = player.addAttachment(DungeonRealms.getInstance());
-        player.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + newRank);
-        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
-    }
-
-    /**
-     * Listens in the Database class when the players
-     * data is first returned to assign the proper
-     * rank to the player!
-     *
-     * @param uuid
-     */
-    public void doGet(UUID uuid) {
-        PLAYER_RANKS.put(uuid, (String) DatabaseAPI.getInstance().getData(EnumData.RANK, uuid));
     }
 
     /**
@@ -119,7 +46,7 @@ public class Rank implements GenericMechanic {
      */
     public static boolean isDev(Player player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return rank.equalsIgnoreCase("dev") && DungeonRealms.getInstance().getDevelopers().contains(player.getDisplayName());
+        return rank.equalsIgnoreCase("dev") || DungeonRealms.getInstance().getDevelopers().contains(player.getName());
     }
 
     /**
@@ -203,6 +130,77 @@ public class Rank implements GenericMechanic {
 
         // Could not find rank.
         return null;
+    }
+
+    @Override
+    public EnumPriority startPriority() {
+        return EnumPriority.ARCHBISHOPS;
+    }
+
+    @Override
+    public void startInitialization() {
+        Utils.log.warning("[RANK] Init finished!");
+    }
+
+    @Override
+    public void stopInvocation() {
+
+    }
+
+    /**
+     * Gets the players rank.
+     *
+     * @param uuid
+     * @return
+     * @since 1.0
+     */
+    public String getRank(UUID uuid) {
+        String rank = (String) DatabaseAPI.getInstance().getData(EnumData.RANK, uuid);
+        return (rank == null || rank == "" ? "default" : rank).toUpperCase();
+    }
+
+    /**
+     * Adds a <String>Permission</String> to a Rank's ArrayList</>
+     *
+     * @param rank
+     * @param permission
+     * @since 1.0
+     */
+    public void addPermission(String rank, String permission) {
+        Database.ranks.updateOne(Filters.eq("rank.name", rank.toUpperCase()), new Document(EnumOperators.$PUSH.getUO(), new Document("rank.permissions", permission)));
+        Utils.log.info("[ASYNC] DatabaseAPI update() called .. addPermission()... METHOD");
+        startInitialization();
+    }
+
+    /**
+     * Sets a players rank.
+     *
+     * @param uuid
+     * @param sRank
+     * @since 1.0
+     */
+    public void setRank(UUID uuid, String sRank) {
+        String newRank = Rank.rankFromPrefix(sRank);
+
+        if (newRank == null) return; // @todo: Remove RAW_RANKS, replace with the fixed list.
+
+        DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.RANK, sRank, true);
+        Player player = Bukkit.getPlayer(uuid);
+
+        PermissionAttachment attachment = player.addAttachment(DungeonRealms.getInstance());
+        player.sendMessage("                 " + ChatColor.YELLOW + "Your rank is now: " + newRank);
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 63f);
+    }
+
+    /**
+     * Listens in the Database class when the players
+     * data is first returned to assign the proper
+     * rank to the player!
+     *
+     * @param uuid
+     */
+    public void doGet(UUID uuid) {
+        PLAYER_RANKS.put(uuid, (String) DatabaseAPI.getInstance().getData(EnumData.RANK, uuid));
     }
 
 }
