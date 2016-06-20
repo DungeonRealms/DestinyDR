@@ -160,7 +160,7 @@ public class ShopListener implements Listener {
                         }
                         if (nms.hasTag() && nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("starter")) {
                             event.setCancelled(true);
-                            clicker.sendMessage("Can't sell starter Items!");
+                            clicker.sendMessage(ChatColor.RED + "You cannot sell this item!");
                             return;
                         }
                         event.setCancelled(true);

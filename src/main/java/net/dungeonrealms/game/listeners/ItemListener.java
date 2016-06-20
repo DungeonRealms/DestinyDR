@@ -205,7 +205,7 @@ public class ItemListener implements Listener {
             if (event.getItem().getType() == Material.ENCHANTED_BOOK) {
                 net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(event.getItem());
                 if (nms.hasTag() && nms.getTag().hasKey("retrainingBook")) {
-                    event.getPlayer().sendMessage(ChatColor.GREEN + "Reset stat points? Type 'yes' or 'y' to confirm");
+                    event.getPlayer().sendMessage(ChatColor.GREEN + "Reset stat points? Type 'yes' or 'y' to confirm.");
                     Chat.listenForMessage(event.getPlayer(), chat -> {
                         if (chat.getMessage().equalsIgnoreCase("Yes") || chat.getMessage().equalsIgnoreCase("y")) {
                             if (event.getItem().getAmount() > 1) {
