@@ -142,11 +142,19 @@ public class DungeonRealms extends JavaPlugin {
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
         saveDefaultConfig();
 
-        DR_SHARDS_NAMES.put("dr1", "DR-1");
-        DR_SHARDS_NAMES.put("dr2", "DR-2");
+        DR_SHARDS_NAMES.put("us1", "US-1");
+        DR_SHARDS_NAMES.put("us2", "US-2");
+        DR_SHARDS_NAMES.put("us3", "US-3");
+        DR_SHARDS_NAMES.put("us4", "US-4");
+        DR_SHARDS_NAMES.put("sub1", "SUB-1");
+        DR_SHARDS_NAMES.put("yt1", "YT-1");
 
-        DR_SHARDS_IPS.put("dr1", new ServerAddress("158.69.122.139", 40007));
-        DR_SHARDS_IPS.put("dr2", new ServerAddress("158.69.122.139", 40008));
+        DR_SHARDS_IPS.put("us1", new ServerAddress("158.69.122.139", 40007));
+        DR_SHARDS_IPS.put("us2", new ServerAddress("158.69.122.139", 40008));
+        DR_SHARDS_IPS.put("us3", new ServerAddress("131.153.25.218", 40007));
+        DR_SHARDS_IPS.put("us4", new ServerAddress("131.153.25.218", 40008));
+        DR_SHARDS_IPS.put("sub1", new ServerAddress("131.153.25.114", 40007));
+        DR_SHARDS_IPS.put("yt1", new ServerAddress("131.153.25.114", 40008));
 
         Utils.log.info("Reading shard config...");
         Ini ini = new Ini();

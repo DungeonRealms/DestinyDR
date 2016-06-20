@@ -90,9 +90,14 @@ public class ShardSelector extends AbstractMenu {
 
         long lastShardTransfer = (long) DatabaseAPI.getInstance().getData(EnumData.LAST_SHARD_TRANSFER, player.getUniqueId());
 
-        if (lastShardTransfer != 0 && (System.currentTimeMillis() - lastShardTransfer) < 30000 && !Rank.isGM(player)) {
-            player.sendMessage(ChatColor.RED + "You must wait 30 seconds before you can transfer between shards.");
-            return;
+        if (lastShardTransfer != 0 && !Rank.isGM(player)) {
+            if (API.isInSafeRegion(player.getLocation()) && (System.currentTimeMillis() - lastShardTransfer) < 30000) {
+                player.sendMessage(ChatColor.RED + "You must wait 30 seconds before you can transfer between shards.");
+                return;
+            } else if (!API.isInSafeRegion(player.getLocation()) && (System.currentTimeMillis() - lastShardTransfer) < 300000) {
+                player.sendMessage(ChatColor.RED + "You must wait 5 minutes before you can transfer between shards.");
+                return;
+            }
         }
 
         if (CombatLog.isInCombat(player)) {
