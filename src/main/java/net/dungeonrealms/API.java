@@ -706,7 +706,7 @@ public class API {
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> AchievementManager.getInstance().handleLogin(player.getUniqueId()), 70L);
         player.addAttachment(DungeonRealms.getInstance()).setPermission("citizens.npc.talk", true);
         AttributeInstance instance = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
-        instance.setBaseValue(4.0D);
+        instance.setBaseValue(2.0D);
         DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
 
         // Permissions

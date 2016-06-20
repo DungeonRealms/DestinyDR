@@ -104,7 +104,7 @@ public class DungeonManager implements GenericMechanic {
             if (!dungeonObject.canSpawnBoss && maxAlive > 0 && monstersAlive > 0) {
                 if (monstersAlive <= (maxAlive * 0.2)) {
                     dungeonObject.canSpawnBoss = true;
-                    dungeonObject.getPlayerList().keySet().stream().forEach(player -> {
+                    Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().stream().forEach(player -> {
                         if (player != null) {
                             if (API.getGamePlayer(player).isInDungeon()) {
                                 player.sendMessage(ChatColor.RED.toString() + dungeonObject.type.getBossName() + ChatColor.RESET + ": Do you really wish to fight me?");
@@ -114,7 +114,7 @@ public class DungeonManager implements GenericMechanic {
                 }
             }
 
-            if (dungeonObject.getPlayerList().size() <= 0 || Bukkit.getWorld(dungeonObject.worldName).getPlayers().size() <= 0) {
+            if (Bukkit.getWorld(dungeonObject.worldName).getPlayers().size() <= 0) {
                 removeInstance(dungeonObject);
                 return;
             }
@@ -131,7 +131,7 @@ public class DungeonManager implements GenericMechanic {
                     break;
                 // 2h
                 case 7200:
-                    dungeonObject.getPlayerList().keySet().stream()
+                    Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().stream()
                             .forEach(player -> {
                                 if (player != null) {
                                     if (API.getGamePlayer(player).isInDungeon()) {
@@ -144,7 +144,7 @@ public class DungeonManager implements GenericMechanic {
                     break;
                 // 1h30 minutes
                 case 5400:
-                    dungeonObject.getPlayerList().keySet().stream()
+                    Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().stream()
                             .forEach(player -> {
                                 if (player != null) {
                                     if (API.getGamePlayer(player).isInDungeon()) {
@@ -157,7 +157,7 @@ public class DungeonManager implements GenericMechanic {
                     break;
                 // 1h
                 case 3600:
-                    dungeonObject.getPlayerList().keySet().stream()
+                    Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().stream()
                             .forEach(player -> {
                                 if (player != null) {
                                     if (API.getGamePlayer(player).isInDungeon()) {
@@ -170,7 +170,7 @@ public class DungeonManager implements GenericMechanic {
                     break;
                 // 30 minutes
                 case 1800:
-                    dungeonObject.getPlayerList().keySet().stream()
+                    Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().stream()
                             .forEach(player -> {
                                 if (player != null) {
                                     if (API.getGamePlayer(player).isInDungeon()) {
@@ -183,7 +183,7 @@ public class DungeonManager implements GenericMechanic {
                     break;
                 // 15 minutes
                 case 900:
-                    dungeonObject.getPlayerList().keySet().stream()
+                    Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().stream()
                             .forEach(player -> {
                                 if (player != null) {
                                     if (API.getGamePlayer(player).isInDungeon()) {
@@ -212,7 +212,7 @@ public class DungeonManager implements GenericMechanic {
      * @since 1.0
      */
     private void updateDungeonBoard(DungeonObject dungeonObject) {
-        dungeonObject.getPlayerList().keySet().forEach(player -> {
+        Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().forEach(player -> {
             if (player != null) {
                 if (API.getGamePlayer(player) != null) {
                     if (API.getGamePlayer(player).isInDungeon()) {
@@ -232,7 +232,7 @@ public class DungeonManager implements GenericMechanic {
      * @since 1.0
      */
     public void removeInstance(DungeonObject dungeonObject) {
-        dungeonObject.getPlayerList().keySet().forEach(player -> {
+        Bukkit.getWorld(dungeonObject.getWorldName()).getPlayers().forEach(player -> {
             if (player != null) {
                 if (Bukkit.getPlayer(player.getUniqueId()) != null) {
                     if (API.getGamePlayer(player) != null) {

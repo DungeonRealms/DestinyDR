@@ -181,6 +181,10 @@ public class DungeonListener implements Listener {
                             default:
                                 return;
                         }
+                        if (!partyDungeon.getPlayerList().containsKey(player)) {
+                            player.sendMessage(ChatColor.RED + "This Dungeon was created before you joined the party, you cannot join this session.");
+                            return;
+                        }
                         boolean hasTeleported = false;
                         DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 600);
                         for (Player player1 : partyMembers) {
@@ -220,7 +224,7 @@ public class DungeonListener implements Listener {
 
             Map<Player, Boolean> partyList = new HashMap<>();
             for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
-                if (player1.getLocation().distanceSquared(player.getLocation()) <= 400) {
+                if (player1.getLocation().distanceSquared(player.getLocation()) <= 200) {
                     partyList.put(player1, true);
                 } else {
                     partyList.put(player1, false);
