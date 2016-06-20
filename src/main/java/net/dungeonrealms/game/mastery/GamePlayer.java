@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.mastery;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
@@ -34,12 +36,14 @@ public class GamePlayer {
     /**
      * Attribute values and their values
      */
-    private Map<AttributeType, Integer[]> attributes;
+    @Setter
+    @Getter
+    private Map<String, Integer[]> attributes;
 
     public GamePlayer(Player player) {
         T = player;
         stats = new PlayerStats(player.getUniqueId());
-        attributes = API.calculateAllAttributes(player);
+        API.GAMEPLAYERS.put(player.getName(), this);
     }
 
     /**
@@ -350,12 +354,4 @@ public class GamePlayer {
     public boolean hasNewbieProtection() {
         return ProtectionHandler.getInstance().getProtected_Players().contains(T.getName());
     }
-
-    /**
-     * @return the attributes
-     */
-    public Map<AttributeType, Integer[]> getAttributes() {
-        return attributes;
-    }
-
 }
