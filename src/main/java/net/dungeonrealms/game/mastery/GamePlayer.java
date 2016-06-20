@@ -64,6 +64,13 @@ public class GamePlayer {
     }
 
     /**
+     * Set ECash for player. Database updates as well.
+     *
+     * @param ECash
+     */
+    public void setECash(int ECash) {DatabaseAPI.getInstance().update(T.getUniqueId(), EnumOperators.$SET, EnumData.ECASH, ECash, true); }
+
+    /**
      * Simple Tiers
      *
      * @since 1.0
