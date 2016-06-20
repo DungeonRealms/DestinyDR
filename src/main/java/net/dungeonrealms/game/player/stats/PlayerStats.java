@@ -368,6 +368,7 @@ public class PlayerStats {
     }
 
     public void addReset() {
+        resetAmounts++;
         DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$INC, EnumData.RESETS, 1, true);
     }
 }
