@@ -133,27 +133,27 @@ public class Achievements {
 
         GOBLIN_CITY("Skullneck", new String[]{
                 "Explorer: Skullneck",
-        }, 500, "achievement.explorer_skull_neck", false),
+        }, 1000, "achievement.explorer_skull_neck", false),
 
         TROLL_CITY1("Trollingor", new String[]{
                 "Explorer: Trollingor",
-        }, 500, "achievement.explorer_trollingor", false),
+        }, 2500, "achievement.explorer_trollingor", false),
 
         CRYSTALPEAKT("Crystalpeak Tower", new String[]{
                 "Explorer: Crystalpeak Tower",
-        }, 500, "achievement.explorer_crystalpeak_tower", false),
+        }, 5000, "achievement.explorer_crystalpeak_tower", false),
 
         TRANSITIONAL_13("Helmchen", new String[]{
                 "Explorer: Helmchen",
-        }, 500, "achievement.explorer_helmchen", false),
+        }, 1000, "achievement.explorer_helmchen", false),
 
         ALSAHRA("Al Sahra", new String[]{
                 "Explorer: Al Sahra",
-        }, 500, "achievement.explorer_al_sahra", false),
+        }, 1000, "achievement.explorer_al_sahra", false),
 
         SAVANNAH_SAFEZONE("Tripoli", new String[]{
                 "Explorer: Tripoli",
-        }, 500, "achievement.explorer_tripoli", false),
+        }, 1000, "achievement.explorer_tripoli", false),
 
         SWAMP_VILLAGE2("Dreadwood", new String[]{
                 "Explorer: Dreadwood",
@@ -161,59 +161,59 @@ public class Achievements {
 
         SWAMP1("Gloomy Hallows", new String[]{
                 "Explorer: Gloomy Hallows",
-        }, 500, "achievement.explorer_gloomy_hallows", false),
+        }, 1000, "achievement.explorer_gloomy_hallows", false),
 
-        CREST_GUARD("Avalon Peaks", new String[]{
-                "Explorer: Avalon Peaks",
-        }, 500, "achievement.explorer_avalon_peaks", false),
+        CREST_GUARD("Crest Guard", new String[]{
+                "Explorer: Crest Guard",
+        }, 2500, "achievement.explorer_crest_guard", false),
 
         CS_TRIP_6("The Frozen North", new String[]{
                 "Explorer: The Frozen North",
-        }, 500, "achievement.explorer_the_frozen_north", false),
+        }, 5000, "achievement.explorer_the_frozen_north", false),
 
         UNDER_WORLD("The Lost City of Avalon", new String[]{
                 "Explorer: The Lost City of Avalon",
-        }, 500, "achievement.explorer_the_lost_city_of_avalon", false),
+        }, 10000, "achievement.explorer_the_lost_city_of_avalon", false),
 
         CHIEF("Chief's Glory", new String[]{
                 "Explorer: Chief's Glory",
-        }, 500, "achievement.explorer_chiefs_glory", false),
+        }, 7500, "achievement.explorer_chiefs_glory", false),
 
         DEAD_PEAKS("Deadpeaks", new String[]{
                 "Explorer: Deadpeaks",
-        }, 500, "achievement.explorer_deadpeaks", false),
+        }, 1000, "achievement.explorer_deadpeaks", false),
 
         MURE("Mure", new String[]{
                 "Explorer: Mure",
-        }, 500, "achievement.explorer_mure", false),
+        }, 2500, "achievement.explorer_mure", false),
 
         SEBRATA("Sebrata", new String[]{
                 "Explorer: Sebrata",
-        }, 500, "achievement.explorer_sebrata", false),
+        }, 2500, "achievement.explorer_sebrata", false),
 
         FIERY_DUNGEON("The Infernal Abyss", new String[]{
                 "Explorer: The Infernal Abyss",
-        }, 500, "achievement.explorer_the_infernal_abyss", false),
+        }, 5000, "achievement.explorer_the_infernal_abyss", false),
 
         NOVICE("Dungeon Realms Novice", new String[]{
                 "You've unlocked 10 or more achievements.",
-        }, 500, "achievement.character_novice", false),
+        }, 1500, "achievement.character_novice", false),
 
         APPRENTICE("Dungeon Realms Apprentice", new String[]{
                 "You've unlocked 25 or more achievements.",
-        }, 1000, "achievement.character_apprentice", false),
+        }, 2500, "achievement.character_apprentice", false),
 
         ADEPT("Dungeon Realms Adept", new String[]{
                 "You've unlocked 50 or more achievements.",
-        }, 2000, "achievement.character_adept", false),
+        }, 5000, "achievement.character_adept", false),
 
         EXPERT("Dungeon Realms Expert", new String[]{
                 "You've unlocked 100 or more achievements.",
-        }, 4000, "achievement.character_expert", false),
+        }, 10000, "achievement.character_expert", false),
 
         MASTER("Dungeon Realms Master", new String[]{
                 "You've unlocked 200 or more achievements.",
-        }, 8000, "achievement.character_master", false),
+        }, 20000, "achievement.character_master", false),
 
         PLAY_WITH_DEV( "Play with Developer", new String[]{
                 "You're playing with a Developer!",
@@ -269,19 +269,19 @@ public class Achievements {
 
         REALM_EXPANSION_1("Expanding I", new String[]{
                 "You've begun work on your realm."
-        }, 250, "achievement.realm_expansion1", false),
+        }, 500, "achievement.realm_expansion1", false),
 
         REALM_EXPANSION_2("Expanding II", new String[]{
                 "You've taken the initiative to expand your realm."
-        }, 350, "achievement.realm_expansion2", false),
+        }, 1000, "achievement.realm_expansion2", false),
 
         REALM_EXPANSION_3("Expanding III", new String[]{
                 "Your realm is looking very nice."
-        }, 450, "achievement.realm_expansion3", false),
+        }, 2500, "achievement.realm_expansion3", false),
 
         REALM_EXPANSION_4("Expanding IV", new String[]{
                 "Your realm is truly a sight to behold."
-        }, 550, "achievement.realm_expansion4", false),
+        }, 5000, "achievement.realm_expansion4", false),
 
         ACQUIRE_CURRENCY_1("Acquire Currency I", new String[]{
                 "You have gems to spend."
@@ -289,31 +289,31 @@ public class Achievements {
 
         ACQUIRE_CURRENCY_2("Acquire Currency II", new String[]{
                 "More money each day."
-        }, 350, "achievement.currency_acquire2", false),
+        }, 500, "achievement.currency_acquire2", false),
 
         ACQUIRE_CURRENCY_3("Acquire Currency III", new String[]{
                 "A large pile of gems."
-        }, 450, "achievement.currency_acquire3", false),
+        }, 1000, "achievement.currency_acquire3", false),
 
         ACQUIRE_CURRENCY_4("Acquire Currency IV", new String[]{
                 "Gem hoarder..."
-        }, 550, "achievement.currency_acquire4", false),
+        }, 1500, "achievement.currency_acquire4", false),
 
         ACQUIRE_CURRENCY_5("Acquire Currency V", new String[]{
                 "Wow, that's a lot of gems"
-        }, 650, "achievement.currency_acquire5", false),
+        }, 2500, "achievement.currency_acquire5", false),
 
         ACQUIRE_CURRENCY_6("Acquire Currency VI", new String[]{
                 "I'm not sure you need all of these."
-        }, 750, "achievement.currency_acquire6", false),
+        }, 5000, "achievement.currency_acquire6", false),
 
         ACQUIRE_CURRENCY_7("Acquire Currency VII", new String[]{
                 "You should start your own bank."
-        }, 850, "achievement.currency_acquire7", false),
+        }, 7500, "achievement.currency_acquire7", false),
 
         ACQUIRE_CURRENCY_8("Acquire Currency VIII", new String[]{
                 "You're now one of the elites in Andalucia"
-        }, 950, "achievement.currency_acquire8", false),
+        }, 10000, "achievement.currency_acquire8", false),
 
         OLD_TIMER("Old Timer", new String[]{
                 "You helped shape Dungeon Realms during the Beta."
@@ -381,19 +381,19 @@ public class Achievements {
 
         LEVEL_10("Level 10", new String[]{
                 "Reach level 10."
-        }, 250, "achievement.character_level_10", false),
+        }, 1000, "achievement.character_level_10", false),
 
         LEVEL_25("Level 25", new String[]{
                 "Reach level 25."
-        }, 500, "achievement.character_level_25", false),
+        }, 2500, "achievement.character_level_25", false),
 
         LEVEL_50("Level 50", new String[]{
                 "Reach level 50."
-        }, 500, "achievement.character_level_50", false),
+        }, 5000, "achievement.character_level_50", false),
 
         LEVEL_100("Level 100", new String[]{
                 "Reach level 100."
-        }, 1000, "achievement.character_level_100", false),
+        }, 10000, "achievement.character_level_100", false),
 
         SHOP_CREATOR("Shop Creator", new String[]{
                 "Create your own shop."
@@ -425,19 +425,19 @@ public class Achievements {
 
         BANDIT_TROVE("Mayel The Cruel", new String[]{
                 "Defeated Mayel The Cruel."
-        }, 1000, "achievement.combat_bandit_trove", false),
+        }, 1500, "achievement.combat_bandit_trove", false),
 
         VARENGLADE("Burick The Fanatic", new String[]{
                 "Defeated Burick The Fanatic."
-        }, 1500, "achievement.combat_varenglade", false),
+        }, 5000, "achievement.combat_varenglade", false),
 
         INFERNAL_ABYSS("The Infernal Abyss", new String[]{
                 "Defeated The Infernal Abyss."
-        }, 2000, "achievement.combat_infernal_abyss", false),
+        }, 10000, "achievement.combat_infernal_abyss", false),
 
         DEPTHS_OF_ACERON("Depths of Aceron", new String[]{
                 "Defeated Aceron."
-        }, 2000, "achievement.combat_depths_of_aceron", false);
+        }, 20000, "achievement.combat_depths_of_aceron", false);
 
         private String name;
         private String[] message;
