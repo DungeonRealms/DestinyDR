@@ -98,7 +98,7 @@ public class BankListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerPickUp(PlayerPickupItemEvent event) {
         if (event.getItem().getItemStack().getType() == Material.EMERALD) {
-            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.BLOCK_NOTE_PLING, 1f, 1f);
+            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_EXPERIENCE_ORB_PICKUP, 1f, 1f);
             if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, event.getPlayer().getUniqueId()).toString())) {
                 event.getPlayer().sendMessage("                      " + ChatColor.GREEN + "+" + event.getItem().getItemStack().getAmount() + ChatColor.BOLD + "G");
             }

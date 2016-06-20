@@ -10,7 +10,6 @@ import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.events.PlayerMessagePlayerEvent;
 import net.dungeonrealms.game.guild.GuildMechanics;
 import net.dungeonrealms.game.handlers.KarmaHandler;
-import net.dungeonrealms.game.handlers.TutorialIslandHandler;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
@@ -785,8 +784,9 @@ public class MainListener implements Listener {
             event.getItem().remove();
             return;
         }
-        event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 1f);
-
+        if (event.getItem().getItemStack().getType() != Material.EMERALD) {
+            event.getPlayer().playSound(event.getPlayer().getLocation(), Sound.ENTITY_ITEM_PICKUP, 1f, 1f);
+        }
     }
 
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
