@@ -46,7 +46,7 @@ public class Rank implements GenericMechanic {
      */
     public static boolean isDev(Player player) {
         String rank = Rank.getInstance().getRank(player.getUniqueId());
-        return rank.equalsIgnoreCase("dev") || DungeonRealms.getInstance().getDevelopers().contains(player.getName());
+        return rank.equalsIgnoreCase("dev") && DungeonRealms.getInstance().getDevelopers().contains(player.getName());
     }
 
     /**
