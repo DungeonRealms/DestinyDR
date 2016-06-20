@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.mastery;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
@@ -34,12 +36,14 @@ public class GamePlayer {
     /**
      * Attribute values and their values
      */
-    private Map<AttributeType, Integer[]> attributes;
+    @Setter
+    @Getter
+    private Map<String, Integer[]> attributes;
 
     public GamePlayer(Player player) {
         T = player;
         stats = new PlayerStats(player.getUniqueId());
-        attributes = API.calculateAllAttributes(player);
+        API.GAMEPLAYERS.put(player.getName(), this);
     }
 
     /**
@@ -351,11 +355,25 @@ public class GamePlayer {
         return ProtectionHandler.getInstance().getProtected_Players().contains(T.getName());
     }
 
-    /**
-     * @return the attributes
-     */
-    public Map<AttributeType, Integer[]> getAttributes() {
-        return attributes;
+    public void setAttributeVal(AttributeType type, Integer[] val) {
+        attributes.put(type.getNBTName(), val);
     }
 
+    public Integer[] getAttributeVal(AttributeType type) {
+        if (type == null) return new Integer[] { 0, 0 };
+        return attributes.get(type.getNBTName());
+    }
+
+    /**
+     * Changes the value of an attribute by the given difference. This difference
+     * may be positive or negative.
+     *
+     * @param type
+     * @param difference
+     */
+    public Integer[] changeAttributeVal(AttributeType type, Integer[] difference) {
+        Integer[] oldVal = getAttributeVal(type);
+        Integer[] newTotalVal = new Integer[] { oldVal[0] + difference[0], oldVal[1] + difference[1] };
+        return attributes.put(type.getNBTName(), newTotalVal);
+    }
 }

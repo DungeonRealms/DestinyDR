@@ -505,7 +505,6 @@ public class API {
         }
 
         GamePlayer gp = new GamePlayer(player);
-        API.GAMEPLAYERS.put(player.getName(), gp);
 
         DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 60);
         //Prevent players entering a dungeon as they spawn.
@@ -538,6 +537,10 @@ public class API {
         }
         player.getEquipment().setArmorContents(armorContents);
         player.getEquipment().setItemInOffHand(offHand);
+
+        // calculate attributes
+        API.calculateAllAttributes(player);
+
         String source = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_STORAGE, uuid);
         if (source != null && source.length() > 0 && !source.equalsIgnoreCase("null")) {
             Inventory inv = ItemSerialization.fromString(source);
@@ -1019,113 +1022,16 @@ public class API {
         return file;
     }
 
-    /**
-     * Calculates the differences between two armor pieces' modifiers and updates the player's
-     * stats accordingly. Also sends the difference message to the player. Called on armor
-     * equip.
-     *
-     * @param oldArmor
-     * @param newArmor
-     * @param p
-     */
-    public static void handleArmorDifferences(ItemStack oldArmor, ItemStack newArmor, Player p) {
-        if (Boolean.valueOf(DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, p.getUniqueId()).toString())) {
-            p.sendMessage(ChatColor.WHITE + "" + oldArmor.getItemMeta().getDisplayName() + "" + ChatColor.WHITE +
-                    ChatColor.BOLD + " -> " + ChatColor.WHITE + "" + newArmor.getItemMeta().getDisplayName() + "");
-            if (newArmor == null || newArmor.getType() == Material.AIR) {
-                List<String> oldModifiers = API.getModifiers(oldArmor);
-                net.minecraft.server.v1_9_R2.NBTTagCompound oldTag = CraftItemStack.asNMSCopy(oldArmor).getTag();
-                // iterate through to get decreases from stats not in the new armor
-                oldModifiers.parallelStream().forEach(modifier -> {
-                    GamePlayer gp = API.getGamePlayer(p);
-                    // get the tag name (in case the stat is a range, in which case compare max values)
-                    String tagName = oldTag.hasKey(modifier) ? modifier : modifier + "Max";
-                    int oldArmorVal = oldTag.hasKey(tagName) ? oldTag.getInt(tagName) : 0;
-                    ArmorAttributeType type = ArmorAttributeType.getByNBTName(modifier);
-                    // calculate new values
-                    Integer[] newTotalVal = type.isRange()
-                            ? new Integer[] { API.getAttributeVal(type, gp)[0] - oldTag.getInt(modifier + "Min"),
-                            API.getAttributeVal(type, gp)[0] - oldTag.getInt(modifier + "Max") }
-                            : new Integer[] { 0, API.getAttributeVal(type, gp)[1] - oldTag.getInt(modifier) };
-                    API.setAttributeVal(type, newTotalVal, gp);
-                    if (oldArmorVal != 0) { // note the decrease to the p
-                        p.sendMessage(ChatColor.RED + "-" + oldArmorVal
-                                + (type.isPercentage() ? "%" : "") + " " + type.getName() + " ["
-                                + newTotalVal[1] + (type.isPercentage() ? "%" : "") + "]");
-                    }
-                });
-            } else {
-                List<String> newModifiers = API.getModifiers(newArmor);
-                List<String> oldModifiers = API.getModifiers(oldArmor);
-                net.minecraft.server.v1_9_R2.NBTTagCompound newTag = CraftItemStack.asNMSCopy(newArmor).getTag();
-                net.minecraft.server.v1_9_R2.NBTTagCompound oldTag = CraftItemStack.asNMSCopy(oldArmor).getTag();
-
-                // get differences
-                newModifiers.parallelStream().forEach(modifier -> {
-                    GamePlayer gp = API.getGamePlayer(p);
-                    // get the tag name (in case the stat is a range, in which case compare max values)
-                    String tagName = newTag.hasKey(modifier) ? modifier : modifier + "Max";
-                    // get the attribute type to determine if we need a percentage or not and to get the
-                    // correct display name
-                    ArmorAttributeType type = ArmorAttributeType.getByNBTName(modifier);
-                    // calculate new values
-                    Integer[] newTotalVal = type.isRange()
-                            ? new Integer[] { API.getAttributeVal(type, gp)[0] - oldTag.getInt(modifier + "Min"),
-                            API.getAttributeVal(type, gp)[0] - oldTag.getInt(modifier + "Max") }
-                            : new Integer[] { 0, API.getAttributeVal(type, gp)[1] - oldTag.getInt(modifier) };
-                    API.setAttributeVal(type, newTotalVal, gp);
-                    if (oldArmor != null && oldArmor.getType() != Material.AIR) {
-                        // get the tag values (if the armor piece doesn't have the modifier, set equal to 0)
-                        int newArmorVal = newTag.hasKey(tagName) ? newTag.getInt(tagName) : 0;
-                        int oldArmorVal = oldTag.hasKey(tagName) ? oldTag.getInt(tagName) : 0;
-                        if (newArmorVal >= oldArmorVal) { // increase in the stat
-                            p.sendMessage(ChatColor.GREEN + "+" + (newArmorVal - oldArmorVal)
-                                    + (type.isPercentage() ? "%" : "") + " " + type.getName() + " ["
-                                    + newTotalVal[1] + (type.isPercentage() ? "%" : "") + "]");
-                        }
-                        else { // decrease in the stat
-                            p.sendMessage(ChatColor.RED + "-" + (oldArmorVal - newArmorVal)
-                                    + (type.isPercentage() ? "%" : "") + " " + type.getName() + " ["
-                                    + newTotalVal[1] + (type.isPercentage() ? "%" : "") + "]");
-                        }
-                    }
-                    else { // equipping armor into empty slot
-
-                    }
-                });
-                if (oldArmor != null && oldArmor.getType() != Material.AIR) {
-                    // iterate through to get decreases from stats not in the new armor
-                    oldModifiers.parallelStream().forEach(modifier -> {
-                        // get the tag name (in case the stat is a range, in which case compare max values)
-                        String tagName = newTag.hasKey(modifier) ? modifier : modifier + "Max";
-                        int oldArmorVal = oldTag.hasKey(tagName) ? oldTag.getInt(tagName) : 0;
-                        ArmorAttributeType type = ArmorAttributeType.getByNBTName(modifier);
-                        int[] newTotalVal = API.calculateAttribute(type, p);
-                        if (oldArmorVal != 0) { // note the decrease to the p
-                            p.sendMessage(ChatColor.RED + "-" + oldArmorVal
-                                    + (type.isPercentage() ? "%" : "") + " " + type.getName() + " ["
-                                    + newTotalVal[1] + (type.isPercentage() ? "%" : "") + "]");                                }
-                    });
-                }
-            }
-        }
-    }
-
     public static void setAttributeVal(AttributeType type, Integer[] val, Player p) {
-        setAttributeVal(type, val, API.getGamePlayer(p));
+        API.getGamePlayer(p).setAttributeVal(type, val);
     }
 
-    public static void setAttributeVal(AttributeType type, Integer[] val, GamePlayer gp) {
-        gp.getAttributes().put(type, val);
+    public static Integer[] changeAttributeVal(AttributeType type, Integer[] difference, Player p) {
+        return API.getGamePlayer(p).changeAttributeVal(type, difference);
     }
 
     public static Integer[] getAttributeVal(AttributeType type, Player p) {
-        return getAttributeVal(type, API.getGamePlayer(p));
-    }
-
-    public static Integer[] getAttributeVal(AttributeType type, GamePlayer gp) {
-        if (gp == null || type == null) return new Integer[] { 0, 0 };
-        return gp.getAttributes().get(type);
+        return API.getGamePlayer(p).getAttributeVal(type);
     }
 
     /**
@@ -1187,14 +1093,61 @@ public class API {
      * as a key along with respective total attribute value as the value.
      * @since 2.0
      */
-    public static Map<AttributeType, Integer[]> calculateAllAttributes(Player p) {
-        Map<AttributeType, Integer[]> attributes = new HashMap<>();
+    public static Map<String, Integer[]> calculateAllAttributes(Player p) {
+        Map<String, Integer[]> attributes = new HashMap<>();
+        GamePlayer gp = API.getGamePlayer(p);
+        assert gp != null;
+
         // populate the map with empty values
         for (WeaponAttributeType type : WeaponAttributeType.values()) {
-            attributes.put(type, new Integer[] { 0, 0 });
+            attributes.put(type.getNBTName(), new Integer[] { 0, 0 });
         }
         for (ArmorAttributeType type : ArmorAttributeType.values()) {
-            attributes.put(type, new Integer[] { 0, 0 });
+            attributes.put(type.getNBTName(), new Integer[] { 0, 0 });
+        }
+
+        gp.setAttributes(attributes);
+
+        // iterate through armorset
+        for (ItemStack armor : p.getInventory().getArmorContents()) {
+            if (!API.isArmor(armor)) continue;
+
+            List<String> modifiers = API.getModifiers(armor);
+            NBTTagCompound tag = CraftItemStack.asNMSCopy(armor).getTag();
+            assert tag != null;
+
+            modifiers.stream().forEach(modifier -> {
+                ArmorAttributeType type = ArmorAttributeType.getByNBTName(modifier);
+                assert type != null;
+
+                if (type.isRange()) {
+                    gp.changeAttributeVal(type, new Integer[] { tag.getInt(modifier + "Min"), tag.getInt(modifier + "Max") });
+                }
+                else {
+                    gp.changeAttributeVal(type, new Integer[] { 0, tag.getInt(modifier) });
+                }
+            });
+        }
+
+        // add weapon stats if necessary
+        ItemStack weapon = p.getInventory().getItemInMainHand();
+
+        if (API.isWeapon(weapon)) {
+            List<String> modifiers = API.getModifiers(weapon);
+            NBTTagCompound tag = CraftItemStack.asNMSCopy(weapon).getTag();
+            assert tag != null;
+
+            modifiers.stream().forEach(modifier -> {
+                WeaponAttributeType type = WeaponAttributeType.getByNBTName(modifier);
+                assert type != null;
+
+                if (type.isRange()) {
+                    gp.changeAttributeVal(type, new Integer[] { tag.getInt(modifier + "Min"), tag.getInt(modifier + "Max") });
+                }
+                else {
+                    gp.changeAttributeVal(type, new Integer[] { 0, tag.getInt(modifier) });
+                }
+            });
         }
 
         return attributes;

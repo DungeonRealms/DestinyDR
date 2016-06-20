@@ -54,7 +54,7 @@ public class CommandCheck extends BasicCommand {
 					WeaponAttributeType attributeType;
 					for (String mod : modifiers) {
 						attributeType = WeaponAttributeType.getByNBTName(mod);
-						if (!tag.hasKey(mod) && tag.hasKey(mod + "Min")) { // ranged value
+						if (attributeType.isRange()) { // ranged value
 							sender.sendMessage(attributeType.getName() + ": " + tag.getInt(mod + "Min") + " - "
 									+ tag.getInt(mod + "Max"));
 						}
@@ -67,7 +67,7 @@ public class CommandCheck extends BasicCommand {
 					ArmorAttributeType attributeType;
 					for (String mod : modifiers) {
 						attributeType = ArmorAttributeType.getByNBTName(mod);
-						if (!tag.hasKey(mod) && tag.hasKey(mod + "Min")) { // ranged value
+						if (attributeType.isRange()) { // ranged value
 							sender.sendMessage(attributeType.getName() + ": " + tag.getInt(mod + "Min") + " - "
 									+ tag.getInt(mod + "Max"));
 						}

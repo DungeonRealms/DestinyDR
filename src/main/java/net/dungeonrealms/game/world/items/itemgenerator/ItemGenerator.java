@@ -191,7 +191,7 @@ public class ItemGenerator {
 		String modName = "";
         String name = tier.getTierColor().toString();
         String[] bonuses = new String[24];
-        HashMap<String, Integer> NBTModifiers = new HashMap<>();
+        LinkedHashMap<String, Integer> NBTModifiers = new LinkedHashMap<>();
         
         // NBT tag write and name the item
 		for (ModifierCondition mc : order) {
