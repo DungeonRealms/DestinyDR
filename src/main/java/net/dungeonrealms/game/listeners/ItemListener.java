@@ -58,6 +58,7 @@ public class ItemListener implements Listener {
         ItemStack item = event.getItemDrop().getItemStack();
         if (!API.isItemDroppable(item)) { //Realm Portal, Character Journal.
             event.setCancelled(true);
+            event.getItemDrop().remove();
             return;
         } else if (!API.isItemTradeable(item)) {
             net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
