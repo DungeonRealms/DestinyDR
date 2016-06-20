@@ -354,4 +354,26 @@ public class GamePlayer {
     public boolean hasNewbieProtection() {
         return ProtectionHandler.getInstance().getProtected_Players().contains(T.getName());
     }
+
+    public void setAttributeVal(AttributeType type, Integer[] val) {
+        attributes.put(type.getNBTName(), val);
+    }
+
+    public Integer[] getAttributeVal(AttributeType type) {
+        if (type == null) return new Integer[] { 0, 0 };
+        return attributes.get(type.getNBTName());
+    }
+
+    /**
+     * Changes the value of an attribute by the given difference. This difference
+     * may be positive or negative.
+     *
+     * @param type
+     * @param difference
+     */
+    public Integer[] changeAttributeVal(AttributeType type, Integer[] difference) {
+        Integer[] oldVal = getAttributeVal(type);
+        Integer[] newTotalVal = new Integer[] { oldVal[0] + difference[0], oldVal[1] + difference[1] };
+        return attributes.put(type.getNBTName(), newTotalVal);
+    }
 }
