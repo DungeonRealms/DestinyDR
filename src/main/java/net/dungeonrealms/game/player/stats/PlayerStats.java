@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
+import javax.xml.crypto.Data;
 import java.text.DecimalFormat;
 import java.util.UUID;
 
@@ -366,4 +367,8 @@ public class PlayerStats {
         return level;
     }
 
+    public void addReset() {
+        resetAmounts++;
+        DatabaseAPI.getInstance().update(playerUUID, EnumOperators.$INC, EnumData.RESETS, 1, true);
+    }
 }

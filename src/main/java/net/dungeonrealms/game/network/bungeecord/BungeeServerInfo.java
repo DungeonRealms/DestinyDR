@@ -51,6 +51,23 @@ public class BungeeServerInfo {
         return motd2;
     }
 
+    public void setMotd(String motd) {
+        if (motd == null) {
+            this.motd1 = "";
+            this.motd2 = "";
+            return;
+        }
+
+        if (motd.contains("\n")) {
+            String[] split = motd.split("\n");
+            this.motd1 = split[0];
+            this.motd2 = split[1];
+        } else {
+            this.motd1 = motd;
+            this.motd2 = "";
+        }
+    }
+
 
     public long getLastRequest() {
         return lastRequest;

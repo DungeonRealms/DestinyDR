@@ -11,7 +11,7 @@ import net.dungeonrealms.game.mastery.Utils;
  * A compilation of enumerations related to items including
  * ItemType, ItemTier, and ItemRarity along with convenience 
  * functions
- * 
+ *
  * @author Nick 9/19/2015
  * @author Alan Lu 5/10/2016
  */
@@ -29,38 +29,38 @@ public class Item {
         CHESTPLATE(6, Material.LEATHER_CHESTPLATE, "Leather Chestplate", Material.CHAINMAIL_CHESTPLATE, "Chainmail", Material.IRON_CHESTPLATE, "Platemail", Material.DIAMOND_CHESTPLATE, "Magic Platemail", Material.GOLD_CHESTPLATE, "Legendary Platemail"),
         LEGGINGS(7, Material.LEATHER_LEGGINGS, "Leather Leggings", Material.CHAINMAIL_LEGGINGS, "Chainmail Leggings", Material.IRON_LEGGINGS, "Platemail Leggings", Material.DIAMOND_LEGGINGS, "Magic Platemail Leggings", Material.GOLD_LEGGINGS, "Legendary Platemail Leggings"),
         BOOTS(8, Material.LEATHER_BOOTS, "Leather Boots", Material.CHAINMAIL_BOOTS, "Chainmail Boots", Material.IRON_BOOTS, "Platemail Boots", Material.DIAMOND_BOOTS, "Magic Platemail Boots", Material.GOLD_BOOTS, "Legendary Platemail Boots");
-        
+
         private int id; // for internal NBT tags
         private Material t1, t2, t3, t4, t5; // the Minecraft material representing each tier
         private String t1Name, t2Name, t3Name, t4Name, t5Name; // the item name representing each tier
-        
+
         ItemType(int id, Material t1, String t1Name, Material t2, String t2Name, Material t3, String t3Name, Material t4, String t4Name, Material t5, String t5Name) {
             this.id = id;
-            
+
             this.t1 = t1;
             this.t1Name = t1Name;
-            
+
             this.t2 = t2;
             this.t2Name = t2Name;
-            
+
             this.t3 = t3;
             this.t3Name = t3Name;
-            
+
             this.t4 = t4;
             this.t4Name = t4Name;
-            
+
             this.t5 = t5;
             this.t5Name = t5Name;
         }
-        
+
         public static ItemType getRandomWeapon() {
             return ItemType.getById(Utils.randInt(0, 4));
         }
-        
+
         public static ItemType getRandomArmor() {
             return ItemType.getById(Utils.randInt(5, 8));
         }
-        
+
         /**
          * Gets the ItemType from the specified Material
          * @param m - the Material of the item
@@ -76,7 +76,7 @@ public class Item {
             }
             return null;
         }
-        
+
         /**
          * Determines if an ItemStack is a weapon
          * @param is - the ItemStack to check
@@ -86,7 +86,7 @@ public class Item {
             ItemType type = getTypeFromMaterial(is.getType());
             return type != null && type.getId() <= 4;
         }
-        
+
         /**
          * Determines if an ItemStack is armor
          * @param is - the ItemStack to check
@@ -96,7 +96,7 @@ public class Item {
             ItemType type = getTypeFromMaterial(is.getType());
             return type != null && type.getId() >= 5;
         }
-        
+
         /**
          * Gets the material of the specified ItemTier
          * @param tier - the ItemTier of the item
@@ -110,7 +110,7 @@ public class Item {
             if(tier == ItemTier.TIER_5) return t5;
             return null;
         }
-        
+
         /**
          * Gets the tier name of the specified ItemTier
          * @param tier - the ItemTier of the item
@@ -124,7 +124,7 @@ public class Item {
             if(tier == ItemTier.TIER_5) return t5Name;
             return null;
         }
-        
+
         public static ItemType getByName(String name) {
             for (ItemType i : values()) {
                 if (i.toString().equalsIgnoreCase(name)) return i;
@@ -148,10 +148,10 @@ public class Item {
 
     public enum ItemTier {
         TIER_1(0, 1, new Integer[]{1, 10}, 2),
-        TIER_2(1, 2, new Integer[]{1, 10}, 3),
-        TIER_3(2, 3, new Integer[]{1, 10}, 4),
-        TIER_4(3, 4, new Integer[]{1, 10}, 5),
-        TIER_5(4, 5, new Integer[]{10, 20}, 6),;
+        TIER_2(1, 2, new Integer[]{10, 20}, 3),
+        TIER_3(2, 3, new Integer[]{20, 30}, 4),
+        TIER_4(3, 4, new Integer[]{30, 40}, 5),
+        TIER_5(4, 5, new Integer[]{40, 100}, 6),;
 
         private int id;
         private int tierId;
@@ -180,7 +180,7 @@ public class Item {
         public int getAttributeRange() {
             return attributeRange;
         }
-        
+
         public ChatColor getTierColor(){
             switch(this){
                 case TIER_1:
@@ -194,7 +194,7 @@ public class Item {
                 case TIER_5:
                     return ChatColor.YELLOW;
             }
-            
+
             return null;
         }
 
@@ -232,8 +232,8 @@ public class Item {
                     return ChatColor.WHITE;
             }
         }
-        
-        
+
+
     }
 
     public enum ItemRarity {
@@ -281,7 +281,7 @@ public class Item {
                     return ChatColor.GRAY.toString() + ChatColor.ITALIC.toString();
             }
         }
-        
+
         public static ItemRarity getByName(String name) {
             for (ItemRarity i : values()) {
                 if (i.toString().equalsIgnoreCase(name)) return i;
@@ -290,34 +290,76 @@ public class Item {
         }
     }
 
-    public enum WeaponAttributeType {
-        DAMAGE(0, "DMG", "damage"),
+    public interface AttributeType {
+        public int getId();
+        public String getName();
+        public String getNBTName();
+        public boolean isPercentage();
+        public boolean isRange();
+    }
+
+    public enum WeaponAttributeType implements AttributeType {
+        DAMAGE(0, "DMG", "damage", false, true),
         PURE_DAMAGE(1, "PURE DMG", "pureDamage"),
-        CRITICAL_HIT(2, "CRITICAL HIT", "criticalHit"), //Percentage
-        ARMOR_PENETRATION(3, "ARMOR PENETRATION", "armorPenetration"),
-        VS_MONSTERS(4, "vs. MONSTERS", "vsMonsters"), //Percentage
-        VS_PLAYER(5, "vs. PLAYERS", "vsPlayers"), //Percentage
-        LIFE_STEAL(6, "LIFE STEAL", "lifesteal"), //Percentage
+        CRITICAL_HIT(2, "CRITICAL HIT", "criticalHit", true), //Percentage
+        ARMOR_PENETRATION(3, "ARMOR PENETRATION", "armorPenetration", true), //Percentage
+        VS_MONSTERS(4, "vs. MONSTERS", "vsMonsters", true), //Percentage
+        VS_PLAYER(5, "vs. PLAYERS", "vsPlayers", true), //Percentage
+        LIFE_STEAL(6, "LIFE STEAL", "lifesteal", true), //Percentage
         VITALITY(7, "VIT", "vitality"),
         DEXTERITY(8, "DEX", "dexterity"),
         ICE_DAMAGE(9, "ICE DMG", "iceDamage"),
         FIRE_DAMAGE(10, "FIRE DMG", "fireDamage"),
         POISON_DAMAGE(11, "POISON DMG", "poisonDamage"),
-        ACCURACY(12, "ACCURACY", "accuracy"), //Percentage
+        ACCURACY(12, "ACCURACY", "accuracy", true), //Percentage
         STRENGTH(13, "STR", "strength"),
         INTELLECT(14, "INT", "intellect"),
-        KNOCKBACK(15, "KNOCKBACK", "knockback"),
-        BLIND(16, "BLIND", "blind"),
-        SLOW(17, "SLOW", "slow");
+        KNOCKBACK(15, "KNOCKBACK", "knockback", true), //Percentage
+        BLIND(16, "BLIND", "blind", true), //Percentage
+        SLOW(17, "SLOW", "slow", true); //Percentage
 
         private int id;
         private String name;
         private String NBTName;
+        private boolean isPercentage;
+        private boolean isRange;
+
+        /**
+         * @return the isRange
+         */
+        public boolean isRange() {
+            return isRange;
+        }
+
+        /**
+         * @return the isPercentage
+         */
+        public boolean isPercentage() {
+            return isPercentage;
+        }
 
         WeaponAttributeType(int id, String name, String NBTName) {
             this.id = id;
             this.name = name;
             this.NBTName = NBTName;
+            this.isPercentage = false;
+            this.isRange = false;
+        }
+
+        WeaponAttributeType(int id, String name, String NBTName, boolean percentage) {
+            this.id = id;
+            this.name = name;
+            this.NBTName = NBTName;
+            this.isPercentage = percentage;
+            this.isRange = false;
+        }
+
+        WeaponAttributeType(int id, String name, String NBTName, boolean percentage, boolean range) {
+            this.id = id;
+            this.name = name;
+            this.NBTName = NBTName;
+            this.isPercentage = percentage;
+            this.isRange = range;
         }
 
         public int getId() {
@@ -340,7 +382,7 @@ public class Item {
             }
             return null;
         }
-        
+
         public static WeaponAttributeType getByName(String name) {
             for (WeaponAttributeType at : values()) {
                 if (at.getName().equals(name)) {
@@ -350,7 +392,7 @@ public class Item {
             return null;
         }
 
-        public static WeaponAttributeType getByString(String name) {
+        public static WeaponAttributeType getByNBTName(String name) {
             for (WeaponAttributeType at : values()) {
                 if (at.getNBTName().equals(name)) {
                     return at;
@@ -359,35 +401,70 @@ public class Item {
             return null;
         }
     }
-    
-    public enum ArmorAttributeType {
-        ARMOR(0, "ARMOR", "armor"), //Percentage
+
+    public enum ArmorAttributeType implements AttributeType {
+        ARMOR(0, "ARMOR", "armor", true, true), //Percentage
         HEALTH_POINTS(1, "HP", "healthPoints"),
         HEALTH_REGEN(2, "HP REGEN", "healthRegen"),
-        ENERGY_REGEN(3, "ENERGY REGEN", "energyRegen"), //Percentage
+        ENERGY_REGEN(3, "ENERGY REGEN", "energyRegen", true), //Percentage
         INTELLECT(4, "INT", "intellect"),
-        FIRE_RESISTANCE(5, "FIRE RESISTANCE", "fireResistance"),
-        BLOCK(6, "BLOCK", "block"), //Percentage
-        THORNS(7, "THORNS", "thorns"), //Percentage
-        STRENGTH(8, "STR", "strength"),
-        VITALITY(9, "VIT", "vitality"),
-        DODGE(10, "DODGE", "dodge"), //Percentage
-        DAMAGE(11, "DPS", "dps"), //Percentage
-        DEXTERITY(12, "DEX", "dexterity"),
-        REFLECTION(13, "REFLECTION", "reflection"), //Percentage
-        GEM_FIND(14, "GEM FIND", "gemFind"), //Percentage
-        ITEM_FIND(15, "ITEM FIND", "itemFind"),
-        ICE_RESISTANCE(16, "ICE RESISTANCE", "iceResistance"),
-        POISON_RESISTANCE(17, "POISON RESISTANCE", "poisonResistance");
+        FIRE_RESISTANCE(5, "FIRE RESISTANCE", "fireResistance", true), //Percentage
+        BLOCK(6, "BLOCK", "block", true), //Percentage
+        LUCK(7, "LUCK", "luck", true), //Percentage
+        THORNS(8, "THORNS", "thorns", true), //Percentage
+        STRENGTH(9, "STR", "strength"),
+        VITALITY(10, "VIT", "vitality"),
+        DODGE(11, "DODGE", "dodge", true), //Percentage
+        DAMAGE(12, "DPS", "dps", true, true), //Percentage
+        DEXTERITY(13, "DEX", "dexterity"),
+        REFLECTION(14, "REFLECTION", "reflection", true), //Percentage
+        GEM_FIND(15, "GEM FIND", "gemFind", true), //Percentage
+        ITEM_FIND(16, "ITEM FIND", "itemFind", true), //Percentage
+        ICE_RESISTANCE(17, "ICE RESISTANCE", "iceResistance", true), //Percentage
+        POISON_RESISTANCE(18, "POISON RESISTANCE", "poisonResistance", true); //Percentage
 
         private int id;
         private String name;
         private String NBTName;
+        private boolean isPercentage;
+        private boolean isRange;
+
+        /**
+         * @return the isRange
+         */
+        public boolean isRange() {
+            return isRange;
+        }
+
+        /**
+         * @return the isPercentage
+         */
+        public boolean isPercentage() {
+            return isPercentage;
+        }
 
         ArmorAttributeType(int id, String name, String NBTName) {
             this.id = id;
             this.name = name;
             this.NBTName = NBTName;
+            this.isPercentage = false;
+            this.isRange = false;
+        }
+
+        ArmorAttributeType(int id, String name, String NBTName, boolean percentage) {
+            this.id = id;
+            this.name = name;
+            this.NBTName = NBTName;
+            this.isPercentage = percentage;
+            this.isRange = false;
+        }
+
+        ArmorAttributeType(int id, String name, String NBTName, boolean percentage, boolean range) {
+            this.id = id;
+            this.name = name;
+            this.NBTName = NBTName;
+            this.isPercentage = percentage;
+            this.isRange = range;
         }
 
         public int getId() {
@@ -410,26 +487,26 @@ public class Item {
             }
             return null;
         }
-        
+
         public static ArmorAttributeType getByName(String name) {
             for (ArmorAttributeType at : values()) {
-                if (at.getName().equalsIgnoreCase(name)) {
+                if (at.getName().equals(name)) {
                     return at;
                 }
             }
             return null;
         }
 
-        public static ArmorAttributeType getByString(String name) {
+        public static ArmorAttributeType getByNBTName(String name) {
             for (ArmorAttributeType at : values()) {
-                if (at.getNBTName().equalsIgnoreCase(name)) {
+                if (at.getNBTName().equals(name)) {
                     return at;
                 }
             }
             return null;
         }
     }
-    
+
     // UTILITY FUNCTIONS
     /**
      * Returns ItemStack Material based on item type and tier.
@@ -441,114 +518,114 @@ public class Item {
      */
     public static ItemStack getBaseItem(Item.ItemType type, Item.ItemTier tier) {
         switch (type) {
-        case SWORD:
-            switch (tier) {
-            case TIER_1:
-                return new ItemStack(Material.WOOD_SWORD);
-            case TIER_2:
-                return new ItemStack(Material.STONE_SWORD);
-            case TIER_3:
-                return new ItemStack(Material.IRON_SWORD);
-            case TIER_4:
-                return new ItemStack(Material.DIAMOND_SWORD);
-            case TIER_5:
-                return new ItemStack(Material.GOLD_SWORD);
-            }
-        case AXE:
-            switch (tier) {
-            case TIER_1:
-                return new ItemStack(Material.WOOD_AXE);
-            case TIER_2:
-                return new ItemStack(Material.STONE_AXE);
-            case TIER_3:
-                return new ItemStack(Material.IRON_AXE);
-            case TIER_4:
-                return new ItemStack(Material.DIAMOND_AXE);
-            case TIER_5:
-                return new ItemStack(Material.GOLD_AXE);
-            }
-        case POLEARM:
-            switch (tier) {
-            case TIER_1:
-                return new ItemStack(Material.WOOD_SPADE);
-            case TIER_2:
-                return new ItemStack(Material.STONE_SPADE);
-            case TIER_3:
-                return new ItemStack(Material.IRON_SPADE);
-            case TIER_4:
-                return new ItemStack(Material.DIAMOND_SPADE);
-            case TIER_5:
-                return new ItemStack(Material.GOLD_SPADE);
-            }
-        case STAFF:
-            switch (tier) {
-            case TIER_1:
-                return new ItemStack(Material.WOOD_HOE);
-            case TIER_2:
-                return new ItemStack(Material.STONE_HOE);
-            case TIER_3:
-                return new ItemStack(Material.IRON_HOE);
-            case TIER_4:
-                return new ItemStack(Material.DIAMOND_HOE);
-            case TIER_5:
-                return new ItemStack(Material.GOLD_HOE);
-            }
-        case BOW:
-            return new ItemStack(Material.BOW);
-        case HELMET:
-            switch (tier) {
-            case TIER_1:
-                return new ItemStack(Material.LEATHER_HELMET);
-            case TIER_2:
-                return new ItemStack(Material.CHAINMAIL_HELMET);
-            case TIER_3:
-                return new ItemStack(Material.IRON_HELMET);
-            case TIER_4:
-                return new ItemStack(Material.DIAMOND_HELMET);
-            case TIER_5:
-                return new ItemStack(Material.GOLD_HELMET);
-            }
-        case CHESTPLATE:
-            switch (tier) {
-            case TIER_1:
-                return new ItemStack(Material.LEATHER_CHESTPLATE);
-            case TIER_2:
-                return new ItemStack(Material.CHAINMAIL_CHESTPLATE);
-            case TIER_3:
-                return new ItemStack(Material.IRON_CHESTPLATE);
-            case TIER_4:
-                return new ItemStack(Material.DIAMOND_CHESTPLATE);
-            case TIER_5:
-                return new ItemStack(Material.GOLD_CHESTPLATE);
-            }
-        case LEGGINGS:
-            switch (tier) {
-            case TIER_1:
-                return new ItemStack(Material.LEATHER_LEGGINGS);
-            case TIER_2:
-                return new ItemStack(Material.CHAINMAIL_LEGGINGS);
-            case TIER_3:
-                return new ItemStack(Material.IRON_LEGGINGS);
-            case TIER_4:
-                return new ItemStack(Material.DIAMOND_LEGGINGS);
-            case TIER_5:
-                return new ItemStack(Material.GOLD_LEGGINGS);
-            }
-        case BOOTS:
-            switch (tier) {
-            case TIER_1:
-                return new ItemStack(Material.LEATHER_BOOTS);
-            case TIER_2:
-                return new ItemStack(Material.CHAINMAIL_BOOTS);
-            case TIER_3:
-                return new ItemStack(Material.IRON_BOOTS);
-            case TIER_4:
-                return new ItemStack(Material.DIAMOND_BOOTS);
-            case TIER_5:
-                return new ItemStack(Material.GOLD_BOOTS);
-            }
-        default:
-            Utils.log.warning("ItemGenerator couldn't find getBaseItem().. " + type.toString());
+            case SWORD:
+                switch (tier) {
+                    case TIER_1:
+                        return new ItemStack(Material.WOOD_SWORD);
+                    case TIER_2:
+                        return new ItemStack(Material.STONE_SWORD);
+                    case TIER_3:
+                        return new ItemStack(Material.IRON_SWORD);
+                    case TIER_4:
+                        return new ItemStack(Material.DIAMOND_SWORD);
+                    case TIER_5:
+                        return new ItemStack(Material.GOLD_SWORD);
+                }
+            case AXE:
+                switch (tier) {
+                    case TIER_1:
+                        return new ItemStack(Material.WOOD_AXE);
+                    case TIER_2:
+                        return new ItemStack(Material.STONE_AXE);
+                    case TIER_3:
+                        return new ItemStack(Material.IRON_AXE);
+                    case TIER_4:
+                        return new ItemStack(Material.DIAMOND_AXE);
+                    case TIER_5:
+                        return new ItemStack(Material.GOLD_AXE);
+                }
+            case POLEARM:
+                switch (tier) {
+                    case TIER_1:
+                        return new ItemStack(Material.WOOD_SPADE);
+                    case TIER_2:
+                        return new ItemStack(Material.STONE_SPADE);
+                    case TIER_3:
+                        return new ItemStack(Material.IRON_SPADE);
+                    case TIER_4:
+                        return new ItemStack(Material.DIAMOND_SPADE);
+                    case TIER_5:
+                        return new ItemStack(Material.GOLD_SPADE);
+                }
+            case STAFF:
+                switch (tier) {
+                    case TIER_1:
+                        return new ItemStack(Material.WOOD_HOE);
+                    case TIER_2:
+                        return new ItemStack(Material.STONE_HOE);
+                    case TIER_3:
+                        return new ItemStack(Material.IRON_HOE);
+                    case TIER_4:
+                        return new ItemStack(Material.DIAMOND_HOE);
+                    case TIER_5:
+                        return new ItemStack(Material.GOLD_HOE);
+                }
+            case BOW:
+                return new ItemStack(Material.BOW);
+            case HELMET:
+                switch (tier) {
+                    case TIER_1:
+                        return new ItemStack(Material.LEATHER_HELMET);
+                    case TIER_2:
+                        return new ItemStack(Material.CHAINMAIL_HELMET);
+                    case TIER_3:
+                        return new ItemStack(Material.IRON_HELMET);
+                    case TIER_4:
+                        return new ItemStack(Material.DIAMOND_HELMET);
+                    case TIER_5:
+                        return new ItemStack(Material.GOLD_HELMET);
+                }
+            case CHESTPLATE:
+                switch (tier) {
+                    case TIER_1:
+                        return new ItemStack(Material.LEATHER_CHESTPLATE);
+                    case TIER_2:
+                        return new ItemStack(Material.CHAINMAIL_CHESTPLATE);
+                    case TIER_3:
+                        return new ItemStack(Material.IRON_CHESTPLATE);
+                    case TIER_4:
+                        return new ItemStack(Material.DIAMOND_CHESTPLATE);
+                    case TIER_5:
+                        return new ItemStack(Material.GOLD_CHESTPLATE);
+                }
+            case LEGGINGS:
+                switch (tier) {
+                    case TIER_1:
+                        return new ItemStack(Material.LEATHER_LEGGINGS);
+                    case TIER_2:
+                        return new ItemStack(Material.CHAINMAIL_LEGGINGS);
+                    case TIER_3:
+                        return new ItemStack(Material.IRON_LEGGINGS);
+                    case TIER_4:
+                        return new ItemStack(Material.DIAMOND_LEGGINGS);
+                    case TIER_5:
+                        return new ItemStack(Material.GOLD_LEGGINGS);
+                }
+            case BOOTS:
+                switch (tier) {
+                    case TIER_1:
+                        return new ItemStack(Material.LEATHER_BOOTS);
+                    case TIER_2:
+                        return new ItemStack(Material.CHAINMAIL_BOOTS);
+                    case TIER_3:
+                        return new ItemStack(Material.IRON_BOOTS);
+                    case TIER_4:
+                        return new ItemStack(Material.DIAMOND_BOOTS);
+                    case TIER_5:
+                        return new ItemStack(Material.GOLD_BOOTS);
+                }
+            default:
+                Utils.log.warning("ItemGenerator couldn't find getBaseItem().. " + type.toString());
         }
         return null;
     }

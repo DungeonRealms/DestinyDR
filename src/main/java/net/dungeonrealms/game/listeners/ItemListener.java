@@ -69,6 +69,7 @@ public class ItemListener implements Listener {
             event.getItemDrop().remove();
         }
         else if (API.isItemSoulbound(item)) {
+            event.setCancelled(true);
             p.sendMessage(ChatColor.RED + "Are you sure you want to " + ChatColor.UNDERLINE + "destroy" + ChatColor
                     .RED + " this soulbound item? Type " + ChatColor.GREEN + ChatColor.BOLD + "Y" + ChatColor.RED + "" +
                     " or " + ChatColor.DARK_RED + ChatColor.BOLD + "N");
@@ -76,11 +77,10 @@ public class ItemListener implements Listener {
                 if (chat.getMessage().equalsIgnoreCase("y")) {
                     p.sendMessage(ChatColor.RED + "Item " + item.getItemMeta().getDisplayName() + ChatColor.RED + " has been " + ChatColor.UNDERLINE + "destroyed.");
                     p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
-                    event.getItemDrop().remove();
+                    p.getInventory().remove(item);
                 }
             }, player -> {
                 player.sendMessage(ChatColor.RED + "Item destroying " + ChatColor.UNDERLINE + "cancelled.");
-                event.setCancelled(true);
             });
         }
     }

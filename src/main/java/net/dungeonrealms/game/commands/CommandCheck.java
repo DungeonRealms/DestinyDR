@@ -1,6 +1,8 @@
 package net.dungeonrealms.game.commands;
 
-import net.dungeonrealms.game.player.rank.Rank;
+import java.util.List;
+
+import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -10,62 +12,80 @@ import org.bukkit.inventory.ItemStack;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
-import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.Item.ArmorAttributeType;
 import net.dungeonrealms.game.world.items.Item.WeaponAttributeType;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
 
 /**
  * Created by Nick on 12/2/2015.
  */
 public class CommandCheck extends BasicCommand {
 
-    public CommandCheck(String command, String usage, String description) {
-        super(command, usage, description);
-    }
+	public CommandCheck(String command, String usage, String description) {
+		super(command, usage, description);
+	}
 
-    @Override
-    public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+	@Override
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
-        if (!(sender instanceof Player)) return false;
+		if (!(sender instanceof Player)) {
+			return false;
+		}
 
-        Player player = (Player) sender;
+		Player player = (Player) sender;
 
-        if(!Rank.isDev(player)) return true;
+		if (!player.isOp()) {
+			return true;
+		}
 
-        if (player.getEquipment().getItemInMainHand() == null) {
-            player.sendMessage(ChatColor.RED + "There is nothing in your hand.");
-            return true;
-        }
+		if (player.getInventory().getItemInMainHand() == null) {
+			player.sendMessage(ChatColor.RED + "There is nothing in your hand.");
+			return true;
+		}
 
-        ItemStack inHand = player.getEquipment().getItemInMainHand();
+		ItemStack inHand = player.getInventory().getItemInMainHand();
 
-        NBTTagCompound tag = CraftItemStack.asNMSCopy(inHand).getTag();
-        
-        
-        if(args.length == 1){
-        	if(args[0].equalsIgnoreCase("nbt")){
-        		if(API.isWeapon(inHand)){
-        			for(WeaponAttributeType type : Item.WeaponAttributeType.values()){
-        				if(tag.hasKey(type.getNBTName())){
-        					sender.sendMessage(type.getName() + ": " + tag.getInt(type.getNBTName()));
-        				}else{
-        					sender.sendMessage("Doesn't contain " + type.getName());
-        				}
-        			}
-        		}else if(API.isArmor(inHand)){
-        			for(ArmorAttributeType type : ArmorAttributeType.values()){
-        				if(tag.hasKey(type.getNBTName())){
-        					sender.sendMessage(type.getName() + ": " + tag.getInt(type.getNBTName()));
-        				}else{
-        					sender.sendMessage("Doesn't contain " + type.getName());
-        				}
-        			}
-        		}
-        	}
-        }else{
-        	player.sendMessage(ChatColor.RED + "EpochIdentifier: " + tag.getString("u"));
-        }
-        return false;
-    }
+		NBTTagCompound tag = CraftItemStack.asNMSCopy(inHand).getTag();
+
+		if(args.length == 1){
+			if(args[0].equalsIgnoreCase("nbt")){
+				List<String> modifiers = API.getModifiers(inHand);
+
+				if (API.isWeapon(inHand)) {
+					WeaponAttributeType attributeType;
+					for (String mod : modifiers) {
+						attributeType = WeaponAttributeType.getByNBTName(mod);
+						if (!tag.hasKey(mod) && tag.hasKey(mod + "Min")) { // ranged value
+							sender.sendMessage(attributeType.getName() + ": " + tag.getInt(mod + "Min") + " - "
+									+ tag.getInt(mod + "Max"));
+						}
+						else { // static value
+							sender.sendMessage(attributeType.getName() + ": " + tag.getInt(mod));
+						}
+					}
+				}
+				else if (API.isArmor(inHand)) {
+					ArmorAttributeType attributeType;
+					for (String mod : modifiers) {
+						attributeType = ArmorAttributeType.getByNBTName(mod);
+						if (!tag.hasKey(mod) && tag.hasKey(mod + "Min")) { // ranged value
+							sender.sendMessage(attributeType.getName() + ": " + tag.getInt(mod + "Min") + " - "
+									+ tag.getInt(mod + "Max"));
+						}
+						else { // static value
+							sender.sendMessage(attributeType.getName() + ": " + tag.getInt(mod));
+						}
+					}
+				}
+				else {
+					player.sendMessage("Listing All NBT...");
+					// get all the nbt tags of the item
+					tag.c().stream().forEach(key -> player.sendMessage(key + ": " + tag.get(key).toString()));
+				}
+			}
+		}
+		else {
+			player.sendMessage(ChatColor.RED + "EpochIdentifier: " + tag.getString("u"));
+		}
+		return false;
+	}
 }

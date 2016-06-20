@@ -59,6 +59,7 @@ import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.event.player.AsyncPlayerPreLoginEvent.Result;
 import org.bukkit.event.player.PlayerFishEvent.State;
+import org.bukkit.event.server.ServerListPingEvent;
 import org.bukkit.event.vehicle.VehicleExitEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 import org.bukkit.event.world.ChunkUnloadEvent;
@@ -163,6 +164,12 @@ public class MainListener implements Listener {
         } else {
             Achievements.getInstance().giveAchievement(event.getSender().getUniqueId(), Achievements.EnumAchievements.SEND_A_PM);
         }
+    }
+
+    @EventHandler
+    public void onPing(ServerListPingEvent event) {
+        if (!DungeonRealms.getInstance().hasFinishedSetup()) event.setMotd("offline");
+        else event.setMotd(DungeonRealms.getInstance().shardid);
     }
 
     /**

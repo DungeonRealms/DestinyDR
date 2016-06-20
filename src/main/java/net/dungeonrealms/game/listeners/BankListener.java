@@ -44,6 +44,9 @@ public class BankListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onEnderChestRightClick(PlayerInteractEvent e) {
         if (e.getAction() == Action.RIGHT_CLICK_BLOCK && e.getPlayer().isSneaking()) {
+            if (e.getClickedBlock().getType() != Material.ENDER_CHEST)
+                return;
+
             e.setCancelled(true);
             Player p = e.getPlayer();
 

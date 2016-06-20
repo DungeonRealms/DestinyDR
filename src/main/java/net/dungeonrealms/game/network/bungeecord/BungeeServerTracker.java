@@ -6,6 +6,7 @@ import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.network.bungeecord.serverpinger.PingResponse;
 import net.dungeonrealms.game.network.bungeecord.serverpinger.ServerAddress;
 import net.dungeonrealms.game.network.bungeecord.serverpinger.ServerPinger;
+import net.dungeonrealms.game.network.bungeecord.serverpinger.response.SpigotPingResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -76,12 +77,13 @@ public class BungeeServerTracker {
                     boolean displayOffline = false;
 
                     try {
-                        PingResponse data = ServerPinger.fetchData(entry.getValue(), 500);
+                        PingResponse data = new SpigotPingResponse(ServerPinger.fetchData(entry.getValue(), 500));
 
                         if (data.isOnline()) {
                             serverInfo.setOnline(true);
                             serverInfo.setOnlinePlayers(data.getOnlinePlayers());
                             serverInfo.setMaxPlayers(data.getMaxPlayers());
+                            serverInfo.setMotd(data.getMotd());
                         } else {
                             displayOffline = true;
                         }
@@ -101,6 +103,7 @@ public class BungeeServerTracker {
                         serverInfo.setOnline(false);
                         serverInfo.setOnlinePlayers(0);
                         serverInfo.setMaxPlayers(0);
+                        serverInfo.setMotd(DungeonRealms.getInstance().shardid);
                     }
                 }
             }
