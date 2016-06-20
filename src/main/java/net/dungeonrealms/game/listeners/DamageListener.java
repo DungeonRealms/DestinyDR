@@ -30,10 +30,7 @@ import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.items.Attribute;
 import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
-import net.dungeonrealms.game.world.items.Item.ItemRarity;
-import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
-import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.spawning.BaseMobSpawner;
@@ -1238,7 +1235,7 @@ public class DamageListener implements Listener {
         ItemStack hand = player.getEquipment().getItemInMainHand();
         if (player.hasMetadata("last_Bow_Use")) {
             event.setCancelled(true);
-            if (System.currentTimeMillis() - player.getMetadata("last_Bow_Use").get(0).asLong() < 450) {
+            if (System.currentTimeMillis() - player.getMetadata("last_Bow_Use").get(0).asLong() < 650) {
                 event.setUseItemInHand(Event.Result.DENY);
                 return;
             }

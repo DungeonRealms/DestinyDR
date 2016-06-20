@@ -295,6 +295,7 @@ public class PlayerMenus {
 
         for (String skinType : playerMountSkins) {
             ItemStack itemStack = EnumMountSkins.getByName(skinType).getSelectionItem();
+            itemStack.setDurability(EnumMountSkins.getByName(skinType).getShortID());
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("skinType", new NBTTagString(skinType));
