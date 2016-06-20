@@ -58,7 +58,7 @@ public class ItemListener implements Listener {
         ItemStack item = event.getItemDrop().getItemStack();
         if (!API.isItemDroppable(item)) { //Realm Portal, Character Journal.
             event.setCancelled(true);
-            p.sendMessage(ChatColor.GRAY + "This item " + ChatColor.RED.toString() + ChatColor.UNDERLINE + "cannot" + ChatColor.GRAY + " be dropped.");
+            return;
         } else if (!API.isItemTradeable(item)) {
             net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
             NBTTagCompound tag = nmsItem.getTag();

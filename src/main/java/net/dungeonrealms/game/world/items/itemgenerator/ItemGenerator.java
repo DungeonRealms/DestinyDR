@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.items.itemgenerator;
 
+import com.google.common.collect.Lists;
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
@@ -483,7 +484,7 @@ public class ItemGenerator {
 	 * @return
 	 */
 	public static ItemStack getNamedItem(String template_name) {
-        File template = new File("plugins/DungeonRealms/new_custom_items/" + template_name + ".item");
+        File template = new File("plugins/DungeonRealms/custom_items/" + template_name + ".item");
         if (!(template.exists())) {
             Utils.log.warning("[ItemGenerator] Custom item " + template_name + " not found!");
             return null; // No such custom template!
@@ -625,9 +626,9 @@ public class ItemGenerator {
 
         // check rarity
         ItemRarity rarity = null;
-        for (String line : item_lore) {
+        for (String line : Lists.reverse(item_lore)) {
             for (ItemRarity itemRarity : ItemRarity.values()) {
-                if (line.contains(itemRarity.getName())) {
+                if (ChatColor.stripColor(line).equals(ChatColor.stripColor(itemRarity.getName()))) {
                     rarity = itemRarity;
                     break;
                 }
@@ -645,7 +646,7 @@ public class ItemGenerator {
 
         // check soulbound, untradeable, or permanently untradeable
         boolean isSoulbound = false, isUntradeable = false, isPermanentlyUntradeable = false;
-        for (String line : item_lore) {
+        for (String line : Lists.reverse(item_lore)) {
             if (line.contains("Soulbound")) {
                 isSoulbound = true;
                 break; // an item can only be one of the three
