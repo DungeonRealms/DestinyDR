@@ -627,8 +627,10 @@ public class ItemGenerator {
         ItemRarity rarity = null;
         for (String line : item_lore) {
             for (ItemRarity itemRarity : ItemRarity.values()) {
-                if (line.contains(rarity.getName())) rarity = itemRarity;
-                break;
+                if (line.contains(itemRarity.getName())) {
+                    rarity = itemRarity;
+                    break;
+                }
             }
             if (rarity != null) break;
         }

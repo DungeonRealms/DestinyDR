@@ -76,7 +76,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
     public void setArmor(int tier) {
         ItemStack weapon = getWeapon();
         ItemStack boots = ItemGenerator.getNamedItem("up_boots");
-        ItemStack legs = ItemGenerator.getNamedItem("up_leggings");
+        ItemStack legs = ItemGenerator.getNamedItem("up_legs");
         ItemStack chest = ItemGenerator.getNamedItem("up_chest");
         ItemStack head = ItemGenerator.getNamedItem("up_helmet");
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
@@ -118,6 +118,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
     private boolean thirdHeal = false;
     private CopyOnWriteArrayList<Entity> spawnedMobs = new CopyOnWriteArrayList<>();
     private boolean canAddsRespawn = true;
+    private boolean hasMessaged = false;
 
     @Override
     public void onBossHit(EntityDamageByEntityEvent event) {
@@ -132,10 +133,11 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
             event.setCancelled(true);
             return;
         } else {
-            if (!canAddsRespawn) {
+            if (!canAddsRespawn && !hasMessaged) {
                 for (Player pl : en.getWorld().getPlayers()) {
                     pl.sendMessage(ChatColor.RED.toString() + "Burick The Fanatic" + ChatColor.RESET.toString() + ": " + "Face me, pathetic creatures!");
                 }
+                hasMessaged = true;
             }
             en.removePotionEffect(PotionEffectType.INVISIBILITY);
             en.setMaximumNoDamageTicks(0);
@@ -162,6 +164,7 @@ public class Burick extends MeleeWitherSkeleton implements Boss {
                     pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERMEN_SCREAM, 1F, 0.5F);
                 }
                 canAddsRespawn = false;
+                hasMessaged = false;
             }
         }
         if (hp <= tenPercentHP) {

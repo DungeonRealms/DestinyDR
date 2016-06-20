@@ -203,16 +203,13 @@ public class DungeonListener implements Listener {
                     }
                     return;
                 }
-            }
-
-            if (!(Affair.getInstance().isInParty(player))) {
+                if (!(Affair.getInstance().getParty(player).get()).getOwner().getName().equals(player.getName())) {
+                    player.sendMessage(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "NOT" + ChatColor.RED + " the party leader.");
+                    player.sendMessage(ChatColor.GRAY + "Only the party leader can start a new dungeon instance.");
+                    return;
+                }
+            } else {
                 Affair.getInstance().createParty(player);
-            }
-
-            if (!(Affair.getInstance().getParty(player).get()).getOwner().equals(player)) {
-                player.sendMessage(ChatColor.RED + "You are " + ChatColor.UNDERLINE + "NOT" + ChatColor.RED + " the party leader.");
-                player.sendMessage(ChatColor.GRAY + "Only the party leader can start a new dungeon instance.");
-                return;
             }
 
             if (!DungeonManager.getInstance().canCreateInstance()) {

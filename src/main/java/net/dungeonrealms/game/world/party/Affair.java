@@ -185,8 +185,13 @@ public class Affair implements GenericMechanic {
 
     public boolean isInParty(Player player) {
         for (AffairO party : _parties) {
-            if (party.getOwner().equals(player) || party.getMembers().contains(player)) {
+            if (party.getOwner().getName().equals(player.getName())) {
                 return true;
+            }
+            for (Player player1 : party.getMembers()) {
+                if (player.getName().equals(player1.getName())) {
+                    return true;
+                }
             }
         }
         return false;

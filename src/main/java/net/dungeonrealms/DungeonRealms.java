@@ -117,7 +117,7 @@ public class DungeonRealms extends JavaPlugin {
     public final Map<String, String> DR_SHARDS_NAMES = new HashMap<>();
     public final Map<String, ServerAddress> DR_SHARDS_IPS = new HashMap<>();
 
-    private final List<String> DEVS = Arrays.asList("Proxying", "Atlas__", "iFamasssxD", "APOLLO_IO", "Bradez1571", "EtheralTemplar");
+    private final List<String> DEVS = Arrays.asList("Proxying", "Atlas__", "iFamasssxD", "APOLLO_IO", "Bradez1571", "EtheralTemplar", "Xwaffle");
 
     @Getter
     private List<String> loggingOut = new ArrayList<>();

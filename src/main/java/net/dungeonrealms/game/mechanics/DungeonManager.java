@@ -78,7 +78,7 @@ public class DungeonManager implements GenericMechanic {
                     players_Entering_Dungeon.remove(entry.getKey());
                 }
             }
-        }, 100L ,20L);
+        }, 100L, 20L);
 
         Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeon -> dungeon.aliveMonsters.stream().forEach(mob -> {
             if (mob != null) {
@@ -337,12 +337,16 @@ public class DungeonManager implements GenericMechanic {
         }
 
         void load() {
-            try {
-                unZip(new ZipFile(DungeonRealms.getInstance().getDataFolder() + type.getLocation()), this);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            loadInWorld(getWorldName(), getPlayerList(), getType());
+            AsyncUtils.pool.submit(() -> {
+                try {
+                    unZip(new ZipFile(DungeonRealms.getInstance().getDataFolder() + type.getLocation()), this);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            });
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                loadInWorld(getWorldName(), getPlayerList(), getType());
+            }, 20L);
         }
 
         void cleanup() {
@@ -354,38 +358,41 @@ public class DungeonManager implements GenericMechanic {
         /**
          *
          */
-        public void teleportPlayersOut() {
+        public void teleportPlayersOut(boolean secondTry) {
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                getPlayerList().stream().filter(p -> p != null && p.isOnline()).forEach(player -> {
-                    switch (getType()) {
-                        case BANDIT_TROVE:
-                            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.BANDIT_TROVE);
-                            break;
-                        case VARENGLADE:
-                            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VARENGLADE);
-                            break;
-                        case THE_INFERNAL_ABYSS:
-                            Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.INFERNAL_ABYSS);
-                            break;
-                        default:
-                            break;
-                    }
-                    if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId()).equals("")) {
-                        String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId())).split(",");
-                        player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]), Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
-                    } else {
-                        player.teleport(Teleportation.Cyrennica);
-                    }
-                    for (ItemStack stack : player.getInventory().getContents()) {
-                        if (stack != null && stack.getType() != Material.AIR) {
-                            if (isDungeonItem(stack)) {
-                                player.getInventory().remove(stack);
+                Bukkit.getWorld(worldName).getPlayers().stream().filter(p -> p != null && p.isOnline()).forEach(player -> {
+                    if (API.getGamePlayer(player) != null && API.getGamePlayer(player).isInDungeon()) {
+                        switch (getType()) {
+                            case BANDIT_TROVE:
+                                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.BANDIT_TROVE);
+                                break;
+                            case VARENGLADE:
+                                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.VARENGLADE);
+                                break;
+                            case THE_INFERNAL_ABYSS:
+                                Achievements.getInstance().giveAchievement(player.getUniqueId(), Achievements.EnumAchievements.INFERNAL_ABYSS);
+                                break;
+                            default:
+                                break;
+                        }
+                        if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId()).equals("")) {
+                            String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId())).split(",");
+                            player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]), Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
+                        } else {
+                            player.teleport(Teleportation.Cyrennica);
+                        }
+                        for (ItemStack stack : player.getInventory().getContents()) {
+                            if (stack != null && stack.getType() != Material.AIR) {
+                                if (isDungeonItem(stack)) {
+                                    player.getInventory().remove(stack);
+                                }
                             }
                         }
                     }
                 });
             }, 15 * 20L);
-            getPlayerList().stream().filter(p -> p != null && p.isOnline()).forEach(p -> p.sendMessage(ChatColor.YELLOW + "You will be teleported out in 15 seconds..."));
+            if (!secondTry)
+                Bukkit.getWorld(worldName).getPlayers().stream().filter(p -> p != null && p.isOnline()).forEach(p -> p.sendMessage(ChatColor.YELLOW + "You will be teleported out in 15 seconds..."));
         }
 
         /**
@@ -444,11 +451,12 @@ public class DungeonManager implements GenericMechanic {
                 }
             }
             Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                teleportPlayersOut(true);
                 if (Dungeons.contains(DungeonManager.getInstance().getDungeon(Bukkit.getWorld(worldName)))) {
                     DungeonManager.getInstance().getDungeon(Bukkit.getWorld(worldName)).cleanup();
                     Dungeons.remove(DungeonManager.getInstance().getDungeon(Bukkit.getWorld(worldName)));
                 }
-            }, 200L);
+            }, 600L);
         }
     }
 
