@@ -56,7 +56,10 @@ public class ItemListener implements Listener {
     public void onItemDrop(PlayerDropItemEvent event) {
         Player p = event.getPlayer();
         ItemStack item = event.getItemDrop().getItemStack();
-        if (!API.isItemTradeable(item)) {
+        if (!API.isItemDroppable(item)) { //Realm Portal, Character Journal.
+            event.setCancelled(true);
+            p.sendMessage(ChatColor.GRAY + "This item " + ChatColor.RED.toString() + ChatColor.UNDERLINE + "cannot" + ChatColor.GRAY + " be dropped.");
+        } else if (!API.isItemTradeable(item)) {
             net.minecraft.server.v1_9_R2.ItemStack nmsItem = CraftItemStack.asNMSCopy(item);
             NBTTagCompound tag = nmsItem.getTag();
             assert tag != null;
@@ -67,21 +70,18 @@ public class ItemListener implements Listener {
                         "so it has " + ChatColor.UNDERLINE + "vanished.");
             p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
             event.getItemDrop().remove();
-        }
-        else if (API.isItemSoulbound(item)) {
+        } else if (API.isItemSoulbound(item)) {
             event.setCancelled(true);
             p.sendMessage(ChatColor.RED + "Are you sure you want to " + ChatColor.UNDERLINE + "destroy" + ChatColor
                     .RED + " this soulbound item? Type " + ChatColor.GREEN + ChatColor.BOLD + "Y" + ChatColor.RED + "" +
                     " or " + ChatColor.DARK_RED + ChatColor.BOLD + "N");
-            Chat.getInstance().listenForMessage(p, chat -> {
+            Chat.listenForMessage(p, chat -> {
                 if (chat.getMessage().equalsIgnoreCase("y")) {
                     p.sendMessage(ChatColor.RED + "Item " + item.getItemMeta().getDisplayName() + ChatColor.RED + " has been " + ChatColor.UNDERLINE + "destroyed.");
                     p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
                     p.getInventory().remove(item);
                 }
-            }, player -> {
-                player.sendMessage(ChatColor.RED + "Item destroying " + ChatColor.UNDERLINE + "cancelled.");
-            });
+            }, player -> player.sendMessage(ChatColor.RED + "Item destroying " + ChatColor.UNDERLINE + "cancelled."));
         }
     }
 

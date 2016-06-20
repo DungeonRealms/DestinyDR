@@ -439,7 +439,9 @@ public class API {
         String inventory = ItemSerialization.toString(inv);
         DatabaseAPI.getInstance().update(uuid, EnumOperators.$SET, EnumData.INVENTORY, inventory, false);
         if (GAMEPLAYERS.size() > 0) {
-            API.getGamePlayer(player).getStats().updateDatabase(true);
+            if (API.getGamePlayer(player) != null) {
+                API.getGamePlayer(player).getStats().updateDatabase(true);
+            }
             GAMEPLAYERS.remove(player.getName());
         }
         DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
@@ -1257,6 +1259,19 @@ public class API {
         return true;
     }
 
+    public static boolean isItemDroppable(ItemStack itemStack) {
+        net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
+        if (nms != null && nms.getTag() != null) {
+            if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")) {
+                return false;
+            }
+            if (nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("nondrop")) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     public static boolean isItemUntradeable(ItemStack item) {
         return !isItemTradeable(item);
     }
@@ -1266,7 +1281,7 @@ public class API {
         if (nms == null || nms.getTag() == null) return false;
         NBTTagCompound tag = nms.getTag();
         if (!tag.hasKey("soulbound")) return false;
-        return tag.getInt("soulbound") == 1 ? true : false;
+        return tag.getInt("soulbound") == 1;
     }
 
     public static boolean isItemPermanentlyUntradeable(ItemStack item) {
@@ -1274,6 +1289,6 @@ public class API {
         if (nms == null || nms.getTag() == null) return false;
         NBTTagCompound tag = nms.getTag();
         if (!tag.hasKey("untradeable")) return false;
-        return tag.getInt("untradeable") == 1 ? true : false;
+        return tag.getInt("untradeable") == 1;
     }
 }

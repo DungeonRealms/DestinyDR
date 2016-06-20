@@ -810,6 +810,7 @@ public class ItemManager {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
         nms.getTag().setString("type", "important");
         nms.getTag().setString("journal", "true");
+        nms.getTag().setString("subtype", "nondrop");
         return CraftItemStack.asBukkitCopy(nms);
     }
 
