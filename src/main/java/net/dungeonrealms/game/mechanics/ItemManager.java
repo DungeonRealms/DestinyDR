@@ -516,6 +516,11 @@ public class ItemManager {
         return null;
     }
 
+    /**
+     * Adds a starter kit to the player.
+     *
+     * @param player
+     */
     public static void giveStarter(Player player) {
         player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
         player.getInventory().addItem(new ItemBuilder().setItem(ItemManager.createHealthPotion(1, false, false)).setNBTString("subtype", "starter").build());
@@ -525,15 +530,14 @@ public class ItemManager {
         player.getInventory().addItem(new ItemBuilder().setItem(new ItemStack(Material.BREAD, 3)).setNBTString("subtype", "starter").build());
 
         if (Utils.randInt(0, 1) == 1) {
-            player.getInventory().addItem(new ItemBuilder().setItem(new ItemGenerator().setType(Item.ItemType.SWORD).setTier(Item.ItemTier.TIER_1).setRarity(Item.ItemRarity.RARE).generateItem().getItem()).setNBTString("subtype", "starter").build());
+            player.getInventory().addItem(ItemGenerator.getNamedItem("training_sword"));
         } else {
-            player.getInventory().addItem(new ItemBuilder().setItem(new ItemGenerator().setType(Item.ItemType.AXE).setTier(Item.ItemTier.TIER_1).setRarity(Item.ItemRarity.RARE).generateItem().getItem()).setNBTString("subtype", "starter").build());
+            player.getInventory().addItem(ItemGenerator.getNamedItem("training_axe"));
         }
     }
 
     /**
-     * Creates a pickaxe based on
-     * given tier
+     * Creates a pickaxe based on the given tier
      *
      * @param tier
      * @return ItemStack

@@ -172,6 +172,15 @@ public class CommandAdd extends BasicCommand {
                 case "resetbook":
                     player.getInventory().addItem(ItemManager.createItem(EnumItem.RetrainingBook));
                     break;
+                case "sotrageexpansion":
+                    player.getInventory().addItem(ItemManager.createItem(EnumItem.StorageExpansion));
+                    break;
+                case "repairhammer":
+                    player.getInventory().addItem(ItemManager.createItem(EnumItem.RepairHammer));
+                    break;
+                case "medalofgathering":
+                    player.getInventory().addItem(ItemManager.createItem(EnumItem.MedalOfGathering));
+                    break;
                 case "journal":
                     player.getInventory().addItem(ItemManager.createCharacterJournal(player));
                     break;

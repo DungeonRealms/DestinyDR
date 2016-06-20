@@ -835,7 +835,7 @@ public class ClickHandler {
                 GamePlayer gp = API.getGamePlayer(player);
                 if (gp.getLevel() >= 10) {
                     if (gp.getStats().resetAmounts > 0) {
-                        player.sendMessage(ChatColor.GREEN + "ONE stat reset available. Type 'yes' or 'y' to continue");
+                        player.sendMessage(ChatColor.GREEN + "ONE stat reset available. Type 'yes' or 'y' to continue.");
                         player.closeInventory();
                         Chat.listenForMessage(player, e -> {
                             if (e.getMessage().equalsIgnoreCase("Yes") || e.getMessage().equalsIgnoreCase("y")) {
