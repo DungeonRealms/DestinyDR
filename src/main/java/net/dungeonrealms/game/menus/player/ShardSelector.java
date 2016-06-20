@@ -18,6 +18,7 @@ import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.Arrays;
@@ -39,7 +40,7 @@ public class ShardSelector extends AbstractMenu {
             String shardID = DungeonRealms.getInstance().DR_SHARDS_NAMES.get(bungeeName);
             BungeeServerInfo info = e.getValue();
 
-            if (!info.isOnline() || shardID.equals(DungeonRealms.getInstance().shardid) || info.getOnlinePlayers() >= info.getMaxPlayers())
+            if (!info.isOnline() || shardID.equals(DungeonRealms.getInstance().shardid) || info.getOnlinePlayers() >= info.getMaxPlayers() || info.getMotd1().equals("offline"))
                 continue;
 
             GUIButton button = new GUIButton(Material.END_CRYSTAL) {

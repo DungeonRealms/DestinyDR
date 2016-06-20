@@ -5,6 +5,10 @@ import com.mongodb.MongoClientURI;
 import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.listeners.ProxyChannelListener;
+import net.dungeonrealms.game.network.bungeecord.serverpinger.PingResponse;
+import net.dungeonrealms.game.network.bungeecord.serverpinger.ServerAddress;
+import net.dungeonrealms.game.network.bungeecord.serverpinger.ServerPinger;
+import net.dungeonrealms.game.network.bungeecord.serverpinger.response.BungeePingResponse;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.ProxyServer;
 import net.md_5.bungee.api.config.ServerInfo;
@@ -23,15 +27,18 @@ import java.util.*;
 
 public class DungeonRealmsProxy extends Plugin implements Listener {
 
-    private static DungeonRealmsProxy instance;
     public static com.mongodb.MongoClient mongoClient = null;
     public static MongoClientURI mongoClientURI = null;
     public static com.mongodb.client.MongoDatabase database = null;
     public static com.mongodb.client.MongoCollection<Document> guilds = null;
-
+    private static DungeonRealmsProxy instance;
     private final String[] DR_SHARDS = new String[]{"dr1", "dr2"};
 
     //private Map<String, Long> restartingServers = new HashMap<>();
+
+    public static DungeonRealmsProxy getInstance() {
+        return instance;
+    }
 
     @Override
     public void onEnable() {
@@ -64,12 +71,29 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     @EventHandler
     public void onServerConnect(ServerConnectEvent event) {
         if ((event.getPlayer().getServer() == null) || event.getTarget().getName().equals("Lobby")) {
-            Iterator<ServerInfo> optimalShardFinder = getOptimalShards().iterator();
-
+            final Iterator<ServerInfo> optimalShardFinder = getOptimalShards().iterator();
             event.getPlayer().sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Finding an available shard for you...");
 
             while (optimalShardFinder.hasNext()) {
                 ServerInfo target = optimalShardFinder.next();
+
+                try {
+                    PingResponse data = new BungeePingResponse(ServerPinger.fetchData(new ServerAddress(target.getAddress().getHostName(), target.getAddress().getPort()), 500));
+                    if (data.getMotd().equals("offline")) {
+                        if (!optimalShardFinder.hasNext()) {
+                            event.getPlayer().disconnect(ChatColor.RED + "Could not find an optimal shard for you.. Please try again later.");
+                            return;
+                        }
+                        continue;
+                    }
+                } catch (Exception e) {
+                    if (!optimalShardFinder.hasNext()) {
+                        event.getPlayer().disconnect(ChatColor.RED + "Could not find an optimal shard for you.. Please try again later.");
+                        return;
+                    }
+                    continue;
+                }
+
                 if (target.canAccess(event.getPlayer()) && !(event.getPlayer().getServer() != null && event.getPlayer().getServer().getInfo().equals(target))) {
                     try {
                         event.setTarget(target);
@@ -99,9 +123,5 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     public void relayPacket(String channel, byte[] data) {
         for (ServerInfo server : ProxyServer.getInstance().getServers().values())
             server.sendData(channel, data);
-    }
-
-    public static DungeonRealmsProxy getInstance() {
-        return instance;
     }
 }
