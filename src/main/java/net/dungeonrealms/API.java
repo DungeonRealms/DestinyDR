@@ -1262,9 +1262,6 @@ public class API {
     public static boolean isItemDroppable(ItemStack itemStack) {
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(itemStack);
         if (nms != null && nms.getTag() != null) {
-            if (nms.getTag().hasKey("type") && nms.getTag().getString("type").equalsIgnoreCase("important")) {
-                return false;
-            }
             if (nms.getTag().hasKey("subtype") && nms.getTag().getString("subtype").equalsIgnoreCase("nondrop")) {
                 return false;
             }
