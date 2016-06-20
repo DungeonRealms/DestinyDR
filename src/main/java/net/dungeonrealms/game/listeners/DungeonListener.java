@@ -21,9 +21,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by Kieran Quigley (Proxying) on 15-Jun-16.
@@ -115,7 +113,8 @@ public class DungeonListener implements Listener {
         if (event.getRegion().toLowerCase().startsWith("instance_")) {
             Player player = event.getPlayer();
             if (DungeonManager.getInstance().getPlayers_Entering_Dungeon().containsKey(player.getName())) {
-                player.sendMessage(ChatColor.RED + "You are already entering, or have just left a Dungeon. Please wait.");
+                player.sendMessage(ChatColor.GRAY + "You currently have a Dungeon cooldown timer, please wait " + ChatColor.RED + ChatColor.UNDERLINE
+                        + DungeonManager.getInstance().getPlayers_Entering_Dungeon().get(player.getName()) + "s" + ChatColor.RESET + ChatColor.RED + " before entering.");
                 return;
             }
             if (EntityAPI.hasPetOut(event.getPlayer().getUniqueId())) {
@@ -219,8 +218,15 @@ public class DungeonListener implements Listener {
                 return;
             }
 
-            List<Player> list = Affair.getInstance().getParty(player).get().getMembers();
-            list.add(Affair.getInstance().getParty(player).get().getOwner());
+            Map<Player, Boolean> partyList = new HashMap<>();
+            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
+                if (player1.getLocation().distanceSquared(player.getLocation()) <= 400) {
+                    partyList.put(player1, true);
+                } else {
+                    partyList.put(player1, false);
+                }
+            }
+            partyList.put(player, true);
             DungeonManager.DungeonType dungeonType;
             if (dungeonName.equalsIgnoreCase("T1Dungeon")) {
                 dungeonType = DungeonManager.DungeonType.BANDIT_TROVE;
@@ -233,7 +239,7 @@ public class DungeonListener implements Listener {
             }
             if (dungeonType == null) return;
             DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 600);
-            DungeonManager.getInstance().createNewInstance(dungeonType, list, dungeonName);
+            DungeonManager.getInstance().createNewInstance(dungeonType, partyList, dungeonName);
             player.sendMessage(ChatColor.GRAY + "Loading Instance: '" + ChatColor.UNDERLINE + dungeonType.name().replaceAll("_", " ") + ChatColor.GRAY
                     + "' -- Please wait...");
         }

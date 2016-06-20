@@ -104,7 +104,13 @@ public class DungeonManager implements GenericMechanic {
             if (!dungeonObject.canSpawnBoss && maxAlive > 0 && monstersAlive > 0) {
                 if (monstersAlive <= (maxAlive * 0.2)) {
                     dungeonObject.canSpawnBoss = true;
-                    dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.RED.toString() + dungeonObject.type.getBossName() + ChatColor.RESET + ": Do you really wish to fight me?"));
+                    dungeonObject.getPlayerList().keySet().stream().forEach(player -> {
+                        if (player != null) {
+                            if (API.getGamePlayer(player).isInDungeon()) {
+                                player.sendMessage(ChatColor.RED.toString() + dungeonObject.type.getBossName() + ChatColor.RESET + ": Do you really wish to fight me?");
+                            }
+                        }
+                    });
                 }
             }
 
@@ -125,38 +131,68 @@ public class DungeonManager implements GenericMechanic {
                     break;
                 // 2h
                 case 7200:
-                    dungeonObject.getPlayerList().stream().forEach(player -> player.sendMessage(ChatColor.WHITE
-                            + "[" + ChatColor.GOLD + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " "
-                            + ChatColor.RED
-                            + "This instance has reached it's max threshold, it will now terminate in (10) minutes."));
+                    dungeonObject.getPlayerList().keySet().stream()
+                            .forEach(player -> {
+                                if (player != null) {
+                                    if (API.getGamePlayer(player).isInDungeon()) {
+                                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
+                                                + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
+                                                + "This instance has reached it's max threshold, it will now terminate in (10) minutes.");
+                                    }
+                                }
+                            });
                     break;
                 // 1h30 minutes
                 case 5400:
-                    dungeonObject.getPlayerList().stream()
-                            .forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
-                                    + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
-                                    + "This instance has reached (90) minute marker!"));
+                    dungeonObject.getPlayerList().keySet().stream()
+                            .forEach(player -> {
+                                if (player != null) {
+                                    if (API.getGamePlayer(player).isInDungeon()) {
+                                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
+                                                + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
+                                                + "This instance has reached (90) minute marker!");
+                                    }
+                                }
+                            });
                     break;
                 // 1h
                 case 3600:
-                    dungeonObject.getPlayerList().stream()
-                            .forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
-                                    + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
-                                    + "This instance has reached (60) minute marker!"));
+                    dungeonObject.getPlayerList().keySet().stream()
+                            .forEach(player -> {
+                                if (player != null) {
+                                    if (API.getGamePlayer(player).isInDungeon()) {
+                                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
+                                                + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
+                                                + "This instance has reached (60) minute marker!");
+                                    }
+                                }
+                            });
                     break;
                 // 30 minutes
                 case 1800:
-                    dungeonObject.getPlayerList().stream()
-                            .forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
-                                    + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
-                                    + "This instance has reached (30) minute marker!"));
+                    dungeonObject.getPlayerList().keySet().stream()
+                            .forEach(player -> {
+                                if (player != null) {
+                                    if (API.getGamePlayer(player).isInDungeon()) {
+                                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
+                                                + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
+                                                + "This instance has reached (30) minute marker!");
+                                    }
+                                }
+                            });
                     break;
                 // 15 minutes
                 case 900:
-                    dungeonObject.getPlayerList().stream()
-                            .forEach(player -> player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
-                                    + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
-                                    + "This instance has reached (15) minute marker!"));
+                    dungeonObject.getPlayerList().keySet().stream()
+                            .forEach(player -> {
+                                if (player != null) {
+                                    if (API.getGamePlayer(player).isInDungeon()) {
+                                        player.sendMessage(ChatColor.WHITE + "[" + ChatColor.GOLD
+                                                + dungeonObject.type.getBossName() + ChatColor.WHITE + "]" + " " + ChatColor.RED
+                                                + "This instance has reached (15) minute marker!");
+                                    }
+                                }
+                            });
                     break;
             }
             updateDungeonBoard(dungeonObject);
@@ -176,9 +212,17 @@ public class DungeonManager implements GenericMechanic {
      * @since 1.0
      */
     private void updateDungeonBoard(DungeonObject dungeonObject) {
-        dungeonObject.getPlayerList().forEach(player -> BountifulAPI.sendActionBar(player, ChatColor.AQUA + "Time: " + ChatColor.WHITE + ChatColor.GOLD
-                + String.valueOf(dungeonObject.getTime() / 60) + "/120" + " " + ChatColor.AQUA + "Alive: " + ChatColor.WHITE + (dungeonObject.maxAlive - dungeonObject.killed) + ChatColor.GRAY
-                + "/" + ChatColor.RED + dungeonObject.maxAlive));
+        dungeonObject.getPlayerList().keySet().forEach(player -> {
+            if (player != null) {
+                if (API.getGamePlayer(player) != null) {
+                    if (API.getGamePlayer(player).isInDungeon()) {
+                        BountifulAPI.sendActionBar(player, ChatColor.AQUA + "Time: " + ChatColor.WHITE + ChatColor.GOLD
+                                + String.valueOf(dungeonObject.getTime() / 60) + "/120" + " " + ChatColor.AQUA + "Alive: " + ChatColor.WHITE + (dungeonObject.maxAlive - dungeonObject.killed) + ChatColor.GRAY
+                                + "/" + ChatColor.RED + dungeonObject.maxAlive);
+                    }
+                }
+            }
+        });
     }
 
     /**
@@ -188,21 +232,18 @@ public class DungeonManager implements GenericMechanic {
      * @since 1.0
      */
     public void removeInstance(DungeonObject dungeonObject) {
-        dungeonObject.getPlayerList().forEach(player -> {
+        dungeonObject.getPlayerList().keySet().forEach(player -> {
             if (player != null) {
                 if (Bukkit.getPlayer(player.getUniqueId()) != null) {
-                    if (API.getGamePlayer(player).isInDungeon()) {
-                        player.sendMessage(ChatColor.RED.toString() + dungeonObject.type.getBossName() + ChatColor.RESET + ": You have failed, Adventurers.");
-                        if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId()).equals("")) {
-                            String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId())).split(",");
-                            player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]), Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
-                        } else {
+                    if (API.getGamePlayer(player) != null) {
+                        if (API.getGamePlayer(player).isInDungeon()) {
+                            player.sendMessage(ChatColor.RED.toString() + dungeonObject.type.getBossName() + ChatColor.RESET + ": You have failed, Adventurers.");
                             player.teleport(Teleportation.Cyrennica);
-                        }
-                        for (ItemStack stack : player.getInventory().getContents()) {
-                            if (stack != null && stack.getType() != Material.AIR) {
-                                if (isDungeonItem(stack)) {
-                                    player.getInventory().remove(stack);
+                            for (ItemStack stack : player.getInventory().getContents()) {
+                                if (stack != null && stack.getType() != Material.AIR) {
+                                    if (isDungeonItem(stack)) {
+                                        player.getInventory().remove(stack);
+                                    }
                                 }
                             }
                         }
@@ -232,7 +273,7 @@ public class DungeonManager implements GenericMechanic {
      * @param playerList List of players to enter!
      * @since 1.0
      */
-    public void createNewInstance(DungeonType type, List<Player> playerList, String instanceName) {
+    public void createNewInstance(DungeonType type, Map<Player, Boolean> playerList, String instanceName) {
         if (!instance_mob_spawns.containsKey(instanceName)) {
             loadDungeonMobSpawns(instanceName);
         }
@@ -286,7 +327,7 @@ public class DungeonManager implements GenericMechanic {
 
         private DungeonType type;
         private Integer time;
-        private List<Player> playerList;
+        private Map<Player, Boolean> playerList;
         private String worldName;
         public CopyOnWriteArrayList<Entity> aliveMonsters = new CopyOnWriteArrayList<>();
         public boolean canSpawnBoss = false;
@@ -301,7 +342,7 @@ public class DungeonManager implements GenericMechanic {
         public int keysDropped;
         public boolean triedTeleportingOut;
 
-        DungeonObject(DungeonType type, Integer time, List<Player> playerList, String worldName, String instanceName) {
+        DungeonObject(DungeonType type, Integer time, Map<Player, Boolean> playerList, String worldName, String instanceName) {
             this.type = type;
             this.time = time;
             this.playerList = playerList;
@@ -330,7 +371,7 @@ public class DungeonManager implements GenericMechanic {
             return time;
         }
 
-        public List<Player> getPlayerList() {
+        public Map<Player, Boolean> getPlayerList() {
             return playerList;
         }
 
@@ -381,12 +422,7 @@ public class DungeonManager implements GenericMechanic {
                             default:
                                 break;
                         }
-                        if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId()).equals("")) {
-                            String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, player.getUniqueId())).split(",");
-                            player.teleport(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]), Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
-                        } else {
-                            player.teleport(Teleportation.Cyrennica);
-                        }
+                        player.teleport(Teleportation.Cyrennica);
                         triedTeleportingOut = true;
                         for (ItemStack stack : player.getInventory().getContents()) {
                             if (stack != null && stack.getType() != Material.AIR) {
@@ -475,7 +511,7 @@ public class DungeonManager implements GenericMechanic {
      * @param playerList List of players going to Dungeon.
      * @since 1.0
      */
-    private void loadInWorld(String worldName, List<Player> playerList, DungeonType type) {
+    private void loadInWorld(String worldName, Map<Player, Boolean> playerList, DungeonType type) {
         /*
          * Only creates a world if the contents of a world don't already exist.
 		 * This method loadInWorld() is called in the actual object load().
@@ -532,14 +568,23 @@ public class DungeonManager implements GenericMechanic {
                 }, 0L, 10L);
             }, 60L);
 
-            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> playerList.stream().forEach(player -> {
-                String locationAsString = "-367,86,390,0,0"; // Cyrennica
-                if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
-                    locationAsString = player.getLocation().getX() + "," + (player.getLocation().getY() + 0.5) + "," + player.getLocation().getZ() + "," + player.getLocation().getYaw() + "," + player.getLocation().getPitch();
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> playerList.keySet().stream().forEach(player -> {
+                if (playerList.get(player)) {
+                    String locationAsString = "-367,86,390,0,0"; // Cyrennica
+                    if (player.getWorld().equals(Bukkit.getWorlds().get(0))) {
+                        locationAsString = player.getLocation().getX() + "," + (player.getLocation().getY() + 0.5) + "," + player.getLocation().getZ() + "," + player.getLocation().getYaw() + "," + player.getLocation().getPitch();
+                    }
+                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, true);
+                    player.teleport(w.getSpawnLocation());
+                    player.sendMessage(ChatColor.RED.toString() + object.type.getBossName() + ChatColor.RESET + ": How dare you enter my domain!");
+                } else {
+                    player.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + ">" + ChatColor.GRAY + " "
+                            + "Your party has started the " + ChatColor.LIGHT_PURPLE + ChatColor.UNDERLINE + object.getType().name().replaceAll("_", " ") + ChatColor.RESET + ChatColor.GRAY + " Dungeon.");
+                    if (API.isInSafeRegion(player.getLocation())) {
+                        player.sendMessage(ChatColor.GRAY + "Due to your location, you can join them instantly via" + ChatColor.GREEN + ChatColor.UNDERLINE + "/djoin");
+                    }
+                    //Player isn't nearby so shouldn't be teleported (BUT) can still enter the dungeon at a later date.
                 }
-                DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, true);
-                player.teleport(w.getSpawnLocation());
-                player.sendMessage(ChatColor.RED.toString() + object.type.getBossName() + ChatColor.RESET + ": How dare you enter my domain!");
             }), 150L);
         }, 20L);
     }

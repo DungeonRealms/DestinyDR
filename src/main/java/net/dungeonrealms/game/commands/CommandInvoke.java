@@ -10,8 +10,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.ConsoleCommandSender;
 import org.bukkit.entity.Player;
 
-import java.util.Collections;
-import java.util.List;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by Nick on 10/20/2015.
@@ -36,32 +36,83 @@ public class CommandInvoke extends BasicCommand {
                     case "bandittrove":
                     case "t1dungeon":
                         if (Affair.getInstance().isInParty(player)) {
-                            List<Player> list = Affair.getInstance().getParty(player).get().getMembers();
-                            list.add(Affair.getInstance().getParty(player).get().getOwner());
-                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, list, "T1Dungeon");
+                            Map<Player, Boolean> partyList = new HashMap<>();
+                            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
+                                if (player1.getLocation().distanceSquared(player.getLocation()) <= 200) {
+                                    partyList.put(player1, true);
+                                } else {
+                                    partyList.put(player1, false);
+                                }
+                            }
+                            partyList.put(player, true);
+                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, partyList, "T1Dungeon");
                         } else {
-                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, Collections.singletonList(player), "T1Dungeon");
+                            Affair.getInstance().createParty(player);
+                            Map<Player, Boolean> partyList = new HashMap<>();
+                            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
+                                if (player1.getLocation().distanceSquared(player.getLocation()) <= 200) {
+                                    partyList.put(player1, true);
+                                } else {
+                                    partyList.put(player1, false);
+                                }
+                            }
+                            partyList.put(player, true);
+                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.BANDIT_TROVE, partyList, "T1Dungeon");
                         }
                         break;
                     case "varenglade":
                     case "dodungeon":
                         if (Affair.getInstance().isInParty(player)) {
-                            List<Player> list = Affair.getInstance().getParty(player).get().getMembers();
-                            list.add(Affair.getInstance().getParty(player).get().getOwner());
-                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, list, "DODungeon");
+                            Map<Player, Boolean> partyList = new HashMap<>();
+                            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
+                                if (player1.getLocation().distanceSquared(player.getLocation()) <= 200) {
+                                    partyList.put(player1, true);
+                                } else {
+                                    partyList.put(player1, false);
+                                }
+                            }
+                            partyList.put(player, true);
+                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, partyList, "DODungeon");
                         } else {
-                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, Collections.singletonList(player), "DODungeon");
+                            Affair.getInstance().createParty(player);
+                            Map<Player, Boolean> partyList = new HashMap<>();
+                            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
+                                if (player1.getLocation().distanceSquared(player.getLocation()) <= 200) {
+                                    partyList.put(player1, true);
+                                } else {
+                                    partyList.put(player1, false);
+                                }
+                            }
+                            partyList.put(player, true);
+                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.VARENGLADE, partyList, "DODungeon");
                         }
                         break;
                     case "infernal_abyss":
                     case "infernalabyss":
                     case "fireydungeon":
                         if (Affair.getInstance().isInParty(player)) {
-                            List<Player> list = Affair.getInstance().getParty(player).get().getMembers();
-                            list.add(Affair.getInstance().getParty(player).get().getOwner());
-                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.THE_INFERNAL_ABYSS, list, "fireydungeon");
+                            Map<Player, Boolean> partyList = new HashMap<>();
+                            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
+                                if (player1.getLocation().distanceSquared(player.getLocation()) <= 400) {
+                                    partyList.put(player1, true);
+                                } else {
+                                    partyList.put(player1, false);
+                                }
+                            }
+                            partyList.put(player, true);
+                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.THE_INFERNAL_ABYSS, partyList, "fireydungeon");
                         } else {
-                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.THE_INFERNAL_ABYSS, Collections.singletonList(player), "fireydungeon");
+                            Affair.getInstance().createParty(player);
+                            Map<Player, Boolean> partyList = new HashMap<>();
+                            for (Player player1 : Affair.getInstance().getParty(player).get().getMembers()) {
+                                if (player1.getLocation().distanceSquared(player.getLocation()) <= 400) {
+                                    partyList.put(player1, true);
+                                } else {
+                                    partyList.put(player1, false);
+                                }
+                            }
+                            partyList.put(player, true);
+                            DungeonManager.getInstance().createNewInstance(DungeonManager.DungeonType.THE_INFERNAL_ABYSS, partyList, "fireydungeon");
                         }
                         break;
                     default:
