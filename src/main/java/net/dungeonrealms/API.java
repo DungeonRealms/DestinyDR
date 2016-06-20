@@ -1122,11 +1122,9 @@ public class API {
 
                 if (type.isRange()) {
                     gp.changeAttributeVal(type, new Integer[] { tag.getInt(modifier + "Min"), tag.getInt(modifier + "Max") });
-                    p.sendMessage(type.getName() + ": " + tag.getInt(modifier + "Min") + " - " + tag.getInt(modifier + "Max"));
                 }
                 else {
                     gp.changeAttributeVal(type, new Integer[] { 0, tag.getInt(modifier) });
-                    p.sendMessage(type.getName() + ": " + tag.getInt(modifier));
                 }
             });
         }
