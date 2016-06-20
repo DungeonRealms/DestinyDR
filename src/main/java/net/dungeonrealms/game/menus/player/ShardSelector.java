@@ -84,7 +84,7 @@ public class ShardSelector extends AbstractMenu {
     @Override
     public void open(Player player) {
         if (getSize() == 0) {
-            player.sendMessage(ChatColor.RED + "Unable to find an available shard for you");
+            player.sendMessage(ChatColor.RED + "Unable to find an available shard for you.");
             return;
         }
 
