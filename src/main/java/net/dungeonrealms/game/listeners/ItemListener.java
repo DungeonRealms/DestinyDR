@@ -66,11 +66,13 @@ public class ItemListener implements Listener {
             assert tag != null;
             // send the untradeable message if not profile or hearthstone since they will be dropped
             // every time the inventory is closed
-            if (!item.getItemMeta().getDisplayName().contains("Character Profile") && !item.getItemMeta().getDisplayName().contains("Hearthstone"))
+            if (!item.getItemMeta().getDisplayName().contains("Character Profile") && !item.getItemMeta().getDisplayName().contains("Hearthstone")) {
                 p.sendMessage(ChatColor.GRAY + "This item was " + ChatColor.ITALIC + "untradeable" + ChatColor.GRAY + ", " +
                         "so it has " + ChatColor.UNDERLINE + "vanished.");
-            p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
+                p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
+            }
             event.getItemDrop().remove();
+//            event.setCancelled(true);
         } else if (API.isItemSoulbound(item)) {
             event.setCancelled(true);
             p.sendMessage(ChatColor.RED + "Are you sure you want to " + ChatColor.UNDERLINE + "destroy" + ChatColor
