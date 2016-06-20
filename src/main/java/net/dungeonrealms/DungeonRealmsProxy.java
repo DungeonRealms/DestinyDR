@@ -58,10 +58,18 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
         this.getProxy().getPluginManager().registerListener(this, this);
     }
 
+//    public String getRank(UUID uuid) {
+//
+//        database.getCollection("player_data").
+//    }
+
     public List<ServerInfo> getOptimalShards() {
         List<ServerInfo> server = new ArrayList<>();
 
-        for (String shardName : DR_SHARDS) server.add(getProxy().getServerInfo(shardName));
+        for (String shardName : DR_SHARDS)
+            if (!shardName.contains("sub") && !shardName.contains("yt"))
+                server.add(getProxy().getServerInfo(shardName));
+
         Collections.sort(server, (o1, o2) -> o1.getPlayers().size() - o2.getPlayers().size());
         Collections.reverse(server);
 
@@ -71,35 +79,48 @@ public class DungeonRealmsProxy extends Plugin implements Listener {
     @EventHandler
     public void onServerConnect(ServerConnectEvent event) {
         if ((event.getPlayer().getServer() == null) || event.getTarget().getName().equals("Lobby")) {
-            final Iterator<ServerInfo> optimalShardFinder = getOptimalShards().iterator();
+            Iterator<ServerInfo> optimalShardFinder = getOptimalShards().iterator();
             event.getPlayer().sendMessage(ChatColor.GREEN + "" + ChatColor.BOLD + "Finding an available shard for you...");
 
             while (optimalShardFinder.hasNext()) {
+
                 ServerInfo target = optimalShardFinder.next();
 
                 try {
-                    PingResponse data = new BungeePingResponse(ServerPinger.fetchData(new ServerAddress(target.getAddress().getHostName(), target.getAddress().getPort()), 500));
-                    if (data.getMotd().equals("offline")) {
+                    PingResponse data = new BungeePingResponse(ServerPinger.fetchData(new ServerAddress(target.getAddress().getHostName(), target.getAddress().getPort()), 700));
+                    if (!data.isOnline() || data.getMotd().equals("offline")) {
+
                         if (!optimalShardFinder.hasNext()) {
                             event.getPlayer().disconnect(ChatColor.RED + "Could not find an optimal shard for you.. Please try again later.");
                             return;
                         }
+
                         continue;
                     }
                 } catch (Exception e) {
+
                     if (!optimalShardFinder.hasNext()) {
                         event.getPlayer().disconnect(ChatColor.RED + "Could not find an optimal shard for you.. Please try again later.");
                         return;
                     }
+
                     continue;
                 }
 
                 if (target.canAccess(event.getPlayer()) && !(event.getPlayer().getServer() != null && event.getPlayer().getServer().getInfo().equals(target))) {
                     try {
                         event.setTarget(target);
+
                     } catch (Exception e) {
                         if (!optimalShardFinder.hasNext())
                             event.getPlayer().disconnect(ChatColor.RED + "Could not find an optimal shard for you.. Please try again later.");
+                    }
+
+                    break;
+                } else {
+                    if (!optimalShardFinder.hasNext()) {
+                        event.getPlayer().disconnect(ChatColor.RED + "Could not find an optimal shard for you.. Please try again later.");
+                        return;
                     }
                 }
             }

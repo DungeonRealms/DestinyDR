@@ -67,32 +67,23 @@ import java.util.*;
 
 public class DungeonRealms extends JavaPlugin {
 
-    private static DungeonRealms instance = null;
-
-    public static DungeonRealms getInstance() {
-        return instance;
-    }
-
-    public void onLoad() {
-        Utils.log.info("DungeonRealms onLoad() ... STARTING UP");
-        instance = this;
-    }
-
-    public MechanicManager mm = null;
-    boolean hasFinishedSetup = false;
+    private static final long serverStart = System.currentTimeMillis();
     public static String version = "3.0";
-
-    // Menus
-
+    private static DungeonRealms instance = null;
     private static HearthStone hs;
     private static Profile ps;
-
-    // End of Menus
-
     private static TabCompleteCommands tcc;
 
-    // Shard Config
+    // Menus
+    // BUNGEE STUFF
+    public final Map<String, String> DR_SHARDS_NAMES = new HashMap<>();
+    public final Map<String, ServerAddress> DR_SHARDS_IPS = new HashMap<>();
 
+    // End of Menus
+    private final List<String> DEVS = Arrays.asList("Proxying", "Atlas__", "iFamasssxD", "APOLLO_IO", "Bradez1571", "EtherealTemplar", "Xwaffle");
+
+    // Shard Config
+    public MechanicManager mm = null;
     public boolean isInstanceServer = false;
     public String bungeeName = "Lobby";
     public int realmnumber = -1;
@@ -106,22 +97,29 @@ public class DungeonRealms extends JavaPlugin {
     public boolean isYouTubeShard = false; // YouTuber shard - only YTers / staff allowed.
     public boolean isBrazilianShard = false; // Brazilian shard - eventually create DR localization, etc.
     public boolean isRoleplayShard = false; // Role playing shard - prompt user its a RP shard.
-    public boolean isBetaShard = false; // Beta shard - enable extended capabilities / alert user about bugs.
 
     // End of Shard Config
+    public boolean isBetaShard = false; // Beta shard - enable extended capabilities / alert user about bugs.
+    boolean hasFinishedSetup = false;
+    @Getter
+    private List<String> loggingOut = new ArrayList<>();
+
+    public static DungeonRealms getInstance() {
+        return instance;
+    }
+
+    public static long getServerStart() {
+        return serverStart;
+    }
+
+    public void onLoad() {
+        Utils.log.info("DungeonRealms onLoad() ... STARTING UP");
+        instance = this;
+    }
 
     public List<String> getDevelopers() {
         return DEVS;
     }
-
-    // BUNGEE STUFF
-    public final Map<String, String> DR_SHARDS_NAMES = new HashMap<>();
-    public final Map<String, ServerAddress> DR_SHARDS_IPS = new HashMap<>();
-
-    private final List<String> DEVS = Arrays.asList("Proxying", "Atlas__", "iFamasssxD", "APOLLO_IO", "Bradez1571", "EtheralTemplar", "Xwaffle");
-
-    @Getter
-    private List<String> loggingOut = new ArrayList<>();
 
     public boolean hasFinishedSetup() {
         return hasFinishedSetup;
@@ -130,12 +128,6 @@ public class DungeonRealms extends JavaPlugin {
     public void setFinishedSetup(boolean bool) {
         hasFinishedSetup = bool;
     }
-
-    public static long getServerStart() {
-        return serverStart;
-    }
-
-    private static final long serverStart = System.currentTimeMillis();
 
     public void onEnable() {
         long START_TIME = System.currentTimeMillis() / 1000L;

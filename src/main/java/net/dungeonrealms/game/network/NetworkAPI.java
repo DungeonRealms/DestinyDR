@@ -38,7 +38,7 @@ public class NetworkAPI implements PluginMessageListener {
         Bukkit.getMessenger().registerOutgoingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms");
         Bukkit.getMessenger().registerIncomingPluginChannel(DungeonRealms.getInstance(), "DungeonRealms", this);
 
-        BungeeServerTracker.startTask(3);
+        BungeeServerTracker.startTask(1);
         Utils.log.info("[NetworkAPI] Finished Registering Outbound/Inbound BungeeCord channels ... OKAY!");
     }
 
