@@ -7,6 +7,7 @@ import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.party.Affair;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -115,6 +116,9 @@ public class ScoreboardHandler implements GenericMechanic {
             String clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
             suffix = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + " [" + clanTag + ChatColor.RESET + "]");
         }
+
+        // make gms and devs have an aqua name
+        if (Rank.isGM(player)) chatColor = ChatColor.AQUA;
 
         Affair affair = Affair.getInstance();
         for (Player player1 : Bukkit.getOnlinePlayers()) {
