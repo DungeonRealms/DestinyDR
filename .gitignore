@@ -5,12 +5,12 @@
 /src/rebel.xml
 /src/rebel-remote.xml
 resources/META_INF/MANIFEST.MF
-/tools/pushBuildToServer/pushBungee.bat
+/tools/pushBungee.bat
 *.iml
 .classpath
 .project
 /target
 .settings
-/tools/pushBuildToServer/pushDev.bat
-/tools/pushBuildToServer/pushDev2.bat
-/tools/pushBuildToServer/pushDev3.bat
+/tools/pushDev.bat
+/tools/pushDev2.bat
+/tools/pushDev3.bat

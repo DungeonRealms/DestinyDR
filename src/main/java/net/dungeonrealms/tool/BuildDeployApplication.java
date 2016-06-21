@@ -7,9 +7,9 @@ import java.io.InputStreamReader;
  * Class written by APOLLOSOFTWARE.IO on 6/7/2016
  */
 
-public class UpdateServerApplication {
+public class BuildDeployApplication {
 
-    static String TOOL_PATH = "\"C:\\Users\\XenoJava\\Desktop\\DR\\DungeonRealms\\tools\\pushBuildToServer\"";
+    static String TOOL_PATH = "\"C:\\Users\\XenoJava\\Desktop\\DR\\DungeonRealms\\tools\"";
 
     public static void main(String[] args) {
 
