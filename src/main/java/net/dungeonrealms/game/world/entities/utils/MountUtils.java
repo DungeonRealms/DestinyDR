@@ -6,6 +6,7 @@ import net.dungeonrealms.game.mastery.ItemSerialization;
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
@@ -87,6 +88,7 @@ public class MountUtils {
                     break;
             }
         }
+        org.bukkit.entity.Horse.Color color = Rank.isDev(player) ? org.bukkit.entity.Horse.Color.WHITE : org.bukkit.entity.Horse.Color.BROWN;
         EnumMounts enumMounts = EnumMounts.getByName(mountType.toUpperCase());
         switch (enumMounts) {
             case TIER1_HORSE: {
@@ -96,7 +98,7 @@ public class MountUtils {
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 mountHorse.getBukkitEntity().setPassenger(player);
                 org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
-                horse.setColor(org.bukkit.entity.Horse.Color.BROWN);
+                horse.setColor(color);
                 HorseInventory horseInventory = horse.getInventory();
                 horseInventory.setSaddle(new ItemStack(Material.SADDLE));
                 horseInventory.setArmor(new ItemStack(Material.IRON_BARDING));
@@ -112,7 +114,7 @@ public class MountUtils {
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 mountHorse.getBukkitEntity().setPassenger(player);
                 org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
-                horse.setColor(org.bukkit.entity.Horse.Color.BROWN);
+                horse.setColor(color);
                 HorseInventory horseInventory = horse.getInventory();
                 horseInventory.setSaddle(new ItemStack(Material.SADDLE));
                 horseInventory.setArmor(new ItemStack(Material.IRON_BARDING));
@@ -128,7 +130,7 @@ public class MountUtils {
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 mountHorse.getBukkitEntity().setPassenger(player);
                 org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
-                horse.setColor(org.bukkit.entity.Horse.Color.BROWN);
+                horse.setColor(color);
                 HorseInventory horseInventory = horse.getInventory();
                 horseInventory.setSaddle(new ItemStack(Material.SADDLE));
                 horseInventory.setArmor(new ItemStack(Material.DIAMOND_BARDING));
@@ -144,7 +146,7 @@ public class MountUtils {
                 mountHorse.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 mountHorse.getBukkitEntity().setPassenger(player);
                 org.bukkit.entity.Horse horse = (org.bukkit.entity.Horse) mountHorse.getBukkitEntity();
-                horse.setColor(org.bukkit.entity.Horse.Color.BROWN);
+                horse.setColor(color);
                 HorseInventory horseInventory = horse.getInventory();
                 horseInventory.setSaddle(new ItemStack(Material.SADDLE));
                 horseInventory.setArmor(new ItemStack(Material.GOLD_BARDING));
@@ -169,6 +171,9 @@ public class MountUtils {
                 h.setMetadata("mule", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
                 String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, uuid);
                 int muleLevel = (int) DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
+                if (muleLevel > 3) {
+                    muleLevel = 3;
+                }
                 MuleTier tier = MuleTier.getByTier(muleLevel);
                 if (tier == null) {
                     return;
@@ -178,11 +183,6 @@ public class MountUtils {
                 player.playSound(player.getLocation(), Sound.ENTITY_DONKEY_AMBIENT, 1F, 1F);
                 EntityAPI.addPlayerMountList(player.getUniqueId(), ((CraftEntity) h).getHandle());
                 if (!inventories.containsKey(player.getUniqueId())) {
-//                    int muleLevel = (int) DatabaseAPI.getInstance().getData(EnumData.MULELEVEL, player.getUniqueId());
-                    if (muleLevel > 3)
-                        //Impossible
-                        muleLevel = 3;
-
                     Inventory inv = Bukkit.createInventory(player, tier.getSize(), "Mule Storage");
                     if (!invString.equalsIgnoreCase("") && !invString.equalsIgnoreCase("empty") && invString.length() > 4) {
                         //Make sure the inventory is as big as we need
