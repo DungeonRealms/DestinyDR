@@ -112,10 +112,11 @@ public class ScoreboardHandler implements GenericMechanic {
      */
     public void setPlayerHeadScoreboard(Player player, ChatColor chatColor, int playerLevel) {
         String suffix = "";
-        if (!GuildDatabase.getAPI().isGuildNull(player.getUniqueId())) {
+        // guild tags in scoreboards have been disabled by Brad's request
+/*        if (!GuildDatabase.getAPI().isGuildNull(player.getUniqueId())) {
             String clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player.getUniqueId()).toString());
             suffix = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + " [" + clanTag + ChatColor.RESET + "]");
-        }
+        }*/
 
         // make gms and devs have an aqua name
         if (Rank.isGM(player)) chatColor = ChatColor.AQUA;
