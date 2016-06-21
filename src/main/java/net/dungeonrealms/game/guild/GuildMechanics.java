@@ -132,11 +132,12 @@ public class GuildMechanics {
 
 
         // UPDATE THEIR BOARD
-        if (player != null) {
+        // guild tags in scoreboard disabled
+        /*if (player != null) {
             GamePlayer gp = API.getGamePlayer(player);
             if (gp != null)
                 ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
-        }
+        }*/
     }
 
 
@@ -280,9 +281,10 @@ public class GuildMechanics {
                 GuildDatabaseAPI.get().addPlayer(guildName, player.getUniqueId());
                 API.updatePlayerData(player.getUniqueId());
 
-                GamePlayer gp = API.getGamePlayer(player);
+                // guild tags in scoreboard disabled
+                /*GamePlayer gp = API.getGamePlayer(player);
                 if (gp != null)
-                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
+                    ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());*/
 
 
                 sendAlert(guildName, player.getName() + ChatColor.GRAY.toString() + " has " +
@@ -362,9 +364,10 @@ public class GuildMechanics {
                     }
             );
 
-            GamePlayer gp = API.getGamePlayer(player);
+            // guild tags in scoreboard disabled
+            /*GamePlayer gp = API.getGamePlayer(player);
             if (gp != null)
-                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
+                ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());*/
 
             API.updatePlayerData(player.getUniqueId());
         }, null);
@@ -458,9 +461,10 @@ public class GuildMechanics {
                     player.sendMessage(ChatColor.GRAY + "You can now chat in your guild chat with " + ChatColor.BOLD + "/g <msg>" + ChatColor.GRAY + ", invite players with " + ChatColor.BOLD + "/ginvite <player>" + ChatColor.GRAY + " and much more -- Check out your character journal for more information!");
                     BankMechanics.getInstance().takeGemsFromInventory(5000, player);
 
-                    GamePlayer gp = API.getGamePlayer(player);
+                    // guild tags in scoreboard disabled
+                    /*GamePlayer gp = API.getGamePlayer(player);
                     if (gp != null)
-                        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
+                        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());*/
 
                     player.getInventory().addItem(info.getCurrentBanner());
                     API.updatePlayerData(player.getUniqueId());
