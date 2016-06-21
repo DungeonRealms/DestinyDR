@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.donate;
 
+import lombok.Getter;
+import lombok.Setter;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
@@ -40,6 +42,9 @@ public class DonationEffects implements GenericMechanic {
     public HashMap<Entity, ParticleAPI.ParticleEffect> ENTITY_PARTICLE_EFFECTS = new HashMap<>();
     public ConcurrentHashMap<Location, Material> PLAYER_GOLD_BLOCK_TRAIL_INFO = new ConcurrentHashMap<>();
     public List<Player> PLAYER_GOLD_BLOCK_TRAILS = new ArrayList<>();
+    @Getter
+    @Setter
+    public boolean lootBuffActive = false;
     private static Random random = new Random();
 
     @Override
