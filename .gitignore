@@ -11,6 +11,5 @@ resources/META_INF/MANIFEST.MF
 .project
 /target
 .settings
-/tools/pushDev.bat
-/tools/pushDev2.bat
-/tools/pushDev3.bat
+tools/pushBuildToServer
+tools/WinSCP.*

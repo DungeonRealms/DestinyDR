@@ -1031,8 +1031,20 @@ public class API {
         return API.getGamePlayer(p).changeAttributeVal(type, difference);
     }
 
-    public static Integer[] getAttributeVal(AttributeType type, Player p) {
-        return API.getGamePlayer(p).getAttributeVal(type);
+    public static int getStaticAttributeVal(AttributeType type, Player p) {
+        return API.getGamePlayer(p).getStaticAttributeVal(type);
+    }
+
+    /**
+     * Gets the value of a player's specified attribute. Must be a non-range
+     * attribute.
+     *
+     * @param type
+     * @param p
+     * @return if a ranged attribute, throws an error message and returns -1.
+     */
+    public static Integer[] getRangedAttributeVal(AttributeType type, Player p) {
+        return API.getGamePlayer(p).getRangedAttributeVal(type);
     }
 
     /**
@@ -1150,6 +1162,8 @@ public class API {
                 }
             });
         }
+
+        gp.setAttributesLoaded(true);
 
         return attributes;
     }

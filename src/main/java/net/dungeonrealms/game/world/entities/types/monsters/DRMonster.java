@@ -8,7 +8,6 @@ import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
-import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
@@ -47,8 +46,8 @@ public interface DRMonster {
         Random random = new Random();
         GamePlayer gp = API.getGamePlayer(killer);
         boolean toggleDebug = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId());
-        double gold_drop_multiplier = (gp.getAttributeVal(Item.ArmorAttributeType.GEM_FIND)[1] + 100.) / 100.;
-        int killerItemFind = gp.getAttributeVal(Item.ArmorAttributeType.ITEM_FIND)[1];
+        double gold_drop_multiplier = (gp.getRangedAttributeVal(Item.ArmorAttributeType.GEM_FIND)[1] + 100.) / 100.;
+        int killerItemFind = gp.getRangedAttributeVal(Item.ArmorAttributeType.ITEM_FIND)[1];
         Location loc = ent.getLocation();
         World world = ((CraftWorld) loc.getWorld()).getHandle();
 
@@ -84,7 +83,7 @@ public interface DRMonster {
         if (gemRoll < (gemChance * gold_drop_multiplier)) {
             if (gemRoll >= gemChance) {
                 if (toggleDebug) {
-                    killer.sendMessage(ChatColor.GREEN + "Your " + gp.getAttributeVal(Item.ArmorAttributeType.GEM_FIND)[1] + "% Gem Find has resulted in a drop.");
+                    killer.sendMessage(ChatColor.GREEN + "Your " + gp.getRangedAttributeVal(Item.ArmorAttributeType.GEM_FIND)[1] + "% Gem Find has resulted in a drop.");
                 }
             }
             double gem_drop_amount = 0;

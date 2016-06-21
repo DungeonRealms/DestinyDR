@@ -10,6 +10,7 @@ import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
+import net.dungeonrealms.game.world.items.Item;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -123,6 +124,10 @@ public class EnergyHandler implements GenericMechanic {
             if (!API.isPlayer(player)) {
                 continue;
             }
+            GamePlayer gp = API.getGamePlayer(player);
+            if (gp == null || !gp.isAttributesLoaded()) {
+                continue; // player data not yet loaded
+            }
             if (getPlayerCurrentEnergy(player) == 1.0F) {
                 continue;
             }
@@ -131,13 +136,13 @@ public class EnergyHandler implements GenericMechanic {
                 updatePlayerEnergyBar(player);
                 continue;
             }
-            float regenAmount = getPlayerEnergyRegenerationAmount(player.getUniqueId());
+            // get regenAmount, 10% base energy regen (calculated here because it's hidden)
+            float regenAmount = (((float) API.getStaticAttributeVal(Item.ArmorAttributeType.ENERGY_REGEN, player)) / 100.0F) + 0.10F;
             if (!(player.hasPotionEffect(PotionEffectType.SLOW_DIGGING))) {
                 if (player.hasMetadata("starving")) {
-                    regenAmount = 0.06F;
+                    regenAmount = 0.05F;
                 }
                 regenAmount = regenAmount / 6.3F;
-                GamePlayer gp = API.getGamePlayer(player);
                 if (gp == null || gp.getStats() == null) return;
                 regenAmount += (int) (regenAmount * gp.getStats().getEnergyRegen());
                 if(Fishing.fishBuffs.containsKey(player.getUniqueId()) && Fishing.fishBuffs.get(player.getUniqueId()).equalsIgnoreCase("Energy Regen")){
@@ -177,154 +182,6 @@ public class EnergyHandler implements GenericMechanic {
             percent = 0;
         }
         player.setLevel(((int) percent));
-    }
-
-    /**
-     * Returns the players current
-     * energy regeneration value
-     *
-     * @param uuid
-     * @return float
-     * @since 1.0
-     */
-    public float getPlayerEnergyRegenerationAmount(UUID uuid) {
-        float regenAmount;
-        Player player = Bukkit.getPlayer(uuid);
-        double regenMod = 0;
-        for (ItemStack itemStack : player.getEquipment().getArmorContents()) {
-            if (itemStack == null || itemStack.getType() == Material.AIR) {
-                continue;
-            }
-            regenMod += getEnergyValueOfArmor(itemStack);
-        }
-
-        regenAmount = ((float) regenMod / 100.0F);
-        regenAmount += 0.10F;
-        double intMod = 0;
-        for (ItemStack itemStack : player.getEquipment().getArmorContents()) {
-            if (itemStack == null || itemStack.getType() == Material.AIR) {
-                continue;
-            }
-            intMod += getIntellectValueOfArmor(itemStack);
-            //regenAmount = getIntellectValueOfArmor(itemStack, regenAmount);
-        }
-
-        //regenAmount += (regenAmount / 100F) * (getEnergyValueOfArmor(itemStack) + 1);
-        if (intMod > 0) {
-            regenAmount += (float) (((intMod * 0.015F) / 100.0F));
-        }
-
-        return regenAmount;
-    }
-
-    /**
-     * Calculates the Energy Regen value
-     * of an itemstack
-     *
-     * @param itemStack
-     * @return int
-     * @since 1.0
-     */
-    public int getEnergyValueOfArmor(ItemStack itemStack) {
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
-        int energyRegen = 0;
-        if (nmsItem == null || nmsItem.getTag() == null) {
-            return 0;
-        }
-        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor"))) {
-            return 0;
-        }
-        if (nmsItem.getTag().getInt("energyRegen") > 0) {
-            energyRegen += nmsItem.getTag().getInt("energyRegen");
-        }
-        return energyRegen;
-    }
-
-    /**
-     * Calculates the Intellect value
-     * of an itemstack
-     *
-     * @param itemStack
-     * @return int
-     * @since 1.0
-     */
-    /*public float getIntellectValueOfArmor(ItemStack itemStack, float regenTotal) {
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
-        if (nmsItem == null || nmsItem.getTag() == null) {
-            return regenTotal;
-        }
-        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor"))) {
-            return regenTotal;
-        }
-        if (nmsItem.getTag().getInt("intellect") > 0) {
-            regenTotal += regenTotal * ((nmsItem.getTag().getInt("intellect") * 0.015F) / 100.0f);
-        }
-        return regenTotal;
-    }*/
-
-    public int getIntellectValueOfArmor(ItemStack itemStack) {
-        net.minecraft.server.v1_9_R2.ItemStack nmsItem = (CraftItemStack.asNMSCopy(itemStack));
-        int intMod = 0;
-        if (nmsItem == null || nmsItem.getTag() == null) {
-            return intMod;
-        }
-        if (!(nmsItem.getTag().getString("type").equalsIgnoreCase("armor"))) {
-            return intMod;
-        }
-        if (nmsItem.getTag().getInt("intellect") > 0) {
-            intMod += nmsItem.getTag().getInt("intellect");
-        }
-        return intMod;
-    }
-
-
-    /**
-     * Returns the players current
-     * energy regeneration value
-     *
-     * @param uuid
-     * @return float
-     * @since 1.0
-     */
-    public float getPlayerEnergyPercentage(UUID uuid) {
-        int regenAmount = 100;
-        Player player = Bukkit.getPlayer(uuid);
-        EntityEquipment playerEquipment = player.getEquipment();
-        ItemStack[] playerArmor = playerEquipment.getArmorContents();
-        if (playerArmor == null) {
-            return regenAmount;
-        }
-        NBTTagCompound nmsTags[] = new NBTTagCompound[4];
-        if (playerArmor[3] != null && playerArmor[3].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(playerArmor[3]).hasTag()) {
-                nmsTags[0] = CraftItemStack.asNMSCopy(playerArmor[3]).getTag();
-            }
-        }
-        if (playerArmor[2] != null && playerArmor[2].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(playerArmor[2]).hasTag()) {
-                nmsTags[1] = CraftItemStack.asNMSCopy(playerArmor[2]).getTag();
-            }
-        }
-        if (playerArmor[1] != null && playerArmor[1].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(playerArmor[1]).hasTag()) {
-                nmsTags[2] = CraftItemStack.asNMSCopy(playerArmor[1]).getTag();
-            }
-        }
-        if (playerArmor[0] != null && playerArmor[0].getType() != Material.AIR) {
-            if (CraftItemStack.asNMSCopy(playerArmor[0]).hasTag()) {
-                nmsTags[3] = CraftItemStack.asNMSCopy(playerArmor[0]).getTag();
-            }
-        }
-        for (NBTTagCompound nmsTag : nmsTags) {
-            if (nmsTag == null) {
-                regenAmount += 0;
-            } else {
-                if (nmsTag.getInt("energyRegen") != 0) {
-                    regenAmount += nmsTag.getInt("energyRegen");
-                }
-            }
-        }
-        return regenAmount;
     }
 
     /**
@@ -430,49 +287,60 @@ public class EnergyHandler implements GenericMechanic {
         Material material = itemStack.getType();
         switch (material) {
             case AIR:
-                return 0.045f;
+                return 0.05f;
             case WOOD_SWORD:
-                return 0.054f;
+                return 0.06f;
             case STONE_SWORD:
-                return 0.064f;
+                return 0.071f;
             case IRON_SWORD:
-                return 0.075f;
+                return 0.0833f;
             case DIAMOND_SWORD:
-                return 0.113f;
+                return 0.125f;
             case GOLD_SWORD:
-                return 0.123f;
+                return 0.135f;
             case WOOD_AXE:
-                return 0.0642F * 1.1F;
+                return 0.0721F * 1.1F;
             case STONE_AXE:
-                return 0.0763F * 1.1F;
+                return 0.0833F * 1.1F;
             case IRON_AXE:
-                return 0.09F * 1.1F;
+                return 0.10F * 1.1F;
             case DIAMOND_AXE:
-                return 0.113F * 1.1F;
+                return 0.125F * 1.1F;
             case GOLD_AXE:
-                return 0.123F * 1.1F;
+                return 0.135F * 1.1F;
             case WOOD_SPADE:
-                return 0.0642F;
+                return 0.0721F;
             case STONE_SPADE:
-                return 0.0763F;
+                return 0.0833F;
             case IRON_SPADE:
-                return 0.09F;
+                return 0.10F;
             case DIAMOND_SPADE:
-                return 0.113F;
+                return 0.125F;
             case GOLD_SPADE:
-                return 0.123F;
+                return 0.135F;
             case WOOD_HOE:
-                return 0.11F / 1.1F;
+                return 0.10F / 1.1F;
             case STONE_HOE:
-                return 0.13F / 1.1F;
+                return 0.12F / 1.1F;
             case IRON_HOE:
-                return 0.14F / 1.1F;
+                return 0.13F / 1.1F;
             case DIAMOND_HOE:
-                return 0.15F / 1.1F;
+                return 0.14F / 1.1F;
             case GOLD_HOE:
-                return 0.16F / 1.1F;
+                return 0.15F / 1.1F;
             case BOW:
-                return 0.099F;
+                switch (API.getItemTier(itemStack)) {
+                    case TIER_1:
+                        return 0.08F;
+                    case TIER_2:
+                        return 0.10F;
+                    case TIER_3:
+                        return 0.11F;
+                    case TIER_4:
+                        return 0.13F;
+                    case TIER_5:
+                        return 0.15F;
+                }
         }
         return 0.10F;
     }

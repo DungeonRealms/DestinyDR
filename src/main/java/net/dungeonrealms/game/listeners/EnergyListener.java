@@ -88,19 +88,7 @@ public class EnergyListener implements Listener {
         if (weapon.getType() == Material.POTION) {
             return;
         }
-        if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player) <= 0) {
-            event.setUseItemInHand(Event.Result.DENY);
-            event.setCancelled(true);
-            return;
-        }
 
-        if (player.hasMetadata("last_Attack")) {
-            if (System.currentTimeMillis() - player.getMetadata("last_Attack").get(0).asLong() < 100){
-                event.setUseItemInHand(Event.Result.DENY);
-                event.setCancelled(true);
-                return;
-            }
-        }
         if (player.hasPotionEffect(PotionEffectType.SLOW_DIGGING) || EnergyHandler.getPlayerCurrentEnergy(player) <= 0) {
             event.setCancelled(true);
             event.setUseItemInHand(Event.Result.DENY);
@@ -111,6 +99,13 @@ public class EnergyListener implements Listener {
                 ex.printStackTrace();
             }
             return;
+        }
+        if (player.hasMetadata("last_Attack")) {
+            if (System.currentTimeMillis() - player.getMetadata("last_Attack").get(0).asLong() < 100){
+                event.setUseItemInHand(Event.Result.DENY);
+                event.setCancelled(true);
+                return;
+            }
         }
         float energyToRemove = EnergyHandler.getWeaponSwingEnergyCost(weapon);
         if (weapon.getType() == Material.BOW) {
