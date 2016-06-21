@@ -180,7 +180,7 @@ public class CommandAdd extends BasicCommand {
                 case "resetbook":
                     player.getInventory().addItem(ItemManager.createItem(EnumItem.RetrainingBook));
                     break;
-                case "sotrageexpansion":
+                case "storageexpansion":
                     player.getInventory().addItem(ItemManager.createItem(EnumItem.StorageExpansion));
                     break;
                 case "repairhammer":
