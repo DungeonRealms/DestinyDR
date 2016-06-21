@@ -71,12 +71,8 @@ public class DungeonRealms extends JavaPlugin {
     private static Profile ps;
     private static TabCompleteCommands tcc;
 
-    // Menus
-    // BUNGEE STUFF
-    public final Map<String, String> DR_SHARDS_NAMES = new HashMap<>();
-    public final Map<String, ServerAddress> DR_SHARDS_IPS = new HashMap<>();
+    public final Map<String, ShardInfo> DR_SHARDS = getShards();
 
-    // End of Menus
     private final List<String> DEVS = Arrays.asList("Proxying", "Atlas__", "iFamasssxD", "APOLLO_IO", "Bradez1571", "EtherealTemplar", "Xwaffle");
 
     // Shard Config
@@ -97,7 +93,8 @@ public class DungeonRealms extends JavaPlugin {
 
     // End of Shard Config
     public boolean isBetaShard = false; // Beta shard - enable extended capabilities / alert user about bugs.
-    boolean hasFinishedSetup = false;
+    volatile boolean hasFinishedSetup = false;
+
     @Getter
     private List<String> loggingOut = new ArrayList<>();
 
@@ -130,20 +127,6 @@ public class DungeonRealms extends JavaPlugin {
         long START_TIME = System.currentTimeMillis() / 1000L;
         Utils.log.info("DungeonRealms onEnable() ... STARTING UP");
         saveDefaultConfig();
-
-        DR_SHARDS_NAMES.put("us1", "US-1");
-        DR_SHARDS_NAMES.put("us2", "US-2");
-        DR_SHARDS_NAMES.put("us3", "US-3");
-        DR_SHARDS_NAMES.put("us4", "US-4");
-        DR_SHARDS_NAMES.put("sub1", "SUB-1");
-        DR_SHARDS_NAMES.put("yt1", "YT-1");
-
-        DR_SHARDS_IPS.put("us1", new ServerAddress("158.69.122.139", 40007));
-        DR_SHARDS_IPS.put("us2", new ServerAddress("158.69.122.139", 40008));
-        DR_SHARDS_IPS.put("us3", new ServerAddress("131.153.25.218", 40007));
-        DR_SHARDS_IPS.put("us4", new ServerAddress("131.153.25.218", 40008));
-        DR_SHARDS_IPS.put("sub1", new ServerAddress("131.153.25.114", 40007));
-        DR_SHARDS_IPS.put("yt1", new ServerAddress("131.153.25.114", 40008));
 
         Utils.log.info("Reading shard config...");
         Ini ini = new Ini();
@@ -439,6 +422,34 @@ public class DungeonRealms extends JavaPlugin {
         mm.stopInvocation();
         Utils.log.info("DungeonRealms onDisable() ... SHUTTING DOWN");
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), Database.mongoClient::close, 40L);
+    }
+
+    // SHARDS
+    private Map<String, ShardInfo> getShards() {
+        Map<String, ShardInfo> map = new HashMap<>();
+
+        map.put("us1", new ShardInfo("US-1", "158.69.122.139", 40007));
+        map.put("us2", new ShardInfo("US-2", "158.69.122.139", 40008));
+        map.put("us3", new ShardInfo("US-3", "131.153.25.218", 40007));
+        map.put("us4", new ShardInfo("US-4", "131.153.25.218", 40008));
+        map.put("sub1", new ShardInfo("SUB-1", "131.153.25.114", 40007));
+        map.put("yt1", new ShardInfo("YT-1", "131.153.25.114", 40008));
+
+        return map;
+    }
+
+    public class ShardInfo {
+
+        @Getter
+        private String shardID;
+
+        @Getter
+        private ServerAddress serverAddress;
+
+        public ShardInfo(String shardID, String hostname, int port) {
+            this.shardID = shardID;
+            this.serverAddress = new ServerAddress(hostname, port);
+        }
     }
 
 }

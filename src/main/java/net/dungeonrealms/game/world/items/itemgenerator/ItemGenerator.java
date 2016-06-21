@@ -493,7 +493,7 @@ public class ItemGenerator {
         int item_id = -1;
         String item_name = "";
         List<String> item_lore = new ArrayList<>();
-        HashMap<String, NBTTagInt> NBTModifiers = new HashMap<>();
+        LinkedHashMap<String, NBTTagInt> NBTModifiers = new LinkedHashMap<>();
         ItemStack is = null;
 
         BufferedReader reader = null;

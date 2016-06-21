@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.world.anticheat;
 
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.mastery.Utils;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
@@ -62,8 +63,9 @@ public class AntiCheat {
                 if (item.getAmount() > 1) {
                     if (isRegistered(item)) {
                         player.getInventory().remove(item);
-                        player.sendMessage(ChatColor.RED + "Duplication detected in your inventory! Action has been logged and most certainly prevented you from any future opportunities.");
-                        Bukkit.broadcastMessage(ChatColor.RED + "Detected Duplicated Items in: " + ChatColor.AQUA + player.getName() + "'s" + ChatColor.RED + " inventory. Duplicated Items Removed.");
+                        Utils.log.warning("[ANTI-CHEAT] [DUPE] Player: " + player.getName());
+                        //player.sendMessage(ChatColor.RED + "Duplication detected in your inventory! Action has been logged and most certainly prevented you from any future opportunities.");
+                        //Bukkit.broadcastMessage(ChatColor.RED + "Detected Duplicated Items in: " + ChatColor.AQUA + player.getName() + "'s" + ChatColor.RED + " inventory. Duplicated Items Removed.");
                     }
                 }
             }

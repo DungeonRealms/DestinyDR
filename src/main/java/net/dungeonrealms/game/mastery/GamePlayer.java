@@ -39,6 +39,9 @@ public class GamePlayer {
     @Setter
     @Getter
     private Map<String, Integer[]> attributes;
+    @Setter
+    @Getter
+    private boolean attributesLoaded;
 
     public GamePlayer(Player player) {
         T = player;
@@ -359,9 +362,25 @@ public class GamePlayer {
         attributes.put(type.getNBTName(), val);
     }
 
-    public Integer[] getAttributeVal(AttributeType type) {
+    public Integer[] getRangedAttributeVal(AttributeType type) {
         if (type == null) return new Integer[] { 0, 0 };
         return attributes.get(type.getNBTName());
+    }
+
+    /**
+     * Gets the value of a player's specified attribute. Must be a non-range
+     * attribute.
+     *
+     * @param type
+     * @return if a ranged attribute, throws an error message and returns -1.
+     */
+    public int getStaticAttributeVal(AttributeType type) {
+        if (type == null || type.isRange()) {
+            Utils.log.warning("Invalid type or type is a ranged attribute.");
+            return -1;
+        }
+        if (attributes.get(type.getNBTName()) == null) return -1;
+        return attributes.get(type.getNBTName())[1];
     }
 
     /**
@@ -374,7 +393,7 @@ public class GamePlayer {
      * @return the new value of the attribute
      */
     public Integer[] changeAttributeVal(AttributeType type, Integer[] difference) {
-        Integer[] oldVal = getAttributeVal(type);
+        Integer[] oldVal = getRangedAttributeVal(type);
         Integer[] newTotalVal = new Integer[] { oldVal[0] + difference[0], oldVal[1] + difference[1] };
         attributes.put(type.getNBTName(), newTotalVal);
         return newTotalVal;

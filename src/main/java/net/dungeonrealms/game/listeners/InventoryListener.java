@@ -259,9 +259,9 @@ public class InventoryListener implements Listener {
                     ArmorAttributeType type = ArmorAttributeType.getByNBTName(modifier);
                     // calculate new values
                     Integer[] newTotalVal = type.isRange()
-                            ? new Integer[]{gp.getAttributeVal(type)[0] - oldTag.getInt(modifier + "Min"),
-                            gp.getAttributeVal(type)[1] - oldTag.getInt(modifier + "Max")}
-                            : new Integer[]{0, gp.getAttributeVal(type)[1] - oldTag.getInt(modifier)};
+                            ? new Integer[]{gp.getRangedAttributeVal(type)[0] - oldTag.getInt(modifier + "Min"),
+                            gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier + "Max")}
+                            : new Integer[]{0, gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier)};
                     gp.setAttributeVal(type, newTotalVal);
                     if (oldArmorVal != 0) { // note the decrease to the p
                         p.sendMessage(ChatColor.RED + "-" + oldArmorVal
@@ -317,9 +317,9 @@ public class InventoryListener implements Listener {
                         String tagName = type.isRange() ? modifier + "Max" : modifier;
                         int oldArmorVal = oldTag.hasKey(tagName) ? oldTag.getInt(tagName) : 0;
                         Integer[] newTotalVal = type.isRange()
-                                ? new Integer[]{gp.getAttributeVal(type)[0] - oldTag.getInt(modifier + "Min"),
-                                gp.getAttributeVal(type)[1] - oldTag.getInt(modifier + "Max")}
-                                : new Integer[]{0, gp.getAttributeVal(type)[1] - oldTag.getInt(modifier)};
+                                ? new Integer[]{gp.getRangedAttributeVal(type)[0] - oldTag.getInt(modifier + "Min"),
+                                gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier + "Max")}
+                                : new Integer[]{0, gp.getRangedAttributeVal(type)[1] - oldTag.getInt(modifier)};
                         gp.setAttributeVal(type, newTotalVal);
                         if (oldArmorVal != 0) { // note the decrease to the player
                             p.sendMessage(ChatColor.RED + "-" + oldArmorVal
@@ -337,9 +337,9 @@ public class InventoryListener implements Listener {
                         String tagName = type.isRange() ? modifier + "Max" : modifier;
                         // calculate new values
                         Integer[] newTotalVal = type.isRange()
-                                ? new Integer[] { gp.getAttributeVal(type)[0] + newTag.getInt(modifier + "Min"),
-                                gp.getAttributeVal(type)[1] + newTag.getInt(modifier + "Max") }
-                                : new Integer[] { 0, gp.getAttributeVal(type)[1] + newTag.getInt(modifier) };
+                                ? new Integer[] { gp.getRangedAttributeVal(type)[0] + newTag.getInt(modifier + "Min"),
+                                gp.getRangedAttributeVal(type)[1] + newTag.getInt(modifier + "Max") }
+                                : new Integer[] { 0, gp.getRangedAttributeVal(type)[1] + newTag.getInt(modifier) };
                         // get the tag values (if the armor piece doesn't have the modifier, set equal to 0)
                         int newArmorVal = newTag.hasKey(tagName) ? newTag.getInt(tagName) : 0;
                         gp.setAttributeVal(type, newTotalVal);

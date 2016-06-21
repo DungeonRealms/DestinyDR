@@ -739,7 +739,7 @@ public class ItemManager {
                     + " / " + gp.getPlayerMaxHP() + "" + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK.toString()
                     + "   " + Math.round(gp.getStats().getDPS()) + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
                     + "   " + (HealthHandler.getInstance().getPlayerHPRegenLive(p)) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n" + ChatColor.BLACK.toString()
-                    + "   " + EnergyHandler.getInstance().getPlayerEnergyPercentage(p.getUniqueId()) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString()
+                    + "   " + gp.getStaticAttributeVal(Item.ArmorAttributeType.ENERGY_REGEN) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString()
                     + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString()
                     + "   " + gp.getPlayerGemFind() + ChatColor.BOLD.toString() + " GEM FIND" + "\n" + ChatColor.BLACK.toString()
                     + "   " + gp.getPlayerItemFind() + ChatColor.BOLD.toString() + " ITEM FIND";
@@ -750,7 +750,7 @@ public class ItemManager {
                     + " / " + gp.getPlayerMaxHP() + "" + ChatColor.BOLD.toString() + " HP" + "\n" + ChatColor.BLACK.toString()
                     + "   " + Math.round(gp.getStats().getDPS()) + "% " + ChatColor.BOLD.toString() + "DPS" + "\n" + ChatColor.BLACK.toString()
                     + "   " + (HealthHandler.getInstance().getPlayerHPRegenLive(p) + gp.getStats().getHPRegen()) + " " + ChatColor.BOLD.toString() + "HP/s" + "\n" + ChatColor.BLACK.toString()
-                    + "   " + EnergyHandler.getInstance().getPlayerEnergyPercentage(p.getUniqueId()) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString()
+                    + "   " + gp.getStaticAttributeVal(Item.ArmorAttributeType.ENERGY_REGEN) + "% " + ChatColor.BOLD.toString() + "Energy/s" + "\n" + ChatColor.BLACK.toString()
                     + "   " + DatabaseAPI.getInstance().getData(EnumData.ECASH, p.getUniqueId()) + ChatColor.BOLD.toString() + " E-CASH" + "\n" + ChatColor.BLACK.toString()
                     + "   " + gp.getPlayerGemFind() + ChatColor.BOLD.toString() + " GEM FIND" + "\n" + ChatColor.BLACK.toString()
                     + "   " + gp.getPlayerItemFind() + ChatColor.BOLD.toString() + " ITEM FIND";
