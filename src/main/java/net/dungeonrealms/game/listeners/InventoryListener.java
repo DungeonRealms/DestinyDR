@@ -227,6 +227,8 @@ public class InventoryListener implements Listener {
         } else {
             player.sendMessage(ChatColor.RED + "You are in the middle of combat! You " + ChatColor.UNDERLINE +
                     "cannot" + ChatColor.RED + " switch armor right now.");
+            event.setCancelled(true);
+            player.updateInventory();
         }
     }
 
