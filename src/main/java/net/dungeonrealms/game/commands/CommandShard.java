@@ -1,7 +1,13 @@
 package net.dungeonrealms.game.commands;
 
+import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.menus.player.ShardSelector;
+import net.dungeonrealms.game.network.NetworkAPI;
+import net.dungeonrealms.game.player.rank.Rank;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -21,7 +27,22 @@ public class CommandShard extends BasicCommand {
         if (!(sender instanceof Player)) return false;
         Player player = (Player) sender;
 
-        new ShardSelector(player).open(player);
+        if (args.length == 0 || !Rank.isGM(player)) {
+            new ShardSelector(player).open(player);
+            return true;
+        }
+
+
+        if (args.length > 0) {
+            API.handleLogout(player.getUniqueId());
+            player.sendMessage(ChatColor.YELLOW + "Sending you to " + args[0] + " ...");
+
+            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(),
+                    () -> {
+                        NetworkAPI.getInstance().sendToServer(player.getName(), args[0]);
+                    }, 10);
+        }
+
         return true;
     }
 
