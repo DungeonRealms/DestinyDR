@@ -1,22 +1,23 @@
 package net.dungeonrealms.game.world.entities.types.monsters.boss.subboss;
 
+import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.handlers.HealthHandler;
+import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Boss;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.InfernalAbyss;
+import net.dungeonrealms.game.world.entities.utils.EntityStats;
+import net.minecraft.server.v1_9_R2.EntityGhast;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
-import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
+import org.bukkit.entity.Player;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
-
-import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
-import net.dungeonrealms.game.world.entities.utils.EntityStats;
-import net.dungeonrealms.game.mastery.MetadataUtils;
-import net.minecraft.server.v1_9_R2.EntityGhast;
 
 /**
  * Created by Chase on Oct 21, 2015
@@ -36,20 +37,24 @@ public class InfernalGhast extends EntityGhast implements Boss {
 		MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
 		this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
 		EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
-		this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
+		this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss");
+		this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss"));
 		this.boss = infernalAbyss;
-		int health = boss.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
-		int maxHealth = boss.getBukkitEntity().getMetadata("maxHP").get(0).asInt();
-		this.getBukkitEntity().setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), health));
-		this.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHealth));
+		//TODO: Enable double armor (takes half damage from attacks) [same as above].
 	}
 
-	public void init() {
-		int health = boss.getBukkitEntity().getMetadata("currentHP").get(0).asInt();
-		int maxHealth = boss.getBukkitEntity().getMetadata("maxHP").get(0).asInt();
-		this.getBukkitEntity().setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), health));
-//		HealthHandler.getInstance().setMonsterHPLive((LivingEntity) this, health);
-		this.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHealth));
+	public void init(int hp) {
+		this.getBukkitEntity().setMetadata("currentHP", new FixedMetadataValue(DungeonRealms.getInstance(), hp));
+		this.getBukkitEntity().setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), hp));
+		maxHP = hp;
+		HealthHandler.getInstance().setMonsterHPLive((LivingEntity) this.getBukkitEntity(), hp);
+		for (Player pl : this.getBukkitEntity().getWorld().getPlayers()) {
+			pl.sendMessage(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "The Infernal Abyss: " + ChatColor.WHITE + "The inferno will devour you!");
+			pl.sendMessage(ChatColor.GRAY + "The Infernal Abyss has armored up! " + ChatColor.UNDERLINE + "+50% ARMOR!");
+			pl.playSound(pl.getLocation(), Sound.ENTITY_GHAST_WARN, 2F, 0.35F);
+			pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 2F, 0.85F);
+		}
+		this.getBukkitEntity().setPassenger(boss.getBukkitEntity());
 	}
 
 	@Override
@@ -59,15 +64,9 @@ public class InfernalGhast extends EntityGhast implements Boss {
 
 	@Override
 	public void onBossDeath() {
-		say(this.getBukkitEntity(), "Guuuards!");
-		this.getWorld().addEntity(boss.guard, SpawnReason.CUSTOM);
-		boss.guard.setLocation(locX, locY, locZ, 1, 1);
 	}
 
-	/**
-	 */
 	public void setArmor(ItemStack[] armor, ItemStack weapon) {
-		// weapon.addEnchantment(Enchantment.DAMAGE_ALL, 1);
 		this.setEquipment(EnumItemSlot.MAINHAND, CraftItemStack.asNMSCopy(weapon));
 		this.setEquipment(EnumItemSlot.FEET, CraftItemStack.asNMSCopy(armor[0]));
 		this.setEquipment(EnumItemSlot.LEGS, CraftItemStack.asNMSCopy(armor[1]));
@@ -81,9 +80,23 @@ public class InfernalGhast extends EntityGhast implements Boss {
 		livingEntity.getEquipment().setHelmet(armor[3]);
 	}
 
+	int maxHP = 0;
+
 	@Override
 	public void onBossHit(EntityDamageByEntityEvent event) {
-		//LivingEntity en = (LivingEntity) event.getEntity();
-	}
+		LivingEntity en = (LivingEntity) event.getEntity();
+		double totalHP = HealthHandler.getInstance().getMonsterMaxHPLive(en);
+		if (totalHP < 10000) {
+			totalHP = maxHP;
+		}
+		totalHP *= 0.5;
+		double currHP = HealthHandler.getInstance().getMonsterHPLive(en);
 
+		if (currHP <= totalHP) {
+			this.getBukkitEntity().eject();
+			this.getBukkitEntity().setPassenger(null);
+			boss.doFinalForm(currHP);
+			this.die();
+		}
+	}
 }

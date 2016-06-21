@@ -270,10 +270,12 @@ public class DungeonListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
     public void playerHitEndercrystal(EntityDamageEvent event) {
-        if (!(event.getEntity() instanceof EnderCrystal)) return;
+        if (event.getEntity().getType() != EntityType.ENDER_CRYSTAL) return;
         if (!event.getEntity().getWorld().getName().contains("DUNGEON")) return;
+        DungeonManager.DungeonObject dungeonObject = DungeonManager.getInstance().getDungeon(event.getEntity().getWorld());
+        if (dungeonObject.getType() != DungeonManager.DungeonType.THE_INFERNAL_ABYSS) return;
         event.setCancelled(true);
         event.setDamage(0);
 
@@ -310,6 +312,8 @@ public class DungeonListener implements Listener {
     public void playerInteractEvent(PlayerInteractEvent event) {
         if (event.getAction() != Action.LEFT_CLICK_BLOCK) return;
         if (!event.getPlayer().getWorld().getName().contains("DUNGEON")) return;
+        DungeonManager.DungeonObject dungeonObject = DungeonManager.getInstance().getDungeon(event.getPlayer().getWorld());
+        if (dungeonObject.getType() != DungeonManager.DungeonType.THE_INFERNAL_ABYSS) return;
         Player player = event.getPlayer();
         Block block = event.getClickedBlock();
         if (block.getType() ==  Material.BEDROCK || block.getType() == Material.FIRE) {

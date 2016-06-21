@@ -24,6 +24,7 @@ public class CommandISay extends BasicCommand {
     public boolean onCommand(CommandSender commandSender, Command command, String s, String[] args) {
 
         String message = ChatColor.translateAlternateColorCodes('&', String.join(" ", Arrays.asList(args)));
+        message = message.replaceAll("_", " ");
         message = message.replaceAll("&0", ChatColor.BLACK.toString());
         message = message.replaceAll("&1", ChatColor.DARK_BLUE.toString());
         message = message.replaceAll("&2", ChatColor.DARK_GREEN.toString());

@@ -1,32 +1,38 @@
 package net.dungeonrealms.game.world.entities.types.monsters.boss;
 
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.EnumBoss;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.MeleeMobs.MeleeWitherSkeleton;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.InfernalGhast;
-import net.dungeonrealms.game.world.entities.types.monsters.boss.subboss.InfernalLordsGuard;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.dungeonrealms.game.world.items.Item.ItemRarity;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
+import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.DamageSource;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
+import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
+import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+
+import java.util.Random;
 
 /**
  * Created by Chase on Oct 21, 2015
@@ -34,11 +40,9 @@ import org.bukkit.metadata.FixedMetadataValue;
 public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
 
     public InfernalGhast ghast;
-    public InfernalLordsGuard guard;
 
     public InfernalAbyss(World world) {
         super(world);
-
     }
 
     /**
@@ -48,13 +52,14 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
         super(world);
         this.setSkeletonType(1);
         this.fireProof = true;
-        this.setOnFire(Integer.MAX_VALUE);
         this.getBukkitEntity().setCustomNameVisible(true);
-        int level = 50;
-        MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, level);
+        int bossLevel = 50;
+        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
+        MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, bossLevel);
         this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
-        EntityStats.setBossRandomStats(this, level, getEnumBoss().tier);
-        this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE.toString() + getEnumBoss().name);
+        EntityStats.setBossRandomStats(this, bossLevel, getEnumBoss().tier);
+        this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss");
+        this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss"));
         for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
             p.sendMessage(ChatColor.RED.toString() + "The Infernal Abyss" + ChatColor.RESET.toString() + ": " + "I have nothing to say to you foolish mortals, except for this: Burn.");
         }
@@ -62,15 +67,56 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
             if (!this.getBukkitEntity().isDead()) {
                 this.getBukkitEntity().getLocation().add(0, 1, 0).getBlock().setType(Material.FIRE);
             }
-        }, 0, 20L);
+        }, 0, 15L);
         ghast = new InfernalGhast(this);
-        guard = new InfernalLordsGuard(this);
-        guard.isInvulnerable(DamageSource.FALL);
-        guard.setLocation(locX, locY, locZ, 1, 1);
         this.setSize(0.7F, 2.4F);
         this.fireProof = true;
         this.setSkeletonType(1);
         setArmor(getEnumBoss().tier);
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            if (!this.ghast.isAlive()) {
+                if (random.nextInt(10) < 5) {
+                    return;
+                }
+                Location hit_loc = this.getBukkitEntity().getLocation();
+                int numToSpawn = random.nextInt(2) + 1;
+                if (random.nextBoolean()) {
+                    for (int i = 0; i <= numToSpawn; i++) {
+                        net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 2, EnumMonster.MagmaCube);
+                        int level = Utils.getRandomFromTier(3, "low");
+                        String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+                        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 3, level);
+                        EntityStats.createDungeonMob(entity, level, 3);
+                        if (entity == null) {
+                            return; //WTF?? UH OH BOYS WE GOT ISSUES
+                        }
+                        entity.setCustomName(newLevelName + API.getTierColor(3).toString() + "Spawn of Inferno");
+                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(3).toString() + "Spawn of Inferno"));
+                        Location location = new Location(world.getWorld(), hit_loc.getX() + new Random().nextInt(3), hit_loc.getY(), hit_loc.getZ() + new Random().nextInt(3));
+                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                        world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                    }
+                } else {
+                    for (int i = 0; i <= numToSpawn; i++) {
+                        net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 2, EnumMonster.MagmaCube);
+                        int level = Utils.getRandomFromTier(4, "low");
+                        String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+                        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 4, level);
+                        EntityStats.createDungeonMob(entity, level, 4);
+                        if (entity == null) {
+                            return; //WTF?? UH OH BOYS WE GOT ISSUES
+                        }
+                        entity.setCustomName(newLevelName + API.getTierColor(4).toString() + "Demonic Spawn of Inferno");
+                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(4).toString() + "Demonic Spawn of Inferno"));
+                        Location location = new Location(world.getWorld(), hit_loc.getX() + new Random().nextInt(3), hit_loc.getY(), hit_loc.getZ() + new Random().nextInt(3));
+                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                        world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
+                    }
+                }
+            }
+        }, 150L, 300L);
     }
 
     public void setArmor(int tier) {
@@ -97,6 +143,7 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
     }
 
     private ItemStack getWeapon() {
+        //TODO: Probably make him a melee boss. As he was always glitching due to being a staff mob previously.
         return ItemGenerator.getNamedItem("infernalstaff");
     }
 
@@ -118,33 +165,55 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
     private boolean hasFiredGhast = false;
     public boolean finalForm = false;
 
+    public void doFinalForm(double hp) {
+        LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
+        livingEntity.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), (int) hp));
+        HealthHandler.getInstance().setMonsterHPLive(livingEntity, (int) hp);
+        livingEntity.setMaximumNoDamageTicks(0);
+        livingEntity.setNoDamageTicks(0);
+        livingEntity.removePotionEffect(PotionEffectType.INVISIBILITY);
+        finalForm = true;
+        for (Player pl : livingEntity.getWorld().getPlayers()) {
+            pl.sendMessage(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "The Infernal Abyss: " + ChatColor.WHITE
+                    + "You... cannot... kill me IN MY OWN DOMAIN, FOOLISH MORTALS!");
+            pl.sendMessage(ChatColor.GRAY + "The Infernal Abyss has become enraged! " + ChatColor.UNDERLINE + "+50% DMG!");
+            pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 2F, 0.85F);
+            pl.playSound(pl.getLocation(), Sound.ENTITY_GHAST_DEATH, 2F, 0.85F);
+        }
+        //TODO: Enable double damage from attacks somehow (insert into list or apply metadata).
+        //TODO: Enable double armor (takes half damage from attacks) [same as above].
+    }
 
     @Override
     public void onBossHit(EntityDamageByEntityEvent event) {
-        if (!finalForm)
-            if (this.ghast.isAlive() || this.guard.isAlive()) {
-                for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
-                    p.sendMessage(ChatColor.RED.toString() + "The Infernal Abyss" + ChatColor.RESET.toString() + ": " + "Hah! You must take out my minions.");
-                }
-                event.setDamage(0);
-                event.setCancelled(true);
-                return;
-            }
-
         LivingEntity en = (LivingEntity) event.getEntity();
-        double seventyFivePercent = HealthHandler.getInstance().getMonsterMaxHPLive(en) * 0.75;
+        if (!finalForm) {
+            if (hasFiredGhast) {
+                if (this.ghast.isAlive()) {
+                    event.setDamage(0);
+                    event.setCancelled(true);
+                    return;
+                } else {
+                    en.setMaximumNoDamageTicks(0);
+                    en.setNoDamageTicks(0);
+                    en.removePotionEffect(PotionEffectType.INVISIBILITY);
+                }
+            }
+        }
 
-        if (HealthHandler.getInstance().getMonsterHPLive(en) <= seventyFivePercent && !hasFiredGhast) {
+        double halfHP = HealthHandler.getInstance().getMonsterMaxHPLive(en) * 0.5;
+        if (HealthHandler.getInstance().getMonsterHPLive(en) <= halfHP && !hasFiredGhast) {
             for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
-                p.sendMessage(ChatColor.RED.toString() + "The Infernal Abyss" + ChatColor.RESET.toString() + ": " + "Taste FIRE!");
+                p.sendMessage(ChatColor.RED.toString() + "The Infernal Abyss" + ChatColor.RESET.toString() + ": " + "Behold, the powers of the inferno.");
             }
             ghast.setLocation(this.locX, this.locY + 4, this.locZ, 1, 1);
             this.getWorld().addEntity(ghast, SpawnReason.CUSTOM);
-            ghast.init();
+            ghast.init(HealthHandler.getInstance().getMonsterHPLive(en));
             this.isInvulnerable(DamageSource.STUCK);
-            this.setLocation(locX, locY + 100, locZ, 1, 1);
             hasFiredGhast = true;
+            en.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
+            en.setMaximumNoDamageTicks(Integer.MAX_VALUE);
+            en.setNoDamageTicks(Integer.MAX_VALUE);
         }
     }
-
 }

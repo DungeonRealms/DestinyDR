@@ -5,12 +5,14 @@ import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Burick;
+import net.dungeonrealms.game.world.entities.types.monsters.boss.InfernalAbyss;
 import net.dungeonrealms.game.world.entities.types.monsters.boss.Mayel;
 import net.dungeonrealms.game.world.entities.utils.EntityStats;
 import net.minecraft.server.v1_9_R2.Entity;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.command.BlockCommandSender;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
@@ -64,6 +66,7 @@ public class BossTeleport extends BasicCommand {
                 ((CraftWorld) bcs.getBlock().getWorld()).getHandle().addEntity(mayel, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 mayel.setLocation(toSpawn.getX(), toSpawn.getY(), toSpawn.getZ(), 1, 1);
                 bcs.getBlock().setType(Material.AIR);
+                toSpawn.getWorld().playSound(toSpawn, Sound.AMBIENT_CAVE, 1F, 1F);
                 break;
             case VARENGLADE:
                 Location varen = new Location(bcs.getBlock().getWorld(), -364, 60, -1.2);
@@ -74,9 +77,19 @@ public class BossTeleport extends BasicCommand {
                 ((CraftWorld) bcs.getBlock().getWorld()).getHandle().addEntity(burick, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 burick.setLocation(varen.getX(), varen.getY(), varen.getZ(), 1, 1);
                 bcs.getBlock().setType(Material.AIR);
+                varen.getWorld().playSound(varen, Sound.ENTITY_ENDERDRAGON_HURT, 4F, 0.5F);
                 break;
             case THE_INFERNAL_ABYSS:
-                break; //TODO: Infernal and whatever OneWolf is?
+                Location abyss = new Location(bcs.getBlock().getWorld(), -54, 158, 646);
+                Entity infernal = new InfernalAbyss(((CraftWorld) bcs.getBlock().getWorld()).getHandle(), abyss);
+                MetadataUtils.registerEntityMetadata(infernal, EnumEntityType.HOSTILE_MOB, 1, 100);
+                EntityStats.setBossRandomStats(infernal, 100, 4);
+                infernal.setLocation(abyss.getX(), abyss.getY(), abyss.getZ(), 1, 1);
+                ((CraftWorld) bcs.getBlock().getWorld()).getHandle().addEntity(infernal, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                infernal.setLocation(abyss.getX(), abyss.getY(), abyss.getZ(), 1, 1);
+                bcs.getBlock().setType(Material.AIR);
+                abyss.getWorld().playSound(abyss, Sound.ENTITY_LIGHTNING_THUNDER, 1F, 1F);
+                break;
         }
         return false;
     }

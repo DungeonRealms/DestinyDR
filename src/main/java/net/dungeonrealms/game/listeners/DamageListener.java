@@ -94,6 +94,7 @@ public class DamageListener implements Listener {
      */
     @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = false)
     public void onBuffExplode(EntityExplodeEvent event) {
+        if (event.getEntity().getWorld().getName().contains("DUNGEON")) return;
         if (!(event.getEntity().hasMetadata("type"))) return;
         event.blockList().clear();
         event.setYield(0.1F);
