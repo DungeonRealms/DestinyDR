@@ -270,13 +270,13 @@ public class GamePlayer {
             T.playSound(T.getLocation(), Sound.ENTITY_PLAYER_LEVELUP, 0.5F, 1F);
 
             T.sendMessage("");
-            Utils.sendCenteredMessage(T, ChatColor.GRAY.toString() + ChatColor.BOLD + "******************************");
+            Utils.sendCenteredMessage(T, ChatColor.AQUA.toString() + ChatColor.BOLD + "******************************");
             Utils.sendCenteredMessage(T, ChatColor.GREEN.toString() + ChatColor.BOLD + "LEVEL UP");
             T.sendMessage("");
             Utils.sendCenteredMessage(T, ChatColor.GRAY + "You are now level: " + ChatColor.GREEN + newLevel);
-            Utils.sendCenteredMessage(T, ChatColor.GRAY + "EXP to next level: " + ChatColor.GREEN + getEXPNeeded(newLevel + 1));
+            Utils.sendCenteredMessage(T, ChatColor.GRAY + "EXP to next level: " + ChatColor.GREEN + getEXPNeeded(newLevel));
             Utils.sendCenteredMessage(T, ChatColor.GRAY + "Free stat points: " + ChatColor.GREEN + this.getStats().freePoints);
-            Utils.sendCenteredMessage(T, ChatColor.GRAY.toString() + ChatColor.BOLD + "******************************");
+            Utils.sendCenteredMessage(T, ChatColor.AQUA.toString() + ChatColor.BOLD + "******************************");
             T.sendMessage("");
         }
         else if (levelSet) { // level was set
@@ -370,10 +370,13 @@ public class GamePlayer {
      *
      * @param type
      * @param difference
+     *
+     * @return the new value of the attribute
      */
     public Integer[] changeAttributeVal(AttributeType type, Integer[] difference) {
         Integer[] oldVal = getAttributeVal(type);
         Integer[] newTotalVal = new Integer[] { oldVal[0] + difference[0], oldVal[1] + difference[1] };
-        return attributes.put(type.getNBTName(), newTotalVal);
+        attributes.put(type.getNBTName(), newTotalVal);
+        return newTotalVal;
     }
 }
