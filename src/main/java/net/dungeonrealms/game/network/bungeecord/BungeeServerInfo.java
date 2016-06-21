@@ -1,18 +1,19 @@
 package net.dungeonrealms.game.network.bungeecord;
 
-public class BungeeServerInfo {
+public class BungeeServerInfo implements Comparable<BungeeServerInfo> {
 
+    // THIS WILL NEVER CHANGE //
+    private final String serverName;
     private volatile boolean isOnline;
     private volatile int onlinePlayers;
     private volatile int maxPlayers;
-
     // The two lines of a motd
     private volatile String motd1; // Should never be null
     private volatile String motd2; // Should never be null
-
     private volatile long lastRequest;
 
-    protected BungeeServerInfo() {
+    protected BungeeServerInfo(String serverName) {
+        this.serverName = serverName;
         isOnline = false;
         this.motd1 = "";
         this.motd2 = "";
@@ -25,6 +26,10 @@ public class BungeeServerInfo {
 
     public void setOnline(boolean isOnline) {
         this.isOnline = isOnline;
+    }
+
+    public String getServerName() {
+        return serverName;
     }
 
     public int getOnlinePlayers() {
@@ -77,4 +82,9 @@ public class BungeeServerInfo {
         this.lastRequest = System.currentTimeMillis();
     }
 
+    @Override
+    public int compareTo(BungeeServerInfo o) {
+      //  if ()
+            return 0;
+    }
 }

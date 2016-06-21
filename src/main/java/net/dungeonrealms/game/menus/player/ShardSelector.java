@@ -7,6 +7,7 @@ import net.dungeonrealms.game.gui.GUIButtonClickEvent;
 import net.dungeonrealms.game.gui.item.GUIButton;
 import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.menus.AbstractMenu;
+import net.dungeonrealms.game.miscellaneous.Cooldown;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -18,13 +19,10 @@ import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
-import java.util.UUID;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/18/2016
@@ -32,14 +30,15 @@ import java.util.UUID;
 public class ShardSelector extends AbstractMenu {
 
     public ShardSelector(Player player) {
-        super("DungeonRealms Shards", 9, player.getUniqueId());
-
+        super("DungeonRealms Shards", AbstractMenu.round(BungeeServerTracker.getTrackedSize()), player.getUniqueId());
         setDestroyOnExit(true);
+
         // DISPLAY AVAILABLE SHARDS //
         for (Entry<String, BungeeServerInfo> e : BungeeServerTracker.getTrackedServers().entrySet()) {
 
             String bungeeName = e.getKey();
-            String shardID = DungeonRealms.getInstance().DR_SHARDS_NAMES.get(bungeeName);
+            if (!DungeonRealms.getInstance().DR_SHARDS.containsKey(bungeeName)) continue;
+            String shardID = DungeonRealms.getInstance().DR_SHARDS.get(bungeeName).getShardID();
             BungeeServerInfo info = e.getValue();
 
             if (!info.isOnline() || shardID.equals(DungeonRealms.getInstance().shardid) || info.getOnlinePlayers() >= info.getMaxPlayers() || info.getMotd1().equals("offline"))
@@ -47,6 +46,7 @@ public class ShardSelector extends AbstractMenu {
 
             if ((shardID.contains("YT") && !Rank.isYouTuber(player)) || (shardID.contains("SUB") && !Rank.isSubscriber(player)))
                 continue;
+
 
             GUIButton button = new GUIButton(Material.END_CRYSTAL) {
                 @Override
@@ -59,6 +59,10 @@ public class ShardSelector extends AbstractMenu {
                         return;
                     }
 
+                    if (Cooldown.hasCooldown(player.getUniqueId()))
+                        return;
+
+                    Cooldown.addCooldown(player.getUniqueId(), 1000L);
                     BountifulAPI.sendTitle(player, 1, 60, 1, ChatColor.YELLOW + "Loading Shard - " + ChatColor.BOLD + shardID + ChatColor.YELLOW + " ...", ChatColor.GRAY.toString() + "Do not disconnect");
 
                     player.sendMessage(ChatColor.GRAY + "Retrieving relevant server information...");
@@ -93,6 +97,7 @@ public class ShardSelector extends AbstractMenu {
 
             button.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID);
             button.setLore(lore);
+
             set(getSize(), button);
         }
     }

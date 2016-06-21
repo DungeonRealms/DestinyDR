@@ -4,7 +4,6 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.network.NetworkAPI;
 import net.dungeonrealms.game.network.bungeecord.serverpinger.PingResponse;
-import net.dungeonrealms.game.network.bungeecord.serverpinger.ServerAddress;
 import net.dungeonrealms.game.network.bungeecord.serverpinger.ServerPinger;
 import net.dungeonrealms.game.network.bungeecord.serverpinger.response.SpigotPingResponse;
 import org.bukkit.Bukkit;
@@ -13,7 +12,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import java.io.IOException;
 import java.net.SocketTimeoutException;
 import java.net.UnknownHostException;
-import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -28,7 +26,7 @@ public class BungeeServerTracker {
 
     public static void track(String server) {
         if (!trackedServers.containsKey(server)) {
-            BungeeServerInfo info = new BungeeServerInfo();
+            BungeeServerInfo info = new BungeeServerInfo(server);
             trackedServers.put(server, info);
 
             NetworkAPI.getInstance().askPlayerCount(server);
@@ -42,7 +40,7 @@ public class BungeeServerTracker {
     public static BungeeServerInfo getOrCreateServerInfo(String server) {
         BungeeServerInfo info = trackedServers.get(server);
         if (info == null) {
-            info = new BungeeServerInfo();
+            info = new BungeeServerInfo(server);
             trackedServers.put(server, info);
         }
 
@@ -62,6 +60,10 @@ public class BungeeServerTracker {
         }
     }
 
+    public static int getTrackedSize() {
+        return trackedServers.size();
+    }
+
     public static Map<String, BungeeServerInfo> getTrackedServers() {
 
         return trackedServers;
@@ -73,13 +75,13 @@ public class BungeeServerTracker {
         taskID = Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> new BukkitRunnable() {
             @Override
             public void run() {
-                for (Map.Entry<String, ServerAddress> entry : DungeonRealms.getInstance().DR_SHARDS_IPS.entrySet()) {
+                for (Map.Entry<String, DungeonRealms.ShardInfo> entry : DungeonRealms.getInstance().DR_SHARDS.entrySet()) {
 
                     BungeeServerInfo serverInfo = getOrCreateServerInfo(entry.getKey());
                     boolean displayOffline = false;
 
                     try {
-                        PingResponse data = new SpigotPingResponse(ServerPinger.fetchData(entry.getValue(), 500));
+                        PingResponse data = new SpigotPingResponse(ServerPinger.fetchData(entry.getValue().getServerAddress(), 500));
 
                         if (data.isOnline()) {
                             serverInfo.setOnline(true);
