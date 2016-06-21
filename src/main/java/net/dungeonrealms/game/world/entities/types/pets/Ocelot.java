@@ -35,4 +35,8 @@ public class Ocelot extends EntityOcelot {
     public Ocelot(World world) {
         super(world);
     }
+
+    @Override
+    protected void r() {
+    }
 }

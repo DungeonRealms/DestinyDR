@@ -1,11 +1,11 @@
 package net.dungeonrealms.game.world.entities.types.pets;
 
-import java.util.UUID;
-
-import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.minecraft.server.v1_9_R2.EntityWolf;
 import net.minecraft.server.v1_9_R2.World;
+
+import java.util.UUID;
 
 /**
  * Created by Kieran on 9/5/2015.
@@ -27,8 +27,13 @@ public class Wolf extends EntityWolf {
         this.persistent = true;
         this.setAge(0);
         this.ageLocked = true;
+        this.setSitting(false);
 
         MetadataUtils.registerEntityMetadata(this, this.entityType, 0, 0);
+    }
+
+    @Override
+    protected void r() {
     }
 
     public Wolf(World world) {

@@ -2,10 +2,7 @@ package net.dungeonrealms.game.world.entities.types.pets;
 
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.minecraft.server.v1_9_R2.EntityLiving;
-import net.minecraft.server.v1_9_R2.EntityMagmaCube;
-import net.minecraft.server.v1_9_R2.World;
-import org.bukkit.Bukkit;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.entity.Player;
 
 import java.util.UUID;
@@ -30,7 +27,6 @@ public class MagmaCube extends EntityMagmaCube {
         this.setSize(1);
         this.canPickUpLoot = false;
         this.persistent = true;
-        this.target = Bukkit.getPlayer(ownerUUID);
 
         MetadataUtils.registerEntityMetadata(this, this.entityType, 0, 0);
     }
@@ -39,7 +35,16 @@ public class MagmaCube extends EntityMagmaCube {
         super(world);
     }
 
+
+    @Override
+    public void d(EntityHuman entityhuman) {
+    }
+
     @Override
     protected void d(EntityLiving entityliving) {
+    }
+
+    @Override
+    protected void r() {
     }
 }

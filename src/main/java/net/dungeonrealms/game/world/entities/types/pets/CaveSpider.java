@@ -1,11 +1,11 @@
 package net.dungeonrealms.game.world.entities.types.pets;
 
-import java.util.UUID;
-
-import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.mastery.MetadataUtils;
+import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.minecraft.server.v1_9_R2.EntityCaveSpider;
 import net.minecraft.server.v1_9_R2.World;
+
+import java.util.UUID;
 
 /**
  * Created by Kieran on 9/5/2015.
@@ -31,5 +31,9 @@ public class CaveSpider extends EntityCaveSpider {
 
     public CaveSpider(World world) {
         super(world);
+    }
+
+    @Override
+    protected void r() {
     }
 }

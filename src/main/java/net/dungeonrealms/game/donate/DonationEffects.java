@@ -62,6 +62,10 @@ public class DonationEffects implements GenericMechanic {
     private void spawnPlayerParticleEffects() {
         if (PLAYER_PARTICLE_EFFECTS.isEmpty()) return;
         for (Player player : PLAYER_PARTICLE_EFFECTS.keySet()) {
+            if (!player.isOnline()) {
+                PLAYER_PARTICLE_EFFECTS.remove(player);
+                return;
+            }
             float moveSpeed = 0.02F;
             ParticleAPI.ParticleEffect particleEffect = PLAYER_PARTICLE_EFFECTS.get(player);
             if (particleEffect == ParticleAPI.ParticleEffect.RED_DUST || particleEffect == ParticleAPI.ParticleEffect.NOTE) {
@@ -95,6 +99,10 @@ public class DonationEffects implements GenericMechanic {
     private void spawnEntityParticleEffects() {
         if (ENTITY_PARTICLE_EFFECTS.isEmpty()) return;
         for (Entity entity : ENTITY_PARTICLE_EFFECTS.keySet()) {
+            if (!entity.isAlive()) {
+                ENTITY_PARTICLE_EFFECTS.remove(entity);
+                return;
+            }
             float moveSpeed = 0.02F;
             ParticleAPI.ParticleEffect particleEffect = ENTITY_PARTICLE_EFFECTS.get(entity);
             if (particleEffect == ParticleAPI.ParticleEffect.RED_DUST || particleEffect == ParticleAPI.ParticleEffect.NOTE) {

@@ -12,12 +12,14 @@ import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entities.types.mounts.Horse;
 import net.dungeonrealms.game.world.entities.types.mounts.mule.MuleTier;
+import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
+import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
@@ -162,11 +164,10 @@ public class MountUtils {
                 h.setVariant(org.bukkit.entity.Horse.Variant.MULE);
                 h.setCarryingChest(true);
                 h.setTamed(true);
-                h.setLeashHolder(player);
+                //h.setLeashHolder(player);
                 h.setOwner(player);
                 h.setColor(org.bukkit.entity.Horse.Color.BROWN);
                 MetadataUtils.registerEntityMetadata(((CraftEntity) h).getHandle(), EnumEntityType.MOUNT, 0, 0);
-//                h.setCustomName(player.getName() + "'s Storage Mule");
                 h.setCustomNameVisible(true);
                 h.setMetadata("mule", new FixedMetadataValue(DungeonRealms.getInstance(), "true"));
                 String invString = (String) DatabaseAPI.getInstance().getData(EnumData.INVENTORY_MULE, uuid);
@@ -181,6 +182,7 @@ public class MountUtils {
                 h.setCustomName(tier.getColor().toString() + player.getName() + "'s " + tier.getName());
                 player.closeInventory();
                 player.playSound(player.getLocation(), Sound.ENTITY_DONKEY_AMBIENT, 1F, 1F);
+                PetUtils.makePet(((CraftLivingEntity) h).getHandle(), player.getUniqueId(), 1D, EnumPets.BABY_HORSE);
                 EntityAPI.addPlayerMountList(player.getUniqueId(), ((CraftEntity) h).getHandle());
                 if (!inventories.containsKey(player.getUniqueId())) {
                     Inventory inv = Bukkit.createInventory(player, tier.getSize(), "Mule Storage");

@@ -2,9 +2,7 @@ package net.dungeonrealms.game.world.entities.types.pets;
 
 import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.world.entities.EnumEntityType;
-import net.minecraft.server.v1_9_R2.EntityLiving;
-import net.minecraft.server.v1_9_R2.EntitySlime;
-import net.minecraft.server.v1_9_R2.World;
+import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
@@ -40,6 +38,14 @@ public class Slime extends EntitySlime {
     }
 
     @Override
+    public void d(EntityHuman entityhuman) {
+    }
+
+    @Override
     protected void d(EntityLiving entityliving) {
+    }
+
+    @Override
+    protected void r() {
     }
 }

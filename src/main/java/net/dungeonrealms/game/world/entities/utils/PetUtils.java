@@ -88,7 +88,7 @@ public class PetUtils implements GenericMechanic{
      * @param toFollow
      * @since 1.0
      */
-    private static void makePet(EntityLiving e, UUID toFollow, double speed, EnumPets petType) {
+    public static void makePet(EntityLiving e, UUID toFollow, double speed, EnumPets petType) {
         try {
             if (e instanceof EntityInsentient) {
                 if (petType != EnumPets.SLIME && petType != EnumPets.MAGMA_CUBE) {
@@ -130,10 +130,10 @@ public class PetUtils implements GenericMechanic{
             this.entity.getNavigation();
             this.path = this.entity.getNavigation().a(targetLocation.getX() + 1, targetLocation.getY(), targetLocation.getZ() + 1);
             this.entity.getNavigation();
-            if (this.path != null) {
+            if (this.path != null && this.entity.getBukkitEntity().getLocation().distanceSquared(targetLocation) >= 6) {
                 this.c();
             }
-            return this.path != null && this.entity.getBukkitEntity().getLocation().distanceSquared(targetLocation) < 3;
+            return this.path != null && this.entity.getBukkitEntity().getLocation().distanceSquared(targetLocation) >= 6;
         }
 
         @Override
@@ -167,7 +167,7 @@ public class PetUtils implements GenericMechanic{
         @Override
         public boolean a() {
             Player owner = Bukkit.getPlayer(p);
-            return (owner != null && !owner.isDead() && this.entity.getBukkitEntity().getLocation().distanceSquared(owner.getLocation()) > 3);
+            return (owner != null && !owner.isDead() && this.entity.getBukkitEntity().getLocation().distanceSquared(owner.getLocation()) >= 6);
         }
 
         @Override
