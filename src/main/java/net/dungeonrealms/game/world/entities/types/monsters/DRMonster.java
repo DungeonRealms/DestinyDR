@@ -1,6 +1,8 @@
 package net.dungeonrealms.game.world.entities.types.monsters;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.game.donate.DonationEffects;
+import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
@@ -43,16 +45,46 @@ public interface DRMonster {
             return;
         }
         Random random = new Random();
+        GamePlayer gp = API.getGamePlayer(killer);
         boolean toggleDebug = (Boolean) DatabaseAPI.getInstance().getData(EnumData.TOGGLE_DEBUG, killer.getUniqueId());
-        int killerGemFind = DamageAPI.calculatePlayerStat(killer, Item.ArmorAttributeType.GEM_FIND);
-        int killerItemFind = DamageAPI.calculatePlayerStat(killer, Item.ArmorAttributeType.ITEM_FIND);
+        double gold_drop_multiplier = (gp.getAttributeVal(Item.ArmorAttributeType.GEM_FIND)[1] + 100.) / 100.;
+        int killerItemFind = gp.getAttributeVal(Item.ArmorAttributeType.ITEM_FIND)[1];
         Location loc = ent.getLocation();
         World world = ((CraftWorld) loc.getWorld()).getHandle();
-        int gemRoll = random.nextInt(99);
-        if (gemRoll <= (20 + (20 * killerGemFind / 100))) {
-            if (gemRoll > 20) {
+
+        int gemRoll = random.nextInt(100);
+        int gemChance = 0;
+        int chance = 0;
+        switch (tier) {
+            case 1:
+                gemChance = 50;
+                chance = ent.hasMetadata("elite") ? 1000 : 120; // 100%, 12%
+                break;
+            case 2:
+                gemChance = 40;
+                chance = ent.hasMetadata("elite") ? 500 : 50; // 50%, 5%
+                break;
+            case 3:
+                gemChance = 30;
+                chance = ent.hasMetadata("elite") ? 100 : 30; // 10%, 3%
+                break;
+            case 4:
+                gemChance = 20;
+                chance = ent.hasMetadata("elite") ? 20 : 5; // 20%, 1%
+                break;
+            case 5:
+                gemChance = 35;
+                chance = ent.hasMetadata("elite") ? 10 : 2; // 1%, 0.2%
+                break;
+        }
+        if (DonationEffects.getInstance().isLootBuffActive()) {
+            chance *= 1.2;
+        }
+
+        if (gemRoll < (gemChance * gold_drop_multiplier)) {
+            if (gemRoll >= gemChance) {
                 if (toggleDebug) {
-                    killer.sendMessage(ChatColor.GREEN + "Your " + killerGemFind + "% Gem Find has resulted in a drop.");
+                    killer.sendMessage(ChatColor.GREEN + "Your " + gp.getAttributeVal(Item.ArmorAttributeType.GEM_FIND)[1] + "% Gem Find has resulted in a drop.");
                 }
             }
             double gem_drop_amount = 0;
@@ -62,23 +94,21 @@ public interface DRMonster {
                 drop_multiplier = 1.5;
             }
 
-            double gold_drop_multiplier = 1;
-
             switch (tier) {
                 case 1:
-                    gem_drop_amount = (random.nextInt(8 - 1) + 1) * gold_drop_multiplier;
+                    gem_drop_amount = (random.nextInt(3 - 1) + 1) * gold_drop_multiplier;
                     break;
                 case 2:
-                    gem_drop_amount = (random.nextInt(18 - 2) + 2) * gold_drop_multiplier;
+                    gem_drop_amount = (random.nextInt(12 - 2) + 2) * gold_drop_multiplier;
                     break;
                 case 3:
-                    gem_drop_amount = (random.nextInt(34 - 10) + 10) * gold_drop_multiplier;
+                    gem_drop_amount = (random.nextInt(30 - 10) + 10) * gold_drop_multiplier;
                     break;
                 case 4:
-                    gem_drop_amount = (random.nextInt(64 - 20) + 20) * gold_drop_multiplier;
+                    gem_drop_amount = (random.nextInt(50 - 20) + 20) * gold_drop_multiplier;
                     break;
                 case 5:
-                    gem_drop_amount = (random.nextInt(175 - 75) + 75) * gold_drop_multiplier;
+                    gem_drop_amount = (random.nextInt(200- 75) + 75) * gold_drop_multiplier;
                     break;
             }
 
@@ -88,44 +118,8 @@ public interface DRMonster {
                 item.setAmount(1);
             }
             world.getWorld().dropItem(loc.add(0, 1, 0), item);
-            if (!ent.hasMetadata("elite")) {
-                return;
-            }
         }
 
-        int chance = 0;
-        switch (tier) {
-            case 1:
-                chance = 100;
-                break;
-            case 2:
-                chance = 60;
-                break;
-            case 3:
-                chance = 30;
-                break;
-            case 4:
-                chance = 15;
-                break;
-            case 5:
-                chance = 6;
-                break;
-        }
-        //TODO: VERY DANGEROUS CODE. REMOVE BEFORE RELEASE
-        if (ent.hasMetadata("elite")) {
-            for (ItemStack stack : ((LivingEntity) ent).getEquipment().getArmorContents()) {
-                if (stack == null || stack.getType() == Material.AIR || stack.getType() == Material.SKULL || stack.getType() == Material.SKULL_ITEM) {
-                    continue;
-                }
-                world.getWorld().dropItem(loc.add(0, 1, 0), stack);
-            }
-            ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInMainHand();
-            if (weapon == null || weapon.getType() == Material.AIR) {
-                return;
-            }
-            world.getWorld().dropItem(loc.add(0, 1, 0), weapon);
-            return;
-        }
         int armorRoll = random.nextInt(1000);
         int drops = 0;
         for (ItemStack stack : ((LivingEntity) ent).getEquipment().getArmorContents()) {
@@ -133,8 +127,8 @@ public interface DRMonster {
                 continue;
             }
             if (drops < 1) {
-                if (armorRoll <= chance + (chance * killerItemFind / 100)) {
-                    if (armorRoll > chance) {
+                if (armorRoll < chance + (chance * killerItemFind / 100)) {
+                    if (armorRoll >= chance) {
                         if (toggleDebug) {
                             killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
                         }
@@ -149,8 +143,8 @@ public interface DRMonster {
             ItemStack helmet = new ItemGenerator().setTier(Item.ItemTier.getByTier(tier)).setType(Item.ItemType.HELMET).setRarity(API.getItemRarity(false)).generateItem().getItem();
             AntiCheat.getInstance().applyAntiDupe(helmet);
             if (drops < 1) {
-                if (armorRoll <= chance + (chance * killerItemFind / 100)) {
-                    if (armorRoll > chance) {
+                if (armorRoll < chance + (chance * killerItemFind / 100)) {
+                    if (armorRoll >= chance) {
                         if (toggleDebug) {
                             killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
                         }
@@ -164,8 +158,8 @@ public interface DRMonster {
         ItemStack weapon = ((LivingEntity) ent).getEquipment().getItemInMainHand();
         if (weapon != null && weapon.getType() != Material.AIR) {
             if (drops < 1) {
-                if (armorRoll <= chance + (chance * killerItemFind / 100)) {
-                    if (armorRoll > chance) {
+                if (armorRoll < chance + (chance * killerItemFind / 100)) {
+                    if (armorRoll >= chance) {
                         if (toggleDebug) {
                             killer.sendMessage(ChatColor.GREEN + "Your " + killerItemFind + "% Item Find has resulted in a drop.");
                         }
@@ -188,6 +182,6 @@ public interface DRMonster {
                 item.setAmount(amount);
                 world.getWorld().dropItem(loc.add(0, 1, 0), item);
             }
-        }*/ //TODO: Decide if we want infinite arrows.
+        }*/ // arrows are no longer needed (uncomment if we ever add them back)
     }
 }
