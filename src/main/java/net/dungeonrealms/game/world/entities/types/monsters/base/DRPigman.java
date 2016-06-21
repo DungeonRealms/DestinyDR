@@ -4,8 +4,8 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.miscellaneous.SkullTextures;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
-import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.entities.types.monsters.DRMonster;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
 import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.minecraft.server.v1_9_R2.*;
@@ -102,9 +102,6 @@ public class DRPigman extends EntityPigZombie implements DRMonster {
 				itemType = net.dungeonrealms.game.world.items.Item.ItemType.SWORD;
 				break;
 			case 1:
-				itemType = net.dungeonrealms.game.world.items.Item.ItemType.POLEARM;
-				break;
-			case 2:
 				itemType = net.dungeonrealms.game.world.items.Item.ItemType.AXE;
 				break;
 		}

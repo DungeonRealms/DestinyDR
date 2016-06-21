@@ -378,6 +378,9 @@ public class SpawningMechanics implements GenericMechanic {
             case Cow:
                 entity = new EntityCow(world);
                 break;
+            case Enderman:
+                entity = new MeleeEnderman(world, tier);
+                break;
             default:
                 Utils.log.info("[SPAWNING] Tried to create " + monsEnum.idName + " but it has failed.");
                 return null;

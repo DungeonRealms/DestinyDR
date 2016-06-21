@@ -711,6 +711,7 @@ public class API {
         AttributeInstance instance = player.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
         instance.setBaseValue(2.0D);
         DungeonRealms.getInstance().getLoggingOut().remove(player.getName());
+        ScoreboardHandler.getInstance().setPlayerHeadScoreboard(player, gp.getPlayerAlignment().getAlignmentColor(), gp.getLevel());
 
         // Permissions
         if (!player.isOp() && !Rank.isDev(player)) {

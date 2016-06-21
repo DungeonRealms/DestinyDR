@@ -72,6 +72,7 @@ public class Entities implements GenericMechanic {
         nmsUtils.registerEntity("MeleeZombie", 54, EntityZombie.class, MeleeZombie.class);
         nmsUtils.registerEntity("MeleeWitherSkeleton", 51, EntitySkeleton.class, MeleeWitherSkeleton.class);
         nmsUtils.registerEntity("MeleeSkeleton", 51, EntitySkeleton.class, MeleeSkeleton.class);
+        nmsUtils.registerEntity("MeleeEnderman", 58, EntityEnderman.class, MeleeEnderman.class);
         //STAFF MONSTERS
         nmsUtils.registerEntity("BasicBlaze", 61, EntityBlaze.class, BasicEntityBlaze.class);
         nmsUtils.registerEntity("StaffZombie", 54, EntityZombie.class, StaffZombie.class);
@@ -91,6 +92,7 @@ public class Entities implements GenericMechanic {
         nmsUtils.registerEntity("DRWitch", 66, EntityWitch.class, DRWitch.class);
         nmsUtils.registerEntity("DRZombie", 54, EntityZombie.class, DRZombie.class);
         nmsUtils.registerEntity("DRGolem", 99, EntityGolem.class, DRGolem.class);
+        nmsUtils.registerEntity("DREnderman", 58, EntityEnderman.class, DREnderman.class);
 
         // Tier 1 Boss
         nmsUtils.registerEntity("Mayel", 51, EntitySkeleton.class, Mayel.class);

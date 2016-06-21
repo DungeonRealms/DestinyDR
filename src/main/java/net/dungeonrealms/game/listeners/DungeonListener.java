@@ -2,24 +2,33 @@ package net.dungeonrealms.game.listeners;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
+import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.mechanics.ItemManager;
+import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.world.entities.Entities;
+import net.dungeonrealms.game.world.entities.types.EnderCrystal;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.party.Affair;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.*;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.*;
 
@@ -59,8 +68,7 @@ public class DungeonListener implements Listener {
         if (!event.getEntity().getWorld().getName().contains("DUNGEON")) return;
         if (event.getEntity() instanceof Player) return;
         if (DungeonManager.getInstance().getDungeon(event.getEntity().getWorld()) == null) return;
-        if (DungeonManager.getInstance().getDungeon(event.getEntity().getWorld()).getType() != DungeonManager.DungeonType.VARENGLADE)
-            return;
+        if (DungeonManager.getInstance().getDungeon(event.getEntity().getWorld()).getType() != DungeonManager.DungeonType.VARENGLADE) return;
         DungeonManager.DungeonObject dungeonObject = DungeonManager.getInstance().getDungeon(event.getEntity().getWorld());
         if (dungeonObject.keysDropped <= 10) {
             if (new Random().nextInt(20) <= 14) {
@@ -72,6 +80,15 @@ public class DungeonListener implements Listener {
                     event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), 36, 54, -4), key);
                 }
                 dungeonObject.keysDropped = dungeonObject.keysDropped + 1;
+            }
+        }
+        if (event.getEntity().hasMetadata("customname")) {
+            String name = ChatColor.stripColor(event.getEntity().getMetadata("customname").get(0).asString());
+            if (event.getEntity().getType() == EntityType.ENDERMAN || name.equalsIgnoreCase("The Devastator") || name.equalsIgnoreCase("The Annihilator")) {
+                for (Player player : event.getEntity().getWorld().getPlayers()) {
+                    player.removePotionEffect(PotionEffectType.WITHER);
+                }
+                DungeonManager.getInstance().getDungeon_Wither_Effect().remove(event.getEntity().getWorld().getName());
             }
         }
     }
@@ -246,6 +263,89 @@ public class DungeonListener implements Listener {
             DungeonManager.getInstance().createNewInstance(dungeonType, partyList, dungeonName);
             player.sendMessage(ChatColor.GRAY + "Loading Instance: '" + ChatColor.UNDERLINE + dungeonType.name().replaceAll("_", " ") + ChatColor.GRAY
                     + "' -- Please wait...");
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void playerHitEndercrystal(EntityDamageEvent event) {
+        if (!(event.getEntity() instanceof EnderCrystal)) return;
+        if (!event.getEntity().getWorld().getName().contains("DUNGEON")) return;
+        event.setCancelled(true);
+        event.setDamage(0);
+
+        if (event instanceof EntityDamageByEntityEvent) {
+            EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) event;
+            if (entityDamageByEntityEvent.getDamager() instanceof Player) {
+                Player player = (Player) entityDamageByEntityEvent.getDamager();
+                Block block =  event.getEntity().getLocation().subtract(0D, 1D, 0D).getBlock();
+                if (block.getType() == Material.BEDROCK) {
+                    block.setType(Material.AIR);
+                    block.getLocation().add(0, 1, 0).getBlock().setType(Material.AIR);
+                }
+                try {
+                    ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, block.getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 50);
+                }  catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                DungeonManager.getInstance().getDungeon_Wither_Effect().put(player.getWorld().getName(), 90);
+
+                for (Player player1 : player.getWorld().getPlayers()) {
+                    player1.removePotionEffect(PotionEffectType.WITHER);
+                    player1.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, (int) (90 * 20L), 0));
+                    player1.playSound(player1.getLocation(), Sound.ENTITY_ENDERDRAGON_HURT, 5F, 1.5F);
+                    player1.sendMessage(ChatColor.YELLOW + "Debuff timer refreshed, " + ChatColor.UNDERLINE + HealthHandler.getInstance().getPlayerMaxHPLive(player1)
+                            + " DMG " + ChatColor.YELLOW + "will be inflicted in 90s unless another beacon is activated.");
+                }
+                event.getEntity().remove();
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    public void playerInteractEvent(PlayerInteractEvent event) {
+        if (event.getAction() != Action.LEFT_CLICK_BLOCK) return;
+        if (!event.getPlayer().getWorld().getName().contains("DUNGEON")) return;
+        Player player = event.getPlayer();
+        Block block = event.getClickedBlock();
+        if (block.getType() ==  Material.BEDROCK || block.getType() == Material.FIRE) {
+            if (block.getType() == Material.BEDROCK) {
+                Block baseBlock = block.getLocation().add(0.D, 1D, 0D).getBlock();
+                if (baseBlock.getType() == Material.FIRE) {
+                    block = baseBlock;
+                } else {
+                    return;
+                }
+            }
+
+            block.setType(Material.AIR);
+            block.getLocation().subtract(0D, 1D, 0D).getBlock().setType(Material.AIR);
+
+            for (Entity entity : block.getChunk().getEntities()) {
+                if (!(entity instanceof EnderCrystal)) {
+                    continue;
+                }
+                if (entity.getLocation().distanceSquared(block.getLocation()) <= 4) {
+                    entity.remove();
+                    break;
+                }
+            }
+
+            try {
+                ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, block.getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 50);
+            }  catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            DungeonManager.getInstance().getDungeon_Wither_Effect().put(player.getWorld().getName(), 90);
+
+            for (Player player1 : player.getWorld().getPlayers()) {
+                player1.removePotionEffect(PotionEffectType.WITHER);
+                player1.addPotionEffect(new PotionEffect(PotionEffectType.WITHER, (int) (90 * 20L), 0));
+                player1.playSound(player1.getLocation(), Sound.ENTITY_ENDERDRAGON_HURT, 5F, 1.5F);
+                player1.sendMessage(ChatColor.YELLOW + "Debuff timer refreshed, " + ChatColor.UNDERLINE + HealthHandler.getInstance().getPlayerMaxHPLive(player1)
+                        + " DMG " + ChatColor.YELLOW + "will be inflicted in 90s unless another beacon is activated.");
+            }
         }
     }
 }

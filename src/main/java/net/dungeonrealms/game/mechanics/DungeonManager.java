@@ -5,6 +5,7 @@ import lombok.Getter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
+import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
@@ -22,6 +23,7 @@ import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffectType;
 
 import java.io.*;
 import java.util.*;
@@ -48,6 +50,8 @@ public class DungeonManager implements GenericMechanic {
     public static volatile ConcurrentHashMap<String, HashMap<Location, String>> instance_mob_spawns = new ConcurrentHashMap<>();
     @Getter
     private ConcurrentHashMap<String, Integer> players_Entering_Dungeon = new ConcurrentHashMap<>();
+    @Getter
+    private ConcurrentHashMap<String, Integer> dungeon_Wither_Effect = new ConcurrentHashMap<>();
 
     public DungeonObject getDungeon(World world) {
         for (DungeonObject dungeon : Dungeons) {
@@ -90,6 +94,45 @@ public class DungeonManager implements GenericMechanic {
         })), 0, 10);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeonObject -> {
+            if (dungeonObject.getType() == DungeonType.THE_INFERNAL_ABYSS) {
+                for (Player player : Bukkit.getWorld(dungeonObject.worldName).getPlayers()) {
+                    if (player.hasPotionEffect(PotionEffectType.WITHER)) {
+                        player.getActivePotionEffects().stream().filter(potionEffect -> potionEffect.getType() == PotionEffectType.WITHER).filter(potionEffect ->
+                                !(dungeon_Wither_Effect.containsKey(player.getWorld().getName()))).forEach(potionEffect -> dungeon_Wither_Effect.put(player.getWorld().getName(), (potionEffect.getDuration() / 20) - 1));
+                    }
+                }
+            }
+
+            for (Map.Entry<String, Integer> entry : dungeon_Wither_Effect.entrySet()) {
+                String worldName = entry.getKey();
+                if (Bukkit.getServer().getWorld(worldName) == null) {
+                    dungeon_Wither_Effect.remove(worldName);
+                    continue;
+                }
+                int secondsLeft = entry.getValue();
+
+                secondsLeft--;
+
+                if (secondsLeft == 30) {
+                    for (Player pl : Bukkit.getServer().getWorld(worldName).getPlayers()) {
+                        pl.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD.toString() + ">> " + ChatColor.RED + "You have " + ChatColor.UNDERLINE
+                                + secondsLeft + "s" + ChatColor.RED + " left until the inferno consumes you.");
+                    }
+                } else if (secondsLeft <= 1) {
+                    for (Player pl : Bukkit.getServer().getWorld(worldName).getPlayers()) {
+                        pl.setHealth(1);
+                        HealthHandler.getInstance().setPlayerHPLive(pl, 1);
+                        pl.sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "You have been drained of nearly all your life by the power of the inferno.");
+                    }
+                    dungeon_Wither_Effect.remove(worldName);
+                    continue;
+                }
+
+                dungeon_Wither_Effect.put(worldName, secondsLeft);
+            }
+        }), 200L, 60L);
+
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeonObject -> {
             int time = dungeonObject.getTime();
             dungeonObject.modifyTime(1);
             if (time < 10) {
@@ -99,6 +142,17 @@ public class DungeonManager implements GenericMechanic {
                 Dungeons.remove(dungeonObject);
                 return;
             }
+
+            if (Bukkit.getWorld(dungeonObject.worldName).getPlayers().size() <= 0) {
+                removeInstance(dungeonObject);
+                return;
+            }
+
+            if (dungeonObject.triedTeleportingOut) {
+                dungeonObject.teleportPlayersOut(true);
+                return;
+            }
+
             int monstersAlive = dungeonObject.maxAlive - dungeonObject.killed;
             int maxAlive = dungeonObject.maxAlive;
             if (!dungeonObject.canSpawnBoss && maxAlive > 0 && monstersAlive > 0) {
@@ -113,17 +167,6 @@ public class DungeonManager implements GenericMechanic {
                     });
                 }
             }
-
-            if (Bukkit.getWorld(dungeonObject.worldName).getPlayers().size() <= 0) {
-                removeInstance(dungeonObject);
-                return;
-            }
-
-            if (dungeonObject.triedTeleportingOut) {
-                dungeonObject.teleportPlayersOut(true);
-                return;
-            }
-
             switch (time) {
                 // 2h 10 minutes
                 case 7500:
@@ -433,9 +476,9 @@ public class DungeonManager implements GenericMechanic {
                         }
                     }
                 });
-            }, 15 * 20L);
+            }, 30 * 20L);
             if (!secondTry)
-                Bukkit.getWorld(worldName).getPlayers().stream().filter(p -> p != null && p.isOnline()).forEach(p -> p.sendMessage(ChatColor.YELLOW + "You will be teleported out in 15 seconds..."));
+                Bukkit.getWorld(worldName).getPlayers().stream().filter(p -> p != null && p.isOnline()).forEach(p -> p.sendMessage(ChatColor.YELLOW + "You will be teleported out in 30 seconds..."));
         }
 
         /**
@@ -499,7 +542,7 @@ public class DungeonManager implements GenericMechanic {
                     DungeonManager.getInstance().getDungeon(Bukkit.getWorld(worldName)).cleanup();
                     Dungeons.remove(DungeonManager.getInstance().getDungeon(Bukkit.getWorld(worldName)));
                 }
-            }, 600L);
+            }, 1500L);
         }
     }
 

@@ -48,6 +48,7 @@ public enum EnumMonster {
     Witch("witch", "Old Hag", "", new String[]{""}, new String[]{""}),
     Daemon2("daemon2", "Daemon", "", new String[]{""}, new String[]{""}),
     Acolyte("acolyte", "Acolyte", "", new String[]{""}, new String[]{""}),
+    Enderman("enderman", "Apparition", "", new String[]{""}, new String[]{""}),
     Pig("pig", "Pig", "", new String[]{""}, new String[]{""}),
     Bat("bat", "Bat", "", new String[]{""}, new String[]{""}),
     Cow("cow", "Cow", "", new String[]{""}, new String[]{""});

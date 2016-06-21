@@ -150,6 +150,9 @@ public class EntityStats {
                 case Goblin:
                     weaponType = ItemType.AXE;
                     break;
+                case Enderman:
+                    weaponType = ItemType.SWORD;
+                    break;
                 default:
                     weaponType = ItemType.getRandomWeapon();
                     break;
