@@ -1,6 +1,7 @@
 package net.dungeonrealms.game.listeners;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.events.PlayerEnterRegionEvent;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mechanics.DungeonManager;
@@ -215,6 +216,9 @@ public class DungeonListener implements Listener {
                                 if (!hasTeleported) {
                                     player.teleport(player1.getLocation());
                                     player.setFallDistance(0F);
+                                    Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                                        DungeonManager.getInstance().sendWorldEnvironment(player, World.Environment.NETHER);
+                                    }, 5L);
                                     hasTeleported = true;
                                 }
                             }

@@ -48,13 +48,4 @@ public class MeleeEnderman extends DREnderman {
     @Override
     protected void setStats() {
     }
-
-    @Override
-    protected void r() {
-        this.goalSelector.a(0, new PathfinderGoalFloat(this));
-        this.goalSelector.a(2, new PathfinderGoalMeleeAttack(this, 1.0D, false));
-        this.goalSelector.a(7, new PathfinderGoalRandomStroll(this, 1.0D));
-        this.goalSelector.a(8, new PathfinderGoalLookAtPlayer(this, EntityHuman.class, 8.0F));
-        this.goalSelector.a(8, new PathfinderGoalRandomLookaround(this));
-    }
 }

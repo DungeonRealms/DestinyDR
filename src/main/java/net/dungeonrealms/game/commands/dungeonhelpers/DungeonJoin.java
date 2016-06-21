@@ -1,11 +1,13 @@
 package net.dungeonrealms.game.commands.dungeonhelpers;
 
 import net.dungeonrealms.API;
+import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.world.party.Affair;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.World;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
@@ -67,6 +69,11 @@ public class DungeonJoin extends BasicCommand {
                                     if (!hasTeleported) {
                                         player.teleport(player1.getLocation());
                                         player.setFallDistance(0F);
+                                        if (dungeonObject.getType() == DungeonManager.DungeonType.THE_INFERNAL_ABYSS) {
+                                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                                                DungeonManager.getInstance().sendWorldEnvironment(player, World.Environment.NETHER);
+                                            }, 5L);
+                                        }
                                         hasTeleported = true;
                                     }
                                 }

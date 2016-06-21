@@ -123,7 +123,7 @@ public class Affair implements GenericMechanic {
         });
 
 
-        Utils.log.info("Deleted Old Party: " + party.toString());
+        Utils.log.info("Deleted Old Party: " + party.getOwner().getName());
 
         _parties.remove(party);
     }

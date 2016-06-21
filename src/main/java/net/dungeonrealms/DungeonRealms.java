@@ -4,10 +4,7 @@ import com.connorlinfoot.bountifulapi.BountifulAPI;
 import lombok.Getter;
 import net.dungeonrealms.game.achievements.AchievementManager;
 import net.dungeonrealms.game.commands.*;
-import net.dungeonrealms.game.commands.dungeonhelpers.BossTeleport;
-import net.dungeonrealms.game.commands.dungeonhelpers.DungeonJoin;
-import net.dungeonrealms.game.commands.dungeonhelpers.DungeonSpawn;
-import net.dungeonrealms.game.commands.dungeonhelpers.ReplaceNear;
+import net.dungeonrealms.game.commands.dungeonhelpers.*;
 import net.dungeonrealms.game.commands.generic.CommandManager;
 import net.dungeonrealms.game.commands.guild.*;
 import net.dungeonrealms.game.commands.menualias.*;
@@ -338,7 +335,8 @@ public class DungeonRealms extends JavaPlugin {
         cm.registerCommand(new BossTeleport("bosstp", "/<command> [args]", "Dungeon Boss Teleporation"));
         cm.registerCommand(new CommandTips("tips", "/<command>", "Tips command"));
         cm.registerCommand(new DungeonJoin("djoin", "/<command>", "Dungeon Join command"));
-
+        cm.registerCommand(new DRLightning("drlightning", "/<command>", "Spawns lightning at an area"));
+        cm.registerCommand(new DebuffCrystal("debuffcrystal", "/<command>", "Spawns a debuff crystal"));
         // Commands only registered for an instance server (including the always registered commands).
         if (isInstanceServer) {
             // cm.registerCommand(new CommandGuild("guild", "/<command> [args]", "Opens the guild menus!"));

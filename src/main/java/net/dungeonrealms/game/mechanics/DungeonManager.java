@@ -94,11 +94,13 @@ public class DungeonManager implements GenericMechanic {
         })), 0, 10);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeonObject -> {
-            if (dungeonObject.getType() == DungeonType.THE_INFERNAL_ABYSS) {
-                for (Player player : Bukkit.getWorld(dungeonObject.worldName).getPlayers()) {
-                    if (player.hasPotionEffect(PotionEffectType.WITHER)) {
-                        player.getActivePotionEffects().stream().filter(potionEffect -> potionEffect.getType() == PotionEffectType.WITHER).filter(potionEffect ->
-                                !(dungeon_Wither_Effect.containsKey(player.getWorld().getName()))).forEach(potionEffect -> dungeon_Wither_Effect.put(player.getWorld().getName(), (potionEffect.getDuration() / 20) - 1));
+            if (dungeonObject.getTime() > 10) {
+                if (dungeonObject.getType() == DungeonType.THE_INFERNAL_ABYSS) {
+                    for (Player player : Bukkit.getWorld(dungeonObject.worldName).getPlayers()) {
+                        if (player.hasPotionEffect(PotionEffectType.WITHER)) {
+                            player.getActivePotionEffects().stream().filter(potionEffect -> potionEffect.getType() == PotionEffectType.WITHER).filter(potionEffect ->
+                                    !(dungeon_Wither_Effect.containsKey(player.getWorld().getName()))).forEach(potionEffect -> dungeon_Wither_Effect.put(player.getWorld().getName(), (potionEffect.getDuration() / 20) - 1));
+                        }
                     }
                 }
             }
@@ -619,6 +621,12 @@ public class DungeonManager implements GenericMechanic {
                     }
                     DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, true);
                     player.teleport(w.getSpawnLocation());
+                    player.setFallDistance(0F);
+                    if (object.getType() == DungeonType.THE_INFERNAL_ABYSS) {
+                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                            sendWorldEnvironment(player, World.Environment.NETHER);
+                        }, 5L);
+                    }
                     player.sendMessage(ChatColor.RED.toString() + object.type.getBossName() + ChatColor.RESET + ": How dare you enter my domain!");
                 } else {
                     player.sendMessage(ChatColor.LIGHT_PURPLE.toString() + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + ">" + ChatColor.GRAY + " "
@@ -659,6 +667,34 @@ public class DungeonManager implements GenericMechanic {
             }
         }
     }
+
+    public void sendWorldEnvironment(Player player, World.Environment environment) {
+        return;
+        //TODO: Fix.
+        /*CraftPlayer craftPlayer = (CraftPlayer) player;
+        CraftWorld world = (CraftWorld) player.getWorld();
+        Location location = player.getLocation();
+
+        PacketPlayOutRespawn packet = new PacketPlayOutRespawn(environment.getId(), EnumDifficulty.getById(world.getDifficulty().getValue()), net.minecraft.server.v1_9_R2.WorldType.NORMAL, WorldSettings.EnumGamemode.getById(player.getGameMode().getValue()));
+
+        craftPlayer.getHandle().playerConnection.sendPacket(packet);
+
+        int viewDistance = 8;
+
+        int xMin = location.getChunk().getX() - viewDistance;
+        int xMax = location.getChunk().getX() + viewDistance;
+        int zMin = location.getChunk().getZ() - viewDistance;
+        int zMax = location.getChunk().getZ() + viewDistance;
+
+        for (int x = xMin; x < xMax; ++x) {
+            for (int z = zMin; z < zMax; ++z) {
+                world.refreshChunk(x, z);
+            }
+        }
+
+        player.updateInventory();*/
+    }
+
 
     private void deleteFolder(File folder) {
         File[] files = folder.listFiles();
