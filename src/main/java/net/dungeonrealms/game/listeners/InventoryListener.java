@@ -198,7 +198,6 @@ public class InventoryListener implements Listener {
      */
     @EventHandler(priority = EventPriority.MONITOR)
     public void playerEquipArmor(ArmorEquipEvent event) {
-        //TODO: Show all stats that have changed.
         Player player = event.getPlayer();
         if (event.getNewArmorPiece() != null && event.getNewArmorPiece().getType() != Material.AIR) {
             Attribute a = new Attribute(event.getNewArmorPiece());
@@ -224,7 +223,7 @@ public class InventoryListener implements Listener {
                 }
                 handleArmorDifferences(event.getOldArmorPiece(), event.getNewArmorPiece(), player);
             }, 10L);
-        } else {
+        } else if (!event.getMethod().equals(ArmorEquipEvent.EquipMethod.DEATH) && !event.getMethod().equals(ArmorEquipEvent.EquipMethod.BROKE)) {
             player.sendMessage(ChatColor.RED + "You are in the middle of combat! You " + ChatColor.UNDERLINE +
                     "cannot" + ChatColor.RED + " switch armor right now.");
             event.setCancelled(true);
