@@ -370,10 +370,13 @@ public class GamePlayer {
      *
      * @param type
      * @param difference
+     *
+     * @return the new value of the attribute
      */
     public Integer[] changeAttributeVal(AttributeType type, Integer[] difference) {
         Integer[] oldVal = getAttributeVal(type);
         Integer[] newTotalVal = new Integer[] { oldVal[0] + difference[0], oldVal[1] + difference[1] };
-        return attributes.put(type.getNBTName(), newTotalVal);
+        attributes.put(type.getNBTName(), newTotalVal);
+        return newTotalVal;
     }
 }

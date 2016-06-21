@@ -291,13 +291,13 @@ public class InventoryListener implements Listener {
                         Integer[] newTotalVal;
 
                         if (type.isRange()) {
-                            newTotalVal = gp.changeAttributeVal(type, new Integer[]{newTag.getInt
-                                    (modifier + "Min") - oldTag.getInt(modifier + "Min"), newTag.getInt(modifier +
-                                    "Max") - oldTag.getInt(modifier + "Max")});
+                            newTotalVal = gp.changeAttributeVal(type, new Integer[]{newTag.getInt(modifier + "Min") -
+                                    oldTag.getInt(modifier + "Min"), newTag.getInt(modifier + "Max") - oldTag.getInt
+                                    (modifier + "Max")});
                         }
                         else {
-                            newTotalVal = gp.changeAttributeVal(type, new Integer[]{0, newTag.getInt(modifier)
-                                    - oldTag.getInt(modifier)});
+                            newTotalVal = gp.changeAttributeVal(type, new Integer[]{0, newTag.getInt(modifier) -
+                                    oldTag.getInt(modifier)});
                         }
 
                         if (newArmorVal >= oldArmorVal) { // increase in the stat
@@ -317,7 +317,11 @@ public class InventoryListener implements Listener {
                         ArmorAttributeType type = ArmorAttributeType.getByNBTName(modifier);
                         String tagName = type.isRange() ? modifier + "Max" : modifier;
                         int oldArmorVal = oldTag.hasKey(tagName) ? oldTag.getInt(tagName) : 0;
-                        Integer[] newTotalVal = gp.getAttributeVal(type);
+                        Integer[] newTotalVal = type.isRange()
+                                ? new Integer[]{gp.getAttributeVal(type)[0] - oldTag.getInt(modifier + "Min"),
+                                gp.getAttributeVal(type)[1] - oldTag.getInt(modifier + "Max")}
+                                : new Integer[]{0, gp.getAttributeVal(type)[1] - oldTag.getInt(modifier)};
+                        gp.setAttributeVal(type, newTotalVal);
                         if (oldArmorVal != 0) { // note the decrease to the player
                             p.sendMessage(ChatColor.RED + "-" + oldArmorVal
                                     + (type.isPercentage() ? "%" : "") + " " + type.getName() + " ["
