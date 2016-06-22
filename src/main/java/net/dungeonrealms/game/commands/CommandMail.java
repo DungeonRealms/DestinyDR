@@ -5,6 +5,7 @@ import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.handlers.MailHandler;
 import net.dungeonrealms.game.player.banks.BankMechanics;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
+import net.dungeonrealms.game.player.rank.Rank;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -26,6 +27,9 @@ public class CommandMail extends BasicCommand {
         if (s instanceof ConsoleCommandSender) return false;
 
         Player player = (Player) s;
+        if (!Rank.isDev(player)) {
+            return true;
+        }
         if (args.length == 2) {
             if (args[0].equals("send")) {
                 if (player.getEquipment().getItemInMainHand() != null && player.getEquipment().getItemInMainHand().getType() != Material.AIR) {
