@@ -661,19 +661,20 @@ public class HealthHandler implements GenericMechanic {
             entity.damage(entity.getHealth());
             entity.setMaximumNoDamageTicks(2000);
             entity.setNoDamageTicks(1000);
-            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
-                if (!entity.isDead()) {
-                    entity.setMaximumNoDamageTicks(200);
-                    entity.setNoDamageTicks(10);
-                    EntityDeathEvent event = new EntityDeathEvent(entity,  new ArrayList<>());
-                    Bukkit.getPluginManager().callEvent(event);
-                    entity.setHealth(0);
-                    entity.remove();
-                }
-                if (!entity1.dead) {
-                    entity1.dead = true;
-                }
-            }, 5L);
+            //TODO: find out why this code is here...
+//            Bukkit.getScheduler().runTaskLater(DungeonRealms.getInstance(), () -> {
+//                if (!entity.isDead()) {
+//                    entity.setMaximumNoDamageTicks(200);
+//                    entity.setNoDamageTicks(10);
+//                    EntityDeathEvent event = new EntityDeathEvent(entity,  new ArrayList<>());
+//                    Bukkit.getPluginManager().callEvent(event);
+//                    entity.setHealth(0);
+//                    entity.remove();
+//                }
+//                if (!entity1.dead) {
+//                    entity1.dead = true;
+//                }
+//            }, 5L);
             if (Entities.MONSTER_LAST_ATTACK.containsKey(entity)) {
                 Entities.MONSTER_LAST_ATTACK.remove(entity);
             }
