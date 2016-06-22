@@ -28,6 +28,14 @@ public class RealmToken {
 
     @Getter
     @Setter
+    private boolean isLoaded = false;
+
+    @Getter
+    @Setter
+    private boolean isPeaceful = false;
+
+    @Getter
+    @Setter
     private Hologram hologram;
 
     @Getter

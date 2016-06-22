@@ -6,8 +6,10 @@ import net.dungeonrealms.game.world.realms.instance.RealmInstance;
 import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
 import net.lingala.zip4j.exception.ZipException;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
+import java.io.IOException;
 import java.util.UUID;
 
 /**
@@ -15,28 +17,37 @@ import java.util.UUID;
  */
 public interface Realms extends GenericMechanic {
 
-
     static Realms getInstance() {
         return RealmInstance.getInstance();
     }
 
 
+    /**
+     * @return EnumPriority.BISHOP
+     */
     EnumPriority startPriority();
 
 
+    /**
+     * Instantiate realm cache folders
+     */
     void startInitialization();
 
 
+    /**
+     * All realms must be uploaded and removed from cache before shutdown
+     */
     void stopInvocation();
 
 
     /**
      * Opens the player's realm portal
+     * Realm should be already cached before executing this command
      *
      * @param player   Owner of realm
      * @param location Desired location for portal
      */
-    void openRealm(Player player, Location location);
+    void openRealmPortal(Player player, Location location);
 
 
     /**
@@ -44,7 +55,7 @@ public interface Realms extends GenericMechanic {
      *
      * @param player Owner of realm
      */
-    void loadRealm(Player player) throws ZipException;
+    void loadRealm(Player player);
 
 
     /**
@@ -52,16 +63,56 @@ public interface Realms extends GenericMechanic {
      *
      * @param uuid Owner of realm
      */
-    boolean downloadRealm(UUID uuid);
+    boolean downloadRealm(UUID uuid) throws IOException, ZipException;
 
 
     /**
-     * Checks if the player's realm is loaded.
+     * Closes the realm portal
      *
-     * @param location Location of portal
+     * @param uuid Owner of realm
      */
-    boolean canPlacePortal(Location location);
+    void closeRealmPortal(UUID uuid);
 
+
+    /**
+     * Updates the realm hologram to Chaotic or Peaceful
+     *
+     * @param realm Realm
+     */
+    void updateRealmHologram(RealmToken realm);
+
+
+    /**
+     * @param uuid Owner of realm
+     * @return World object of realm
+     */
+    World getRealmWorld(UUID uuid);
+
+
+    /**
+     * Realm Dimensions
+     *
+     * @param tier Tier level of realm
+     * @return Realm dimensions number = NxNxN
+     */
+    int getRealmDimensions(int tier);
+
+
+    /**
+     * Realm tier
+     *
+     * @param uuid Owner of realm
+     * @return Realm size teir
+     */
+    int getRealmTier(UUID uuid);
+
+
+    /**
+     * Checks player's realm is cached
+     *
+     * @param uuid Owner of realm
+     */
+    boolean isRealmCached(UUID uuid);
 
     /**
      * Checks if the player's realm is loaded.
@@ -83,5 +134,18 @@ public interface Realms extends GenericMechanic {
      * @param uuid Owner of realm
      * @return Players realm.
      */
-    RealmToken getOrCreateRealm(UUID uuid);
+    RealmToken getRealm(UUID uuid);
+
+    /**
+     * @param portalLocation Location
+     * @return Players realm.
+     */
+    RealmToken getRealm(Location portalLocation);
+
+
+    /**
+     * @param world Realm world
+     * @return Players realm.
+     */
+    RealmToken getRealm(World world);
 }
