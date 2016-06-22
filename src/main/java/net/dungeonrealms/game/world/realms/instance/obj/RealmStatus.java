@@ -5,6 +5,6 @@ package net.dungeonrealms.game.world.realms.instance.obj;
  */
 public enum RealmStatus {
 
-    DOWNLOADING, UPLOADING, OPENED, CLOSED
+    DOWNLOADING, UPLOADING, CREATING, LOADED, OPENED, CLOSED
 
 }

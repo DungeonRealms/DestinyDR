@@ -3,6 +3,7 @@ package net.dungeonrealms.game.world.realms;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.world.realms.instance.RealmInstance;
+import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
 import net.lingala.zip4j.exception.ZipException;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -37,12 +38,37 @@ public interface Realms extends GenericMechanic {
      */
     void openRealm(Player player, Location location);
 
+
     /**
-     * This function downloads the player's realm if it exists
+     * Loads the player's realm*
      *
      * @param player Owner of realm
      */
-    boolean downloadRealm(UUID player);
+    void loadRealm(Player player) throws ZipException;
+
+
+    /**
+     * This function downloads the player's realm from the realm FTP database if it exists
+     *
+     * @param uuid Owner of realm
+     */
+    boolean downloadRealm(UUID uuid);
+
+
+    /**
+     * Checks if the player's realm is loaded.
+     *
+     * @param location Location of portal
+     */
+    boolean canPlacePortal(Location location);
+
+
+    /**
+     * Checks if the player's realm is loaded.
+     *
+     * @param uuid Owner of realm
+     */
+    boolean isRealmLoaded(UUID uuid);
 
 
     /**
@@ -53,4 +79,9 @@ public interface Realms extends GenericMechanic {
     void loadTemplate(UUID player) throws ZipException;
 
 
+    /**
+     * @param uuid Owner of realm
+     * @return Players realm.
+     */
+    RealmToken getOrCreateRealm(UUID uuid);
 }
