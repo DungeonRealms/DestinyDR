@@ -24,7 +24,6 @@ import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.minecraft.server.v1_9_R2.DamageSource;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
-import net.minecraft.server.v1_9_R2.GenericAttributes;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.*;
 import org.bukkit.block.Block;
@@ -68,7 +67,6 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
         this.fireProof = true;
         this.getBukkitEntity().setCustomNameVisible(true);
         int bossLevel = 50;
-        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
         MetadataUtils.registerEntityMetadata(this, EnumEntityType.HOSTILE_MOB, getEnumBoss().tier, bossLevel);
         this.getBukkitEntity().setMetadata("boss", new FixedMetadataValue(DungeonRealms.getInstance(), getEnumBoss().nameid));
         EntityStats.setBossRandomStats(this, bossLevel, getEnumBoss().tier);
@@ -88,34 +86,6 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
         this.setSkeletonType(1);
         setArmor(getEnumBoss().tier);
         DungeonManager.getInstance().getFireUnderEntity().add(this);
-        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
-            if (!this.ghast.isAlive()) {
-                if (random.nextInt(30) <= 4) {
-                    return;
-                }
-                Location hit_loc = this.getBukkitEntity().getLocation();
-                int numToSpawn = random.nextInt(2) + 1;
-                if (random.nextBoolean()) {
-                } else {
-                    for (int i = 0; i <= numToSpawn; i++) {
-                        net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 2, EnumMonster.MagmaCube);
-                        int level = Utils.getRandomFromTier(4, "low");
-                        String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
-                        MetadataUtils.registerEntityMetadata(entity, EnumEntityType.HOSTILE_MOB, 4, level);
-                        EntityStats.createDungeonMob(entity, level, 4);
-                        if (entity == null) {
-                            return; //WTF?? UH OH BOYS WE GOT ISSUES
-                        }
-                        entity.setCustomName(newLevelName + API.getTierColor(4).toString() + "Demonic Spawn of Inferno");
-                        entity.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(4).toString() + "Demonic Spawn of Inferno"));
-                        Location location = new Location(world.getWorld(), hit_loc.getX() + new Random().nextInt(3), hit_loc.getY(), hit_loc.getZ() + new Random().nextInt(3));
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                        world.addEntity(entity, CreatureSpawnEvent.SpawnReason.CUSTOM);
-                        entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
-                    }
-                }
-            }
-        }, 150L, 300L);
     }
 
     public void setArmor(int tier) {

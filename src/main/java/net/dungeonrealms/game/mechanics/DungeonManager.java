@@ -109,7 +109,7 @@ public class DungeonManager implements GenericMechanic {
                     fireUnderEntity.remove(entity);
                     return;
                 }
-                if (!entity.onGround) {
+                if (entity.getVehicle() != null) {
                     return;
                 }
                 Location location = entity.getBukkitEntity().getLocation();

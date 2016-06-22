@@ -27,8 +27,7 @@ public abstract class DREnderman extends EntityEnderman implements DRMonster {
         this(world);
         this.monsterType = monsterType;
         this.name = monsterType.name;
-        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(14d);
-        this.getAttributeInstance(GenericAttributes.MOVEMENT_SPEED).setValue(0.29D);
+        this.getAttributeInstance(GenericAttributes.FOLLOW_RANGE).setValue(24d);
         this.getAttributeInstance(GenericAttributes.c).setValue(0.75d);
         setArmor(tier);
         setStats();
