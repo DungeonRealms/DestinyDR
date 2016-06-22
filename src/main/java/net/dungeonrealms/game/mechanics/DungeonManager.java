@@ -109,7 +109,7 @@ public class DungeonManager implements GenericMechanic {
                     fireUnderEntity.remove(entity);
                     return;
                 }
-                if (entity.getVehicle() != null) {
+                if (!entity.getBukkitEntity().isOnGround()) {
                     return;
                 }
                 Location location = entity.getBukkitEntity().getLocation();
@@ -128,7 +128,7 @@ public class DungeonManager implements GenericMechanic {
                     }
                     toSpawn.setCustomName(newLevelName + API.getTierColor(3).toString() + "Spawn of Inferno");
                     toSpawn.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(3).toString() + "Spawn of Inferno"));
-                    Location toSpawnLoc = new Location(world.getWorld(), location.getX(), location.getY(), location.getZ());
+                    Location toSpawnLoc = new Location(world.getWorld(), location.getX(), location.getY() + 2, location.getZ());
                     entity.setLocation(toSpawnLoc.getX(), toSpawnLoc.getY(), toSpawnLoc.getZ(), 1, 1);
                     world.addEntity(toSpawn, CreatureSpawnEvent.SpawnReason.CUSTOM);
                     entity.setLocation(toSpawnLoc.getX(), toSpawnLoc.getY(), toSpawnLoc.getZ(), 1, 1);
