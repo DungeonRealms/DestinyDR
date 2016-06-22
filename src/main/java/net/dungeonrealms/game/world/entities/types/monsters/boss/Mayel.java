@@ -115,7 +115,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
         } catch (Exception err) {
             err.printStackTrace();
         }
-        doBossDrops();
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::doBossDrops, 5L);
         for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
             p.sendMessage(ChatColor.RED.toString() + "Mayel The Cruel" + ChatColor.RESET.toString() + ": " + "No... how could it be?");
         }
@@ -212,17 +212,22 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
                 player.sendMessage(ChatColor.DARK_PURPLE + "Each player receives " + ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + perPlayerDrop + ChatColor.DARK_PURPLE + " gems!");
             }
         }, 5L);
+        String partyMembers = "";
         for (Player player : livingEntity.getWorld().getPlayers()) {
+            partyMembers += player.getName() + ",";
             if (player.getInventory().firstEmpty() == -1) {
                 player.getWorld().dropItem(player.getLocation(), banknote);
                 player.sendMessage(ChatColor.RED + "Because you had no room in your inventory, your new bank note has been placed at your character's feet.");
             } else {
                 player.getInventory().addItem(banknote);
             }
-            API.getGamePlayer(player).addExperience(1000, false);
+            API.getGamePlayer(player).addExperience(5000, false);
         }
-        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> Bukkit.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + ">> " + ChatColor.GOLD + "The cunning bandit lord " + ChatColor.UNDERLINE
-                + "Mayel The Cruel" + ChatColor.RESET + ChatColor.GOLD + " has been slain by a group of adventurers!"), 60L);
+        final String adventurers = partyMembers;
+        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+            Bukkit.broadcastMessage(ChatColor.GOLD.toString() + ChatColor.BOLD + ">> " + ChatColor.GOLD + "The cunning bandit lord " + ChatColor.UNDERLINE + "Mayel The Cruel" + ChatColor.RESET + ChatColor.GOLD + " has been slain by a group of adventurers!");
+            Bukkit.broadcastMessage(ChatColor.GRAY + "Group: " + adventurers);
+        }, 60L);
     }
 
 

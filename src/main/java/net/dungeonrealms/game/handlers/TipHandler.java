@@ -73,7 +73,7 @@ public class TipHandler implements GenericMechanic {
             used_Tips.clear();
         }
 
-        String tipChosen = unused_Tips.get(new Random().nextInt(unused_Tips.size() - 1));
+        String tipChosen = unused_Tips.get(new Random().nextInt(unused_Tips.size()));
 
         used_Tips.add(tipChosen);
         unused_Tips.remove(tipChosen);
