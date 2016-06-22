@@ -85,6 +85,7 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
         this.fireProof = true;
         this.setSkeletonType(1);
         setArmor(getEnumBoss().tier);
+        this.persistent = true;
         DungeonManager.getInstance().getFireUnderEntity().add(this);
     }
 
@@ -231,7 +232,7 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
                 return;
             }
         }
-        if (random.nextInt(10) <= 2) {
+        if (random.nextInt(15) == 1) {
             Location hit_loc = this.getBukkitEntity().getLocation();
             int minionType = random.nextInt(2);
             try {
@@ -241,7 +242,7 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
             }
             if (minionType == 0) {
                 if (finalForm) {
-                    for (int i = 0; i < 4; i++) {
+                    for (int i = 0; i < 3; i++) {
                         net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 3, EnumMonster.Silverfish);
                         int level = Utils.getRandomFromTier(3, "low");
                         String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
@@ -258,7 +259,7 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
                         entity.setLocation(location.getX(), location.getY(), location.getZ(), 1, 1);
                     }
                 } else {
-                    for (int i = 0; i < 4; i++) {
+                    for (int i = 0; i < 3; i++) {
                         net.minecraft.server.v1_9_R2.Entity entity = SpawningMechanics.getMob(world, 3, EnumMonster.MagmaCube);
                         int level = Utils.getRandomFromTier(3, "low");
                         String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
