@@ -22,7 +22,6 @@ import net.dungeonrealms.game.world.items.Item.ItemTier;
 import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
-import net.minecraft.server.v1_9_R2.DamageSource;
 import net.minecraft.server.v1_9_R2.EnumItemSlot;
 import net.minecraft.server.v1_9_R2.World;
 import org.bukkit.*;
@@ -134,7 +133,7 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
         livingEntity.removePotionEffect(PotionEffectType.INVISIBILITY);
         finalForm = true;
         for (Player pl : livingEntity.getWorld().getPlayers()) {
-            pl.sendMessage(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "The Infernal Abyss: " + ChatColor.WHITE
+            pl.sendMessage(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss: " + ChatColor.WHITE
                     + "You... cannot... kill me IN MY OWN DOMAIN, FOOLISH MORTALS!");
             pl.sendMessage(ChatColor.GRAY + "The Infernal Abyss has become enraged! " + ChatColor.UNDERLINE + "+50% DMG!");
             pl.playSound(pl.getLocation(), Sound.ENTITY_ENDERDRAGON_GROWL, 2F, 0.85F);
@@ -170,9 +169,6 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
             err.printStackTrace();
         }
         Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), this::doBossDrops, 5L);
-        for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
-            p.sendMessage(ChatColor.RED.toString() + "Burick The Fanatic" + ChatColor.RESET.toString() + ": " + "I will have my revenge!");
-        }
     }
 
     private void pushAwayPlayer(Entity entity, Player p, double speed) {
@@ -215,12 +211,12 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
         double halfHP = HealthHandler.getInstance().getMonsterMaxHPLive(en) * 0.5;
         if (HealthHandler.getInstance().getMonsterHPLive(en) <= halfHP && !hasFiredGhast) {
             for (Player p : this.getBukkitEntity().getWorld().getPlayers()) {
-                p.sendMessage(ChatColor.RED.toString() + "The Infernal Abyss" + ChatColor.RESET.toString() + ": " + "Behold, the powers of the inferno.");
+                p.sendMessage(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss" + ChatColor.RESET.toString() + ": " + "Behold, the powers of the inferno.");
             }
-            ghast.setLocation(this.locX, this.locY + 4, this.locZ, 1, 1);
+            ghast.setLocation(this.locX, this.locY + 7, this.locZ, 1, 1);
+            ghast.init(HealthHandler.getInstance().getMonsterHPLive(en));
             this.getWorld().addEntity(ghast, SpawnReason.CUSTOM);
             ghast.init(HealthHandler.getInstance().getMonsterHPLive(en));
-            this.isInvulnerable(DamageSource.STUCK);
             hasFiredGhast = true;
             en.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 15));
             en.setMaximumNoDamageTicks(Integer.MAX_VALUE);
@@ -319,7 +315,7 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
     private void doBossDrops() {
         LivingEntity livingEntity = (LivingEntity) this.getBukkitEntity();
         for (Player pl : livingEntity.getWorld().getPlayers()) {
-            pl.sendMessage(ChatColor.GOLD + "" + ChatColor.UNDERLINE + "The Infernal Abyss: " + ChatColor.WHITE
+            pl.sendMessage(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss: " + ChatColor.WHITE
                     + "You...have... defeated me...ARGHHHH!!!!!");
             pushAwayPlayer(livingEntity, pl, 6.0F);
             pl.playSound(pl.getLocation(), Sound.ENTITY_GENERIC_EXPLODE, 1F, 1F);
@@ -380,7 +376,7 @@ public class InfernalAbyss extends MeleeWitherSkeleton implements Boss {
         }, 5L);
         String partyMembers = "";
         for (Player player : livingEntity.getWorld().getPlayers()) {
-            partyMembers += player.getName() + ",";
+            partyMembers += player.getName() + ", ";
             if (player.getInventory().firstEmpty() == -1) {
                 player.getWorld().dropItem(player.getLocation(), banknote);
                 player.sendMessage(ChatColor.RED + "Because you had no room in your inventory, your new bank note has been placed at your character's feet.");

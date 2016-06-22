@@ -1,12 +1,9 @@
 package net.dungeonrealms.game.handlers;
 
 import net.dungeonrealms.API;
-import net.dungeonrealms.game.guild.db.GuildDatabase;
 import net.dungeonrealms.game.mastery.GamePlayer;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.game.mongo.DatabaseAPI;
-import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.party.Affair;
 import org.bukkit.Bukkit;
@@ -155,10 +152,10 @@ public class ScoreboardHandler implements GenericMechanic {
 //        Scoreboard scoreboard = player1.getScoreboard() != null ? player1.getScoreboard() : getPlayerScoreboardObject(player);
 
         String suffix = "";
-        if (!GuildDatabase.getAPI().isGuildNull(toSetFor.getUniqueId())) {
+        /*if (!GuildDatabase.getAPI().isGuildNull(toSetFor.getUniqueId())) {
             String clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, toSetFor.getUniqueId()).toString());
             suffix = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + " [" + clanTag + ChatColor.RESET + "]");
-        }
+        }*/
         GamePlayer gamePlayer = API.getGamePlayer(toSetFor);
 
         int level = gamePlayer.getStats().getLevel();
@@ -180,10 +177,10 @@ public class ScoreboardHandler implements GenericMechanic {
     public void setCurrentPlayerLevels(Scoreboard scoreboard) {
         for (Player player1 : Bukkit.getOnlinePlayers()) {
             String suffix = "";
-            if (!GuildDatabase.getAPI().isGuildNull(player1.getUniqueId())) {
+            /*if (!GuildDatabase.getAPI().isGuildNull(player1.getUniqueId())) {
                 String clanTag = GuildDatabase.getAPI().getTagOf(DatabaseAPI.getInstance().getData(EnumData.GUILD, player1.getUniqueId()).toString());
                 suffix = ChatColor.translateAlternateColorCodes('&', ChatColor.RESET + " [" + clanTag + ChatColor.RESET + "]");
-            }
+            }*/
             GamePlayer gamePlayer = API.getGamePlayer(player1);
 
             int level = gamePlayer.getStats().getLevel();

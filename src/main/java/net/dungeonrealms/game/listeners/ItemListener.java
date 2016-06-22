@@ -16,6 +16,7 @@ import net.dungeonrealms.game.player.chat.Chat;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
+import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
@@ -515,8 +516,15 @@ public class ItemListener implements Listener {
                         player.closeInventory();
                         return;
                     }
+                    String petName;
+                    if (petType.contains("@")) {
+                        petName = petType.split("@")[1];
+                        petType = petType.split("@")[0];
+                    } else {
+                        petName = EnumPets.getByName(petType).getDisplayName();
+                    }
+                    PetUtils.spawnPet(player.getUniqueId(), petType, petName);
                     player.sendMessage(ChatColor.GREEN + "Pet summoned.");
-                    PetUtils.spawnPet(player.getUniqueId(), petType, "");
                     break;
                 case "trail":
                     if (DonationEffects.getInstance().PLAYER_PARTICLE_EFFECTS.containsKey(player)) {
@@ -536,20 +544,4 @@ public class ItemListener implements Listener {
             }
         }
     }
-
-    /*@EventHandler(priority = EventPriority.NORMAL)
-    public void onItemBreak(PlayerItemBreakEvent event) {
-        if (!RepairAPI.isItemArmorOrWeapon(event.getBrokenItem())) return;
-        if (RepairAPI.getCustomDurability(event.getBrokenItem()) - 1 > 0.1D) {
-            ItemStack brokenItem = event.getBrokenItem();
-            if (event.getPlayer().getInventory().contains(brokenItem)) {
-                event.getPlayer().getInventory().remove(brokenItem);
-            }
-            RepairAPI.setCustomItemDurability(brokenItem, RepairAPI.getCustomDurability(brokenItem));
-            if (event.getPlayer().getInventory().contains(brokenItem)) {
-                event.getPlayer().getInventory().remove(brokenItem);
-            }
-            event.getPlayer().getInventory().addItem(brokenItem);
-        }
-    }*/
 }

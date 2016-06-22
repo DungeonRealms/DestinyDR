@@ -214,7 +214,7 @@ public class Mayel extends RangedWitherSkeleton implements Boss {
         }, 5L);
         String partyMembers = "";
         for (Player player : livingEntity.getWorld().getPlayers()) {
-            partyMembers += player.getName() + ",";
+            partyMembers += player.getName() + ", ";
             if (player.getInventory().firstEmpty() == -1) {
                 player.getWorld().dropItem(player.getLocation(), banknote);
                 player.sendMessage(ChatColor.RED + "Because you had no room in your inventory, your new bank note has been placed at your character's feet.");
