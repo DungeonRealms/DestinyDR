@@ -20,6 +20,7 @@ import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
+import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagInt;
@@ -39,10 +40,7 @@ import org.bukkit.potion.Potion;
 import org.bukkit.potion.PotionType;
 
 import java.text.DecimalFormat;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by Nick on 9/18/2015.
@@ -249,6 +247,20 @@ public class ItemManager {
         return CraftItemStack.asBukkitCopy(nmsStack);
     }
 
+
+    public static ItemStack createRealmPortalRune(UUID uuid) {
+        int realmTier = Realms.getInstance().getRealmTier(uuid);
+        int realmDimensions = Realms.getInstance().getRealmDimensions(realmTier);
+
+
+        return new ItemBuilder().setItem(createItem(Material.NETHER_STAR, ChatColor.LIGHT_PURPLE.toString() + ChatColor.BOLD + "Realm Portal Rune",
+                new String[]{ChatColor.GRAY + "Tier: " + realmTier + "/7" + " [" + realmDimensions + "x" + realmDimensions + "x" + realmDimensions + "]"
+                        , ChatColor.LIGHT_PURPLE + "Right Click: " + ChatColor.GRAY + "Open Portal",
+                        ChatColor.LIGHT_PURPLE + "Left Click: " + ChatColor.GRAY + "Realm Shop",
+                        ChatColor.LIGHT_PURPLE + "Sneak-Right Click: " + ChatColor.GRAY + "Upgrade Realm",
+                        ChatColor.LIGHT_PURPLE + "Sneak-Left Click: " + ChatColor.GRAY + "Add Builder",})).setNBTString("type", "important")
+                .setNBTString("subtype", "nondrop").setNBTString("realmPortalRune", "true").build();
+    }
 
     public static ItemStack createMuleUpgrade(int tier) {
         ItemStack is = null;

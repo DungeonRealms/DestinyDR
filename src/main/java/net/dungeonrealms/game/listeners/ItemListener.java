@@ -19,6 +19,7 @@ import net.dungeonrealms.game.world.anticheat.AntiCheat;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
+import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.minecraft.server.v1_9_R2.Entity;
@@ -66,7 +67,8 @@ public class ItemListener implements Listener {
             assert tag != null;
             // send the untradeable message if not profile or hearthstone since they will be dropped
             // every time the inventory is closed
-            if (!item.getItemMeta().getDisplayName().contains("Character Profile") && !item.getItemMeta().getDisplayName().contains("Hearthstone")) {
+            if (!item.getItemMeta().getDisplayName().contains("Character Profile") && item.getItemMeta().getDisplayName().contains("Realm Portal Rune")
+                    && !item.getItemMeta().getDisplayName().contains("Hearthstone")) {
                 p.sendMessage(ChatColor.GRAY + "This item was " + ChatColor.ITALIC + "untradeable" + ChatColor.GRAY + ", " +
                         "so it has " + ChatColor.UNDERLINE + "vanished.");
                 p.playSound(p.getLocation(), Sound.ENTITY_GENERIC_EXTINGUISH_FIRE, 0.6F, 0.2F);
@@ -141,6 +143,32 @@ public class ItemListener implements Listener {
         if (tag == null) return;
         if (tag.hasKey("type")) {
             event.setCancelled(true);
+        }
+    }
+
+
+    /**
+     * Handles Right Click of Realm portal rune
+     */
+    @EventHandler(priority = EventPriority.MONITOR)
+    public void onPlayerUsePortalRune(PlayerInteractEvent event) {
+        if (!(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) return;
+        Player p = event.getPlayer();
+        if (p.getEquipment().getItemInMainHand() == null || p.getEquipment().getItemInMainHand().getType() != Material.NETHER_STAR)
+            return;
+        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(p.getEquipment().getItemInMainHand());
+        NBTTagCompound tag = nmsStack.getTag();
+        if (tag == null) return;
+        if (tag.hasKey("realmPortalRune") && !(tag.getString("realmPortalRune").equalsIgnoreCase("true"))) return;
+
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+
+            if (!Realms.getInstance().isRealmCached(event.getPlayer().getUniqueId())) {
+                Realms.getInstance().loadRealm(p);
+                return;
+            }
+
+            Realms.getInstance().openRealmPortal(p, event.getClickedBlock().getLocation());
         }
     }
 
@@ -293,13 +321,14 @@ public class ItemListener implements Listener {
         } else {
             //Have a potion in both hands...
             ItemStack itemUsed = event.getItem();
-            if (event.getItem() == null || event.getItem().getType() ==  Material.AIR) return;
+            if (event.getItem() == null || event.getItem().getType() == Material.AIR) return;
             potion = player.getInventory().getItemInMainHand();
             nmsItem = CraftItemStack.asNMSCopy(potion);
             ItemStack potionOffhand = player.getInventory().getItemInOffHand();
             net.minecraft.server.v1_9_R2.ItemStack nmsOffhand = CraftItemStack.asNMSCopy(potionOffhand);
             if (AntiCheat.getInstance().getUniqueEpochIdentifier(itemUsed) == null) return;
-            if (AntiCheat.getInstance().getUniqueEpochIdentifier(potion) == null && AntiCheat.getInstance().getUniqueEpochIdentifier(potionOffhand) == null) return;
+            if (AntiCheat.getInstance().getUniqueEpochIdentifier(potion) == null && AntiCheat.getInstance().getUniqueEpochIdentifier(potionOffhand) == null)
+                return;
             if (AntiCheat.getInstance().getUniqueEpochIdentifier(itemUsed).equalsIgnoreCase(AntiCheat.getInstance().getUniqueEpochIdentifier(potion))) {
                 //Drinking their Mainhand potion
                 if (nmsItem == null || nmsItem.getTag() == null) return;
