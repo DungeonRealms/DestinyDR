@@ -20,7 +20,6 @@ import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.handlers.*;
 import net.dungeonrealms.game.listeners.*;
 import net.dungeonrealms.game.mastery.AsyncUtils;
-import net.dungeonrealms.game.mastery.RealmManager;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.DungeonManager;
 import net.dungeonrealms.game.mechanics.generic.MechanicManager;
@@ -43,7 +42,8 @@ import net.dungeonrealms.game.world.entities.utils.PetUtils;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.party.Affair;
-import net.dungeonrealms.game.world.realms.Instance;
+import net.dungeonrealms.game.world.realms.Realms;
+import net.dungeonrealms.game.world.realms.instance.RealmInstance;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.BuffManager;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
@@ -187,7 +187,7 @@ public class DungeonRealms extends JavaPlugin {
             //mm.registerMechanic(RealmManager.getInstance());
             mm.registerMechanic(new ShopMechanics());
             mm.registerMechanic(Mining.getInstance());
-            mm.registerMechanic(Instance.getInstance());
+            mm.registerMechanic(RealmInstance.getInstance());
             mm.registerMechanic(Fishing.getInstance());
             mm.registerMechanic(SpawningMechanics.getInstance());
             mm.registerMechanic(AchievementManager.getInstance());
@@ -209,13 +209,12 @@ public class DungeonRealms extends JavaPlugin {
             //mm.registerMechanic(RealmManager.getInstance());
             mm.registerMechanic(new ShopMechanics());
             mm.registerMechanic(Mining.getInstance());
-            mm.registerMechanic(Instance.getInstance());
+            mm.registerMechanic(RealmInstance.getInstance());
             mm.registerMechanic(AchievementManager.getInstance());
             mm.registerMechanic(new LootManager());
             mm.registerMechanic(Affair.getInstance());
-            if (realmnumber >= 0) {
-                mm.registerMechanic(RealmManager.getInstance());
-            }
+
+            if (realmnumber >= 0) mm.registerMechanic(Realms.getInstance());
         }
 
         mm.loadMechanics();
