@@ -12,19 +12,22 @@ import java.util.UUID;
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/21/2016
  */
+
 public class RealmToken {
 
     @Getter
-    private UUID owner;
+    private final UUID owner;
 
     @Getter
     @Setter
     private RealmStatus status;
 
     @Getter
+    @Setter
     private Location portalLocation;
 
     @Getter
+    @Setter
     private Hologram hologram;
 
     @Getter
@@ -32,5 +35,10 @@ public class RealmToken {
 
     @Getter
     private List<UUID> builders = new ArrayList<>();
+
+
+    public RealmToken(UUID owner) {
+        this.owner = owner;
+    }
 
 }
