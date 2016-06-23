@@ -38,6 +38,7 @@ import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.party.Affair;
+import net.dungeonrealms.game.world.realms.Realms;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -299,6 +300,8 @@ public class MainListener implements Listener {
         Chat.listenForMessage(event.getPlayer(), null, null);
         event.setQuitMessage(null);
         GuildMechanics.getInstance().doLogout(event.getPlayer());
+        Realms.getInstance().doLogout(event.getPlayer());
+
         //Ensures the player has played at least 5 seconds before saving to the database.
         if (DatabaseAPI.getInstance().PLAYER_TIME.containsKey(event.getPlayer().getUniqueId()) && DatabaseAPI.getInstance().PLAYER_TIME.get(event.getPlayer().getUniqueId()) > 5) {
             DatabaseAPI.getInstance().PLAYER_TIME.remove(event.getPlayer().getUniqueId());

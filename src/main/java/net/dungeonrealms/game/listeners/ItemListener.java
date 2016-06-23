@@ -8,6 +8,7 @@ import net.dungeonrealms.game.guild.GuildDatabaseAPI;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
+import net.dungeonrealms.game.miscellaneous.Cooldown;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
@@ -163,6 +164,9 @@ public class ItemListener implements Listener {
         if (tag.hasKey("realmPortalRune") && !(tag.getString("realmPortalRune").equalsIgnoreCase("true"))) return;
 
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+
+            if (Cooldown.hasCooldown(event.getPlayer().getUniqueId())) return;
+            Cooldown.addCooldown(event.getPlayer().getUniqueId(), 1000);
 
             if (!Realms.getInstance().isRealmCached(event.getPlayer().getUniqueId())) {
                 Realms.getInstance().loadRealm(p);

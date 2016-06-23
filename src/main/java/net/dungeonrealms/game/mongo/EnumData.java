@@ -21,6 +21,7 @@ public enum EnumData {
     ALIGNMENT("info.alignment"),
     ALIGNMENT_TIME("info.alignmentTime"),
     CURRENT_LOCATION("info.currentLocation"),
+    IS_REALM_UPLOAD("info.isRealmUpload"),
     HASSHOP("info.shopOpen"),
     SHOPLEVEL("info.shopLevel"),
     MULELEVEL("info.muleLevel"),

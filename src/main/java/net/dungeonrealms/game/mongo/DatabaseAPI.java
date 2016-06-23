@@ -16,6 +16,8 @@ import java.util.concurrent.ConcurrentHashMap;
 public class DatabaseAPI {
 
     private static DatabaseAPI instance = null;
+    public volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
+    public volatile ConcurrentHashMap<UUID, Integer> PLAYER_TIME = new ConcurrentHashMap<>();
 
     public static DatabaseAPI getInstance() {
         if (instance == null) {
@@ -23,9 +25,6 @@ public class DatabaseAPI {
         }
         return instance;
     }
-
-    public volatile ConcurrentHashMap<UUID, Document> PLAYERS = new ConcurrentHashMap<>();
-    public volatile ConcurrentHashMap<UUID, Integer> PLAYER_TIME = new ConcurrentHashMap<>();
 
     /**
      * Updates a players information in Mongo and returns the updated result.
@@ -88,6 +87,8 @@ public class DatabaseAPI {
                 return ((Document) doc.get("info")).get("lastShardTransfer", Long.class);
             case IS_PLAYING:
                 return ((Document) doc.get("info")).get("isPlaying", Boolean.class);
+            case IS_REALM_UPLOAD:
+                return ((Document) doc.get("info")).get("isRealmUpload", Boolean.class);
             case LEVEL:
                 return ((Document) doc.get("info")).get("netLevel", Integer.class);
             case EXPERIENCE:
@@ -309,6 +310,7 @@ public class DatabaseAPI {
                                 .append("alignment", "lawful")
                                 .append("alignmentTime", 0)
                                 .append("guild", "")
+                                .append("isRealmUpload", false)
                                 .append("shopOpen", false)
                                 .append("foodLevel", 20)
                                 .append("shopLevel", 1)

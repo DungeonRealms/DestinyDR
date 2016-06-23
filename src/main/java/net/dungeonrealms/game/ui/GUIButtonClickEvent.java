@@ -1,6 +1,6 @@
-package net.dungeonrealms.game.gui;
+package net.dungeonrealms.game.ui;
 
-import net.dungeonrealms.game.gui.item.GUIButton;
+import net.dungeonrealms.game.ui.item.GUIButton;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;

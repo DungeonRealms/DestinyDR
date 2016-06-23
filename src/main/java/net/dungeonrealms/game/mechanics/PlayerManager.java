@@ -46,6 +46,7 @@ public class PlayerManager {
 
     private static boolean hasItem(PlayerInventory inv, String type) {
         for (ItemStack item : inv.getContents()) {
+            if (item == null || item.getType() == null || item.getType() == Material.AIR) continue;
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(item);
             NBTTagCompound tag = nmsStack.getTag();
             if (tag == null) continue;

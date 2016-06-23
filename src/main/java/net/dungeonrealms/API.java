@@ -331,7 +331,7 @@ public class API {
     public static List<Player> getNearbyPlayers(Location location, int radius) {
         List<Player> playersNearby = new ArrayList<>();
         for (Player player : location.getWorld().getPlayers()) {
-            if (!API.isPlayer(player)) {
+            if (!API.isPlayer(player) || API._hiddenPlayers.contains(player)) {
                 continue;
             }
             if (location.distanceSquared(player.getLocation()) <= radius * radius) {
