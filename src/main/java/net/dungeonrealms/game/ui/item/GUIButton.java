@@ -1,6 +1,6 @@
-package net.dungeonrealms.game.gui.item;
+package net.dungeonrealms.game.ui.item;
 
-import net.dungeonrealms.game.gui.GUIButtonClickEvent;
+import net.dungeonrealms.game.ui.GUIButtonClickEvent;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 

@@ -167,7 +167,7 @@ public class RealmListener implements Listener {
                 String locationAsString = event.getFrom().getX() + "," + (event.getFrom().getY() + 1) + "," + event.getFrom().getZ() + "," + event.getFrom().getYaw() + "," + event.getFrom().getPitch();
                 DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, true);
 
-                event.setTo(Realms.getInstance().getRealmWorld(realm.getOwner()).getSpawnLocation());
+                event.setTo(Realms.getInstance().getRealmWorld(realm.getOwner()).getSpawnLocation().clone().add(0, 1, 0));
                 realm.getPlayersInRealm().add(event.getPlayer().getUniqueId());
             } else {
                 event.setCancelled(true);

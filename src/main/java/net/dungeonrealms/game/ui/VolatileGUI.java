@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.gui;
+package net.dungeonrealms.game.ui;
 
 import org.bukkit.event.Event;
 

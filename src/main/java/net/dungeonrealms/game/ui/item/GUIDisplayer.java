@@ -1,4 +1,4 @@
-package net.dungeonrealms.game.gui.item;
+package net.dungeonrealms.game.ui.item;
 
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;

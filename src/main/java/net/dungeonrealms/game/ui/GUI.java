@@ -1,10 +1,10 @@
-package net.dungeonrealms.game.gui;
+package net.dungeonrealms.game.ui;
 
 
 import lombok.Getter;
 import lombok.Setter;
-import net.dungeonrealms.game.gui.item.GUIButton;
-import net.dungeonrealms.game.gui.item.GUIItem;
+import net.dungeonrealms.game.ui.item.GUIButton;
+import net.dungeonrealms.game.ui.item.GUIItem;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.HumanEntity;
@@ -28,9 +28,9 @@ import java.util.UUID;
 
 public abstract class GUI extends HashMap<Integer, GUIItem> implements Listener {
 
+    protected Inventory inventory;
     //private static Map<UUID, List<GUI>> activeGUIs = new WeakHashMap<UUID, List<GUI>>();
     private boolean moveable = false;
-    protected Inventory inventory;
     private UUID holder;
 
     @Getter
@@ -38,22 +38,15 @@ public abstract class GUI extends HashMap<Integer, GUIItem> implements Listener 
     private boolean destroyOnExit = false;
 
 
-    public static GUI createGUI(String name, int size) {
-        return new GUI(name, size) {
-            @Override
-            public Inventory getInventory() {
-                return super.getInventory();
-            }
-        };
+    public GUI(String name, int size) {
+        super(new HashMap<Integer, GUIItem>());
+        this.inventory = Bukkit.createInventory(null, size, ChatColor.translateAlternateColorCodes('&', name));
     }
 
-    public static GUI createGUI(String name, int size, UUID holder) {
-        return new GUI(name, size, holder) {
-            @Override
-            public Inventory getInventory() {
-                return super.getInventory();
-            }
-        };
+    public GUI(String name, int size, UUID holder) {
+        super(new HashMap<Integer, GUIItem>());
+        this.inventory = Bukkit.createInventory(null, size, ChatColor.translateAlternateColorCodes('&', name));
+        this.holder = holder;
     }
 
     //public static void clearCached(UUID uuid, GUI newShop) {
@@ -93,18 +86,6 @@ public abstract class GUI extends HashMap<Integer, GUIItem> implements Listener 
     //     return activeGUIs.containsKey(uuid);
     //  }
 
-    public GUI(String name, int size) {
-        super(new HashMap<Integer, GUIItem>());
-        this.inventory = Bukkit.createInventory(null, size, ChatColor.translateAlternateColorCodes('&', name));
-    }
-
-
-    public GUI(String name, int size, UUID holder) {
-        super(new HashMap<Integer, GUIItem>());
-        this.inventory = Bukkit.createInventory(null, size, ChatColor.translateAlternateColorCodes('&', name));
-        this.holder = holder;
-    }
-
     public GUI(JavaPlugin plugin, String name, int size, int destroy) {
         super(new HashMap<Integer, GUIItem>());
         this.inventory = Bukkit.createInventory(null, size, name);
@@ -112,6 +93,23 @@ public abstract class GUI extends HashMap<Integer, GUIItem> implements Listener 
         Bukkit.getScheduler().scheduleSyncDelayedTask(plugin, new DestroyTask(this), destroy * 20);
     }
 
+    public static GUI createGUI(String name, int size) {
+        return new GUI(name, size) {
+            @Override
+            public Inventory getInventory() {
+                return super.getInventory();
+            }
+        };
+    }
+
+    public static GUI createGUI(String name, int size, UUID holder) {
+        return new GUI(name, size, holder) {
+            @Override
+            public Inventory getInventory() {
+                return super.getInventory();
+            }
+        };
+    }
 
     public void register(JavaPlugin plugin) {
         Bukkit.getPluginManager().registerEvents(this, plugin);
@@ -175,24 +173,6 @@ public abstract class GUI extends HashMap<Integer, GUIItem> implements Listener 
         if (gui.isDestroyOnExit()) gui.remove();
     }
 
-    public class DestroyTask
-            implements Runnable {
-        private GUI shop;
-
-        public DestroyTask(GUI shop) {
-            this.shop = shop;
-        }
-
-        public void run() {
-            HumanEntity player;
-            for (Iterator i$ = GUI.this.inventory.getViewers().iterator(); i$.hasNext(); player.closeInventory()) {
-                player = (HumanEntity) i$.next();
-            }
-            shop.remove();
-        }
-    }
-
-
     public UUID getHolder() {
         return holder;
     }
@@ -209,14 +189,13 @@ public abstract class GUI extends HashMap<Integer, GUIItem> implements Listener 
         HandlerList.unregisterAll(this);
     }
 
-    public void setMoveable(boolean moveable) {
-        this.moveable = moveable;
-    }
-
     public boolean isMoveable() {
         return this.moveable;
     }
 
+    public void setMoveable(boolean moveable) {
+        this.moveable = moveable;
+    }
 
     public void set(int index, GUIItem item) {
         this.put(index, item);
@@ -246,6 +225,23 @@ public abstract class GUI extends HashMap<Integer, GUIItem> implements Listener 
     public void clear() {
         super.clear();
         inventory.clear();
+    }
+
+    public class DestroyTask
+            implements Runnable {
+        private GUI shop;
+
+        public DestroyTask(GUI shop) {
+            this.shop = shop;
+        }
+
+        public void run() {
+            HumanEntity player;
+            for (Iterator i$ = GUI.this.inventory.getViewers().iterator(); i$.hasNext(); player.closeInventory()) {
+                player = (HumanEntity) i$.next();
+            }
+            shop.remove();
+        }
     }
 
 

@@ -9,9 +9,9 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-import java.io.IOException;
 import java.util.UUID;
 import java.util.concurrent.Future;
+import java.util.function.Consumer;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/21/2016
@@ -54,9 +54,33 @@ public interface Realms extends GenericMechanic {
     /**
      * Loads the player's realm*
      *
-     * @param player Owner of realm
+     * @param player   Owner of realm
      */
     void loadRealm(Player player);
+
+
+    /**
+     * Loads the realm world
+     *
+     * @param uuid Owner of realm
+     */
+    void loadRealmWorld(UUID uuid);
+
+
+    /**
+     * Uploads all open realms to Master FTP Serve
+     *
+     * @param runAsync Should execute on async pool?
+     */
+    void removeAllRealms(boolean runAsync);
+
+
+    /**
+     * Executed when player logs of DR
+     *
+     * @param player Player who is logging out
+     */
+    void doLogout(Player player);
 
 
     /**
@@ -64,16 +88,40 @@ public interface Realms extends GenericMechanic {
      *
      * @param uuid Owner of realm
      */
-    Future<Boolean> downloadRealm(UUID uuid) throws IOException, ZipException;
+    Future<Boolean> downloadRealm(UUID uuid);
 
+    /**
+     * This function uploads the player's realm to master ftp server for it to be downloaded
+     * by the other shards
+     *
+     * @param runAsync Should execute on async pool?
+     * @param uuid     Owner of realm
+     */
+    void uploadRealm(UUID uuid, boolean runAsync, Consumer<Boolean> doAfter);
 
     /**
      * Closes the realm portal
      *
-     * @param uuid Owner of realm
+     * @param uuid        Owner of realm
      * @param kickPlayers Kick all players?
      */
     void closeRealmPortal(UUID uuid, boolean kickPlayers);
+
+
+    /**
+     * Removes entire realm for server and uploads it to FTP
+     *
+     * @param runAsync Should execute on async pool?
+     * @param uuid     Owner of realm
+     */
+    void removeRealm(UUID uuid, boolean runAsync);
+
+    /**
+     * Removes the cached realm token.
+     *
+     * @param uuid Owner of realm
+     */
+    void removeCachedRealm(UUID uuid);
 
 
     /**
@@ -122,6 +170,13 @@ public interface Realms extends GenericMechanic {
      * @param uuid Owner of realm
      */
     boolean isRealmLoaded(UUID uuid);
+
+    /**
+     * Checks if the player's realm is loaded.
+     *
+     * @param uuid Owner of realm
+     */
+    boolean isRealmPortalOpen(UUID uuid);
 
 
     /**
