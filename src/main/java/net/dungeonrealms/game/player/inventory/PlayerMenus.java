@@ -11,6 +11,7 @@ import net.dungeonrealms.game.mechanics.PlayerManager;
 import net.dungeonrealms.game.miscellaneous.ItemBuilder;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
+import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMountSkins;
 import net.dungeonrealms.game.world.entities.types.mounts.EnumMounts;
 import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
@@ -596,7 +597,7 @@ public class PlayerMenus {
                 ChatColor.WHITE + "Use:" + ChatColor.GREEN + " View available pets.",
                 ChatColor.WHITE + "Middle-Click:" + ChatColor.GREEN + " Receive Pet Leash."
         }));
-        inv.setItem(16, editItem(new ItemStack(Material.CHEST), ChatColor.GOLD + "Storage Mule", new String[]{
+        inv.setItem(16, editItem(new ItemStack(Material.LEASH), ChatColor.GOLD + "Storage Mule", new String[]{
                 "",
                 ChatColor.GRAY.toString() + ChatColor.ITALIC + "Inventory getting full on your travels?",
 				ChatColor.GRAY.toString() + ChatColor.ITALIC + "purchase a Mule from the Animal Tamer.",
@@ -687,10 +688,27 @@ public class PlayerMenus {
         player.openInventory(inv);
     }
 
-    /*
-     * -- Customer Support --
+    /**
+     * Opens the GM Toggles menu.
+     * (user must be GM)
+     *
+     * @param player
      */
+    public static void openGameMasterTogglesMenu(Player player) {
+        if (!Rank.isGM(player)) return;
+        boolean isToggled = false;
 
+        Inventory inv = Bukkit.createInventory(null, 9, "Game Master Toggles");
 
+        // Invisible
+        isToggled = API._hiddenPlayers.contains(player);
+        inv.setItem(0, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, (short) (isToggled ? 10 : 8)), (isToggled ? ChatColor.GREEN : ChatColor.RED) + "Invisible Mode", new String[]{(ChatColor.GRAY + "Toggling this will make you invisible to players and mobs.")}).build());
+
+        // Allow Fight
+        isToggled = false; // @todo: Alan - change this to check if they've got fight enabled.
+        inv.setItem(1, new ItemBuilder().setItem(new ItemStack(Material.INK_SACK, 1, (short) (isToggled ? 10 : 8)), (isToggled ? ChatColor.GREEN : ChatColor.RED) + "Allow Combat", new String[]{(ChatColor.GRAY + "Toggling this will make you vulnerable to attacks but also allow outgoing damage.")}).build());
+
+        player.openInventory(inv);
+    }
 
 }

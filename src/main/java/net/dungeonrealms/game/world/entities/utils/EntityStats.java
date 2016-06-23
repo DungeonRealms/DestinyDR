@@ -212,7 +212,6 @@ public class EntityStats {
         livingEntity.getEquipment().setLeggings(armor[1]);
         livingEntity.getEquipment().setChestplate(armor[2]);
         int maxHp = HealthHandler.getInstance().getMonsterMaxHPOnSpawn(livingEntity);
-        maxHp *= 1.25;
         livingEntity.setMetadata("maxHP", new FixedMetadataValue(DungeonRealms.getInstance(), maxHp));
         HealthHandler.getInstance().setMonsterHPLive(livingEntity, maxHp);
     }

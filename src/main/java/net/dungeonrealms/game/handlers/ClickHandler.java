@@ -40,6 +40,8 @@ import org.bukkit.event.inventory.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -1506,6 +1508,44 @@ public class ClickHandler {
                 }
                 break;
             default:
+                break;
+            case "Game Master Toggles":
+                event.setCancelled(true);
+                if (event.getCurrentItem() == null || event.getCurrentItem().getType() == Material.AIR) return;
+
+                switch (slot) {
+                    case 0: // Invisible
+                        if (API._hiddenPlayers.contains(player)) {
+                            API._hiddenPlayers.remove(player);
+                            for (Player player1 : Bukkit.getOnlinePlayers()) {
+                                if (player1.getUniqueId().toString().equals(player.getUniqueId().toString())) {
+                                    continue;
+                                }
+                                player1.showPlayer(player);
+                            }
+                            player.removePotionEffect(PotionEffectType.INVISIBILITY);
+                            player.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "You are now visible.");
+                            player.setCustomNameVisible(true);
+                            player.setGameMode(GameMode.SURVIVAL);
+                        } else {
+                            API._hiddenPlayers.add(player);
+                            player.setCustomNameVisible(false);
+                            player.hidePlayer(player);
+                            player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1));
+                            player.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "You are now hidden.");
+                            player.setGameMode(GameMode.SPECTATOR);
+                        }
+                        break;
+
+                    case 1:
+                        player.sendMessage(ChatColor.RED + "Coming soon."); // @todo: Alan - change this to toggle fight enabled mode.
+                        break;
+
+                    default:
+                        break;
+                }
+
+                PlayerMenus.openGameMasterTogglesMenu(player);
                 break;
         }
     }

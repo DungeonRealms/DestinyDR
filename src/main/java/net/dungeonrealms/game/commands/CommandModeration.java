@@ -63,26 +63,8 @@ public class CommandModeration extends BasicCommand {
                 }
                 break;
             case "hide":
-                if (API._hiddenPlayers.contains(sender)) {
-                    API._hiddenPlayers.remove(sender);
-                    for (Player player1 : Bukkit.getOnlinePlayers()) {
-                        if (player1.getUniqueId().toString().equals(sender.getUniqueId().toString())) {
-                            continue;
-                        }
-                        player1.showPlayer(sender);
-                    }
-                    sender.removePotionEffect(PotionEffectType.INVISIBILITY);
-                    sender.sendMessage(ChatColor.RED + ChatColor.BOLD.toString() + "You are now visible.");
-                    sender.setCustomNameVisible(true);
-                    sender.setGameMode(GameMode.SURVIVAL);
-                } else {
-                    API._hiddenPlayers.add(sender);
-                    sender.setCustomNameVisible(false);
-                    sender.hidePlayer(sender);
-                    sender.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 1));
-                    sender.sendMessage(ChatColor.GREEN + ChatColor.BOLD.toString() + "You are now hidden.");
-                    sender.setGameMode(GameMode.SPECTATOR);
-                }
+                sender.sendMessage(ChatColor.YELLOW + "Please use " + ChatColor.BOLD + ChatColor.UNDERLINE + "/gm" + ChatColor.YELLOW + ".");
+                // @todo: remove this later on.
                 break;
             case "banksee":
             	playerName = args[1];
