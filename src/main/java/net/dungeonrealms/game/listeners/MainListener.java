@@ -568,17 +568,14 @@ public class MainListener implements Listener {
                         event.setExpToDrop(0);
                         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(stack);
                         int tier = nms.getTag().getInt("itemTier");
-                        if (new Random().nextInt(100) <= Fishing.getChance(tier)) {
-                            ItemStack fish = Fishing.getFishItem(stack);
-                            int experienceGain = Fishing.getFishEXP(tier);
-                            Fishing.gainExp(stack, p, experienceGain);
-                            if (API.getGamePlayer(event.getPlayer()) != null) {
-                                API.getGamePlayer(event.getPlayer()).addExperience((experienceGain / 8), false);
-                            }
-                            p.getInventory().addItem(fish);
-                        } else {
-                            p.sendMessage("Oh no, it got away!");
+                        ItemStack fish = Fishing.getFishDrop(tier);
+                        int experienceGain = Fishing.getFishEXP(tier);
+                        Fishing.gainExp(stack, p, experienceGain);
+                        if (API.getGamePlayer(event.getPlayer()) != null) {
+                            API.getGamePlayer(event.getPlayer()).addExperience((experienceGain / 8), false);
                         }
+                        p.getInventory().addItem(fish);
+
                     }
                 }
             }
