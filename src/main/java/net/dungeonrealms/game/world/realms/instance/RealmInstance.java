@@ -86,10 +86,9 @@ public class RealmInstance implements Realms {
         }
 
         Utils.log.info("DungeonRealms Finished Registering FTP() ... FINISHED!");
-
-
         Bukkit.getPluginManager().registerEvents(new RealmListener(), DungeonRealms.getInstance());
     }
+
 
     @Override
     public void stopInvocation() {
@@ -198,6 +197,9 @@ public class RealmInstance implements Realms {
         CACHED_REALMS.put(player.getUniqueId(), realm);
 
         try {
+
+            player.sendMessage(ChatColor.YELLOW + "Attempted to download your realm ...");
+
             if (!downloadRealm(player.getUniqueId()).get()) {
                 // CREATE NEW REALM //
                 player.sendMessage(ChatColor.GREEN + "Your realm does not exist remotely! Creating a new realm...");
