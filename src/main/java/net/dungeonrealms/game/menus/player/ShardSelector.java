@@ -84,7 +84,7 @@ public class ShardSelector extends AbstractMenu {
             };
 
             List<String> lore = new ArrayList<>();
-            lore.add(ChatColor.YELLOW + "Beta Shard");
+            //lore.add(ChatColor.YELLOW + "Beta Shard");
 
             if (!getServerType(shardID).equals(""))
                 lore.add(ChatColor.RED.toString() + ChatColor.ITALIC + getServerType(shardID));
@@ -104,7 +104,10 @@ public class ShardSelector extends AbstractMenu {
 
     public String getServerType(String shardID) {
         if (shardID.contains("SUB")) return "Subscribers Only";
-        if (shardID.contains("YT")) return "Youtubers Only";
+        if (shardID.contains("YT")) return "YouTubers Only";
+        if (shardID.contains("BR")) return "Brazilian Shard";
+        if (shardID.contains("RP")) return "Role-playing Shard";
+        if (shardID.contains("SUPPORT")) return "Support Agents Only";
         return "";
     }
 
