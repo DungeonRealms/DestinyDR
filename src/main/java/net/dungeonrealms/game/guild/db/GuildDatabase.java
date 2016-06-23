@@ -204,12 +204,16 @@ public class  GuildDatabase implements GuildDatabaseAPI {
 
             case MEMBERS:
                 update(guildName, EnumGuildData.MEMBERS, EnumOperators.$PULL, uuid.toString());
+                break;
 
             case OFFICERS:
                 update(guildName, EnumGuildData.OFFICERS, EnumOperators.$PULL, uuid.toString());
+                break;
 
             case OWNER:
                 update(guildName, EnumGuildData.OWNER, EnumOperators.$SET, "");
+                break;
+
         }
 
         setGuild(uuid, "");
