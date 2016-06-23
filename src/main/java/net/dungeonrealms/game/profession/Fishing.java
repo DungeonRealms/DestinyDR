@@ -7,7 +7,6 @@ import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.ParticleAPI.ParticleEffect;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
-import net.dungeonrealms.game.miscellaneous.RandomHelper;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
@@ -42,6 +41,25 @@ public class Fishing implements GenericMechanic {
                 return 80;
         }
         return 1;
+    }
+
+    public static int getNextLevelUp(int tier) {
+        if (tier == 1) {
+            return 20;
+        }
+        if (tier == 2) {
+            return 40;
+        }
+        if (tier == 3) {
+            return 60;
+        }
+        if (tier == 4) {
+            return 80;
+        }
+        if (tier == 5) {
+            return 100;
+        }
+        return -1;
     }
 
     public enum EnumFish {
@@ -595,6 +613,211 @@ public class Fishing implements GenericMechanic {
         p.setItemInHand(stack);
     }
 
+
+    public static int getTreasureFindChance(ItemStack is) {
+        int chance = 0;
+
+        if (!(isDRFishingPole(is))) {
+            return chance;
+        }
+
+        for (String s : is.getItemMeta().getLore()) {
+            if (s.contains("TREASURE FIND")) {
+                chance = Integer.parseInt(s.substring(s.lastIndexOf(" ") + 1, s.lastIndexOf("%")));
+                return chance;
+            }
+        }
+
+        return chance;
+    }
+
+    public static int getJunkFindChance(ItemStack is) {
+        int chance = 0;
+
+        if (!(isDRFishingPole(is))) {
+            return chance;
+        }
+
+        for (String s : is.getItemMeta().getLore()) {
+            if (s.contains("JUNK FIND")) {
+                chance = Integer.parseInt(s.substring(s.lastIndexOf(" ") + 1, s.lastIndexOf("%")));
+                return chance;
+            }
+        }
+
+        return chance;
+    }
+
+    public static int getDoubleDropChance(ItemStack is) {
+        int chance = 0;
+
+        if (!(isDRFishingPole(is))) {
+            return chance;
+        }
+
+        for (String s : is.getItemMeta().getLore()) {
+            if (s.contains("DOUBLE")) {
+                chance = Integer.parseInt(s.substring(s.lastIndexOf(" ") + 1, s.lastIndexOf("%")));
+                return chance;
+            }
+        }
+
+        return chance;
+    }
+
+    public static int getTripleDropChance(ItemStack is) {
+        int chance = 0;
+
+        if (!(isDRFishingPole(is))) {
+            return chance;
+        }
+
+        for (String s : is.getItemMeta().getLore()) {
+            if (s.contains("TRIPLE")) {
+                chance = Integer.parseInt(s.substring(s.lastIndexOf(" ") + 1, s.lastIndexOf("%")));
+                return chance;
+            }
+        }
+
+        return chance;
+    }
+
+    public static int getGemFindChance(ItemStack is) {
+        int chance = 0;
+
+        if (!(isDRFishingPole(is))) {
+            return chance;
+        }
+
+        for (String s : is.getItemMeta().getLore()) {
+            if (s.contains("GEM FIND")) {
+                chance = Integer.parseInt(s.substring(s.lastIndexOf(" ") + 1, s.lastIndexOf("%")));
+                return chance;
+            }
+        }
+
+        return chance;
+    }
+
+    public static int getSuccessChance(ItemStack is) {
+        int chance = 0;
+
+        if (!(isDRFishingPole(is))) {
+            return chance;
+        }
+
+        for (String s : is.getItemMeta().getLore()) {
+            if (s.contains("SUCCESS")) {
+                chance = Integer.parseInt(s.substring(s.lastIndexOf("+") + 1, s.lastIndexOf("%")));
+                return chance;
+            }
+        }
+
+        return chance;
+    }
+
+    public static int getDurabilityBuff(ItemStack is) {
+        int buff = 0;
+
+        if (!(isDRFishingPole(is))) {
+            return buff;
+        }
+
+        for (String s : is.getItemMeta().getLore()) {
+            if (s.contains("DURABILITY")) {
+                buff = Integer.parseInt(s.substring(s.lastIndexOf("+") + 1, s.lastIndexOf("%")));
+                return buff;
+            }
+        }
+
+        return buff;
+    }
+
+
+    public static String getRandomStatBuff(int cur_tier) {
+        int buff_type = new Random().nextInt(6);
+            /*
+             * 0 = Double Fish 1 = Chance for Treasure 2 = Chance of success increase 3 = Triple Fish 4 = Durability Increase
+             */
+
+        if (cur_tier == 2) {
+            if (buff_type == 0 || buff_type == 1) {
+                int buff_percent = new Random().nextInt(5) + 1;
+                return ChatColor.RED.toString() + "DOUBLE FISH: " + buff_percent + "%";
+            } else if (buff_type == 2) {
+                int buff_percent = new Random().nextInt(2) + 1;
+                return ChatColor.RED.toString() + "FISHING SUCCESS: +" + buff_percent + "%";
+            } else if (buff_type == 3) {
+                int buff_percent = new Random().nextInt(2) + 1;
+                return ChatColor.RED.toString() + "TRIPLE FISH: " + buff_percent + "%";
+            } else if (buff_type == 4) {
+                int buff_percent = new Random().nextInt(10) + 1;
+                return ChatColor.RED.toString() + "DURABILITY: +" + buff_percent + "%";
+            } else if (buff_type == 5) {
+                int buff_percent = new Random().nextInt(11) + 1;
+                return ChatColor.RED.toString() + "JUNK FIND: " + buff_percent + "%";
+            }
+        } else if (cur_tier == 3) {
+            if (buff_type == 0 || buff_type == 1) {
+                int buff_percent = new Random().nextInt(9) + 1;
+                return ChatColor.RED.toString() + "DOUBLE FISH: " + buff_percent + "%";
+            } else if (buff_type == 2) {
+                int buff_percent = new Random().nextInt(2) + 3;
+                return ChatColor.RED.toString() + "FISHING SUCCESS: +" + buff_percent + "%";
+            } else if (buff_type == 3) {
+                int buff_percent = new Random().nextInt(3) + 1;
+                return ChatColor.RED.toString() + "TRIPLE FISH: " + buff_percent + "%";
+            } else if (buff_type == 4) {
+                int buff_percent = new Random().nextInt(15) + 1;
+                return ChatColor.RED.toString() + "DURABILITY: +" + buff_percent + "%";
+            } else if (buff_type == 5) {
+                int buff_percent = new Random().nextInt(12) + 1;
+                return ChatColor.RED.toString() + "JUNK FIND: " + buff_percent + "%";
+            }
+        } else if (cur_tier == 4) {
+            if (buff_type == 0) {
+                int buff_percent = new Random().nextInt(13) + 1;
+                return ChatColor.RED.toString() + "DOUBLE FISH: " + buff_percent + "%";
+            } else if (buff_type == 1) {
+                int buff_percent = 1;
+                return ChatColor.RED.toString() + "TREASURE FIND: " + buff_percent + "%";
+            } else if (buff_type == 2) {
+                int buff_percent = new Random().nextInt(2) + 4;
+                return ChatColor.RED.toString() + "FISHING SUCCESS: +" + buff_percent + "%";
+            } else if (buff_type == 3) {
+                int buff_percent = new Random().nextInt(4) + 1;
+                return ChatColor.RED.toString() + "TRIPLE FISH: " + buff_percent + "%";
+            } else if (buff_type == 4) {
+                int buff_percent = new Random().nextInt(20) + 1;
+                return ChatColor.RED.toString() + "DURABILITY: +" + buff_percent + "%";
+            } else if (buff_type == 5) {
+                int buff_percent = new Random().nextInt(13) + 1;
+                return ChatColor.RED.toString() + "JUNK FIND: " + buff_percent + "%";
+            }
+        } else if (cur_tier == 5) {
+            if (buff_type == 0) {
+                int buff_percent = new Random().nextInt(24) + 1;
+                return ChatColor.RED.toString() + "DOUBLE FISH: " + buff_percent + "%";
+            } else if (buff_type == 1) {
+                int buff_percent = 1;
+                return ChatColor.RED.toString() + "TREASURE FIND: " + buff_percent + "%";
+            } else if (buff_type == 2) {
+                int buff_percent = new Random().nextInt(6) + 1;
+                return ChatColor.RED.toString() + "FISHING SUCCESS: +" + buff_percent + "%";
+            } else if (buff_type == 3) {
+                int buff_percent = new Random().nextInt(5) + 1;
+                return ChatColor.RED.toString() + "TRIPLE FISH: " + buff_percent + "%";
+            } else if (buff_type == 4) {
+                int buff_percent = new Random().nextInt(25) + 1;
+                return ChatColor.RED.toString() + "DURABILITY: +" + buff_percent + "%";
+            } else if (buff_type == 5) {
+                int buff_percent = new Random().nextInt(15) + 1;
+                return ChatColor.RED.toString() + "JUNK FIND: " + buff_percent + "%";
+            }
+        }
+        return null;
+    }
+
     private static void lvlUp(int tier, Player p) {
         ItemStack rod = p.getEquipment().getItemInMainHand();
         net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(rod);
@@ -631,7 +854,7 @@ public class Fishing implements GenericMechanic {
             List<String> lore = meta.getLore();
             String expBar = ChatColor.RED + "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
             lore.set(0, ChatColor.GRAY.toString() + "Level: " + API.getTierColor(tier) + lvl);
-            lore.set(1, 0 + ChatColor.GRAY.toString() + " / " + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
+            lore.set(1, ChatColor.GRAY.toString() + 0 + ChatColor.GRAY.toString() + " / " + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
             lore.set(2, ChatColor.GRAY.toString() + "EXP: " + expBar);
             String name = "Novice Fishingrod";
 
@@ -655,17 +878,14 @@ public class Fishing implements GenericMechanic {
                     break;
             }
             meta.setDisplayName(name);
-            if (addEnchant) {
-                giveEnchant(rod);
-            }
+            if (addEnchant)
+                lore.add(getRandomStatBuff(tier));
             meta.setLore(lore);
             rod.setItemMeta(meta);
             p.setItemInHand(rod);
         }
     }
 
-    private static void giveEnchant(ItemStack rod) {
-    }
 
     /**
      * Get the tier of said Rod.
@@ -678,8 +898,8 @@ public class Fishing implements GenericMechanic {
         return CraftItemStack.asNMSCopy(rodStack).getTag().getInt("itemTier");
     }
 
-    private HashMap<Location, Integer> FISHING_LOCATIONS = new HashMap<>();
-    public HashMap<Location, List<Location>> FISHING_PARTICLES = new HashMap<>();
+    public static HashMap<Location, Integer> FISHING_LOCATIONS = new HashMap<>();
+    public static HashMap<Location, List<Location>> FISHING_PARTICLES = new HashMap<>();
 
     public void generateFishingParticleBlockList() {
         int count = 0;
@@ -711,20 +931,23 @@ public class Fishing implements GenericMechanic {
         Utils.log.info("[Professions] Loaded a total of " + count + " possible FISHING PARTICLE locations.");
     }
 
-    public Location getFishingSpot(Location loc) {
-        Location closest_loc = null;
+    public static Location getFishingSpot(Location loc) {
+        for (Location fish_loc : FISHING_LOCATIONS.keySet()) {
+            double dist_sqr = loc.distanceSquared(fish_loc);
+            if (dist_sqr <= 100)
+                return fish_loc;
+        }
+        return null;
+    }
+
+    public static Integer getFishingSpotTier(Location loc) {
         for (Location fish_loc : FISHING_LOCATIONS.keySet()) {
             double dist_sqr = loc.distanceSquared(fish_loc);
             if (dist_sqr <= 100) {
-                closest_loc = fish_loc;
+                FISHING_LOCATIONS.get(fish_loc);
             }
         }
-
-        if (closest_loc == null) {
-            return null;
-        }
-
-        return closest_loc;
+        return -1;
     }
 
     public void loadFishingLocations() {

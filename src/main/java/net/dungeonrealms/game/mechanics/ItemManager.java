@@ -548,6 +548,7 @@ public class ItemManager {
         }
     }
 
+
     /**
      * Creates a pickaxe based on the given tier
      *
@@ -563,7 +564,7 @@ public class ItemManager {
         String expBar = ChatColor.RED + "||||||||||||||||||||" + "||||||||||||||||||||" + "||||||||||";
         int lvl = Mining.getTierLvl(tier);
         lore.add(ChatColor.GRAY.toString() + "Level: " + API.getTierColor(tier) + lvl);
-        lore.add(ChatColor.GRAY.toString()+ 0 + ChatColor.GRAY.toString() + " / " + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
+        lore.add(ChatColor.GRAY.toString() + 0 + ChatColor.GRAY.toString() + " / " + ChatColor.GRAY + Mining.getEXPNeeded(lvl));
         lore.add(ChatColor.GRAY.toString() + "EXP: " + expBar);
         switch (tier) {
             case 1:
