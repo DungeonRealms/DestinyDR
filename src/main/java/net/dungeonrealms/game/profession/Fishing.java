@@ -950,6 +950,20 @@ public class Fishing implements GenericMechanic {
         return -1;
     }
 
+    public boolean isCustomFish(ItemStack is) {
+        if (is != null && is.getType() == Material.COOKED_FISH && is.hasItemMeta() && is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()) {
+            return true;
+        }
+        return false;
+    }
+
+    public boolean isCustomRawFish(ItemStack is) {
+        if (is != null && is.getType() == Material.RAW_FISH && is.hasItemMeta() && is.getItemMeta().hasDisplayName() && is.getItemMeta().hasLore()) {
+            return true;
+        }
+        return false;
+    }
+
     public void loadFishingLocations() {
         int count = 0;
         ArrayList<String> CONFIG = (ArrayList<String>) DungeonRealms.getInstance().getConfig()
