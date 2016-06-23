@@ -6,6 +6,7 @@ import net.dungeonrealms.game.menus.player.Profile;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.player.inventory.PlayerMenus;
+import net.dungeonrealms.game.world.entities.types.pets.EnumPets;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
 import net.minecraft.server.v1_9_R2.Entity;
@@ -52,8 +53,15 @@ public class CommandPet extends BasicCommand {
                 player.closeInventory();
                 return true;
             }
+            String petName;
+            if (petType.contains("@")) {
+                petType = petType.split("@")[0];
+                petName = petType.split("@")[1];
+            } else {
+                petName = EnumPets.getByName(petType).getDisplayName();
+            }
             player.sendMessage(ChatColor.GREEN + "Pet summoned.");
-            PetUtils.spawnPet(player.getUniqueId(), petType, "");
+            PetUtils.spawnPet(player.getUniqueId(), petType, petName);
             return true;
         } else if (args.length == 1) {
             if (args[0].equalsIgnoreCase("open") || args[0].equalsIgnoreCase("o") || args[0].equalsIgnoreCase("view") || args[0].equalsIgnoreCase("v")) {

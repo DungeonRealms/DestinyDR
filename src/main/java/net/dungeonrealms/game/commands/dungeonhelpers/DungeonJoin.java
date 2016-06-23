@@ -53,36 +53,36 @@ public class DungeonJoin extends BasicCommand {
                     player.sendMessage(ChatColor.RED + "Your party are not in a Dungeon.");
                     return true;
                 }
-                if (dungeonObject.getPlayerList().containsKey(player)) {
-                    if (!dungeonObject.getPlayerList().get(player)) {
-                        if (API.isInSafeRegion(player.getLocation())) {
-                            boolean hasTeleported = false;
-                            DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 600);
-                            for (Player player1 : dungeonObject.getPlayerList().keySet()) {
-                                if (player.getName().equals(player1.getName())) {
-                                    continue;
-                                }
-                                if (player1.getWorld().getName().contains("DUNGEON")) {
-                                    player1.sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + ">" + ChatColor.GRAY
-                                            + " " + player.getName() + " has " + ChatColor.GREEN + ChatColor.UNDERLINE + "joined" + ChatColor.GRAY
-                                            + " the dungeon.");
-                                    if (!hasTeleported) {
-                                        player.teleport(player1.getLocation());
-                                        player.setFallDistance(0F);
-                                        if (dungeonObject.getType() == DungeonManager.DungeonType.THE_INFERNAL_ABYSS) {
-                                            Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
-                                                DungeonManager.getInstance().sendWorldEnvironment(player, World.Environment.NETHER);
-                                            }, 5L);
-                                        }
-                                        hasTeleported = true;
+                if (dungeonObject.getPlayerList().containsKey(player) || dungeonObject.getTime() < 600) {
+                    dungeonObject.getPlayerList().put(player, true);
+                    DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 600);
+                    if (API.isInSafeRegion(player.getLocation())) {
+                        boolean hasTeleported = false;
+                        DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 600);
+                        for (Player player1 : dungeonObject.getPlayerList().keySet()) {
+                            if (player.getName().equals(player1.getName())) {
+                                continue;
+                            }
+                            if (player1.getWorld().getName().contains("DUNGEON")) {
+                                player1.sendMessage(ChatColor.LIGHT_PURPLE + "<" + ChatColor.BOLD + "P" + ChatColor.LIGHT_PURPLE + ">" + ChatColor.GRAY
+                                        + " " + player.getName() + " has " + ChatColor.GREEN + ChatColor.UNDERLINE + "joined" + ChatColor.GRAY
+                                        + " the dungeon.");
+                                if (!hasTeleported) {
+                                    player.teleport(player1.getLocation());
+                                    player.setFallDistance(0F);
+                                    if (dungeonObject.getType() == DungeonManager.DungeonType.THE_INFERNAL_ABYSS) {
+                                        Bukkit.getScheduler().scheduleSyncDelayedTask(DungeonRealms.getInstance(), () -> {
+                                            DungeonManager.getInstance().sendWorldEnvironment(player, World.Environment.NETHER);
+                                        }, 5L);
                                     }
+                                    hasTeleported = true;
                                 }
                             }
-                            return true;
-                        } else {
-                            player.sendMessage(ChatColor.RED + "You cannot join the Dungeon from this location!");
-                            return true;
                         }
+                        return true;
+                    } else {
+                        player.sendMessage(ChatColor.RED + "You cannot join the Dungeon from this location!");
+                        return true;
                     }
                 } else {
                     player.sendMessage(ChatColor.RED + "This Dungeon was created before you joined the party, you cannot join this session.");

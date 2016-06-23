@@ -4,7 +4,6 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.game.commands.generic.BasicCommand;
 import net.dungeonrealms.game.donate.DonationEffects;
 import net.dungeonrealms.game.mastery.GamePlayer;
-import net.dungeonrealms.game.mastery.RealmManager;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.ItemManager;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
@@ -24,7 +23,7 @@ import net.dungeonrealms.game.world.items.Item.ItemType;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.party.Affair;
-import net.dungeonrealms.game.world.realms.Instance;
+import net.dungeonrealms.game.world.realms.instance.RealmInstance;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import net.minecraft.server.v1_9_R2.NBTTagString;
 import org.bukkit.Bukkit;
@@ -67,7 +66,7 @@ public class CommandAdd extends BasicCommand {
                     player.sendMessage(ChatColor.GREEN + "There are " + String.valueOf(Affair.getInstance()._parties.size()));
                     break;
                 case "check":
-                    player.sendMessage("YOUR REALM EXIST? " + String.valueOf(Instance.getInstance().doesRemoteRealmExist(player.getUniqueId().toString())));
+//                    player.sendMessage("YOUR REALM EXIST? " + String.valueOf(RealmInstance.getInstance().doesRemoteRealmExist(player.getUniqueId().toString())));
                     break;
                 case "uuid":
                     player.sendMessage(Bukkit.getPlayer(API.getUUIDFromName(player.getName())).getDisplayName());
@@ -76,10 +75,10 @@ public class CommandAdd extends BasicCommand {
                     player.sendMessage(API.getNameFromUUID(player.getUniqueId()));
                     break;
                 case "uploadrealm":
-                    new RealmManager().uploadRealm(player.getUniqueId());
+//                    new RealmManager().uploadRealm(player.getUniqueId());
                     break;
                 case "realm":
-                    Instance.getInstance().openRealm(player);
+//                    RealmInstance.getInstance().openRealmPortal(player);
                     //new RealmManager().downloadRealm(player.getUniqueId());
                     break;
                 case "weapon":

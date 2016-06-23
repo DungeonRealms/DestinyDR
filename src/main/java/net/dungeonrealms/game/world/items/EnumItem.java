@@ -9,5 +9,6 @@ public enum EnumItem {
 	RepairHammer,
 	RetrainingBook,
 	MedalOfGathering,
-	CharacterJournal
+	CharacterJournal,
+	RealmPortalRune
 }

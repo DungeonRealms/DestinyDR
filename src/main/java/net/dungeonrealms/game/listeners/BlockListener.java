@@ -14,7 +14,7 @@ import net.dungeonrealms.game.profession.Mining;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import net.dungeonrealms.game.world.loot.LootManager;
 import net.dungeonrealms.game.world.loot.LootSpawner;
-import net.dungeonrealms.game.world.realms.Instance;
+import net.dungeonrealms.game.world.realms.instance.RealmInstance;
 import net.dungeonrealms.game.world.shops.Shop;
 import net.dungeonrealms.game.world.shops.ShopMechanics;
 import net.dungeonrealms.game.world.spawning.SpawningMechanics;
@@ -48,6 +48,8 @@ import java.util.*;
  * Created by Nick on 9/18/2015.
  */
 public class BlockListener implements Listener {
+
+    private Map<Location, Repair> repairMap = new HashMap<>();
 
     /**
      * Disables the placement of core items that have NBTData of `important` in
@@ -88,7 +90,6 @@ public class BlockListener implements Listener {
         if (e.getBlock().getWorld() == Bukkit.getWorlds().get(0) || e.getBlock().getWorld().getName().contains("DUNGEON"))
             e.setCancelled(true);
     }
-
 
     @EventHandler(priority = EventPriority.LOW)
     public void onEntityExplode(EntityExplodeEvent event) {
@@ -231,9 +232,6 @@ public class BlockListener implements Listener {
                 event.setCancelled(true);
         }
     }
-
-
-    private Map<Location, Repair> repairMap = new HashMap<>();
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void playerRightClickAnvil(PlayerInteractEvent event) {
@@ -451,19 +449,19 @@ public class BlockListener implements Listener {
                 net.minecraft.server.v1_9_R2.ItemStack nms = CraftItemStack.asNMSCopy(item);
                 if (nms.getTag().hasKey("usage") && nms.getTag().getString("usage").equalsIgnoreCase("profile")) {
                     if (event.getPlayer().isOp()) {
-                        Instance.getInstance().tryToOpenRealm(event.getPlayer(), event.getClickedBlock().getLocation());
+//                        RealmInstance.getInstance().tryToOpenRealm(event.getPlayer(), event.getClickedBlock().getLocation());
                     } else {
                         event.getPlayer().sendMessage(ChatColor.RED.toString() + ChatColor.BOLD + "COMING SOON..");
                     }
                 }
             } else {
-                if (event.getClickedBlock().getType() == Material.PORTAL) {
-                    if (Instance.getInstance().getPlayerRealm(event.getPlayer()).isRealmPortalOpen()) {
-                        if (Instance.getInstance().getRealmViaLocation(event.getClickedBlock().getLocation()).getRealmOwner().equals(event.getPlayer())) {
-                            Instance.getInstance().removeRealm(Instance.getInstance().getRealmViaLocation(event.getClickedBlock().getLocation()), false);
-                        }
-                    }
-                }
+//                if (event.getClickedBlock().getType() == Material.PORTAL) {
+//                    if (RealmInstance.getInstance().getPlayerRealm(event.getPlayer()).isRealmPortalOpen()) {
+//                        if (RealmInstance.getInstance().getRealmViaLocation(event.getClickedBlock().getLocation()).getRealmOwner().equals(event.getPlayer())) {
+//                            RealmInstance.getInstance().removeRealm(RealmInstance.getInstance().getRealmViaLocation(event.getClickedBlock().getLocation()), false);
+//                        }
+//                    }
+//                }
             }
         }
     }

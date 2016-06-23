@@ -204,13 +204,6 @@
             <scope>system</scope>
         </dependency>
         <dependency>
-            <groupId>com</groupId>
-            <artifactId>voidgenerator</artifactId>
-            <version>1.0</version>
-            <systemPath>${project.basedir}/lib/VoidGenerator.jar</systemPath>
-            <scope>system</scope>
-        </dependency>
-        <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
             <version>1.16.8</version>

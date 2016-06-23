@@ -425,19 +425,19 @@ public class Achievements {
 
         BANDIT_TROVE("Mayel The Cruel", new String[]{
                 "Defeated Mayel The Cruel."
-        }, 1500, "achievement.combat_bandit_trove", false),
+        }, 15000, "achievement.combat_bandit_trove", false),
 
         VARENGLADE("Burick The Fanatic", new String[]{
                 "Defeated Burick The Fanatic."
-        }, 5000, "achievement.combat_varenglade", false),
+        }, 50000, "achievement.combat_varenglade", false),
 
         INFERNAL_ABYSS("The Infernal Abyss", new String[]{
                 "Defeated The Infernal Abyss."
-        }, 10000, "achievement.combat_infernal_abyss", false),
+        }, 75000, "achievement.combat_infernal_abyss", false),
 
         DEPTHS_OF_ACERON("Depths of Aceron", new String[]{
                 "Defeated Aceron."
-        }, 20000, "achievement.combat_depths_of_aceron", false);
+        }, 75000, "achievement.combat_depths_of_aceron", false);
 
         private String name;
         private String[] message;

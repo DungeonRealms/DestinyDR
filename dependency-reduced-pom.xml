@@ -260,13 +260,6 @@
       <systemPath>${project.basedir}/lib/nuvotifier-universal-2.3.1.jar</systemPath>
     </dependency>
     <dependency>
-      <groupId>com</groupId>
-      <artifactId>voidgenerator</artifactId>
-      <version>1.0</version>
-      <scope>system</scope>
-      <systemPath>${project.basedir}/lib/VoidGenerator.jar</systemPath>
-    </dependency>
-    <dependency>
       <groupId>org.projectlombok</groupId>
       <artifactId>lombok</artifactId>
       <version>1.16.8</version>

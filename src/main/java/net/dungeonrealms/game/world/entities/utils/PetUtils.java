@@ -2,8 +2,6 @@ package net.dungeonrealms.game.world.entities.utils;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
-import net.dungeonrealms.game.donate.DonationEffects;
-import net.dungeonrealms.game.mechanics.ParticleAPI;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.world.entities.Entities;
@@ -11,7 +9,6 @@ import net.dungeonrealms.game.world.entities.EnumEntityType;
 import net.dungeonrealms.game.world.entities.types.pets.*;
 import net.minecraft.server.v1_9_R2.*;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
@@ -196,49 +193,31 @@ public class PetUtils implements GenericMechanic{
      *
      * @param uuid
      * @param petType
-     * @param particleType
+     * @param name
      * @since 1.0
      */
-    public static void spawnPet(UUID uuid, String petType, String particleType) {
+    public static void spawnPet(UUID uuid, String petType, String name) {
         Player player = Bukkit.getPlayer(uuid);
         World world = ((CraftWorld) player.getWorld()).getHandle();
-        EnumPets enumPets = EnumPets.getByName(petType.toUpperCase());
-        ParticleAPI.ParticleEffect particleEffect = null;
-        if (!particleType.equalsIgnoreCase("")) {
-            particleEffect = ParticleAPI.ParticleEffect.getByName(particleType);
-        }
         if (!API.isStringPet(petType)) {
             player.sendMessage("Uh oh... Something went wrong with your pet! Please inform a staff member! [PetType]");
             return;
         }
+        EnumPets enumPets = EnumPets.getByName(petType.toUpperCase());
         switch (enumPets) {
             case CAVE_SPIDER: {
-                String customPetName = "Spider";
-                CaveSpider petCaveSpider = new CaveSpider(world, player.getName() + "'s Pet", player.getUniqueId(), EnumEntityType.PET);
+                CaveSpider petCaveSpider = new CaveSpider(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petCaveSpider.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petCaveSpider, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petCaveSpider.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 player.playSound(player.getLocation(), Sound.ENTITY_SPIDER_AMBIENT, 1F, 1F);
                 makePet(petCaveSpider, player.getUniqueId(), 1.3D, EnumPets.CAVE_SPIDER);
-                if (particleEffect != null) {
-                    switch (particleEffect) {
-                        case FLAME:
-                            customPetName = ChatColor.RED + "Flaming Spider";
-                            DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.put(petCaveSpider, ParticleAPI.ParticleEffect.FLAME);
-                            break;
-                        case HAPPY_VILLAGER:
-                            customPetName = ChatColor.DARK_GREEN + "Poisonous Spider";
-                            DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.put(petCaveSpider, ParticleAPI.ParticleEffect.HAPPY_VILLAGER);
-                            break;
-                    }
-                }
-                petCaveSpider.setCustomName(customPetName);
                 EntityAPI.addPlayerPetList(player.getUniqueId(), petCaveSpider);
                 player.closeInventory();
                 break;
             }
             case BABY_ZOMBIE: {
-                BabyZombie petBabyZombie = new BabyZombie(world, player.getName() + "'s Pet", player.getUniqueId(), EnumEntityType.PET);
+                BabyZombie petBabyZombie = new BabyZombie(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petBabyZombie.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petBabyZombie, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petBabyZombie.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
@@ -249,7 +228,7 @@ public class PetUtils implements GenericMechanic{
                 break;
             }
             case BABY_PIGZOMBIE: {
-                BabyZombiePig petBabyZombiePig = new BabyZombiePig(world, player.getName() + "'s Pet", player.getUniqueId(), EnumEntityType.PET);
+                BabyZombiePig petBabyZombiePig = new BabyZombiePig(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petBabyZombiePig.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petBabyZombiePig, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petBabyZombiePig.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
@@ -262,7 +241,7 @@ public class PetUtils implements GenericMechanic{
                 break;
             }
             case WOLF: {
-                Wolf petWolf = new Wolf(world, player.getName() + "'s Pet", player.getUniqueId(), EnumEntityType.PET);
+                Wolf petWolf = new Wolf(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petWolf.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petWolf, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petWolf.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
@@ -277,7 +256,7 @@ public class PetUtils implements GenericMechanic{
                 break;
             }
             case CHICKEN: {
-                Chicken petChicken = new Chicken(world, player.getName() + "'s Pet", player.getUniqueId(), EnumEntityType.PET);
+                Chicken petChicken = new Chicken(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petChicken.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petChicken, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petChicken.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
@@ -290,7 +269,7 @@ public class PetUtils implements GenericMechanic{
                 break;
             }
             case OCELOT: {
-                Ocelot petOcelot = new Ocelot(world, player.getName() + "'s Pet", player.getUniqueId(), EnumEntityType.PET);
+                Ocelot petOcelot = new Ocelot(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petOcelot.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petOcelot, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petOcelot.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
@@ -304,7 +283,7 @@ public class PetUtils implements GenericMechanic{
                 break;
             }
             case RABBIT: {
-                Rabbit petRabbit = new Rabbit(world, player.getName() + "'s Pet", player.getUniqueId(), EnumEntityType.PET);
+                Rabbit petRabbit = new Rabbit(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petRabbit.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petRabbit, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petRabbit.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
@@ -317,7 +296,7 @@ public class PetUtils implements GenericMechanic{
                 break;
             }
             case SILVERFISH: {
-                Silverfish petSilverfish = new Silverfish(world, player.getName() + "'s Pet", player.getUniqueId(), EnumEntityType.PET);
+                Silverfish petSilverfish = new Silverfish(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petSilverfish.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petSilverfish, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petSilverfish.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
@@ -328,7 +307,7 @@ public class PetUtils implements GenericMechanic{
                 break;
             }
             case ENDERMITE: {
-                Endermite petEndermite = new Endermite(world, player.getName() + "'s Pet", player.getUniqueId(), EnumEntityType.PET);
+                Endermite petEndermite = new Endermite(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petEndermite.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petEndermite, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petEndermite.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
@@ -339,7 +318,7 @@ public class PetUtils implements GenericMechanic{
                 break;
             }
             case SNOWMAN: {
-                Snowman petSnowman = new Snowman(world, player.getName() + "'s Pet", player.getUniqueId(), EnumEntityType.PET);
+                Snowman petSnowman = new Snowman(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petSnowman.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petSnowman, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petSnowman.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
@@ -350,7 +329,7 @@ public class PetUtils implements GenericMechanic{
                 break;
             }
             case BAT: {
-                Bat petBat = new Bat(world, player.getName() + "'s Pet", player.getUniqueId(), EnumEntityType.PET);
+                Bat petBat = new Bat(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petBat.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petBat, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petBat.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
@@ -360,7 +339,7 @@ public class PetUtils implements GenericMechanic{
                 break;
             }
             case SLIME: {
-                Slime petSlime = new Slime(world, player.getName() + "'s Pet", player.getUniqueId(), EnumEntityType.PET);
+                Slime petSlime = new Slime(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petSlime.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petSlime, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petSlime.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
@@ -371,7 +350,7 @@ public class PetUtils implements GenericMechanic{
                 break;
             }
             case MAGMA_CUBE: {
-                MagmaCube petMagmaCube = new MagmaCube(world, player.getName() + "'s Pet", player.getUniqueId(), EnumEntityType.PET);
+                MagmaCube petMagmaCube = new MagmaCube(world, name, player.getUniqueId(), EnumEntityType.PET);
                 petMagmaCube.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
                 world.addEntity(petMagmaCube, CreatureSpawnEvent.SpawnReason.CUSTOM);
                 petMagmaCube.setLocation(player.getLocation().getX(), player.getLocation().getY(), player.getLocation().getZ(), 0, 0);
