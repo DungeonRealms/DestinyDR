@@ -398,4 +398,20 @@ public class GamePlayer {
         attributes.put(type.getNBTName(), newTotalVal);
         return newTotalVal;
     }
+
+    /**
+     * Changes the value of an attribute by a percent difference. This difference
+     * may be positive or negative.
+     *
+     * @param type
+     * @param percentDifference
+     * @return the new value of the attribute
+     */
+    public Integer[] changeAttributeValPercentage(AttributeType type, float percentDifference) {
+        int newLow = attributes.get(type.getNBTName())[0] * ((percentDifference + 100.) / 100.);
+        int newHigh = attributes.get(type.getNBTName())[1] * ((percentDifference + 100.) / 100.);
+        if (newLow < 0) newLow = 0;
+        if (newHigh < 0) newHigh = 0;
+        return attributes.put(type.getNBTName(), new Integer[] { newLow, newHigh });
+    }
 }
