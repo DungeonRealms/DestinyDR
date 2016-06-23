@@ -26,6 +26,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.EntityDeathEvent;
+import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -69,7 +71,8 @@ public class DungeonListener implements Listener {
         if (!event.getEntity().getWorld().getName().contains("DUNGEON")) return;
         if (event.getEntity() instanceof Player) return;
         if (DungeonManager.getInstance().getDungeon(event.getEntity().getWorld()) == null) return;
-        if (DungeonManager.getInstance().getDungeon(event.getEntity().getWorld()).getType() != DungeonManager.DungeonType.VARENGLADE) return;
+        if (DungeonManager.getInstance().getDungeon(event.getEntity().getWorld()).getType() != DungeonManager.DungeonType.VARENGLADE)
+            return;
         DungeonManager.DungeonObject dungeonObject = DungeonManager.getInstance().getDungeon(event.getEntity().getWorld());
         if (dungeonObject.keysDropped <= 10) {
             if (new Random().nextInt(20) <= 14) {
@@ -83,13 +86,109 @@ public class DungeonListener implements Listener {
                 dungeonObject.keysDropped = dungeonObject.keysDropped + 1;
             }
         }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    public void T4Death(EntityDeathEvent event) {
+        if (!event.getEntity().getWorld().getName().contains("DUNGEON")) return;
+        if (event.getEntity() instanceof Player) return;
+        if (DungeonManager.getInstance().getDungeon(event.getEntity().getWorld()) == null) return;
+        if (DungeonManager.getInstance().getDungeon(event.getEntity().getWorld()).getType() != DungeonManager.DungeonType.THE_INFERNAL_ABYSS)
+            return;
         if (event.getEntity().hasMetadata("customname")) {
             String name = ChatColor.stripColor(event.getEntity().getMetadata("customname").get(0).asString());
             if (event.getEntity().getType() == EntityType.ENDERMAN || name.equalsIgnoreCase("The Devastator") || name.equalsIgnoreCase("The Annihilator")) {
+                if (name.equalsIgnoreCase("The Devastator")) {
+                    ItemStack key = ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.GREEN + "Doorkey A", new String[]{
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "A key required in the Infernal Abyss Dungeon", ChatColor.RED + "Dungeon Item"});
+                    if (event.getEntity().getKiller() != null) {
+                        event.getEntity().getKiller().getInventory().addItem(key);
+                    } else {
+                        event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), -event.getEntity().getLocation().getZ()), key);
+                    }
+                } else if (name.equalsIgnoreCase("The Annihilator")) {
+                    ItemStack key = ItemManager.createItem(Material.TRIPWIRE_HOOK, ChatColor.GREEN + "Doorkey B", new String[]{
+                            ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "A key required in the Infernal Abyss Dungeon", ChatColor.RED + "Dungeon Item"});
+                    if (event.getEntity().getKiller() != null) {
+                        event.getEntity().getKiller().getInventory().addItem(key);
+                    } else {
+                        event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), -event.getEntity().getLocation().getZ()), key);
+                    }
+                }
                 for (Player player : event.getEntity().getWorld().getPlayers()) {
                     player.removePotionEffect(PotionEffectType.WITHER);
                 }
                 DungeonManager.getInstance().getDungeon_Wither_Effect().remove(event.getEntity().getWorld().getName());
+            } else if (name.equalsIgnoreCase("Fire Lord Of The Abyss")) {
+                ItemStack key = ItemManager.createItem(Material.BLAZE_POWDER, ChatColor.RED + "A Heart of Fire", new String[]{
+                        ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "An ingredient taken from a Fire Lord", ChatColor.RED + "Dungeon Item"});
+                if (event.getEntity().getKiller() != null) {
+                    event.getEntity().getKiller().getInventory().addItem(key);
+                } else {
+                    event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), -event.getEntity().getLocation().getZ()), key);
+                }
+            } else if (name.equalsIgnoreCase("Ice Lord Of The Abyss")) {
+                ItemStack key = ItemManager.createItem(Material.ICE, ChatColor.BLUE + "A Heart of Ice", new String[]{
+                        ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "An ingredient taken from an Ice Lord", ChatColor.RED + "Dungeon Item"});
+                if (event.getEntity().getKiller() != null) {
+                    event.getEntity().getKiller().getInventory().addItem(key);
+                } else {
+                    event.getEntity().getWorld().dropItemNaturally(new Location(event.getEntity().getWorld(), event.getEntity().getLocation().getX(), event.getEntity().getLocation().getY(), -event.getEntity().getLocation().getZ()), key);
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.HIGHEST)
+    private void playerCraftT4(InventoryClickEvent event) {
+        if (!event.getWhoClicked().getWorld().getName().contains("DUNGEON")) return;
+        if (DungeonManager.getInstance().getDungeon(event.getWhoClicked().getWorld()) == null) return;
+        if (DungeonManager.getInstance().getDungeon(event.getWhoClicked().getWorld()).getType() != DungeonManager.DungeonType.THE_INFERNAL_ABYSS)
+            return;
+        if (event.getCursor() == null) return;
+        if (event.getCurrentItem() == null) return;
+        if (!event.getInventory().getName().equalsIgnoreCase("container.crafting")) return;
+        if (event.getSlotType() == InventoryType.SlotType.ARMOR) return;
+        ItemStack cursorItem = event.getCursor();
+        ItemStack slotItem = event.getCurrentItem();
+        DungeonManager.DungeonObject dungeonObject = DungeonManager.getInstance().getDungeon(event.getWhoClicked().getWorld());
+        if (slotItem.getType() == Material.BLAZE_POWDER) {
+            //Dragging Heart of Ice onto Heart of Fire
+            if (cursorItem.getType() == Material.ICE) {
+                if (slotItem.hasItemMeta() && cursorItem.hasItemMeta()) {
+                    if (DungeonManager.getInstance().isDungeonItem(slotItem) && DungeonManager.getInstance().isDungeonItem(cursorItem)) {
+                        if (!dungeonObject.canSpawnBoss) {
+                            int percentToKill = (int) (dungeonObject.maxAlive * 0.80);
+                            int killed = dungeonObject.killed;
+                            event.getWhoClicked().sendMessage(ChatColor.RED + "You need to kill " + ChatColor.UNDERLINE + (percentToKill - killed) + ChatColor.RED + " monsters to create this item.");
+                            return;
+                        }
+                        event.setCancelled(true);
+                        slotItem = ItemManager.createItem(Material.FIREBALL, ChatColor.LIGHT_PURPLE + "The Inferno Seal", new String[]{
+                                ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "A demonic aura surrounds the relic.", ChatColor.RED + "Dungeon Item"});
+                        event.setCursor(null);
+                        event.setCurrentItem(slotItem);
+                    }
+                }
+            }
+        } else if (slotItem.getType() == Material.ICE) {
+            //Dragging Heart of Fire onto Heart of ICE
+            if (cursorItem.getType() == Material.BLAZE_POWDER) {
+                if (slotItem.hasItemMeta() && cursorItem.hasItemMeta()) {
+                    if (DungeonManager.getInstance().isDungeonItem(slotItem) && DungeonManager.getInstance().isDungeonItem(cursorItem)) {
+                        if (!dungeonObject.canSpawnBoss) {
+                            int percentToKill = (int) (dungeonObject.maxAlive * 0.80);
+                            int killed = dungeonObject.killed;
+                            event.getWhoClicked().sendMessage(ChatColor.RED + "You need to kill " + ChatColor.UNDERLINE + (percentToKill - killed) + ChatColor.RED + " monsters to create this item.");
+                            return;
+                        }
+                        event.setCancelled(true);
+                        slotItem = ItemManager.createItem(Material.FIREBALL, ChatColor.LIGHT_PURPLE + "The Inferno Seal", new String[]{
+                                ChatColor.GRAY.toString() + ChatColor.ITALIC.toString() + "A demonic aura surrounds the relic.", ChatColor.RED + "Dungeon Item"});
+                        event.setCursor(null);
+                        event.setCurrentItem(slotItem);
+                    }
+                }
             }
         }
     }
@@ -287,14 +386,14 @@ public class DungeonListener implements Listener {
             EntityDamageByEntityEvent entityDamageByEntityEvent = (EntityDamageByEntityEvent) event;
             if (entityDamageByEntityEvent.getDamager() instanceof Player) {
                 Player player = (Player) entityDamageByEntityEvent.getDamager();
-                Block block =  event.getEntity().getLocation().subtract(0D, 1D, 0D).getBlock();
+                Block block = event.getEntity().getLocation().subtract(0D, 1D, 0D).getBlock();
                 if (block.getType() == Material.BEDROCK) {
                     block.setType(Material.AIR);
                     block.getLocation().add(0, 1, 0).getBlock().setType(Material.AIR);
                 }
                 try {
                     ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, block.getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 50);
-                }  catch (Exception e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -320,7 +419,7 @@ public class DungeonListener implements Listener {
         if (dungeonObject.getType() != DungeonManager.DungeonType.THE_INFERNAL_ABYSS) return;
         Player player = event.getPlayer();
         Block block = event.getClickedBlock();
-        if (block.getType() ==  Material.BEDROCK || block.getType() == Material.FIRE) {
+        if (block.getType() == Material.BEDROCK || block.getType() == Material.FIRE) {
             if (block.getType() == Material.BEDROCK) {
                 Block baseBlock = block.getLocation().add(0.D, 1D, 0D).getBlock();
                 if (baseBlock.getType() == Material.FIRE) {
@@ -345,7 +444,7 @@ public class DungeonListener implements Listener {
 
             try {
                 ParticleAPI.sendParticleToLocation(ParticleAPI.ParticleEffect.MAGIC_CRIT, block.getLocation().add(0, 1, 0), new Random().nextFloat(), new Random().nextFloat(), new Random().nextFloat(), 1F, 50);
-            }  catch (Exception e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
