@@ -1265,7 +1265,8 @@ public class MainListener implements Listener {
         if (event.getTarget() != null) {
             if (!(event.getTarget() instanceof Player)) {
                 event.setCancelled(true);
-            } else if (API._hiddenPlayers.contains(event.getTarget())) {
+            } else if (Rank.isGM((Player) event.getTarget()) || API._hiddenPlayers.contains(event.getTarget())) {
+                //TODO: Check for /allowfight @alan.
                 event.setCancelled(true);
             }
         }
