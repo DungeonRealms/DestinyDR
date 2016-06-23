@@ -11,6 +11,7 @@ import org.bukkit.entity.Player;
 
 import java.io.IOException;
 import java.util.UUID;
+import java.util.concurrent.Future;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/21/2016
@@ -63,15 +64,16 @@ public interface Realms extends GenericMechanic {
      *
      * @param uuid Owner of realm
      */
-    boolean downloadRealm(UUID uuid) throws IOException, ZipException;
+    Future<Boolean> downloadRealm(UUID uuid) throws IOException, ZipException;
 
 
     /**
      * Closes the realm portal
      *
      * @param uuid Owner of realm
+     * @param kickPlayers Kick all players?
      */
-    void closeRealmPortal(UUID uuid);
+    void closeRealmPortal(UUID uuid, boolean kickPlayers);
 
 
     /**
