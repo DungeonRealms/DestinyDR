@@ -80,7 +80,7 @@ public class InfernalGhast extends EntityGhast implements Boss {
 		livingEntity.getEquipment().setHelmet(armor[3]);
 	}
 
-	int maxHP = 0;
+	private int maxHP = 0;
 
 	@Override
 	public void onBossHit(EntityDamageByEntityEvent event) {

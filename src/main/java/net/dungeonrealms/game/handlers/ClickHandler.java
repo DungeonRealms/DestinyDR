@@ -31,7 +31,6 @@ import net.dungeonrealms.game.world.entities.utils.MountUtils;
 import net.dungeonrealms.game.world.entities.utils.PetUtils;
 import net.dungeonrealms.game.world.items.EnumItem;
 import net.dungeonrealms.game.world.teleportation.TeleportAPI;
-import net.md_5.bungee.Util;
 import net.minecraft.server.v1_9_R2.Entity;
 import net.minecraft.server.v1_9_R2.NBTTagCompound;
 import org.bukkit.*;
@@ -45,6 +44,8 @@ import org.bukkit.inventory.meta.ItemMeta;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * Created by Nick on 10/2/2015.
@@ -617,28 +618,70 @@ public class ClickHandler {
                     return;
                 }
                 if (event.getCurrentItem().getType() != Material.AIR && event.getCurrentItem().getType() != Material.BARRIER && event.getCurrentItem().getType() != Material.LEASH) {
-                    if (EntityAPI.hasPetOut(player.getUniqueId())) {
-                        Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
-                        if (entity.isAlive()) {
-                            entity.getBukkitEntity().remove();
+                    if (event.getClick() == ClickType.LEFT) {
+                        if (EntityAPI.hasPetOut(player.getUniqueId())) {
+                            Entity entity = EntityAPI.getPlayerPet(player.getUniqueId());
+                            if (entity.isAlive()) {
+                                entity.getBukkitEntity().remove();
+                            }
+                            if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
+                                DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
+                            }
+                            EntityAPI.removePlayerPetList(player.getUniqueId());
                         }
-                        if (DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.containsKey(entity)) {
-                            DonationEffects.getInstance().ENTITY_PARTICLE_EFFECTS.remove(entity);
+                        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                        if (nmsStack.getTag() == null || nmsStack.getTag().getString("petType") == null) {
+                            player.sendMessage("Uh oh... Something went wrong with your pet! Please inform a staff member! [NBTTag]");
+                            player.closeInventory();
+                            return;
                         }
-                        EntityAPI.removePlayerPetList(player.getUniqueId());
-                    }
-                    net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
-                    if (nmsStack.getTag() == null || nmsStack.getTag().getString("petType") == null) {
-                        player.sendMessage("Uh oh... Something went wrong with your pet! Please inform a staff member! [NBTTag]");
+                        String petName = "";
+                        if (nmsStack.getTag().getString("petName") != null) {
+                            petName = nmsStack.getTag().getString("petName");
+                        }
+                        String toStore = nmsStack.getTag().getString("petType") + "@" + petName;
+                        DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, toStore, true);
+                        PetUtils.spawnPet(player.getUniqueId(), nmsStack.getTag().getString("petType"), petName);
+                    } else if (event.getClick() == ClickType.RIGHT) {
+                        net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(event.getCurrentItem());
+                        if (nmsStack.getTag() == null || nmsStack.getTag().getString("petType") == null) {
+                            player.sendMessage("Uh oh... Something went wrong with your pet! Please inform a staff member! [NBTTag]");
+                            player.closeInventory();
+                            return;
+                        }
+                        String petType = nmsStack.getTag().getString("petType");
+                        player.sendMessage(ChatColor.GRAY + "Enter a name for your pet, or type " + ChatColor.RED + ChatColor.UNDERLINE +"cancel" + ChatColor.GRAY + " to end the process.");
                         player.closeInventory();
-                        return;
+                        Chat.listenForMessage(player, newPetName -> {
+                            if (newPetName.getMessage().equalsIgnoreCase("cancel") || newPetName.getMessage().equalsIgnoreCase("exit")) {
+                                player.sendMessage(ChatColor.GRAY + "Pet naming " + ChatColor.RED + ChatColor.UNDERLINE + "CANCELLED.");
+                                return;
+                            }
+                            String inputName = newPetName.getMessage();
+
+                            // Name must be below 12 characters
+                            if (inputName.length() > 12) {
+                                player.sendMessage(ChatColor.RED + "Your pet name exceeds the maximum length of 12 characters.");
+                                player.sendMessage(ChatColor.GRAY + "" + ChatColor.ITALIC + "You were " + (inputName.length() - 16) + " characters over the limit.");
+                                return;
+                            }
+                            Pattern pattern = Pattern.compile("^([A-Za-z]|[0-9])+$");
+                            Matcher matcher = pattern.matcher(inputName);
+
+                            // Name must be alphanumerical
+                            if (!matcher.find()) {
+                                player.sendMessage(ChatColor.RED + "Your pet name can only contain alphanumerical values.");
+                                return;
+                            }
+
+                            String checkedPetName = Chat.getInstance().checkForBannedWords(inputName);
+
+                            String newPet = petType + "@" + checkedPetName;
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PULL, EnumData.PETS, petType, false);
+                            DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$PUSH, EnumData.PETS, newPet, true);
+                            player.sendMessage(ChatColor.GRAY + "Pet name changed to " + ChatColor.GREEN + ChatColor.UNDERLINE + checkedPetName);
+                        }, null);
                     }
-                    String particleType = "";
-                    if (nmsStack.getTag().getString("particleType") != null) {
-                        particleType = nmsStack.getTag().getString("particleType");
-                    }
-                    DatabaseAPI.getInstance().update(player.getUniqueId(), EnumOperators.$SET, EnumData.ACTIVE_PET, nmsStack.getTag().getString("petType"), true);
-                    PetUtils.spawnPet(player.getUniqueId(), nmsStack.getTag().getString("petType"), particleType);
                 }
                 break;
             case "Mount Selection":

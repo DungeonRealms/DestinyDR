@@ -1,29 +1,30 @@
 package net.dungeonrealms.game.listeners;
 
-import net.dungeonrealms.API;
-import net.dungeonrealms.game.handlers.FriendHandler;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.combat.CombatLog;
 import net.dungeonrealms.game.world.entities.Entities;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
-import net.dungeonrealms.game.world.realms.instance.RealmInstance;
-import org.bukkit.*;
-import org.bukkit.block.Block;
+import net.dungeonrealms.game.world.realms.Realms;
+import net.dungeonrealms.game.world.realms.instance.obj.RealmStatus;
+import net.dungeonrealms.game.world.realms.instance.obj.RealmToken;
+import net.minecraft.server.v1_9_R2.Entity;
+import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
+import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
-import org.bukkit.event.block.BlockBreakEvent;
-import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerPortalEvent;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/21/2016
  */
-public class RealmListener {
+public class RealmListener implements Listener {
 
-//    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
+    //    @EventHandler(priority = EventPriority.LOWEST, ignoreCancelled = true)
 //    public void changeWorld(PlayerChangedWorldEvent event) {
 //    }
 //
@@ -124,43 +125,58 @@ public class RealmListener {
 //     * @param event
 //     * @since 1.0
 //     */
-//    @EventHandler(priority = EventPriority.LOWEST)
-//    public void onPlayerEnterPortal(PlayerPortalEvent event) {
-//        if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) {
-//            if (EntityAPI.hasPetOut(event.getPlayer().getUniqueId())) {
-//                net.minecraft.server.v1_9_R2.Entity pet = Entities.PLAYER_PETS.get(event.getPlayer().getUniqueId());
-//                pet.dead = true;
-//                EntityAPI.removePlayerPetList(event.getPlayer().getUniqueId());
-//            }
-//            if (EntityAPI.hasMountOut(event.getPlayer().getUniqueId())) {
-//                net.minecraft.server.v1_9_R2.Entity mount = Entities.PLAYER_MOUNTS.get(event.getPlayer().getUniqueId());
-//                mount.dead = true;
-//                EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
-//            }
-//            if (!CombatLog.isInCombat(event.getPlayer())) {
-//                if (RealmInstance.getInstance().getRealmLocation(event.getFrom(), event.getPlayer()) != null) {
-//                    String locationAsString = event.getFrom().getX() + "," + (event.getFrom().getY() + 1) + "," + event.getFrom().getZ() + "," + event.getFrom().getYaw() + "," + event.getFrom().getPitch();
-//                    DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, true);
-//                    event.setTo(RealmInstance.getInstance().getRealmLocation(event.getFrom(), event.getPlayer()));
-//                    RealmInstance.getInstance().addPlayerToRealmList(event.getPlayer(), RealmInstance.getInstance().getRealmViaLocation(event.getFrom()));
-//                } else {
-//                    event.setCancelled(true);
-//                }
-//            } else {
-//                event.setCancelled(true);
-//                event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter a realm while in combat!");
-//            }
-//        } else {
-//            if (!DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, event.getPlayer().getUniqueId()).equals("")) {
-//                String[] locationString = String.valueOf(DatabaseAPI.getInstance().getData(EnumData.CURRENT_LOCATION, event.getPlayer().getUniqueId())).split(",");
-//                event.setTo(new Location(Bukkit.getWorlds().get(0), Double.parseDouble(locationString[0]), Double.parseDouble(locationString[1]), Double.parseDouble(locationString[2]), Float.parseFloat(locationString[3]), Float.parseFloat(locationString[4])));
-//                RealmInstance.getInstance().removePlayerFromRealmList(event.getPlayer(), RealmInstance.getInstance().getPlayersCurrentRealm(event.getPlayer()));
-//            } else {
-//                Location realmPortalLocation = RealmInstance.getInstance().getPortalLocationFromRealmWorld(event.getPlayer());
-//                event.setTo(realmPortalLocation.clone().add(0, 2, 0));
-//            }
-//            event.getPlayer().setFlying(false);
-//        }
-//    }
 
+
+    @EventHandler
+    public void onPortalDestory(PlayerInteractEvent event) {
+        if (event.getAction() != Action.LEFT_CLICK_BLOCK) return;
+        if (!event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
+
+        RealmToken realm = Realms.getInstance().getRealm(event.getClickedBlock().getLocation());
+
+        if (realm != null && realm.getOwner().equals(event.getPlayer().getUniqueId()))
+            Realms.getInstance().closeRealmPortal(realm.getOwner());
+    }
+
+    @EventHandler(priority = EventPriority.LOWEST)
+    public void onPlayerEnterPortal(PlayerPortalEvent event) {
+        if (event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) {
+            if (EntityAPI.hasPetOut(event.getPlayer().getUniqueId())) {
+                Entity pet = Entities.PLAYER_PETS.get(event.getPlayer().getUniqueId());
+                pet.dead = true;
+                EntityAPI.removePlayerPetList(event.getPlayer().getUniqueId());
+            }
+            if (EntityAPI.hasMountOut(event.getPlayer().getUniqueId())) {
+                Entity mount = Entities.PLAYER_MOUNTS.get(event.getPlayer().getUniqueId());
+                mount.dead = true;
+                EntityAPI.removePlayerMountList(event.getPlayer().getUniqueId());
+            }
+
+            if (!CombatLog.isInCombat(event.getPlayer())) {
+                RealmToken realm = Realms.getInstance().getRealm(event.getFrom());
+
+                if (realm == null) return;
+
+                if (!Realms.getInstance().isRealmLoaded(realm.getOwner()))
+                    return;
+
+                if (realm.getStatus() != RealmStatus.OPENED) return;
+
+
+                // SAVES THEIR LOCATION
+                String locationAsString = event.getFrom().getX() + "," + (event.getFrom().getY() + 1) + "," + event.getFrom().getZ() + "," + event.getFrom().getYaw() + "," + event.getFrom().getPitch();
+                DatabaseAPI.getInstance().update(event.getPlayer().getUniqueId(), EnumOperators.$SET, EnumData.CURRENT_LOCATION, locationAsString, true);
+
+                event.setTo(Realms.getInstance().getRealmWorld(realm.getOwner()).getSpawnLocation());
+                realm.getPlayersInRealm().add(event.getPlayer().getUniqueId());
+            } else {
+                event.setCancelled(true);
+                event.getPlayer().sendMessage(ChatColor.RED + "You cannot enter a realm while in combat!");
+            }
+        } else if (Realms.getInstance().getRealm(event.getPlayer().getLocation().getWorld()) != null) {
+            RealmToken realm = Realms.getInstance().getRealm(event.getPlayer().getLocation().getWorld());
+            event.setTo(realm.getPortalLocation().clone().add(0, 1, 0));
+            realm.getPlayersInRealm().remove(event.getPlayer().getUniqueId());
+        }
+    }
 }

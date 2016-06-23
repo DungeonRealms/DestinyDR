@@ -570,15 +570,6 @@ public class API {
 
         PlayerManager.checkInventory(uuid);
 
-        // Fatigue
-        EnergyHandler.getInstance().handleLoginEvents(player);
-
-        // Health
-        HealthHandler.getInstance().handleLoginEvents(player);
-
-        // Alignment
-        KarmaHandler.getInstance().handleLoginEvents(player);
-
         // Essentials
         //Subscription.getInstance().handleJoin(player);
         Rank.getInstance().doGet(uuid);
@@ -679,6 +670,15 @@ public class API {
                 }
             }
         }
+
+        // Fatigue
+        EnergyHandler.getInstance().handleLoginEvents(player);
+
+        // Health
+        HealthHandler.getInstance().handleLoginEvents(player);
+
+        // Alignment
+        KarmaHandler.getInstance().handleLoginEvents(player);
 
         // Subscription
         Subscription.getInstance().handleLogin(player);

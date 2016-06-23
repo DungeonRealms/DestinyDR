@@ -7,22 +7,30 @@ import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.AsyncUtils;
+import net.dungeonrealms.game.mastery.MetadataUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.mechanics.generic.GenericMechanic;
 import net.dungeonrealms.game.mongo.DatabaseAPI;
 import net.dungeonrealms.game.mongo.EnumData;
 import net.dungeonrealms.game.mongo.EnumOperators;
+import net.dungeonrealms.game.world.entities.EnumEntityType;
+import net.dungeonrealms.game.world.entities.types.monsters.EnumMonster;
+import net.dungeonrealms.game.world.entities.utils.EntityStats;
+import net.dungeonrealms.game.world.spawning.SpawningMechanics;
 import net.dungeonrealms.game.world.spawning.dungeons.DungeonMobCreator;
 import net.dungeonrealms.game.world.teleportation.Teleportation;
-import net.minecraft.server.v1_9_R2.Entity;
+import net.minecraft.server.v1_9_R2.*;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.*;
+import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffectType;
 
 import java.io.*;
@@ -52,6 +60,8 @@ public class DungeonManager implements GenericMechanic {
     private ConcurrentHashMap<String, Integer> players_Entering_Dungeon = new ConcurrentHashMap<>();
     @Getter
     private ConcurrentHashMap<String, Integer> dungeon_Wither_Effect = new ConcurrentHashMap<>();
+    @Getter
+    private CopyOnWriteArrayList<Entity> fireUnderEntity = new CopyOnWriteArrayList<>();
 
     public DungeonObject getDungeon(World world) {
         for (DungeonObject dungeon : Dungeons) {
@@ -84,14 +94,47 @@ public class DungeonManager implements GenericMechanic {
             }
         }, 100L, 20L);
 
-        Bukkit.getScheduler().scheduleAsyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeon -> dungeon.aliveMonsters.stream().forEach(mob -> {
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeon -> dungeon.aliveMonsters.stream().forEach(mob -> {
             if (mob != null) {
                 if (!mob.isAlive() || mob.dead) {
                     dungeon.aliveMonsters.remove(mob);
                     dungeon.killed = dungeon.killed + 1;
                 }
             }
-        })), 0, 10);
+        })), 200L, 10L);
+
+        Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> {
+            for (Entity entity : fireUnderEntity) {
+                if (!entity.isAlive()) {
+                    fireUnderEntity.remove(entity);
+                    return;
+                }
+                if (!entity.getBukkitEntity().isOnGround()) {
+                    return;
+                }
+                Location location = entity.getBukkitEntity().getLocation();
+                if (location.getBlock().getType() == Material.AIR) {
+                    location.getBlock().setType(Material.FIRE);
+                }
+                if (new Random().nextInt(20) == 0) {
+                    net.minecraft.server.v1_9_R2.World world = entity.getWorld();
+                    net.minecraft.server.v1_9_R2.Entity toSpawn = SpawningMechanics.getMob(world, 3, EnumMonster.MagmaCube);
+                    int level = Utils.getRandomFromTier(3, "low");
+                    String newLevelName = org.bukkit.ChatColor.LIGHT_PURPLE.toString() + "[" + level + "] ";
+                    MetadataUtils.registerEntityMetadata(toSpawn, EnumEntityType.HOSTILE_MOB, 3, level);
+                    EntityStats.createDungeonMob(toSpawn, level, 3);
+                    if (toSpawn == null) {
+                        return; //WTF?? UH OH BOYS WE GOT ISSUES
+                    }
+                    toSpawn.setCustomName(newLevelName + API.getTierColor(3).toString() + "Spawn of Inferno");
+                    toSpawn.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), newLevelName + API.getTierColor(3).toString() + "Spawn of Inferno"));
+                    Location toSpawnLoc = new Location(world.getWorld(), location.getX(), location.getY() + 2, location.getZ());
+                    entity.setLocation(toSpawnLoc.getX(), toSpawnLoc.getY(), toSpawnLoc.getZ(), 1, 1);
+                    world.addEntity(toSpawn, CreatureSpawnEvent.SpawnReason.CUSTOM);
+                    entity.setLocation(toSpawnLoc.getX(), toSpawnLoc.getY(), toSpawnLoc.getZ(), 1, 1);
+                }
+            }
+        }, 200L, 5L);
 
         Bukkit.getScheduler().scheduleSyncRepeatingTask(DungeonRealms.getInstance(), () -> Dungeons.stream().forEach(dungeonObject -> {
             if (dungeonObject.getTime() > 10) {
@@ -241,7 +284,7 @@ public class DungeonManager implements GenericMechanic {
                     break;
             }
             updateDungeonBoard(dungeonObject);
-        }), 0, 20L);
+        }), 0L, 20L);
         Utils.log.info("[DUNGEONS] Finished Loading Dungeon Mechanics ... OKAY");
     }
 

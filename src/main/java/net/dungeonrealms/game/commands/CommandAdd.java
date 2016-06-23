@@ -78,7 +78,7 @@ public class CommandAdd extends BasicCommand {
 //                    new RealmManager().uploadRealm(player.getUniqueId());
                     break;
                 case "realm":
-//                    RealmInstance.getInstance().openRealm(player);
+//                    RealmInstance.getInstance().openRealmPortal(player);
                     //new RealmManager().downloadRealm(player.getUniqueId());
                     break;
                 case "weapon":

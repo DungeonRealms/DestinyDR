@@ -865,6 +865,7 @@ public class MainListener implements Listener {
     @EventHandler(priority = EventPriority.LOWEST)
     public void characterJournalPartyInvnite(EntityDamageByEntityEvent event) {
         if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
+            if (!API.isPlayer(event.getEntity())) return;
             if (((Player) event.getDamager()).getEquipment().getItemInMainHand() != null) {
                 ItemStack stack = ((Player) event.getDamager()).getEquipment().getItemInMainHand();
                 if (stack.getType() == Material.WRITTEN_BOOK) {

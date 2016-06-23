@@ -166,25 +166,30 @@ public class PlayerMenus {
 
         for (String pet : playerPets) {
             String petType;
-            String particleType = "";
             String petName;
-            if (pet.contains("-")) {
-                petType = pet.split("-")[0];
-                particleType = pet.split("-")[1];
-                petName = ParticleAPI.ParticleEffect.getChatColorByName(particleType) + particleType + " " + ChatColor.GREEN + EnumPets.getByName(petType).getDisplayName();
+            if (pet.contains("@")) {
+                petType = pet.split("@")[0];
+                petName = pet.split("@")[1];
             } else {
                 petType = pet;
-                petName = ChatColor.GREEN + EnumPets.getByName(petType).getDisplayName();
+                petName = EnumPets.getByName(petType).getDisplayName();
             }
-            ItemStack itemStack = new ItemStack(Material.MONSTER_EGG, 1, (short) EnumPets.getByName(petType).getEggShortData());
+            EnumPets pets = EnumPets.getByName(petType);
+            if (pets == null) {
+                //UH OH BOYZ. HOW'D THAT GET HERE? SOMEONE EDITED MONGO WRONGLY
+                continue;
+            }
+            ItemStack itemStack = new ItemStack(Material.MONSTER_EGG, 1, (short) pets.getEggShortData());
             net.minecraft.server.v1_9_R2.ItemStack nmsStack = CraftItemStack.asNMSCopy(itemStack);
             NBTTagCompound tag = nmsStack.getTag() == null ? new NBTTagCompound() : nmsStack.getTag();
             tag.set("petType", new NBTTagString(petType));
-            if (!particleType.equalsIgnoreCase("")) {
-                tag.set("particleType", new NBTTagString(particleType));
-            }
+            tag.set("petName", new NBTTagString(petName));
             nmsStack.setTag(tag);
-            inv.addItem(editItem(CraftItemStack.asBukkitCopy(nmsStack), petName, new String[]{
+            inv.addItem(editItemWithShort(CraftItemStack.asBukkitCopy(nmsStack), (short) pets.getEggShortData(), pets.getDisplayName(), new String[]{
+                    ChatColor.GREEN + "Left Click: " + ChatColor.WHITE + "Summon Pet",
+                    ChatColor.GREEN + "Right Click: " + ChatColor.WHITE + "Rename Pet",
+                    "",
+                    ChatColor.GREEN + "Name: " + ChatColor.WHITE + petName,
             }));
         }
 

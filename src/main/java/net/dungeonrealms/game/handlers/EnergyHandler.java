@@ -11,14 +11,12 @@ import net.dungeonrealms.game.mongo.EnumOperators;
 import net.dungeonrealms.game.player.rank.Rank;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.items.Item;
-import net.minecraft.server.v1_9_R2.NBTTagCompound;
+import net.dungeonrealms.game.world.items.repairing.RepairAPI;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
 import org.bukkit.Material;
-import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.EntityEquipment;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -329,16 +327,16 @@ public class EnergyHandler implements GenericMechanic {
             case GOLD_HOE:
                 return 0.15F / 1.1F;
             case BOW:
-                switch (API.getItemTier(itemStack)) {
-                    case TIER_1:
+                switch (RepairAPI.getArmorOrWeaponTier(itemStack)) {
+                    case 1:
                         return 0.08F;
-                    case TIER_2:
+                    case 2:
                         return 0.10F;
-                    case TIER_3:
+                    case 3:
                         return 0.11F;
-                    case TIER_4:
+                    case 4:
                         return 0.13F;
-                    case TIER_5:
+                    case 5:
                         return 0.15F;
                 }
         }

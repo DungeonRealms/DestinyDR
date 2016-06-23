@@ -26,13 +26,13 @@ public class PlayerManager {
     public static void checkInventory(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
         player.getInventory().setItem(7, ItemManager.createCharacterJournal(Bukkit.getPlayer(uuid)));
-        for(ItemStack is : player.getInventory().getContents())
-        {
-        	if(is == ItemManager.getPlayerProfile(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Character Profile", new String[]{
-                    ChatColor.GREEN + "Right Click: " + ChatColor.GRAY + "Open Profile"}))
-        	{
-        		is.setType(Material.AIR);
-        	}
+        player.getInventory().setItem(8, ItemManager.createRealmPortalRune(uuid));
+
+        for (ItemStack is : player.getInventory().getContents()) {
+            if (is == ItemManager.getPlayerProfile(player, ChatColor.WHITE.toString() + ChatColor.BOLD + "Character Profile", new String[]{
+                    ChatColor.GREEN + "Right Click: " + ChatColor.GRAY + "Open Profile"})) {
+                is.setType(Material.AIR);
+            }
         }
 
     }
@@ -62,22 +62,6 @@ public class PlayerManager {
             this.friendlyName = friendlyName;
         }
 
-        public EnumData getDbField() {
-            return dbField;
-        }
-
-        public String getFriendlyName() {
-            return friendlyName;
-        }
-
-        public String getDescription() {
-            return description;
-        }
-
-        public String getCommandName() {
-            return commandName;
-        }
-
         public static PlayerToggles getById(int id) {
             for (PlayerToggles playerToggles : values()) {
                 if (playerToggles.id == id) {
@@ -94,6 +78,22 @@ public class PlayerManager {
                 }
             }
             return null;
+        }
+
+        public EnumData getDbField() {
+            return dbField;
+        }
+
+        public String getFriendlyName() {
+            return friendlyName;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public String getCommandName() {
+            return commandName;
         }
 
         public void setToggleState(Player player, boolean state) {

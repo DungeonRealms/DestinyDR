@@ -200,8 +200,12 @@ public class DungeonListener implements Listener {
                                 return;
                         }
                         if (!partyDungeon.getPlayerList().containsKey(player)) {
-                            player.sendMessage(ChatColor.RED + "This Dungeon was created before you joined the party, you cannot join this session.");
-                            return;
+                            if (partyDungeon.getTime() > 600) {
+                                player.sendMessage(ChatColor.RED + "This Dungeon was created before you joined the party, you cannot join this session.");
+                                return;
+                            } else {
+                                partyDungeon.getPlayerList().put(player, true);
+                            }
                         }
                         boolean hasTeleported = false;
                         DungeonManager.getInstance().getPlayers_Entering_Dungeon().put(player.getName(), 600);
