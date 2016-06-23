@@ -86,10 +86,9 @@ public class RealmInstance implements Realms {
         }
 
         Utils.log.info("DungeonRealms Finished Registering FTP() ... FINISHED!");
-
-
         Bukkit.getPluginManager().registerEvents(new RealmListener(), DungeonRealms.getInstance());
     }
+
 
     @Override
     public void stopInvocation() {
@@ -198,19 +197,18 @@ public class RealmInstance implements Realms {
         CACHED_REALMS.put(player.getUniqueId(), realm);
 
         try {
+
+            player.sendMessage(ChatColor.YELLOW + "Please wait whilst your realm is being opened...");
+
             if (!downloadRealm(player.getUniqueId()).get()) {
                 // CREATE NEW REALM //
-                player.sendMessage(ChatColor.GREEN + "Your realm does not exist remotely! Creating a new realm...");
-
                 realm.setStatus(RealmStatus.CREATING);
                 loadTemplate(player.getUniqueId());
-
-                player.sendMessage(ChatColor.GREEN + "Your realm has been created!");
-            } else player.sendMessage(ChatColor.GREEN + "Your realm has been downloaded.");
+            }
 
         } catch (Exception e) {
             CACHED_REALMS.remove(player.getUniqueId());
-            player.sendMessage(ChatColor.RED + "Unable to open your realm!");
+            player.sendMessage(ChatColor.RED + "There was an error whilst trying to open your realm!");
             e.printStackTrace();
             return;
         }
