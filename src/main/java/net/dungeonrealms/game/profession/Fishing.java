@@ -898,8 +898,8 @@ public class Fishing implements GenericMechanic {
         return CraftItemStack.asNMSCopy(rodStack).getTag().getInt("itemTier");
     }
 
-    public static HashMap<Location, Integer> FISHING_LOCATIONS = new HashMap<>();
-    public static HashMap<Location, List<Location>> FISHING_PARTICLES = new HashMap<>();
+    public HashMap<Location, Integer> FISHING_LOCATIONS = new HashMap<>();
+    public HashMap<Location, List<Location>> FISHING_PARTICLES = new HashMap<>();
 
     public void generateFishingParticleBlockList() {
         int count = 0;
@@ -931,7 +931,7 @@ public class Fishing implements GenericMechanic {
         Utils.log.info("[Professions] Loaded a total of " + count + " possible FISHING PARTICLE locations.");
     }
 
-    public static Location getFishingSpot(Location loc) {
+    public Location getFishingSpot(Location loc) {
         for (Location fish_loc : FISHING_LOCATIONS.keySet()) {
             double dist_sqr = loc.distanceSquared(fish_loc);
             if (dist_sqr <= 100)
@@ -940,11 +940,11 @@ public class Fishing implements GenericMechanic {
         return null;
     }
 
-    public static Integer getFishingSpotTier(Location loc) {
+    public Integer getFishingSpotTier(Location loc) {
         for (Location fish_loc : FISHING_LOCATIONS.keySet()) {
             double dist_sqr = loc.distanceSquared(fish_loc);
             if (dist_sqr <= 100) {
-                FISHING_LOCATIONS.get(fish_loc);
+                return FISHING_LOCATIONS.get(fish_loc);
             }
         }
         return -1;

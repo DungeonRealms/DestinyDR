@@ -572,11 +572,8 @@ public class MainListener implements Listener {
         }
 
         if (e.getState() == State.CAUGHT_FISH) {
-            e.setCancelled(true);
-
-            // TODO: Generate random fish based off spot.
-            final Location fish_loc = Fishing.getFishingSpot(e.getHook().getLocation());
-            final int spot_tier = Fishing.getFishingSpotTier(e.getHook().getLocation());
+            final Location fish_loc = Fishing.getInstance().getFishingSpot(e.getHook().getLocation());
+            final int spot_tier = Fishing.getInstance().getFishingSpotTier(fish_loc);
 
             if (fish_loc == null || spot_tier == -1) {
                 pl.sendMessage(ChatColor.RED + "You must be near a Fishing Location to catch fish!");
