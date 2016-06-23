@@ -2,14 +2,12 @@ package net.dungeonrealms.game.listeners;
 
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
+import net.dungeonrealms.game.achievements.Achievements;
 import net.dungeonrealms.game.handlers.EnergyHandler;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.GameMode;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Event;
 import org.bukkit.event.EventHandler;
@@ -182,6 +180,22 @@ public class RestrictionListener implements Listener {
         if (DungeonRealms.getInstance().getLoggingOut().contains(event.getPlayer().getName())) {
             event.setCancelled(true);
             event.getPlayer().closeInventory();
+        }
+    }
+
+    @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player pl = event.getPlayer();
+        Location from = event.getFrom();
+        if (API.getRegionName(from).equalsIgnoreCase("tutorial_island")) {
+            if (!Achievements.getInstance().hasAchievement(pl.getUniqueId(), Achievements.EnumAchievements.CYRENNICA)) {
+                Location to = event.getTo();
+                if (!API.getRegionName(to).equalsIgnoreCase("tutorial_island") && !API.getRegionName(to).equalsIgnoreCase("cityofcyrennica")) {
+                    event.setCancelled(true);
+                    pl.teleport(from);
+                    pl.sendMessage(ChatColor.RED + "You " + ChatColor.UNDERLINE + "must" + ChatColor.RED + " either finish the tutorial or skip it with /skip to get off tutorial island.");
+                }
+            }
         }
     }
 

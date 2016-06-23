@@ -164,7 +164,6 @@ public class MountUtils {
                 h.setVariant(org.bukkit.entity.Horse.Variant.MULE);
                 h.setCarryingChest(true);
                 h.setTamed(true);
-                //h.setLeashHolder(player);
                 h.setOwner(player);
                 h.setColor(org.bukkit.entity.Horse.Color.BROWN);
                 MetadataUtils.registerEntityMetadata(((CraftEntity) h).getHandle(), EnumEntityType.MOUNT, 0, 0);
@@ -182,7 +181,7 @@ public class MountUtils {
                 h.setCustomName(tier.getColor().toString() + player.getName() + "'s " + tier.getName());
                 player.closeInventory();
                 player.playSound(player.getLocation(), Sound.ENTITY_DONKEY_AMBIENT, 1F, 1F);
-                PetUtils.makePet(((CraftLivingEntity) h).getHandle(), player.getUniqueId(), 1D, EnumPets.BABY_HORSE);
+                PetUtils.makePet(((CraftLivingEntity) h).getHandle(), player.getUniqueId(), 1.8D, EnumPets.BABY_HORSE);
                 EntityAPI.addPlayerMountList(player.getUniqueId(), ((CraftEntity) h).getHandle());
                 if (!inventories.containsKey(player.getUniqueId())) {
                     Inventory inv = Bukkit.createInventory(player, tier.getSize(), "Mule Storage");

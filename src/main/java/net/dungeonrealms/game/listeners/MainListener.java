@@ -33,7 +33,6 @@ import net.dungeonrealms.game.player.trade.TradeManager;
 import net.dungeonrealms.game.profession.Fishing;
 import net.dungeonrealms.game.world.entities.utils.EntityAPI;
 import net.dungeonrealms.game.world.entities.utils.MountUtils;
-import net.dungeonrealms.game.world.items.DamageAPI;
 import net.dungeonrealms.game.world.items.Item;
 import net.dungeonrealms.game.world.items.itemgenerator.ItemGenerator;
 import net.dungeonrealms.game.world.items.repairing.RepairAPI;
@@ -1265,6 +1264,8 @@ public class MainListener implements Listener {
     public void entityTarget(EntityTargetEvent event) {
         if (event.getTarget() != null) {
             if (!(event.getTarget() instanceof Player)) {
+                event.setCancelled(true);
+            } else if (API._hiddenPlayers.contains(event.getTarget())) {
                 event.setCancelled(true);
             }
         }
