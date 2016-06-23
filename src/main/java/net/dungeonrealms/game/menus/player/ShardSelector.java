@@ -95,7 +95,7 @@ public class ShardSelector extends AbstractMenu {
             lore.add(" ");
             lore.add(ChatColor.GRAY + "Online: " + info.getOnlinePlayers() + "/" + info.getMaxPlayers());
 
-            button.setDisplayName(ChatColor.YELLOW + "" + ChatColor.BOLD + shardID);
+            button.setDisplayName(ChatColor.GREEN + "" + ChatColor.BOLD + shardID);
             button.setLore(lore);
 
             set(getSize(), button);

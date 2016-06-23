@@ -6,6 +6,7 @@ import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.KarmaHandler;
 import net.dungeonrealms.game.listeners.RealmListener;
+import net.dungeonrealms.game.mastery.AsyncUtils;
 import net.dungeonrealms.game.mastery.Utils;
 import net.dungeonrealms.game.mechanics.generic.EnumPriority;
 import net.dungeonrealms.game.miscellaneous.Cooldown;
@@ -29,6 +30,7 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Future;
 
 /**
  * Class written by APOLLOSOFTWARE.IO on 6/21/2016
@@ -92,7 +94,7 @@ public class RealmInstance implements Realms {
     @Override
     public void stopInvocation() {
         for (RealmToken realm : CACHED_REALMS.values())
-            closeRealmPortal(realm.getOwner());
+            closeRealmPortal(realm.getOwner(), true);
 
         //TODO: UPLOAD ALL REALMS TO MASTER FTP SERVER BEFORE SHUTTING DOWN THE SERVER
     }
@@ -167,7 +169,7 @@ public class RealmInstance implements Realms {
             }
         }
 
-        if (realm.getStatus() == RealmStatus.OPENED) closeRealmPortal(player.getUniqueId());
+        if (realm.getStatus() == RealmStatus.OPENED) closeRealmPortal(player.getUniqueId(), false);
 
         final Location portalLocation = location.clone().add(0, 1, 0);
         realm.setPortalLocation(portalLocation);
@@ -196,7 +198,7 @@ public class RealmInstance implements Realms {
         CACHED_REALMS.put(player.getUniqueId(), realm);
 
         try {
-            if (!downloadRealm(player.getUniqueId())) {
+            if (!downloadRealm(player.getUniqueId()).get()) {
                 // CREATE NEW REALM //
                 player.sendMessage(ChatColor.GREEN + "Your realm does not exist remotely! Creating a new realm...");
 
@@ -229,43 +231,46 @@ public class RealmInstance implements Realms {
         generateRealmBase(uuid);
     }
 
-    public boolean downloadRealm(UUID uuid) throws IOException, ZipException {
-        FTPClient ftpClient = new FTPClient();
-        FileOutputStream fos;
-        String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
+    public Future<Boolean> downloadRealm(UUID uuid) throws IOException, ZipException {
+        return AsyncUtils.pool.submit(() -> {
+            FTPClient ftpClient = new FTPClient();
+            FileOutputStream fos;
+            String REMOTE_FILE = "/" + "realms" + "/" + uuid.toString() + ".zip";
 
-        try {
-            ftpClient.connect(FTP_HOST_NAME, FTP_PORT);
-            boolean login = ftpClient.login(FTP_USER_NAME, FTP_PASSWORD);
-            if (login) {
-                Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString());
-            }
-            ftpClient.enterLocalPassiveMode();
-            ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
-            Utils.log.info("[REALM] [ASYNC] Downloading " + uuid.toString() + "'s Realm ... STARTING");
-            File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloaded/" + uuid.toString() + ".zip");
-            fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
+            try {
+                ftpClient.connect(FTP_HOST_NAME, FTP_PORT);
+                boolean login = ftpClient.login(FTP_USER_NAME, FTP_PASSWORD);
+                if (login) {
+                    Utils.log.warning("[REALM] [ASYNC] FTP Connection Established for " + uuid.toString());
+                }
+                ftpClient.enterLocalPassiveMode();
+                ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
+                Utils.log.info("[REALM] [ASYNC] Downloading " + uuid.toString() + "'s Realm ... STARTING");
+                File TEMP_LOCAL_LOCATION = new File(DungeonRealms.getInstance().getDataFolder() + "/realms/downloaded/" + uuid.toString() + ".zip");
+                fos = new FileOutputStream(TEMP_LOCAL_LOCATION);
 
-            if (ftpClient.retrieveFile(REMOTE_FILE, fos)) {
-                Utils.log.info("[REALM] [ASYNC] Realm downloaded for " + uuid.toString());
+                if (ftpClient.retrieveFile(REMOTE_FILE, fos)) {
+                    Utils.log.info("[REALM] [ASYNC] Realm downloaded for " + uuid.toString());
 
-                ZipFile zipFile = new ZipFile(TEMP_LOCAL_LOCATION);
-                Utils.log.info("[REALM] [ASYNC] Extracting Realm for " + uuid.toString());
-                zipFile.extractAll(rootFolder.getAbsolutePath() + "/" + uuid.toString());
-                Utils.log.info("[REALM] [ASYNC] Realm Extracted for " + uuid.toString());
+                    ZipFile zipFile = new ZipFile(TEMP_LOCAL_LOCATION);
+                    Utils.log.info("[REALM] [ASYNC] Extracting Realm for " + uuid.toString());
+                    zipFile.extractAll(rootFolder.getAbsolutePath() + "/" + uuid.toString());
+                    Utils.log.info("[REALM] [ASYNC] Realm Extracted for " + uuid.toString());
+                    fos.close();
+
+
+                    return true;
+                }
+
                 fos.close();
-                return true;
+                return false;
+            } finally {
+                if (ftpClient.isConnected()) {
+                    ftpClient.logout();
+                    ftpClient.disconnect();
+                }
             }
-
-            fos.close();
-            return false;
-        } finally {
-            if (ftpClient.isConnected()) {
-                ftpClient.logout();
-                ftpClient.disconnect();
-            }
-        }
-
+        });
     }
 
     private boolean isPortalNearby(Location location, int radius) {
@@ -296,23 +301,28 @@ public class RealmInstance implements Realms {
     }
 
     @Override
-    public void closeRealmPortal(UUID uuid) {
+    public void closeRealmPortal(UUID uuid, boolean kickPlayers) {
         if (!isRealmLoaded(uuid)) return;
 
         RealmToken realm = getRealm(uuid);
 
         Location portalLocation = realm.getPortalLocation().clone();
-        portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
-        portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
 
-        realm.getHologram().delete();
+        if (realm.getPortalLocation() != null) {
+            portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
+            portalLocation.add(0, 1, 0).getBlock().setType(Material.AIR);
+        }
+
+        if (realm.getHologram() != null)
+            realm.getHologram().delete();
+
         realm.setPortalLocation(null);
         realm.setStatus(RealmStatus.CLOSED);
 
         for (UUID u : realm.getPlayersInRealm()) {
             Player p = Bukkit.getPlayer(u);
 
-            if (p != null)
+            if (p != null && portalLocation != null)
                 p.teleport(portalLocation);
         }
     }
