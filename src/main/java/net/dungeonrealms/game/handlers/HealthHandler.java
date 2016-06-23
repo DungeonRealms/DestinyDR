@@ -25,7 +25,6 @@ import org.bukkit.craftbukkit.v1_9_R2.entity.CraftEntity;
 import org.bukkit.craftbukkit.v1_9_R2.entity.CraftLivingEntity;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.*;
-import org.bukkit.event.entity.EntityDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
@@ -799,6 +798,10 @@ public class HealthHandler implements GenericMechanic {
                 continue;
             }
             totalHP = getVitalityValueOfArmor(itemStack, totalHP);
+        }
+
+        if (entity.hasMetadata("dungeon")) {
+            totalHP *= 2;
         }
         
         if (entity.hasMetadata("elite")) {
