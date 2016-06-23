@@ -25,7 +25,7 @@ public enum EnumPets {
     RABBIT(8, "RABBIT", 101, "Rabbit"),
     CHICKEN(9, "CHICKEN", 93, "Chicken"),
     BAT(10, "BAT", 65, "Bat"),
-    SLIME(11, "SLIME", 66, "Slime"),
+    SLIME(11, "SLIME", 55, "Slime"),
     MAGMA_CUBE(12, "MAGMA_CUBE", 62, "Magma Cube"),
     BABY_HORSE(13, "BABY_HORSE", 64, "Baby Horse");
 
