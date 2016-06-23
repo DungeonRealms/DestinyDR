@@ -280,7 +280,7 @@ public class RealmInstance implements Realms {
 
                     ZipFile zipFile = new ZipFile(TEMP_LOCAL_LOCATION);
                     Utils.log.info("[REALM] [ASYNC] Extracting Realm for " + uuid.toString());
-                    zipFile.extractAll(rootFolder.getAbsolutePath() + "/" + uuid.toString());
+                    zipFile.extractAll(rootFolder.getAbsolutePath() + "/");
                     Utils.log.info("[REALM] [ASYNC] Realm Extracted for " + uuid.toString());
                     fos.close();
 
