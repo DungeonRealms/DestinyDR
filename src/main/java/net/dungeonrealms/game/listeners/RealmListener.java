@@ -17,6 +17,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.event.player.PlayerPortalEvent;
 
 /**
@@ -125,6 +126,18 @@ public class RealmListener implements Listener {
 //     * @param event
 //     * @since 1.0
 //     */
+
+
+    @EventHandler
+    public void onMove(PlayerMoveEvent event) {
+        if (!event.getPlayer().getWorld().equals(Bukkit.getWorlds().get(0))) return;
+
+        if(event.getTo().getY() < 0) {
+            RealmToken realm = Realms.getInstance().getRealm(event.getPlayer().getLocation().getWorld());
+            event.setTo(realm.getPortalLocation().clone().add(0, 1, 0));
+            realm.getPlayersInRealm().remove(event.getPlayer().getUniqueId());
+        }
+    }
 
 
     @EventHandler
