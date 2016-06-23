@@ -1,5 +1,7 @@
 package net.dungeonrealms.game.world.entities.types.monsters.boss.subboss;
 
+import lombok.Getter;
+import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.handlers.HealthHandler;
 import net.dungeonrealms.game.mastery.MetadataUtils;
@@ -19,13 +21,17 @@ import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Chase on Oct 21, 2015
  */
 public class InfernalGhast extends EntityGhast implements Boss {
 
 	private InfernalAbyss boss;
-
+	@Getter
+	protected Map<String, Integer[]> attributes = new HashMap<>();
 	
 	/**
 	 * @param infernalAbyss
@@ -40,6 +46,7 @@ public class InfernalGhast extends EntityGhast implements Boss {
 		this.getBukkitEntity().setCustomName(ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss");
 		this.getBukkitEntity().setMetadata("customname", new FixedMetadataValue(DungeonRealms.getInstance(), ChatColor.RED.toString() + ChatColor.UNDERLINE + "The Infernal Abyss"));
 		this.boss = infernalAbyss;
+		attributes = API.calculateAllAttributes((LivingEntity) this.getBukkitEntity());
 		//TODO: Enable double armor (takes half damage from attacks) [same as above].
 	}
 

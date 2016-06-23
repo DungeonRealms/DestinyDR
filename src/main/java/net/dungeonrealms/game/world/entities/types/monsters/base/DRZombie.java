@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
+import lombok.Getter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.mechanics.ParticleAPI;
@@ -20,6 +21,8 @@ import org.bukkit.metadata.FixedMetadataValue;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.Random;
 
 /**
@@ -33,7 +36,9 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
     protected EnumEntityType entityType;
     protected EnumMonster monsterType;
     public int tier;
-    
+    @Getter
+    protected Map<String, Integer[]> attributes = new HashMap<>();
+
     protected DRZombie(World world, EnumMonster monster, int tier, EnumEntityType entityType) {
         this(world);
         this.tier  = tier;
@@ -53,6 +58,7 @@ public abstract class DRZombie extends EntityZombie implements DRMonster {
         livingEntity.getEquipment().setHelmet(monster.getSkullItem(monster));
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
+        attributes = API.calculateAllAttributes((LivingEntity) this.getBukkitEntity());
     }
 
     protected DRZombie(World world) {

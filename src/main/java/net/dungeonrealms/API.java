@@ -49,6 +49,7 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.craftbukkit.v1_9_R2.CraftWorld;
 import org.bukkit.craftbukkit.v1_9_R2.inventory.CraftItemStack;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.entity.CreatureSpawnEvent.SpawnReason;
 import org.bukkit.inventory.Inventory;
@@ -1111,18 +1112,62 @@ public class API {
         GamePlayer gp = API.getGamePlayer(p);
         assert gp != null;
 
-        // populate the map with empty values
-        for (WeaponAttributeType type : WeaponAttributeType.values()) {
-            attributes.put(type.getNBTName(), new Integer[] { 0, 0 });
-        }
         for (ArmorAttributeType type : ArmorAttributeType.values()) {
-            attributes.put(type.getNBTName(), new Integer[] { 0, 0 });
+            attributes.put(type.getNBTName(), new Integer[]{0, 0});
+        }
+        for (WeaponAttributeType type : WeaponAttributeType.values()) {
+            attributes.put(type.getNBTName(), new Integer[]{0, 0});
         }
 
+        // calculate from armor and weapon, then update the gp attributes property
+        attributes.putAll(calculateArmorAttributes(p.getInventory().getArmorContents(), false));
+        attributes.putAll(calculateWeaponAttributes(p.getInventory().getItemInMainHand(), false));
         gp.setAttributes(attributes);
 
+        // so energy regen doesn't start before attributes have been loaded
+        gp.setAttributesLoaded(true);
+
+        return attributes;
+    }
+
+    public static Map<String, Integer[]> calculateAllAttributes(LivingEntity ent) {
+        Map<String, Integer[]> attributes = new HashMap<>();
+
+        for (ArmorAttributeType type : ArmorAttributeType.values()) {
+            attributes.put(type.getNBTName(), new Integer[]{0, 0});
+        }
+        for (WeaponAttributeType type : WeaponAttributeType.values()) {
+            attributes.put(type.getNBTName(), new Integer[]{0, 0});
+        }
+
+        // calculate from armor and weapon, then update the gp attributes property
+        attributes.putAll(calculateArmorAttributes(ent.getEquipment().getArmorContents(), false));
+        attributes.putAll(calculateWeaponAttributes(ent.getEquipment().getItemInMainHand(), false));
+
+        return attributes;
+    }
+
+    /**
+     * Returns a HashMap of the attributes in armor. Does not update the
+     * gameplayer attributes property. Called in the calculateAllAttributes
+     * method.
+     *
+     * @param armorSet
+     * @param includeAbsentAttributes if true add all attributes not present
+     *                                to map with values 0, 0
+     * @return
+     */
+    public static Map<String, Integer[]> calculateArmorAttributes(ItemStack[] armorSet, boolean includeAbsentAttributes) {
+        Map<String, Integer[]> armorAttributes = new HashMap<>();
+
+        // populate the map with default values if necessary
+        if (includeAbsentAttributes) {
+            for (ArmorAttributeType type : ArmorAttributeType.values()) {
+                armorAttributes.put(type.getNBTName(), new Integer[]{0, 0});
+            }
+        }
         // iterate through armorset
-        for (ItemStack armor : p.getInventory().getArmorContents()) {
+        for (ItemStack armor : armorSet) {
             if (!API.isArmor(armor)) continue;
 
             List<String> modifiers = API.getModifiers(armor);
@@ -1134,38 +1179,59 @@ public class API {
                 assert type != null;
 
                 if (type.isRange()) {
-                    gp.changeAttributeVal(type, new Integer[] { tag.getInt(modifier + "Min"), tag.getInt(modifier + "Max") });
+                    armorAttributes.put(type.getNBTName(), new Integer[] { tag.getInt(modifier + "Min"), tag.getInt(modifier + "Max") });
                 }
                 else {
-                    gp.changeAttributeVal(type, new Integer[] { 0, tag.getInt(modifier) });
+                    armorAttributes.put(type.getNBTName(), new Integer[] { 0, tag.getInt(modifier) });
                 }
             });
         }
 
-        // add weapon stats if necessary
-        ItemStack weapon = p.getInventory().getItemInMainHand();
+        return armorAttributes;
+    }
+
+    /**
+     * Returns a HashMap of the attributes in player's weapon if he is holding one.
+     * Does not update the gameplayer attributes property. Called in the
+     * calculateAllAttributes method and when calculating damage in DamageAPI.
+     *
+     * @param weapon
+     * @param includeAbsentAttributes if true add all attributes not present
+     *                                to map with values 0, 0
+     * @return
+     */
+    public static Map<String, Integer[]> calculateWeaponAttributes(ItemStack weapon, boolean includeAbsentAttributes) {
+        Map<String, Integer[]> weaponAttributes = new HashMap<>();
 
         if (API.isWeapon(weapon)) {
             List<String> modifiers = API.getModifiers(weapon);
             NBTTagCompound tag = CraftItemStack.asNMSCopy(weapon).getTag();
             assert tag != null;
 
+            // populate the map with default values
+            if (includeAbsentAttributes) {
+                for (WeaponAttributeType type : WeaponAttributeType.values()) {
+                    weaponAttributes.put(type.getNBTName(), new Integer[]{0, 0});
+                }
+            }
+
             modifiers.stream().forEach(modifier -> {
                 WeaponAttributeType type = WeaponAttributeType.getByNBTName(modifier);
                 assert type != null;
 
                 if (type.isRange()) {
-                    gp.changeAttributeVal(type, new Integer[] { tag.getInt(modifier + "Min"), tag.getInt(modifier + "Max") });
+                    weaponAttributes.put(type.getNBTName(), new Integer[] { tag.getInt(modifier + "Min"), tag.getInt(modifier + "Max") });
                 }
                 else {
-                    gp.changeAttributeVal(type, new Integer[] { 0, tag.getInt(modifier) });
+                    weaponAttributes.put(type.getNBTName(), new Integer[] { 0, tag.getInt(modifier) });
                 }
             });
         }
+        else {
+            return null;
+        }
 
-        gp.setAttributesLoaded(true);
-
-        return attributes;
+        return weaponAttributes;
     }
 
     /**

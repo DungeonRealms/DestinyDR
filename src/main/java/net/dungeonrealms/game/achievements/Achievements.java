@@ -437,7 +437,31 @@ public class Achievements {
 
         DEPTHS_OF_ACERON("Depths of Aceron", new String[]{
                 "Defeated Aceron."
-        }, 75000, "achievement.combat_depths_of_aceron", false);
+        }, 75000, "achievement.combat_depths_of_aceron", false),
+
+        MONSTER_HUNTER_I("Monster Hunter I", new String[]{
+                "Defeated 100 monsters."
+        }, 250, "achievement.combat_monster_hunter_i", false),
+
+        MONSTER_HUNTER_II("Monster Hunter II", new String[]{
+                "Defeated 300 monsters."
+        }, 500, "achievement.combat_monster_hunter_ii", false),
+
+        MONSTER_HUNTER_III("Monster Hunter III", new String[]{
+                "Defeated 500 monsters."
+        }, 1000, "achievement.combat_monster_hunter_iii", false),
+
+        MONSTER_HUNTER_IV("Monster Hunter IV", new String[]{
+                "Defeated 1000 monsters."
+        }, 3000, "achievement.combat_monster_hunter_iv", false),
+
+        MONSTER_HUNTER_V("Monster Hunter V", new String[]{
+                "Defeated 1500 monsters."
+        }, 6000, "achievement.combat_monster_hunter_v", false),
+
+        MONSTER_HUNTER_VI("Monster Hunter VI", new String[]{
+                "Defeated 2000 monsters."
+        }, 10000, "achievement.combat_monster_hunter_vi", false);
 
         private String name;
         private String[] message;

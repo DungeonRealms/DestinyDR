@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
+import lombok.Getter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
@@ -14,6 +15,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Chase on Sep 19, 2015
  */
@@ -22,7 +26,9 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
     private String mobHead;
     protected EnumEntityType entityType;
     protected EnumMonster monsterType;
-    
+    @Getter
+    protected Map<String, Integer[]> attributes = new HashMap<>();
+
     /**
      * @param world
      */
@@ -46,6 +52,7 @@ public abstract class DRSkeleton extends EntitySkeleton implements DRMonster {
         livingEntity.getEquipment().setHelmet(monster.getSkullItem(monster));
         this.noDamageTicks = 0;
         this.maxNoDamageTicks = 0;
+        attributes = API.calculateAllAttributes((LivingEntity) this.getBukkitEntity());
     }
     
     protected DRSkeleton(World world) {

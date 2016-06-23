@@ -1,5 +1,6 @@
 package net.dungeonrealms.game.world.entities.types.monsters.base;
 
+import lombok.Getter;
 import net.dungeonrealms.API;
 import net.dungeonrealms.DungeonRealms;
 import net.dungeonrealms.game.world.anticheat.AntiCheat;
@@ -16,12 +17,17 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.metadata.FixedMetadataValue;
 
+import java.util.HashMap;
+import java.util.Map;
+
 /**
  * Created by Chase on Oct 21, 2015
  */
 public class DRSilverfish extends EntitySilverfish implements DRMonster {
 
 	public EnumMonster enumMonster;
+	@Getter
+	protected Map<String, Integer[]> attributes = new HashMap<>();
 
 	public DRSilverfish(World world, EnumMonster type, int tier) {
 		super(world);
@@ -36,6 +42,7 @@ public class DRSilverfish extends EntitySilverfish implements DRMonster {
 		this.targetSelector.a(5, new PathfinderGoalNearestAttackableTarget(this, EntityHuman.class, true));
 		this.noDamageTicks = 0;
 		this.maxNoDamageTicks = 0;
+		attributes = API.calculateAllAttributes((LivingEntity) this.getBukkitEntity());
 	}
 
 	public void setArmor(int tier) {
