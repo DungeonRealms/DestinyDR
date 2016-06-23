@@ -303,7 +303,6 @@ public class MainListener implements Listener {
 
         //Ensures the player has played at least 5 seconds before saving to the database.
         if (DatabaseAPI.getInstance().PLAYER_TIME.containsKey(event.getPlayer().getUniqueId()) && DatabaseAPI.getInstance().PLAYER_TIME.get(event.getPlayer().getUniqueId()) > 5) {
-            DatabaseAPI.getInstance().PLAYER_TIME.remove(event.getPlayer().getUniqueId());
             Player player = event.getPlayer();
             // Player leaves while in duel
             if (DuelingMechanics.isDueling(player.getUniqueId())) {
@@ -1268,7 +1267,7 @@ public class MainListener implements Listener {
         if (event.getTarget() != null) {
             if (!(event.getTarget() instanceof Player)) {
                 event.setCancelled(true);
-            } else if (Rank.isGM((Player) event.getTarget()) || API._hiddenPlayers.contains(event.getTarget())) {
+            } else if (Rank.isGM((Player) event.getTarget())) {
                 //TODO: Check for /allowfight @alan.
                 event.setCancelled(true);
             }

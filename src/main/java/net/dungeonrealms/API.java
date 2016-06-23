@@ -351,6 +351,12 @@ public class API {
      */
     public static void handleLogout(UUID uuid) {
         Player player = Bukkit.getPlayer(uuid);
+        if (!DatabaseAPI.getInstance().PLAYER_TIME.containsKey(uuid) || DatabaseAPI.getInstance().PLAYER_TIME.get(uuid) <= 5) {
+            //Dont save.
+            DatabaseAPI.getInstance().PLAYER_TIME.remove(uuid);
+            return;
+        }
+        DatabaseAPI.getInstance().PLAYER_TIME.remove(uuid);
         if (player.getWorld().getName().contains("DUNGEON")) {
             for (ItemStack stack : player.getInventory().getContents()) {
                 if (stack != null && stack.getType() != Material.AIR) {
